@@ -52,7 +52,7 @@ jobs:
           tags: ${{ env.APP_IMAGE }}:dev
           cache-from: |
             type=gha,scope=test
-            type=gha,scope=prod
+            type=gha,scope=dev
           cache-to: type=gha,scope=test
       - name: Run docker-compose services
         working-directory: deployment
@@ -71,6 +71,5 @@ jobs:
           python manage.py makemigrations
           python manage.py migrate
           python manage.py collectstatic --noinput --verbosity 0
-          export DJANGO_SETTINGS_MODULE=core.settings.test && coverage run manage.py test && coverage xml
+          export DJANGO_SETTINGS_MODULE=core.settings.dev && coverage run manage.py test && coverage xml
           EOF
-          docker cp georepo_dev:/home/web/django_project/coverage.xml ../coverage.xml
