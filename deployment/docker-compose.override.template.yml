@@ -21,6 +21,17 @@ services:
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
 
+  worker:
+    image: kartoza/sanbi_dev
+    build:
+      context: ../
+      dockerfile: deployment/docker/Dockerfile
+      target: dev
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/static:/home/web/static
+      - ./volumes/media:/home/web/media
+
   dev:
     build:
       context: ../

@@ -61,6 +61,9 @@ jobs:
           cp docker-compose.override.template.yml docker-compose.override.yml
           cd ../
           make dev
+          make wait-db
+          make sleep
+          make create-test-db
       - name: Run Coverage test
         working-directory: deployment
         run: |
