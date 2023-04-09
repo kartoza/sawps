@@ -1,5 +1,9 @@
 # SANBI WPS
 
+# Development
+
+Please follow the Kartoza coding standards: https://kartoza.github.io/TheKartozaHandbook/development/conventions/coding_standards/#compliance
+
 
 ## 🏃‍♂️ How To Run Project with Visual Studio Code
 
