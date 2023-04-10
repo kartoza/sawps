@@ -11,7 +11,7 @@ Please follow the Kartoza coding standards: https://kartoza.github.io/TheKartoza
 
     Create a copy of the .template.env file and name it .env. Update the .env file with your project-specific settings.
 
-- Ensure you have Dev Containers extension is installed
+- Ensure Dev Containers extension is installed
 
 - Build and open project in devcontainer :
 
