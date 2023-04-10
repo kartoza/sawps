@@ -48,3 +48,5 @@ CELERY_RESULT_BACKEND = 'django-db'
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'django.template.context_processors.request',
 ]
+
+MAPTILER_API_KEY = os.environ.get('MAPTILER_API_KEY', '')

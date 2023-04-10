@@ -4,11 +4,13 @@
 {% endblock %}
 
 {% block content %}
-
+<script>
+    window.maptiler_api_key = "{{ maptiler_api_key }}";
+</script>
 
 <div id="app"></div>
 {% render_bundle 'Home' 'css' %}
-{% render_bundle 'Home' 'js' %}
+{% render_bundle 'Main' 'js' %}
 
 {% endblock %}
 
