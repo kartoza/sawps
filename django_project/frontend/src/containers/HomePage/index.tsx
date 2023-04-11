@@ -1,10 +1,12 @@
 import React from 'react';
-import './styles/App.scss';
+import ResponsiveNavbar from '../../components/Navbar';
+import './index.scss';
 
-function Home() {
+function HomePage() {
   return (
     <div className="App">
-      <header className="App-header">
+      <ResponsiveNavbar/>
+      <div className="App-content">
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
@@ -16,9 +18,9 @@ function Home() {
         >
           React
         </a>
-      </header>
+      </div>
     </div>
   );
 }
 
-export default Home;
+export default HomePage;

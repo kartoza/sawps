@@ -1,16 +1,16 @@
 import React from 'react';
 import { createRoot } from "react-dom/client";
-import './assets/styles/index.scss';
-import reportWebVitals from './reportWebVitals';
-import HomePage from './containers/HomePage';
-import ErrorBoundary from "./components/ErrorBoundary";
+import './index.scss';
+import reportWebVitals from '../../reportWebVitals';
+import MainPage from '../MainPage/MainPage';
+import ErrorBoundary from "../../components/ErrorBoundary";
 
 
 const rootElement = document.getElementById('app')!
 const root = createRoot(rootElement);
 root.render(
     <ErrorBoundary>
-        <HomePage/>
+        <MainPage/>
     </ErrorBoundary>
 );
 
