@@ -16,6 +16,7 @@
 
 <script>
   window.csrfToken = "{{ csrf_token }}";
+  window.isLoggedIn = {% if user.is_authenticated %}true{% else %}false{% endif %};
 </script>
 <body>
 {% block content %}

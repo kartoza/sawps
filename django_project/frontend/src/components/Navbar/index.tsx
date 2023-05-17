@@ -11,11 +11,23 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import './index.scss';
 
 const pages = ['Map'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const menuItems = [{
+  'title': 'Profile',
+  'href': '/'
+}, {
+  'title': 'Account',
+  'href': '/',
+}, { 
+  'title': 'Dashboard',
+  'href': '/',
+}, {
+  'title': 'Logout',
+  'href': '/accounts/logout'
+}];
+const isLoggedIn = (window as any).isLoggedIn;
 
 function ResponsiveNavbar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -24,15 +36,13 @@ function ResponsiveNavbar() {
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
   const handleCloseNavMenu = (page: string = "") => {
     setAnchorElNav(null);
-    if (page) {
-        window.location.href = `\\${page.toLowerCase()}\\`;
-    }
   };
 
   const handleCloseUserMenu = () => {
@@ -44,14 +54,16 @@ function ResponsiveNavbar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ p: 1, display: { xs: 'none', md: 'flex' } }}>
-            <img
-              src='/static/images/sanbi-logo-1x.png'
-              alt="Logo"
-              style={{
-                height: 'auto',
-                maxWidth: 'calc(100% - 16px)'
-              }}
-            />
+            <a href='/'>
+              <img
+                src='/static/images/sanbi-logo-1x.png'
+                alt="Logo"
+                style={{
+                  height: 'auto',
+                  maxWidth: 'calc(100% - 16px)'
+                }}
+              />
+            </a>
           </Box>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -84,7 +96,7 @@ function ResponsiveNavbar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={() => handleCloseNavMenu(page)}>
+                <MenuItem key={page} onClick={() => window.location.href = `\\${page.toLowerCase()}\\`}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -94,7 +106,7 @@ function ResponsiveNavbar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={() => handleCloseNavMenu(page)}
+                onClick={() => window.location.href = `\\${page.toLowerCase()}\\`}
                 sx={{ my: 2, display: 'block' }}
               >
                 {page}
@@ -102,35 +114,54 @@ function ResponsiveNavbar() {
             ))}
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="User" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {isLoggedIn ? 
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="User" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {menuItems.map((menuItem) => (
+                  <MenuItem key={menuItem.title} 
+                    onClick={() => window.location.href = menuItem.href}>
+                    <Typography textAlign="center">{menuItem.title}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu> 
+            </Box> : 
+            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+              <Button
+                key='sign-in'
+                href='/accounts/login'
+                sx={{ my: 2, display: 'block' }}
+              >
+                Log In
+              </Button>
+              <Button
+                key='sign-up'
+                href='/accounts/signup'
+                sx={{ my: 2, display: 'block', ml: 2 }}
+              >
+                Sign Up
+              </Button>
+            </Box>
+          }
         </Toolbar>
       </Container>
     </AppBar>

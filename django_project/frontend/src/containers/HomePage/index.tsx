@@ -27,7 +27,7 @@ function Banner() {
             </Typography>
             <Box className='banner-button-container'>
               <Button title='About'>About</Button>
-              <Button title='About'>Explore</Button>
+              <Button title='About' onClick={() => window.location.href = '/map'}>Explore</Button>
             </Box>
           </Box>
         </Grid>
