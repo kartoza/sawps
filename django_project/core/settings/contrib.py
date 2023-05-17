@@ -4,6 +4,9 @@ from .base import *  # noqa
 
 # Extra installed apps
 INSTALLED_APPS = INSTALLED_APPS + (
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'rest_framework',
     'rest_framework_gis',
     'webpack_loader',
@@ -41,6 +44,8 @@ REST_FRAMEWORK = {
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # default
     'guardian.backends.ObjectPermissionBackend',
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 CELERY_RESULT_BACKEND = 'django-db'
