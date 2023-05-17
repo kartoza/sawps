@@ -1,4 +1,13 @@
 .navbar {
-    background-color: var(--secondary-color);
-    height: 70px;
+    background-color: var(--white);
+    color: var(--black);
+}
+
+.logo-wrapper {
+    display: flex;
+}
+
+.logo-wrapper img {
+    height: auto;
+    max-width: 100%;
 }
