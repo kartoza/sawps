@@ -15,7 +15,8 @@ const minimized = !isDev;
 let conf = {
     entry: {
         Home: './src/App.tsx',
-        Main: './src/containers/MainPage/index.tsx'
+        Main: './src/containers/MainPage/index.tsx',
+        Login: './src/containers/LoginPage/index.tsx'
     },
     output: {
         path: path.resolve(__dirname, "./bundles/frontend"),
