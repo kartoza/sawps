@@ -1,14 +1,38 @@
-{% extends "base.html" %}
-{% block extra_head %}
-    {% load render_bundle from webpack_loader %}
+{% extends 'base.html' %}
+{% load i18n %}
+{% load account %}
+{% block title %}Login{% endblock%}
+
+{% block body_content %}
+    <div class="content">
+        {% block content %}
+
+            {% csrf_token %}
+            <div class="container">
+
+                <div class="custom-form-container">
+                    {% if messages %}
+                        <ul class="errorlist">
+                            {% for message in messages %}
+                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <h1>{% trans "LOG IN" %}</h1>
+
+                    <form class="login" method="POST" action="{% url 'account_login' %}">{% csrf_token %}
+                        {{ form.as_p }}
+                        {% if redirect_field_value %}
+                            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+                        <button class="login custom-form-submit btn-login" type="submit">{% trans "LOGIN" %}</button>
+                    </form>
+
+                </div>
+            </div> <!-- /container -->
+            </div>
+        {% endblock %}
 {% endblock %}
 
-{% block content %}
-
-
-<div id="app"></div>
-{% render_bundle 'Home' 'css' %}
-{% render_bundle 'Login' 'js' %}
-
-{% endblock%}
 </html>
