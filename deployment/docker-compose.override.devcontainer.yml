@@ -34,3 +34,4 @@ services:
     links:
       - db
       - worker
+  
