@@ -9,7 +9,8 @@
           "name": "Django: Run server",
           "type": "python",
           "request": "launch",
-          "program": "${workspaceFolder}/django_project/manage.py",
+          "program": "/home/web/project/django_project/manage.py",
+          "cwd": "/home/web/project/django_project",
           "args": [
               "runserver", "8000"
           ],
@@ -22,7 +23,7 @@
           "request": "launch",
           "runtimeExecutable": "npm",
           "preLaunchTask": "React: Webpack-dev-server",
-          "cwd": "${workspaceFolder}/django_project/frontend",
+          "cwd": "/home/web/project/django_project",
           "console": "integratedTerminal",
       },
   ], 
