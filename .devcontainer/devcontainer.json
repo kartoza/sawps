@@ -1,12 +1,12 @@
 {
     "name": "Django Docker Environment",
     "remoteUser": "vscode",
-    "postCreateCommand": "git config --global --add safe.directory /home/web/project",
     "dockerComposeFile": [
       "../deployment/docker-compose.yml",
       "../deployment/docker-compose.override.devcontainer.yml"
     ],
     "service": "dev",
+    "runServices": ["dev", "db", "worker", "redis"],
     "workspaceFolder": "/home/web/project",
     "settings": {
       "terminal.integrated.shell.linux": "/bin/bash",
