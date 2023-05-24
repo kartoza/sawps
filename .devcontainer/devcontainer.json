@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "Django Docker Environment",
   "remoteUser": "vscode",
   "dockerComposeFile": [
@@ -28,3 +29,34 @@
   "extensions": ["ms-python.python", "ms-azuretools.vscode-docker"],
   "shutdownAction": "stopCompose"
 }
+=======
+    "name": "Django Docker Environment",
+    "remoteUser": "vscode",
+    "dockerComposeFile": [
+      "../deployment/docker-compose.yml",
+      "../deployment/docker-compose.override.devcontainer.yml"
+    ],
+    "service": "dev",
+    "runServices": ["dev", "db", "worker", "redis"],
+    "workspaceFolder": "/home/web/project",
+    "settings": {
+      "terminal.integrated.shell.linux": "/bin/bash",
+      "python.pythonPath": "/usr/local/bin/python",
+      "python.linting.pylintEnabled": true,
+      "python.linting.enabled": true
+    },
+    "runArgs": [
+      "--env-file",
+      "../deployment/.env"
+    ],
+    "portsAttributes": {
+      "9000": {
+        "label": "Frontend",
+        "onAutoForward": "notify"
+      }
+    },
+    "forwardPorts": [8000, 9000],
+    "extensions": ["ms-python.python", "ms-azuretools.vscode-docker"],
+    "shutdownAction": "stopCompose"
+  }
+>>>>>>> 7278590fbceaee32e8c617dcb30ba10c613f643f
