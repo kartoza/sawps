@@ -35,15 +35,3 @@ services:
       - db
       - worker
   
-
-  django:
-    image: kartoza/sanbi_dev
-    build:
-      context: ../
-      dockerfile: deployment/docker/Dockerfile
-      target: vscode
-    command: 'uwsgi --ini /uwsgi.conf'
-    links:
-      - db
-      - worker
-      
