@@ -7,8 +7,8 @@ class AbstractLayer(models.Model):
     """
     name = models.CharField(max_length=512)
     type = models.CharField(max_length=15)
-    extent = models.CharField(null=True)
-    srid = models.CharField(null=True, default='4326')
+    extent = models.CharField(null=True, max_length=20)
+    srid = models.CharField(null=True, default='4326', max_length=4)
     description = models.TextField(null=True)
 
     def __str__(self):
@@ -54,10 +54,10 @@ class RasterLayer(AbstractLayer):
 class Feature(models.Model):
     """Feature for vector layers defined by it's geom field,
       we are using Geometry base class to handle all geom types"""
-    layer_id = models.ForeignKey(VectorLayer, on_delete=models.CASCADE)
-    name = models.CharField()
+    layer_id = models.ForeignKey(VectorLayer, on_delete=models.CASCADE, related_name="features")
     geom= models.GeometryField()
-    description = models.CharField()
+    name = models.CharField(max_length=100, null=True)
+    description = models.TextField(null=True)
 
     def __str__(self):
         return self.name

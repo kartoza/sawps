@@ -1,3 +1,7 @@
 from django.contrib import admin
+from . import models
 
-# Register your models here.
+admin.site.register(models.VectorLayer)
+admin.site.register(models.RasterLayer)
+admin.site.register(models.WMS)
+admin.site.register(models.Feature)
