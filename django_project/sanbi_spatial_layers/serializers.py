@@ -13,7 +13,7 @@ class FeatureSerializer(serializers.GeoFeatureModelSerializer):
         geo_field = "geom"
         auto_bbox = True
         fields = "__all__"
-    
+
 
 class VectorLayerSerializer(serializers.ModelSerializer):
     """
@@ -21,9 +21,11 @@ class VectorLayerSerializer(serializers.ModelSerializer):
     """
     # didn't use source="features" because it's the same as attr name
     features = FeatureSerializer(many=True, required=False, read_only=True)
+
     class Meta:
         model = models.VectorLayer
-        fields = ["id", "name", "type", "extent", "srid", "description", "features"]
+        fields = ["id", "name", "type", "extent", "srid",
+                  "description", "features"]
 
 
 class WMSLayerSerializer(serializers.ModelSerializer):
@@ -33,6 +35,7 @@ class WMSLayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WMS
         fields = "__all__"
+
 
 class RasterLayerSerializer(serializers.ModelSerializer):
     """

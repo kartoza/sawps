@@ -20,11 +20,12 @@ class AbstractLayer(models.Model):
 
 class VectorLayer(AbstractLayer):
     """
-    vector layer, no need to add more fields 
+    vector layer, no need to add more fields
     """
     class Meta:
         verbose_name = "Vector layer"
         verbose_name_plural = "Vector layers"
+
 
 class WMS(AbstractLayer):
     """
@@ -41,7 +42,7 @@ class WMS(AbstractLayer):
 
 class RasterLayer(AbstractLayer):
     """
-    raster layer, geoDjango has a RasterField field 
+    raster layer, geoDjango has a RasterField field
     to handle rasters instead of usual ImageField
     """
     raster_file = models.RasterField()
@@ -52,10 +53,14 @@ class RasterLayer(AbstractLayer):
 
 
 class Feature(models.Model):
-    """Feature for vector layers defined by it's geom field,
-      we are using Geometry base class to handle all geom types"""
-    layer_id = models.ForeignKey(VectorLayer, on_delete=models.CASCADE, related_name="features")
-    geom= models.GeometryField()
+    """Feature for vector layers defined
+       by it's geom field, we are using
+       Geometry base class to handle all
+       geom types"""
+    layer_id = models.ForeignKey(
+        VectorLayer, on_delete=models.CASCADE,
+        related_name="features")
+    geom = models.GeometryField()
     name = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True)
 
