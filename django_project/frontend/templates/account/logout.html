@@ -4,28 +4,34 @@
 {% block head_title %}Logout{% endblock%}
 
 
-{% block body_content %}
-    <div class="content">
-        {% block content %}
-
+{% block content %}
+<section class="account-action text-white text-center">
+    <div class="container position-relative">
+        <div class="row">
+            <div class="col-xl-6 account-form">
+            <div class="content">
+        
             {% csrf_token %}
             <div class="container">
 
                 <div class="custom-form-container">
 
-                    <h1>{% trans "LOG OUT" %}</h1>
+                    <h3 class="account-form-title">{% trans "LOG OUT" %}</h3>
 
                     <p style="font-size:12pt">{% trans 'Are you sure you want to log out?' %}</p>
                     <form class="logout" method="POST" action="{% url 'account_logout' %}">{% csrf_token %}
                         {% if redirect_field_value %}
                             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                         {% endif %}
-                        <button class="login custom-form-submit btn-login" type="submit">{% trans "LOG OUT" %}</button>
+                        <button class="login custom-form-submit btn btn-primary" type="submit">{% trans "LOG OUT" %}</button>
                     </form>
 
                 </div>
             </div> <!-- /container -->
             </div>
-        {% endblock %}
+             </div>
+    </div>
+    </div>
+</section> 
 {% endblock %}
 </html>

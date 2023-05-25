@@ -5,9 +5,29 @@
                 alt="Logo"
                 style="height: 'auto', maxWidth: 'calc(100% - 16px)'"
                 /></a>
-                <div class="my-2 my-lg-0">
-                <a class="btn btn-primary" href="/accounts/login">Login</a>
-                <a class="btn btn-primary" href="/accounts/signup">Register</a>
+                
+                <div class="navbar-dark  my-2 my-lg-0">
+                <a class="nav-item navbar-text" href="/map">Map</a>
+                
+                {% if user.is_authenticated %}
+                <div class="nav-item dropdown">
+                        <a class="dropdown-toggle" id="dropdownMenu" data-toggle="dropdown" 
+                        aria-haspopup="true" aria-expanded="false" href="#"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user.username }}</a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
+                            <a class="dropdown-item" href="/">Profile</a>
+                            <a class="dropdown-item" href="/">Account</a>
+                            <a class="dropdown-item" href="/">Dashboard</a>
+                            <a class="dropdown-item" href="/accounts/logout">Logout</a>
+                        </div>
                 </div>
+                
+                
+                {% else %}
+                <a class="nav-item btn btn-primary" href="/accounts/login">Login</a>
+                <a class="nav-item btn btn-primary" href="/accounts/signup">Register</a>
+                {% endif %}
+                </div>
+                
             </div>
 </nav>

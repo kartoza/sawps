@@ -27,3 +27,46 @@
     background-color: #FAA755;
     border-color: #FAA755;
 }
+
+.account-action {
+  position: relative;
+  background-color: #000000;
+  background: url("/static/images/lion.png") no-repeat center center;
+  background-size: cover;
+  padding-top: 7rem;
+  padding-bottom: 7rem;
+}
+.account-action:before {
+  content: "";
+  position: absolute;
+  background-color: #000000;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0.5;
+}
+
+.account-form{
+  background: #282829;
+  border-radius: 4px;
+  float: right;
+  margin-left: auto;
+  margin-top: 0;
+}
+
+.custom-form-container{
+  margin-top: 40px; 
+  margin-bottom: 10px;
+}
+
+.account-form-title{
+  color: #70B276;
+  size:34px;
+  height:40px
+}
+
+.login-help > a{
+  text-decoration: none;
+  color: #70B276;
+}
