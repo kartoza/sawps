@@ -1,0 +1,25 @@
+[
+    {
+        "model": "auth.group",
+        "pk": 1,
+        "fields": {
+          "name": "SANBI Platform administrator"
+        }
+    },
+    {
+        "model": "auth.group",
+        "pk": 2,
+        "fields": {
+          "name": "Decision maker"
+        }
+    },
+    
+    {
+      "model": "auth.group",
+      "pk": 3,
+      "fields": {
+        "name": "Data contributor"
+      }
+    }
+    
+ ]
