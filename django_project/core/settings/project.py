@@ -10,9 +10,7 @@ import os  # noqa
 from .contrib import *  # noqa
 
 ALLOWED_HOSTS = ['*']
-ADMINS = (
-    ('Dimas Ciputra', 'dimas@kartoza.com'),
-)
+ADMINS = (('Dimas Ciputra', 'dimas@kartoza.com'),)
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',

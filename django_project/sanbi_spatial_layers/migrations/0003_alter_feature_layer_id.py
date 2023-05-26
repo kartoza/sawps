@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('sanbi_spatial_layers', '0002_alter_feature_layer_id'),
     ]
@@ -14,6 +13,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='feature',
             name='layer_id',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='features', to='sanbi_spatial_layers.vectorlayer'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='features',
+                to='sanbi_spatial_layers.vectorlayer',
+            ),
         ),
     ]

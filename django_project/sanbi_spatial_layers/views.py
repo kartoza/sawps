@@ -6,21 +6,23 @@ from rest_framework.permissions import IsAdminUser
 
 
 class VectorLayersListView(ListCreateAPIView):
-    """ view for bulk operations over vector
-      layers  """
+    """view for bulk operations over vector
+    layers"""
+
     serializer_class = serializers.VectorLayerSerializer
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        """ overriding get_queryset method """
+        """overriding get_queryset method"""
         return models.VectorLayer.objects.all()
 
 
 class VectorLayerDetailedView(RetrieveUpdateDestroyAPIView):
-    """ view for rud opertaions over a single vector layer """
+    """view for rud opertaions over a single vector layer"""
+
     serializer_class = serializers.VectorLayerSerializer
     permission_classes = [IsAdminUser]
-    lookup_url_kwarg = "id"
+    lookup_url_kwarg = 'id'
     # queryset = models.VectorLayer.objects.all()
 
     def get_queryset(self):
@@ -28,7 +30,8 @@ class VectorLayerDetailedView(RetrieveUpdateDestroyAPIView):
 
 
 class FeaturesListView(ListCreateAPIView):
-    """ view for bulk operations over features  """
+    """view for bulk operations over features"""
+
     serializer_class = serializers.FeatureSerializer
     permission_classes = [IsAdminUser]
 
@@ -37,50 +40,55 @@ class FeaturesListView(ListCreateAPIView):
 
 
 class FeatureDetailedView(RetrieveUpdateDestroyAPIView):
-    """ view for rud opertaions over a single feature """
+    """view for rud opertaions over a single feature"""
+
     serializer_class = serializers.FeatureSerializer
     permission_classes = [IsAdminUser]
-    lookup_url_kwarg = "id"
+    lookup_url_kwarg = 'id'
 
     def get_queryset(self):
         return models.Feature.objects.all()
 
 
 class WMSLayersListView(ListCreateAPIView):
-    """ view for bulk operations over WMS layers  """
+    """view for bulk operations over WMS layers"""
+
     serializer_class = serializers.WMSLayerSerializer
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        """ overriding get_queryset method """
+        """overriding get_queryset method"""
         return models.WMS.objects.all()
 
 
 class WMSLayerDetailedView(RetrieveUpdateDestroyAPIView):
-    """ view for rud opertaions over a single WMS layer """
+    """view for rud opertaions over a single WMS layer"""
+
     serializer_class = serializers.WMSLayerSerializer
     permission_classes = [IsAdminUser]
-    lookup_url_kwarg = "id"
+    lookup_url_kwarg = 'id'
 
     def get_queryset(self):
         return models.WMS.objects.all()
 
 
 class RasterLayersListView(ListCreateAPIView):
-    """ view for bulk operations over Raster layers  """
+    """view for bulk operations over Raster layers"""
+
     serializer_class = serializers.RasterLayerSerializer
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        """ overriding get_queryset method """
+        """overriding get_queryset method"""
         return models.RasterLayer.objects.all()
 
 
 class RasterLayerDetailedView(RetrieveUpdateDestroyAPIView):
-    """ view for rud opertaions over a single Raster layer """
+    """view for rud opertaions over a single Raster layer"""
+
     serializer_class = serializers.RasterLayerSerializer
     permission_classes = [IsAdminUser]
-    lookup_url_kwarg = "id"
+    lookup_url_kwarg = 'id'
 
     def get_queryset(self):
         return models.RasterLayer.objects.all()

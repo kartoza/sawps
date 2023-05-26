@@ -24,9 +24,10 @@ urlpatterns = [
     path('', include('frontend.urls')),
     path('admin/', admin.site.urls),
     path('admin/', admin.site.urls),
-    path("spatial_layers/", include("sanbi_spatial_layers.urls")),
+    path('spatial_layers/', include('sanbi_spatial_layers.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(
-        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+    )

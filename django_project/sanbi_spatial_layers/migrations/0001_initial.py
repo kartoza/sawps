@@ -6,23 +6,37 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='RasterLayer',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=512)),
                 ('type', models.CharField(max_length=15)),
                 ('extent', models.CharField(max_length=20, null=True)),
-                ('srid', models.CharField(default='4326', max_length=4, null=True)),
+                (
+                    'srid',
+                    models.CharField(default='4326', max_length=4, null=True),
+                ),
                 ('description', models.TextField(null=True)),
-                ('raster_file', django.contrib.gis.db.models.fields.RasterField(srid=4326)),
+                (
+                    'raster_file',
+                    django.contrib.gis.db.models.fields.RasterField(
+                        srid=4326
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Raster layer',
@@ -32,11 +46,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='VectorLayer',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=512)),
                 ('type', models.CharField(max_length=15)),
                 ('extent', models.CharField(max_length=20, null=True)),
-                ('srid', models.CharField(default='4326', max_length=4, null=True)),
+                (
+                    'srid',
+                    models.CharField(default='4326', max_length=4, null=True),
+                ),
                 ('description', models.TextField(null=True)),
             ],
             options={
@@ -47,11 +72,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WMS',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=512)),
                 ('type', models.CharField(max_length=15)),
                 ('extent', models.CharField(max_length=20, null=True)),
-                ('srid', models.CharField(default='4326', max_length=4, null=True)),
+                (
+                    'srid',
+                    models.CharField(default='4326', max_length=4, null=True),
+                ),
                 ('description', models.TextField(null=True)),
                 ('url', models.URLField()),
             ],
@@ -63,11 +99,30 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Feature',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('geom', django.contrib.gis.db.models.fields.GeometryField(srid=4326)),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'geom',
+                    django.contrib.gis.db.models.fields.GeometryField(
+                        srid=4326
+                    ),
+                ),
                 ('name', models.CharField(max_length=100, null=True)),
                 ('description', models.TextField(null=True)),
-                ('layer_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sanbi_spatial_layers.vectorlayer')),
+                (
+                    'layer_id',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='sanbi_spatial_layers.vectorlayer',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Feature',
