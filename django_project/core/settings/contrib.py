@@ -14,6 +14,13 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'django_cleanup.apps.CleanupConfig',
     'django_celery_beat',
     'django_celery_results',
+    
+    # Enable two-factor auth.
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_static',
+
+    'allauth_2fa',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {

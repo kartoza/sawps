@@ -142,5 +142,9 @@ CACHES = {
     }
 }
 
-LOGIN_URL = '/account/login/'
-LOGIN_REDIRECT_URL = '/'
+#LOGIN_URL = '/account/login/'
+LOGIN_URL = '/accounts/authenticate'
+LOGIN_REDIRECT_URL = 'two-factor-authenticate'
+
+# Set the allauth adapter to be the 2FA adapter.
+# ACCOUNT_ADAPTER = 'allauth_2fa.adapter.OTPAdapter'

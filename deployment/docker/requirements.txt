@@ -37,3 +37,6 @@ django-celery-beat==2.5.0
 redis==4.3.4
 
 django-allauth==0.54.0
+
+# for the 2fa
+django-allauth-2fa==0.10.0
