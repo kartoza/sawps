@@ -144,3 +144,6 @@ CACHES = {
 
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
+
+# Fixtures path
+FIXTURE_DIRS = ( (absolute_path('fixtures')),)
