@@ -32,7 +32,7 @@ function Banner() {
           </Box>
         </Grid>
       </Grid>
-      
+
     </Paper>
   );
 }
