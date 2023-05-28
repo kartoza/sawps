@@ -126,7 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.messages',
-    'sanbi_spatial_layers'
+    'sanbi_spatial_layers',
 )
 
 SITE_ID = 1
