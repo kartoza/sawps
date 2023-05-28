@@ -4,7 +4,7 @@
 {% block head_title %}Register{% endblock%}
 
 {% block content %}
-<section class="account-action text-white text-center">
+<section class="account-action text-white">
     <div class="container position-relative">
         <div class="row">
             <div class="col-xl-6 account-form">
@@ -16,6 +16,7 @@
 
                             <h3 class="account-form-title">{% trans "Registration" %}</h3>
                             <form class="signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">{% csrf_token %}
+                               
                                 <input type="hidden" name="recaptcha_token" id="recaptcha-token-input" value="">
                                 {% if form.non_field_errors %}
                                     <div class="alert alert-warning">
@@ -24,14 +25,21 @@
                                         {% endfor %}
                                     </div>
                                 {% endif %}
-                                {{ form.as_p }}
+                                 <div class="form-row">
+                                {% for field in form%}
+                                <div class="form-group col-md-6">
+                                    <label for="{{field.label}}">{{field.label}}</label>
+                                    {{ field }}
+                                </div>
+                                {% endfor%}
+                                </div>
                                 {% if redirect_field_value %}
                                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                                 {% endif %}
-
+                                
                             
 
-                                <button id="submit-button" class="login custom-form-submit btn btn-primary" type="submit">{% trans "Register" %}</button>
+                                <button id="submit-button" class="custom-form-submit btn btn-primary" type="submit">{% trans "Register" %}</button>
                             </form>
                             <div class="login-help">
                                 <a href="{% url 'account_login' %}">{% trans "Log In" %}</a> -

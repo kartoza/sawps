@@ -35,7 +35,19 @@
   background-size: cover;
   padding-top: 7rem;
   padding-bottom: 7rem;
+  
 }
+
+.account-button{
+  color: #000000 !important;
+  border-radius: 2px;
+  background-color: #FAA755;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border: 2px solid #FAA755;
+  text-transform: uppercase;
+}
+
 .account-action:before {
   content: "";
   position: absolute;
@@ -63,7 +75,8 @@
 .account-form-title{
   color: #70B276;
   size:34px;
-  height:40px
+  height:40px;
+  text-align: center;
 }
 
 .login-help > a{

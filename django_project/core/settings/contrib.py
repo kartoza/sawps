@@ -55,3 +55,10 @@ TEMPLATES[0]['OPTIONS']['context_processors'] += [
 ]
 
 MAPTILER_API_KEY = os.environ.get('MAPTILER_API_KEY', '')
+
+# ACCOUNT config
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_FORMS = {
+        'signup': 'swaps.forms.sign_up.CustomSignupForm',
+    }
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
