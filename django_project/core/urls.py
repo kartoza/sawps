@@ -17,11 +17,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from sanbi_spatial_layers import urls as spatial_layers_urls
 
 urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('', include('frontend.urls')),
     path('admin/', admin.site.urls),
+    path('spatial_layers/', include(spatial_layers_urls)),
 ]
 
 if settings.DEBUG:

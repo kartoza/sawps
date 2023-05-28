@@ -15,6 +15,13 @@ class TestWMSRestViews(APITestCase):
         cls.user = User.objects.create_user(
             username='test_user', password='Test1234'
         )
+        cls.wms_object = {
+            'id': '1',
+            'name': 'wms layer - test',
+            'type': 'WMS layer',
+            'description': 'testing wms list/get/create/update/delete',
+            'url': 'http://ows.mundialis.de/services/service?',
+        }
 
     def tearDown(self):
         super().tearDown()
@@ -23,13 +30,7 @@ class TestWMSRestViews(APITestCase):
     def test_create_wms_layer_staff_user(self):
         """create wms layer with staff user"""
         self.client.login(username='test_staff_user', password='Test1234')
-        wms = {
-            'name': 'wms layer - test',
-            'type': 'WMS layer',
-            'description': 'testing wms creation',
-            'url': 'http://ows.mundialis.de/services/service?',
-        }
-        response = self.client.post(reverse('add_wms_layer'), wms)
+        response = self.client.post(reverse('add_wms_layer'), self.wms_object)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         wms_layer = WMS.objects.all()[0]
         self.assertEqual(wms_layer.name, 'wms layer - test')
@@ -37,50 +38,25 @@ class TestWMSRestViews(APITestCase):
     def test_create_wms_layer_non_staff_user(self):
         """fails to create wms layer with a non-staff user"""
         self.client.login(username='test_user', password='Test1234')
-        wms = {
-            'name': 'wms layer - test',
-            'type': 'WMS layer',
-            'description': 'testing wms creation',
-            'url': 'http://ows.mundialis.de/services/service?',
-        }
-        response = self.client.post(reverse('add_wms_layer'), wms)
+        response = self.client.post(reverse('add_wms_layer'), self.wms_object)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_wms_layer_anonymous_user(self):
         """fails to create wms layer when there is an anonymous user"""
-        wms = {
-            'name': 'wms layer - test',
-            'type': 'WMS layer',
-            'description': 'testing wms creation',
-            'url': 'http://ows.mundialis.de/services/service?',
-        }
-        response = self.client.post(reverse('add_wms_layer'), wms)
+        response = self.client.post(reverse('add_wms_layer'), self.wms_object)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_wms_layers(self):
         """list wms layers"""
         self.client.login(username='test_staff_user', password='Test1234')
-        wms = {
-            'id': '1',
-            'name': 'wms layer - test',
-            'type': 'WMS layer',
-            'description': 'testing wms creation',
-            'url': 'http://ows.mundialis.de/services/service?',
-        }
-        self.client.post(reverse('add_wms_layer'), wms)
+        self.client.post(reverse('add_wms_layer'), self.wms_object)
         response = self.client.get(reverse('list_wms_layers'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_wms_layers(self):
         """get a layer using <int:id>"""
         self.client.login(username='test_staff_user', password='Test1234')
-        wms = {
-            'name': 'wms layer - test',
-            'type': 'WMS layer',
-            'description': 'testing wms creation',
-            'url': 'http://ows.mundialis.de/services/service?',
-        }
-        self.client.post(reverse('add_wms_layer'), wms)
+        self.client.post(reverse('add_wms_layer'), self.wms_object)
         wms_layer = WMS.objects.all()[0]
         id = wms_layer.id
         wms_layer = self.client.get(
@@ -91,13 +67,7 @@ class TestWMSRestViews(APITestCase):
     def create_data(self):
         """helper method - creates one record with as staff and logout"""
         self.client.login(username='test_staff_user', password='Test1234')
-        wms = {
-            'name': 'wms layer - test',
-            'type': 'WMS layer',
-            'description': 'testing wms creation',
-            'url': 'http://ows.mundialis.de/services/service?',
-        }
-        self.client.post(reverse('add_wms_layer'), wms)
+        self.client.post(reverse('add_wms_layer'), self.wms_object)
         wms_layer = WMS.objects.all()[0]
         self.client.logout()
         return wms_layer
