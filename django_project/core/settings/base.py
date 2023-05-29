@@ -70,6 +70,9 @@ MIDDLEWARE = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    #2fa
+    'django_otp.middleware.OTPMiddleware',
+
 )
 
 ROOT_URLCONF = 'core.urls'
@@ -143,9 +146,11 @@ CACHES = {
     }
 }
 
-#LOGIN_URL = '/account/login/'
-LOGIN_URL = '/accounts/authenticate'
-LOGIN_REDIRECT_URL = 'two-factor-authenticate'
+LOGIN_URL = 'two_factor:login'
+LOGIN_REDIRECT_URL = '/'
 
 # Fixtures path
 FIXTURE_DIRS = ((absolute_path('fixtures')),)
+
+# Set the allauth adapter to be the 2FA adapter.
+# ACCOUNT_ADAPTER = 'allauth_2fa.adapter.OTPAdapter'

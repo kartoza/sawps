@@ -19,8 +19,6 @@ from .views.map import MapView
 
 
 urlpatterns = [
-    path('accounts/two-factor/', include('allauth_2fa.urls')),
-    path('accounts/', include('allauth.urls')),
     path('', HomeView.as_view(), name='home'),
     path('map/', MapView.as_view(), name='map'),
 ]

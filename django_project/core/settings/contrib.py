@@ -19,8 +19,8 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'django_otp',
     'django_otp.plugins.otp_totp',
     'django_otp.plugins.otp_static',
+    'two_factor',
 
-    'allauth_2fa',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {
