@@ -31,7 +31,7 @@
 .account-action {
   position: relative;
   background-color: #000000;
-  background: url("/static/images/lion.png") no-repeat center center;
+  background: url("/static/images/lion.png") no-repeat;
   background-size: cover;
   padding-top: 7rem;
   padding-bottom: 7rem;
