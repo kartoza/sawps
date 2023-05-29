@@ -126,7 +126,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.messages',
+    'activity',
     'sanbi_spatial_layers',
+    'stakeholder',
+    'regulatory_permit',
+    'occurrence',
+    'population_data',
+    'peoperty',
+    'species'
 )
 
 SITE_ID = 1
