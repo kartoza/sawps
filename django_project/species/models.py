@@ -3,7 +3,11 @@ from django.db import models
 
 class ManagementStatus(models.Model):
     """management status model"""
-    management_status = [('self sustaining','Self-sustaining'), ('managed','Managed')]
+
+    management_status = [
+        ('self sustaining', 'Self-sustaining'),
+        ('managed', 'Managed'),
+    ]
     name = models.CharField(
         unique=True, max_length=50, choices=management_status
     )
@@ -15,6 +19,7 @@ class ManagementStatus(models.Model):
 
 class TaxonRank(models.Model):
     """taxon rank model"""
+
     name = models.CharField(max_length=250)
 
     class Meta:
@@ -24,6 +29,7 @@ class TaxonRank(models.Model):
 
 class Taxon(models.Model):
     """taxon model"""
+
     scientific_name = models.CharField(unique=True, max_length=250)
     common_name_varbatim = models.CharField(
         null=True, blank=True, max_length=250
@@ -42,6 +48,7 @@ class Taxon(models.Model):
 
 class OwnedSpecies(models.Model):
     """owned species model"""
+
     management_status_id = models.ForeignKey(
         ManagementStatus, on_delete=models.DO_NOTHING
     )
@@ -51,7 +58,9 @@ class OwnedSpecies(models.Model):
     count_method_id = models.ForeignKey(
         'population_data.CountMethod', on_delete=models.DO_NOTHING
     )
-    user_id = models.ForeignKey('stakeholder.UserProfile',on_delete=models.DO_NOTHING)
+    user_id = models.ForeignKey(
+        'stakeholder.UserProfile', on_delete=models.DO_NOTHING
+    )
     taxon_id = models.ForeignKey(Taxon, on_delete=models.DO_NOTHING)
     property_id = models.ForeignKey(
         'property.Property', on_delete=models.DO_NOTHING
@@ -64,6 +73,7 @@ class OwnedSpecies(models.Model):
 
 class Month(models.Model):
     """month model"""
+
     name = models.CharField(unique=True, max_length=250)
     sort_order = models.IntegerField(unique=True)
 

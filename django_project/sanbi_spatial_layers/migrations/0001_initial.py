@@ -10,27 +10,30 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="WMS",
+            name='WMS',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=512)),
-                ("type", models.CharField(max_length=15)),
-                ("extent", models.CharField(max_length=20, null=True)),
-                ("srid", models.CharField(default="4326", max_length=4, null=True)),
-                ("description", models.TextField(null=True)),
-                ("url", models.URLField()),
+                ('name', models.CharField(max_length=512)),
+                ('type', models.CharField(max_length=15)),
+                ('extent', models.CharField(max_length=20, null=True)),
+                (
+                    'srid',
+                    models.CharField(default='4326', max_length=4, null=True),
+                ),
+                ('description', models.TextField(null=True)),
+                ('url', models.URLField()),
             ],
             options={
-                "verbose_name": "WMS",
-                "verbose_name_plural": "WMS",
+                'verbose_name': 'WMS',
+                'verbose_name_plural': 'WMS',
             },
         ),
     ]

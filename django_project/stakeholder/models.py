@@ -1,11 +1,19 @@
 from django.db import models
+
 # from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
 
 
 class UserTitle(models.Model):
     """user title model"""
-    user_titles = [("mr",'Mr'), ("mrs",'Mrs'), ('ms','Ms'), ('miss','Miss'), ('dr','Dr')]
+
+    user_titles = [
+        ('mr', 'Mr'),
+        ('mrs', 'Mrs'),
+        ('ms', 'Ms'),
+        ('miss', 'Miss'),
+        ('dr', 'Dr'),
+    ]
     name = models.CharField(unique=True, max_length=10, choices=user_titles)
 
     class Meta:
@@ -15,13 +23,14 @@ class UserTitle(models.Model):
 
 class UserRoleType(models.Model):
     """user role type (Base users, admins ..etc.) model"""
+
     user_roles = [
-    ("base user",'Base User'),
-    ("data contributor",'Data Contributor'),
-    ('decision maker','Decision maker'),
-    ('super user','Super user'),
-    ('admin','Admin'),
-]
+        ('base user', 'Base User'),
+        ('data contributor', 'Data Contributor'),
+        ('decision maker', 'Decision maker'),
+        ('super user', 'Super user'),
+        ('admin', 'Admin'),
+    ]
 
     name = models.CharField(unique=True, max_length=50, choices=user_roles)
     description = models.TextField()
@@ -33,13 +42,14 @@ class UserRoleType(models.Model):
 
 class UserProfile(models.Model):
     """extend User Model, using one-to-one mapping temporarly"""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     title_id = models.ForeignKey(UserTitle, on_delete=models.DO_NOTHING)
     cell_number = models.IntegerField()
     user_role_type_id = models.ForeignKey(
         UserRoleType, on_delete=models.DO_NOTHING
     )
-        
+
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
@@ -48,7 +58,7 @@ class UserProfile(models.Model):
 class LoginStatus(models.Model):
     """user login status model"""
 
-    status = [("logged in",'Logged in'), ("logged out",'Logged out')]
+    status = [('logged in', 'Logged in'), ('logged out', 'Logged out')]
     name = models.CharField(unique=True, max_length=50, choices=status)
 
     class Meta:

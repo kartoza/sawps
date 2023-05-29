@@ -1,9 +1,13 @@
 from django.db import models
 
+
 class dataUsePermission(models.Model):
     """data use permission model"""
 
-    data_use_permissions = (('full public access','Full Public Access'), ('no public access','No Public Access'))
+    data_use_permissions = (
+        ('full public access', 'Full Public Access'),
+        ('no public access', 'No Public Access'),
+    )
     name = models.CharField(
         unique=True, max_length=150, choices=data_use_permissions
     )
@@ -22,10 +26,14 @@ class dataUsePermissionChange(models.Model):
     #     'stakeholder.Organization', on_delete=models.DO_NOTHING
     # )
     new_data_use_permission_id = models.ForeignKey(
-        dataUsePermission, on_delete=models.CASCADE, related_name='new_data_use_permissions'
+        dataUsePermission,
+        on_delete=models.CASCADE,
+        related_name='new_data_use_permissions',
     )
     previous_data_use_permission_id = models.ForeignKey(
-        dataUsePermission, on_delete=models.CASCADE, related_name='previous_data_use_permission'
+        dataUsePermission,
+        on_delete=models.CASCADE,
+        related_name='previous_data_use_permission',
     )
     user_id = models.ForeignKey(
         'stakeholder.UserProfile', on_delete=models.DO_NOTHING

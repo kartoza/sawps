@@ -133,7 +133,7 @@ INSTALLED_APPS = (
     'occurrence',
     'population_data',
     'peoperty',
-    'species'
+    'species',
 )
 
 SITE_ID = 1
