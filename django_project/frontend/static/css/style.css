@@ -83,3 +83,13 @@
   text-decoration: none;
   color: #70B276;
 }
+
+.custom-form-submit{
+  display: block;
+  margin: 0 auto !important;
+  position: relative;
+}
+
+.account-form{
+  min-height: 300px;
+}

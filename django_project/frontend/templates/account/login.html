@@ -24,12 +24,21 @@
                             <h3 class="account-form-title">{% trans "Log in" %}</h3>
 
                             <form class="login" method="POST" action="{% url 'account_login' %}">{% csrf_token %}
-                                {{ form.as_p }}
+                                {% for field in form%}
+                                <div class="form-group">
+                                    <label for="{{field.label}}">{{field.label}}</label>
+                                        <input type="{{field.field.widget.input_type}}" {% if field.field.widget.input_type != 'checkbox' %} class="form-control" {% endif %} placeholder="{{field.label}}">
+
+                                </div>
+                                {% endfor%}
                                 {% if redirect_field_value %}
                                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                                 {% endif %}
-                                <button class="login custom-form-submit btn btn-primary" type="submit">{% trans "LOGIN" %}</button>
+                                <button class="login custom-form-submit account-button" type="submit">{% trans "LOGIN" %}</button>
                             </form>
+                            <div class="login-help text-center">
+                                <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password" %}</a>
+                            </div>
 
                         </div>
                     </div> <!-- /container -->

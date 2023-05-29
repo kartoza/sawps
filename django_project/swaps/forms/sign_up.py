@@ -25,6 +25,8 @@ class CustomSignupForm(SignupForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
+    field_order = ['first_name', 'last_name' , 'email', 'organisation', 'group', 'password']
+
     def custom_signup(self, request, user):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']

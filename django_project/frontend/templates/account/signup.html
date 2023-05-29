@@ -25,23 +25,24 @@
                                         {% endfor %}
                                     </div>
                                 {% endif %}
-                                 <div class="form-row">
-                                {% for field in form%}
+                                <div class="form-row"> 
+                                {% for field in form %}
                                 <div class="form-group col-md-6">
                                     <label for="{{field.label}}">{{field.label}}</label>
                                     {{ field }}
                                 </div>
                                 {% endfor%}
                                 </div>
+                                
                                 {% if redirect_field_value %}
                                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                                 {% endif %}
                                 
                             
 
-                                <button id="submit-button" class="custom-form-submit btn btn-primary" type="submit">{% trans "Register" %}</button>
+                                <button id="submit-button" class="custom-form-submit account-button" type="submit">{% trans "Register" %}</button>
                             </form>
-                            <div class="login-help">
+                            <div class="login-help text-center">
                                 <a href="{% url 'account_login' %}">{% trans "Log In" %}</a> -
                                 <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password" %}</a>
                             </div>
