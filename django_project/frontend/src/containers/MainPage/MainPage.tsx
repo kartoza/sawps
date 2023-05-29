@@ -10,7 +10,7 @@ function MainPage() {
       <ResponsiveNavbar/>
       <div className="MainPage">
         <SideBar/>
-        <Map/>      
+        <Map/>
       </div>
     </div>
   );

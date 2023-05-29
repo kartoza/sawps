@@ -27,7 +27,8 @@ EMAIL_SUBJECT_PREFIX = os.environ.get('EMAIL_SUBJECT_PREFIX', '')
 
 SERVER_EMAIL = os.environ.get('ADMIN_EMAIL', 'noreply@kartoza.com')
 DEFAULT_FROM_EMAIL = os.environ.get(
-    'DEFAULT_FROM_EMAIL', 'noreply@kartoza.com')
+    'DEFAULT_FROM_EMAIL', 'noreply@kartoza.com'
+)
 
 LOGGING = {
     'version': 1,
@@ -39,23 +40,23 @@ LOGGING = {
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
-                      '%(thread)d %(message)s'
+            '%(thread)d %(message)s'
         },
     },
     'handlers': {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'formatter': 'verbose',
         },
     },
     'loggers': {
         'django.db.backends': {
             'level': 'ERROR',
             'handlers': ['console'],
-            'propagate': False
+            'propagate': False,
         },
-    }
+    },
 }
 
 # -------------------------------------------------- #
@@ -73,16 +74,16 @@ if SENTRY_DSN is not None and SENTRY_DSN.strip():
         integrations=[
             DjangoIntegration(),
         ],
-
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
         traces_sample_rate=1.0,
-
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True
+        send_default_pii=True,
     )
 
 
-CSRF_TRUSTED_ORIGINS = ast.literal_eval(os.environ.get('CSRF_TRUSTED_ORIGINS', '[]'))
+CSRF_TRUSTED_ORIGINS = ast.literal_eval(
+    os.environ.get('CSRF_TRUSTED_ORIGINS', '[]')
+)

@@ -5,7 +5,8 @@ pylint
 flake8
 factory_boy
 debugpy
-
+pre-commit
+black
 django-devserver
 
 # documentation

@@ -20,7 +20,7 @@ const menuItems = [{
 }, {
   'title': 'Account',
   'href': '/',
-}, { 
+}, {
   'title': 'Dashboard',
   'href': '/',
 }, {
@@ -114,7 +114,7 @@ function ResponsiveNavbar() {
             ))}
           </Box>
 
-          {isLoggedIn ? 
+          {isLoggedIn ?
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -138,13 +138,13 @@ function ResponsiveNavbar() {
                 onClose={handleCloseUserMenu}
               >
                 {menuItems.map((menuItem) => (
-                  <MenuItem key={menuItem.title} 
+                  <MenuItem key={menuItem.title}
                     onClick={() => window.location.href = menuItem.href}>
                     <Typography textAlign="center">{menuItem.title}</Typography>
                   </MenuItem>
                 ))}
-              </Menu> 
-            </Box> : 
+              </Menu>
+            </Box> :
             <Box sx={{ display: 'flex', flexDirection: 'row' }}>
               <Button
                 key='sign-in'

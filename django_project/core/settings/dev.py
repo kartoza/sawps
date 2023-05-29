@@ -1,4 +1,3 @@
-
 from .project import *  # noqa
 
 # Set debug to True for development
@@ -25,12 +24,14 @@ LOGGING = {
         'verbose': {
             'format': (
                 '%(levelname)s %(name)s %(asctime)s %(module)s %(process)d '
-                '%(thread)d %(message)s')
+                '%(thread)d %(message)s'
+            )
         },
         'simple': {
             'format': (
                 '%(name)s %(levelname)s %(filename)s L%(lineno)s: '
-                '%(message)s')
+                '%(message)s'
+            )
         },
     },
     'handlers': {
@@ -49,10 +50,7 @@ LOGGING = {
     },
     # root logger
     # non handled logs will propagate to the root logger
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING'
-    }
+    'root': {'handlers': ['console'], 'level': 'WARNING'},
 }
 
 WEBPACK_LOADER['DEFAULT']['CACHE'] = DEBUG
