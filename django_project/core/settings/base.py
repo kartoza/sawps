@@ -142,7 +142,7 @@ CACHES = {
         'LOCATION': (
             f'redis://default:{os.environ.get("REDIS_PASSWORD", "")}'
             f'@{os.environ.get("REDIS_HOST", "")}',
-        ),
+        )
     }
 }
 
@@ -151,6 +151,3 @@ LOGIN_REDIRECT_URL = '/'
 
 # Fixtures path
 FIXTURE_DIRS = ((absolute_path('fixtures')),)
-
-# Set the allauth adapter to be the 2FA adapter.
-# ACCOUNT_ADAPTER = 'allauth_2fa.adapter.OTPAdapter'
