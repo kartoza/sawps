@@ -1,0 +1,3 @@
+images:
+  - name: sanbi
+    dockerfile: deployment/docker/dockerfile
