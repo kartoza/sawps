@@ -38,4 +38,3 @@ Open your web browser and go to localhost:8000 to view the running application.
 [Database ERD](https://drive.google.com/file/d/1O92w2zwbKm_SARXnXIljHbX-rQPmFiXM/view?usp=sharing)
 
 [Figma Board](https://www.figma.com/file/T6JEAAXTWzA9OIfAQe3iW7/SANBI?node-id=6-2&t=4T7COmsnfif2Nwwn-0)
-

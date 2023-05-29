@@ -59,7 +59,8 @@ STATICFILES_DIRS = (
 # the name of the directory the project is in to try and use something
 # project specific.
 CACHE_MIDDLEWARE_KEY_PREFIX = os.getenv(
-    'COMPOSE_PROJECT_NAME', 'kartoza_django_project')
+    'COMPOSE_PROJECT_NAME', 'kartoza_django_project'
+)
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -138,7 +139,7 @@ CACHES = {
         'LOCATION': (
             f'redis://default:{os.environ.get("REDIS_PASSWORD", "")}'
             f'@{os.environ.get("REDIS_HOST", "")}',
-        )
+        ),
     }
 }
 
@@ -147,4 +148,4 @@ LOGIN_URL = '/accounts/authenticate'
 LOGIN_REDIRECT_URL = 'two-factor-authenticate'
 
 # Fixtures path
-FIXTURE_DIRS = ( (absolute_path('fixtures')),)
+FIXTURE_DIRS = ((absolute_path('fixtures')),)
