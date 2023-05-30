@@ -1,0 +1,16 @@
+[
+{
+    "model": "stakeholder.loginstatus",
+    "pk": 1,
+    "fields": {
+        "name": "Logged In"
+    }
+},
+{
+    "model": "stakeholder.loginstatus",
+    "pk": 2,
+    "fields": {
+        "name": "Logged Out"
+    }
+}
+]

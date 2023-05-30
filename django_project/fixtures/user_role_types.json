@@ -1,0 +1,42 @@
+[
+{
+    "model": "stakeholder.userroletype",
+    "pk": 1,
+    "fields": {
+        "name": "Base User",
+        "description": "Base User"
+    }
+},
+{
+    "model": "stakeholder.userroletype",
+    "pk": 2,
+    "fields": {
+        "name": "Data Contributor",
+        "description": "Data Contributor"
+    }
+},
+{
+    "model": "stakeholder.userroletype",
+    "pk": 3,
+    "fields": {
+        "name": "Decision Maker",
+        "description": "Decision Maker"
+    }
+},
+{
+    "model": "stakeholder.userroletype",
+    "pk": 4,
+    "fields": {
+        "name": "Super user",
+        "description": "Super user"
+    }
+},
+{
+    "model": "stakeholder.userroletype",
+    "pk": 5,
+    "fields": {
+        "name": "Admin",
+        "description": "Admin"
+    }
+}
+]

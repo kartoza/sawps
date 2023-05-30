@@ -1,0 +1,12 @@
+[
+{
+    "model": "stakeholder.userlogin",
+    "pk": 2,
+    "fields": {
+        "datetime": "2023-05-30T03:34:39Z",
+        "ip_address": "255.255.255.255",
+        "login_status_id": 1,
+        "user": 1
+    }
+}
+]

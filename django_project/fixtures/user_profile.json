@@ -1,0 +1,12 @@
+[
+{
+    "model": "stakeholder.userprofile",
+    "pk": 1,
+    "fields": {
+        "user": 4,
+        "title_id": 1,
+        "cell_number": 912217052,
+        "user_role_type_id": 1
+    }
+}
+]
