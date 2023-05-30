@@ -9,7 +9,7 @@ function MainPage() {
     <div className="App">
       <div className="MainPage">
         <SideBar/>
-        <Map/>      
+        <Map/>
       </div>
     </div>
   );
