@@ -32,9 +32,21 @@ Install dependencies inside the container: Press ```Cmd+Shift+P``` (macOS) or ``
 
 ![image](https://user-images.githubusercontent.com/178003/231016195-5d78356b-e802-40f6-aa33-82404b65925d.png)
 
+
+Run the migrations inside the container: Press ```Cmd+Shift+P``` (macOS) or ```Ctrl+Shift+P``` (Windows/Linux), type ```Tasks: Run Tasks``` and select it. Choose ```Django: Migrate```.
+
+![image](https://user-images.githubusercontent.com/178003/231015768-39803d00-95dc-42c7-a08f-ab58ac09fa58.png)
+
+![django-migrate](https://github.com/timlinux/sawps/assets/178003/7ae66c26-2323-4664-9ead-b6c27dd5ad31)
+
+
 Run the project inside the container: Press ```Cmd+Shift+D``` (macOS) or ```Ctrl+Shift+D``` (Windows/Linux), choose ```Django+React``` in the RUN AND DEBUG dropdown.
 
 ![image](https://user-images.githubusercontent.com/178003/231016537-cda1d85f-5123-45ef-8f51-c12e90e1d0c9.png)
+
+Review the list of forwarded ports from the container to your local host:
+
+
 
 
 Open your web browser and go to localhost:8000 to view the running application.
