@@ -44,12 +44,24 @@ Run the project inside the container: Press ```Cmd+Shift+D``` (macOS) or ```Ctrl
 
 ![image](https://user-images.githubusercontent.com/178003/231016537-cda1d85f-5123-45ef-8f51-c12e90e1d0c9.png)
 
+### 👩‍💻 Open the developer site
+
 Review the list of forwarded ports from the container to your local host:
 
-
+![forwarded-ports](https://github.com/timlinux/sawps/assets/178003/23a38e37-5e27-482a-8dba-07798b0a8e40)
 
 
 Open your web browser and go to localhost:8000 to view the running application.
+
+### 👩‍🏭 Create a super user
+
+![django-superuser1](https://github.com/timlinux/sawps/assets/178003/a7cfc797-5738-4de8-bdaa-deffce905c53)
+
+
+![django-superuser2](https://github.com/timlinux/sawps/assets/178003/35f9f06e-79c3-405d-b7ce-b82a35ff28ac)
+
+
+
 
 ## 💻 Resources
 
