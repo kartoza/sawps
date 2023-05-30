@@ -18,12 +18,13 @@ class UserTitle(models.Model):
 
 class UserRoleType(models.Model):
     """user role type (Base users, admins ..etc.) model"""
+
     name = models.CharField(unique=True, max_length=50)
     description = models.TextField()
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name = 'User role'
         verbose_name_plural = 'User roles'
@@ -31,6 +32,7 @@ class UserRoleType(models.Model):
 
 class UserProfile(models.Model):
     """extend User model with one-to-one mapping"""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     title_id = models.ForeignKey(UserTitle, on_delete=models.DO_NOTHING)
     cell_number = models.IntegerField()
@@ -52,6 +54,7 @@ class UserProfile(models.Model):
 
 class LoginStatus(models.Model):
     """user login status model"""
+
     name = models.CharField(unique=True, max_length=20)
 
     def __str__(self):
@@ -64,6 +67,7 @@ class LoginStatus(models.Model):
 
 class UserLogin(models.Model):
     """user login model"""
+
     datetime = models.DateTimeField(default=timezone.now)
     ip_address = models.CharField(max_length=15)
     login_status_id = models.ForeignKey(
