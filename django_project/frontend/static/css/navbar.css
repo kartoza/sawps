@@ -50,7 +50,7 @@
   .navbar-brand:hover, .navbar-brand:focus {
     color: var(--bs-navbar-brand-hover-color);
   }
-  
+
   .navbar-nav {
     --bs-nav-link-padding-x: 0;
     --bs-nav-link-padding-y: 0.5rem;
@@ -71,7 +71,7 @@
   .navbar-nav .dropdown-menu {
     position: static;
   }
-  
+
   .navbar-text {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -82,13 +82,13 @@
   .navbar-text a:focus {
     color: var(--bs-navbar-active-color);
   }
-  
+
   .navbar-collapse {
     flex-basis: 100%;
     flex-grow: 1;
     align-items: center;
   }
-  
+
   .navbar-toggler {
     padding: var(--bs-navbar-toggler-padding-y) var(--bs-navbar-toggler-padding-x);
     font-size: var(--bs-navbar-toggler-font-size);
@@ -112,7 +112,7 @@
     outline: 0;
     box-shadow: 0 0 0 var(--bs-navbar-toggler-focus-width);
   }
-  
+
   .navbar-toggler-icon {
     display: inline-block;
     width: 1.5em;
@@ -123,12 +123,12 @@
     background-position: center;
     background-size: 100%;
   }
-  
+
   .navbar-nav-scroll {
     max-height: var(--bs-scroll-height, 75vh);
     overflow-y: auto;
   }
-  
+
   @media (min-width: 576px) {
     .navbar-expand-sm {
       flex-wrap: nowrap;
@@ -409,7 +409,7 @@
     padding: 0;
     overflow-y: visible;
   }
-  
+
   .navbar-dark {
     --bs-navbar-color: rgba(255, 255, 255, 0.55);
     --bs-navbar-hover-color: rgba(255, 255, 255, 0.75);

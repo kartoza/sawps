@@ -16,7 +16,7 @@
 
                             <h3 class="account-form-title">{% trans "Registration" %}</h3>
                             <form class="signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">{% csrf_token %}
-                               
+
                                 <input type="hidden" name="recaptcha_token" id="recaptcha-token-input" value="">
                                 {% if form.non_field_errors %}
                                     <div class="alert alert-warning">
@@ -25,7 +25,7 @@
                                         {% endfor %}
                                     </div>
                                 {% endif %}
-                                <div class="form-row"> 
+                                <div class="form-row">
                                 {% for field in form %}
                                 {% if field.name == 'group' %}
                                 </div>
@@ -42,12 +42,12 @@
                                 {% endif %}
                                 {% endfor%}
                                 </div>
-                                
+
                                 {% if redirect_field_value %}
                                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                                 {% endif %}
-                                
-                            
+
+
 
                                 <button id="submit-button" class="custom-form-submit account-button" type="submit">{% trans "Register" %}</button>
                             </form>
@@ -64,7 +64,7 @@
             </div>
         </div>
     </div>
-</section>           
+</section>
 {% endblock %}
 
 </html>

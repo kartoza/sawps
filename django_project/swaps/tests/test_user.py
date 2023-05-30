@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class TestCustomSignupForm(TestCase):
-    "Test sign up form"
+    'Test sign up form'
 
     def setUp(self):
         """
@@ -20,8 +20,6 @@ class TestCustomSignupForm(TestCase):
         pass
 
     def test_user_form(self):
-
-        post_url = '/accounts/signup/'
 
         group = GroupF.create(
             id=1,
