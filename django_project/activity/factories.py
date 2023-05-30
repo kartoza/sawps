@@ -2,7 +2,7 @@ import factory
 from activity.models import ActivityType
 
 
-class ActivtyTypeFactory(factory.django.DjangoModelFactory):
+class ActivityTypeFactory(factory.django.DjangoModelFactory):
     """factory class for activity type models"""
 
     class Meta:

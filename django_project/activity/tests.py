@@ -1,6 +1,6 @@
 from django.test import TestCase
 from activity.models import ActivityType
-from activity.factories import ActivtyTypeFactory
+from activity.factories import ActivityTypeFactory
 
 
 class ActivityTypeTestCase(TestCase):
@@ -8,7 +8,7 @@ class ActivityTypeTestCase(TestCase):
 
     def setUp(self) -> None:
         """setup test data"""
-        self.activity_type = ActivtyTypeFactory()
+        self.activity_type = ActivityTypeFactory()
 
     def test_activity_type_create(self):
         """test activity type create"""

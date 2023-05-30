@@ -3,7 +3,7 @@
     "model": "activity.activitytype",
     "pk": 1,
     "fields": {
-        "name": "planned translocation",
+        "name": "Planned translocation",
         "recruitment": null
     }
 },
@@ -11,7 +11,7 @@
     "model": "activity.activitytype",
     "pk": 2,
     "fields": {
-        "name": "planned hunt/cull",
+        "name": "Planned hunt/cull",
         "recruitment": null
     }
 },
@@ -19,7 +19,7 @@
     "model": "activity.activitytype",
     "pk": 3,
     "fields": {
-        "name": "unplanned/natural deaths",
+        "name": "Unplanned/natural deaths",
         "recruitment": null
     }
 },
@@ -27,7 +27,7 @@
     "model": "activity.activitytype",
     "pk": 4,
     "fields": {
-        "name": "planned euthanasia",
+        "name": "Planned euthanasia",
         "recruitment": null
     }
 },
@@ -35,7 +35,7 @@
     "model": "activity.activitytype",
     "pk": 5,
     "fields": {
-        "name": "unplanned/illegal hunting",
+        "name": "Unplanned/illegal hunting",
         "recruitment": null
     }
 }
