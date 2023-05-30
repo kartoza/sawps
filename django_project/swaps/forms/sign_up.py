@@ -31,8 +31,10 @@ class CustomSignupForm(SignupForm):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.organisation = self.cleaned_data['organisation']
-        user.group = self.cleaned_data['group']
-        user.save()
+        try:
+            user.groups.set(Group.objects.get(id=self.cleaned_data['group']))
+        except:
+            user.save()
         return user
     
     def __init__(self, *args, **kwargs):
