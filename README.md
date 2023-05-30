@@ -39,12 +39,12 @@ Run the migrations inside the container: Press ```Cmd+Shift+P``` (macOS) or ```C
 
 ![django-migrate](https://github.com/timlinux/sawps/assets/178003/7ae66c26-2323-4664-9ead-b6c27dd5ad31)
 
+### 👩‍💻 Open the developer site
 
 Run the project inside the container: Press ```Cmd+Shift+D``` (macOS) or ```Ctrl+Shift+D``` (Windows/Linux), choose ```Django+React``` in the RUN AND DEBUG dropdown.
 
 ![image](https://user-images.githubusercontent.com/178003/231016537-cda1d85f-5123-45ef-8f51-c12e90e1d0c9.png)
 
-### 👩‍💻 Open the developer site
 
 Review the list of forwarded ports from the container to your local host:
 
