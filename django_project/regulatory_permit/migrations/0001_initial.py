@@ -10,23 +10,23 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="dataUsePermission",
+            name='dataUsePermission',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=150, unique=True)),
-                ("description", models.TextField()),
+                ('name', models.CharField(max_length=150, unique=True)),
+                ('description', models.TextField()),
             ],
             options={
-                "verbose_name": "Data use permission",
-                "verbose_name_plural": "Data use permissions",
+                'verbose_name': 'Data use permission',
+                'verbose_name_plural': 'Data use permissions',
             },
         ),
     ]

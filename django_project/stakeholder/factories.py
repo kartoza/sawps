@@ -85,20 +85,25 @@ class userLoginFactory(factory.django.DjangoModelFactory):
 
 class OrganizationFactory(factory.django.DjangoModelFactory):
     """factory class for organization model"""
-    
+
     class Meta:
         model = stakeholderModels.Organization
-    
+
     name = factory.Faker('company')
-    data_use_permission = factory.SubFactory('regulatory_permit.factories.dataUsePermissionFactory')
+    data_use_permission = factory.SubFactory(
+        'regulatory_permit.factories.dataUsePermissionFactory'
+    )
+
 
 class OrganizationRepresentativeFactory(factory.django.DjangoModelFactory):
     """factory class for organization representative model"""
 
     class Meta:
         model = stakeholderModels.OrganizationRepresentatives
-    
-    organization = factory.SubFactory('stakeholder.factories.OrganizationFactory')
+
+    organization = factory.SubFactory(
+        'stakeholder.factories.OrganizationFactory'
+    )
     user = factory.SubFactory('stakeholder.factories.userFactory')
 
 
@@ -107,6 +112,8 @@ class OrganizationUserFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = stakeholderModels.OrganizationRepresentatives
-    
-    organization = factory.SubFactory('stakeholder.factories.OrganizationFactory')
+
+    organization = factory.SubFactory(
+        'stakeholder.factories.OrganizationFactory'
+    )
     user = factory.SubFactory('stakeholder.factories.userFactory')

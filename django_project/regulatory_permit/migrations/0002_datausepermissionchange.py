@@ -6,42 +6,42 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("stakeholder", "0001_user_model"),
-        ("regulatory_permit", "0001_initial"),
+        ('stakeholder', '0001_user_model'),
+        ('regulatory_permit', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="dataUsePermissionChange",
+            name='dataUsePermissionChange',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("date", models.DateField()),
+                ('date', models.DateField()),
                 (
-                    "organization",
+                    'organization',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        to="stakeholder.organization",
+                        to='stakeholder.organization',
                     ),
                 ),
                 (
-                    "user",
+                    'user',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        to="stakeholder.userprofile",
+                        to='stakeholder.userprofile',
                     ),
                 ),
             ],
             options={
-                "verbose_name": "Data use permission change",
-                "verbose_name_plural": "Data use permission change",
+                'verbose_name': 'Data use permission change',
+                'verbose_name_plural': 'Data use permission change',
             },
         ),
     ]

@@ -8,197 +8,200 @@ import django.utils.timezone
 
 class Migration(migrations.Migration):
     replaces = [
-        ("stakeholder", "0001_initial"),
-        ("stakeholder", "0002_organization_organizationuser_and_more"),
+        ('stakeholder', '0001_initial'),
+        ('stakeholder', '0002_organization_organizationuser_and_more'),
     ]
 
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("regulatory_permit", "0001_initial"),
+        ('regulatory_permit', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="LoginStatus",
+            name='LoginStatus',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=20, unique=True)),
+                ('name', models.CharField(max_length=20, unique=True)),
             ],
             options={
-                "verbose_name": "Login status",
-                "verbose_name_plural": "Login status",
+                'verbose_name': 'Login status',
+                'verbose_name_plural': 'Login status',
             },
         ),
         migrations.CreateModel(
-            name="UserRoleType",
+            name='UserRoleType',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=50, unique=True)),
-                ("description", models.TextField()),
+                ('name', models.CharField(max_length=50, unique=True)),
+                ('description', models.TextField()),
             ],
             options={
-                "verbose_name": "User role",
-                "verbose_name_plural": "User roles",
+                'verbose_name': 'User role',
+                'verbose_name_plural': 'User roles',
             },
         ),
         migrations.CreateModel(
-            name="UserTitle",
+            name='UserTitle',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=10, unique=True)),
+                ('name', models.CharField(max_length=10, unique=True)),
             ],
             options={
-                "verbose_name": "title",
-                "verbose_name_plural": "titles",
+                'verbose_name': 'title',
+                'verbose_name_plural': 'titles',
             },
         ),
         migrations.CreateModel(
-            name="UserProfile",
+            name='UserProfile',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("cell_number", models.IntegerField()),
+                ('cell_number', models.IntegerField()),
                 (
-                    "title_id",
+                    'title_id',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        to="stakeholder.usertitle",
+                        to='stakeholder.usertitle',
                     ),
                 ),
                 (
-                    "user",
+                    'user',
                     models.OneToOneField(
                         on_delete=django.db.models.deletion.CASCADE,
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
                 (
-                    "user_role_type_id",
+                    'user_role_type_id',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        to="stakeholder.userroletype",
+                        to='stakeholder.userroletype',
                     ),
                 ),
             ],
             options={
-                "verbose_name": "User",
-                "verbose_name_plural": "Users",
+                'verbose_name': 'User',
+                'verbose_name_plural': 'Users',
             },
         ),
         migrations.CreateModel(
-            name="UserLogin",
+            name='UserLogin',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("datetime", models.DateTimeField(default=django.utils.timezone.now)),
-                ("ip_address", models.CharField(max_length=15)),
                 (
-                    "login_status_id",
+                    'datetime',
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ('ip_address', models.CharField(max_length=15)),
+                (
+                    'login_status_id',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        to="stakeholder.loginstatus",
+                        to='stakeholder.loginstatus',
                     ),
                 ),
                 (
-                    "user",
+                    'user',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="stakeholder.userprofile",
+                        to='stakeholder.userprofile',
                     ),
                 ),
             ],
             options={
-                "verbose_name": "User login",
-                "verbose_name_plural": "Users login",
+                'verbose_name': 'User login',
+                'verbose_name_plural': 'Users login',
             },
         ),
         migrations.CreateModel(
-            name="Organization",
+            name='Organization',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=250, unique=True)),
+                ('name', models.CharField(max_length=250, unique=True)),
                 (
-                    "data_use_permission",
+                    'data_use_permission',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        to="regulatory_permit.datausepermission",
+                        to='regulatory_permit.datausepermission',
                     ),
                 ),
             ],
             options={
-                "verbose_name": "Organization",
-                "verbose_name_plural": "Organizations",
+                'verbose_name': 'Organization',
+                'verbose_name_plural': 'Organizations',
             },
         ),
         migrations.CreateModel(
-            name="OrganizationUser",
+            name='OrganizationUser',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
                 (
-                    "organization",
+                    'organization',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="stakeholder.organization",
+                        to='stakeholder.organization',
                     ),
                 ),
                 (
-                    "user",
+                    'user',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         to=settings.AUTH_USER_MODEL,
@@ -206,31 +209,31 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "verbose_name": "Organization user",
-                "verbose_name_plural": "Organization users",
+                'verbose_name': 'Organization user',
+                'verbose_name_plural': 'Organization users',
             },
         ),
         migrations.CreateModel(
-            name="OrganizationRepresentatives",
+            name='OrganizationRepresentatives',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
                 (
-                    "organization",
+                    'organization',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="stakeholder.organization",
+                        to='stakeholder.organization',
                     ),
                 ),
                 (
-                    "user",
+                    'user',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         to=settings.AUTH_USER_MODEL,
@@ -238,8 +241,8 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "verbose_name": "Organization representative",
-                "verbose_name_plural": "Organization representatives",
+                'verbose_name': 'Organization representative',
+                'verbose_name_plural': 'Organization representatives',
             },
         ),
     ]

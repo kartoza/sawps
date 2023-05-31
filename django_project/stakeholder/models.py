@@ -85,6 +85,7 @@ class UserLogin(models.Model):
 
 class Organization(models.Model):
     """organization model"""
+
     name = models.CharField(unique=True, max_length=250)
     data_use_permission = models.ForeignKey(
         'regulatory_permit.dataUsePermission', on_delete=models.DO_NOTHING
@@ -96,11 +97,10 @@ class Organization(models.Model):
 
 
 class AbstractOrganizationPersonnel(models.Model):
-    """ Abstact organization personnel model"""
+    """Abstact organization personnel model"""
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    organization = models.ForeignKey(
-        Organization, on_delete=models.CASCADE
-    )
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -120,5 +120,3 @@ class OrganizationUser(AbstractOrganizationPersonnel):
     class Meta:
         verbose_name = 'Organization user'
         verbose_name_plural = 'Organization users'
-
-

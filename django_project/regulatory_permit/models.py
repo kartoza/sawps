@@ -1,11 +1,10 @@
 from django.db import models
 
+
 class dataUsePermission(models.Model):
     """data use permission model"""
 
-    name = models.CharField(
-        unique=True, max_length=150
-    )
+    name = models.CharField(unique=True, max_length=150)
     description = models.TextField()
 
     class Meta:
