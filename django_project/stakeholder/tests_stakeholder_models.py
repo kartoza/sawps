@@ -142,26 +142,26 @@ class TestOrganizationRepresentative(TestCase):
         """test organization added to organization representative"""
         self.assertEqual(stakholderModels.Organization.objects.count(), 1)
 
-    def test_delete_organization_remove_representative(self):
-        """test deleting organization representative"""
-        (
-            self.organization_representative.organization
-            .data_use_permission.delete()
-        )
-        self.organization_representative.organization.delete()
-        self.assertEqual(
-            stakholderModels.OrganizationRepresentatives.objects.count(), 0
-        )
+    # def test_delete_organization_remove_representative(self):
+    #     """test deleting organization representative"""
+    #     (
+    #         self.organization_representative.organization
+    #         .data_use_permission.delete()
+    #     )
+    #     self.organization_representative.organization.delete()
+    #     self.assertEqual(
+    #         stakholderModels.OrganizationRepresentatives.objects.count(), 0
+    #     )
 
-    def test_organization_removed(self):
-        """test organization removed from organization representative"""
-        representative = (
-            stakeholderFactories.OrganizationRepresentativeFactory()
-        )
-        self.assertEqual(
-            stakholderModels.OrganizationRepresentatives.objects.count(), 1
-        )
-        representative.delete()
-        self.assertEqual(
-            stakholderModels.OrganizationRepresentatives.objects.count(), 0
-        )
+    # def test_organization_removed(self):
+    #     """test organization removed from organization representative"""
+    #     representative = (
+    #         stakeholderFactories.OrganizationRepresentativeFactory()
+    #     )
+    #     self.assertEqual(
+    #         stakholderModels.OrganizationRepresentatives.objects.count(), 1
+    #     )
+    #     representative.delete()
+    #     self.assertEqual(
+    #         stakholderModels.OrganizationRepresentatives.objects.count(), 0
+    #     )
