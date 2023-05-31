@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.messages',
+    'activity',
 )
 
 SITE_ID = 1
