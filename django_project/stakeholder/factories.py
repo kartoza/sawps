@@ -81,3 +81,32 @@ class userLoginFactory(factory.django.DjangoModelFactory):
         'date_time_this_year', tzinfo=datetime.timezone.utc
     )
     ip_address = factory.Faker('ipv4')
+
+
+class OrganizationFactory(factory.django.DjangoModelFactory):
+    """factory class for organization model"""
+    
+    class Meta:
+        model = stakeholderModels.Organization
+    
+    name = factory.Faker('company')
+    data_use_permission = factory.SubFactory('regulatory_permit.factories.dataUsePermissionFactory')
+
+class OrganizationRepresentativeFactory(factory.django.DjangoModelFactory):
+    """factory class for organization representative model"""
+
+    class Meta:
+        model = stakeholderModels.OrganizationRepresentatives
+    
+    organization = factory.SubFactory('stakeholder.factories.OrganizationFactory')
+    user = factory.SubFactory('stakeholder.factories.userFactory')
+
+
+class OrganizationUserFactory(factory.django.DjangoModelFactory):
+    """factory class for organization user model"""
+
+    class Meta:
+        model = stakeholderModels.OrganizationRepresentatives
+    
+    organization = factory.SubFactory('stakeholder.factories.OrganizationFactory')
+    user = factory.SubFactory('stakeholder.factories.userFactory')

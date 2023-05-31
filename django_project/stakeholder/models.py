@@ -81,3 +81,44 @@ class UserLogin(models.Model):
     class Meta:
         verbose_name = 'User login'
         verbose_name_plural = 'Users login'
+
+
+class Organization(models.Model):
+    """organization model"""
+    name = models.CharField(unique=True, max_length=250)
+    data_use_permission = models.ForeignKey(
+        'regulatory_permit.dataUsePermission', on_delete=models.DO_NOTHING
+    )
+
+    class Meta:
+        verbose_name = 'Organization'
+        verbose_name_plural = 'Organizations'
+
+
+class AbstractOrganizationPersonnel(models.Model):
+    """ Abstact organization personnel model"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE
+    )
+
+    class Meta:
+        abstract = True
+
+
+class OrganizationRepresentatives(AbstractOrganizationPersonnel):
+    """organization representatives model"""
+
+    class Meta:
+        verbose_name = 'Organization representative'
+        verbose_name_plural = 'Organization representatives'
+
+
+class OrganizationUser(AbstractOrganizationPersonnel):
+    """organization user model"""
+
+    class Meta:
+        verbose_name = 'Organization user'
+        verbose_name_plural = 'Organization users'
+
+
