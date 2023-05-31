@@ -41,7 +41,6 @@ function Banner() {
 function HomePage() {
   return (
     <div className="App">
-      <ResponsiveNavbar/>
       <Banner/>
     </div>
   );

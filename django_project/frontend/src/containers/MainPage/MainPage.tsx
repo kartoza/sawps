@@ -7,7 +7,6 @@ import './index.scss';
 function MainPage() {
   return (
     <div className="App">
-      <ResponsiveNavbar/>
       <div className="MainPage">
         <SideBar/>
         <Map/>
