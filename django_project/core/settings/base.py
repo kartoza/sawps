@@ -127,6 +127,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.messages',
     'activity',
+    'occurrence',
 )
 
 SITE_ID = 1
