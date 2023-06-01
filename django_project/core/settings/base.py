@@ -51,7 +51,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    absolute_path('core', 'static'),
+    absolute_path('frontend', 'static'),
     absolute_path('frontend', 'bundles'),
 )
 
@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.messages',
+    'activity',
 )
 
 SITE_ID = 1
