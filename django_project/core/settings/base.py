@@ -127,7 +127,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.messages',
     'activity',
-    'swaps'
+    'notification',
 )
 
 SITE_ID = 1
