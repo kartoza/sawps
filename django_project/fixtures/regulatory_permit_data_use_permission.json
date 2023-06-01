@@ -1,0 +1,18 @@
+[
+{
+    "model": "regulatory_permit.datausepermission",
+    "pk": 1,
+    "fields": {
+        "name": "Full public access",
+        "description": "Full public access description"
+    }
+},
+{
+    "model": "regulatory_permit.datausepermission",
+    "pk": 2,
+    "fields": {
+        "name": "No public access",
+        "description": "No public access description"
+    }
+}
+]
