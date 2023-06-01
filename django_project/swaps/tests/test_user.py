@@ -1,7 +1,7 @@
 from django.test import TestCase
 from swaps.tests.models.account_factory import (
     UserF,
-    GroupF
+    GroupF,
 )
 
 from swaps.forms.sign_up import CustomSignupForm
