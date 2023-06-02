@@ -1,7 +1,9 @@
 from django.db import models
 
+
 class DataUsePermission(models.Model):
-    """ data use permission model """
+    """data use permission model"""
+
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
 
