@@ -54,3 +54,39 @@ class TestProfile(TestCase):
         profile.delete()
 
         self.assertTrue(profile.pk is None)
+
+
+    def test_profile_update_request(self):
+        """
+        Test update profile from the form page
+        """
+        user = get_user_model().objects.create(
+            is_staff=False,
+            is_active=True,
+            is_superuser=False,
+            username='test',
+            email='test@test.com'
+            )
+        user.set_password('passwd')
+        user.save()
+        resp = self.client.login(
+            username='test',
+            password='passwd'
+        )
+        self.assertTrue(resp)
+
+        post_dict = {
+            'first-name': 'Fan',
+            'last-name': 'Andri',
+            'organization': 'Kartoza',
+            'profile-picture': 'profile_pictures/picture_P.jpg'
+        }
+
+        response = self.client.post(
+            '/profile/{}/'.format(user.username),
+            post_dict
+        )
+        self.assertEqual(response.status_code, 302)
+        updated_user = get_user_model().objects.get(id=user.id)
+        self.assertEqual(updated_user.first_name, post_dict['first-name'])
+        self.assertEqual(updated_user.sawps_profile.picture, post_dict['profile-picture'])

@@ -1,20 +1,24 @@
+import logging
 from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
 from swaps.models import Profile
 
 
+logger = logging.getLogger(__name__)
+
+
 class ProfileView(DetailView):
     template_name = 'user/profile.html'
     model = get_user_model()
-    slug_field = 'email'
+    slug_field = 'username'
 
     def post(self, request, *args, **kwargs):
         if 'slug' not in kwargs:
-            raise Http404('Missing email')
+            raise Http404('Missing username')
 
         profile = self.model.objects.get(
-            email=kwargs['slug']
+            username=kwargs['slug']
         )
         if profile != self.request.user:
             raise Http404('Mismatch user')

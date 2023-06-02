@@ -4,7 +4,7 @@ from swaps.views import ProfileView
 
 # views urls
 urlpatterns = [  # '',
-    path('profile/', ProfileView.as_view(),
+    path('<slug:slug>', ProfileView.as_view(),
         name='profile'),
 
 ]
