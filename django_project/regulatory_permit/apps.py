@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PropertryConfig(AppConfig):
+class RegulatoryPermitConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'property'
+    name = 'regulatory_permit'

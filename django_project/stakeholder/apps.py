@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PropertryConfig(AppConfig):
+class StakeholderConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'property'
+    name = 'stakeholder'
