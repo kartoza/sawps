@@ -1,5 +1,5 @@
 from django.test import TestCase
-import property.models as PropertyModels
+from property.models import PropertyType, Province
 import property.factories as PropertyFactories
 from django.db.utils import IntegrityError
 
@@ -14,9 +14,9 @@ class PropertyTypeTest(TestCase):
     def test_create_property_type(self):
         """test creating a new property type"""
         self.assertTrue(
-            isinstance(self.property_type, PropertyModels.PropertyType)
+            isinstance(self.property_type, PropertyType)
         )
-        self.assertEqual(PropertyModels.PropertyType.objects.count(), 1)
+        self.assertEqual(PropertyType.objects.count(), 1)
         self.assertEqual(self.property_type.name, 'PropertyType 0')
 
     def test_update_property_type(self):
@@ -24,7 +24,7 @@ class PropertyTypeTest(TestCase):
         self.property_type.name = 'PropertyType 2'
         self.property_type.save()
         self.assertEqual(
-            PropertyModels.PropertyType.objects.get(id=1).name,
+            PropertyType.objects.get(id=1).name,
             'PropertyType 2',
         )
 
@@ -37,7 +37,7 @@ class PropertyTypeTest(TestCase):
     def test_delete_property_type(self):
         """test deleting a property type"""
         self.property_type.delete()
-        self.assertEqual(PropertyModels.PropertyType.objects.count(), 0)
+        self.assertEqual(PropertyType.objects.count(), 0)
 
 
 class ProvinceTestCase(TestCase):
@@ -49,8 +49,8 @@ class ProvinceTestCase(TestCase):
 
     def test_create_province(self):
         'test create a province'
-        self.assertTrue(isinstance(self.province, PropertyModels.Province))
-        self.assertEqual(PropertyModels.Province.objects.count(), 1)
+        self.assertTrue(isinstance(self.province, Province))
+        self.assertEqual(Province.objects.count(), 1)
         self.assertEqual(self.province.name, 'Province 0')
 
     def test_update_province(self):
@@ -58,7 +58,7 @@ class ProvinceTestCase(TestCase):
         self.province.name = 'Province 1'
         self.province.save()
         self.assertEqual(
-            PropertyModels.Province.objects.get(id=1).name, 'Province 1'
+            Province.objects.get(id=1).name, 'Province 1'
         )
 
     def test_unique_province_name_constraint(self):
@@ -70,4 +70,4 @@ class ProvinceTestCase(TestCase):
     def test_delete_province(self):
         'test delete a province'
         self.province.delete()
-        self.assertEqual(PropertyModels.Province.objects.count(), 0)
+        self.assertEqual(Province.objects.count(), 0)
