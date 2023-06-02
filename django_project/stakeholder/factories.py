@@ -9,11 +9,11 @@ class userRoleTypeFactory(factory.django.DjangoModelFactory):
         model = UserRoleType
 
     name = factory.Faker(
-        "random_element", elements=("base user", "admin", "super user")
+        'random_element', elements=('base user', 'admin', 'super user')
     )
-    description = factory.Faker("text", max_nb_chars=200)
+    description = factory.Faker('text', max_nb_chars=200)
 
-    
+
 class userTitleFactory(factory.django.DjangoModelFactory):
     """factory class for user title models"""
 
@@ -23,5 +23,3 @@ class userTitleFactory(factory.django.DjangoModelFactory):
     name = factory.Faker(
         'random_element', elements=('mr', 'mrs', 'miss', 'dr')
     )
-
-    

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from stakeholder.models import UserRoleType, UserTitle
-from stakeholder.factories  import userRoleTypeFactory, userTitleFactory
+from stakeholder.factories import userRoleTypeFactory, userTitleFactory
 
 
 class TestUserRoleType(TestCase):
@@ -15,22 +15,23 @@ class TestUserRoleType(TestCase):
         self.assertEqual(UserRoleType.objects.count(), 1)
         self.assertTrue(
             self.UserRoleTypeFactory.name
-            in ["base user", "admin", "super user"]
+            in ['base user', 'admin', 'super user']
         )
 
     def test_update_role(self):
         """test updating a role"""
-        self.UserRoleTypeFactory.name = "admin"
+        self.UserRoleTypeFactory.name = 'admin'
         self.UserRoleTypeFactory.save()
         UserRoleObject = UserRoleType.objects.get(
             id=self.UserRoleTypeFactory.id
         )
-        self.assertEqual(UserRoleObject.name, "admin")
+        self.assertEqual(UserRoleObject.name, 'admin')
 
     def test_delete_role(self):
         """test deleting new role"""
         self.UserRoleTypeFactory.delete()
         self.assertEqual(UserRoleType.objects.count(), 0)
+
 
 class UserTitleTestCase(TestCase):
     """user title test case, we are"""
@@ -47,9 +48,7 @@ class UserTitleTestCase(TestCase):
     def test_update_title(self):
         """test updating a title"""
         self.userTitle.name = 'mr'
-        userTitle = UserTitle.objects.get(
-            id=self.userTitle.id
-        )
+        userTitle = UserTitle.objects.get(id=self.userTitle.id)
         self.assertTrue(userTitle.name, 'mr')
 
     def test_delete_new_title(self):

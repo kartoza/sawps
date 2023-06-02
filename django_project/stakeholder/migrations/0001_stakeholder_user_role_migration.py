@@ -10,23 +10,23 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="UserRoleType",
+            name='UserRoleType',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=50, unique=True)),
-                ("description", models.TextField()),
+                ('name', models.CharField(max_length=50, unique=True)),
+                ('description', models.TextField()),
             ],
             options={
-                "verbose_name": "User role",
-                "verbose_name_plural": "User roles",
+                'verbose_name': 'User role',
+                'verbose_name_plural': 'User roles',
             },
         ),
     ]
