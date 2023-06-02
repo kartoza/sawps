@@ -1,6 +1,5 @@
 from stakeholder import models as stakeholderModels
 import factory
-from django.contrib.auth.models import User
 
 
 class userTitleFactory(factory.django.DjangoModelFactory):

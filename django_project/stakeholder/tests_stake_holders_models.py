@@ -2,6 +2,7 @@ from django.test import TestCase
 import stakeholder.models as stakholderModels
 import stakeholder.factories as stakeholderFactories
 
+
 class UserTitleTestCase(TestCase):
     """user title test case, we are"""
 
