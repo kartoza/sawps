@@ -1,5 +1,5 @@
 from django.contrib import admin
-import property.models as PropertyModels
+from property.models import PropertyType
 
-admin.site.register(PropertyModels.PropertyType)
-admin.site.register(propertryModels.Province)
+
+admin.site.register(PropertyType)

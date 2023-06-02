@@ -10,7 +10,7 @@ class PropertyTypeFactory(factory.django.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: 'PropertyType %d' % n)
 
-    
+
 class ProvinceFactory(factory.django.DjangoModelFactory):
     """Factory for Province"""
 

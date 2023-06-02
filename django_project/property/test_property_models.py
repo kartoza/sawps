@@ -1,6 +1,6 @@
 from django.test import TestCase
 import property.models as PropertyModels
-from property.factories import PropertyTypeFactory
+import property.factories as PropertyFactories
 from django.db.utils import IntegrityError
 
 
@@ -9,7 +9,7 @@ class PropertyTypeTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.property_type = PropertyTypeFactory()
+        cls.property_type = PropertyFactories.PropertyTypeFactory()
 
     def test_create_property_type(self):
         """test creating a new property type"""
@@ -31,7 +31,7 @@ class PropertyTypeTest(TestCase):
     def test_property_type_unique_name_constraint(self):
         """test property type unique name constraint"""
         with self.assertRaises(Exception) as raised:
-            PropertyTypeFactory(name='PropertyType 2')
+            PropertyFactories.PropertyTypeFactory(name='PropertyType 2')
             self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_property_type(self):
@@ -49,8 +49,8 @@ class ProvinceTestCase(TestCase):
 
     def test_create_province(self):
         'test create a province'
-        self.assertTrue(isinstance(self.province, PropertryModels.Province))
-        self.assertEqual(PropertryModels.Province.objects.count(), 1)
+        self.assertTrue(isinstance(self.province, PropertyModels.Province))
+        self.assertEqual(PropertyModels.Province.objects.count(), 1)
         self.assertEqual(self.province.name, 'Province 0')
 
     def test_update_province(self):
@@ -58,7 +58,7 @@ class ProvinceTestCase(TestCase):
         self.province.name = 'Province 1'
         self.province.save()
         self.assertEqual(
-            PropertryModels.Province.objects.get(id=1).name, 'Province 1'
+            PropertyModels.Province.objects.get(id=1).name, 'Province 1'
         )
 
     def test_unique_province_name_constraint(self):
@@ -70,4 +70,4 @@ class ProvinceTestCase(TestCase):
     def test_delete_province(self):
         'test delete a province'
         self.province.delete()
-        self.assertEqual(PropertryModels.Province.objects.count(), 0)
+        self.assertEqual(PropertyModels.Province.objects.count(), 0)
