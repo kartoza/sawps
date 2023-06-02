@@ -1,5 +1,5 @@
 from django.urls import path
-from swaps.api_views.reminder import (
+from notification.api_views.reminder import (
     ReminderDetail,
     ReminderList
 )

@@ -3,6 +3,6 @@ from django.urls import path, include
 
 # api urls
 urlpatterns = [  # '',
-    path('api/', include('swaps.api_urls')),
+    path('api/', include('notification.api_urls')),
 
 ]

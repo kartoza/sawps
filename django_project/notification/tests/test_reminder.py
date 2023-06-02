@@ -8,7 +8,10 @@ class TestReminder(TestCase):
 
     def setUp(self) -> None:
         """setup test data"""
-        self.reminder = ReminderF()
+        self.reminder = ReminderF(
+            title='title0',
+            text= 'text0'
+        )
 
     def test_create_reminder(self):
         """test create reminder"""
