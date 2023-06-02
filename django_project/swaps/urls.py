@@ -1,10 +1,10 @@
-from django.urls import path, include
+from django.urls import re_path, include
 from swaps.views import ProfileView
 
 
 # views urls
 urlpatterns = [  # '',
-    path('<slug:slug>', ProfileView.as_view(),
+    re_path(r'^profile/(?P<slug>\w+)/$', ProfileView.as_view(),
         name='profile'),
 
 ]

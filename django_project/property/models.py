@@ -8,6 +8,6 @@ class Province(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Province"
-        verbose_name_plural = "Provinces"
-        db_table = "province"
+        verbose_name = 'Province'
+        verbose_name_plural = 'Provinces'
+        db_table = 'province'

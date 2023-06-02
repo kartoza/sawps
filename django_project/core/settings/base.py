@@ -127,11 +127,8 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.messages',
     'activity',
-    'swaps',
-    'occurrence',
-    'regulatory_permit',
-    'property',
     'stakeholder',
+    'swaps'
 )
 
 SITE_ID = 1

@@ -6,7 +6,7 @@ from swaps.models.profile import Profile
 class GroupF(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Group
-        django_get_or_create = ('id', )
+        django_get_or_create = ('id',)
 
     id = factory.Sequence(lambda n: n)
     name = factory.Sequence(lambda n: 'name%s' % n)
@@ -15,7 +15,7 @@ class GroupF(factory.django.DjangoModelFactory):
 class UserF(factory.django.DjangoModelFactory):
     class Meta:
         model = settings.AUTH_USER_MODEL
-        django_get_or_create = ('id', )
+        django_get_or_create = ('id',)
 
     id = factory.Sequence(lambda n: n)
     username = factory.Sequence(lambda n: 'username%s' % n)

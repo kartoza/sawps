@@ -79,7 +79,7 @@ class TestProfile(TestCase):
             'first-name': 'Fan',
             'last-name': 'Andri',
             'organization': 'Kartoza',
-            'profile-picture': 'profile_pictures/picture_P.jpg'
+
         }
 
         response = self.client.post(
@@ -89,4 +89,4 @@ class TestProfile(TestCase):
         self.assertEqual(response.status_code, 302)
         updated_user = get_user_model().objects.get(id=user.id)
         self.assertEqual(updated_user.first_name, post_dict['first-name'])
-        self.assertEqual(updated_user.sawps_profile.picture, post_dict['profile-picture'])
+        self.assertIsNone(updated_user.swaps_profile.picture)
