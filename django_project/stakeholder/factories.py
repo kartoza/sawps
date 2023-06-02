@@ -1,5 +1,6 @@
-from stakeholder.models import UserRoleType, UserTitle
+from stakeholder.models import UserRoleType, UserTitle, LoginStatus
 import factory
+
 
 
 class userRoleTypeFactory(factory.django.DjangoModelFactory):
@@ -13,7 +14,17 @@ class userRoleTypeFactory(factory.django.DjangoModelFactory):
     )
     description = factory.Faker('text', max_nb_chars=200)
 
+    
+class loginStatusFactory(factory.django.DjangoModelFactory):
+    """factory class for login status models"""
 
+    class Meta:
+        model = LoginStatus
+
+    name = factory.Faker(
+        "random_element", elements=("logged in", "logged out")
+
+      
 class userTitleFactory(factory.django.DjangoModelFactory):
     """factory class for user title models"""
 
