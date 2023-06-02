@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
 
-class StakeholderConfig(AppConfig):
-  
+class RegulatoryPermitConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'stakeholder'
+    name = 'regulatory_permit'
