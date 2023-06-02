@@ -128,6 +128,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'activity',
     'regulatory_permit',
+    'property',
+    'stakeholder',
 )
 
 SITE_ID = 1
