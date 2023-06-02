@@ -8,4 +8,4 @@ class ProvinceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = PropertyModels.Province
 
-    name = factory.Sequence(lambda n: "Province %d" % n)
+    name = factory.Sequence(lambda n: 'Province %d' % n)

@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class UserTitle(models.Model):
     """user title model"""
 
