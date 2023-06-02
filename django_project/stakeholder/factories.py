@@ -1,4 +1,4 @@
-from stakeholder import models as stakeholderModels
+from stakeholder.models import UserRoleType, UserTitle
 import factory
 
 
@@ -6,7 +6,7 @@ class userRoleTypeFactory(factory.django.DjangoModelFactory):
     """factory class for user role type models"""
 
     class Meta:
-        model = stakeholderModels.UserRoleType
+        model = UserRoleType
 
     name = factory.Faker(
         "random_element", elements=("base user", "admin", "super user")
@@ -18,7 +18,7 @@ class userTitleFactory(factory.django.DjangoModelFactory):
     """factory class for user title models"""
 
     class Meta:
-        model = stakeholderModels.UserTitle
+        model = UserTitle
 
     name = factory.Faker(
         'random_element', elements=('mr', 'mrs', 'miss', 'dr')

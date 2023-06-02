@@ -1,6 +1,6 @@
 from django.test import TestCase
-import stakeholder.models as stakholderModels
-import stakeholder.factories as stakeholderFactories
+from stakeholder.models import UserRoleType, UserTitle
+from stakeholder.factories  import userRoleTypeFactory, userTitleFactory
 
 
 class TestUserRoleType(TestCase):
@@ -8,11 +8,11 @@ class TestUserRoleType(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.UserRoleTypeFactory = stakeholderFactories.userRoleTypeFactory()
+        cls.UserRoleTypeFactory = userRoleTypeFactory()
 
     def test_create_new_role(self):
         """test creating new role"""
-        self.assertEqual(stakholderModels.UserRoleType.objects.count(), 1)
+        self.assertEqual(UserRoleType.objects.count(), 1)
         self.assertTrue(
             self.UserRoleTypeFactory.name
             in ["base user", "admin", "super user"]
@@ -22,7 +22,7 @@ class TestUserRoleType(TestCase):
         """test updating a role"""
         self.UserRoleTypeFactory.name = "admin"
         self.UserRoleTypeFactory.save()
-        UserRoleObject = stakholderModels.UserRoleType.objects.get(
+        UserRoleObject = UserRoleType.objects.get(
             id=self.UserRoleTypeFactory.id
         )
         self.assertEqual(UserRoleObject.name, "admin")
@@ -30,4 +30,29 @@ class TestUserRoleType(TestCase):
     def test_delete_role(self):
         """test deleting new role"""
         self.UserRoleTypeFactory.delete()
-        self.assertEqual(stakholderModels.UserRoleType.objects.count(), 0)
+        self.assertEqual(UserRoleType.objects.count(), 0)
+
+class UserTitleTestCase(TestCase):
+    """user title test case, we are"""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.userTitle = userTitleFactory()
+
+    def test_create_new_title(self):
+        """test creating new title"""
+        self.assertEqual(UserTitle.objects.count(), 1)
+        self.assertTrue(self.userTitle.name in ['mr', 'mrs', 'miss', 'dr'])
+
+    def test_update_title(self):
+        """test updating a title"""
+        self.userTitle.name = 'mr'
+        userTitle = UserTitle.objects.get(
+            id=self.userTitle.id
+        )
+        self.assertTrue(userTitle.name, 'mr')
+
+    def test_delete_new_title(self):
+        """test deleting a title"""
+        self.userTitle.delete()
+        self.assertEqual(UserTitle.objects.count(), 0)

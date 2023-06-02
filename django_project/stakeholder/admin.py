@@ -1,6 +1,6 @@
 from django.contrib import admin
-import stakeholder.models as stakeholderModels
+from stakeholder.models import UserRoleType, UserTitle
 
-admin.site.register(stakeholderModels.UserRoleType)
-admin.site.register(stakeholderModels.UserTitle)
+admin.site.register(UserRoleType)
+admin.site.register(UserTitle)
 
