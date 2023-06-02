@@ -47,7 +47,7 @@ class DataUsePermissionTestCase(TestCase):
     def test_unqiue_data_use_permission_name(self):
         """test unique name of use permission"""
         try:
-            data_use_permission = (
+            (
                 regulatoryPermitModels.DataUsePermission.objects.create(
                     name='data use permission 0',
                     description='data use permission description 0',

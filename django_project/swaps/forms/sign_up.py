@@ -35,7 +35,7 @@ class CustomSignupForm(SignupForm):
         user.organisation = self.cleaned_data['organisation']
         try:
             user.groups.set(Group.objects.get(id=self.cleaned_data['group']))
-        except:
+        except Exception:
             user.save()
         return user
 
