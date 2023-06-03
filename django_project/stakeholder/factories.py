@@ -9,7 +9,8 @@ class loginStatusFactory(factory.django.DjangoModelFactory):
         model = stakeholderModels.LoginStatus
 
     name = factory.Faker(
-        "random_element", elements=("logged in", "logged out")
+        'random_element', elements=('logged in', 'logged out')
+    )
 
 
 class userTitleFactory(factory.django.DjangoModelFactory):
