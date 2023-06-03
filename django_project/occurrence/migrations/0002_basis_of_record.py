@@ -5,29 +5,29 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("occurrence", "0001_survey_method_migrations"),
+        ('occurrence', '0001_survey_method_migrations'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="BasisOfRecord",
+            name='BasisOfRecord',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=150, unique=True)),
-                ("sort_id", models.IntegerField(unique=True)),
+                ('name', models.CharField(max_length=150, unique=True)),
+                ('sort_id', models.IntegerField(unique=True)),
             ],
             options={
-                "verbose_name": "Basis of record",
-                "verbose_name_plural": "Basis of records",
-                "db_table": "basis_of_record",
+                'verbose_name': 'Basis of record',
+                'verbose_name_plural': 'Basis of records',
+                'db_table': 'basis_of_record',
             },
         ),
     ]

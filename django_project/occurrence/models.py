@@ -17,7 +17,7 @@ class SurveyMethod(models.Model):
 
 
 class BasisOfRecord(models.Model):
-    """ basis of record model """
+    """basis of record model"""
 
     name = models.CharField(max_length=150, unique=True)
     sort_id = models.IntegerField(unique=True)
