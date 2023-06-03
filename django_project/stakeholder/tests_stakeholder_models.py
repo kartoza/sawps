@@ -16,20 +16,20 @@ class LoginStatusTestCase(TestCase):
         self.assertTrue(
             isinstance(self.loginStatus, stakholderModels.LoginStatus)
         )
-        self.assertTrue(self.loginStatus.name in ["logged in", "logged out"])
+        self.assertTrue(self.loginStatus.name in ['logged in', 'logged out'])
 
     def test_update_login_status(self):
         """test updating a login status"""
-        self.loginStatus.name = "logged in"
+        self.loginStatus.name = 'logged in'
         loginStatus = stakholderModels.LoginStatus.objects.get(
             id=self.loginStatus.id
         )
-        self.assertTrue(loginStatus.name, "logged in")
-        self.loginStatus.name = "logged out"
+        self.assertTrue(loginStatus.name, 'logged in')
+        self.loginStatus.name = 'logged out'
         loginStatus = stakholderModels.LoginStatus.objects.get(
             id=self.loginStatus.id
         )
-        self.assertTrue(loginStatus.name, "logged out")
+        self.assertTrue(loginStatus.name, 'logged out')
 
     def test_delete_login_status(self):
         """test deleting a login status"""

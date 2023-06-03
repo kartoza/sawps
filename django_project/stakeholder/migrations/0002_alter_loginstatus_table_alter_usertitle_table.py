@@ -5,16 +5,16 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("stakeholder", "0001_login_status_migration"),
+        ('stakeholder', '0001_login_status_migration'),
     ]
 
     operations = [
         migrations.AlterModelTable(
-            name="loginstatus",
-            table="login_status",
+            name='loginstatus',
+            table='login_status',
         ),
         migrations.AlterModelTable(
-            name="usertitle",
-            table="user_title",
+            name='usertitle',
+            table='user_title',
         ),
     ]

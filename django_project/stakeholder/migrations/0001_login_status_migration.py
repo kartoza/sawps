@@ -6,28 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
-        ('stakeholder', '0001_initial')
-    ]
+    dependencies = [('stakeholder', '0001_initial')]
 
     operations = [
         migrations.CreateModel(
-            name="LoginStatus",
+            name='LoginStatus',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=20, unique=True)),
+                ('name', models.CharField(max_length=20, unique=True)),
             ],
             options={
-                "verbose_name": "Login status",
-                "verbose_name_plural": "Login status",
+                'verbose_name': 'Login status',
+                'verbose_name_plural': 'Login status',
             },
         ),
     ]
