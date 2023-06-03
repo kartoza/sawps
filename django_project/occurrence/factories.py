@@ -1,5 +1,5 @@
 import factory
-from occurrence.models import SurveyMethod, OccurrenceStatus 
+from occurrence.models import SurveyMethod, OccurrenceStatus
 
 
 class SurveyMethodFactory(factory.django.DjangoModelFactory):

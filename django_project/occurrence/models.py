@@ -18,6 +18,7 @@ class SurveyMethod(models.Model):
 
 class OccurrenceStatus(models.Model):
     """occurrence status model"""
+
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
