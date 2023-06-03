@@ -1,13 +1,12 @@
 from django.test import TestCase
-from swaps.tests.models.account_factory import (
-    UserF,
-    GroupF
-)
+from swaps.tests.models.account_factory import UserF, GroupF
 
 from swaps.forms.sign_up import CustomSignupForm
 
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class TestCustomSignupForm(TestCase):
     'Test sign up form'
@@ -20,11 +19,7 @@ class TestCustomSignupForm(TestCase):
         pass
 
     def test_user_form(self):
-
-        group = GroupF.create(
-            id=1,
-            name='Test'
-        )
+        group = GroupF.create(id=1, name='Test')
         group.save()
 
         request = {
@@ -34,7 +29,7 @@ class TestCustomSignupForm(TestCase):
             'email': 'faneva@kartoza.com',
             'groups': '1',
             'password1': 'Test02',
-            'password2': 'Test02'
+            'password2': 'Test02',
         }
 
         user = UserF.create()

@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class OccurrenceConfig(AppConfig):
+class RegulatoryPermitConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'occurrence'
+    name = 'regulatory_permit'
