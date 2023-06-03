@@ -10,23 +10,23 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="TaxonRank",
+            name='TaxonRank',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=250, unique=True)),
+                ('name', models.CharField(max_length=250, unique=True)),
             ],
             options={
-                "verbose_name": "Taxon Rank",
-                "verbose_name_plural": "Taxon Ranks",
-                "db_table": "taxon_rank",
+                'verbose_name': 'Taxon Rank',
+                'verbose_name_plural': 'Taxon Ranks',
+                'db_table': 'taxon_rank',
             },
         ),
     ]

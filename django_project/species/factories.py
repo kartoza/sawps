@@ -1,8 +1,10 @@
-import factory 
+import factory
 from species.models import TaxonRank
 
+
 class TaxonRankFactory(factory.django.DjangoModelFactory):
-    """ taxon rank factory """
+    """taxon rank factory"""
+
     class Meta:
         model = TaxonRank
 
