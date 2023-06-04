@@ -1,12 +1,8 @@
 from django.test import TestCase
-<<<<<<< HEAD
 from swaps.tests.models.account_factory import (
     UserF,
     GroupF,
 )
-=======
-from swaps.tests.models.account_factory import UserF, GroupF
->>>>>>> 88d63da92aee23101348821c4410ac1f1413c924
 
 from swaps.forms.sign_up import CustomSignupForm
 

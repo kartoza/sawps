@@ -21,40 +21,41 @@
       <div class="col-lg-4">
         <div class="card mb-4">
           <div class="card-body text-center">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+
+            <img src={% if object.user_profile.picture %}{{object.user_profile.picture.url}}{% else %}"https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp{% endif %}" alt="avatar"
               class="rounded-circle img-fluid" style="width: 150px;">
-            <p class="text-muted my-2"><i class="fa-solid fa-upload mr-2"></i>Upload profile picture</p>
+            <p class="text-muted my-2 upload-picture"><span data-toggle="modal" data-target="#uploadPictureModal"><i class="fa-solid fa-upload mr-2"></i>Upload profile picture</span></p>
           </div>
         </div>
-
       </div>
       <div class="col-lg-8">
         <div class="card mb-4">
           <div class="card-body">
-            <form>
+              <form method="post" action="{% url 'profile' object.username %}">
+              {% csrf_token %}
               <div class="form-group">
                 <label for="first-name">First name</label>
-                <input type="text" class="form-control" id="first-name" aria-describedby="firstNameHelp" placeholder="First name">
+                <input type="text" class="form-control" id="first-name" name="first-name" aria-describedby="firstNameHelp" value={{object.first_name}}>
               </div>
               <div class="form-group">
                 <label for="nlast-nameame">Name</label>
-                <input type="text" class="form-control" id="last-name" aria-describedby="nameHelp" placeholder={{object.last_name}}>
+                <input type="text" class="form-control" name="last-name" aria-describedby="nameHelp" value={{object.last_name}}>
               </div>
               <div class="form-group">
                 <label for="title">Title</label>
-                <input type="text" class="form-control" id="title" aria-describedby="titleHelp" placeholder="Title">
+                <input type="text" class="form-control" name="title" aria-describedby="titleHelp" placeholder="Title">
               </div>
               <div class="form-group">
                 <label for="organization">Organisation</label>
-                <input type="text" class="form-control" id="organization" placeholder="Organisation">
+                <input type="text" class="form-control" name="organization" value="Organisation">
               </div>
               <div class="form-group">
                 <label for="role">Role</label>
-                <input type="text" class="form-control" id="role" placeholder="Role">
+                <input type="text" class="form-control" name="groupe" placeholder="Role">
               </div>
                <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+                <input type="email" class="form-control" name="email" aria-describedby="emailHelp" value={{object.email}}>
               </div>
               <button type="submit" class="account-button">Update</button>
             </form>
@@ -64,4 +65,27 @@
     </div>
   </div>
 </section>
+
+<div class="modal fade" id="uploadPictureModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="uploadPictureModalLabel">Upload profile picture</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form method="post" action="{% url 'profile' object.username %}">
+              {% csrf_token %}
+              <div class="custom-file">
+              <input type="file" class="custom-file-input" name="profile-picture" id="profile-picture">
+                <label class="custom-file-label" for="profile-picture">Choose file</label>
+              </div>
+            </div>
+              <button type="submit" class="account-button">Upload</button>
+            </form>
+          </div>
+        </div>
+      </div>
 {% endblock %}

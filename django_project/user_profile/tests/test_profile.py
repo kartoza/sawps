@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from swaps.tests.models.account_factory import UserF, ProfileF
+from user_profile.tests.profile_factory import ProfileF
+from swaps.tests.models.account_factory import UserF
 
 
 class TestProfile(TestCase):
@@ -77,4 +78,4 @@ class TestProfile(TestCase):
         self.assertEqual(response.status_code, 302)
         updated_user = get_user_model().objects.get(id=user.id)
         self.assertEqual(updated_user.first_name, post_dict['first-name'])
-        self.assertIsNone(updated_user.swaps_profile.picture)
+        self.assertIsNotNone(updated_user.user_profile.picture)

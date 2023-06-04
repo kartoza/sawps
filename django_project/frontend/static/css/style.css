@@ -101,3 +101,7 @@
 a:hover{
   color: #70B276;
 }
+
+.upload-picture{
+  cursor: pointer;
+}

@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'activity',
     'stakeholder',
     'swaps',
+    'user_profile',
 )
 
 SITE_ID = 1

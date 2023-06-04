@@ -1,7 +1,6 @@
 import factory
 from django.conf import settings
 from django.contrib.auth import models
-from swaps.models.profile import Profile
 
 
 class GroupF(factory.django.DjangoModelFactory):
@@ -24,10 +23,3 @@ class UserF(factory.django.DjangoModelFactory):
     last_name = factory.Sequence(lambda n: 'last_name%s' % n)
     email = factory.Sequence(lambda n: 'email%s@example.com' % n)
     password = factory.PostGenerationMethodCall('set_password', 'password')
-
-
-class ProfileF(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Profile
-
-    user = factory.SubFactory(UserF)
