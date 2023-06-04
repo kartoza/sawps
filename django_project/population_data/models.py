@@ -1,9 +1,11 @@
 from django.db import models
 
+
 class NatureOfPopulation(models.Model):
     """
     nature of the population model.
     """
+
     name = models.CharField(max_length=255, unique=True)
     extensive = models.BooleanField()
 

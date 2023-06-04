@@ -10,24 +10,24 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="NatureOfPopulation",
+            name='NatureOfPopulation',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=255, unique=True)),
-                ("extensive", models.BooleanField()),
+                ('name', models.CharField(max_length=255, unique=True)),
+                ('extensive', models.BooleanField()),
             ],
             options={
-                "verbose_name": "Nature of Population",
-                "verbose_name_plural": "Nature of Population",
-                "db_table": "nature_of_population",
+                'verbose_name': 'Nature of Population',
+                'verbose_name_plural': 'Nature of Population',
+                'db_table': 'nature_of_population',
             },
         ),
     ]

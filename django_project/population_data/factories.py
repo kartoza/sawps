@@ -1,10 +1,12 @@
 import factory
 from population_data.models import NatureOfPopulation
 
+
 class NatureOfPopulationFactory(factory.django.DjangoModelFactory):
     """
     nature of the population factory.
     """
+
     class Meta:
         model = NatureOfPopulation
 
