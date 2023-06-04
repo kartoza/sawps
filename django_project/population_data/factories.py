@@ -1,9 +1,13 @@
-import factory 
+import factory
 from population_data.models import CountMethod
 
+
 class CountMethodFactory(factory.django.DjangoModelFactory):
-    """ count method factory """
+    """count method factory"""
+
     class Meta:
-        """ meta """
+        """meta"""
+
         model = CountMethod
-    name = "count method-1"
+
+    name = 'count method-1'
