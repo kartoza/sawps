@@ -4,8 +4,7 @@ from swaps.tests.models.account_factory import UserF, ProfileF
 
 
 class TestProfile(TestCase):
-    """ Tests CURD Profile.
-    """
+    """Tests CURD Profile."""
 
     def setUp(self):
         """
@@ -21,20 +20,17 @@ class TestProfile(TestCase):
         profile = ProfileF.create(
             user=user,
             picture='profile_pictures/picture_P.jpg',
-            )
+        )
 
         self.assertTrue(profile.user is not None)
         self.assertEqual(profile.picture, 'profile_pictures/picture_P.jpg')
-
 
     def test_profile_update(self):
         """
         Tests profile update
         """
         user = UserF.create()
-        profile = ProfileF.create(
-            user=user
-        )
+        profile = ProfileF.create(user=user)
         profile_picture = {
             'picture': 'profile_pictures/picture_P.jpg',
         }
@@ -48,13 +44,10 @@ class TestProfile(TestCase):
         Tests profile delete
         """
         user = UserF.create()
-        profile = ProfileF.create(
-            user=user
-        )
+        profile = ProfileF.create(user=user)
         profile.delete()
 
         self.assertTrue(profile.pk is None)
-
 
     def test_profile_update_request(self):
         """
@@ -65,26 +58,21 @@ class TestProfile(TestCase):
             is_active=True,
             is_superuser=False,
             username='test',
-            email='test@test.com'
-            )
+            email='test@test.com',
+        )
         user.set_password('passwd')
         user.save()
-        resp = self.client.login(
-            username='test',
-            password='passwd'
-        )
+        resp = self.client.login(username='test', password='passwd')
         self.assertTrue(resp)
 
         post_dict = {
             'first-name': 'Fan',
             'last-name': 'Andri',
             'organization': 'Kartoza',
-
         }
 
         response = self.client.post(
-            '/profile/{}/'.format(user.username),
-            post_dict
+            '/profile/{}/'.format(user.username), post_dict
         )
         self.assertEqual(response.status_code, 302)
         updated_user = get_user_model().objects.get(id=user.id)

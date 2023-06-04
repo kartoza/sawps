@@ -17,9 +17,7 @@ class ProfileView(DetailView):
         if 'slug' not in kwargs:
             raise Http404('Missing username')
 
-        profile = self.model.objects.get(
-            username=kwargs['slug']
-        )
+        profile = self.model.objects.get(username=kwargs['slug'])
         if profile != self.request.user:
             raise Http404('Mismatch user')
 
@@ -30,7 +28,9 @@ class ProfileView(DetailView):
         if not Profile.objects.filter(user=profile).exists():
             Profile.objects.create(user=profile)
 
-        profile.swaps_profile.picture = self.request.FILES.get('profile-picture', None)
+        profile.swaps_profile.picture = self.request.FILES.get(
+            'profile-picture', None
+        )
         profile.swaps_profile.save()
         profile.save()
 

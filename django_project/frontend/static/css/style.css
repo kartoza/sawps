@@ -22,7 +22,7 @@
     text-transform: uppercase;
   }
 
-  .btn-primary:hover {
+  .btn-primary:hover, .btn-primary:focus, .btn-primary:visited, .btn-primary:active {
     color: #000000;
     background-color: #FAA755;
     border-color: #FAA755;
@@ -92,4 +92,12 @@
 
 .account-form{
   min-height: 300px;
+}
+
+.swaps-text-primary, a {
+  color: #86BC8B;
+}
+
+a:hover{
+  color: #70B276;
 }

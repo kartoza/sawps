@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import models
 from swaps.models.profile import Profile
 
+
 class GroupF(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Group
@@ -27,6 +28,6 @@ class UserF(factory.django.DjangoModelFactory):
 
 class ProfileF(factory.django.DjangoModelFactory):
     class Meta:
-       model = Profile
+        model = Profile
 
     user = factory.SubFactory(UserF)
