@@ -1,8 +1,10 @@
 import factory
 from population_data.models import Month
 
+
 class MonthFactory(factory.django.DjangoModelFactory):
-    """ month factory """
+    """month factory"""
+
     class Meta:
         model = Month
 

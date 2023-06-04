@@ -1,7 +1,9 @@
 from django.db import models
 
+
 class Month(models.Model):
-    """ month model """
+    """month model"""
+
     name = models.CharField(max_length=100, unique=True)
     sorid = models.IntegerField(unique=True)
 

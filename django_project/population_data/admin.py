@@ -1,3 +1,4 @@
 from django.contrib import admin
+from population_data.models import Month
 
-# Register your models here.
+admin.site.register(Month)

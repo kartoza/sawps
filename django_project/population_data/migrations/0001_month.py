@@ -10,24 +10,24 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Month",
+            name='Month',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=100, unique=True)),
-                ("sorid", models.IntegerField(unique=True)),
+                ('name', models.CharField(max_length=100, unique=True)),
+                ('sorid', models.IntegerField(unique=True)),
             ],
             options={
-                "verbose_name": "month",
-                "verbose_name_plural": "months",
-                "db_table": "month",
+                'verbose_name': 'month',
+                'verbose_name_plural': 'months',
+                'db_table': 'month',
             },
         ),
     ]
