@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = []
+    dependencies = [('property', '0001_property_type_model')]
 
     operations = [
         migrations.CreateModel(
