@@ -7,7 +7,7 @@ class PropertyType(models.Model):
     def __str__(self):
         return self.name
 
-    class META:
+    class Meta:
         verbose_name = 'Property type'
         verbose_name_plural = 'Property types'
         db_table = 'property_type'
