@@ -23,8 +23,7 @@ class LoginStatus(models.Model):
     class Meta:
         verbose_name = 'Login status'
         verbose_name_plural = 'Login status'
-        db_table = 'login_status'
-        
+        db_table = 'login_status'        
 
 class UserTitle(models.Model):
     """user title model"""
