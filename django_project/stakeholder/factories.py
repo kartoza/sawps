@@ -2,7 +2,6 @@ from stakeholder.models import UserRoleType, UserTitle, LoginStatus
 import factory
 
 
-
 class userRoleTypeFactory(factory.django.DjangoModelFactory):
     """factory class for user role type models"""
 
