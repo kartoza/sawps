@@ -1,0 +1,44 @@
+[
+{
+    "model": "property.propertytype",
+    "pk": 1,
+    "fields": {
+        "name": "Community"
+    }
+},
+{
+    "model": "property.propertytype",
+    "pk": 2,
+    "fields": {
+        "name": "Provincial"
+    }
+},
+{
+    "model": "property.propertytype",
+    "pk": 3,
+    "fields": {
+        "name": "National"
+    }
+},
+{
+    "model": "property.propertytype",
+    "pk": 4,
+    "fields": {
+        "name": "State"
+    }
+},
+{
+    "model": "property.propertytype",
+    "pk": 5,
+    "fields": {
+        "name": "Private"
+    }
+},
+{
+    "model": "property.propertytype",
+    "pk": 6,
+    "fields": {
+        "name": "State and private"
+    }
+}
+]
