@@ -1,5 +1,6 @@
 from django.contrib import admin
+from occurrence.models import OrganismQuantityType, SurveyMethod
 
-import occurrence.models as OccurrenceModels
+admin.site.register(OrganismQuantityType)
+admin.site.register(SurveyMethod)
 
-admin.site.register(OccurrenceModels.SurveyMethod)
