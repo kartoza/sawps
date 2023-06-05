@@ -128,6 +128,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'activity',
     'occurrence',
+    'notification',
+    'occurrence',
+    'regulatory_permit',
+    'property',
     'stakeholder',
 )
 
