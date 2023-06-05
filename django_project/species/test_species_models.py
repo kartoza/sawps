@@ -20,7 +20,7 @@ class ManagementStatusTestCase(TestCase):
         """ test management status update """
         self.management_status.name = 'management status_1'
         self.management_status.save()
-        self.assertEqual(ManagementStatus.objects.get(id=1), 'management status_1')
+        self.assertEqual(ManagementStatus.objects.get(id=1).name, 'management status_1')
 
     
     def test_management_status_unique_name_constraint(self):
