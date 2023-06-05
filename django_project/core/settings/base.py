@@ -127,6 +127,10 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.messages',
     'activity',
+    'notification',
+    'occurrence',
+    'regulatory_permit',
+    'property',
     'stakeholder',
     'occurrence',
 )

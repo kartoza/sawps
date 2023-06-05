@@ -1,6 +1,17 @@
 from django.db import models
 
 
+class UserRoleType(models.Model):
+    """user role type (Base users, admins ..etc.) model"""
+
+    name = models.CharField(unique=True, max_length=50)
+    description = models.TextField()
+
+    class Meta:
+        verbose_name = 'User role'
+        verbose_name_plural = 'User roles'
+
+
 class LoginStatus(models.Model):
     """user login status model"""
 
