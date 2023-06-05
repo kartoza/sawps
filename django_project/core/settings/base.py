@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'regulatory_permit',
     'property',
     'stakeholder',
+    'population_data',
 )
 
 SITE_ID = 1
