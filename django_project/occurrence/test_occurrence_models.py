@@ -32,13 +32,13 @@ class SurveyMethodTestCase(TestCase):
     def test_survey_method_unique_name_constraint(self):
         """test survey method unique name constraint"""
         with self.assertRaises(Exception) as raised:
-            OccurrenceFactories.SurveyMethodFactory(name='survey method 0')
+            SurveyMethodFactory(name='survey method 0')
         self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_survey_method_unique_sort_id_constraint(self):
         """test survey method unique sort id constraint"""
         with self.assertRaises(Exception) as raised:
-            OccurrenceFactories.SurveyMethodFactory(sort_id=0)
+            SurveyMethodFactory(sort_id=0)
         self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_survey_method(self):
