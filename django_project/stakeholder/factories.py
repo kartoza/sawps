@@ -24,7 +24,7 @@ class loginStatusFactory(factory.django.DjangoModelFactory):
     name = factory.Faker(
         'random_element', elements=('logged in', 'logged out')
     )
-
+    
       
 class userTitleFactory(factory.django.DjangoModelFactory):
     """factory class for user title models"""
