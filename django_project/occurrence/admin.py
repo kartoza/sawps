@@ -1,5 +1,7 @@
 from django.contrib import admin
 
-import occurrence.models as OccurrenceModels
+from occurrence.models import SurveyMethod, BasisOfRecord
 
-admin.site.register(OccurrenceModels.SurveyMethod)
+admin.site.register(SurveyMethod)
+
+admin.site.register(BasisOfRecord)
