@@ -15,7 +15,6 @@ class ReminderDetail(APIView):
             raise Http404
 
     def get(self, request):
-
         reminder_id = request.GET.get('reminderId')
         reminder = self.get_object(reminder_id)
         serializer = ReminderSerializer(reminder)
@@ -28,7 +27,6 @@ class ReminderList(APIView):
     """Return list of reminder"""
 
     def get(self, request):
-
         status = request.GET.get('status')
         reminders = Reminder.objects.all()
         if status:

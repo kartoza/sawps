@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}Login{% endblock %}
+
+
+{% block content %}
+<div class="login-page" style="background-color: #000000; height: 85vh;">
+    <div class="container position-absolute">
+        <div class="row">
+            <div class="col-xl-3 swaps-text-primary account-form">
+            <div class="content">
+            <div class="custom-form-container">
+                <h4 class="account-form-title">{% trans "Two-Factor Authentication" %}</h4>
+                <hr class="separator">
+                <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <label>OTP code</label>
+                {{ form.otp_token }}
+                <p></p>
+                <div class="login-help text-center" style="color:#70B276">
+                Use your preferred authenticator application to generate an OTP
+                </div>
+                <button class="swaps-from-submit account-button" type="submit">
+                    {% trans 'Authenticate' %}
+                </button>
+                </form>
+            </div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

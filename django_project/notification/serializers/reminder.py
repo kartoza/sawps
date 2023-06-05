@@ -3,13 +3,8 @@ from notification.models import Reminder
 
 
 class ReminderSerializer(serializers.ModelSerializer):
-    """ Serializer for reminder"""
+    """Serializer for reminder"""
+
     class Meta:
         model = Reminder
-        fields = [
-            'id',
-            'title',
-            'date',
-            'text',
-            'status'
-            ]
+        fields = ['id', 'title', 'date', 'text', 'status']

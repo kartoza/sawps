@@ -3,6 +3,7 @@
 
 import os
 from .utils import absolute_path, ensure_secret_key_file
+
 ensure_secret_key_file()
 
 # Local time zone for this installation. Choices can be found here:
@@ -71,6 +72,9 @@ MIDDLEWARE = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    # 2fa
+    'django_otp.middleware.OTPMiddleware',
+    'allauth_2fa.middleware.AllauthTwoFactorMiddleware',
 )
 
 ROOT_URLCONF = 'core.urls'
@@ -152,8 +156,12 @@ CACHES = {
     }
 }
 
-LOGIN_URL = '/account/login/'
+# LOGIN_URL = 'two_factor:login'
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
 # Fixtures path
 FIXTURE_DIRS = ((absolute_path('fixtures')),)
+
+ACCOUNT_ADAPTER = 'allauth_2fa.adapter.OTPAdapter'
+ALLAUTH_2FA_TEMPLATE_EXTENSION = 'html'
