@@ -34,7 +34,7 @@ jobs:
         python-version:
           - 3.10.4
     env:
-      APP_IMAGE: kartoza/georepo
+      APP_IMAGE: kartoza/sanbi
     steps:
       - uses: actions/checkout@v2
       - name: Set up QEMU

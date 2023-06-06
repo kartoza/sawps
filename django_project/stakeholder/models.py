@@ -10,6 +10,7 @@ class UserRoleType(models.Model):
     class Meta:
         verbose_name = 'User role'
         verbose_name_plural = 'User roles'
+        db_table = 'user_role'
 
 
 class LoginStatus(models.Model):
@@ -20,6 +21,7 @@ class LoginStatus(models.Model):
     class Meta:
         verbose_name = 'Login status'
         verbose_name_plural = 'Login status'
+        db_table = "login_status"
 
 
 class UserTitle(models.Model):
@@ -33,3 +35,4 @@ class UserTitle(models.Model):
     class Meta:
         verbose_name = 'title'
         verbose_name_plural = 'titles'
+        db_table = "user_title"
