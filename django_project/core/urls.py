@@ -22,6 +22,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('', include('frontend.urls')),
     path('admin/', admin.site.urls),
+    path('', include('notification.urls'))
 ]
 
 if settings.DEBUG:
