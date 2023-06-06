@@ -1,0 +1,16 @@
+[
+    {
+        "model": "occurrence.occurrencestatus",
+        "pk": 1,
+        "fields": {
+            "name": "Absent"
+        }
+    },
+    {
+        "model": "occurrence.occurrencestatus",
+        "pk": 2,
+        "fields": {
+            "name": "Present"
+        }
+    }
+    ]

@@ -2,7 +2,7 @@ from django.db import models
 
 
 class SurveyMethod(models.Model):
-    """survey method model"""
+    """Survey method model."""
 
     name = models.CharField(max_length=255, unique=True)
     sort_id = models.IntegerField(unique=True)
@@ -16,8 +16,19 @@ class SurveyMethod(models.Model):
         db_table = 'survey_method'
 
 
+class OccurrenceStatus(models.Model):
+    """Occurrence status model."""
+
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        verbose_name = 'Occurrence status'
+        verbose_name_plural = 'Occurrence statuses'
+        db_table = 'occurrence_status'
+    
+
 class BasisOfRecord(models.Model):
-    """basis of record model"""
+    """Basis of record model."""
 
     name = models.CharField(max_length=150, unique=True)
     sort_id = models.IntegerField(unique=True)
@@ -32,7 +43,7 @@ class BasisOfRecord(models.Model):
 
         
 class SamplingSizeUnit(models.Model):
-    """sampling size unit model"""
+    """Sampling size unit model."""
 
     unit = models.CharField(max_length=4, unique=True)
 
