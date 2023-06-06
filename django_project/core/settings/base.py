@@ -73,6 +73,7 @@ MIDDLEWARE = (
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     #2fa
     'django_otp.middleware.OTPMiddleware',
+    'allauth_2fa.middleware.AllauthTwoFactorMiddleware',
 
 )
 
@@ -153,8 +154,12 @@ CACHES = {
     }
 }
 
-LOGIN_URL = 'two_factor:login'
+# LOGIN_URL = 'two_factor:login'
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
 # Fixtures path
 FIXTURE_DIRS = ((absolute_path('fixtures')),)
+
+ACCOUNT_ADAPTER = 'allauth_2fa.adapter.OTPAdapter'
+ALLAUTH_2FA_TEMPLATE_EXTENSION = 'html'

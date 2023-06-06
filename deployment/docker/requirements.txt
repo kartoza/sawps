@@ -39,5 +39,4 @@ redis==4.3.4
 django-allauth==0.54.0
 
 # for the 2fa
- phonenumbers==8.13.11 
- django-two-factor-auth==1.15.2 
+ django-allauth-2fa==0.10.0
