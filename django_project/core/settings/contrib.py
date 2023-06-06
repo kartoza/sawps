@@ -45,7 +45,6 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': (
         'rest_framework.versioning.NamespaceVersioning'
     ),
-    'EXCEPTION_HANDLER': 'georepo.utils.custom_exception_handler',
 }
 
 AUTHENTICATION_BACKENDS = (
@@ -68,8 +67,8 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_FORMS = {
-        'signup': 'swaps.forms.CustomSignupForm',
-    }
+    'signup': 'swaps.forms.CustomSignupForm',
+}
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 AUTH_WITH_EMAIL_ONLY = True
