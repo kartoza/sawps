@@ -3,7 +3,7 @@ from occurrence.models import SurveyMethod, BasisOfRecord, SamplingSizeUnit, Occ
 
 
 class SurveyMethodFactory(factory.django.DjangoModelFactory):
-    """survey method factory"""
+    """Survey method factory."""
 
     class Meta:
         model = SurveyMethod
@@ -13,7 +13,7 @@ class SurveyMethodFactory(factory.django.DjangoModelFactory):
 
 
 class OccurrenceStatusFactory(factory.django.DjangoModelFactory):
-    """occurrence status factory"""
+    """Occurrence status factory."""
 
     class Meta:
         model = OccurrenceStatus
@@ -22,7 +22,7 @@ class OccurrenceStatusFactory(factory.django.DjangoModelFactory):
 
     
 class BasisOfRecordFactory(factory.django.DjangoModelFactory):
-    """basis of record factory"""
+    """Basis of record factory."""
 
     class Meta:
         model = BasisOfRecord
@@ -32,7 +32,7 @@ class BasisOfRecordFactory(factory.django.DjangoModelFactory):
 
     
 class SamplingSizeUnitFactory(factory.django.DjangoModelFactory):
-    """sampling size unit factory"""
+    """Sampling size unit factory."""
 
     class Meta:
         model = SamplingSizeUnit

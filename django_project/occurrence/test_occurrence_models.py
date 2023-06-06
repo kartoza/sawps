@@ -5,15 +5,15 @@ from django.db.utils import IntegrityError
 
 
 class SurveyMethodTestCase(TestCase):
-    """survey method test case"""
+    """Survey method test case."""
 
     @classmethod
     def setUpTestData(cls):
-        """setup test data"""
+        """Setup test data."""
         cls.survey_method = SurveyMethodFactory()
 
     def test_create_survey_method(self):
-        """test create survey method"""
+        """Test create survey method."""
         self.assertTrue(
             isinstance(self.survey_method, SurveyMethod)
         )
@@ -21,7 +21,7 @@ class SurveyMethodTestCase(TestCase):
         self.assertEqual(self.survey_method.name, 'survey method 0')
 
     def test_update_survey_method(self):
-        """test update survey method"""
+        """Test update survey method."""
         self.survey_method.name = 'survey method 1'
         self.survey_method.save()
         self.assertEqual(
@@ -30,19 +30,19 @@ class SurveyMethodTestCase(TestCase):
         )
 
     def test_survey_method_unique_name_constraint(self):
-        """test survey method unique name constraint"""
+        """Test survey method unique name constraint."""
         with self.assertRaises(Exception) as raised:
             SurveyMethodFactory(name='survey method 0')
         self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_survey_method_unique_sort_id_constraint(self):
-        """test survey method unique sort id constraint"""
+        """Test survey method unique sort id constraint."""
         with self.assertRaises(Exception) as raised:
             SurveyMethodFactory(sort_id=0)
         self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_survey_method(self):
-        """test delete survey method"""
+        """Test delete survey method."""
         self.survey_method.delete()
         self.assertEqual(SurveyMethod.objects.count(), 0)
 
@@ -50,17 +50,17 @@ class SurveyMethodTestCase(TestCase):
 class OccurrenceStatusTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        """setup test data for occurrence status testcase"""
+        """Setup test data for occurrence status testcase."""
         cls.occurrence_status = OccurrenceStatusFactory()
 
     def test_create_occurrence_status(self):
-        """test create occurrence status"""
+        """Test create occurrence status."""
         self.assertTrue(isinstance(self.occurrence_status, OccurrenceStatus))
         self.assertEqual(OccurrenceStatus.objects.count(), 1)
         self.assertEqual(self.occurrence_status.name, 'occurrence status 0')
 
     def test_update_occurrence_status(self):
-        """test update occurrence status"""
+        """Test update occurrence status."""
         self.occurrence_status.name = 'occurrence status 1'
         self.occurrence_status.save()
         self.assertEqual(
@@ -69,33 +69,33 @@ class OccurrenceStatusTestCase(TestCase):
         )
 
     def test_occurrence_status_unique_name_constraint(self):
-        """test occurrence status unique name constraint"""
+        """Test occurrence status unique name constraint."""
         with self.assertRaises(Exception) as raised:
             OccurrenceStatusFactory(name='occurrence status 0')
         self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_occurrence_status(self):
-        """test delete occurrence status"""
+        """Test delete occurrence status."""
         self.occurrence_status.delete()
         self.assertEqual(OccurrenceStatus.objects.count(), 0)
 
         
 class BasisOfRecordTestCase(TestCase):
-    """basis of record testcase"""
+    """Basis of record testcase."""
 
     @classmethod
     def setUpTestData(self):
-        """setup test data for basis of record test case"""
+        """Setup test data for basis of record test case."""
         self.basis_of_record = BasisOfRecordFactory()
 
     def test_create_basis_of_record(self):
-        """test create basis of record"""
+        """Test create basis of record."""
         self.assertTrue(isinstance(self.basis_of_record, BasisOfRecord))
         self.assertEqual(BasisOfRecord.objects.count(), 1)
         self.assertEqual(self.basis_of_record.name, 'basis of record 0')
 
     def test_update_basis_of_record(self):
-        """test update basis of record"""
+        """Test update basis of record."""
         self.basis_of_record.name = 'basis of record 1'
         self.basis_of_record.save()
         self.assertEqual(
@@ -103,50 +103,50 @@ class BasisOfRecordTestCase(TestCase):
         )
 
     def test_basis_of_record_unique_name_constraint(self):
-        """test basis of record unique name constraint"""
+        """Test basis of record unique name constraint."""
         with self.assertRaises(Exception) as raised:
             BasisOfRecordFactory(name='basis of record 1')
             self.assertEqual(IntegrityError, raised.exception)
 
     def test_basis_of_record_unique_sort_id_constraint(self):
-        """test basis of record unique sort id constraint"""
+        """Test basis of record unique sort id constraint."""
         with self.assertRaises(Exception) as raised:
             BasisOfRecordFactory(sort_id=0)
             self.assertEqual(IntegrityError, raised.exception)
 
     def test_delete_basis_of_record(self):
-        """test delete basis of record"""
+        """Test delete basis of record."""
         self.basis_of_record.delete()
         self.assertEqual(BasisOfRecord.objects.count(), 0)
 
         
 class SamplingSizeUnitTestCase(TestCase):
-    """sampling size unit testcase"""
+    """Sampling size unit testcase."""
 
     @classmethod
     def setUpTestData(cls):
-        """setup test data"""
+        """Setup test data."""
         cls.sampling_size_unit = SamplingSizeUnitFactory(unit='cm')
 
     def test_create_sampling_size_unit(self):
-        """test create sampling size unit"""
+        """Test create sampling size unit."""
         self.assertTrue(isinstance(self.sampling_size_unit, SamplingSizeUnit))
         self.assertEqual(SamplingSizeUnit.objects.count(), 1)
         self.assertEqual(self.sampling_size_unit.unit, 'cm')
 
     def test_update_sampling_size_unit(self):
-        """test update sampling size unit"""
+        """Test update sampling size unit."""
         self.sampling_size_unit.unit = 'mm'
         self.sampling_size_unit.save()
         self.assertEqual(SamplingSizeUnit.objects.get(id=1).unit, 'mm')
 
     def test_sampling_size_unit_unique_unit_constraint(self):
-        """testing unique values for the unti"""
+        """Testing unique values for the unit."""
         with self.assertRaises(Exception) as raised:
             SamplingSizeUnitFactory(unit='mm')
             self.assertEqual(raised.exception, IntegrityError)
 
     def test_delete_sampling_size_unit(self):
-        """test delete sampling size unit"""
+        """Test delete sampling size unit."""
         self.sampling_size_unit.delete()
         self.assertEqual(SamplingSizeUnit.objects.count(), 0)
