@@ -14,3 +14,17 @@ class SurveyMethod(models.Model):
         verbose_name = 'Survey method'
         verbose_name_plural = 'Survey methods'
         db_table = 'survey_method'
+
+
+class SamplingSizeUnit(models.Model):
+    """sampling size unit model"""
+
+    unit = models.CharField(max_length=4, unique=True)
+
+    def __str__(self):
+        return self.unit
+
+    class Meta:
+        verbose_name = 'Sampling size unit'
+        verbose_name_plural = 'Sampling size units'
+        db_table = 'sampling_size_unit'
