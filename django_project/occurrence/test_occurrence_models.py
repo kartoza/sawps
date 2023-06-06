@@ -1,11 +1,6 @@
 from django.test import TestCase
-<<<<<<< HEAD
-from occurrence.models import SurveyMethod, OccurrenceStatus
-from occurrence.factories import SurveyMethodFactory, OccurrenceStatusFactory
-=======
-from occurrence.models import SurveyMethod, BasisOfRecord, SamplingSizeUnit
-from occurrence.factories import SurveyMethodFactory, BasisOfRecordFactory, SamplingSizeUnitFactory
->>>>>>> main
+from occurrence.models import SurveyMethod, OccurrenceStatus, BasisOfRecord, SamplingSizeUnit 
+from occurrence.factories import SurveyMethodFactory, OccurrenceStatusFactory, BasisOfRecordFactory, SamplingSizeUnitFactory
 from django.db.utils import IntegrityError
 
 
