@@ -3,6 +3,7 @@ from occurrence.models import SurveyMethod, BasisOfRecord, SamplingSizeUnit, Occ
 
 
 class OrganismQuantityTypeFactory(factory.django.DjangoModelFactory):
+    """Organism quantity type factory. """
     class Meta:
         model = OrganismQuantityType
 

@@ -2,7 +2,7 @@ from django.db import models
 
 
 class OrganismQuantityType(models.Model):
-    """organism quantity type model"""
+    """Organism quantity type model."""
     class Meta:
         verbose_name = "organism_quantity_type"
         verbose_name_plural = "organism_quantity_type"
