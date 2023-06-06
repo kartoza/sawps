@@ -7,7 +7,7 @@ class Erf(models.Model):
 
     fid = models.AutoField(primary_key=True)
 
-    geom = models.GeometryField(
+    geom = models.MultiPolygonField(
         null=True,
         srid=3857
     )
@@ -34,7 +34,7 @@ class FarmPortion(models.Model):
 
     fid = models.AutoField(primary_key=True)
 
-    geom = models.GeometryField(
+    geom = models.MultiPolygonField(
         null=True,
         srid=3857
     )
@@ -61,7 +61,7 @@ class Holding(models.Model):
 
     fid = models.AutoField(primary_key=True)
 
-    geom = models.GeometryField(
+    geom = models.MultiPolygonField(
         null=True,
         srid=3857
     )
@@ -88,7 +88,7 @@ class ParentFarm(models.Model):
 
     fid = models.AutoField(primary_key=True)
 
-    geom = models.GeometryField(
+    geom = models.MultiPolygonField(
         null=True,
         srid=3857
     )
