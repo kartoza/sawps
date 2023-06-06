@@ -1,5 +1,5 @@
 import factory
-from occurrence.models import SurveyMethod, BasisOfRecord
+from occurrence.models import SurveyMethod, BasisOfRecord, SamplingSizeUnit
 
 
 class SurveyMethodFactory(factory.django.DjangoModelFactory):
@@ -20,3 +20,12 @@ class BasisOfRecordFactory(factory.django.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: 'basis of record {0}'.format(n))
     sort_id = factory.Sequence(lambda n: n)
+
+    
+class SamplingSizeUnitFactory(factory.django.DjangoModelFactory):
+    """sampling size unit factory"""
+
+    class Meta:
+        model = SamplingSizeUnit
+
+    unit = factory.Faker('random_choices', elements='cm')

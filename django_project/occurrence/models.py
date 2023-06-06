@@ -29,3 +29,17 @@ class BasisOfRecord(models.Model):
         verbose_name = 'Basis of record'
         verbose_name_plural = 'Basis of records'
         db_table = 'basis_of_record'
+
+        
+class SamplingSizeUnit(models.Model):
+    """sampling size unit model"""
+
+    unit = models.CharField(max_length=4, unique=True)
+
+    def __str__(self):
+        return self.unit
+
+    class Meta:
+        verbose_name = 'Sampling size unit'
+        verbose_name_plural = 'Sampling size units'
+        db_table = 'sampling_size_unit'
