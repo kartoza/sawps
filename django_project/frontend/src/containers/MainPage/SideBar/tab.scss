@@ -1,3 +1,15 @@
+.TabHeaders {
+    button:focus {
+        outline: unset;
+    }
+}
+
+.TabPanels {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
 .MuiTabs-root {
     .MuiTab-root {
         color: #70B276;

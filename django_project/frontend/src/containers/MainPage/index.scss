@@ -1,5 +1,3 @@
-@import './SideBar/tab.scss';
-
 .MainPage {
     position: relative;
     display: flex;
@@ -9,9 +7,6 @@
 
     .TabHeaders {
         padding-left: 5px;
-        button:focus {
-            outline: unset;
-        }
     }
 
     .Content {

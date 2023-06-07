@@ -39,17 +39,15 @@ function MainPage() {
                   </Tabs>
                </Box>
               </Grid>
-              <Grid item flex={1}>
-                <Box>
-                  <TabPanel key={0} value={selectedTab} index={0} noPadding>
-                    <Map />
-                  </TabPanel>
-                  <TabPanel key={1} value={selectedTab} index={1} noPadding>
-                      <Button onClick={() => {
-                        setShowRightSideBar(!showRightSideBar)
-                    }}>Open Right Side</Button>
-                  </TabPanel>
-                </Box>
+              <Grid item className="TabPanels">
+                <TabPanel key={0} value={selectedTab} index={0} noPadding>
+                  <Map />
+                </TabPanel>
+                <TabPanel key={1} value={selectedTab} index={1} noPadding>
+                    <Button onClick={() => {
+                      setShowRightSideBar(!showRightSideBar)
+                  }}>Open Right Side</Button>
+                </TabPanel>
               </Grid>
             </Grid>
           </Grid>

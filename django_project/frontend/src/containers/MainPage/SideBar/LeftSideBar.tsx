@@ -11,7 +11,7 @@ function LeftSideBar() {
 
     return (
         <Box className='LeftSideBar'>
-            <Box>
+            <Box className='TabHeaders'>
                 <Tabs value={selectedTabSideBar}
                     onChange={(event: React.SyntheticEvent, newValue: number) => {
                         setSelectedTabSideBar(newValue)
@@ -21,7 +21,7 @@ function LeftSideBar() {
                         <Tab key={1} label={'FILTERS'} {...a11yProps(1)} />
                 </Tabs>
             </Box>
-            <Box>
+            <Box className='TabPanels'>
                 <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
                     <Layers />
                 </TabPanel>
