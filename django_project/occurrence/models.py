@@ -1,6 +1,16 @@
 from django.db import models
 
 
+class OrganismQuantityType(models.Model):
+    """Organism quantity type model."""
+    name = models.CharField(max_length=255, unique=True)
+    sort_id = models.IntegerField(unique=True)
+    class Meta:
+        verbose_name = "organism_quantity_type"
+        verbose_name_plural = "organism_quantity_type"
+        db_table = "organism_quantity_type"
+
+
 class SurveyMethod(models.Model):
     """Survey method model."""
 
