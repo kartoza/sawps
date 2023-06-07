@@ -1,3 +1,4 @@
 images:
   - name: sawps
     dockerfile: deployment/docker/Dockerfile
+    buildPath: .
