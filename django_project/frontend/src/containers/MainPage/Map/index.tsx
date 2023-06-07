@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import maplibregl from 'maplibre-gl';
+import ReactDOM from "react-dom/client";
+import maplibregl, { IControl } from 'maplibre-gl';
 import './index.scss';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
@@ -50,10 +51,57 @@ class CustomNavControl extends maplibregl.NavigationControl {
 
 }
 
+function LegendPlaceholder(props: any) {
+  return (
+    <div className='legend-placeholder'>
+      <div className='legend-header'>
+        LEGEND
+      </div>
+      <div className='legend-item'>
+        Properties
+      </div>
+      <div className='legend-item'>
+        Rivers
+      </div>
+      <div className='legend-item'>
+        Roads
+      </div>
+      <div className='legend-item'>
+        Places
+      </div>
+    </div>
+  )
+}
+
+class LegendControl<IControl> {
+  _map: maplibregl.Map;
+  _container: HTMLElement;
+
+  constructor() {
+
+  }
+
+  onAdd(map: maplibregl.Map){
+    this._map = map;
+    this._container = document.createElement('div');
+    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group mapboxgl-ctrl mapboxgl-ctrl-group';
+    const divRoot = ReactDOM.createRoot(this._container)
+    divRoot.render(<LegendPlaceholder />);
+    return this._container;
+  }
+
+  onRemove() {
+      this._container.parentNode.removeChild(this._container)
+      this._map = undefined
+  }
+
+}
+
 
 export default function Map() {
     const mapContainer = useRef(null);
     const map = useRef(null);
+    const legendRef = useRef(null);
 
     useEffect(() => {
         if (map.current) return; //stops map from intializing more than once
@@ -66,6 +114,8 @@ export default function Map() {
           showCompass: true,
           showZoom: true
         }), 'bottom-left')
+        // legendRef.current = new LegendControl()
+        // map.current.addControl(legendRef.current, 'bottom-left')
     });
 
     return (
