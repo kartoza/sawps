@@ -30,7 +30,7 @@
       {
         "id": "background",
         "type": "background",
-        "minzoom": 0,
+        "minzoom": 5,
         "maxzoom": 24,
         "layout": {"visibility": "visible"},
         "paint": {
