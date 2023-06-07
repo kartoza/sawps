@@ -1,11 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIRequestFactory
-from frontend.tests.model_factories import ContextLayerF, UserF
+from frontend.tests.model_factories import UserF
 from frontend.api_views.map import (
-    ContextLayer
+    ContextLayerList,
+    MapStyles
 )
-from frontend.api_views.map import ContextLayerList
 
 
 class TestMapAPIViews(TestCase):
@@ -20,6 +20,15 @@ class TestMapAPIViews(TestCase):
         )
         request.user = self.user_1
         view = ContextLayerList.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+    
+    def test_get_map_styles(self):
+        request = self.factory.get(
+            reverse('map-style')
+        )
+        request.user = self.user_1
+        view = MapStyles.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
 

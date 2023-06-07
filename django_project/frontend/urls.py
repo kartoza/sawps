@@ -16,13 +16,26 @@ Including another URLconf
 from django.urls import path, re_path
 from .views.home import HomeView
 from .views.map import MapView
-from frontend.api_views.map import ContextLayerList
+from frontend.api_views.map import (
+    ContextLayerList,
+    MapStyles,
+    AerialTile
+)
 
 urlpatterns = [
     re_path(
-         r'api/map/context_layer/list/?$',
+         r'^api/map/context_layer/list/?$',
         ContextLayerList.as_view(),
         name='context-layer-list'),
+    re_path(
+         r'^api/map/styles/?$',
+        MapStyles.as_view(),
+        name='map-style'),
+    re_path(
+         r'^api/map/aerial/'
+         r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
+        AerialTile.as_view(),
+        name='aerial-map-tile'),
     path('map/', MapView.as_view(), name='map'),
     path('', HomeView.as_view(), name='home'),
 ]

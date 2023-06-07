@@ -12,14 +12,13 @@
       "sanbi": {
         "type": "vector",
         "tiles": ["http://localhost:9090/maps/sanbi/{z}/{x}/{y}.pbf"],
-        "minZoom": 5,
-        "maxZoom": 14,
+        "minzoom": 5,
         "maxzoom": 24
       },
       "NGI Aerial Imagery": {
         "type": "raster",
         "tiles": [
-          "http://aerial.openstreetmap.org.za/ngi-aerial/%7Bz%7D/%7Bx%7D/%7By%7D.jpg"
+          "http://aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg"
         ],
         "minzoom": 5,
         "maxzoom": 24
@@ -83,7 +82,7 @@
         "type": "raster",
         "source": "NGI Aerial Imagery",
         "minzoom": 10,
-        "layout": {"visibility": "none"}
+        "layout": {"visibility": "visible"}
       },
       {
         "id": "ecosystems_10",

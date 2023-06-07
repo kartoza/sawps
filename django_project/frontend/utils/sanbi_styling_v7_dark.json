@@ -12,8 +12,7 @@
       "sanbi": {
         "type": "vector",
         "tiles": ["http://localhost:9090/maps/sanbi/{z}/{x}/{y}.pbf"],
-        "minZoom": 5,
-        "maxZoom": 14,
+        "minzoom": 5,
         "maxzoom": 24
       },
       "NGI Aerial Imagery": {
@@ -80,7 +79,7 @@
         "type": "raster",
         "source": "NGI Aerial Imagery",
         "minzoom": 10,
-        "layout": {"visibility": "none"}
+        "layout": {"visibility": "visible"}
       },
       {
         "id": "ecosystems_10",
