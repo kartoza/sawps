@@ -43,3 +43,5 @@ services:
       - ./volumes/layer_tiles:/opt/layer_tiles
     ports:
       - "${TEGOLA_DEV_PORT:-9191}:9090"
+    links:
+      - db
