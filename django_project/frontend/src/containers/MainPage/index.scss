@@ -1,8 +1,20 @@
 .MainPage {
+    position: relative;
     display: flex;
     flex-direction: row;
     width: 100%;
     height: calc(100% - 82px);
+
+    .TabHeaders {
+        padding-left: 5px;
+        button:focus {
+            outline: unset;
+        }
+    }
+
+    .Content {
+        height: 100%;
+    }
 }
 
 .App {
