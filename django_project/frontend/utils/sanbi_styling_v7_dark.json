@@ -1,0 +1,1548 @@
+{
+    "version": 8,
+    "name": "sanbi",
+    "metadata": {
+      "maputnik:license": "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
+      "maputnik:renderer": "mbgljs",
+      "openmaptiles:version": "3.x"
+    },
+    "center": [25.86, -28.52],
+    "zoom": 5,
+    "sources": {
+      "sanbi": {
+        "type": "vector",
+        "tiles": ["http://localhost:9090/maps/sanbi/{z}/{x}/{y}.pbf"],
+        "minZoom": 5,
+        "maxZoom": 14,
+        "maxzoom": 24
+      },
+      "NGI Aerial Imagery": {
+        "type": "raster",
+        "tiles": [
+          "http://aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg"
+        ],
+        "minzoom": 5,
+        "maxzoom": 24
+      }
+    },
+    "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
+    "glyphs": "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key={{MAPTILER_API_KEY}}",
+    "layers": [
+      {
+        "id": "background",
+        "type": "background",
+        "minzoom": 0,
+        "maxzoom": 24,
+        "layout": {"visibility": "visible"},
+        "paint": {"background-color": "rgba(0, 0, 0, 1)", "background-opacity": 1}
+      },
+      {
+        "id": "zaf_boundary_small_scale",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "zaf_boundary_small_scale",
+        "minzoom": 5,
+        "maxzoom": 10,
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(40, 40, 41, 1)", "fill-opacity": 1}
+      },
+      {
+        "id": "zaf_boundary_small_scale_outline",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_boundary_small_scale",
+        "minzoom": 5,
+        "maxzoom": 10,
+        "layout": {"visibility": "visible"},
+        "paint": {"line-color": "rgba(60, 60, 60, 1)"}
+      },
+      {
+        "id": "zaf_boundary",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "zaf_boundary",
+        "minzoom": 10,
+        "maxzoom": 24,
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(40, 40, 41, 1)", "fill-opacity": 0.75}
+      },
+      {
+        "id": "zaf_boundary_outline",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_boundary",
+        "minzoom": 10,
+        "layout": {"visibility": "visible"},
+        "paint": {"line-color": "rgba(60, 60, 60, 1)", "line-width": 1}
+      },
+      {
+        "id": "NGI aerial imagery",
+        "type": "raster",
+        "source": "NGI Aerial Imagery",
+        "minzoom": 10,
+        "layout": {"visibility": "none"}
+      },
+      {
+        "id": "ecosystems_10",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Succulent Karoo"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(140, 130, 119, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_9",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Savanna"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(152, 143, 133, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_8",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Nama-Karoo"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(163, 155, 146, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_7",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Indian Ocean Coastal Belt"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(175, 168, 160, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Grassland"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(186, 180, 173, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Fynbos"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(198, 193, 187, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Forests"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(209, 205, 201, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Desert"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(221, 218, 214, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Azonal Vegetation"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(232, 230, 228, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "biome_18", "Albany Thicket"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(244, 243, 241, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_10",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Succulent Karoo"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(140, 130, 119, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_9",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Savanna"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(152, 143, 133, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_8",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Nama-Karoo"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(163, 155, 146, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_7",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Indian Ocean Coastal Belt"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(175, 168, 160, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Grassland"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(186, 180, 173, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Fynbos"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(198, 193, 187, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Forests"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(209, 205, 201, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Desert"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(221, 218, 214, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Azonal Vegetation"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(232, 230, 228, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_midscale_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "biome_18", "Albany Thicket"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(244, 243, 241, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_10",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Succulent Karoo"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(140, 130, 119, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_9",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Savanna"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(152, 143, 133, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_8",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Nama-Karoo"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(163, 155, 146, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_7",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Indian Ocean Coastal Belt"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(175, 168, 160, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Grassland"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(186, 180, 173, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Fynbos"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(198, 193, 187, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Forests"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(209, 205, 201, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Desert"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(221, 218, 214, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Azonal Vegetation"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(232, 230, 228, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "ecosystems_small_scale_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "ecosystems_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "biome_18", "Albany Thicket"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(244, 243, 241, 1)", "fill-opacity": 0.1}
+      },
+      {
+        "id": "pa_2022_9",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "World Heritage Site"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(224, 229, 228, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_8",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "Special Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(208, 217, 215, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_7",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "Protected Environment"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(193, 204, 201, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(177, 191, 188, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "National Park"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(161, 178, 175, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "Mountain Catchment Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(146, 165, 161, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "Marine Protected Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(130, 153, 148, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "Forest Wilderness Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(115, 140, 134, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "site_type", "Forest Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(99, 127, 121, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_9",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "World Heritage Site"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(224, 229, 228, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_8",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "Special Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(208, 217, 215, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_7",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "Protected Environment"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(193, 204, 201, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(177, 191, 188, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "National Park"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(161, 178, 175, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "Mountain Catchment Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(146, 165, 161, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "Marine Protected Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(130, 153, 148, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "Forest Wilderness Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(115, 140, 134, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_midscale_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "site_type", "Forest Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(99, 127, 121, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_9",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "World Heritage Site"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(224, 229, 228, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_8",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "Special Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(208, 217, 215, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_7",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "Protected Environment"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(193, 204, 201, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(177, 191, 188, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "National Park"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(161, 178, 175, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "Mountain Catchment Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(146, 165, 161, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "Marine Protected Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(130, 153, 148, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "Forest Wilderness Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(115, 140, 134, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "pa_2022_small_scale_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "protected_areas_2022_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "site_type", "Forest Nature Reserve"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(99, 127, 121, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(170, 170, 170, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(162, 157, 157, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(154, 143, 143, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 2"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(145, 130, 130, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 1"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(137, 116, 116, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(129, 103, 103, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_midscale_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-opacity": 0.15, "fill-color": "rgba(170, 170, 170, 1)"}
+      },
+      {
+        "id": "cba_2019_midscale_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-opacity": 0.15, "fill-color": "rgba(162, 157, 157, 1)"}
+      },
+      {
+        "id": "cba_2019_midscale_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-opacity": 0.15, "fill-color": "rgba(154, 143, 143, 1)"}
+      },
+      {
+        "id": "cba_2019_midscale_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 2"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-opacity": 0.15, "fill-color": "rgba(145, 130, 130, 1)"}
+      },
+      {
+        "id": "cba_2019_midscale_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 1"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-opacity": 0.15, "fill-color": "rgba(137, 116, 116, 1)"}
+      },
+      {
+        "id": "cba_2019_midscale_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-opacity": 0.15, "fill-color": "rgba(129, 103, 103, 1)"}
+      },
+      {
+        "id": "cba_2019_small_scale_6",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(170, 170, 170, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_small_scale_5",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(162, 157, 157, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_small_scale_4",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(154, 143, 143, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_small_scale_3",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "cba_2019_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 2"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(145, 130, 130, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_small_scale_2",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 1"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(137, 116, 116, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "cba_2019_small_scale_1",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "critical_biodiversity_areas_2019_small_scale",
+        "minzoom": 8,
+        "maxzoom": 10,
+        "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area"]],
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(129, 103, 103, 1)", "fill-opacity": 0.15}
+      },
+      {
+        "id": "public_places",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "zaf_public_places",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(55, 68, 57, 1)", "fill-opacity": 0.2}
+      },
+      {
+        "id": "public_places_midscale",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "zaf_public_places_midscale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(55, 68, 57, 1)", "fill-opacity": 0.2}
+      },
+      {
+        "id": "waterbodies_dws_dams_50k",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "dws_dams_50k",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
+      },
+      {
+        "id": "waterbodies_midscale_dws_dams_50k",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "midscale_dws_dams_50k",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
+      },
+      {
+        "id": "waterbodies_major_dws_dams_50k",
+        "type": "fill",
+        "source": "sanbi",
+        "source-layer": "major_dws_dams_50k",
+        "minzoom": 5,
+        "maxzoom": 10,
+        "layout": {"visibility": "visible"},
+        "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
+      },
+      {
+        "id": "rivers_all",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "rivers2018",
+        "minzoom": 12,
+        "maxzoom": 24,
+        "layout": {
+          "visibility": "visible",
+          "line-cap": "round",
+          "line-join": "round"
+        },
+        "paint": {
+          "line-color": "rgba(27, 88, 123, 1)",
+          "line-width": {"stops": [[12, 5], [20, 15]]}
+        }
+      },
+      {
+        "id": "rivers_major",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "major_rivers2018",
+        "minzoom": 5,
+        "maxzoom": 12,
+        "layout": {
+          "visibility": "visible",
+          "line-join": "round",
+          "line-cap": "round"
+        },
+        "paint": {
+          "line-color": "rgba(27, 88, 123, 1)",
+          "line-width": {"stops": [[5, 1], [12, 5]]}
+        }
+      },
+      {
+        "id": "roads_all_track",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["any", ["==", "highway", "track"]],
+        "layout": {
+          "visibility": "visible",
+          "line-join": "round",
+          "line-cap": "round"
+        },
+        "paint": {
+          "line-color": "rgba(151, 151, 151, 1)",
+          "line-opacity": 1,
+          "line-width": {"stops": [[14, 1], [22, 5]]},
+          "line-dasharray": [1.5, 1.5]
+        }
+      },
+      {
+        "id": "roads_all_roads_etc",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "road"],
+          ["==", "highway", "residential"],
+          ["==", "highway", "living_street"],
+          ["==", "highway", "service"],
+          ["==", "highway", "unclassified"]
+        ],
+        "layout": {
+          "visibility": "visible",
+          "line-join": "round",
+          "line-cap": "round"
+        },
+        "paint": {
+          "line-color": "rgba(133, 133, 133, 1)",
+          "line-width": {"stops": [[14, 1.5], [20, 8]]},
+          "line-opacity": 1
+        }
+      },
+      {
+        "id": "roads_all_tertiary",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "tertiary"],
+          ["==", "highway", "tertiary_link"]
+        ],
+        "layout": {"line-join": "round", "line-cap": "round"},
+        "paint": {
+          "line-color": "rgba(116, 116, 116, 1)",
+          "line-width": {"stops": [[14, 1.5], [20, 12]]}
+        }
+      },
+      {
+        "id": "roads_all_secondary",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "secondary"],
+          ["==", "highway", "secondary_link"]
+        ],
+        "layout": {"line-join": "round", "line-cap": "round"},
+        "paint": {
+          "line-color": "rgba(116, 116, 116, 1)",
+          "line-width": {"stops": [[14, 1.5], [20, 15]]}
+        }
+      },
+      {
+        "id": "roads_all_primary_casing",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "primary"],
+          ["==", "highway", "primary_link"]
+        ],
+        "layout": {
+          "line-cap": "butt",
+          "line-join": "round",
+          "visibility": "visible"
+        },
+        "paint": {
+          "line-color": "rgba(116, 116, 116, 1)",
+          "line-width": {"stops": [[14, 2], [20, 20]]}
+        }
+      },
+      {
+        "id": "roads_all_primary_inner",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "primary"],
+          ["==", "highway", "primary_link"]
+        ],
+        "layout": {
+          "line-join": "round",
+          "line-cap": "round",
+          "visibility": "visible"
+        },
+        "paint": {
+          "line-color": "rgba(98, 98, 98, 1)",
+          "line-width": {"stops": [[14, 2], [20, 15]]}
+        }
+      },
+      {
+        "id": "roads_all_trunk_casing",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "trunk"],
+          ["==", "highway", "trunk_link"]
+        ],
+        "layout": {"line-cap": "butt", "line-join": "round"},
+        "paint": {
+          "line-color": "rgba(116, 116, 116, 1)",
+          "line-width": {"stops": [[14, 2], [20, 20]]}
+        }
+      },
+      {
+        "id": "roads_all_trunk_inner",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "trunk"],
+          ["==", "highway", "trunk_link"]
+        ],
+        "layout": {
+          "visibility": "visible",
+          "line-cap": "round",
+          "line-join": "round"
+        },
+        "paint": {
+          "line-color": "rgba(98, 98, 98, 1)",
+          "line-width": {"stops": [[14, 2], [20, 15]]}
+        }
+      },
+      {
+        "id": "roads_all_mway_hway_case",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "motorway"],
+          ["==", "highway", "highway"],
+          ["==", "highway", "motorway_link"],
+          ["==", "highway", "highway_link"]
+        ],
+        "layout": {"line-cap": "butt", "line-join": "round"},
+        "paint": {
+          "line-color": "rgba(98, 98, 98, 1)",
+          "line-width": {"stops": [[14, 5], [20, 30]]}
+        }
+      },
+      {
+        "id": "roads_all_mway_hway_inner",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": [
+          "any",
+          ["==", "highway", "motorway"],
+          ["==", "highway", "highway"],
+          ["==", "highway", "motorway_link"],
+          ["==", "highway", "highway_link"]
+        ],
+        "layout": {"line-join": "round", "line-cap": "round"},
+        "paint": {
+          "line-color": "rgba(0, 0, 0, 1)",
+          "line-width": {"stops": [[14, 4], [20, 20]]}
+        }
+      },
+      {
+        "id": "roads_midscale_primary_ca",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "midscale_zaf_roads",
+        "minzoom": 12,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "highway", "primary"]],
+        "layout": {"visibility": "visible"},
+        "paint": {
+          "line-color": "rgba(116, 116, 116, 1)",
+          "line-width": {"stops": [[12, 2], [14, 3]]}
+        }
+      },
+      {
+        "id": "roads_midscale_primary_inner",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "midscale_zaf_roads",
+        "minzoom": 12,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "highway", "primary"]],
+        "layout": {"visibility": "visible"},
+        "paint": {
+          "line-color": "rgba(98, 98, 98, 1)",
+          "line-width": {"stops": [[12, 1], [14, 2]]}
+        }
+      },
+      {
+        "id": "roads_midscale_trunk_casing",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "midscale_zaf_roads",
+        "minzoom": 12,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "highway", "trunk"]],
+        "layout": {"visibility": "visible"},
+        "paint": {
+          "line-color": "rgba(116, 116, 116, 1)",
+          "line-width": {"stops": [[12, 2], [14, 3]]}
+        }
+      },
+      {
+        "id": "roads_midscale_trunk_inner",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "midscale_zaf_roads",
+        "minzoom": 12,
+        "maxzoom": 14,
+        "filter": ["all", ["==", "highway", "trunk"]],
+        "layout": {"visibility": "visible"},
+        "paint": {
+          "line-color": "rgba(98, 98, 98, 1)",
+          "line-width": {"stops": [[12, 1], [14, 2]]}
+        }
+      },
+      {
+        "id": "roads_midscale_mway_hway_casing",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "midscale_zaf_roads",
+        "minzoom": 12,
+        "maxzoom": 14,
+        "filter": [
+          "any",
+          ["==", "highway", "highway"],
+          ["==", "highway", "motorway"]
+        ],
+        "layout": {
+          "visibility": "visible",
+          "line-cap": "butt",
+          "line-join": "miter"
+        },
+        "paint": {
+          "line-color": "rgba(98, 98, 98, 1)",
+          "line-width": {"stops": [[12, 4], [14, 5]]}
+        }
+      },
+      {
+        "id": "roads_midscale_mway_hway_inner",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "midscale_zaf_roads",
+        "minzoom": 12,
+        "maxzoom": 14,
+        "filter": [
+          "any",
+          ["==", "highway", "highway"],
+          ["==", "highway", "motorway"]
+        ],
+        "layout": {
+          "visibility": "visible",
+          "line-cap": "round",
+          "line-join": "round"
+        },
+        "paint": {
+          "line-color": "rgba(0, 0, 0, 1)",
+          "line-width": {"stops": [[12, 3], [14, 4]]}
+        }
+      },
+      {
+        "id": "roads_highways_casing",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_highways",
+        "minzoom": 5,
+        "maxzoom": 12,
+        "layout": {"visibility": "visible", "line-join": "miter"},
+        "paint": {
+          "line-color": "rgba(98, 98, 98, 1)",
+          "line-width": {"stops": [[5, 2], [12, 4]]}
+        }
+      },
+      {
+        "id": "roads_highways_inner",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_highways",
+        "minzoom": 5,
+        "maxzoom": 12,
+        "layout": {
+          "visibility": "visible",
+          "line-join": "round",
+          "line-cap": "round"
+        },
+        "paint": {
+          "line-color": "rgba(0, 0, 0, 1)",
+          "line-width": {"stops": [[9, 0], [10, 1.5], [12, 3]]}
+        }
+      },
+      {
+        "id": "provinces_small_scale",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "zaf_provinces_small_scale",
+        "minzoom": 5,
+        "maxzoom": 8,
+        "layout": {"visibility": "visible"},
+        "paint": {
+          "line-opacity": 1,
+          "line-width": 1,
+          "line-color": "rgba(153, 153, 153, 1)"
+        }
+      },
+      {
+        "id": "erf",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "erf",
+        "minzoom": 14,
+        "layout": {"visibility": "visible", "line-join": "bevel"},
+        "paint": {
+          "line-color": "rgba(185, 185, 185, 1)",
+          "line-width": {"stops": [[14, 0.5], [20, 3]]},
+          "line-opacity": 1
+        }
+      },
+      {
+        "id": "holding",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "holding",
+        "minzoom": 12,
+        "layout": {"visibility": "visible", "line-join": "bevel"},
+        "paint": {
+          "line-color": "rgba(185, 185, 185, 1)",
+          "line-width": {"stops": [[12, 1], [20, 5]]},
+          "line-opacity": 1
+        }
+      },
+      {
+        "id": "farm_portion",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "farm_portion",
+        "minzoom": 12,
+        "layout": {"visibility": "visible", "line-join": "bevel"},
+        "paint": {
+          "line-color": "rgba(185, 185, 185, 1)",
+          "line-width": {"stops": [[12, 1], [20, 5]]},
+          "line-opacity": 1
+        }
+      },
+      {
+        "id": "parent_farm",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": "parent_farm",
+        "minzoom": 10,
+        "layout": {
+          "visibility": "visible",
+          "line-join": "bevel",
+          "line-cap": "butt"
+        },
+        "paint": {
+          "line-color": "rgba(185, 185, 185, 1)",
+          "line-width": {"stops": [[10, 1.5], [20, 7]]},
+          "line-opacity": 1
+        }
+      },
+      {
+        "id": "label_zaf_roads",
+        "type": "symbol",
+        "source": "sanbi",
+        "source-layer": "zaf_roads",
+        "minzoom": 14,
+        "maxzoom": 24,
+        "filter": ["all", ["!=", "name", "none"]],
+        "layout": {
+          "text-field": "{name}",
+          "visibility": "visible",
+          "symbol-placement": "line",
+          "text-size": 10,
+          "text-font": ["Open Sans Regular"],
+          "text-padding": 10,
+          "icon-padding": 2
+        },
+        "paint": {
+          "text-halo-color": "rgba(45, 45, 45, 1)",
+          "text-color": "rgba(255, 255, 255, 1)",
+          "text-halo-width": 1
+        }
+      },
+      {
+        "id": "label_midscale_zaf_roads",
+        "type": "symbol",
+        "source": "sanbi",
+        "source-layer": "midscale_zaf_roads",
+        "minzoom": 12,
+        "maxzoom": 14,
+        "filter": ["all", ["!=", "name", "none"]],
+        "layout": {
+          "text-field": "{name}",
+          "visibility": "visible",
+          "symbol-placement": "line",
+          "text-size": 10,
+          "text-font": ["Open Sans Regular"],
+          "text-padding": 24
+        },
+        "paint": {
+          "text-halo-color": "rgba(45, 45, 45, 1)",
+          "text-color": "rgba(255, 255, 255, 1)",
+          "text-halo-width": 0.5
+        }
+      },
+      {
+        "id": "label_zaf_highways",
+        "type": "symbol",
+        "source": "sanbi",
+        "source-layer": "zaf_highways",
+        "minzoom": 5,
+        "maxzoom": 12,
+        "filter": ["all", ["!=", "lname", "none"]],
+        "layout": {
+          "text-field": "{lname}",
+          "visibility": "visible",
+          "symbol-placement": "line",
+          "text-size": 10,
+          "text-font": ["Open Sans Regular"],
+          "text-padding": 24
+        },
+        "paint": {
+          "text-halo-color": "rgba(45, 45, 45, 1)",
+          "text-color": "rgba(255, 255, 255, 1)",
+          "text-halo-width": 0.5
+        }
+      },
+      {
+        "id": "label_place_name_smallest_scale",
+        "type": "symbol",
+        "source": "sanbi",
+        "source-layer": "place_name_smallest_scale",
+        "minzoom": 5,
+        "maxzoom": 7,
+        "layout": {
+          "text-field": "{name}",
+          "visibility": "visible",
+          "symbol-placement": "point",
+          "text-size": 18,
+          "text-font": ["Open Sans Regular", "Amatic SC Bold"]
+        },
+        "paint": {
+          "text-halo-color": "rgba(0, 0, 0, 1)",
+          "text-color": "rgba(255, 255, 255, 1)",
+          "text-halo-width": 2
+        }
+      },
+      {
+        "id": "label_place_name_midscale",
+        "type": "symbol",
+        "source": "sanbi",
+        "source-layer": "place_name_midscale",
+        "minzoom": 7,
+        "maxzoom": 10,
+        "layout": {
+          "text-field": "{name}",
+          "visibility": "visible",
+          "symbol-placement": "point",
+          "text-size": 18,
+          "text-font": ["Open Sans Regular"]
+        },
+        "paint": {
+          "text-color": "rgba(255, 255, 255, 1)",
+          "text-halo-color": "rgba(0, 0, 0, 1)",
+          "text-halo-width": 2
+        }
+      },
+      {
+        "id": "label_place_name_larger_scale",
+        "type": "symbol",
+        "source": "sanbi",
+        "source-layer": "place_name_larger_scale",
+        "minzoom": 10,
+        "maxzoom": 14,
+        "layout": {
+          "text-field": "{name}",
+          "visibility": "visible",
+          "symbol-placement": "point",
+          "text-size": 18,
+          "text-font": ["Open Sans Regular"]
+        },
+        "paint": {
+          "text-color": "rgba(255, 255, 255, 1)",
+          "text-halo-color": "rgba(0, 0, 0, 1)",
+          "text-halo-width": 2
+        }
+      },
+      {
+        "id": "label_place_name_largest_scale",
+        "type": "symbol",
+        "source": "sanbi",
+        "source-layer": "place_name_largest_scale",
+        "minzoom": 14,
+        "layout": {
+          "text-field": "{name}",
+          "visibility": "visible",
+          "symbol-placement": "point",
+          "text-size": 18,
+          "text-font": ["Open Sans Regular"]
+        },
+        "paint": {
+          "text-halo-width": 2,
+          "text-halo-color": "rgba(0, 0, 0, 1)",
+          "text-color": "rgba(255, 255, 255, 1)"
+        }
+      }
+    ],
+    "id": "osm-liberty"
+  }

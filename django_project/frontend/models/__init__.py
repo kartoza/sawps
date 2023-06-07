@@ -1,3 +1,3 @@
 """Frontend models."""
-from ..models.context_layer import *  # noqa
-from ..models.parcels import *  # noqa
+from frontend.models.context_layer import *  # noqa
+from frontend.models.parcels import *  # noqa

@@ -13,11 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
+from django.urls import path, re_path
 from .views.home import HomeView
 from .views.map import MapView
+from frontend.api_views.map import ContextLayerList
 
 urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
+    re_path(
+         r'api/map/context_layer/list/?$',
+        ContextLayerList.as_view(),
+        name='context-layer-list'),
     path('map/', MapView.as_view(), name='map'),
+    path('', HomeView.as_view(), name='home'),
 ]
