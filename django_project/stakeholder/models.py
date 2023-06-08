@@ -21,7 +21,7 @@ class LoginStatus(models.Model):
     class Meta:
         verbose_name = 'Login status'
         verbose_name_plural = 'Login status'
-        db_table = "login_status"
+        db_table = 'login_status'
 
 
 class UserTitle(models.Model):
@@ -35,4 +35,4 @@ class UserTitle(models.Model):
     class Meta:
         verbose_name = 'title'
         verbose_name_plural = 'titles'
-        db_table = "user_title"
+        db_table = 'user_title'

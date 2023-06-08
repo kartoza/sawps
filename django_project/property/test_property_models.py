@@ -13,9 +13,7 @@ class PropertyTypeTest(TestCase):
 
     def test_create_property_type(self):
         """test creating a new property type"""
-        self.assertTrue(
-            isinstance(self.property_type, PropertyType)
-        )
+        self.assertTrue(isinstance(self.property_type, PropertyType))
         self.assertEqual(PropertyType.objects.count(), 1)
         self.assertEqual(self.property_type.name, 'PropertyType 0')
 
@@ -57,9 +55,7 @@ class ProvinceTestCase(TestCase):
         'test update a province'
         self.province.name = 'Province 1'
         self.province.save()
-        self.assertEqual(
-            Province.objects.get(id=1).name, 'Province 1'
-        )
+        self.assertEqual(Province.objects.get(id=1).name, 'Province 1')
 
     def test_unique_province_name_constraint(self):
         'test unique province name constraint'

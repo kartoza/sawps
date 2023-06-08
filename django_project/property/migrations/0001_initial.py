@@ -10,43 +10,43 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="PropertyType",
+            name='PropertyType',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=250, unique=True)),
+                ('name', models.CharField(max_length=250, unique=True)),
             ],
             options={
-                "verbose_name": "Property type",
-                "verbose_name_plural": "Property types",
-                "db_table": "property_type",
+                'verbose_name': 'Property type',
+                'verbose_name_plural': 'Property types',
+                'db_table': 'property_type',
             },
         ),
         migrations.CreateModel(
-            name="Province",
+            name='Province',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=100)),
+                ('name', models.CharField(max_length=100)),
             ],
             options={
-                "verbose_name": "Province",
-                "verbose_name_plural": "Provinces",
-                "db_table": "province",
+                'verbose_name': 'Province',
+                'verbose_name_plural': 'Provinces',
+                'db_table': 'province',
             },
         ),
     ]

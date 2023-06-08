@@ -1,13 +1,20 @@
 import factory
-from occurrence.models import SurveyMethod, BasisOfRecord, SamplingSizeUnit, OccurrenceStatus, OrganismQuantityType
+from occurrence.models import (
+    SurveyMethod,
+    BasisOfRecord,
+    SamplingSizeUnit,
+    OccurrenceStatus,
+    OrganismQuantityType,
+)
 
 
 class OrganismQuantityTypeFactory(factory.django.DjangoModelFactory):
-    """Organism quantity type factory. """
+    """Organism quantity type factory."""
+
     class Meta:
         model = OrganismQuantityType
 
-    name = factory.Sequence(lambda n: "organism_quantity_type_%d" % n)
+    name = factory.Sequence(lambda n: 'organism_quantity_type_%d' % n)
     sort_id = factory.Sequence(lambda n: n)
 
 
@@ -29,7 +36,7 @@ class OccurrenceStatusFactory(factory.django.DjangoModelFactory):
 
     name = factory.Sequence(lambda n: 'occurrence status {0}'.format(n))
 
-    
+
 class BasisOfRecordFactory(factory.django.DjangoModelFactory):
     """Basis of record factory."""
 
@@ -39,7 +46,7 @@ class BasisOfRecordFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'basis of record {0}'.format(n))
     sort_id = factory.Sequence(lambda n: n)
 
-    
+
 class SamplingSizeUnitFactory(factory.django.DjangoModelFactory):
     """Sampling size unit factory."""
 

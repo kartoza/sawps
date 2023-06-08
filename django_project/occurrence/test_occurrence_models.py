@@ -1,7 +1,20 @@
 from django.test import TestCase
-from occurrence.models import OrganismQuantityType, SurveyMethod, OccurrenceStatus, BasisOfRecord, SamplingSizeUnit
-from occurrence.factories import OrganismQuantityTypeFactory, SurveyMethodFactory
-from occurrence.factories import OccurrenceStatusFactory, BasisOfRecordFactory, SamplingSizeUnitFactory
+from occurrence.models import (
+    OrganismQuantityType,
+    SurveyMethod,
+    OccurrenceStatus,
+    BasisOfRecord,
+    SamplingSizeUnit,
+)
+from occurrence.factories import (
+    OrganismQuantityTypeFactory,
+    SurveyMethodFactory,
+)
+from occurrence.factories import (
+    OccurrenceStatusFactory,
+    BasisOfRecordFactory,
+    SamplingSizeUnitFactory,
+)
 from django.db.utils import IntegrityError
 
 
@@ -17,21 +30,21 @@ class OrganismQuantityTypeTestCase(TestCase):
         """Test create organism quantity type."""
         self.assertTrue(isinstance(self.quantityType, OrganismQuantityType))
         self.assertEqual(OrganismQuantityType.objects.count(), 1)
-        self.assertEqual(self.quantityType.name, "organism_quantity_type_0")
+        self.assertEqual(self.quantityType.name, 'organism_quantity_type_0')
 
     def test_update_quantity_type(self):
         """Test update quantity type."""
-        self.quantityType.name = "organism_quantity_type_1"
+        self.quantityType.name = 'organism_quantity_type_1'
         self.quantityType.save()
         self.assertEqual(
             OrganismQuantityType.objects.get(id=1).name,
-            "organism_quantity_type_1",
+            'organism_quantity_type_1',
         )
 
     def test_quantity_type_unique_name(self):
         """Test unique names of quantity types."""
         with self.assertRaises(Exception) as raised:
-            OrganismQuantityTypeFactory(name="organism_quantity_type_1")
+            OrganismQuantityTypeFactory(name='organism_quantity_type_1')
             self.assertEqual(raised.exception, IntegrityError)
 
     def test_quantity_type_unique_sort_id(self):
@@ -56,9 +69,7 @@ class SurveyMethodTestCase(TestCase):
 
     def test_create_survey_method(self):
         """Test create survey method."""
-        self.assertTrue(
-            isinstance(self.survey_method, SurveyMethod)
-        )
+        self.assertTrue(isinstance(self.survey_method, SurveyMethod))
         self.assertEqual(SurveyMethod.objects.count(), 1)
         self.assertEqual(self.survey_method.name, 'survey method 0')
 
@@ -121,7 +132,7 @@ class OccurrenceStatusTestCase(TestCase):
         self.occurrence_status.delete()
         self.assertEqual(OccurrenceStatus.objects.count(), 0)
 
-        
+
 class BasisOfRecordTestCase(TestCase):
     """Basis of record testcase."""
 
@@ -161,7 +172,7 @@ class BasisOfRecordTestCase(TestCase):
         self.basis_of_record.delete()
         self.assertEqual(BasisOfRecord.objects.count(), 0)
 
-        
+
 class SamplingSizeUnitTestCase(TestCase):
     """Sampling size unit testcase."""
 

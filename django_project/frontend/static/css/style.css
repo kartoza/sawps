@@ -1,3 +1,4 @@
+
 .btn-primary {
     --bs-btn-color: #fff;
     --bs-btn-bg: #FAA755;
@@ -73,7 +74,7 @@
   border-radius: 4px;
   float: right;
   margin-left: auto;
-  margin-top: 0;
+  margin-top: -35px;
 }
 
 .custom-form-container{
@@ -102,14 +103,23 @@
   position: relative;
 }
 
-.account-form{
-  min-height: 300px;
-}
 
-.swaps-primary-text{
+.swaps-text-primary{
   color: #70B276;
 }
 
 hr.separator{
   border-top: 1px solid #70B276;
+}
+
+.swaps-text-primary, a {
+  color: #86BC8B;
+}
+
+a:hover{
+  color: #70B276;
+}
+
+.upload-picture{
+  cursor: pointer;
 }

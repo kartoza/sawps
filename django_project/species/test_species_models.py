@@ -1,4 +1,3 @@
-
 from django.test import TestCase
 from species.models import TaxonRank
 from species.factories import TaxonRankFactory

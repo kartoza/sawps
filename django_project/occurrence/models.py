@@ -3,12 +3,14 @@ from django.db import models
 
 class OrganismQuantityType(models.Model):
     """Organism quantity type model."""
+
     name = models.CharField(max_length=255, unique=True)
     sort_id = models.IntegerField(unique=True)
+
     class Meta:
-        verbose_name = "organism_quantity_type"
-        verbose_name_plural = "organism_quantity_type"
-        db_table = "organism_quantity_type"
+        verbose_name = 'organism_quantity_type'
+        verbose_name_plural = 'organism_quantity_type'
+        db_table = 'organism_quantity_type'
 
 
 class SurveyMethod(models.Model):
@@ -35,7 +37,7 @@ class OccurrenceStatus(models.Model):
         verbose_name = 'Occurrence status'
         verbose_name_plural = 'Occurrence statuses'
         db_table = 'occurrence_status'
-    
+
 
 class BasisOfRecord(models.Model):
     """Basis of record model."""
@@ -51,7 +53,7 @@ class BasisOfRecord(models.Model):
         verbose_name_plural = 'Basis of records'
         db_table = 'basis_of_record'
 
-        
+
 class SamplingSizeUnit(models.Model):
     """Sampling size unit model."""
 

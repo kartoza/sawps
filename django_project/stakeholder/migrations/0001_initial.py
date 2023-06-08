@@ -10,64 +10,64 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="LoginStatus",
+            name='LoginStatus',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=20, unique=True)),
+                ('name', models.CharField(max_length=20, unique=True)),
             ],
             options={
-                "verbose_name": "Login status",
-                "verbose_name_plural": "Login status",
-                "db_table": "login_status",
+                'verbose_name': 'Login status',
+                'verbose_name_plural': 'Login status',
+                'db_table': 'login_status',
             },
         ),
         migrations.CreateModel(
-            name="UserRoleType",
+            name='UserRoleType',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=50, unique=True)),
-                ("description", models.TextField()),
+                ('name', models.CharField(max_length=50, unique=True)),
+                ('description', models.TextField()),
             ],
             options={
-                "verbose_name": "User role",
-                "verbose_name_plural": "User roles",
-                "db_table": "user_role",
+                'verbose_name': 'User role',
+                'verbose_name_plural': 'User roles',
+                'db_table': 'user_role',
             },
         ),
         migrations.CreateModel(
-            name="UserTitle",
+            name='UserTitle',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=10, unique=True)),
+                ('name', models.CharField(max_length=10, unique=True)),
             ],
             options={
-                "verbose_name": "title",
-                "verbose_name_plural": "titles",
-                "db_table": "user_title",
+                'verbose_name': 'title',
+                'verbose_name_plural': 'titles',
+                'db_table': 'user_title',
             },
         ),
     ]

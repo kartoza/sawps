@@ -3,6 +3,7 @@
 
 import os
 from .utils import absolute_path, ensure_secret_key_file
+
 ensure_secret_key_file()
 
 # Local time zone for this installation. Choices can be found here:
@@ -71,10 +72,9 @@ MIDDLEWARE = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    #2fa
+    # 2fa
     'django_otp.middleware.OTPMiddleware',
     'allauth_2fa.middleware.AllauthTwoFactorMiddleware',
-
 )
 
 ROOT_URLCONF = 'core.urls'
@@ -150,7 +150,7 @@ CACHES = {
         'LOCATION': (
             f'redis://default:{os.environ.get("REDIS_PASSWORD", "")}'
             f'@{os.environ.get("REDIS_HOST", "")}',
-        )
+        ),
     }
 }
 

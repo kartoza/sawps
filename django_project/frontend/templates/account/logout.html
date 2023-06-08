@@ -5,10 +5,10 @@
 
 
 {% block content %}
-<section class="account-action text-white ">
+<section class="account-action text-white" style="background-color: #000000;">
     <div class="container position-relative">
         <div class="row">
-            <div class="col-xl-6 account-form">
+            <div class="col-xl-3 swaps-primary account-form">
             <div class="content">
 
             {% csrf_token %}
@@ -16,14 +16,15 @@
 
                 <div class="custom-form-container">
 
-                    <h3 class="account-form-title">{% trans "LOG OUT" %}</h3>
+                    <h4 class="account-form-title">{% trans "Log out" %}</h4>
+                    <hr class="separator">
 
                     <p style="font-size:12pt">{% trans 'Are you sure you want to log out?' %}</p>
                     <form class="logout" method="POST" action="{% url 'account_logout' %}">{% csrf_token %}
                         {% if redirect_field_value %}
                             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                         {% endif %}
-                        <button class="login swaps-from-submit account-button" type="submit">{% trans "LOG OUT" %}</button>
+                        <button class="swaps-from-submit account-button" type="submit">{% trans "LOG OUT" %}</button>
                     </form>
 
                 </div>
