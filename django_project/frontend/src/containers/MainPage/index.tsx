@@ -5,15 +5,36 @@ import { store } from '../../app/store';
 import './index.scss';
 import reportWebVitals from '../../reportWebVitals';
 import MainPage from '../MainPage/MainPage';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ErrorBoundary from "../../components/ErrorBoundary";
 
 
 const rootElement = document.getElementById('app')!
 const root = createRoot(rootElement);
+// to override MUI buttons theme
+const { palette } = createTheme();
+const { augmentColor } = palette;
+const createColor = (mainColor: any) => augmentColor({
+    color: {
+        main: mainColor,
+        contrastText: '#fff'
+    }
+});
+const theme_override = createTheme({
+    typography: {
+        fontFamily: '"Poppins", sans-serif',
+    },
+  palette: {
+    primary: createColor('#70B276')
+  },
+});
+
 root.render(
     <Provider store={store}>
         <ErrorBoundary>
-            <MainPage/>
+            <ThemeProvider theme={theme_override}>
+                <MainPage/>
+            </ThemeProvider>
         </ErrorBoundary>
     </Provider>
 );

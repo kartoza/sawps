@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import maplibregl, { IControl } from 'maplibre-gl';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { setMapReady } from '../../../reducers/MapStatus';
+import { setMapReady } from '../../../reducers/MapState';
 import ContextLayerInterface from '../../../models/ContextLayer';
 import './index.scss';
 
@@ -109,10 +109,38 @@ const checkLayerVisibility = (source_layer: string, contextLayers: ContextLayerI
   return true
 }
 
+const renderHighlightParcelLayers = (map: maplibregl.Map, layer_names: string[]) => {
+  for (let _idx = 0; _idx < layer_names.length; ++_idx) {
+    let _layer_name = `${layer_names[_idx]}-highlight`
+      map.addLayer({
+        'id': _layer_name,
+        'type': 'fill',
+        'source': 'sanbi',
+        'source-layer': `${layer_names[_idx]}`,
+        'layout': {},
+        'paint': {
+          'fill-color': '#F9A95D',
+          'fill-opacity': 0.7
+        }
+      });
+  }
+}
+
+const removeHighlightParcelLayers = (map: maplibregl.Map, layer_names: string[]) => {
+  for (let _idx = 0; _idx < layer_names.length; ++_idx) {
+    let _layer_name = `${layer_names[_idx]}-highlight`
+    let _layer = map.getLayer(_layer_name)
+    if (typeof _layer !== 'undefined') {
+      map.removeLayer(_layer_name)
+    }
+  }
+}
+
 export default function Map() {
   const dispatch = useAppDispatch()
   const contextLayers = useAppSelector((state: RootState) => state.layerFilter.contextLayers)
-  const isMapReady = useAppSelector((state: RootState) => state.mapStatus.isMapReady)
+  const isMapReady = useAppSelector((state: RootState) => state.mapState.isMapReady)
+  const selectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
   const mapContainer = useRef(null);
   const map = useRef(null);
   const legendRef = useRef(null);
@@ -130,6 +158,21 @@ export default function Map() {
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
     }
   }, [contextLayers, isMapReady])
+
+  useEffect(() => {
+    if (!isMapReady) return;
+    if (contextLayers.length === 0) return;
+    if (!map.current) return;
+    if (selectionMode === 'parcel') {
+      let _parcelLayer = contextLayers.find((element) => element.name.toLowerCase() === 'cadastral boundaries')
+      if (typeof _parcelLayer === 'undefined') return;
+      renderHighlightParcelLayers(map.current, _parcelLayer.layer_names)
+    } else {
+      let _parcelLayer = contextLayers.find((element) => element.name.toLowerCase() === 'cadastral boundaries')
+      if (typeof _parcelLayer === 'undefined') return;
+      removeHighlightParcelLayers(map.current, _parcelLayer.layer_names)
+    }
+  }, [selectionMode])
 
   useEffect(() => {
       if (map.current) return; //stops map from intializing more than once
