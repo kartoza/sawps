@@ -1,8 +1,8 @@
 from django.test import TestCase
-from property.models import PropertyType, Province, OwnershipStatus
-from property.factories import PropertyTypeFactory, ProvinceFactory, OwnershipStatusFactory
+from property.models import PropertyType, Province, OwnershipStatus, Property
+from property.factories import PropertyTypeFactory, ProvinceFactory, OwnershipStatusFactory, PropertyFactory
 from django.db.utils import IntegrityError
-
+from django.db.models import CheckConstraint
 
 class PropertyTypeTest(TestCase):
     """Propert type test case"""
@@ -17,14 +17,14 @@ class PropertyTypeTest(TestCase):
             isinstance(self.property_type, PropertyType)
         )
         self.assertEqual(PropertyType.objects.count(), 1)
-        self.assertEqual(self.property_type.name, 'PropertyType 0')
+        self.assertEqual(self.property_type.name, 'PropertyType 1')
 
     def test_update_property_type(self):
         """Test updating a property type"""
         self.property_type.name = 'PropertyType 2'
         self.property_type.save()
         self.assertEqual(
-            PropertyType.objects.get(id=1).name,
+            PropertyType.objects.all()[0].name,
             'PropertyType 2',
         )
 
@@ -51,20 +51,20 @@ class ProvinceTestCase(TestCase):
         'Test create a province.'
         self.assertTrue(isinstance(self.province, Province))
         self.assertEqual(Province.objects.count(), 1)
-        self.assertEqual(self.province.name, 'Province 0')
+        self.assertEqual(self.province.name, 'Province 1')
 
     def test_update_province(self):
         'Test update a province.'
-        self.province.name = 'Province 1'
+        self.province.name = 'Province 2'
         self.province.save()
         self.assertEqual(
-            Province.objects.get(id=1).name, 'Province 1'
+            Province.objects.all()[0].name, 'Province 2'
         )
 
     def test_unique_province_name_constraint(self):
         'Test unique province name constraint.'
         with self.assertRaises(Exception) as raised:
-            ProvinceFactory(name='Province 0')
+            ProvinceFactory(name='Province 2')
             self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_province(self):
@@ -101,3 +101,34 @@ class OwnershipStatusTestCase(TestCase):
         """Test delete ownership status."""
         self.ownership_status.delete()
         self.assertEqual(OwnershipStatus.objects.count(), 0)
+
+
+class PropertyTestCase(TestCase):
+    """ Property test case."""
+    @classmethod
+    def setUpTestData(cls):
+        cls.property = PropertyFactory()
+    
+    def test_create_property(self):
+        """Test creating property """
+        self.assertTrue(isinstance(self.property, Property))
+        self.assertEqual(Property.objects.count(), 1)
+        self.assertEqual(self.property.name, 'property_0')
+    
+    def test_update_property(self):
+        """Test update property."""
+        self.property.name = 'Property_1'
+        self.property.save()
+        self.assertEqual(Property.objects.get(id=1).name, 'Property_1')
+
+    def test_property_area_constraint(self):
+        """Test property area constraint"""
+        with self.assertRaises(Exception) as raised:
+            self.property.area_available = 250
+            self.property.save()
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    def test_delete_property(self):
+        """Test delete property."""
+        self.property.delete()
+        self.assertEqual(Property.objects.count(), 0)
