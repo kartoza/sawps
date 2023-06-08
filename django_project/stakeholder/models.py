@@ -72,7 +72,7 @@ class Organization(models.Model):
     """Organization model."""
 
     name = models.CharField(unique=True, max_length=250)
-    data_use_permission_id = models.ForeignKey(
+    data_use_permission = models.ForeignKey(
         'regulatory_permit.dataUsePermission', on_delete=models.DO_NOTHING
     )
 
