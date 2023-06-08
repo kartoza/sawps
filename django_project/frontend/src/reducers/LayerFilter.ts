@@ -1,0 +1,48 @@
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import ContextLayerInterface from '../models/ContextLayer';
+
+export interface LayerFilterInterface {
+    contextLayers: ContextLayerInterface[];
+}
+
+const initialState: LayerFilterInterface = {
+    contextLayers: []
+}
+
+export const LayerFilterSlice = createSlice({
+    name: 'LayerFilter',
+    initialState,
+    reducers: {
+        setContextLayers: (state, action: PayloadAction<ContextLayerInterface[]>) => {
+            state.contextLayers = [...action.payload]
+        },
+        setSelectedLayers: (state, action: PayloadAction<number[]>) => {
+            let _layers = state.contextLayers.map((layer) => {
+                if (action.payload.includes(layer.id)) {
+                    layer.isSelected = true
+                } else {
+                    layer.isSelected = false
+                }
+                return layer
+            })
+            state.contextLayers = [..._layers]
+        },
+        toggleLayer: (state, action: PayloadAction<number>) => {
+            let _layers = state.contextLayers.map((layer) => {
+                if (action.payload === layer.id) {
+                    layer.isSelected = !layer.isSelected
+                }
+                return layer
+            })
+            state.contextLayers = [..._layers]
+        }
+    }
+})
+
+export const {
+    setContextLayers,
+    setSelectedLayers,
+    toggleLayer
+} = LayerFilterSlice.actions
+
+export default LayerFilterSlice.reducer;

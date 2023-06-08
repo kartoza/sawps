@@ -50,8 +50,8 @@ function ResponsiveNavbar() {
   };
 
   return (
-    <AppBar position="static" className='navbar'>
-      <Container maxWidth="xl">
+    <AppBar position="static" className='navbar navbar-dark bg-dark'>
+      <Box sx={{width: '100%'}}>
         <Toolbar disableGutters>
           <Box sx={{ p: 1, display: { xs: 'none', md: 'flex' } }}>
             <a href='/'>
@@ -163,7 +163,7 @@ function ResponsiveNavbar() {
             </Box>
           }
         </Toolbar>
-      </Container>
+      </Box>
     </AppBar>
   );
 }
