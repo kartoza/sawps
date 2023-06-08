@@ -33,4 +33,3 @@ class UserTitle(models.Model):
     class Meta:
         verbose_name = 'title'
         verbose_name_plural = 'titles'
-        db_table = 'user_title'
