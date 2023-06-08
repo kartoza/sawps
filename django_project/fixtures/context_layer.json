@@ -1,0 +1,96 @@
+[
+    {
+        "model": "frontend.contextlayer",
+        "pk": 2,
+        "fields": {
+            "name": "Rivers",
+            "is_static": true,
+            "layer_names": [
+                "rivers2018",
+                "major_rivers2018"
+            ]
+        }
+    },
+    {
+        "model": "frontend.contextlayer",
+        "pk": 3,
+        "fields": {
+            "name": "Roads",
+            "is_static": true,
+            "layer_names": [
+                "zaf_roads",
+                "zaf_highways",
+                "midscale_zaf_roads"
+            ]
+        }
+    },
+    {
+        "model": "frontend.contextlayer",
+        "pk": 4,
+        "fields": {
+            "name": "Ecosystem type",
+            "is_static": true,
+            "layer_names": [
+                "ecosystems",
+                "ecosystems_midscale",
+                "ecosystems_small_scale"
+            ]
+        }
+    },
+    {
+        "model": "frontend.contextlayer",
+        "pk": 5,
+        "fields": {
+            "name": "Biodiversity areas",
+            "is_static": true,
+            "layer_names": [
+                "critical_biodiversity_areas_2019",
+                "critical_biodiversity_areas_2019_midscale",
+                "critical_biodiversity_areas_2019_midscale",
+                "cba_2019_small_scale"
+            ]
+        }
+    },
+    {
+        "model": "frontend.contextlayer",
+        "pk": 6,
+        "fields": {
+            "name": "Protected areas",
+            "is_static": true,
+            "layer_names": [
+                "protected_areas_2022",
+                "protected_areas_2022_midscale",
+                "protected_areas_2022_small_scale"
+            ]
+        }
+    },
+    {
+        "model": "frontend.contextlayer",
+        "pk": 7,
+        "fields": {
+            "name": "Cadastral boundaries",
+            "is_static": true,
+            "layer_names": [
+                "erf",
+                "farm_portion",
+                "holding",
+                "parent_farm"
+            ]
+        }
+    },
+    {
+        "model": "frontend.contextlayer",
+        "pk": 8,
+        "fields": {
+            "name": "Place names",
+            "is_static": true,
+            "layer_names": [
+                "place_name_larger_scale",
+                "place_name_largest_scale",
+                "place_name_midscale",
+                "place_name_smallest_scale"
+            ]
+        }
+    }
+]
+    
