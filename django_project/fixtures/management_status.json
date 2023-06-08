@@ -1,0 +1,16 @@
+[
+{
+    "model": "species.managementstatus",
+    "pk": 1,
+    "fields": {
+        "name": "Managed"
+    }
+},
+{
+    "model": "species.managementstatus",
+    "pk": 2,
+    "fields": {
+        "name": "Self-sustaining"
+    }
+}
+]

@@ -1,5 +1,5 @@
 from django.contrib import admin
+from species.models import ManagementStatus, TaxonRank
 
-from species.models import TaxonRank
-
+admin.site.register(ManagementStatus)
 admin.site.register(TaxonRank)
