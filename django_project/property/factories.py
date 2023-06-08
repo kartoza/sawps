@@ -1,20 +1,29 @@
 import factory
-import property.models as PropertyModels
+from property.models import PropertyType, Province, OwnershipStatus
 
 
 class PropertyTypeFactory(factory.django.DjangoModelFactory):
-    """factory for PropertyType model"""
+    """Factory for PropertyType model."""
 
     class Meta:
-        model = PropertyModels.PropertyType
+        model = PropertyType
 
     name = factory.Sequence(lambda n: 'PropertyType %d' % n)
 
 
 class ProvinceFactory(factory.django.DjangoModelFactory):
-    """Factory for Province"""
+    """Factory for Province."""
 
     class Meta:
-        model = PropertyModels.Province
+        model = Province
 
     name = factory.Sequence(lambda n: 'Province %d' % n)
+
+
+class OwnershipStatusFactory(factory.django.DjangoModelFactory):
+    """Factory for OwnershipStatus."""
+
+    class Meta:
+        model = OwnershipStatus
+
+    name = factory.Sequence(lambda n: 'OwnershipStatus_%d' % n)
