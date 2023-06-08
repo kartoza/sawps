@@ -26,7 +26,9 @@
 <body>
 {% block header %}
     <!-- Navigation bar -->
+    {% if not skip_nav_bar %}
     {% include 'navibar.html' %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
