@@ -1,9 +1,18 @@
 import factory
-from occurrence.models import SurveyMethod, SamplingSizeUnit
+from occurrence.models import SurveyMethod, BasisOfRecord, SamplingSizeUnit, OccurrenceStatus, OrganismQuantityType
+
+
+class OrganismQuantityTypeFactory(factory.django.DjangoModelFactory):
+    """Organism quantity type factory. """
+    class Meta:
+        model = OrganismQuantityType
+
+    name = factory.Sequence(lambda n: "organism_quantity_type_%d" % n)
+    sort_id = factory.Sequence(lambda n: n)
 
 
 class SurveyMethodFactory(factory.django.DjangoModelFactory):
-    """survey method factory"""
+    """Survey method factory."""
 
     class Meta:
         model = SurveyMethod
@@ -12,8 +21,27 @@ class SurveyMethodFactory(factory.django.DjangoModelFactory):
     sort_id = factory.Sequence(lambda n: n)
 
 
+class OccurrenceStatusFactory(factory.django.DjangoModelFactory):
+    """Occurrence status factory."""
+
+    class Meta:
+        model = OccurrenceStatus
+
+    name = factory.Sequence(lambda n: 'occurrence status {0}'.format(n))
+
+    
+class BasisOfRecordFactory(factory.django.DjangoModelFactory):
+    """Basis of record factory."""
+
+    class Meta:
+        model = BasisOfRecord
+
+    name = factory.Sequence(lambda n: 'basis of record {0}'.format(n))
+    sort_id = factory.Sequence(lambda n: n)
+
+    
 class SamplingSizeUnitFactory(factory.django.DjangoModelFactory):
-    """sampling size unit factory"""
+    """Sampling size unit factory."""
 
     class Meta:
         model = SamplingSizeUnit
