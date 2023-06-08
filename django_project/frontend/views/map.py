@@ -12,4 +12,5 @@ class MapView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['maptiler_api_key'] = settings.MAPTILER_API_KEY
+        ctx['skip_nav_bar'] = True
         return ctx

@@ -1,0 +1,33 @@
+@import './tab.scss';
+
+// TODO: set responsive left and right sidebar width
+.LeftSideBar {
+    width: 400px;
+
+    .MuiTab-root {
+        width: 50%;
+    }
+
+    button:focus {
+        outline: unset;
+    }
+
+    .Layers {
+        .MuiList-root {
+            padding-top: 0px;
+            .MuiListItemButton-root.Mui-selected {
+                background-color: var(--black-transparent);
+            }
+        }
+    }
+}
+
+.RightSideBar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 450px;
+    z-index: 100;
+    background: white;
+}

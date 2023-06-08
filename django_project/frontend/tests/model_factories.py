@@ -1,6 +1,7 @@
 """Model factories for frontend."""
 import factory
 
+from django.contrib.auth import get_user_model
 from frontend.models.context_layer import ContextLayer
 from frontend.models.parcels import (
     Erf,
@@ -8,6 +9,17 @@ from frontend.models.parcels import (
     Holding,
     ParentFarm
 )
+
+
+class UserF(factory.django.DjangoModelFactory):
+    """Factory for User model."""
+    class Meta:
+        """Meta class for UserF."""
+        model = get_user_model()
+
+    username = factory.Sequence(
+        lambda n: f'username {n}'
+    )
 
 
 class ContextLayerF(factory.django.DjangoModelFactory):
