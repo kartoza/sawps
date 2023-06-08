@@ -56,12 +56,6 @@ class AerialTile(APIView):
         response = requests.get(
             f'http://aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg'
         )
-        # return Response(
-        #     status=response.status_code,
-        #     headers=response.headers,
-        #     content_type=response.headers['Content-Type'],
-        #     data=response.content
-        # )
         if response.status_code != 200:
             raise Http404()
         return HttpResponse(
