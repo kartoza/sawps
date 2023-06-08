@@ -5,7 +5,7 @@ services:
       - ./volumes/database:/opt/postgres/data
       - ./volumes/backups:/backups
     ports:
-      - "${DB_PORT:-6432}:5432"
+      - "${DATABASE_PORT:-6432}:5432"
 
   dbbackups:
     volumes:
@@ -49,6 +49,10 @@ services:
       # for ssh
       - "${SSH_PORT:-61102}:22"
 
+  tegola:
+    volumes:
+      - ./tegola:/opt/tegola_config
+      - ./volumes/layer_tiles:/opt/layer_tiles
 
   nginx:
     volumes:
@@ -59,3 +63,4 @@ services:
       - "${HTTP_PORT:-8888}:80"
     links:
       - django
+      - tegola

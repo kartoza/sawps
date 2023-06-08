@@ -1,7 +1,49 @@
 from django.test import TestCase
-from occurrence.models import SurveyMethod, OccurrenceStatus, BasisOfRecord, SamplingSizeUnit 
-from occurrence.factories import SurveyMethodFactory, OccurrenceStatusFactory, BasisOfRecordFactory, SamplingSizeUnitFactory
+from occurrence.models import OrganismQuantityType, SurveyMethod, OccurrenceStatus, BasisOfRecord, SamplingSizeUnit
+from occurrence.factories import OrganismQuantityTypeFactory, SurveyMethodFactory
+from occurrence.factories import OccurrenceStatusFactory, BasisOfRecordFactory, SamplingSizeUnitFactory
 from django.db.utils import IntegrityError
+
+
+class OrganismQuantityTypeTestCase(TestCase):
+    """Organism quantity type test case."""
+
+    @classmethod
+    def setUpTestData(cls):
+        """Set up test data."""
+        cls.quantityType = OrganismQuantityTypeFactory()
+
+    def test_create_quantity_type(self):
+        """Test create organism quantity type."""
+        self.assertTrue(isinstance(self.quantityType, OrganismQuantityType))
+        self.assertEqual(OrganismQuantityType.objects.count(), 1)
+        self.assertEqual(self.quantityType.name, "organism_quantity_type_0")
+
+    def test_update_quantity_type(self):
+        """Test update quantity type."""
+        self.quantityType.name = "organism_quantity_type_1"
+        self.quantityType.save()
+        self.assertEqual(
+            OrganismQuantityType.objects.get(id=1).name,
+            "organism_quantity_type_1",
+        )
+
+    def test_quantity_type_unique_name(self):
+        """Test unique names of quantity types."""
+        with self.assertRaises(Exception) as raised:
+            OrganismQuantityTypeFactory(name="organism_quantity_type_1")
+            self.assertEqual(raised.exception, IntegrityError)
+
+    def test_quantity_type_unique_sort_id(self):
+        """Test unique sort ids of quantity types."""
+        with self.assertRaises(Exception) as raised:
+            OrganismQuantityTypeFactory(sort_id=0)
+            self.assertEqual(raised.exception, IntegrityError)
+
+    def test_delete_quantity_type(self):
+        """Test delete quantity type."""
+        self.quantityType.delete()
+        self.assertEqual(OrganismQuantityType.objects.count(), 0)
 
 
 class SurveyMethodTestCase(TestCase):
