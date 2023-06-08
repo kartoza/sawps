@@ -2,10 +2,10 @@
 from django.contrib.gis.db import models
 
 
-class Erf(models.Model):
-    """Erf Urban Parcel."""
+class ParcelBase(models.Model):
+    """Base Model for Parcel Tables."""
 
-    fid = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
 
     geom = models.MultiPolygonField(
         null=True,
@@ -18,92 +18,43 @@ class Erf(models.Model):
         null=True,
     )
 
-    id = models.CharField(
+    cname = models.CharField(
         max_length=60,
         blank=True,
         null=True,
     )
+
+    class Meta:
+        """Meta class for ParcelBase."""
+        abstract = True
+
+
+class Erf(ParcelBase):
+    """Erf Urban Parcel."""
 
     class Meta:
         """Meta class for Erf."""
         db_table = 'layer"."erf'
 
 
-class FarmPortion(models.Model):
+class FarmPortion(ParcelBase):
     """Farm Portion Rural Parcel."""
-
-    fid = models.AutoField(primary_key=True)
-
-    geom = models.MultiPolygonField(
-        null=True,
-        srid=3857
-    )
-
-    tag_value = models.CharField(
-        max_length=40,
-        blank=True,
-        null=True,
-    )
-
-    id = models.CharField(
-        max_length=60,
-        blank=True,
-        null=True,
-    )
 
     class Meta:
         """Meta class for FarmPortion."""
         db_table = 'layer"."farm_portion'
 
 
-class Holding(models.Model):
+class Holding(ParcelBase):
     """Holding Semi Urban Parcel."""
-
-    fid = models.AutoField(primary_key=True)
-
-    geom = models.MultiPolygonField(
-        null=True,
-        srid=3857
-    )
-
-    tag_value = models.CharField(
-        max_length=40,
-        blank=True,
-        null=True,
-    )
-
-    id = models.CharField(
-        max_length=60,
-        blank=True,
-        null=True,
-    )
 
     class Meta:
         """Meta class for Holding."""
         db_table = 'layer"."holding'
 
 
-class ParentFarm(models.Model):
+class ParentFarm(ParcelBase):
     """ParentFarm Rural Parcel."""
-
-    fid = models.AutoField(primary_key=True)
-
-    geom = models.MultiPolygonField(
-        null=True,
-        srid=3857
-    )
-
-    tag_value = models.CharField(
-        max_length=40,
-        blank=True,
-        null=True,
-    )
-
-    id = models.CharField(
-        max_length=60,
-        blank=True,
-        null=True,
-    )
 
     class Meta:
         """Meta class for ParentFarm."""

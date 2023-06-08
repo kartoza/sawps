@@ -27,7 +27,7 @@ class ErfF(factory.django.DjangoModelFactory):
         """Meta class Factory for Erf Model."""
         model = Erf
 
-    id = factory.Sequence(
+    cname = factory.Sequence(
         lambda n: f'erf-{n}'
     )
 
@@ -38,7 +38,7 @@ class FarmPortionF(factory.django.DjangoModelFactory):
         """Meta class Factory for FarmPortion Model."""
         model = FarmPortion
 
-    id = factory.Sequence(
+    cname = factory.Sequence(
         lambda n: f'farm-portion-{n}'
     )
 
@@ -49,7 +49,7 @@ class HoldingF(factory.django.DjangoModelFactory):
         """Meta class Factory for Holding Model."""
         model = Holding
 
-    id = factory.Sequence(
+    cname = factory.Sequence(
         lambda n: f'holding-{n}'
     )
 
@@ -60,6 +60,6 @@ class ParentFarmF(factory.django.DjangoModelFactory):
         """Meta class Factory for ParentFarm Model."""
         model = ParentFarm
 
-    id = factory.Sequence(
+    cname = factory.Sequence(
         lambda n: f'parent-farm-{n}'
     )
