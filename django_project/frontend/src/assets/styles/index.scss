@@ -17,7 +17,7 @@ code {
 :root {
   --white: #fff;
   --black: #000;
-  --primary-color: #098066;
+  --primary-color: #70B276;
   --secondary-color: #db901f;
   --space-unit: 1em;
   --space-xxs:  calc(0.25 * var(--space-unit));
@@ -26,5 +26,13 @@ code {
   --space-md:   calc(1.25 * var(--space-unit));
   --space-lg:   calc(2 * var(--space-unit));
   --space-xl:   calc(3.25 * var(--space-unit));
-  --space-xxl:  calc(5.25 * var(--space-unit))
+  --space-xxl:  calc(5.25 * var(--space-unit));
+
+  // green
+  --green-darken-1: #43A047;
+
+  // black
+  --black-gray: rgba(0, 0, 0, 0.6);
+  --black-darker: rgba(0, 0, 0, 0.87);
+  --black-transparent: rgba(0, 0, 0, 0.12); // for highlighting
 }
