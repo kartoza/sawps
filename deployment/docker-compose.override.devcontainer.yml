@@ -4,6 +4,8 @@ services:
     volumes:
       - ./volumes/database:/opt/postgres/data
       - ./volumes/backups:/backups
+    ports:
+      - "${DATABASE_PORT:-6432}:5432"
 
   dbbackups:
     volumes:
@@ -34,3 +36,12 @@ services:
     links:
       - db
       - worker
+  
+  tegola:
+    volumes:
+      - ./tegola:/opt/tegola_config
+      - ./volumes/layer_tiles:/opt/layer_tiles
+    ports:
+      - "${TEGOLA_DEV_PORT:-9191}:9090"
+    links:
+      - db

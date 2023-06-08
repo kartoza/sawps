@@ -1,0 +1,30 @@
+[
+    {
+        "model": "occurrence.samplingsizeunit",
+        "pk": 1,
+        "fields": {
+            "unit": "cm"
+        }
+    },
+    {
+        "model": "occurrence.samplingsizeunit",
+        "pk": 2,
+        "fields": {
+            "unit": "mm"
+        }
+    },
+    {
+        "model": "occurrence.samplingsizeunit",
+        "pk": 3,
+        "fields": {
+            "unit": "m"
+        }
+    },
+    {
+        "model": "occurrence.samplingsizeunit",
+        "pk": 4,
+        "fields": {
+            "unit": "km"
+        }
+    }
+    ]

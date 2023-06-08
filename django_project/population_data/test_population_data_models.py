@@ -2,43 +2,82 @@ from django.test import TestCase
 
 # Create your tests here.
 from django.test import TestCase
-from population_data.models import Month
-from population_data.factories import MonthFactory
+from population_data.models import Month, NatureOfPopulation
+from population_data.factories import MonthFactory, NatureOfPopulationFactory
 from django.db.utils import IntegrityError
 
 
 class MonthTestCase(TestCase):
-    """month test case"""
+    """Month test case."""
 
     @classmethod
     def setUpTestData(cls):
         cls.month = MonthFactory()
 
     def test_create_month(self):
-        """test create a month"""
+        """Test create a month."""
         self.assertTrue(isinstance(self.month, Month))
         self.assertEqual(Month.objects.count(), 1)
         self.assertEqual(self.month.name, 'month-0')
 
     def test_update_month(self):
-        """update month"""
+        """Update month."""
         self.month.name = 'month-1'
         self.month.save()
         self.assertEqual(Month.objects.get(id=1).name, 'month-1')
 
     def test_month_unique_name_constraint(self):
-        """test month unique name constraint"""
+        """Test month unique name constraint."""
         with self.assertRaises(Exception) as raised:
             MonthFactory(name='month-1')
             self.assertEqual(raised.exception, IntegrityError)
 
     def test_month_unique_sorid_constraint(self):
-        """test month unique sorid constraint"""
+        """Test month unique sorid constraint."""
         with self.assertRaises(Exception) as raised:
             MonthFactory(sorid=0)
             self.assertEqual(raised.exception, IntegrityError)
 
     def test_delete_month(self):
-        """test delete month"""
+        """Test delete month."""
         self.month.delete()
         self.assertEqual(Month.objects.count(), 0)
+
+
+class NatureOfPopulationTestCase(TestCase):
+    """Nature of population test case."""
+
+    @classmethod
+    def setUpTestData(cls):
+        """SetUpTestData for nature of population test case."""
+        cls.nature_of_population = NatureOfPopulationFactory()
+
+    def test_create_nature_of_population(self):
+        """Test create nature of population."""
+        self.assertTrue(
+            isinstance(self.nature_of_population, NatureOfPopulation)
+        )
+        self.assertEqual(NatureOfPopulation.objects.count(), 1)
+        self.assertEqual(
+            self.nature_of_population.name, 'nature of population-0'
+        )
+
+    def test_update_nature_of_population(self):
+        """Test update nature of population."""
+        self.nature_of_population.name = 'nature of population-1'
+        self.nature_of_population.save()
+        self.assertEqual(
+            NatureOfPopulation.objects.get(id=1).name,
+            'nature of population-1',
+        )
+
+    def test_nature_of_population_unique_name_constraint(self):
+        """Test nature of population unique name constraint."""
+        with self.assertRaises(Exception) as raised:
+            NatureOfPopulationFactory(name='nature of population-1')
+            self.assertEqual(IntegrityError, type(raised.exception))
+
+    def test_delete_nature_of_population(self):
+        """Test delete nature of population."""
+        self.nature_of_population.delete()
+        self.assertEqual(NatureOfPopulation.objects.count(), 0)
