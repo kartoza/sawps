@@ -8,7 +8,10 @@ volumes:
   nginx-cache:
   backups-data:
   data-volume:
+  tegola-data:
+  layer-tiles:
 
+x-tegola-image: &tegola-image gospatial/tegola:v0.16.0
 x-common-django:
   &default-common-django
   image: kartoza/${COMPOSE_PROJECT_NAME:-django_project}:${DJANGO_TAG:-0.0.1}
@@ -25,7 +28,7 @@ x-common-django:
     - INITIAL_FIXTURES=${INITIAL_FIXTURES:-False}
     - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS:-[]}
     - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
-    - SENTRY_DSN=${SENTRY_DSN:-''}
+    - SENTRY_DSN=${SENTRY_DSN}
     - MAPTILER_API_KEY=${MAPTILER_API_KEY:-''}
 
     # Email where alters should be sent. This will be used by let's encrypt and as the django admin email.
@@ -45,6 +48,7 @@ services:
 
   db:
     image: kartoza/postgis:14-3.3
+    shm_size: 1g
     volumes:
       - data-volume:/opt/postgres/data
     environment:
@@ -59,7 +63,7 @@ services:
     environment:
       # take care to let the project name below match that
       # declared in the top of the makefile
-      - DUMPPREFIX=PG_GeoSight
+      - DUMPPREFIX=PG_Sanbi
       # These are all defaults anyway, but setting explicitly in
       # case we ever want to ever use different credentials
       - POSTGRES_USER=${DATABASE_USERNAME:-docker}
@@ -91,6 +95,26 @@ services:
     <<: *default-common-django
     entrypoint: []
 
+  tegola:
+    image: *tegola-image
+    entrypoint: /opt/tegola
+    command: serve --config /opt/tegola_config/tegola.conf
+    volumes:
+      - tegola-data:/opt/tegola_config:ro
+      - layer-tiles:/opt/layer_tiles
+    links:
+      - db
+    environment:
+      - POSTGRES_USER=${DATABASE_USERNAME:-docker}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-docker}
+      - POSTGRES_DBNAME=${DATABASE_NAME:-django}
+      - POSTGRES_HOST=${DATABASE_HOST:-db}
+      - POSTGRES_PRIVATE_PORT=5432
+      - SSL_MODE=prefer
+      - TEGOLA_PORT=9090
+      - TEGOLA_SQL_DEBUG=EXECUTE_SQL #LAYER_SQL  or EXECUTE_SQL
+    restart: on-failure
+
   nginx:
     image: nginx
     hostname: nginx
@@ -101,3 +125,4 @@ services:
       - nginx-cache:/home/web/nginx_cache
     links:
       - django
+      - tegola
