@@ -5,7 +5,7 @@ class Month(models.Model):
     """Month model."""
 
     name = models.CharField(max_length=100, unique=True)
-    sorid = models.IntegerField(unique=True)
+    sort_order = models.IntegerField(unique=True)
 
     class Meta:
         verbose_name = 'month'

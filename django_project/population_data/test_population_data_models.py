@@ -32,10 +32,10 @@ class MonthTestCase(TestCase):
             MonthFactory(name='month-1')
             self.assertEqual(raised.exception, IntegrityError)
 
-    def test_month_unique_sorid_constraint(self):
-        """Test month unique sorid constraint."""
+    def test_month_unique_sort_order_constraint(self):
+        """Test month unique sort_order constraint."""
         with self.assertRaises(Exception) as raised:
-            MonthFactory(sorid=0)
+            MonthFactory(sort_order=0)
             self.assertEqual(raised.exception, IntegrityError)
 
     def test_delete_month(self):

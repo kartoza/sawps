@@ -9,7 +9,7 @@ class MonthFactory(factory.django.DjangoModelFactory):
         model = Month
 
     name = factory.Sequence(lambda n: 'month-{0}'.format(n))
-    sorid = factory.Sequence(lambda n: n)
+    sort_order = factory.Sequence(lambda n: n)
 
 
 class NatureOfPopulationFactory(factory.django.DjangoModelFactory):
