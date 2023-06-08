@@ -1,6 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactDOM from "react-dom/client";
 import maplibregl, { IControl } from 'maplibre-gl';
+import {RootState} from '../../../app/store';
+import {useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { setMapReady } from '../../../reducers/MapStatus';
+import ContextLayerInterface from '../../../models/ContextLayer';
 import './index.scss';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
@@ -97,30 +101,57 @@ class LegendControl<IControl> {
 
 }
 
+const checkLayerVisibility = (source_layer: string, contextLayers: ContextLayerInterface[]): boolean => {
+  const contextLayer = contextLayers.find(element => element.layer_names && element.layer_names.includes(source_layer))
+  if (contextLayer) {
+    return contextLayer.isSelected
+  }  
+  return true
+}
 
 export default function Map() {
-    const mapContainer = useRef(null);
-    const map = useRef(null);
-    const legendRef = useRef(null);
+  const dispatch = useAppDispatch()
+  const contextLayers = useAppSelector((state: RootState) => state.layerFilter.contextLayers)
+  const isMapReady = useAppSelector((state: RootState) => state.mapStatus.isMapReady)
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const legendRef = useRef(null);
 
-    useEffect(() => {
-        if (map.current) return; //stops map from intializing more than once
-        map.current = new maplibregl.Map({
-          container: mapContainer.current,
-          style: `${MAP_STYLE_URL}`,
-          minZoom: 5
-        })
-        map.current.addControl(new CustomNavControl({
-          showCompass: true,
-          showZoom: true
-        }), 'bottom-left')
-        // legendRef.current = new LegendControl()
-        // map.current.addControl(legendRef.current, 'bottom-left')
-    });
+  useEffect(() => {
+    if (!isMapReady) return;
+    if (contextLayers.length === 0) return;
+    if (!map.current) return;
+    const _mapObj: maplibregl.Map = map.current
+    const _layers = _mapObj.getStyle().layers
+    for (let i=0; i < _layers.length; ++i) {
+      let _layer:any = _layers[i]
+      if (!('source' in _layer) || !('source-layer' in _layer) || _layer['source'] !== 'sanbi') continue
+      const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
+      _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
+    }
+  }, [contextLayers, isMapReady])
 
-    return (
-        <div className="map-wrap">
-          <div ref={mapContainer} className="map" />
-        </div>
-    );
+  useEffect(() => {
+      if (map.current) return; //stops map from intializing more than once
+      map.current = new maplibregl.Map({
+        container: mapContainer.current,
+        style: `${MAP_STYLE_URL}`,
+        minZoom: 5
+      })
+      map.current.addControl(new CustomNavControl({
+        showCompass: true,
+        showZoom: true
+      }), 'bottom-left')
+      // legendRef.current = new LegendControl()
+      // map.current.addControl(legendRef.current, 'bottom-left')
+      map.current.on('load', () => {
+        dispatch(setMapReady(true))
+      })
+  });
+
+  return (
+      <div className="map-wrap">
+        <div ref={mapContainer} className="map" />
+      </div>
+  );
 }

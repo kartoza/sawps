@@ -1,56 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from "axios";
 import Box from "@mui/material/Box";
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ContextLayerInterface from '../../../models/ContextLayer';
+import {RootState} from '../../../app/store';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import { setContextLayers, toggleLayer } from '../../../reducers/LayerFilter';
+import Loading from '../../../components/Loading';
 import './index.scss';
 
-function Layers() {
-    const [selectedLayers, setSelectedLayers] = useState<number[]>([])
-    const [availableLayers, setAvailableLayers] = useState<ContextLayerInterface[]>([
-        {
-            id: 1,
-            name: 'Roads'
-        },
-        {
-            id: 2,
-            name: 'Rivers'
-        },
-        {
-            id: 3,
-            name: 'Properties'
-        },
-        {
-            id: 4,
-            name: 'Protected Areas'
-        }
-    ])
+const FETCH_AVAILABLE_CONTEXT_LAYERS = '/api/map/context_layer/list/'
 
-    const handleListItemClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-        layerId: number,
-      ) => {
-        let _selected = [...selectedLayers]
-        let _idx = _selected.indexOf(layerId)
-        if (_idx !== -1) {
-            _selected.splice(_idx, 1)
-            setSelectedLayers(_selected)
-        } else {
-            setSelectedLayers([..._selected, layerId])
-        }
+function Layers() {
+    const dispatch = useAppDispatch()
+    const contextLayers = useAppSelector((state: RootState) => state.layerFilter.contextLayers)
+    const isMapReady = useAppSelector((state: RootState) => state.mapStatus.isMapReady)
+    const [loading, setLoading] = useState(false)
+
+    const fetchContextLayers = () => {
+        setLoading(true)
+        axios.get(FETCH_AVAILABLE_CONTEXT_LAYERS).then((response) => {
+            setLoading(false)
+            if (response.data) {
+              let _layers = response.data as ContextLayerInterface[]
+              _layers = _layers.map((layer) => {
+                layer.isSelected = true
+                return layer
+              })
+              dispatch(setContextLayers(_layers))
+            }
+        })
     }
+
+    useEffect(() => {
+        if (contextLayers.length === 0) {
+            fetchContextLayers()
+        }
+    }, [contextLayers])
 
     return (
         <Box className={'Layers'}>
             <List component="nav" aria-label="layers">
-            {
-                availableLayers.map((layer: ContextLayerInterface) => {
+            { loading ? <Loading /> :
+                contextLayers.map((layer: ContextLayerInterface) => {
                     return (
                         <ListItemButton
                             key={layer.id}
-                            selected={selectedLayers.indexOf(layer.id) !== -1}
-                            onClick={(event) => handleListItemClick(event, layer.id)}
+                            selected={layer.isSelected}
+                            disabled={loading || !isMapReady}
+                            onClick={(event) => dispatch(toggleLayer(layer.id))}
                         >
                             <ListItemText primary={layer.name} />
                         </ListItemButton>
