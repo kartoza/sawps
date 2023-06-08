@@ -1,5 +1,16 @@
 import factory
-from population_data.models import Month, NatureOfPopulation
+from population_data.models import CountMethod, Month, NatureOfPopulation
+
+
+class CountMethodFactory(factory.django.DjangoModelFactory):
+    """Count method factory."""
+
+    class Meta:
+        """meta"""
+
+        model = CountMethod
+
+    name = 'count method-1'
 
 
 class MonthFactory(factory.django.DjangoModelFactory):
