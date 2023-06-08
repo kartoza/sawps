@@ -22,7 +22,7 @@ class CustomNavControl extends maplibregl.NavigationControl {
 
     // add print icon
     this._print = this._createButton('maplibregl-ctrl-print', (e) => {
-      
+      // not implemented yet
     });
     this._printIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._print);
     this._printIcon.setAttribute('aria-hidden', 'true');
@@ -30,7 +30,7 @@ class CustomNavControl extends maplibregl.NavigationControl {
     
     // add change base map icon
     this._baseMapSelect = this._createButton('maplibregl-ctrl-base-map-select', (e) => {
-      
+      // not implemented yet
     });
     this._baseMapSelectIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._baseMapSelect);
     this._baseMapSelectIcon.setAttribute('aria-hidden', 'true');
@@ -142,8 +142,6 @@ export default function Map() {
         showCompass: true,
         showZoom: true
       }), 'bottom-left')
-      // legendRef.current = new LegendControl()
-      // map.current.addControl(legendRef.current, 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
       })

@@ -1,14 +1,7 @@
 import React from "react";
-// import loadable from '@loadable/component';
 import CircularProgress from "@mui/material/CircularProgress";
 import {Typography} from "@mui/material";
 import './index.scss';
-
-// const CircularProgress = loadable(
-//     () => import("@mui/material/CircularProgress" /* webpackChunkName: "loading" */), {
-//         fallback: <div>&nbsp;</div>
-//     }
-// )
 
 interface LoadingInterface {
     label?: string,
