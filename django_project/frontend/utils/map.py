@@ -31,6 +31,8 @@ def get_map_template_style(request, theme_choice: int = 0):
         schema = 'http://'
         tegola_dev_port = os.environ.get('TEGOLA_DEV_PORT', '9191')
         domain = f'localhost:{tegola_dev_port}'
+    elif 'localhost' in domain:
+        schema = 'http://'
     if 'sources' in styles and 'sanbi' in styles['sources']:
         styles['sources']['sanbi']['tiles'] = [
             f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}.pbf'
