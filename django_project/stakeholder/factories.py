@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 
 class userRoleTypeFactory(factory.django.DjangoModelFactory):
-    """factory class for user role type models"""
+    """Factory class for user role type models."""
 
     class Meta:
         model = UserRoleType
@@ -17,7 +17,7 @@ class userRoleTypeFactory(factory.django.DjangoModelFactory):
 
     
 class loginStatusFactory(factory.django.DjangoModelFactory):
-    """factory class for login status models"""
+    """Factory class for login status models."""
 
     class Meta:
         model = LoginStatus
@@ -28,7 +28,7 @@ class loginStatusFactory(factory.django.DjangoModelFactory):
 
       
 class userTitleFactory(factory.django.DjangoModelFactory):
-    """factory class for user title models"""
+    """Factory class for user title models."""
 
     class Meta:
         model = UserTitle
@@ -39,7 +39,7 @@ class userTitleFactory(factory.django.DjangoModelFactory):
 
 
 class userFactory(factory.django.DjangoModelFactory):
-    """factory class for user models"""
+    """Factory class for user models."""
 
     class Meta:
         model = User
@@ -50,7 +50,7 @@ class userFactory(factory.django.DjangoModelFactory):
 
 
 class userProfileFactory(factory.django.DjangoModelFactory):
-    """factory class for user profile model"""
+    """Factory class for user profile model."""
 
     class Meta:
         model = UserProfile

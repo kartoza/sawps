@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class UserRoleType(models.Model):
-    """user role type (Base users, admins ..etc.) model"""
+    """User role type (Base users, admins ..etc.) model."""
 
     name = models.CharField(unique=True, max_length=50)
     description = models.TextField()
@@ -18,7 +18,7 @@ class UserRoleType(models.Model):
 
 
 class LoginStatus(models.Model):
-    """user login status model"""
+    """User login status model."""
 
     name = models.CharField(unique=True, max_length=20)
 
@@ -32,7 +32,7 @@ class LoginStatus(models.Model):
 
 
 class UserTitle(models.Model):
-    """user title model"""
+    """User title model."""
 
     name = models.CharField(unique=True, max_length=10)
 
@@ -46,7 +46,7 @@ class UserTitle(models.Model):
 
 
 class UserProfile(models.Model):
-    """extend User model with one-to-one mapping"""
+    """Extend User model with one-to-one mapping."""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     title_id = models.ForeignKey(UserTitle, on_delete=models.DO_NOTHING)
