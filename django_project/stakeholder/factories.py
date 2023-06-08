@@ -1,5 +1,6 @@
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus
+from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile
 import factory
+from django.contrib.auth.models import User
 
 
 
@@ -34,4 +35,29 @@ class userTitleFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker(
         'random_element', elements=('mr', 'mrs', 'miss', 'dr')
+    )
+
+
+class userFactory(factory.django.DjangoModelFactory):
+    """factory class for user models"""
+
+    class Meta:
+        model = User
+
+    username = factory.Faker('user_name')
+    password = factory.Faker('password')
+    email = factory.Faker('email')
+
+
+class userProfileFactory(factory.django.DjangoModelFactory):
+    """factory class for user profile model"""
+
+    class Meta:
+        model = UserProfile
+
+    user = factory.SubFactory('stakeholder.factories.userFactory')
+    title_id = factory.SubFactory('stakeholder.factories.userTitleFactory')
+    cell_number = factory.Faker('random_int', min=10000, max=99999)
+    user_role_type_id = factory.SubFactory(
+        'stakeholder.factories.userRoleTypeFactory'
     )
