@@ -1,6 +1,6 @@
 from django.test import TestCase
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile
-from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userFactory, userProfileFactory
+from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, UserLogin
+from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userLoginFactory, userProfileFactory
 from django.contrib.auth.models import User
 
 
@@ -119,3 +119,30 @@ class TestUser(TestCase):
         """Test deleting user when a profile is deleted."""
         self.profileFactory.delete()
         self.assertEqual(User.objects.count(), 1)
+
+
+class TestUserLogin(TestCase):
+    """"User login testcase."""
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_login = userLoginFactory()
+
+    def create_user_login(self):
+        """Test creating new user login."""
+        self.assertEqual(UserLogin.objects.count(), 1)
+        self.assertEqual(User.objects.count(), 2)
+
+    def test_update_user_login(self):
+        """Test updating user login."""
+        self.user_login.login_status.name = 'logged out'
+        self.user_login.login_status.save()
+        self.assertEqual(
+            UserLogin.objects.get(id=self.user_login.id).login_status.name,
+            'logged out'
+        )
+
+    def test_delete_user_login(self):
+        """Test deleting user login."""
+        self.user_login.delete()
+        self.assertEqual(UserLogin.objects.count(), 0)
+        self.assertEqual(User.objects.count(), 2)
