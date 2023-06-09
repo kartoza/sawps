@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block head_title %}Your Profile{% endblock %}
 
 {% block content %}
@@ -24,7 +26,8 @@
 
             <img src={% if object.user_profile.picture %}{{object.user_profile.picture.url}}{% else %}"https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp{% endif %}" alt="avatar"
               class="rounded-circle img-fluid" style="width: 150px;">
-            <p class="text-muted my-2 upload-picture"><span data-toggle="modal" data-target="#uploadPictureModal"><i class="fa-solid fa-upload mr-2"></i>Upload profile picture</span></p>
+            <p class="text-muted my-2 upload-picture"><span data-toggle="modal" data-target="#uploadPictureModal">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="15px" class="mb-2 mr-1" style="fill:#6c757dd9"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3V320c0 17.7 14.3 32 32 32s32-14.3 32-32V109.3l73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 53 43 96 96 96H352c53 0 96-43 96-96V352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V352z"/></svg>Upload profile picture</span></p>
           </div>
         </div>
       </div>

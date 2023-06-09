@@ -37,3 +37,6 @@ django-celery-beat==2.5.0
 redis==4.3.4
 
 django-allauth==0.54.0
+
+# For django image field
+Pillow==9.5.0
