@@ -66,3 +66,17 @@ class UserProfile(models.Model):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
         db_table = "user_profile"
+
+
+class Organisation(models.Model):
+    """Organisation model."""
+
+    name = models.CharField(unique=True, max_length=250)
+    data_use_permission = models.ForeignKey(
+        'regulatory_permit.dataUsePermission', on_delete=models.DO_NOTHING
+    )
+
+    class Meta:
+        verbose_name = 'Organisation'
+        verbose_name_plural = 'Organisations'
+        db_table = "organisation"
