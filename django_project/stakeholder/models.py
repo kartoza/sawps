@@ -80,3 +80,28 @@ class Organisation(models.Model):
         verbose_name = 'Organisation'
         verbose_name_plural = 'Organisations'
         db_table = "organisation"
+
+
+class OrganisationPersonnel(models.Model):
+    """Organisation personnel abstract model."""
+    organisation = models.ForeignKey(Organisation, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+
+class OrganisationRepresentative(OrganisationPersonnel):
+    """Organisation representative model."""
+    class Meta:
+        verbose_name = 'Organisation representative'
+        verbose_name_plural = 'Organisation representatives'
+        db_table = 'organisation_representative'
+
+
+class OrganisationUser(OrganisationPersonnel):
+    """Organisation user model."""
+    class Meta:
+        verbose_name = 'Organisation user'
+        verbose_name_plural = 'Organisation users'
+        db_table = 'organisation_user'
