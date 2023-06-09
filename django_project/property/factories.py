@@ -41,9 +41,12 @@ class PropertyFactory(factory.django.DjangoModelFactory):
     province = factory.SubFactory(ProvinceFactory)
     ownership_status = factory.SubFactory(OwnershipStatusFactory)
     property_size_ha = 200
-    organization = factory.SubFactory('stakeholder.factories.organizationFactory')
+    organisation = factory.SubFactory('stakeholder.factories.organisationFactory')
     area_available = 150
-    geometry = 'POLYGON ((-123.456 48.123, -123.456 48.456, -123.123 48.456, -123.456 48.123))'
+    geometry = 'MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)),((20 35, 45 20, 30 5, 10 10, 10 30, 20 35),(30 20, 20 25, 20 15, 30 20)))'
     owner_email = factory.Faker('email')
     created_by = factory.SubFactory('stakeholder.factories.userFactory')
     created_at = factory.Faker('date_time')
+
+
+
