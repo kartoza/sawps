@@ -45,3 +45,5 @@ class PropertyFactory(factory.django.DjangoModelFactory):
     area_available = 150
     geometry = 'POLYGON ((-123.456 48.123, -123.456 48.456, -123.123 48.456, -123.456 48.123))'
     owner_email = factory.Faker('email')
+    created_by = factory.SubFactory('stakeholder.factories.userFactory')
+    created_at = factory.Faker('date_time')
