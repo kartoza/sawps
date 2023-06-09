@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from swaps.email_verification_token import email_verification_token
+from django.contrib.sites.models import Site
 
 
 class CustomSignupForm(SignupForm):
@@ -52,7 +53,7 @@ class CustomSignupForm(SignupForm):
             'email/email_verification.html',
             {
                 'email': user.email,
-                'domain': 'SWAPS',
+                'domain': Site.objects.get_current().domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': token,
             },

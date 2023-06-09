@@ -12,8 +12,6 @@ from swaps.email_verification_token import email_verification_token
 class ActivateAccount(View):
     def get(self, request, uidb64, token, *args, **kwargs):
         uid = force_str(urlsafe_base64_decode(uidb64))
-        logging.error('hehehhehe', uid)
-        user = models.User.objects.get(pk=uid)
         try:
             user = models.User.objects.get(pk=uid)
         except models.User.DoesNotExist:
