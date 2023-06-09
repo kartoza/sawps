@@ -19,12 +19,17 @@ from .views.map import MapView
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
-    AerialTile
+    AerialTile,
+    FindParcelByCoord
 )
 
 urlpatterns = [
     re_path(
-         r'^api/map/context_layer/list/?$',
+         r'^api/map/search/parcel/?$',
+        FindParcelByCoord.as_view(),
+        name='find-parcel'),
+    re_path(
+         r'^api/map/search/context_layer/list/?$',
         ContextLayerList.as_view(),
         name='context-layer-list'),
     re_path(

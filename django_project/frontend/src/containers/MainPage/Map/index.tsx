@@ -1,13 +1,16 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import axios from "axios";
 import ReactDOM from "react-dom/client";
 import maplibregl, { IControl } from 'maplibre-gl';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { setMapReady } from '../../../reducers/MapState';
 import ContextLayerInterface from '../../../models/ContextLayer';
+import ParcelInterface from '../../../models/Parcel';
 import './index.scss';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
+const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
 
 class CustomNavControl extends maplibregl.NavigationControl {
 
@@ -111,7 +114,8 @@ const checkLayerVisibility = (source_layer: string, contextLayers: ContextLayerI
 
 const renderHighlightParcelLayers = (map: maplibregl.Map, layer_names: string[]) => {
   for (let _idx = 0; _idx < layer_names.length; ++_idx) {
-    let _layer_name = `${layer_names[_idx]}-highlight`
+    let _layer_name = `${layer_names[_idx]}-select-parcel`
+    if (typeof map.getLayer(_layer_name) === 'undefined') {
       map.addLayer({
         'id': _layer_name,
         'type': 'fill',
@@ -120,20 +124,59 @@ const renderHighlightParcelLayers = (map: maplibregl.Map, layer_names: string[])
         'layout': {},
         'paint': {
           'fill-color': '#F9A95D',
-          'fill-opacity': 0.7
+          'fill-opacity': 0.4
+        }
+      }, 'erf');
+    }
+    if (typeof map.getLayer(`${_layer_name}-line`) === 'undefined') {
+      // add line color
+      map.addLayer({
+        'id': `${_layer_name}-line`,
+        'type': 'line',
+        'source': 'sanbi',
+        'source-layer': `${layer_names[_idx]}`,
+        'layout': {},
+        'paint': {
+          'line-color': '#FF0000',
+          'line-width': [
+            'case',
+            ['boolean', ['feature-state', 'parcel-selected'], false], 4,
+            0
+          ]
         }
       });
+    }    
   }
 }
 
 const removeHighlightParcelLayers = (map: maplibregl.Map, layer_names: string[]) => {
   for (let _idx = 0; _idx < layer_names.length; ++_idx) {
-    let _layer_name = `${layer_names[_idx]}-highlight`
+    let _layer_name = `${layer_names[_idx]}-select-parcel`
     let _layer = map.getLayer(_layer_name)
     if (typeof _layer !== 'undefined') {
       map.removeLayer(_layer_name)
     }
+    _layer = map.getLayer(`${_layer_name}-line`)
+    if (typeof _layer !== 'undefined') {
+      map.removeLayer(`${_layer_name}-line`)
+    }
   }
+}
+
+const findParcelLayer = (contextLayers: ContextLayerInterface[]): ContextLayerInterface => {
+  return contextLayers.find((element) => element.name.toLowerCase() === 'cadastral boundaries')
+}
+
+const searchParcel = (lngLat: maplibregl.LngLat, callback: (parcel: ParcelInterface) => void) => {
+  axios.get(SEARCH_PARCEL_URL + `?lat=${lngLat.lat}&lng=${lngLat.lng}`).then((response) => {
+    if (response.data) {
+      callback(response.data as ParcelInterface)
+    } else {
+      callback(null)
+    }
+  }).catch((error) => {
+    callback(null)
+  })
 }
 
 export default function Map() {
@@ -145,6 +188,7 @@ export default function Map() {
   const map = useRef(null);
   const legendRef = useRef(null);
 
+
   useEffect(() => {
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
@@ -154,22 +198,22 @@ export default function Map() {
     for (let i=0; i < _layers.length; ++i) {
       let _layer:any = _layers[i]
       if (!('source' in _layer) || !('source-layer' in _layer) || _layer['source'] !== 'sanbi') continue
+      if (selectionMode === 'parcel' && _layer['id'].includes('-select-parcel')) continue
       const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
     }
-  }, [contextLayers, isMapReady])
+  }, [contextLayers, isMapReady, selectionMode])
 
   useEffect(() => {
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
     if (!map.current) return;
+    
+    let _parcelLayer = findParcelLayer(contextLayers)
+    if (typeof _parcelLayer === 'undefined') return;
     if (selectionMode === 'parcel') {
-      let _parcelLayer = contextLayers.find((element) => element.name.toLowerCase() === 'cadastral boundaries')
-      if (typeof _parcelLayer === 'undefined') return;
       renderHighlightParcelLayers(map.current, _parcelLayer.layer_names)
     } else {
-      let _parcelLayer = contextLayers.find((element) => element.name.toLowerCase() === 'cadastral boundaries')
-      if (typeof _parcelLayer === 'undefined') return;
       removeHighlightParcelLayers(map.current, _parcelLayer.layer_names)
     }
   }, [selectionMode])
@@ -179,6 +223,8 @@ export default function Map() {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
         style: `${MAP_STYLE_URL}`,
+        center: [27.763781680455708, -26.71998940486352], // debug
+        zoom: 17,
         minZoom: 5
       })
       map.current.addControl(new CustomNavControl({
@@ -188,7 +234,40 @@ export default function Map() {
       map.current.on('load', () => {
         dispatch(setMapReady(true))
       })
+
   });
+
+  const mapOnClick = useCallback((e: any) => {
+    if (contextLayers.length === 0) return;
+    if (selectionMode === 'none') return;
+    let _parcelLayer = findParcelLayer(contextLayers)
+    if (typeof _parcelLayer === 'undefined') return;
+    let _mapObj: maplibregl.Map = map.current
+    if (selectionMode === 'parcel') {
+      // find parcel
+      searchParcel(e.lngLat, (parcel: ParcelInterface) => {
+        if (parcel) {
+          // toggle selection
+          let _feature_id = { source: 'sanbi', sourceLayer: parcel.layer, id: parcel.id }
+          let _selected = _mapObj.getFeatureState(_feature_id)
+          if (_selected) {
+            _selected = _selected['parcel-selected']
+          }
+          _mapObj.setFeatureState(
+            _feature_id,
+            { 'parcel-selected': !_selected }
+          );
+        }
+      })
+    }
+  }, [contextLayers, selectionMode])
+
+  useEffect(() => {
+    map.current.on('click', mapOnClick)
+    return () => {
+      map.current.off('click', mapOnClick)
+    }
+  }, [contextLayers, selectionMode])
 
   return (
       <div className="map-wrap">
