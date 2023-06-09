@@ -13,6 +13,7 @@ from frontend.models.parcels import (
     FarmPortion,
     ParentFarm
 )
+from area import area
 
 
 class CreateNewProperty(APIView):
@@ -20,8 +21,7 @@ class CreateNewProperty(APIView):
     permission_classes = [IsAuthenticated]
 
     def get_geom_size_in_ha(self, geom: GEOSGeometry):
-        cloned_geom = geom.transform(32118, clone=True)
-        meters_sq = cloned_geom.area
+        meters_sq = area(geom.geojson)
         acres = meters_sq * 0.000247105381 # meters^2 to acres
         return acres / 2.471
 
@@ -93,10 +93,10 @@ class CreateNewProperty(APIView):
         geom = self.get_geometry(parcels)
         data = {
             'name': request.data.get('name'),
-            'owner_email': request.data.get('ownerEmail'),
-            'property_type_id': request.data.get('propertyTypeId'),
-            'province_id': request.data.get('provinceId'),
-            'organisation_id': request.data.get('organisationId'),
+            'owner_email': request.data.get('owner_email'),
+            'property_type_id': request.data.get('property_type_id'),
+            'province_id': request.data.get('province_id'),
+            'organisation_id': request.data.get('organisation_id'),
             'geometry': geom,
             'property_size_ha': self.get_geom_size_in_ha(geom) if geom else 0
         }

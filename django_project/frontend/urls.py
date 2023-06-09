@@ -45,7 +45,7 @@ urlpatterns = [
         AerialTile.as_view(),
         name='aerial-map-tile'),
     re_path(
-        r'^/api/property/create/?$',
+        r'^api/property/create/?$',
         CreateNewProperty.as_view(),
         name='property-create'),
     path('map/', MapView.as_view(), name='map'),

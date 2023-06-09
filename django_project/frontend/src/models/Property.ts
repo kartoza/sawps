@@ -4,14 +4,14 @@ export default interface PropertyInterface {
     id: number,
     name: string,
     owner: string,
-    ownerEmail?: string,
-    propertyType: string,
-    propertyTypeId?: number,
+    owner_email?: string,
+    property_type: string,
+    property_type_id?: number,
     province: string,
-    provinceId?: number,
+    province_id?: number,
     size?: number,
     organisation?: string,
-    organisationId?: number,
+    organisation_id?: number,
     parcels?: ParcelInterface[]
 }
 
@@ -20,15 +20,24 @@ export const createNewProperty = ():PropertyInterface => {
         id: 0,
         name: '',
         owner: '',
-        ownerEmail: '',
-        propertyType: '',
+        owner_email: '',
+        property_type: '',
         province: '',
         size: 0,
         organisation: '',
         parcels: [],
-        propertyTypeId: 0,
-        provinceId: 0,
-        organisationId: 0
+        property_type_id: 0,
+        province_id: 0,
+        organisation_id: 0
     }
     return _result
 }
+
+export interface PropertyValidation {
+    name?: boolean,
+    email?: boolean,
+    property_type?: boolean,
+    province?: boolean,
+    organisation?: boolean
+}
+

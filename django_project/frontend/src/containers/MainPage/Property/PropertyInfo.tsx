@@ -11,13 +11,14 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import PropertyInterface from '../../../models/Property';
+import PropertyInterface, {PropertyValidation} from '../../../models/Property';
 import './index.scss';
 
 interface PropertyInfoInterface {
     property: PropertyInterface,
     enableForm: boolean,
-    onUpdated: (data: PropertyInterface) => void
+    onUpdated: (data: PropertyInterface, validation: PropertyValidation) => void,
+    validationError?: PropertyValidation
 }
 
 const PROPERTY_TYPE_LIST = [
@@ -61,11 +62,12 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                         </TableCell>
                         <TableCell>
                             <TextField
+                                error={props.validationError?.name}
                                 disabled={loading || !props.enableForm}
                                 id="input_propertyname"
                                 hiddenLabel={true}
                                 type={"text"}
-                                onChange={val => props.onUpdated({ ...props.property, name: val.target.value })}
+                                onChange={val => props.onUpdated({ ...props.property, name: val.target.value }, {name:false})}
                                 value={props.property.name}
                                 sx={{ width: '100%' }}
                             />
@@ -77,11 +79,10 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                         </TableCell>
                         <TableCell>
                             <TextField
-                                disabled={loading || !props.enableForm}
+                                disabled={true}
                                 id="input_ownername"
                                 hiddenLabel={true}
                                 type={"text"}
-                                onChange={val => props.onUpdated({ ...props.property, owner: val.target.value })}
                                 value={props.property.owner}
                                 sx={{ width: '100%' }}
                             />
@@ -93,12 +94,13 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                         </TableCell>
                         <TableCell>
                             <TextField
+                                error={props.validationError?.email}
                                 disabled={loading || !props.enableForm}
                                 id="input_owneremail"
                                 hiddenLabel={true}
                                 type={"text"}
-                                onChange={val => props.onUpdated({ ...props.property, ownerEmail: val.target.value })}
-                                value={props.property.ownerEmail}
+                                onChange={val => props.onUpdated({ ...props.property, owner_email: val.target.value }, {email:false})}
+                                value={props.property.owner_email}
                                 sx={{ width: '100%' }}
                             />
                         </TableCell>
@@ -111,10 +113,11 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                             <FormControl fullWidth size="small">
                                 <Select
                                     id="property-type-select"
-                                    value={props.property.propertyType}
+                                    error={props.validationError?.property_type}
+                                    value={props.property.property_type}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, propertyType: event.target.value })}
+                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, property_type: event.target.value }, {property_type:false})}
                                 >
                                     { PROPERTY_TYPE_LIST.map((property_type: string) => {
                                         return (
@@ -133,10 +136,11 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                             <FormControl fullWidth size="small">
                                 <Select
                                     id="province-select"
+                                    error={props.validationError?.province}
                                     value={props.property.province}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, province: event.target.value })}
+                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, province: event.target.value }, {province:false})}
                                 >
                                     { PROVINCE_LIST.map((province: string) => {
                                         return (
@@ -164,16 +168,17 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                     </TableRow>
                     <TableRow key='organisation'>
                         <TableCell component="th" scope="row">
-                            Confirm Organisation
+                            Organisation
                         </TableCell>
                         <TableCell>
                             <FormControl fullWidth size="small">
                                 <Select
                                     id="organisation-select"
+                                    error={props.validationError?.organisation}
                                     value={props.property.organisation}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, organisation: event.target.value })}
+                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, organisation: event.target.value }, {organisation:false})}
                                 >
                                     { ORGANISATION_LIST.map((organisation: string) => {
                                         return (
