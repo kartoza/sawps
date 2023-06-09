@@ -22,6 +22,9 @@ from frontend.api_views.map import (
     AerialTile,
     FindParcelByCoord
 )
+from frontend.api_views.property import (
+    CreateNewProperty
+)
 
 urlpatterns = [
     re_path(
@@ -41,6 +44,10 @@ urlpatterns = [
          r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
         AerialTile.as_view(),
         name='aerial-map-tile'),
+    re_path(
+        r'^/api/property/create/?$',
+        CreateNewProperty.as_view(),
+        name='property-create'),
     path('map/', MapView.as_view(), name='map'),
     path('', HomeView.as_view(), name='home'),
 ]

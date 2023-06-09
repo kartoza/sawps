@@ -1,12 +1,18 @@
+import ParcelInterface from "./Parcel"
+
 export default interface PropertyInterface {
     id: number,
     name: string,
     owner: string,
     ownerEmail?: string,
     propertyType: string,
+    propertyTypeId?: number,
     province: string,
+    provinceId?: number,
     size?: number,
-    organisation?: string
+    organisation?: string,
+    organisationId?: number,
+    parcels?: ParcelInterface[]
 }
 
 export const createNewProperty = ():PropertyInterface => {
@@ -18,7 +24,11 @@ export const createNewProperty = ():PropertyInterface => {
         propertyType: '',
         province: '',
         size: 0,
-        organisation: ''
+        organisation: '',
+        parcels: [],
+        propertyTypeId: 0,
+        provinceId: 0,
+        organisationId: 0
     }
     return _result
 }

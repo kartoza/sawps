@@ -9,14 +9,10 @@ from frontend.models.parcels import (
     Holding
 )
 from frontend.tests.model_factories import UserF
-from frontend.api_views.map import (
-    ContextLayerList,
-    MapStyles,
-    FindParcelByCoord
-)
+from frontend.api_views.property import CreateNewProperty
 
 
-class TestMapAPIViews(TestCase):
+class TestPropertyAPIViews(TestCase):
 
     def setUp(self) -> None:
         self.factory = APIRequestFactory()
@@ -38,35 +34,34 @@ class TestMapAPIViews(TestCase):
                 cname='C1235DEF'
             )
     
-    def test_get_context_layers(self):
-        request = self.factory.get(
-            reverse('context-layer-list')
+    def test_create_new_property(self):
+        data = {
+            'name': 'Property A',
+            'ownerEmail': 'test@test.com',
+            'propertyTypeId': 1,
+            'provinceId': 1,
+            'organisationId': 1,
+            'parcels': [
+                {
+                    'id': self.erf_1.id,
+                    'layer': 'erf',
+                    'cname': self.erf_1.cname,
+                    'type': 'urban'
+                },
+                {
+                    'id': self.holding_1.id,
+                    'layer': 'holding',
+                    'cname': self.holding_1.cname,
+                    'type': 'urban'
+                },
+            ]
+        }
+        request = self.factory.post(
+            reverse('property-create'), data=data,
+            format='json'
         )
         request.user = self.user_1
-        view = ContextLayerList.as_view()
+        view = CreateNewProperty.as_view()
         response = view(request)
-        self.assertEqual(response.status_code, 200)
-    
-    def test_get_map_styles(self):
-        request = self.factory.get(
-            reverse('map-style')
-        )
-        request.user = self.user_1
-        view = MapStyles.as_view()
-        response = view(request)
-        self.assertEqual(response.status_code, 200)
-    
-    def test_find_parcel_by_coord(self):
-        lat = -26.71998940486352
-        lng = 27.763781680455708
-        request = self.factory.get(
-            reverse('find-parcel')  + (
-                f'/?lat={lat}&lng={lng}'
-            )
-        )
-        request.user = self.user_1
-        view = FindParcelByCoord.as_view()
-        response = view(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['layer'], 'holding')
-        self.assertEqual(response.data['cname'], self.holding_1.cname)
+        self.assertEqual(response.status_code, 201)
+
