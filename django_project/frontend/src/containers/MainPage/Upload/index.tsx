@@ -9,7 +9,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from '@mui/icons-material/Search';
 import {RootState} from '../../../app/store';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import { setMapMode } from '../../../reducers/MapState';
+import { toggleParcelSelectionMode } from '../../../reducers/MapState';
 
 import './index.scss';
 
@@ -62,8 +62,8 @@ function Upload() {
                                             <Grid item>
                                                 <Grid container flexDirection={'row'} flexWrap={'wrap'} spacing={1} rowGap={1} justifyContent={'space-evenly'}>
                                                     { mapSelectionMode === 'parcel' ? 
-                                                        <Button variant='contained' onClick={() => dispatch(setMapMode('property')) }>CANCEL</Button> :
-                                                        <Button variant='contained' onClick={() => dispatch(setMapMode('parcel')) }>SELECT</Button>
+                                                        <Button variant='contained' onClick={() => dispatch(toggleParcelSelectionMode()) }>CANCEL</Button> :
+                                                        <Button variant='contained' onClick={() => dispatch(toggleParcelSelectionMode()) }>SELECT</Button>
                                                     } 
                                                     <Button variant='contained'>DIGITISE</Button>
                                                     <Button variant='contained'>UPLOAD</Button>
