@@ -1,4 +1,4 @@
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile
+from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation
 import factory
 from django.contrib.auth.models import User
 
@@ -61,3 +61,13 @@ class userProfileFactory(factory.django.DjangoModelFactory):
     user_role_type_id = factory.SubFactory(
         'stakeholder.factories.userRoleTypeFactory'
     )
+
+
+class organisationFactory(factory.django.DjangoModelFactory):
+    """Factory class for organisation model."""
+
+    class Meta:
+        model = Organisation
+
+    name = factory.Faker('company')
+    data_use_permission = factory.SubFactory('regulatory_permit.factories.DataUsePermissionFactory')
