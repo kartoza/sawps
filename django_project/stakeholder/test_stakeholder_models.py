@@ -1,6 +1,6 @@
 from django.test import TestCase
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organization
-from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userFactory, userProfileFactory, organizationFactory
+from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation
+from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userFactory, userProfileFactory, organisationFactory
 from django.contrib.auth.models import User
 
 
@@ -125,22 +125,22 @@ class OrganizationTestCase(TestCase):
     """Organization test case."""
     @classmethod
     def setUpTestData(cls):
-        cls.organization = organizationFactory()
+        cls.organization = organisationFactory()
     
     def test_create_organization(self):
         """Test creating organization."""
-        self.assertEqual(Organization.objects.count(), 1)
-        self.assertTrue(isinstance(self.organization, Organization))
-        self.assertTrue(self.organization.name, Organization.objects.get(id=1).name)
+        self.assertEqual(Organisation.objects.count(), 1)
+        self.assertTrue(isinstance(self.organization, Organisation))
+        self.assertTrue(self.organization.name, Organisation.objects.get(id=1).name)
         
     def test_update_organization(self):
         """Test updating organization."""
         self.organization.name = 'test'
         self.organization.save()
-        self.assertEqual(Organization.objects.get(id=1).name, 'test')
+        self.assertEqual(Organisation.objects.get(id=1).name, 'test')
     
     def test_delete_organization(self):
         """Test deleting organization."""
         self.organization.delete()
-        self.assertEqual(Organization.objects.count(), 0)
+        self.assertEqual(Organisation.objects.count(), 0)
         

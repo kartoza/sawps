@@ -43,7 +43,7 @@ class Property(models.Model):
     owner_email = models.EmailField(null=True, blank=True)
     property_size_ha = models.IntegerField(null=True, blank=True)
     area_available = models.FloatField()
-    geometry = models.GeometryField(srid=4326, null=True, blank=True)
+    geometry = models.MultiPolygonField(srid=4326, null=True, blank=True)
     province = models.ForeignKey(Province, on_delete=models.DO_NOTHING)
     ownership_status = models.ForeignKey(
         OwnershipStatus, on_delete=models.DO_NOTHING
@@ -51,8 +51,8 @@ class Property(models.Model):
     property_type = models.ForeignKey(
         PropertyType, on_delete=models.DO_NOTHING
     )
-    organization = models.ForeignKey(
-        'stakeholder.Organization', on_delete=models.DO_NOTHING
+    organisation = models.ForeignKey(
+        'stakeholder.Organisation', on_delete=models.DO_NOTHING
     )
 
     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
