@@ -54,15 +54,15 @@
             }
 
             .UploadSectionContent {
+                p {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    text-align: left;
+                    font-size: 0.8rem;
+                }
                 &.CreateBoundary {
                     .MuiButton-root {
                         min-width: 100px;
-                    }
-                    p {
-                        padding-top: 10px;
-                        padding-bottom: 10px;
-                        text-align: left;
-                        font-size: 0.8rem;
                     }
                 }
             }

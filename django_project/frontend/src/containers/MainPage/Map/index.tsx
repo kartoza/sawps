@@ -1,6 +1,4 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import axios from "axios";
-import ReactDOM from "react-dom/client";
 import maplibregl, { IControl } from 'maplibre-gl';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
@@ -75,7 +73,7 @@ export default function Map() {
         container: mapContainer.current,
         style: `${MAP_STYLE_URL}`,
         center: [27.763781680455708, -26.71998940486352], // debug
-        zoom: 17,
+        zoom: 17, // debug
         minZoom: 5
       })
       map.current.addControl(new CustomNavControl({
