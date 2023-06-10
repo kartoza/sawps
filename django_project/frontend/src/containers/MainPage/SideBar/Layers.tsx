@@ -38,7 +38,7 @@ function Layers() {
         if (contextLayers.length === 0) {
             fetchContextLayers()
         }
-    }, [contextLayers])
+    }, [])
 
     return (
         <Box className={'Layers'}>
