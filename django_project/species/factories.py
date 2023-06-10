@@ -28,6 +28,4 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
     management_status = factory.SubFactory(ManagementStatusFactory)
     nature_of_population = factory.SubFactory('population_data.factories.NatureOfPopulationFactory')
     count_method = factory.SubFactory('population_data.factories.CountMethodFactory')
-    user = factory.Iterator(User.objects.all())
-    taxon = factory.Iterator(Taxon.objects.all())
-    property = factory.SubFactory('population_data.factories.PropertyFactory')
+    property = factory.SubFactory('property.factories.PropertyFactory')
