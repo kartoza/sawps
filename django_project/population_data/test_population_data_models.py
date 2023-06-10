@@ -1,6 +1,6 @@
 from django.test import TestCase
-from population_data.models import CountMethod, Month, NatureOfPopulation
-from population_data.factories import CountMethodFactory, MonthFactory, NatureOfPopulationFactory
+from population_data.models import CountMethod, Month, NatureOfPopulation, PopulationCount, PopulationCountPerActivity
+from population_data.factories import CountMethodFactory, MonthFactory, NatureOfPopulationFactory, PopulationCountFactory#, PopulationCountPerActivityFactory
 from django.db.utils import IntegrityError
 
 
@@ -22,7 +22,7 @@ class CountMethodTestCase(TestCase):
         """Test update count method."""
         self.count_method.name = 'count method-2'
         self.count_method.save()
-        self.assertEqual(CountMethod.objects.get(id=1).name, 'count method-2')
+        self.assertEqual(CountMethod.objects.get(id=self.count_method.id).name, 'count method-2')
 
     def test_count_method_unique_name_constraint(self):
         """Test count method unique name constraint."""
@@ -53,7 +53,7 @@ class MonthTestCase(TestCase):
         """Update month."""
         self.month.name = 'month-1'
         self.month.save()
-        self.assertEqual(Month.objects.get(id=1).name, 'month-1')
+        self.assertEqual(Month.objects.get(id=self.month.id).name, 'month-1')
 
     def test_month_unique_name_constraint(self):
         """Test month unique name constraint."""
@@ -96,7 +96,7 @@ class NatureOfPopulationTestCase(TestCase):
         self.nature_of_population.name = 'nature of population-1'
         self.nature_of_population.save()
         self.assertEqual(
-            NatureOfPopulation.objects.get(id=1).name,
+            NatureOfPopulation.objects.get(id=self.nature_of_population.id).name,
             'nature of population-1',
         )
 
@@ -110,3 +110,31 @@ class NatureOfPopulationTestCase(TestCase):
         """Test delete nature of population."""
         self.nature_of_population.delete()
         self.assertEqual(NatureOfPopulation.objects.count(), 0)
+
+
+class PopulationCountFactory(TestCase):
+    """Population count test case."""
+    @classmethod
+    def setUpTestData(cls):
+        """SetUpTestData for population count test case."""
+        cls.population_count = PopulationCountFactory()
+    
+    def test_create_population_count(self):
+        """Test create population count."""
+        self.assertTrue(
+            isinstance(self.population_count, PopulationCount)
+        )
+        self.assertEqual(PopulationCount.objects.count(), 1)
+
+    def test_update_population_count(self):
+        """Test update population count."""
+        self.population_count.count = 100
+        #self.population_count.save()
+        self.assertEqual(
+            PopulationCount.objects.get(id=self.population_count.id).count, 100
+        )
+
+    def test_delete_population_count(self):
+        """Test delete population count."""
+        #self.population_count.delete()
+        self.assertEqual(PopulationCount.objects.count(), 0)
