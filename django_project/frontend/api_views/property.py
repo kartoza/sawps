@@ -7,13 +7,29 @@ from django.contrib.gis.db.models import Union
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from area import area
+from property.models import (
+    PropertyType,
+    Province,
+    Property,
+    OwnershipStatus
+)
+from stakeholder.models import (
+    Organisation
+)
 from frontend.models.parcels import (
     Erf,
     Holding,
     FarmPortion,
     ParentFarm
 )
-from area import area
+from frontend.serializers.property import (
+    PropertyTypeSerializer,
+    ProvinceSerializer
+)
+from frontend.serializers.stakeholder import (
+    OrganisationSerializer
+)
 
 
 class CreateNewProperty(APIView):
@@ -91,6 +107,7 @@ class CreateNewProperty(APIView):
         # union of parcels
         parcels = request.data.get('parcels')
         geom = self.get_geometry(parcels)
+        ownership_status = OwnershipStatus.objects.all().first()
         data = {
             'name': request.data.get('name'),
             'owner_email': request.data.get('owner_email'),
@@ -98,9 +115,43 @@ class CreateNewProperty(APIView):
             'province_id': request.data.get('province_id'),
             'organisation_id': request.data.get('organisation_id'),
             'geometry': geom,
-            'property_size_ha': self.get_geom_size_in_ha(geom) if geom else 0
+            'area_available': 0,
+            'property_size_ha': self.get_geom_size_in_ha(geom) if geom else 0,
+            'ownership_status_id': ownership_status.id,
+            'created_by_id': self.request.user.id,
+            'created_at': datetime.now()
         }
-        new_property_id = 0
+        property = Property.objects.create(**data)
         return Response(status=201, data={
-            'id': new_property_id
+            'id': property.id
+        })
+
+
+class PropertyMetadataList(APIView):
+    """Get metadata for property: type, organisation, province."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        provinces = Province.objects.all().order_by('name')
+        types = PropertyType.objects.all().order_by('name')
+        organisations = Organisation.objects.all().order_by('name')
+        if not self.request.user.is_superuser:
+            # filter by organisation that the user belongs to
+            pass
+        return Response(status=200, data={
+            'provinces': (
+                ProvinceSerializer(provinces, many=True).data
+            ),
+            'types': (
+                PropertyTypeSerializer(types, many=True).data
+            ),
+            'organisations': (
+                OrganisationSerializer(organisations, many=True).data
+            ),
+            'user_email': self.request.user.email,
+            'user_name': (
+                f'{self.request.user.first_name} '
+                f'{self.request.user.last_name}' if
+                self.request.user.first_name else self.request.user.username
+            )
         })

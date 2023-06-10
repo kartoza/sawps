@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import axios from "axios";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -7,11 +8,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import PropertyInterface, {PropertyValidation} from '../../../models/Property';
+import PropertyInterface, { PropertyValidation, PropertyTypeInterface, ProvinceInterface } from '../../../models/Property';
+import { OrganisationInterface } from '../../../models/Stakeholder';
 import './index.scss';
 
 interface PropertyInfoInterface {
@@ -21,26 +22,52 @@ interface PropertyInfoInterface {
     validationError?: PropertyValidation
 }
 
-const PROPERTY_TYPE_LIST = [
-    'TYPE 1',
-    'TYPE 2',
-    'TYPE 3'
-]
+const PROPERTY_METADATA_URL = '/api/property/metadata/list/'
 
-const PROVINCE_LIST = [
-    'PROVINCE 1',
-    'PROVINCE 2',
-    'PROVINCE 3'
-]
 
-const ORGANISATION_LIST = [
-    'ORGANISATION 1',
-    'ORGANISATION 2',
-    'ORGANISATION 3'
-]
-
+/**
+ * Display property information table
+ * @param props PropertyInfoInterface
+ * @returns 
+ */
 export default function PropertyInfo(props: PropertyInfoInterface) {
     const [loading, setLoading] = useState(false)
+    const [propertyTypeList, setPropertyTypeList] = useState<PropertyTypeInterface[]>([])
+    const [provinceList, setProvinceList] = useState<ProvinceInterface[]>([])
+    const [organisationList, setOrganisationList] = useState<OrganisationInterface[]>([])
+
+    const fetchMetadataList = () => {
+        setLoading(true)
+        axios.get(PROPERTY_METADATA_URL).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setPropertyTypeList(response.data['types'])
+                setProvinceList(response.data['provinces'])
+                setOrganisationList(response.data['organisations'])
+                let _initial_data:any = {}
+                if (response.data['organisations'].length === 1) {
+                    _initial_data['organisation'] = response.data['organisations'][0]['name']
+                    _initial_data['organisation_id'] = response.data['organisations'][0]['id']
+                }
+                if (response.data['user_name']) {
+                    _initial_data['owner'] = response.data['user_name']
+                }
+                if (response.data['user_email']) {
+                    _initial_data['owner_email'] = response.data['user_email']
+                }
+                if (_initial_data) {
+                    props.onUpdated({ ...props.property, ..._initial_data }, {})
+                }
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
+    useEffect(() => {
+        fetchMetadataList()
+    }, [])
 
     return (
         <TableContainer component={Paper}>
@@ -114,14 +141,17 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 <Select
                                     id="property-type-select"
                                     error={props.validationError?.property_type}
-                                    value={props.property.property_type}
+                                    value={props.property.property_type_id.toString()}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, property_type: event.target.value }, {property_type:false})}
+                                    onChange={(event: SelectChangeEvent) => {
+                                        let _selected = propertyTypeList.find(e => e.id === parseInt(event.target.value))
+                                        props.onUpdated({ ...props.property, property_type_id: _selected.id,  property_type: _selected.name }, {property_type:false})}
+                                    }
                                 >
-                                    { PROPERTY_TYPE_LIST.map((property_type: string) => {
+                                    { propertyTypeList.map((property_type: PropertyTypeInterface) => {
                                         return (
-                                            <MenuItem key={property_type} value={property_type}>{property_type}</MenuItem>
+                                            <MenuItem key={property_type.id} value={property_type.id}>{property_type.name}</MenuItem>
                                         )
                                     })}
                                 </Select>
@@ -137,14 +167,17 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 <Select
                                     id="province-select"
                                     error={props.validationError?.province}
-                                    value={props.property.province}
+                                    value={props.property.province_id.toString()}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, province: event.target.value }, {province:false})}
+                                    onChange={(event: SelectChangeEvent) => {
+                                        let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
+                                        props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})}
+                                    }
                                 >
-                                    { PROVINCE_LIST.map((province: string) => {
+                                    { provinceList.map((province: ProvinceInterface) => {
                                         return (
-                                            <MenuItem key={province} value={province}>{province}</MenuItem>
+                                            <MenuItem key={province.id} value={province.id}>{province.name}</MenuItem>
                                         )
                                     })}
                                 </Select>
@@ -175,14 +208,17 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 <Select
                                     id="organisation-select"
                                     error={props.validationError?.organisation}
-                                    value={props.property.organisation}
+                                    value={props.property.organisation_id.toString()}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => props.onUpdated({ ...props.property, organisation: event.target.value }, {organisation:false})}
+                                    onChange={(event: SelectChangeEvent) => {
+                                        let _selected = organisationList.find(e => e.id === parseInt(event.target.value))
+                                        props.onUpdated({ ...props.property, organisation: _selected.name, organisation_id: _selected.id }, {organisation:false})}
+                                    }
                                 >
-                                    { ORGANISATION_LIST.map((organisation: string) => {
+                                    { organisationList.map((organisation: OrganisationInterface) => {
                                         return (
-                                            <MenuItem key={organisation} value={organisation}>{organisation}</MenuItem>
+                                            <MenuItem key={organisation.id} value={organisation.id}>{organisation.name}</MenuItem>
                                         )
                                     })}
                                 </Select>

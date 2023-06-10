@@ -23,7 +23,8 @@ from frontend.api_views.map import (
     FindParcelByCoord
 )
 from frontend.api_views.property import (
-    CreateNewProperty
+    CreateNewProperty,
+    PropertyMetadataList
 )
 
 urlpatterns = [
@@ -48,6 +49,10 @@ urlpatterns = [
         r'^api/property/create/?$',
         CreateNewProperty.as_view(),
         name='property-create'),
+    re_path(
+        r'^api/property/metadata/list/?$',
+        PropertyMetadataList.as_view(),
+        name='property-metadata'),
     path('map/', MapView.as_view(), name='map'),
     path('', HomeView.as_view(), name='home'),
 ]

@@ -19,7 +19,7 @@ import AlertMessage from '../../../components/AlertMessage';
 
 import './index.scss';
 
-const CREATE_NEW_GEOMETRY_URL = '/api/property/create/'
+const CREATE_NEW_PROPERTY_URL = '/api/property/create/'
 
 function Upload() {
     const dispatch = useAppDispatch()
@@ -72,10 +72,12 @@ function Upload() {
             owner_email: property.owner_email ? property.owner_email.trim() : '',
             parcels: selectedParcels
         }
-        postData(`${CREATE_NEW_GEOMETRY_URL}`, _data).then(
+        postData(`${CREATE_NEW_PROPERTY_URL}`, _data).then(
             response => {
                 setSavingProperty(false)
                 setAlertMessage('Successfully adding new property!')
+                // reset parcel selection mode
+                dispatch(toggleParcelSelectionMode())
             }
           ).catch(error => {
             setSavingProperty(false)

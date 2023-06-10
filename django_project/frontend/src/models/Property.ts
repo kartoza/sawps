@@ -41,3 +41,12 @@ export interface PropertyValidation {
     organisation?: boolean
 }
 
+export interface PropertyTypeInterface {
+    id: number,
+    name: string
+}
+
+export interface ProvinceInterface {
+    id: number,
+    name: string
+}
