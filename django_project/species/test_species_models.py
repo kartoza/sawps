@@ -1,7 +1,7 @@
 
 from django.test import TestCase
-from species.models import TaxonRank, Taxon, ManagementStatus
-from species.factories import TaxonRankFactory, ManagementStatusFactory
+from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies
+from species.factories import TaxonRankFactory, ManagementStatusFactory, OwnedSpeciesFactory
 from django.db.utils import IntegrityError
 
 
@@ -137,3 +137,27 @@ class TaxonTestCase(TestCase):
         """Test delete taxon rank."""
         self.taxonRank.delete()
         self.assertEqual(TaxonRank.objects.count(), 0)
+
+
+class OwnedSpeciesTestCase(TestCase):
+    """Owned species test case."""
+    @classmethod
+    def setUpTestData(cls):
+        """Set up test data for owned species test case."""
+        cls.ownedSpecies = OwnedSpeciesFactory()
+
+    def test_create_owned_species(self):
+        """Test create owned species."""
+        self.assertTrue(isinstance(self.ownedSpecies, OwnedSpecies))
+        self.assertEqual(OwnedSpecies.objects.count(), 1)
+
+    def test_update_owned_species(self):
+        """Test update owned species."""
+        self.ownedSpecies.management_status = 'management_status_1'
+        self.ownedSpecies.save()
+        self.assertEqual(OwnedSpecies.objects.get(id=1).management_status.name, 'management_status_1')
+
+    def test_delete_owned_species(self):
+        """Test delete owned species."""
+        self.ownedSpecies.delete()
+        self.assertEqual(OwnedSpecies.objects.count(), 0)

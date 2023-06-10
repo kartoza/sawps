@@ -1,6 +1,7 @@
 import factory
 from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies
-
+from species.models import Taxon
+from django.contrib.auth.models import User
 
 class TaxonRankFactory(factory.django.DjangoModelFactory):
     """taxon rank factory"""
@@ -27,6 +28,6 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
     management_status = factory.SubFactory(ManagementStatusFactory)
     nature_of_population = factory.SubFactory('population_data.factories.NatureOfPopulationFactory')
     count_method = factory.SubFactory('population_data.factories.CountMethodFactory')
-    user = factory.SubFactory('population_data.factories.UserFactory')
-    taxon = factory.SubFactory('population_data.factories.TaxonFactory')
+    user = factory.Iterator(User.objects.all())
+    taxon = factory.Iterator(Taxon.objects.all())
     property = factory.SubFactory('population_data.factories.PropertyFactory')
