@@ -40,7 +40,7 @@ class PopulationCountAbstractFactory(factory.django.DjangoModelFactory):
         abstract = True
 
     year = factory.Faker('date')
-    owned = factory.SubFactory('species.factories.OwnedSpeciesFactory')
+    owned_species = factory.SubFactory('species.factories.OwnedSpeciesFactory')
     total = factory.Faker('random_int')
     adult_male = factory.Faker('random_int')
     adult_female = factory.Faker('random_int')
@@ -48,12 +48,21 @@ class PopulationCountAbstractFactory(factory.django.DjangoModelFactory):
     juvenile_male = factory.Faker('random_int')
     juvenile_female = factory.Faker('random_int')
 
+    @factory.post_generation
+    def owned_species(self, create, extracted, **kwargs):
+        """Add activity type to population count per activity."""
+        if not create:
+            return
+        if extracted:
+            for owned_species in extracted:
+                self.owned_species.add(owned_species)
+
+
 
 class PopulationCountFactory(PopulationCountAbstractFactory):
     """Population count factory."""
     class Meta:
         model = PopulationCount
-        abstract = False
 
     sub_adult_total = factory.Faker('random_int')
     sub_adult_male = factory.Faker('random_int')

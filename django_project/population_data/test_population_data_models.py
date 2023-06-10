@@ -1,6 +1,9 @@
 from django.test import TestCase
 from population_data.models import CountMethod, Month, NatureOfPopulation, PopulationCount, PopulationCountPerActivity
-from population_data.factories import CountMethodFactory, MonthFactory, NatureOfPopulationFactory, PopulationCountFactory#, PopulationCountPerActivityFactory
+from population_data.factories import CountMethodFactory, MonthFactory, NatureOfPopulationFactory, PopulationCountFactory, PopulationCountPerActivityFactory
+from species.models import Taxon, OwnedSpecies
+from django.contrib.auth.models import User
+from species.factories import OwnedSpeciesFactory, TaxonRankFactory
 from django.db.utils import IntegrityError
 
 
@@ -112,12 +115,20 @@ class NatureOfPopulationTestCase(TestCase):
         self.assertEqual(NatureOfPopulation.objects.count(), 0)
 
 
-class PopulationCountFactory(TestCase):
+class PopulationCountTestCase(TestCase):
     """Population count test case."""
     @classmethod
     def setUpTestData(cls):
         """SetUpTestData for population count test case."""
-        cls.population_count = PopulationCountFactory()
+        taxon = Taxon.objects.create(
+            scientific_name='taxon_0',
+            common_name_varbatim='taxon_0',
+            colour_variant=False,
+            taxon_rank=TaxonRankFactory(),
+        )
+        user = User.objects.create_user(username='testuser', password='12345')        
+        OwnedSpeciesFactory(taxon=taxon, user=user)
+        cls.population_count = PopulationCountFactory(owned_species=OwnedSpecies.objects.all())
     
     def test_create_population_count(self):
         """Test create population count."""
@@ -126,15 +137,53 @@ class PopulationCountFactory(TestCase):
         )
         self.assertEqual(PopulationCount.objects.count(), 1)
 
+
     def test_update_population_count(self):
         """Test update population count."""
-        self.population_count.count = 100
-        #self.population_count.save()
+        self.population_count.total = 100
+        self.population_count.save()
         self.assertEqual(
-            PopulationCount.objects.get(id=self.population_count.id).count, 100
+            PopulationCount.objects.get(year=self.population_count.year).total, 100
         )
 
     def test_delete_population_count(self):
         """Test delete population count."""
-        #self.population_count.delete()
+        self.population_count.delete()
         self.assertEqual(PopulationCount.objects.count(), 0)
+
+
+class PopulationCountPerActivityTestCase(TestCase):
+    """Population count test case."""
+    @classmethod
+    def setUpTestData(cls):
+        """SetUpTestData for population count test case."""
+        taxon = Taxon.objects.create(
+            scientific_name='taxon_0',
+            common_name_varbatim='taxon_0',
+            colour_variant=False,
+            taxon_rank=TaxonRankFactory(),
+        )
+        user = User.objects.create_user(username='testuser', password='12345')        
+        OwnedSpeciesFactory(taxon=taxon, user=user)
+        cls.population_count = PopulationCountPerActivityFactory(owned_species=OwnedSpecies.objects.all())
+    
+    def test_create_population_count(self):
+        """Test create population count."""
+        self.assertTrue(
+            isinstance(self.population_count, PopulationCountPerActivity)
+        )
+        self.assertEqual(PopulationCountPerActivity.objects.count(), 1)
+
+
+    def test_update_population_count(self):
+        """Test update population count."""
+        self.population_count.total = 100
+        self.population_count.save()
+        self.assertEqual(
+            PopulationCountPerActivity.objects.get(year=self.population_count.year).total, 100
+        )
+
+    def test_delete_population_count(self):
+        """Test delete population count."""
+        self.population_count.delete()
+        self.assertEqual(PopulationCountPerActivity.objects.count(), 0)

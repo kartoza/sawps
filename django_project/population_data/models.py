@@ -48,7 +48,7 @@ class NatureOfPopulation(models.Model):
 class PopulationCountAbstract(models.Model):
     """"Populaiton count abstract model."""
     year = models.DateField(primary_key=True)
-    owned = models.ManyToManyField('species.OwnedSpecies')
+    owned_species = models.ManyToManyField('species.OwnedSpecies')
     total = models.IntegerField()
     adult_male = models.IntegerField(null=True, blank=True)
     adult_female = models.IntegerField(null=True, blank=True)
