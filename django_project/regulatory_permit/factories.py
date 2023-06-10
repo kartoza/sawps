@@ -1,14 +1,25 @@
 import factory
-import regulatory_permit.models as regulatoryPermitModels
+from regulatory_permit.models import DataUsePermission, DataUsePermissionChange
 
 
 class DataUsePermissionFactory(factory.django.DjangoModelFactory):
-    """data use permission factory"""
+    """Data use permission factory"""
 
     class Meta:
-        model = regulatoryPermitModels.DataUsePermission
+        model = DataUsePermission
 
     name = factory.Sequence(lambda n: 'data use permission %d' % n)
     description = factory.Sequence(
         lambda n: 'data use permission description %d' % n
     )
+
+
+class DataUsePermissionChangeFactory(factory.django.DjangoModelFactory):
+    """Datause permission change factory."""
+
+    class Meta:
+        model = DataUsePermissionChange
+
+    date = factory.Faker('date')
+    organisation = factory.SubFactory('stakeholder.factories.organisationFactory')
+    user = factory.SubFactory('stakeholder.factories.userFactory')
