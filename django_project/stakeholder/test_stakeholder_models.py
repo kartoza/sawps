@@ -1,17 +1,18 @@
 from django.test import TestCase
-from stakeholder.models import UserRoleType, UserTitle
-from stakeholder.factories import userRoleTypeFactory, userTitleFactory
+from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation
+from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userFactory, userProfileFactory, organisationFactory
+from django.contrib.auth.models import User
 
 
 class TestUserRoleType(TestCase):
-    """test user's role type model"""
+    """Test user's role type model."""
 
     @classmethod
     def setUpTestData(cls):
         cls.UserRoleTypeFactory = userRoleTypeFactory()
 
     def test_create_new_role(self):
-        """test creating new role"""
+        """Test creating new role."""
         self.assertEqual(UserRoleType.objects.count(), 1)
         self.assertTrue(
             self.UserRoleTypeFactory.name
@@ -19,7 +20,7 @@ class TestUserRoleType(TestCase):
         )
 
     def test_update_role(self):
-        """test updating a role"""
+        """Test updating a role."""
         self.UserRoleTypeFactory.name = 'admin'
         self.UserRoleTypeFactory.save()
         UserRoleObject = UserRoleType.objects.get(
@@ -28,30 +29,118 @@ class TestUserRoleType(TestCase):
         self.assertEqual(UserRoleObject.name, 'admin')
 
     def test_delete_role(self):
-        """test deleting new role"""
+        """Test deleting new role."""
         self.UserRoleTypeFactory.delete()
         self.assertEqual(UserRoleType.objects.count(), 0)
 
 
 class UserTitleTestCase(TestCase):
-    """user title test case, we are"""
+    """User title test case."""
 
     @classmethod
     def setUpTestData(cls):
         cls.userTitle = userTitleFactory()
 
     def test_create_new_title(self):
-        """test creating new title"""
+        """Test creating new title."""
         self.assertEqual(UserTitle.objects.count(), 1)
         self.assertTrue(self.userTitle.name in ['mr', 'mrs', 'miss', 'dr'])
 
     def test_update_title(self):
-        """test updating a title"""
+        """Test updating a title."""
         self.userTitle.name = 'mr'
         userTitle = UserTitle.objects.get(id=self.userTitle.id)
         self.assertTrue(userTitle.name, 'mr')
 
     def test_delete_new_title(self):
-        """test deleting a title"""
+        """Test deleting a title."""
         self.userTitle.delete()
         self.assertEqual(UserTitle.objects.count(), 0)
+
+
+class LoginStatusTestCase(TestCase):
+    """User login status test case."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.loginStatus = loginStatusFactory()
+
+    def test_create_login_status(self):
+        """Test creating login status."""
+        self.assertEqual(LoginStatus.objects.count(), 1)
+        self.assertTrue(
+            isinstance(self.loginStatus, LoginStatus)
+        )
+        self.assertTrue(self.loginStatus.name in ['logged in', 'logged out'])
+
+    def test_update_login_status(self):
+        """Test updating a login status."""
+        self.loginStatus.name = 'logged in'
+        loginStatus = LoginStatus.objects.get(
+            id=self.loginStatus.id
+        )
+        self.assertTrue(loginStatus.name, 'logged in')
+        self.loginStatus.name = 'logged out'
+        loginStatus = LoginStatus.objects.get(
+            id=self.loginStatus.id
+        )
+        self.assertTrue(loginStatus.name, 'logged out')
+
+    def test_delete_login_status(self):
+        """Test deleting a login status."""
+        self.loginStatus.delete()
+        self.assertEqual(LoginStatus.objects.count(), 0)
+
+
+class TestUser(TestCase):
+    """Test the main user model relation to the profie model."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.profileFactory = userProfileFactory()
+
+    def test_create_new_user_with_new_profile(self):
+        """Test creating new user when new profile is created."""
+        self.assertEqual(UserProfile.objects.count(), 1)
+        self.assertEqual(
+            User.objects.count(), 2
+        )  # Anon user is created by default
+
+    def test_update_user_profile(self):
+        """Test updating user through profile."""
+        self.profileFactory.user.username = 'test'
+        self.profileFactory.user.first_name = 'test123'
+        self.profileFactory.user.save()
+        self.assertEqual(
+            User.objects.get(username='test').first_name, 'test123'
+        )
+
+    def test_delete_role(self):
+        """Test deleting user when a profile is deleted."""
+        self.profileFactory.delete()
+        self.assertEqual(User.objects.count(), 1)
+
+
+class OrganizationTestCase(TestCase):
+    """Organization test case."""
+    @classmethod
+    def setUpTestData(cls):
+        cls.organization = organisationFactory()
+    
+    def test_create_organization(self):
+        """Test creating organization."""
+        self.assertEqual(Organisation.objects.count(), 1)
+        self.assertTrue(isinstance(self.organization, Organisation))
+        self.assertTrue(self.organization.name, Organisation.objects.get(id=1).name)
+        
+    def test_update_organization(self):
+        """Test updating organization."""
+        self.organization.name = 'test'
+        self.organization.save()
+        self.assertEqual(Organisation.objects.get(id=1).name, 'test')
+    
+    def test_delete_organization(self):
+        """Test deleting organization."""
+        self.organization.delete()
+        self.assertEqual(Organisation.objects.count(), 0)
+        
