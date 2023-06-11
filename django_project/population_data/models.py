@@ -52,7 +52,7 @@ class PopulationCountAbstract(models.Model):
     total = models.IntegerField()
     adult_male = models.IntegerField(null=True, blank=True)
     adult_female = models.IntegerField(null=True, blank=True)
-    month = models.ForeignKey(Month, on_delete=models.DO_NOTHING)
+    month = models.ForeignKey(Month, on_delete=models.CASCADE)
     juvenile_male = models.IntegerField(null=True, blank=True)
     juvenile_female = models.IntegerField(null=True, blank=True)
 
