@@ -101,7 +101,7 @@ class Organisation(models.Model):
 
 class OrganisationPersonnel(models.Model):
     """Organisation personnel abstract model."""
-    organisation = models.ForeignKey(Organisation, on_delete=models.DO_NOTHING)
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
