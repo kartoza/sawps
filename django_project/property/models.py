@@ -77,6 +77,9 @@ class ParcelType(models.Model):
     """Parcel type model."""
     name = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = 'Parcel type'
         verbose_name_plural = 'Parcel types'
