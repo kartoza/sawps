@@ -75,27 +75,27 @@ class Occurrence(models.Model):
     owner_institution_code = models.CharField(max_length=250)
     coordinates_uncertainty_m = models.IntegerField()
     geometry = models.PointField(srid=4326, null=True, blank=True)
-    taxon = models.ForeignKey('species.Taxon', on_delete=models.DO_NOTHING)
+    taxon = models.ForeignKey('species.Taxon', on_delete=models.CASCADE)
     basis_of_record = models.ForeignKey(
-        BasisOfRecord, on_delete=models.DO_NOTHING
+        BasisOfRecord, on_delete=models.CASCADE
     )
     ogranism_quantity_type = models.ForeignKey(
-        OrganismQuantityType, on_delete=models.DO_NOTHING
+        OrganismQuantityType, on_delete=models.CASCADE
     )
     occurrence_status = models.ForeignKey(
-        OccurrenceStatus, on_delete=models.DO_NOTHING
+        OccurrenceStatus, on_delete=models.CASCADE
     )
     sampling_size_unit = models.ForeignKey(
-        SamplingSizeUnit, on_delete=models.DO_NOTHING
+        SamplingSizeUnit, on_delete=models.CASCADE
     )
     survey_method = models.ForeignKey(
-        SurveyMethod, on_delete=models.DO_NOTHING
+        SurveyMethod, on_delete=models.CASCADE
     )
     organisation = models.ForeignKey(
-        'stakeholder.Organisation', on_delete=models.DO_NOTHING
+        'stakeholder.Organisation', on_delete=models.CASCADE
     )
     user = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING
+        User, on_delete=models.CASCADE
     )
 
     class Meta:
