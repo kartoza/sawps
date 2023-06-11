@@ -58,7 +58,7 @@ class OwnedSpecies(models.Model):
     property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
 
     def __str__(self):
-                return f'Owned species#{self.id}'
+        return f'Owned species#{self.id}'
 
     class Meta:
         verbose_name = 'Owned Species'
