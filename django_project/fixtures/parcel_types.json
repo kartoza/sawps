@@ -1,0 +1,16 @@
+[
+{
+    "model": "property.parceltype",
+    "pk": 1,
+    "fields": {
+        "name": "Rural"
+    }
+},
+{
+    "model": "property.parceltype",
+    "pk": 2,
+    "fields": {
+        "name": "Urban"
+    }
+}
+]

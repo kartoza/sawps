@@ -24,13 +24,14 @@ class Province(models.Model):
         verbose_name_plural = 'Provinces'
         db_table = 'province'
 
+
 class OwnershipStatus(models.Model):
     """Ownership status model."""
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name = "ownership status"
         verbose_name_plural = "ownership status"
@@ -70,3 +71,32 @@ class Property(models.Model):
                 name='check property size',
             ),
         ]
+
+
+class ParcelType(models.Model):
+    """Parcel type model."""
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Parcel type'
+        verbose_name_plural = 'Parcel types'
+        db_table = 'parcel_type'
+
+
+class Parcel(models.Model):
+    """Parcel model."""
+    sg_number = models.CharField(max_length=100, unique=True)
+    year = models.DateField()
+    property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
+    parcel_type = models.ForeignKey(ParcelType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.sg_number
+    
+    class Meta:
+        verbose_name = 'Parcel'
+        verbose_name_plural = 'Parcels'
+        db_table = 'parcel'
