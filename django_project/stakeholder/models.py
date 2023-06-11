@@ -68,6 +68,23 @@ class UserProfile(models.Model):
         db_table = "user_profile"
 
 
+class UserLogin(models.Model):
+    """User login model."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    login_status = models.ForeignKey(LoginStatus, on_delete=models.DO_NOTHING)
+    ip_address = models.CharField(max_length=20)
+    date_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        verbose_name = 'User login'
+        verbose_name_plural = 'User logins'
+        db_table = "user_login"
+
+        
 class Organisation(models.Model):
     """Organisation model."""
 
