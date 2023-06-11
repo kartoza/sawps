@@ -50,15 +50,15 @@ class Taxon(models.Model):
 
 class OwnedSpecies(models.Model):
     """Owned species mdoel."""
-    management_status = models.ForeignKey('species.ManagementStatus', on_delete=models.DO_NOTHING)
-    nature_of_population = models.ForeignKey('population_data.NatureOfPopulation', on_delete=models.DO_NOTHING)
-    count_method = models.ForeignKey('population_data.CountMethod', on_delete=models.DO_NOTHING)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    taxon = models.ForeignKey('species.Taxon', on_delete=models.DO_NOTHING)
-    property = models.ForeignKey('property.Property', on_delete=models.DO_NOTHING)
+    management_status = models.ForeignKey('species.ManagementStatus', on_delete=models.CASCADE)
+    nature_of_population = models.ForeignKey('population_data.NatureOfPopulation', on_delete=models.CASCADE)
+    count_method = models.ForeignKey('population_data.CountMethod', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    taxon = models.ForeignKey('species.Taxon', on_delete=models.CASCADE)
+    property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
 
     def __str__(self):
-                return f'Owned species#{self.id}'
+        return f'Owned species#{self.id}'
 
     class Meta:
         verbose_name = 'Owned Species'
