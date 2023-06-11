@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from user_profile.tests.profile_factory import ProfileF
 from swaps.tests.models.account_factory import UserF
+from stakeholder.factories import userProfileFactory, userTitleFactory, userRoleTypeFactory
 
 
 class TestProfile(TestCase):
@@ -18,7 +18,7 @@ class TestProfile(TestCase):
         Tests profile creation
         """
         user = UserF.create()
-        profile = ProfileF.create(
+        profile = userProfileFactory.create(
             user=user,
             picture='profile_pictures/picture_P.jpg',
         )
@@ -31,7 +31,7 @@ class TestProfile(TestCase):
         Tests profile update
         """
         user = UserF.create()
-        profile = ProfileF.create(user=user)
+        profile = userProfileFactory.create(user=user)
         profile_picture = {
             'picture': 'profile_pictures/picture_P.jpg',
         }
@@ -45,7 +45,7 @@ class TestProfile(TestCase):
         Tests profile delete
         """
         user = UserF.create()
-        profile = ProfileF.create(user=user)
+        profile = userProfileFactory.create(user=user)
         profile.delete()
 
         self.assertTrue(profile.pk is None)
@@ -61,6 +61,14 @@ class TestProfile(TestCase):
             username='test',
             email='test@test.com',
         )
+        title = userTitleFactory.create(
+            id=1,
+            name = 'test',
+        )
+        role = userRoleTypeFactory.create(
+            id=1,
+            name = 'test',
+        )
         user.set_password('passwd')
         user.save()
         resp = self.client.login(username='test', password='passwd')
@@ -70,6 +78,8 @@ class TestProfile(TestCase):
             'first-name': 'Fan',
             'last-name': 'Andri',
             'organization': 'Kartoza',
+            'title': '1',
+            'role': '1'
         }
 
         response = self.client.post(
@@ -79,3 +89,5 @@ class TestProfile(TestCase):
         updated_user = get_user_model().objects.get(id=user.id)
         self.assertEqual(updated_user.first_name, post_dict['first-name'])
         self.assertIsNotNone(updated_user.user_profile.picture)
+        self.assertEqual(user.user_profile.title_id.name, title.name)
+        self.assertEqual(user.user_profile.user_role_type_id.name, role.name)

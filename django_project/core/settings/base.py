@@ -134,7 +134,6 @@ INSTALLED_APPS = (
     'property',
     'stakeholder',
     'swaps',
-    'user_profile',
     'population_data',
     'species',
 )

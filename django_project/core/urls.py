@@ -23,7 +23,7 @@ urlpatterns = [
     path('', include('frontend.urls')),
     path('admin/', admin.site.urls),
     path('', include('notification.urls')),
-    path('', include('user_profile.urls')),
+    path('', include('stakeholder.urls')),
 ]
 
 if settings.DEBUG:

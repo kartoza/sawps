@@ -46,15 +46,23 @@
               </div>
               <div class="form-group">
                 <label for="title">Title</label>
-                <input type="text" class="form-control" name="title" aria-describedby="titleHelp" placeholder="Title">
+                <select class="form-control" name="title" id="title">
+                  {% for title in titles %}
+                    <option value="{{ title.id }}"> {{ title.name }} </option>
+                  {% endfor %}
+                </select>
               </div>
               <div class="form-group">
                 <label for="organization">Organisation</label>
-                <input type="text" class="form-control" name="organization" value="Organisation">
+                <input type="text" class="form-control" name="organization" placeholder="Organisation">
               </div>
               <div class="form-group">
                 <label for="role">Role</label>
-                <input type="text" class="form-control" name="groupe" placeholder="Role">
+                <select class="form-control" name="role"id="role">
+                  {% for role in roles %}
+                    <option value="{{ role.id }}"> {{ role.name }} </option>
+                  {% endfor %}
+                </select>
               </div>
                <div class="form-group">
                 <label for="email">Email address</label>
