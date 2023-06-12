@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'regulatory_permit',
     'property',
     'stakeholder',
+    'swaps',
     'population_data',
     'species',
 )

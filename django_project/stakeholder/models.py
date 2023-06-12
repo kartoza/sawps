@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class UserRoleType(models.Model):
@@ -48,11 +49,19 @@ class UserTitle(models.Model):
 class UserProfile(models.Model):
     """Extend User model with one-to-one mapping."""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name='user_profile')
     title_id = models.ForeignKey(UserTitle, on_delete=models.DO_NOTHING)
-    cell_number = models.IntegerField()
+    cell_number = models.CharField(
+        max_length=15,
+        default='',
+        null=True,
+        blank=True
+    )
     user_role_type_id = models.ForeignKey(
         UserRoleType, on_delete=models.DO_NOTHING
+    )
+    picture = models.ImageField(
+        upload_to='profile_pictures', null=True, blank=True
     )
 
     def delete(self, *args, **kwargs):
@@ -61,6 +70,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    def picture_url(self):
+        if self.picture.url:
+            return '{media}/{url}'.format(
+                    media=settings.MEDIA_ROOT,
+                    url=self.picture,
+                )
 
     class Meta:
         verbose_name = 'User'
