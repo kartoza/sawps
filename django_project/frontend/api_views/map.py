@@ -1,5 +1,7 @@
 """API Views related to map."""
+from typing import Tuple, List
 import requests
+from django.db import connection
 from django.http import HttpResponse, Http404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -42,6 +44,41 @@ class MapStyles(APIView):
 
 class PropertiesLayerMVTTiles(APIView):
     """Dynamic Vector Tile for properties layer."""
+    permission_classes = [IsAuthenticated]
+
+    def generate_tile(self, sql, query_values):
+        rows = []
+        tile = []
+        with connection.cursor() as cursor:
+            raw_sql = (
+                'SELECT ST_AsMVT(tile.*, '
+                '4096, \'geom\', \'id\') '
+                'FROM ('
+                f'{sql}'
+                ') AS tile '
+            )
+            cursor.execute(raw_sql, query_values)
+            rows = cursor.fetchall()
+            for row in rows:
+                tile.append(bytes(row[0]))
+        return tile
+
+    def generate_query_for_map(
+            self,
+            user,
+            z: int,
+            x: int,
+            y: int,) -> Tuple[str, List[str]]:
+        query_values = []
+        sql = (
+            'SELECT p.id, p.name, '
+            'ST_AsMVTGeom('
+            '  ST_Transform(p.geometry, 3857), '
+            '  TileBBox(%s, %s, %s, 3857)) as geom '
+            'from property p '
+            'where p.created_by_id=%s'
+        )
+        return sql, query_values
 
 
 class AerialTile(APIView):
