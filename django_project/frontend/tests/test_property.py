@@ -27,7 +27,10 @@ from frontend.api_views.property import (
 
 
 class TestPropertyAPIViews(TestCase):
-    fixtures = ['property_type.json']
+    fixtures = [
+        'property_type.json',
+        'parcel_types.json'
+    ]
 
     def setUp(self) -> None:
         self.factory = APIRequestFactory()

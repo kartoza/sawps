@@ -1,5 +1,6 @@
 """API Views related to property."""
 from datetime import datetime
+from django.core.exceptions import ValidationError
 from django.contrib.gis.geos import (
     GEOSGeometry
 )
@@ -12,7 +13,9 @@ from property.models import (
     PropertyType,
     Province,
     Property,
-    OwnershipStatus
+    OwnershipStatus,
+    ParcelType,
+    Parcel
 )
 from stakeholder.models import (
     Organisation
@@ -96,12 +99,19 @@ class CreateNewProperty(APIView):
 
     def add_parcels(self, property, parcels):
         for parcel in parcels:
+            type = parcel['type']
+            parcel_type = ParcelType.objects.filter(
+                name__iexact=type
+            ).first()
+            if not parcel_type:
+                raise ValidationError(f'Invalid parcel_type: {type}')
             data = {
                 'sg_number': parcel['cname'],
-                'year': datetime.today().year,
+                'year': datetime.today().date(),
                 'property': property,
-                'parcel_type_id': 0
+                'parcel_type_id': parcel_type.id
             }
+            Parcel.objects.create(**data)
 
     def post(self, request, *args, **kwargs):    
         # union of parcels
