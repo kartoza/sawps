@@ -51,7 +51,6 @@ function Layers() {
                     return (
                         <ListItemButton
                             key={layer.id}
-                            // selected={layer.isSelected}
                             disabled={loading || !isMapReady}
                             onClick={(event) => dispatch(toggleLayer(layer.id))}
                         >
