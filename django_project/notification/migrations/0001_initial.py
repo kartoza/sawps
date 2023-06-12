@@ -31,7 +31,9 @@ class Migration(migrations.Migration):
                 ('date', models.DateTimeField(default=datetime.datetime.now)),
                 (
                     'text',
-                    models.TextField(blank=True, help_text='Reminder text', null=True),
+                    models.TextField(
+                        blank=True, help_text='Reminder text', null=True
+                    ),
                 ),
                 (
                     'status',

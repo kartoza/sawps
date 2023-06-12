@@ -3,9 +3,10 @@ from notification.models import Reminder
 
 # Register your models here.
 
+
 class ReminderAdmin(admin.ModelAdmin):
     list_display = ('title', 'date', 'text', 'status')
-    list_filter = ('title','status', 'date')
+    list_filter = ('title', 'status', 'date')
     ordering = ('status', 'date')
 
 
