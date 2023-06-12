@@ -4,17 +4,18 @@
 {% block head_title %}Register{% endblock%}
 
 {% block content %}
-<section class="account-action text-white">
-    <div class="container position-relative">
-        <div class="row">
-            <div class="col-xl-6 account-form">
-            <div class="content" style="height: 100%;">
+<section class="account-action" style="background-color: #000000;height: 85vh;">
+    <div class="container position-absolute">
+    <div class="row">
+        <div class="col-xl-6 swaps-text-primary account-form">
+            <div class="content">
                     {% csrf_token %}
-                    <div class="container" style="height: 100%;">
+                    <div class="container">
 
                         <div class="custom-form-container">
 
-                            <h3 class="account-form-title">{% trans "Registration" %}</h3>
+                            <h4 class="account-form-title">{% trans "Registration" %}</h4>
+                            <hr class="separator">
                             <form class="signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">{% csrf_token %}
 
                                 <input type="hidden" name="recaptcha_token" id="recaptcha-token-input" value="">
@@ -49,12 +50,9 @@
 
 
 
-                                <button id="submit-button" class="custom-form-submit account-button" type="submit">{% trans "Register" %}</button>
+                                <button id="submit-button" class="swaps-from-submit account-button" type="submit">{% trans "Register" %}</button>
                             </form>
-                            <div class="login-help text-center">
-                                <a href="{% url 'account_login' %}">{% trans "Log In" %}</a> -
-                                <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password" %}</a>
-                            </div>
+
                         </div>
                         <div class="form-space"></div>
                     </div> <!-- /container -->
