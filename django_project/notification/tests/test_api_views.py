@@ -4,6 +4,7 @@ from django.test import TestCase
 from notification.tests.reminder_factory import ReminderF
 from swaps.tests.models.account_factory import UserF
 
+
 class TestApiView(TestCase):
     """Test all api view"""
 
@@ -13,7 +14,7 @@ class TestApiView(TestCase):
         self.user = UserF.create(is_superuser=True)
 
     def test_get_reminder_api(self):
-        """ Test reminder api """
+        """Test reminder api"""
         reminder_1 = ReminderF.create(
             id=1,
             title='Title test 1',
@@ -21,22 +22,17 @@ class TestApiView(TestCase):
             status='active',
         )
 
-        self.client.login(
-            username=self.user.username,
-            password='password'
-        )
+        self.client.login(username=self.user.username, password='password')
 
         pk = '1'
-        api_url = '/api/reminder/?reminderId='+ pk
+        api_url = '/api/reminder/?reminderId=' + pk
         response = self.client.get(api_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(
-            'id' in response.data
-        )
+        self.assertTrue('id' in response.data)
 
     def test_list_reminders_api(self):
-        """ Test reminder aip """
+        """Test reminder aip"""
         reminder_1 = ReminderF.create(
             id=1,
             title='Title test 1',
@@ -49,16 +45,11 @@ class TestApiView(TestCase):
             status='active',
         )
 
-        self.client.login(
-            username=self.user.username,
-            password='password'
-        )
+        self.client.login(username=self.user.username, password='password')
 
         reminder_status = 'active'
-        api_url = '/api/reminders/?status='+ reminder_status
+        api_url = '/api/reminders/?status=' + reminder_status
         response = self.client.get(api_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            len(response.data), 2
-        )
+        self.assertEqual(len(response.data), 2)

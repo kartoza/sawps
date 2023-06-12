@@ -1,0 +1,22 @@
+<div class="col">
+        <h3 class="page-title swaps-text-primary mb-3">Profile Configuration</h3>
+        <nav class="navbar navbar-expand-lg">
+          <ol class="navbar-nav mb-0 ">
+            <li class="nav-item"><a class="primary-text-color nav-link" href="#">PROFILE</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">REMINDERS</a></li>
+            <li class="nav-item" aria-current="page"><a class="nav-link"href="#">NOTIFICATIONS</a></li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    <div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+
+            <img src={% if object.user_profile.picture %}{{object.user_profile.picture.url}}{% else %}"https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp{% endif %}" alt="avatar"
+              class="rounded-circle img-fluid" style="width: 150px;">
+            <p class="text-muted my-2 upload-picture"><span data-toggle="modal" data-target="#uploadPictureModal"><i class="fa-solid fa-upload mr-2"></i>Upload profile picture</span></p>
+          </div>
+        </div>
+      </div>
