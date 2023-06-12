@@ -62,7 +62,6 @@ Open your web browser and go to localhost:8000 to view the running application.
 
 
 
-
 ## 💻 Resources
 
 [Database ERD](https://drive.google.com/file/d/1O92w2zwbKm_SARXnXIljHbX-rQPmFiXM/view?usp=sharing)
