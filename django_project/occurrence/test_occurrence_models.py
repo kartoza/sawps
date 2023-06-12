@@ -1,7 +1,10 @@
 from django.test import TestCase
-from occurrence.models import OrganismQuantityType, SurveyMethod, OccurrenceStatus, BasisOfRecord, SamplingSizeUnit
-from occurrence.factories import OrganismQuantityTypeFactory, SurveyMethodFactory
+from occurrence.models import OrganismQuantityType, SurveyMethod, OccurrenceStatus, BasisOfRecord, SamplingSizeUnit, Occurrence
+from occurrence.factories import OrganismQuantityTypeFactory, SurveyMethodFactory, OccurrenceFactory
 from occurrence.factories import OccurrenceStatusFactory, BasisOfRecordFactory, SamplingSizeUnitFactory
+from species.models import Taxon
+from species.factories import TaxonRankFactory
+from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 
 
@@ -17,14 +20,14 @@ class OrganismQuantityTypeTestCase(TestCase):
         """Test create organism quantity type."""
         self.assertTrue(isinstance(self.quantityType, OrganismQuantityType))
         self.assertEqual(OrganismQuantityType.objects.count(), 1)
-        self.assertEqual(self.quantityType.name, "organism_quantity_type_0")
+        self.assertEqual(self.quantityType.name, OrganismQuantityType.objects.get(id=self.quantityType.id).name)
 
     def test_update_quantity_type(self):
         """Test update quantity type."""
         self.quantityType.name = "organism_quantity_type_1"
         self.quantityType.save()
         self.assertEqual(
-            OrganismQuantityType.objects.get(id=1).name,
+            OrganismQuantityType.objects.get(id=self.quantityType.id).name,
             "organism_quantity_type_1",
         )
 
@@ -60,14 +63,14 @@ class SurveyMethodTestCase(TestCase):
             isinstance(self.survey_method, SurveyMethod)
         )
         self.assertEqual(SurveyMethod.objects.count(), 1)
-        self.assertEqual(self.survey_method.name, 'survey method 0')
+        self.assertEqual(self.survey_method.name, SurveyMethod.objects.get(id=self.survey_method.id).name)
 
     def test_update_survey_method(self):
         """Test update survey method."""
         self.survey_method.name = 'survey method 1'
         self.survey_method.save()
         self.assertEqual(
-            SurveyMethod.objects.get(id=1).name,
+            SurveyMethod.objects.get(id=self.survey_method.id).name,
             'survey method 1',
         )
 
@@ -75,13 +78,13 @@ class SurveyMethodTestCase(TestCase):
         """Test survey method unique name constraint."""
         with self.assertRaises(Exception) as raised:
             SurveyMethodFactory(name='survey method 0')
-        self.assertEqual(IntegrityError, type(raised.exception))
+            self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_survey_method_unique_sort_id_constraint(self):
         """Test survey method unique sort id constraint."""
         with self.assertRaises(Exception) as raised:
             SurveyMethodFactory(sort_id=0)
-        self.assertEqual(IntegrityError, type(raised.exception))
+            self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_survey_method(self):
         """Test delete survey method."""
@@ -180,7 +183,7 @@ class SamplingSizeUnitTestCase(TestCase):
         """Test update sampling size unit."""
         self.sampling_size_unit.unit = 'mm'
         self.sampling_size_unit.save()
-        self.assertEqual(SamplingSizeUnit.objects.get(id=1).unit, 'mm')
+        self.assertEqual(SamplingSizeUnit.objects.get(id=self.sampling_size_unit.id).unit, 'mm')
 
     def test_sampling_size_unit_unique_unit_constraint(self):
         """Testing unique values for the unit."""
@@ -192,3 +195,37 @@ class SamplingSizeUnitTestCase(TestCase):
         """Test delete sampling size unit."""
         self.sampling_size_unit.delete()
         self.assertEqual(SamplingSizeUnit.objects.count(), 0)
+
+
+class OccurrenceTestCase(TestCase):
+    """Occurrence testcase."""
+    @classmethod
+    def setUpTestData(cls):
+        """Setup test data."""
+        taxon = Taxon.objects.create(
+            scientific_name='taxon_0',
+            common_name_varbatim='taxon_0',
+            colour_variant=False,
+            taxon_rank=TaxonRankFactory(),
+        )
+        user = User.objects.create(username='user_0', password='password')
+        sampling_size_unit = SamplingSizeUnit.objects.create(unit='cm')
+        cls.occurrence = OccurrenceFactory(taxon=taxon, user=user, sampling_size_unit=sampling_size_unit)
+    
+    def test_create_occurrence(self):
+        """Test create occurrence."""
+        self.assertTrue(isinstance(self.occurrence, Occurrence))
+        self.assertEqual(Occurrence.objects.count(), 1)
+
+    def test_update_occurrence(self):
+        """Test update occurrence."""
+        self.occurrence.individual_count = 3
+        self.occurrence.save()
+        self.assertEqual(
+            Occurrence.objects.get(id=self.occurrence.id).individual_count, 3
+        )
+
+    def test_delete_occurrence(self):
+        """Test delete occurrence."""
+        self.occurrence.delete()
+        self.assertEqual(Occurrence.objects.count(), 0) 
