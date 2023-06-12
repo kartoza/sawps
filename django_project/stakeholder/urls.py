@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.urls import re_path, reverse_lazy
+from django.urls import re_path, reverse_lazy, path
 from django.views.generic import RedirectView
 from stakeholder.views import ProfileView
 
@@ -21,4 +21,4 @@ urlpatterns = [  # '',
         ),
         name='profile-settings',
     ),
-]
+    ]

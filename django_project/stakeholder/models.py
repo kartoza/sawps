@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class UserRoleType(models.Model):
@@ -69,6 +70,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    def picture_url(self):
+        if self.picture.url:
+            return '{media}/{url}'.format(
+                    media=settings.MEDIA_ROOT,
+                    url=self.picture,
+                )
 
     class Meta:
         verbose_name = 'User'

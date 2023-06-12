@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class ProfileView(DetailView):
-    template_name = 'user/profile.html'
+    template_name = 'profile.html'
     model = get_user_model()
     slug_field = 'username'
 
@@ -20,11 +20,17 @@ class ProfileView(DetailView):
         profile = self.model.objects.get(username=kwargs['slug'])
         if profile != self.request.user:
             raise Http404('Mismatch user')
+        
+        if self.request.POST.get('first-name', ''):
+            profile.first_name = self.request.POST.get('first-name', '')
+        if self.request.POST.get('last-name', ''):    
+            profile.last_name = self.request.POST.get('last-name', '')
+        
+        if self.request.POST.get('organization', ''):
+            profile.organization = self.request.POST.get('organization', '')
 
-        profile.first_name = self.request.POST.get('first-name', '')
-        profile.last_name = self.request.POST.get('last-name', '')
-        profile.organization = self.request.POST.get('organization', '')
-        profile.email = self.request.POST.get('email', '')
+        if self.request.POST.get('email', ''):
+            profile.email = self.request.POST.get('email', '')
 
         if not UserProfile.objects.filter(user=profile).exists():
             UserProfile.objects.create(
@@ -33,9 +39,10 @@ class ProfileView(DetailView):
                 user_role_type_id  = UserRoleType.objects.get(id=self.request.POST.get('role',''))
             )
 
-        profile.user_profile.picture = self.request.FILES.get(
+        if self.request.FILES.get('profile-picture', None):
+            profile.user_profile.picture = self.request.FILES.get(
             'profile-picture', None
-        )
+        )    
         
         profile.user_profile.save()
         profile.save()
@@ -48,4 +55,7 @@ class ProfileView(DetailView):
         context['roles'] = UserRoleType.objects.all()
 
         return context
+
+
+
 
