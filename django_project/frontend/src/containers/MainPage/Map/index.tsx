@@ -82,7 +82,7 @@ export default function Map() {
         dispatch(setMapReady(true))
       })
 
-  });
+  }, []);
 
   /* Callback when map is on click. */
   const mapOnClick = useCallback((e: any) => {
