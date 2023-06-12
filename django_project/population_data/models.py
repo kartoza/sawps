@@ -47,8 +47,8 @@ class NatureOfPopulation(models.Model):
 
 class PopulationCountAbstract(models.Model):
     """"Populaiton count abstract model."""
-    year = models.DateField(primary_key=True)
-    owned_species = models.ManyToManyField('species.OwnedSpecies')
+    year = models.DateField()
+    owned_species = models.ForeignKey('species.OwnedSpecies', on_delete=models.CASCADE)
     total = models.IntegerField()
     adult_male = models.IntegerField(null=True, blank=True)
     adult_female = models.IntegerField(null=True, blank=True)
@@ -72,12 +72,11 @@ class PopulationCount(PopulationCountAbstract):
         verbose_name = 'Population count'
         verbose_name = 'Population counts'
         db_table = 'population_count'
-
+        unique_together = ('year', 'owned_species')
 
 class PopulationCountPerActivity(PopulationCountAbstract):
     """Population count per activity model."""
-
-    activity_type = models.ManyToManyField('activity.ActivityType')
+    activity_type = models.ForeignKey('activity.ActivityType', on_delete=models.CASCADE)
     founder_population = models.BooleanField(null=True, blank=True)
     reintroduction_source = models.CharField(
         max_length=250, null=True, blank=True
@@ -88,5 +87,5 @@ class PopulationCountPerActivity(PopulationCountAbstract):
         verbose_name = 'Population count per activity'
         verbose_name = 'Population count per activities'
         db_table = 'population_count_per_activity'
-
+        unique_together = ('year', 'owned_species', 'activity_type')
 

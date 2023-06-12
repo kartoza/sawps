@@ -127,8 +127,8 @@ class PopulationCountTestCase(TestCase):
             taxon_rank=TaxonRankFactory(),
         )
         user = User.objects.create_user(username='testuser', password='12345')        
-        OwnedSpeciesFactory(taxon=taxon, user=user)
-        cls.population_count = PopulationCountFactory(owned_species=OwnedSpecies.objects.all())
+        owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
+        cls.population_count = PopulationCountFactory(owned_species=owned_species)
     
     def test_create_population_count(self):
         """Test create population count."""
@@ -145,6 +145,16 @@ class PopulationCountTestCase(TestCase):
         self.assertEqual(
             PopulationCount.objects.get(year=self.population_count.year).total, 100
         )
+
+    def test_year_ownedspecies_fields_unique_toghter_constraint(self):
+        """Test both year and ownedspecis are unique togther."""
+        with self.assertRaises(Exception) as raised:
+            PopulationCountFactory(
+                owned_species=self.population_count.owned_species,
+                year=self.population_count.year,
+            )
+            self.assertEqual(IntegrityError, type(raised.exception))
+    
 
     def test_delete_population_count(self):
         """Test delete population count."""
@@ -164,8 +174,8 @@ class PopulationCountPerActivityTestCase(TestCase):
             taxon_rank=TaxonRankFactory(),
         )
         user = User.objects.create_user(username='testuser', password='12345')        
-        OwnedSpeciesFactory(taxon=taxon, user=user)
-        cls.population_count = PopulationCountPerActivityFactory(owned_species=OwnedSpecies.objects.all())
+        owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
+        cls.population_count = PopulationCountPerActivityFactory(owned_species=owned_species)
     
     def test_create_population_count(self):
         """Test create population count."""
@@ -182,6 +192,16 @@ class PopulationCountPerActivityTestCase(TestCase):
         self.assertEqual(
             PopulationCountPerActivity.objects.get(year=self.population_count.year).total, 100
         )
+
+    def test_year_ownedspecies_activity_type_fields_unique_toghter_constraint(self):
+        """Test year, ownedspecies and activity_type are unique togther."""
+        with self.assertRaises(Exception) as raised:
+            PopulationCountPerActivityFactory(
+                owned_species=self.population_count.owned_species,
+                year=self.population_count.year,
+                activity_type=self.population_count.activity_type,
+            )
+            self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_population_count(self):
         """Test delete population count."""
