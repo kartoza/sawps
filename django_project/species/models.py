@@ -9,10 +9,10 @@ class ManagementStatus(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
-        verbose_name = "Management Status"
-        verbose_name_plural = "Management Status"
+        verbose_name = 'Management Status'
+        verbose_name_plural = 'Management Status'
         db_table = 'management_status'
 
 
@@ -41,7 +41,7 @@ class Taxon(models.Model):
 
     def __str__(self):
         return self.scientific_name
-    
+
     class Meta:
         verbose_name = 'Taxon'
         verbose_name_plural = 'Taxa'
