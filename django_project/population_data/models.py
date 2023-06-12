@@ -70,12 +70,11 @@ class PopulationCount(PopulationCountAbstract):
 
     class Meta:
         verbose_name = 'Population count'
-        verbose_name = 'Population counts'
+        verbose_name_plural = 'Population counts'
         db_table = 'population_count'
         constraints = [models.UniqueConstraint(
             fields=['year', 'owned_species'],name='unique_population_count'
         )]
-        unique_together = ('year', 'owned_species')
 
 class PopulationCountPerActivity(PopulationCountAbstract):
     """Population count per activity model."""
@@ -88,7 +87,7 @@ class PopulationCountPerActivity(PopulationCountAbstract):
 
     class Meta:
         verbose_name = 'Population count per activity'
-        verbose_name = 'Population count per activities'
+        verbose_name_plural = 'Population count per activities'
         db_table = 'population_count_per_activity'
         constraints = [models.UniqueConstraint(
             fields=['year', 'owned_species', 'activity_type'],name='unique_population_count_per_activity'
