@@ -72,8 +72,6 @@ export default function Map() {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
         style: `${MAP_STYLE_URL}`,
-        center: [27.763781680455708, -26.71998940486352], // debug
-        zoom: 17, // debug
         minZoom: 5
       })
       map.current.addControl(new CustomNavControl({
