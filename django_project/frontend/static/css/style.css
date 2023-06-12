@@ -82,18 +82,18 @@
 }
 
 .account-form-title{
-  color: #70B276;
+  color: #ffffff;
   size:34px;
   text-align: center;
 }
 
 .login-help{
-  color: #9D85BE;
+  color: #ffffff;
   font-size: 12px;
   line-height: 24px;
 }
 .login-help > a{
-  color: #9D85BE;
+  color: #ffffff;
   text-decoration: none;
 }
 
@@ -105,34 +105,27 @@
 
 
 .swaps-text-primary{
-  color: #70B276;
+  color: #ffffff;
 }
 
 hr.separator{
-  border-top: 1px solid #70B276;
+  border-top: 1px solid #ffffff;
 }
 
-.swaps-text-primary, a {
-  color: #86BC8B;
-}
-
-a:hover{
-  color: #70B276;
+.swaps-text-primary{
+  color: #ffffff;
 }
 
 .upload-picture{
   cursor: pointer;
 }
 
-.swaps-text-primary, a {
-  color: #86BC8B;
-}
-
-a:hover{
+.swaps-text-menu{
   color: #70B276;
 }
 
-.upload-picture{
-  cursor: pointer;
+.swap-text-green, .swap-text-green >li>a{
+  color: #70B276;
 }
+
 
