@@ -28,7 +28,7 @@ class LoginStatus(models.Model):
     class Meta:
         verbose_name = 'Login status'
         verbose_name_plural = 'Login status'
-        db_table = 'login_status'
+        db_table = "login_status"
 
 
 class UserTitle(models.Model):
@@ -42,7 +42,7 @@ class UserTitle(models.Model):
     class Meta:
         verbose_name = 'title'
         verbose_name_plural = 'titles'
-        db_table = 'user_title'
+        db_table = "user_title"
 
 
 class UserProfile(models.Model):
@@ -65,4 +65,60 @@ class UserProfile(models.Model):
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
-        db_table = 'user_profile'
+        db_table = "user_profile"
+
+
+class UserLogin(models.Model):
+    """User login model."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    login_status = models.ForeignKey(LoginStatus, on_delete=models.DO_NOTHING)
+    ip_address = models.CharField(max_length=20)
+    date_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        verbose_name = 'User login'
+        verbose_name_plural = 'User logins'
+        db_table = "user_login"
+
+        
+class Organisation(models.Model):
+    """Organisation model."""
+
+    name = models.CharField(unique=True, max_length=250)
+    data_use_permission = models.ForeignKey(
+        'regulatory_permit.dataUsePermission', on_delete=models.DO_NOTHING
+    )
+
+    class Meta:
+        verbose_name = 'Organisation'
+        verbose_name_plural = 'Organisations'
+        db_table = "organisation"
+
+
+class OrganisationPersonnel(models.Model):
+    """Organisation personnel abstract model."""
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+
+class OrganisationRepresentative(OrganisationPersonnel):
+    """Organisation representative model."""
+    class Meta:
+        verbose_name = 'Organisation representative'
+        verbose_name_plural = 'Organisation representatives'
+        db_table = 'organisation_representative'
+
+
+class OrganisationUser(OrganisationPersonnel):
+    """Organisation user model."""
+    class Meta:
+        verbose_name = 'Organisation user'
+        verbose_name_plural = 'Organisation users'
+        db_table = 'organisation_user'

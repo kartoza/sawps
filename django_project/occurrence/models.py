@@ -1,5 +1,5 @@
-from django.db import models
-
+from django.contrib.gis.db import models
+from django.contrib.auth.models import User
 
 class OrganismQuantityType(models.Model):
     """Organism quantity type model."""
@@ -66,3 +66,41 @@ class SamplingSizeUnit(models.Model):
         verbose_name = 'Sampling size unit'
         verbose_name_plural = 'Sampling size units'
         db_table = 'sampling_size_unit'
+
+
+class Occurrence(models.Model):
+    """Occurrence model."""
+    individual_count = models.IntegerField()
+    organism_quantity = models.IntegerField()
+    sampling_size_value = models.FloatField()
+    datetime = models.DateTimeField(null=True, blank=True)
+    owner_institution_code = models.CharField(max_length=250)
+    coordinates_uncertainty_m = models.IntegerField()
+    geometry = models.PointField(srid=4326, null=True, blank=True)
+    taxon = models.ForeignKey('species.Taxon', on_delete=models.CASCADE)
+    basis_of_record = models.ForeignKey(
+        BasisOfRecord, on_delete=models.CASCADE
+    )
+    ogranism_quantity_type = models.ForeignKey(
+        OrganismQuantityType, on_delete=models.CASCADE
+    )
+    occurrence_status = models.ForeignKey(
+        OccurrenceStatus, on_delete=models.CASCADE
+    )
+    sampling_size_unit = models.ForeignKey(
+        SamplingSizeUnit, on_delete=models.CASCADE
+    )
+    survey_method = models.ForeignKey(
+        SurveyMethod, on_delete=models.CASCADE
+    )
+    organisation = models.ForeignKey(
+        'stakeholder.Organisation', on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE
+    )
+
+    class Meta:
+        verbose_name = 'Occurrence'
+        verbose_name_plural = 'Occurrences'
+        db_table = 'occurrence'

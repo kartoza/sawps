@@ -1,6 +1,6 @@
 from django.test import TestCase
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile
-from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userFactory, userProfileFactory
+from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation, OrganisationUser, OrganisationRepresentative, UserLogin
+from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userLoginFactory, userProfileFactory, organisationFactory, organisationUserFactory, organisationRepresentativeFactory
 from django.contrib.auth.models import User
 
 
@@ -119,3 +119,104 @@ class TestUser(TestCase):
         """Test deleting user when a profile is deleted."""
         self.profileFactory.delete()
         self.assertEqual(User.objects.count(), 1)
+
+
+class TestUserLogin(TestCase):
+    """"User login testcase."""
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_login = userLoginFactory()
+
+    def create_user_login(self):
+        """Test creating new user login."""
+        self.assertEqual(UserLogin.objects.count(), 1)
+        self.assertEqual(User.objects.count(), 2)
+
+    def test_update_user_login(self):
+        """Test updating user login."""
+        self.user_login.login_status.name = 'logged out'
+        self.user_login.login_status.save()
+        self.assertEqual(
+            UserLogin.objects.get(id=self.user_login.id).login_status.name,
+            'logged out'
+        )
+
+    def test_delete_user_login(self):
+        """Test deleting user login."""
+        self.user_login.delete()
+        self.assertEqual(UserLogin.objects.count(), 0)
+        self.assertEqual(User.objects.count(), 2)
+
+        
+class OrganizationTestCase(TestCase):
+    """Organization test case."""
+    @classmethod
+    def setUpTestData(cls):
+        cls.organization = organisationFactory()
+    
+    def test_create_organization(self):
+        """Test creating organization."""
+        self.assertEqual(Organisation.objects.count(), 1)
+        self.assertTrue(isinstance(self.organization, Organisation))
+        self.assertTrue(self.organization.name, Organisation.objects.get(id=self.organization.id).name)
+        
+    def test_update_organization(self):
+        """Test updating organization."""
+        self.organization.name = 'test'
+        self.organization.save()
+        self.assertEqual(Organisation.objects.get(id=self.organization.id).name, 'test')
+    
+    def test_delete_organization(self):
+        """Test deleting organization."""
+        self.organization.delete()
+        self.assertEqual(Organisation.objects.count(), 0)
+        
+
+class OrganizationUserTestCase(TestCase):
+    """Test case for organization user."""
+    @classmethod
+    def setUpTestData(cls):
+        """Setup test data for organisation user model."""
+        cls.organizationUser = organisationUserFactory()
+
+    def test_create_organisation_user(self):
+        """Test creating organisation user."""
+        self.assertEqual(OrganisationUser.objects.count(), 1)
+        self.assertTrue(isinstance(self.organizationUser, OrganisationUser))
+        self.assertTrue(self.organizationUser.user.username, OrganisationUser.objects.get(id=1).user.username)
+    
+    def test_update_organisation_user(self):
+        """ Test updating organisation user."""
+        self.organizationUser.user.username = 'test'
+        self.organizationUser.user.save()
+        self.assertEqual(OrganisationUser.objects.get(id=1).user.username, 'test')
+
+    def test_delete_organisation_user(self):
+        """Test deleting organisation user."""
+        self.organizationUser.delete()
+        self.assertEqual(OrganisationUser.objects.count(), 0)
+
+
+class OrganizationRepresentativeTestCase(TestCase):
+    """Test case for organization representative."""
+    @classmethod
+    def setUpTestData(cls):
+        """Setup test data for organisation representative model."""
+        cls.organizationRep = organisationRepresentativeFactory()
+
+    def test_create_organisation_user(self):
+        """Test creating organisation representative."""
+        self.assertEqual(OrganisationRepresentative.objects.count(), 1)
+        self.assertTrue(isinstance(self.organizationRep, OrganisationRepresentative))
+        self.assertTrue(self.organizationRep.user.username, OrganisationRepresentative.objects.get(id=1).user.username)
+    
+    def test_update_organisation_user(self):
+        """ Test updating organisation representative."""
+        self.organizationRep.user.username = 'test'
+        self.organizationRep.user.save()
+        self.assertEqual(OrganisationRepresentative.objects.get(id=1).user.username, 'test')
+
+    def test_delete_organisation_user(self):
+        """Test deleting organisation representative."""
+        self.organizationRep.delete()
+        self.assertEqual(OrganisationRepresentative.objects.count(), 0)

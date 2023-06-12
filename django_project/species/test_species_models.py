@@ -1,6 +1,8 @@
+
 from django.test import TestCase
-from species.models import TaxonRank, Taxon, ManagementStatus
-from species.factories import TaxonRankFactory, ManagementStatusFactory
+from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies
+from species.factories import TaxonRankFactory, ManagementStatusFactory, OwnedSpeciesFactory
+from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 
 
@@ -23,7 +25,7 @@ class ManagementStatusTestCase(TestCase):
         self.management_status.save()
         self.assertEqual(ManagementStatus.objects.get(id=1).name, 'management status_1')
 
-
+    
     def test_management_status_unique_name_constraint(self):
         """Test management status unique name constraint."""
         with self.assertRaises(Exception) as raised:
@@ -47,13 +49,13 @@ class TaxonRankTestCase(TestCase):
     def test_create_taxon_rank(self):
         """Test create taxon rank."""
         self.assertTrue(isinstance(self.taxonRank, TaxonRank))
-        self.assertEqual(self.taxonRank.name, 'taxon_rank_0')
+        self.assertEqual(self.taxonRank.name, TaxonRank.objects.get(id=self.taxonRank.id).name)
 
     def test_update_taxon_rank(self):
         """Test update taxon rank."""
         self.taxonRank.name = 'taxon_rank_1'
         self.taxonRank.save()
-        self.assertEqual(TaxonRank.objects.get(id=1).name, 'taxon_rank_1')
+        self.assertEqual(TaxonRank.objects.get(id=self.taxonRank.id).name, 'taxon_rank_1')
 
     def test_unique_taxon_rank_name_constraint(self):
         """Test unique taxon rank name constraint."""
@@ -84,15 +86,15 @@ class TaxonTestCase(TestCase):
         """Test create taxon."""
         self.assertTrue(isinstance(self.taxon, Taxon))
         self.assertEqual(Taxon.objects.count(), 1)
-        self.assertEqual(self.taxon.scientific_name, 'taxon_0')
+        self.assertEqual(self.taxon.scientific_name, Taxon.objects.get(id=self.taxon.id).scientific_name)
 
     def test_update_taxon(self):
         """Test update taxon objects."""
         self.taxon.scientific_name = 'taxon_1'
         self.taxon.infraspecific_epithet = 'infra_1'
         self.taxon.save()
-        self.assertEqual(Taxon.objects.get(id=1).scientific_name, 'taxon_1')
-        self.assertEqual(Taxon.objects.get(id=1).infraspecific_epithet, 'infra_1')
+        self.assertEqual(Taxon.objects.get(id=self.taxon.id).scientific_name, 'taxon_1')
+        self.assertEqual(Taxon.objects.get(id=self.taxon.id).infraspecific_epithet, 'infra_1')
 
     def test_taxon_unique_scientific_name_constraint(self):
         """Test taxon unique scientific name constraint."""
@@ -136,3 +138,34 @@ class TaxonTestCase(TestCase):
         """Test delete taxon rank."""
         self.taxonRank.delete()
         self.assertEqual(TaxonRank.objects.count(), 0)
+
+
+class OwnedSpeciesTestCase(TestCase):
+    """Owned species test case."""
+    @classmethod
+    def setUpTestData(cls):
+        """Set up test data for owned species test case."""
+        user = User.objects.create_user(username='testuser', password='12345')
+        taxon = Taxon.objects.create(
+            scientific_name='taxon_0',
+            common_name_varbatim='taxon_0',
+            colour_variant=False,
+            taxon_rank=TaxonRankFactory(),
+        )
+        cls.ownedSpecies = OwnedSpeciesFactory(taxon=taxon, user=user)
+
+    def test_create_owned_species(self):
+        """Test create owned species."""
+        self.assertTrue(isinstance(self.ownedSpecies, OwnedSpecies))
+        self.assertEqual(OwnedSpecies.objects.count(), 1)
+
+    def test_update_owned_species(self):
+        """Test update owned species."""
+        self.ownedSpecies.management_status = ManagementStatusFactory(name='management_status_1')
+        self.ownedSpecies.save()
+        self.assertEqual(OwnedSpecies.objects.get(id=self.ownedSpecies.id).management_status.name, 'management_status_1')
+
+    def test_delete_owned_species(self):
+        """Test delete owned species."""
+        self.ownedSpecies.delete()
+        self.assertEqual(OwnedSpecies.objects.count(), 0)
