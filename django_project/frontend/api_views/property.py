@@ -2,7 +2,7 @@
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.contrib.gis.geos import (
-    GEOSGeometry
+    GEOSGeometry, Polygon, MultiPolygon
 )
 from django.contrib.gis.db.models import Union
 from rest_framework.views import APIView
@@ -92,6 +92,9 @@ class CreateNewProperty(APIView):
                 queryset['geom__union'] if geom is None else
                 geom.union(queryset['geom__union'])
             )
+        if isinstance(geom, Polygon):
+            # parcels geom is in 3857
+            geom = MultiPolygon([geom], srid=3857)
         if geom:
             # transform srid to 4326
             geom.transform(4326)
