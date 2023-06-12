@@ -19,7 +19,8 @@ from .views.map import MapView
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
-    AerialTile
+    AerialTile,
+    PropertiesLayerMVTTiles
 )
 
 urlpatterns = [
@@ -32,10 +33,14 @@ urlpatterns = [
         MapStyles.as_view(),
         name='map-style'),
     re_path(
-         r'^api/map/aerial/'
+         r'^api/map/layer/aerial/'
          r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
         AerialTile.as_view(),
-        name='aerial-map-tile'),
+        name='aerial-map-layer'),
+    re_path(r'^api/map/layer/properties/'
+            r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
+            PropertiesLayerMVTTiles.as_view(),
+            name='properties-map-layer'),
     path('map/', MapView.as_view(), name='map'),
     path('', HomeView.as_view(), name='home'),
 ]

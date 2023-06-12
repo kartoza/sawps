@@ -2,6 +2,7 @@
 from typing import Tuple, List
 import requests
 from django.db import connection
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse, Http404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +10,8 @@ from rest_framework.response import Response
 from frontend.models.context_layer import ContextLayer
 from frontend.serializers.context_layer import ContextLayerSerializer
 from frontend.utils.map import get_map_template_style
+
+User = get_user_model()
 
 
 class ContextLayerList(APIView):
@@ -51,7 +54,7 @@ class PropertiesLayerMVTTiles(APIView):
         tile = []
         with connection.cursor() as cursor:
             raw_sql = (
-                'SELECT ST_AsMVT(tile.*, '
+                'SELECT ST_AsMVT(tile.*, \'properties\', '
                 '4096, \'geom\', \'id\') '
                 'FROM ('
                 f'{sql}'
@@ -65,20 +68,41 @@ class PropertiesLayerMVTTiles(APIView):
 
     def generate_query_for_map(
             self,
-            user,
+            user: User,
             z: int,
             x: int,
             y: int,) -> Tuple[str, List[str]]:
-        query_values = []
         sql = (
             'SELECT p.id, p.name, '
             'ST_AsMVTGeom('
             '  ST_Transform(p.geometry, 3857), '
             '  TileBBox(%s, %s, %s, 3857)) as geom '
             'from property p '
-            'where p.created_by_id=%s'
+            'where p.created_by_id=%s '
+            'AND p.geometry && TileBBox(%s, %s, %s, 4326)'
         )
+        query_values = [
+            z, x, y,
+            user.id,
+            z, x, y,
+        ]
         return sql, query_values
+
+    def get(self, *args, **kwargs):
+        sql, query_values = (
+            self.generate_query_for_map(
+                self.request.user,
+                kwargs.get('z'),
+                kwargs.get('x'),
+                kwargs.get('y')
+            )
+        )
+        tile = self.generate_tile(sql, query_values)
+        if not len(tile):
+            raise Http404()
+        return HttpResponse(
+            tile,
+            content_type="application/x-protobuf")
 
 
 class AerialTile(APIView):

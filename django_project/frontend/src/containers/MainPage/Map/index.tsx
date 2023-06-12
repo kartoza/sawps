@@ -8,6 +8,7 @@ import ContextLayerInterface from '../../../models/ContextLayer';
 import './index.scss';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
+const MAP_SOURCES = ['sanbi', 'properties']
 
 class CustomNavControl extends maplibregl.NavigationControl {
 
@@ -125,7 +126,7 @@ export default function Map() {
     const _layers = _mapObj.getStyle().layers
     for (let i=0; i < _layers.length; ++i) {
       let _layer:any = _layers[i]
-      if (!('source' in _layer) || !('source-layer' in _layer) || _layer['source'] !== 'sanbi') continue
+      if (!('source' in _layer) || !('source-layer' in _layer) || !MAP_SOURCES.includes(_layer['source'])) continue
       const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
     }
@@ -136,7 +137,9 @@ export default function Map() {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
         style: `${MAP_STYLE_URL}`,
-        minZoom: 5
+        minZoom: 5,
+        center: [27.763781680455708, -26.71998940486352], // debug
+        zoom: 17, // debug
       })
       map.current.addControl(new CustomNavControl({
         showCompass: true,
