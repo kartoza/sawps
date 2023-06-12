@@ -6,7 +6,7 @@ from notification.models import Reminder
 class ReminderF(factory.django.DjangoModelFactory):
     class Meta:
         model = Reminder
-        django_get_or_create = ('id', )
+        django_get_or_create = ('id',)
 
     id = factory.Sequence(lambda n: n)
     title = factory.Sequence(lambda n: 'title%s' % n)

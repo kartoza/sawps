@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 class ManagementStatus(models.Model):
     """Management status model."""
@@ -7,10 +9,10 @@ class ManagementStatus(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
-        verbose_name = "Management Status"
-        verbose_name_plural = "Management Status"
+        verbose_name = 'Management Status'
+        verbose_name_plural = 'Management Status'
         db_table = 'management_status'
 
 
@@ -39,8 +41,26 @@ class Taxon(models.Model):
 
     def __str__(self):
         return self.scientific_name
-    
+
     class Meta:
         verbose_name = 'Taxon'
         verbose_name_plural = 'Taxa'
         db_table = 'taxon'
+
+
+class OwnedSpecies(models.Model):
+    """Owned species mdoel."""
+    management_status = models.ForeignKey('species.ManagementStatus', on_delete=models.CASCADE)
+    nature_of_population = models.ForeignKey('population_data.NatureOfPopulation', on_delete=models.CASCADE)
+    count_method = models.ForeignKey('population_data.CountMethod', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    taxon = models.ForeignKey('species.Taxon', on_delete=models.CASCADE)
+    property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Owned species#{self.id}'
+
+    class Meta:
+        verbose_name = 'Owned Species'
+        verbose_name_plural = 'Owned Species'
+        db_table = 'owned_species'

@@ -1,3 +1,4 @@
+
 .btn-primary {
     --bs-btn-color: #fff;
     --bs-btn-bg: #FAA755;
@@ -30,20 +31,29 @@
 
 .account-action {
   position: relative;
-  background-color: #000000;
   background: url("/static/images/lion.png") no-repeat;
-  background-size: cover;
+  background-size: contain;
   padding-top: 7rem;
   padding-bottom: 7rem;
 
 }
 
+.login-page{
+  position: relative;
+  background: url("/static/images/leopard.jpg") no-repeat;
+  background-size: contain;
+  padding-top: 7rem;
+  padding-bottom: 7rem;
+
+}
+
+
 .account-button{
   color: #000000 !important;
   border-radius: 2px;
   background-color: #FAA755;
-  padding-top: 7px;
-  padding-bottom: 7px;
+  padding-top: 3px;
+  padding-bottom: 3px;
   border: 2px solid #FAA755;
   text-transform: uppercase;
 }
@@ -64,34 +74,54 @@
   border-radius: 4px;
   float: right;
   margin-left: auto;
-  margin-top: 0;
+  margin-top: -35px;
 }
 
 .custom-form-container{
-  margin-top: 40px;
-  margin-bottom: 10px;
+  margin: 10px;
 }
 
 .account-form-title{
   color: #70B276;
   size:34px;
-  height:40px;
   text-align: center;
 }
 
+.login-help{
+  color: #9D85BE;
+  font-size: 12px;
+  line-height: 24px;
+}
 .login-help > a{
+  color: #9D85BE;
   text-decoration: none;
-  color: #70B276;
 }
 
-.custom-form-submit{
+.swaps-from-submit{
   display: block;
   margin: 0 auto !important;
   position: relative;
 }
 
-.account-form{
-  min-height: 300px;
+
+.swaps-text-primary{
+  color: #70B276;
+}
+
+hr.separator{
+  border-top: 1px solid #70B276;
+}
+
+.swaps-text-primary, a {
+  color: #86BC8B;
+}
+
+a:hover{
+  color: #70B276;
+}
+
+.upload-picture{
+  cursor: pointer;
 }
 
 .swaps-text-primary, a {

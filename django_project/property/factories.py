@@ -1,5 +1,5 @@
 import factory
-from property.models import PropertyType, Province, OwnershipStatus, Property
+from property.models import PropertyType, Province, OwnershipStatus, Property, ParcelType, Parcel
 
 
 class PropertyTypeFactory(factory.django.DjangoModelFactory):
@@ -29,7 +29,6 @@ class OwnershipStatusFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'OwnershipStatus_%d' % n)
 
 
-
 class PropertyFactory(factory.django.DjangoModelFactory):
     """Property factory."""
 
@@ -49,4 +48,21 @@ class PropertyFactory(factory.django.DjangoModelFactory):
     created_at = factory.Faker('date_time')
 
 
+class ParcelTypeFactory(factory.django.DjangoModelFactory):
+    """Factory for ParcelType."""
 
+    class Meta:
+        model = ParcelType
+
+    name = factory.Sequence(lambda n: 'ParcelType_%d' % n)
+
+class ParcelFactory(factory.django.DjangoModelFactory):
+    """Factory for Parcel."""
+
+    class Meta:
+        model = Parcel
+
+    sg_number = factory.Sequence(lambda n: 'SG_%d' % n)
+    year = factory.Sequence(lambda n: '201%d-10-10' % n)
+    parcel_type = factory.SubFactory(ParcelTypeFactory)
+    property = factory.SubFactory(PropertyFactory)

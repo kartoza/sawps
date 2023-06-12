@@ -10,106 +10,106 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="BasisOfRecord",
+            name='BasisOfRecord',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=150, unique=True)),
-                ("sort_id", models.IntegerField(unique=True)),
+                ('name', models.CharField(max_length=150, unique=True)),
+                ('sort_id', models.IntegerField(unique=True)),
             ],
             options={
-                "verbose_name": "Basis of record",
-                "verbose_name_plural": "Basis of records",
-                "db_table": "basis_of_record",
+                'verbose_name': 'Basis of record',
+                'verbose_name_plural': 'Basis of records',
+                'db_table': 'basis_of_record',
             },
         ),
         migrations.CreateModel(
-            name="OccurrenceStatus",
+            name='OccurrenceStatus',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=100, unique=True)),
+                ('name', models.CharField(max_length=100, unique=True)),
             ],
             options={
-                "verbose_name": "Occurrence status",
-                "verbose_name_plural": "Occurrence statuses",
-                "db_table": "occurrence_status",
+                'verbose_name': 'Occurrence status',
+                'verbose_name_plural': 'Occurrence statuses',
+                'db_table': 'occurrence_status',
             },
         ),
         migrations.CreateModel(
-            name="OrganismQuantityType",
+            name='OrganismQuantityType',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=255, unique=True)),
-                ("sort_id", models.IntegerField(unique=True)),
+                ('name', models.CharField(max_length=255, unique=True)),
+                ('sort_id', models.IntegerField(unique=True)),
             ],
             options={
-                "verbose_name": "organism_quantity_type",
-                "verbose_name_plural": "organism_quantity_type",
-                "db_table": "organism_quantity_type",
+                'verbose_name': 'organism_quantity_type',
+                'verbose_name_plural': 'organism_quantity_type',
+                'db_table': 'organism_quantity_type',
             },
         ),
         migrations.CreateModel(
-            name="SamplingSizeUnit",
+            name='SamplingSizeUnit',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("unit", models.CharField(max_length=4, unique=True)),
+                ('unit', models.CharField(max_length=4, unique=True)),
             ],
             options={
-                "verbose_name": "Sampling size unit",
-                "verbose_name_plural": "Sampling size units",
-                "db_table": "sampling_size_unit",
+                'verbose_name': 'Sampling size unit',
+                'verbose_name_plural': 'Sampling size units',
+                'db_table': 'sampling_size_unit',
             },
         ),
         migrations.CreateModel(
-            name="SurveyMethod",
+            name='SurveyMethod',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("name", models.CharField(max_length=255, unique=True)),
-                ("sort_id", models.IntegerField(unique=True)),
+                ('name', models.CharField(max_length=255, unique=True)),
+                ('sort_id', models.IntegerField(unique=True)),
             ],
             options={
-                "verbose_name": "Survey method",
-                "verbose_name_plural": "Survey methods",
-                "db_table": "survey_method",
+                'verbose_name': 'Survey method',
+                'verbose_name_plural': 'Survey methods',
+                'db_table': 'survey_method',
             },
         ),
     ]

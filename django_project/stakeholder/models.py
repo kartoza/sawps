@@ -76,6 +76,23 @@ class UserProfile(models.Model):
         db_table = "user_profile"
 
 
+class UserLogin(models.Model):
+    """User login model."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    login_status = models.ForeignKey(LoginStatus, on_delete=models.DO_NOTHING)
+    ip_address = models.CharField(max_length=20)
+    date_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        verbose_name = 'User login'
+        verbose_name_plural = 'User logins'
+        db_table = "user_login"
+
+        
 class Organisation(models.Model):
     """Organisation model."""
 
@@ -88,3 +105,28 @@ class Organisation(models.Model):
         verbose_name = 'Organisation'
         verbose_name_plural = 'Organisations'
         db_table = "organisation"
+
+
+class OrganisationPersonnel(models.Model):
+    """Organisation personnel abstract model."""
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+
+class OrganisationRepresentative(OrganisationPersonnel):
+    """Organisation representative model."""
+    class Meta:
+        verbose_name = 'Organisation representative'
+        verbose_name_plural = 'Organisation representatives'
+        db_table = 'organisation_representative'
+
+
+class OrganisationUser(OrganisationPersonnel):
+    """Organisation user model."""
+    class Meta:
+        verbose_name = 'Organisation user'
+        verbose_name_plural = 'Organisation users'
+        db_table = 'organisation_user'
