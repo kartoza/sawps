@@ -46,8 +46,8 @@ class NatureOfPopulation(models.Model):
 
 
 class PopulationCountAbstract(models.Model):
-    """"Populaiton count abstract model."""
-    year = models.DateField()
+    """"Population count abstract model."""
+    year = models.PositiveBigIntegerField()
     owned_species = models.ForeignKey('species.OwnedSpecies', on_delete=models.CASCADE)
     total = models.IntegerField()
     adult_male = models.IntegerField(null=True, blank=True)
