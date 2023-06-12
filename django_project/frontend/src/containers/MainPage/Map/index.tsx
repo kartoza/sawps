@@ -77,7 +77,7 @@ export default function Map() {
         minZoom: 5
       })
       map.current.addControl(new CustomNavControl({
-        showCompass: true,
+        showCompass: false,
         showZoom: true
       }), 'bottom-left')
       map.current.on('load', () => {

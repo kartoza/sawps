@@ -117,13 +117,13 @@ function Upload() {
                     <Grid item>
                         <Grid container className='UploadContent'>
                             <Grid item>
-                                Select Property
+                                
                             </Grid>
                             <Grid item>
                                 <Grid container className='UploadSection'>
                                     <Grid item className='UploadSectionHeader'>
                                         <span className='UploadSectionHeaderIcon Boundary'></span>
-                                        <span>Create Property Boundary/Update</span>
+                                        <span>Create Property Boundary</span>
                                     </Grid>
                                     <Grid item className='UploadSectionContent CreateBoundary'>
                                         <Grid container flexDirection={'column'}>
