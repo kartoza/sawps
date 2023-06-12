@@ -57,7 +57,7 @@ class TestPropertyAPIViews(TestCase):
                 geom=GEOSGeometry(geom_str),
                 cname='C1235DEF'
             )
-    
+
     def test_create_new_property(self):
         property_type = PropertyType.objects.all().first()
         data = {

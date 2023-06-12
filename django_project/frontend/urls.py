@@ -29,30 +29,36 @@ from frontend.api_views.property import (
 
 urlpatterns = [
     re_path(
-         r'^api/map/search/parcel/?$',
+        r'^api/map/search/parcel/?$',
         FindParcelByCoord.as_view(),
-        name='find-parcel'),
+        name='find-parcel'
+    ),
     re_path(
-         r'^api/map/search/context_layer/list/?$',
+        r'^api/map/search/context_layer/list/?$',
         ContextLayerList.as_view(),
-        name='context-layer-list'),
+        name='context-layer-list'
+    ),
     re_path(
-         r'^api/map/styles/?$',
+        r'^api/map/styles/?$',
         MapStyles.as_view(),
-        name='map-style'),
+        name='map-style'
+    ),
     re_path(
-         r'^api/map/aerial/'
-         r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
+        r'^api/map/aerial/'
+        r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
         AerialTile.as_view(),
-        name='aerial-map-tile'),
+        name='aerial-map-tile'
+    ),
     re_path(
         r'^api/property/create/?$',
         CreateNewProperty.as_view(),
-        name='property-create'),
+        name='property-create'
+    ),
     re_path(
         r'^api/property/metadata/list/?$',
         PropertyMetadataList.as_view(),
-        name='property-metadata'),
+        name='property-metadata'
+    ),
     path('map/', MapView.as_view(), name='map'),
     path('', HomeView.as_view(), name='home'),
 ]

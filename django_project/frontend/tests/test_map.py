@@ -37,7 +37,7 @@ class TestMapAPIViews(TestCase):
                 geom=GEOSGeometry(geom_str),
                 cname='C1235DEF'
             )
-    
+
     def test_get_context_layers(self):
         request = self.factory.get(
             reverse('context-layer-list')
@@ -46,7 +46,7 @@ class TestMapAPIViews(TestCase):
         view = ContextLayerList.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-    
+
     def test_get_map_styles(self):
         request = self.factory.get(
             reverse('map-style')
@@ -55,12 +55,12 @@ class TestMapAPIViews(TestCase):
         view = MapStyles.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-    
+
     def test_find_parcel_by_coord(self):
         lat = -26.71998940486352
         lng = 27.763781680455708
         request = self.factory.get(
-            reverse('find-parcel')  + (
+            reverse('find-parcel') + (
                 f'/?lat={lat}&lng={lng}'
             )
         )

@@ -41,7 +41,7 @@ class CreateNewProperty(APIView):
 
     def get_geom_size_in_ha(self, geom: GEOSGeometry):
         meters_sq = area(geom.geojson)
-        acres = meters_sq * 0.000247105381 # meters^2 to acres
+        acres = meters_sq * 0.000247105381  # meters^2 to acres
         return acres / 2.471
 
     def get_geometry(self, parcels):
@@ -56,7 +56,7 @@ class CreateNewProperty(APIView):
                 queryset['geom__union'] if geom is None else
                 geom.union(queryset['geom__union'])
             )
-        
+
         holding_parcel_ids = [p['id'] for p in parcels if
                               p['layer'] == 'holding']
         if holding_parcel_ids:
@@ -68,7 +68,7 @@ class CreateNewProperty(APIView):
                 queryset['geom__union'] if geom is None else
                 geom.union(queryset['geom__union'])
             )
-        
+
         farm_portion_parcel_ids = [p['id'] for p in parcels if
                                    p['layer'] == 'farm_portion']
         if farm_portion_parcel_ids:
@@ -113,7 +113,7 @@ class CreateNewProperty(APIView):
             }
             Parcel.objects.create(**data)
 
-    def post(self, request, *args, **kwargs):    
+    def post(self, request, *args, **kwargs):
         # union of parcels
         parcels = request.data.get('parcels')
         geom = self.get_geometry(parcels)
