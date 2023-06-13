@@ -4,7 +4,9 @@
     "metadata": {
       "maputnik:license": "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
       "maputnik:renderer": "mbgljs",
-      "openmaptiles:version": "3.x"
+      "openmaptiles:version": "3.x",
+      "sanbi:version": "7",
+      "sanbi:theme": "light"
     },
     "center": [25.86, -28.52],
     "zoom": 5,
