@@ -4,6 +4,8 @@ import Box from "@mui/material/Box";
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
 import ContextLayerInterface from '../../../models/ContextLayer';
 import {RootState} from '../../../app/store';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
@@ -45,14 +47,23 @@ function Layers() {
             <List component="nav" aria-label="layers">
             { loading ? <Loading /> :
                 contextLayers.map((layer: ContextLayerInterface) => {
+                    const labelId = `checkbox-list-label-${layer.id}`;
                     return (
                         <ListItemButton
                             key={layer.id}
-                            selected={layer.isSelected}
                             disabled={loading || !isMapReady}
                             onClick={(event) => dispatch(toggleLayer(layer.id))}
                         >
-                            <ListItemText primary={layer.name} />
+                            <ListItemIcon>
+                                <Checkbox
+                                edge="start"
+                                checked={layer.isSelected}
+                                tabIndex={-1}
+                                disableRipple
+                                inputProps={{ 'aria-labelledby': labelId }}
+                                />
+                            </ListItemIcon>
+                            <ListItemText id={labelId} primary={layer.name} />
                         </ListItemButton>
                     )
                 })
