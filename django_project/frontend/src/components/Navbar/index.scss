@@ -1,5 +1,5 @@
 .navbar {
-    background-color: var(--white);
+    background-color: #282829;
     color: var(--black);
 }
 
@@ -10,4 +10,10 @@
 .logo-wrapper img {
     height: auto;
     max-width: 100%;
+}
+
+#navbarNav .navbar-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
