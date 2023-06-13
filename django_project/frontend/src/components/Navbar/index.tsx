@@ -50,7 +50,7 @@ function ResponsiveNavbar() {
   };
 
   return (
-    <AppBar position="static" className='navbar navbar-dark bg-dark'>
+    <AppBar position="static" className='navbar navbar-dark'>
       <Box sx={{width: '100%'}}>
         <Toolbar disableGutters>
           <Box sx={{ p: 1, display: { xs: 'none', md: 'flex' } }}>

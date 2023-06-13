@@ -1,5 +1,48 @@
+html, body {
+  height: 100%;
+}
+
+.fs-background {
+  height: calc(100% - 98px); 
+}
+
+.full-height {
+  height: 100%
+}
+
+.half-height {
+  height: 100%
+}
+
+
 body {
-  font-family: 'Roboto';
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --white: #fff;
+  --black: #000;
+  --primary-color: #70B276;
+  --secondary-color: #FAA755;
+  --green: #70B276;
+  --orange: #FAA755;
+  --purple: #9D85BE;
+  --space-unit: 1em;
+  --space-xxs: calc(0.25 * var(--space-unit));
+  --space-xs: calc(0.5 * var(--space-unit));
+  --space-sm: calc(0.75 * var(--space-unit));
+  --space-md: calc(1.25 * var(--space-unit));
+  --space-lg: calc(2 * var(--space-unit));
+  --space-xl: calc(3.25 * var(--space-unit));
+  --space-xxl: calc(5.25 * var(--space-unit));
+  --green-darken-1: #43A047;
+  --black-gray: rgba(0, 0, 0, 0.6);
+  --black-darker: rgba(0, 0, 0, 0.87);
+  --black-transparent: rgba(0, 0, 0, 0.12);
+  --black-custom-primary: #282829;
 }
 
 .btn-primary {
@@ -36,8 +79,6 @@ body {
   position: relative;
   background: url("/static/images/lion.png") no-repeat;
   background-size: contain;
-  padding-top: 7rem;
-  padding-bottom: 7rem;
 
 }
 
@@ -45,20 +86,17 @@ body {
   position: relative;
   background: url("/static/images/leopard.jpg") no-repeat;
   background-size: contain;
-  padding-top: 7rem;
-  padding-bottom: 7rem;
 
 }
 
 
 .account-button{
   color: #000000 !important;
-  border-radius: 2px;
-  background-color: #FAA755;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  border: 2px solid #FAA755;
+  background-color: var(--orange);
+  border: 2px solid var(--orange);
   text-transform: uppercase;
+  padding: 3px 20px !important;
+  border-radius: 5px;
 }
 
 .account-action:before {
@@ -75,9 +113,10 @@ body {
 .account-form{
   background: #282829;
   border-radius: 4px;
-  float: right;
-  margin-left: auto;
-  margin-top: -35px;
+  color: var(--white);
+  width: max-content;
+  padding: 20px;
+  margin-top: 10vh;
 }
 
 .custom-form-container{
@@ -85,18 +124,18 @@ body {
 }
 
 .account-form-title{
-  color: #ffffff;
+  color: var(--white);
   size:34px;
   text-align: center;
 }
 
 .login-help{
-  color: #ffffff;
+  color: var(--white);
   font-size: 12px;
   line-height: 24px;
 }
 .login-help > a{
-  color: #ffffff;
+  color: var(--white);
   text-decoration: none;
 }
 
@@ -108,27 +147,75 @@ body {
 
 
 .swaps-text-primary{
-  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  height: max-content;
+  color: #70B276;
 }
 
 hr.separator{
-  border-top: 1px solid #ffffff;
+  border-top: 1px solid var(--white);
 }
 
-.swaps-text-primary{
-  color: #ffffff;
+.swaps-text-primary, a {
+  color: #86BC8B;
+}
+
+a:hover{
+  color: #70B276;
 }
 
 .upload-picture{
   cursor: pointer;
 }
 
-.swaps-text-menu{
+.swaps-text-primary, a {
+  color: #86BC8B;
+}
+
+a:hover{
   color: #70B276;
 }
 
-.swap-text-green, .swap-text-green >li>a{
-  color: #70B276;
+.upload-picture{
+  cursor: pointer;
 }
 
 
+.navbar {
+  background-color: #282829;
+  color: var(--black);
+}
+
+.custom-form-container p{
+  display: flex;
+  flex-direction: column;
+}
+
+ .custom-form-container p label {
+   text-align: center;
+   color: var(--white);
+ }
+
+.custom-form-container p input[type="text"],
+.custom-form-container p input[type="email"],
+.custom-form-container p input[type="password"] {
+   width: 100%;
+   box-sizing: border-box;
+   background-color: var(--white);
+   border-radius: 4px;
+   border: 0;
+   height: 40px;
+   padding-left: 10px;
+ }
+
+.error-list, .errorlist {
+  list-style-type: none;
+  padding: 0;
+  color: var(--orange);
+}
+
+.navbar-nav.ml-auto {
+  display: flex;
+  align-items: center;
+}
