@@ -142,7 +142,6 @@ INSTALLED_APPS = (
     'swaps',
     'population_data',
     'species',
-    'swaps',
 )
 
 SITE_ID = 1
