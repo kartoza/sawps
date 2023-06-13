@@ -44,3 +44,51 @@ class NatureOfPopulation(models.Model):
         verbose_name_plural = 'Nature of Population'
         db_table = 'nature_of_population'
 
+
+class PopulationCountAbstract(models.Model):
+    """"Population count abstract model."""
+    year = models.PositiveBigIntegerField()
+    owned_species = models.ForeignKey('species.OwnedSpecies', on_delete=models.CASCADE)
+    total = models.IntegerField()
+    adult_male = models.IntegerField(null=True, blank=True)
+    adult_female = models.IntegerField(null=True, blank=True)
+    month = models.ForeignKey(Month, on_delete=models.CASCADE)
+    juvenile_male = models.IntegerField(null=True, blank=True)
+    juvenile_female = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class PopulationCount(PopulationCountAbstract):
+    """Population count model."""
+    sub_adult_total = models.IntegerField(null=True, blank=True)
+    sub_adult_male = models.IntegerField(null=True, blank=True)
+    sub_adult_female = models.IntegerField(null=True, blank=True)
+    juvenile_total = models.IntegerField(null=True, blank=True)
+    pride = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Population count'
+        verbose_name_plural = 'Population counts'
+        db_table = 'population_count'
+        constraints = [models.UniqueConstraint(
+            fields=['year', 'owned_species'],name='unique_population_count'
+        )]
+
+class PopulationCountPerActivity(PopulationCountAbstract):
+    """Population count per activity model."""
+    activity_type = models.ForeignKey('activity.ActivityType', on_delete=models.CASCADE)
+    founder_population = models.BooleanField(null=True, blank=True)
+    reintroduction_source = models.CharField(
+        max_length=250, null=True, blank=True
+    )
+    permit_number = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Population count per activity'
+        verbose_name_plural = 'Population count per activities'
+        db_table = 'population_count_per_activity'
+        constraints = [models.UniqueConstraint(
+            fields=['year', 'owned_species', 'activity_type'],name='unique_population_count_per_activity'
+        )]
