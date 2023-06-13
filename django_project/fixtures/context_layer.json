@@ -74,7 +74,10 @@
                 "erf",
                 "farm_portion",
                 "holding",
-                "parent_farm"
+                "parent_farm",
+                "farm_portion_labels",
+                "holding_labels",
+                "erf_labels"
             ]
         }
     },
