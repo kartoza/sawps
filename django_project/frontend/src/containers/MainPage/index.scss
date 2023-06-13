@@ -7,6 +7,10 @@
 
     .TabHeaders {
         padding-left: 5px;
+
+        .MuiTab-root {
+            min-width: 197.5px;
+        }
     }
 
     .Content {

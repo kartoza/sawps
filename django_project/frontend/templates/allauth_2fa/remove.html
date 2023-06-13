@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<section>
+  <div class="container py-5">
+    <div class="row">
+      {% include "profile_config_base.html" %}
+
+      <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-body">
+<h3 class="swaps-text-primary">
+  {% trans "Disable Two-Factor Authentication" %}
+</h3>
+
+<p>{% trans "Please enter a valid authentication token to disable two-factor authentication:" %}</p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class=" account-button">
+    {% trans 'Disable Two-Factor' %}
+  </button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+{% endblock %}

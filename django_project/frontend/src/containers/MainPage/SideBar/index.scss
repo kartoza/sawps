@@ -15,8 +15,8 @@
     .Layers {
         .MuiList-root {
             padding-top: 0px;
-            .MuiListItemButton-root.Mui-selected {
-                background-color: var(--black-transparent);
+            .MuiCheckbox-root.Mui-checked {
+                color: var(--black-custom-primary);
             }
         }
     }
@@ -30,4 +30,8 @@
     width: 450px;
     z-index: 100;
     background: white;
+
+    .MuiSkeleton-root {
+        background-color: white;
+    }
 }

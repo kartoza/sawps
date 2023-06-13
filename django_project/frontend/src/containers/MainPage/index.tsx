@@ -6,14 +6,19 @@ import './index.scss';
 import reportWebVitals from '../../reportWebVitals';
 import MainPage from '../MainPage/MainPage';
 import ErrorBoundary from "../../components/ErrorBoundary";
+import theme from '../../utils/Theme';
+import { ThemeProvider } from '@mui/material';
 
 
 const rootElement = document.getElementById('app')!
 const root = createRoot(rootElement);
+
 root.render(
     <Provider store={store}>
         <ErrorBoundary>
-            <MainPage/>
+            <ThemeProvider theme={theme}>
+                <MainPage/>
+            </ThemeProvider>
         </ErrorBoundary>
     </Provider>
 );
