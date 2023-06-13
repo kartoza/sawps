@@ -18,14 +18,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-
 urlpatterns = [
     path('accounts/two-factor/', include('allauth_2fa.urls')),
     path('accounts/', include('allauth.urls')),
     path('', include('frontend.urls')),
     path('admin/', admin.site.urls),
     path('', include('notification.urls')),
-    path('', include('swaps.urls')),
+    path('', include('stakeholder.urls')),
 ]
 
 if settings.DEBUG:
