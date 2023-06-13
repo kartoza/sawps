@@ -16,8 +16,7 @@ class CustomSignupForm(SignupForm):
     last_name = forms.CharField(
         max_length=150, label='Last Name', required=True
     )
-    
-
+   
     field_order = [
         'first_name',
         'last_name',
@@ -44,7 +43,7 @@ class CustomSignupForm(SignupForm):
         )
 
         user.email_user(subject, message)
-        
+
         return user
 
     def __init__(self, *args, **kwargs):
