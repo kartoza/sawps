@@ -10,7 +10,7 @@ from core.settings.utils import absolute_path
 def get_map_template_style(request, theme_choice: int = 0):
     """
     Fetch map template style from file.
-    
+
     :param theme_choice: 0 light, 1 dark
     :return: json map style
     """

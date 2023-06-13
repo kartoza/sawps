@@ -11,12 +11,12 @@ import { setContextLayers, toggleLayer } from '../../../reducers/LayerFilter';
 import Loading from '../../../components/Loading';
 import './index.scss';
 
-const FETCH_AVAILABLE_CONTEXT_LAYERS = '/api/map/context_layer/list/'
+const FETCH_AVAILABLE_CONTEXT_LAYERS = '/api/map/search/context_layer/list/'
 
 function Layers() {
     const dispatch = useAppDispatch()
     const contextLayers = useAppSelector((state: RootState) => state.layerFilter.contextLayers)
-    const isMapReady = useAppSelector((state: RootState) => state.mapStatus.isMapReady)
+    const isMapReady = useAppSelector((state: RootState) => state.mapState.isMapReady)
     const [loading, setLoading] = useState(false)
 
     const fetchContextLayers = () => {
@@ -38,7 +38,7 @@ function Layers() {
         if (contextLayers.length === 0) {
             fetchContextLayers()
         }
-    }, [contextLayers])
+    }, [])
 
     return (
         <Box className={'Layers'}>
