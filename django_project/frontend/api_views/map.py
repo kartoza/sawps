@@ -91,14 +91,25 @@ class PropertiesLayerMVTTiles(APIView):
             '  ST_Transform(p.geometry, 3857), '
             '  TileBBox(%s, %s, %s, 3857)) as geom '
             'from property p '
-            'where p.created_by_id=%s '
-            'AND p.geometry && TileBBox(%s, %s, %s, 4326)'
+            'where p.geometry && TileBBox(%s, %s, %s, 4326) '
         )
         query_values = [
             z, x, y,
-            user.id,
             z, x, y,
         ]
+        if not user.is_superuser:
+            sql = (
+                sql +
+                'AND (p.created_by_id=%s OR '
+                '     p.organisation_id in (SELECT ou.organisation_id '
+                '     FROM organisation_user ou WHERE ou.user_id=%s)) '
+            )
+            query_values = [
+                z, x, y,
+                z, x, y,
+                user.id,
+                user.id,
+            ]
         return sql, query_values
 
     def get(self, *args, **kwargs):

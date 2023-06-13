@@ -22,6 +22,10 @@ class TestMapAPIViews(TestCase):
     def setUp(self) -> None:
         self.factory = APIRequestFactory()
         self.user_1 = UserF.create(username='test_1')
+        self.superuser = UserF.create(
+            username='test_2',
+            is_superuser=True
+        )
         # insert geom 1 and 2
         geom_path = absolute_path(
             'frontend', 'tests',
@@ -67,6 +71,14 @@ class TestMapAPIViews(TestCase):
             reverse('properties-map-layer', kwargs=kwargs)
         )
         request.user = self.user_1
+        view = PropertiesLayerMVTTiles.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        # test superuser
+        request = self.factory.get(
+            reverse('properties-map-layer', kwargs=kwargs)
+        )
+        request.user = self.superuser
         view = PropertiesLayerMVTTiles.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
