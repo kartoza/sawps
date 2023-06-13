@@ -75,6 +75,8 @@ MIDDLEWARE = (
     # 2fa
     'django_otp.middleware.OTPMiddleware',
     'allauth_2fa.middleware.AllauthTwoFactorMiddleware',
+    # request 2fa to all active user
+    'swaps.middleware.RequireSuperuser2FAMiddleware',
 )
 
 ROOT_URLCONF = 'core.urls'
@@ -140,6 +142,7 @@ INSTALLED_APPS = (
     'swaps',
     'population_data',
     'species',
+    'swaps',
 )
 
 SITE_ID = 1
