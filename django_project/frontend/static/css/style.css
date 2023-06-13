@@ -1,3 +1,6 @@
+body {
+  font-family: 'Roboto';
+}
 
 .btn-primary {
     --bs-btn-color: #fff;
