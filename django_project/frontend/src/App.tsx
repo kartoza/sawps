@@ -4,16 +4,12 @@ import './assets/styles/index.scss';
 import reportWebVitals from './reportWebVitals';
 import HomePage from './containers/HomePage';
 import ErrorBoundary from "./components/ErrorBoundary";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './utils/Theme';
 
 
 const rootElement = document.getElementById('app')!
 const root = createRoot(rootElement);
-const theme = createTheme({
-    typography: {
-        fontFamily: '"Poppins", sans-serif',
-    },
-});
 
 root.render(
     <ErrorBoundary>
