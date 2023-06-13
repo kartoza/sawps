@@ -5,11 +5,12 @@
 
 
 {% block content %}
-<div class="login-page" style="background-color: #000000; height: 85vh;">
-    <div class="container position-absolute">
+<div class="login-page fs-background" style="background-color: #000000; ">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-xl-3 swaps-text-primary account-form">
-            <div class="content">
+            <div class="col-xl-6"></div>
+            <div class="col-xl-6 swaps-text-primary ">
+            <div class="content account-form">
             <div class="custom-form-container">
                 <h4 class="account-form-title">{% trans "Two-Factor Authentication" %}</h4>
                 <hr class="separator">
@@ -19,7 +20,7 @@
                 <label>OTP code</label>
                 {{ form.otp_token }}
                 <p></p>
-                <div class="login-help text-center" style="color:#70B276">
+                <div class="login-help text-center">
                 Use your preferred authenticator application to generate an OTP
                 </div>
                 <button class="swaps-from-submit account-button" type="submit">
