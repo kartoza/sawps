@@ -42,5 +42,7 @@ django-allauth==0.54.0
 django-otp==1.2.1
 django-allauth-2fa==0.10.0
 
+# area calculation
+area==1.1.1
 # For django image field
 Pillow==9.5.0

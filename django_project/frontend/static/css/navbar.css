@@ -432,3 +432,8 @@
   .navbar-dark {
     color: rgba(255,255,255,.5);
   }
+
+.navbar-brand img {
+  border: 4px solid white;
+  border-radius: 2px;
+}

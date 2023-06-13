@@ -41,14 +41,11 @@
   width: 100%;
 
   button {
-    border: 1px solid var(--white);
     color: var(--white);
     padding: 15px 50px;
-  }
-
-  button:nth-child(2) {
     margin-left: 10px;
   }
+
 }
 
 .banner-description {

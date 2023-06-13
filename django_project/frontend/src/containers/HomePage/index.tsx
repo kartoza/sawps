@@ -2,6 +2,9 @@ import React from 'react';
 import ResponsiveNavbar from '../../components/Navbar';
 import './index.scss';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
+import CustomButton from '../../components/Button';
+
+const isLoggedIn = (window as any).isLoggedIn;
 
 function Banner() {
   return (
@@ -10,8 +13,8 @@ function Banner() {
         color: '#fff',
         height: { xs: 500, md: 800 },
         maxWidth: '100%',
-        backgroundImage: `url(/static/images/lion.png)`,
-        backgroundSize: { xs: '70%', md: 'auto 100%' },
+        backgroundImage: `url(/static/images/not-lion.png)`,
+        backgroundSize: { xs: '70%', md: 'auto 90%' },
         backgroundPosition: 'left',
         backgroundRepeat: 'no-repeat',
         backgroundColor: '#000',
@@ -19,15 +22,21 @@ function Banner() {
       }}
     >
       <Grid container spacing={1} sx={{ height: '100%' }}>
-        <Grid item xs={2} md={7} xl={6}></Grid>
-        <Grid item xs={4}>
+        <Grid item xs={1} md={6} xl={5}></Grid>
+        <Grid item xs={5}>
           <Box className='banner-description'>
             <Typography variant="h3" component="h3" gutterBottom>
               Wild life population system monitoring traded wildlife in South Africa
             </Typography>
             <Box className='banner-button-container'>
-              <Button title='About'>About</Button>
-              <Button title='About' onClick={() => window.location.href = '/map'}>Explore</Button>
+              <CustomButton color='green' title='About'>About</CustomButton>
+              {isLoggedIn ? <>
+                <CustomButton color='orange' title='About' onClick={() => window.location.href = '/map'}>Explore</CustomButton>
+                <CustomButton color='purple' title='About'>Upload Your Data</CustomButton>
+              </> : <>
+                <CustomButton color='orange' title='About' onClick={() => window.location.href = '/accounts/login/'}>Login</CustomButton>
+                <CustomButton color='purple' title='About' onClick={() => window.location.href = '/accounts/signup/'}>Register</CustomButton>
+              </>}
             </Box>
           </Box>
         </Grid>

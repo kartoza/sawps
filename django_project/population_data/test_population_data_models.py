@@ -1,6 +1,9 @@
 from django.test import TestCase
-from population_data.models import CountMethod, Month, NatureOfPopulation
-from population_data.factories import CountMethodFactory, MonthFactory, NatureOfPopulationFactory
+from population_data.models import CountMethod, Month, NatureOfPopulation, PopulationCount, PopulationCountPerActivity
+from population_data.factories import CountMethodFactory, MonthFactory, NatureOfPopulationFactory, PopulationCountFactory, PopulationCountPerActivityFactory
+from species.models import Taxon, OwnedSpecies
+from django.contrib.auth.models import User
+from species.factories import OwnedSpeciesFactory, TaxonRankFactory
 from django.db.utils import IntegrityError
 
 
@@ -22,7 +25,7 @@ class CountMethodTestCase(TestCase):
         """Test update count method."""
         self.count_method.name = 'count method-2'
         self.count_method.save()
-        self.assertEqual(CountMethod.objects.get(id=1).name, 'count method-2')
+        self.assertEqual(CountMethod.objects.get(id=self.count_method.id).name, 'count method-2')
 
     def test_count_method_unique_name_constraint(self):
         """Test count method unique name constraint."""
@@ -53,7 +56,7 @@ class MonthTestCase(TestCase):
         """Update month."""
         self.month.name = 'month-1'
         self.month.save()
-        self.assertEqual(Month.objects.get(id=1).name, 'month-1')
+        self.assertEqual(Month.objects.get(id=self.month.id).name, 'month-1')
 
     def test_month_unique_name_constraint(self):
         """Test month unique name constraint."""
@@ -96,7 +99,7 @@ class NatureOfPopulationTestCase(TestCase):
         self.nature_of_population.name = 'nature of population-1'
         self.nature_of_population.save()
         self.assertEqual(
-            NatureOfPopulation.objects.get(id=1).name,
+            NatureOfPopulation.objects.get(id=self.nature_of_population.id).name,
             'nature of population-1',
         )
 
@@ -110,3 +113,97 @@ class NatureOfPopulationTestCase(TestCase):
         """Test delete nature of population."""
         self.nature_of_population.delete()
         self.assertEqual(NatureOfPopulation.objects.count(), 0)
+
+
+class PopulationCountTestCase(TestCase):
+    """Population count test case."""
+    @classmethod
+    def setUpTestData(cls):
+        """SetUpTestData for population count test case."""
+        taxon = Taxon.objects.create(
+            scientific_name='taxon_0',
+            common_name_varbatim='taxon_0',
+            colour_variant=False,
+            taxon_rank=TaxonRankFactory(),
+        )
+        user = User.objects.create_user(username='testuser', password='12345')        
+        owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
+        cls.population_count = PopulationCountFactory(owned_species=owned_species)
+    
+    def test_create_population_count(self):
+        """Test create population count."""
+        self.assertTrue(
+            isinstance(self.population_count, PopulationCount)
+        )
+        self.assertEqual(PopulationCount.objects.count(), 1)
+
+
+    def test_update_population_count(self):
+        """Test update population count."""
+        self.population_count.total = 100
+        self.population_count.save()
+        self.assertEqual(
+            PopulationCount.objects.get(year=self.population_count.year).total, 100
+        )
+
+    def test_year_ownedspecies_fields_unique_toghter_constraint(self):
+        """Test both year and ownedspecis are unique togther."""
+        with self.assertRaises(Exception) as raised:
+            PopulationCountFactory(
+                owned_species=self.population_count.owned_species,
+                year=self.population_count.year,
+            )
+            self.assertEqual(IntegrityError, type(raised.exception))
+    
+
+    def test_delete_population_count(self):
+        """Test delete population count."""
+        self.population_count.delete()
+        self.assertEqual(PopulationCount.objects.count(), 0)
+
+
+class PopulationCountPerActivityTestCase(TestCase):
+    """Population count test case."""
+    @classmethod
+    def setUpTestData(cls):
+        """SetUpTestData for population count test case."""
+        taxon = Taxon.objects.create(
+            scientific_name='taxon_0',
+            common_name_varbatim='taxon_0',
+            colour_variant=False,
+            taxon_rank=TaxonRankFactory(),
+        )
+        user = User.objects.create_user(username='testuser', password='12345')        
+        owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
+        cls.population_count = PopulationCountPerActivityFactory(owned_species=owned_species)
+    
+    def test_create_population_count(self):
+        """Test create population count."""
+        self.assertTrue(
+            isinstance(self.population_count, PopulationCountPerActivity)
+        )
+        self.assertEqual(PopulationCountPerActivity.objects.count(), 1)
+
+
+    def test_update_population_count(self):
+        """Test update population count."""
+        self.population_count.total = 100
+        self.population_count.save()
+        self.assertEqual(
+            PopulationCountPerActivity.objects.get(year=self.population_count.year).total, 100
+        )
+
+    def test_year_ownedspecies_activity_type_fields_unique_toghter_constraint(self):
+        """Test year, ownedspecies and activity_type are unique togther."""
+        with self.assertRaises(Exception) as raised:
+            PopulationCountPerActivityFactory(
+                owned_species=self.population_count.owned_species,
+                year=self.population_count.year,
+                activity_type=self.population_count.activity_type,
+            )
+            self.assertEqual(IntegrityError, type(raised.exception))
+
+    def test_delete_population_count(self):
+        """Test delete population count."""
+        self.population_count.delete()
+        self.assertEqual(PopulationCountPerActivity.objects.count(), 0)

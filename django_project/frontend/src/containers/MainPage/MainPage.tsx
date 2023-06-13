@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
@@ -7,13 +7,23 @@ import { Button } from '@mui/material';
 import ResponsiveNavbar from '../../components/Navbar';
 import TabPanel, { a11yProps } from '../../components/TabPanel';
 import { LeftSideBar, RightSideBar } from './SideBar';
+import Upload from './Upload';
 import Map from './Map';
 import './index.scss';
 
 function MainPage() {
   const [selectedTab, setSelectedTab] = useState(0)
   const [showRightSideBar, setShowRightSideBar] = useState(false)
+  const [rightSideBarMode, setRightSideBarMode] = useState(-1) // 0: upload data, 1: property summary, 2: filtered properties summary
 
+  useEffect(() => {
+    if (selectedTab === 3) {
+      setShowRightSideBar(true)
+      setRightSideBarMode(0)
+    } else if (selectedTab === 1 || selectedTab === 2) {
+      setShowRightSideBar(false)
+    }
+  }, [selectedTab])
 
   return (
     <div className="App">
@@ -40,19 +50,18 @@ function MainPage() {
                </Box>
               </Grid>
               <Grid item className="TabPanels">
-                <TabPanel key={0} value={selectedTab} index={0} noPadding>
+                <TabPanel key={0} value={selectedTab} index={-1} indexList={[0, 3]} noPadding>
                   <Map />
                 </TabPanel>
                 <TabPanel key={1} value={selectedTab} index={1} noPadding>
-                    <Button onClick={() => {
-                      setShowRightSideBar(!showRightSideBar)
-                  }}>Open Right Side</Button>
+                </TabPanel>
+                <TabPanel key={2} value={selectedTab} index={2} noPadding>
                 </TabPanel>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-        { showRightSideBar ? <RightSideBar /> : null}
+        { showRightSideBar && rightSideBarMode === 0 ? <RightSideBar element={Upload} /> : null}
       </div>
     </div>
   );
