@@ -4,15 +4,23 @@
 {% block head_title %}Register{% endblock%}
 
 {% block content %}
-<section class="account-action" style="background-color: #000000;height: 85vh;">
-    <div class="container position-absolute">
-    <div class="row">
-        <div class="col-xl-6 swaps-text-primary account-form">
-            <div class="content">
+<section class="account-action fs-background" style="background-color: #000000;">
+    <div class="container-fluid full-height position-absolute">
+    <div class="row half-height">
+        <div class="col-7"></div>
+        <div class="col-5 swaps-text-primary">
+            <div class="account-form content" style="width: 700px">
                     {% csrf_token %}
                     <div class="container">
 
                         <div class="custom-form-container">
+                            {% if messages %}
+                                <ul class="errorlist">
+                                    {% for message in messages %}
+                                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
 
                             <h4 class="account-form-title">{% trans "Registration" %}</h4>
                             <hr class="separator">
@@ -28,17 +36,41 @@
                                 {% endif %}
                                 <div class="form-row">
                                 {% for field in form %}
-                                {% if field.name == 'group' %}
+                                {% if field.name == 'email' %}
                                 </div>
                                 <div class="form-group">
-                                    <label for="{{field.label}}">{{field.label}}</label>
+                                    <label for="{{field.label}}">{{field.label}}:</label>
                                     {{ field }}
+                                    {% if field.errors %}
+                                        <ul class="errorlist">
+                                            {% for error in field.errors%}
+                                            <li>{{error}}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                    <div style="color: var(--white);" class="mt-2">
+                                        Password must contain at least eight characters, including
+                                        <ul>
+                                        <li class="password-help-text">lower case letter</li>
+                                        <li class="password-help-text">upper case letter</li>
+                                        <li class="password-help-text">upper case letter</li>
+                                        <li class="password-help-text">numeric character</li>
+                                        <li class="password-help-text">special character</li>
+                                    </ul>
+                                    </div>    
                                 </div>
                                 <div class="form-row">
                                 {% else %}
                                 <div class="form-group col-md-6">
-                                    <label for="{{field.label}}">{{field.label}}</label>
+                                    <label for="{{field.label}}">{{field.label}}:</label>
                                     {{ field }}
+                                    {% if field.errors %}
+                                        <ul class="errorlist">
+                                            {% for error in field.errors%}
+                                            <li>{{error}}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
                                 </div>
                                 {% endif %}
                                 {% endfor%}
@@ -47,8 +79,6 @@
                                 {% if redirect_field_value %}
                                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                                 {% endif %}
-
-
 
                                 <button id="submit-button" class="swaps-from-submit account-button" type="submit">{% trans "Register" %}</button>
                             </form>

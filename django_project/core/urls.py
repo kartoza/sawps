@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('notification.urls')),
     path('', include('stakeholder.urls')),
+    path('', include('swaps.urls')),
 ]
 
 if settings.DEBUG:
