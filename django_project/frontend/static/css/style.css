@@ -219,3 +219,16 @@ a:hover{
   display: flex;
   align-items: center;
 }
+
+.password-help-text{
+  margin: auto;
+  position: relative;
+  display: block;
+  justify-content: center;
+  text-align: center;
+}
+
+.form-group label{
+  justify-content: center;
+  display: flex;
+}

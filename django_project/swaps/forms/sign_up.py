@@ -16,8 +16,7 @@ class CustomSignupForm(SignupForm):
     last_name = forms.CharField(
         max_length=150, label='Last Name', required=True
     )
-    
-
+   
     field_order = [
         'first_name',
         'last_name',
@@ -44,10 +43,11 @@ class CustomSignupForm(SignupForm):
         )
 
         user.email_user(subject, message)
-        
+
         return user
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = ''
