@@ -40,3 +40,21 @@ code {
   --black-transparent: rgba(0, 0, 0, 0.12); // for highlighting
   --black-custom-primary: #282829;
 }
+
+// utility/helper classes
+// class to make grid item grow fill the space
+.FlexContainerFill {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 100%;
+  flex: 1;
+}
+
+// class to make grid item grow using height 100
+.FlexContainerFillHeight {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 100%;
+}

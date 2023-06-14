@@ -94,6 +94,16 @@
                 "place_name_smallest_scale"
             ]
         }
+    },
+    {
+        "model": "frontend.contextlayer",
+        "pk": 9,
+        "fields": {
+            "name": "Properties",
+            "is_static": false,
+            "layer_names": [
+                "properties"
+            ]
+        }
     }
 ]
-    
