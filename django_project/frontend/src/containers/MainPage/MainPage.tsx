@@ -22,26 +22,22 @@ enum RightSideBarMode {
 
 function MainPage() {
   const [selectedTab, setSelectedTab] = useState(0)
-  const [showRightSideBar, setShowRightSideBar] = useState(false)
   const [rightSideBarMode, setRightSideBarMode] = useState(RightSideBarMode.None) // 0: upload data, 1: property summary, 2: filtered properties summary
   const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
 
   useEffect(() => {
     if (selectedTab === 3) {
-      setShowRightSideBar(true)
       setRightSideBarMode(RightSideBarMode.Upload)
     } else if (selectedTab === 1 || selectedTab === 2) {
-      setShowRightSideBar(false)
+      setRightSideBarMode(RightSideBarMode.None)
     }
   }, [selectedTab])
 
   useEffect(() => {
     if (propertyItem.id > 0) {
       // show right side bar
-      setShowRightSideBar(true)
       setRightSideBarMode(RightSideBarMode.PropertySummary)
     } else {
-      setShowRightSideBar(false)
       setRightSideBarMode(RightSideBarMode.None)
     }
   }, [propertyItem])
@@ -82,8 +78,8 @@ function MainPage() {
             </Grid>
           </Grid>
         </Grid>
-        { showRightSideBar && rightSideBarMode === RightSideBarMode.Upload ? <RightSideBar element={Upload} /> : null}
-        { showRightSideBar && rightSideBarMode === RightSideBarMode.PropertySummary ? <RightSideBar element={PropertySummary} /> : null}
+        { rightSideBarMode === RightSideBarMode.Upload ? <RightSideBar element={Upload} /> : null}
+        { rightSideBarMode === RightSideBarMode.PropertySummary ? <RightSideBar element={PropertySummary} /> : null}
       </div>
     </div>
   );
