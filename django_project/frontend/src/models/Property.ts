@@ -50,3 +50,8 @@ export interface ProvinceInterface {
     id: number,
     name: string
 }
+
+export interface PropertySelectItem {
+    id: number,
+    name: string,
+}

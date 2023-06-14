@@ -26,7 +26,7 @@ const PROPERTY_METADATA_URL = '/api/property/metadata/list/'
 
 
 /**
- * Display property information table
+ * Display property information table with input
  * @param props PropertyInfoInterface
  * @returns 
  */
@@ -122,7 +122,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                         <TableCell>
                             <TextField
                                 error={props.validationError?.email}
-                                disabled={loading || !props.enableForm}
+                                disabled={true}
                                 id="input_owneremail"
                                 hiddenLabel={true}
                                 type={"text"}
@@ -141,7 +141,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 <Select
                                     id="property-type-select"
                                     error={props.validationError?.property_type}
-                                    value={props.property.property_type_id.toString()}
+                                    value={ props.property.property_type_id ? props.property.property_type_id.toString() : ''}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
                                     onChange={(event: SelectChangeEvent) => {
@@ -158,47 +158,51 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                             </FormControl>
                         </TableCell>
                     </TableRow>
-                    <TableRow key='province'>
-                        <TableCell component="th" scope="row">
-                            Province
-                        </TableCell>
-                        <TableCell>
-                            <FormControl fullWidth size="small">
-                                <Select
-                                    id="province-select"
-                                    error={props.validationError?.province}
-                                    value={props.property.province_id.toString()}
-                                    displayEmpty
-                                    disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => {
-                                        let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
-                                        props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})}
-                                    }
-                                >
-                                    { provinceList.map((province: ProvinceInterface) => {
-                                        return (
-                                            <MenuItem key={province.id} value={province.id}>{province.name}</MenuItem>
-                                        )
-                                    })}
-                                </Select>
-                            </FormControl>
-                        </TableCell>
-                    </TableRow>
-                    <TableRow key='size'>
-                        <TableCell component="th" scope="row">
-                            Property Size (in ha)
-                        </TableCell>
-                        <TableCell>
-                            <TextField
-                                disabled={true}
-                                id="input_size"
-                                hiddenLabel={true}
-                                type={"text"}
-                                value={props.property.size}
-                                sx={{ width: '100%' }}
-                            />                            
-                        </TableCell>
-                    </TableRow>
+                    { props.property.id !== 0 &&
+                        <TableRow key='province'>
+                            <TableCell component="th" scope="row">
+                                Province
+                            </TableCell>
+                            <TableCell>
+                                <FormControl fullWidth size="small">
+                                    <Select
+                                        id="province-select"
+                                        error={props.validationError?.province}
+                                        value={props.property.province_id ? props.property.province_id.toString() : ''}
+                                        displayEmpty
+                                        disabled={loading || !props.enableForm}
+                                        onChange={(event: SelectChangeEvent) => {
+                                            let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})}
+                                        }
+                                    >
+                                        { provinceList.map((province: ProvinceInterface) => {
+                                            return (
+                                                <MenuItem key={province.id} value={province.id}>{province.name}</MenuItem>
+                                            )
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </TableCell>
+                        </TableRow>
+                    }
+                    { props.property.id !== 0 &&
+                        <TableRow key='size'>
+                            <TableCell component="th" scope="row">
+                                Property Size (in ha)
+                            </TableCell>
+                            <TableCell>
+                                <TextField
+                                    disabled={true}
+                                    id="input_size"
+                                    hiddenLabel={true}
+                                    type={"text"}
+                                    value={props.property.size}
+                                    sx={{ width: '100%' }}
+                                />                            
+                            </TableCell>
+                        </TableRow>
+                    }
                     <TableRow key='organisation'>
                         <TableCell component="th" scope="row">
                             Organisation
@@ -208,7 +212,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 <Select
                                     id="organisation-select"
                                     error={props.validationError?.organisation}
-                                    value={props.property.organisation_id.toString()}
+                                    value={props.property.organisation_id ? props.property.organisation_id.toString() : ''}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
                                     onChange={(event: SelectChangeEvent) => {

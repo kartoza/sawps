@@ -14,11 +14,31 @@
         margin-top: 8px;
         margin-bottom: 8px;
         width: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
     }
     .UploadContent {
         padding: 10px;
         display: flex;
         flex-direction: column;
+
+        .UploadWizard {
+            .TabHeaders {
+                padding-left: 0px;
+        
+                .MuiTab-root {
+                    min-width: unset;
+                }
+            }
+        }
+
+        .ButtonContainer {
+            margin-top: 20px;
+
+            .MuiButton-root {
+                width: 100%;
+            }
+        }
 
         .UploadSection {
             display: flex;
@@ -64,6 +84,12 @@
                     .MuiButton-root {
                         min-width: 100px;
                     }
+                }
+            }
+
+            &.Step2 {
+                .ButtonContainer {
+                    margin-top: 10px;
                 }
             }
         }
