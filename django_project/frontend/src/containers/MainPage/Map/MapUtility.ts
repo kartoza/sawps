@@ -1,8 +1,10 @@
 import axios from "axios";
 import ContextLayerInterface from '../../../models/ContextLayer';
 import ParcelInterface from '../../../models/Parcel';
+import PropertyInterface from "../../../models/Property";
 
 const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
+const SEARCH_PROPERTY_URL = '/api/map/search/property/'
 
 /**
  * Determine layer visibility based on selected context layers
@@ -102,6 +104,32 @@ export const searchParcel = (lngLat: maplibregl.LngLat, callback: (parcel: Parce
             callback(null)
         }
     }).catch((error) => {
+        if (error.response && error.response.status === 404) {
+            // perhaps there is other way to stop axios printing 404 to log?
+            console.clear()
+        }
+        callback(null)
+    })
+}
+
+/**
+ * Search property by coordinate
+ * Note: LngLat is in srid 4326
+ * @param lngLat 
+ * @param callback 
+ */
+export const searchProperty = (lngLat: maplibregl.LngLat, callback: (parcel: PropertyInterface) => void) => {
+    axios.get(SEARCH_PROPERTY_URL + `?lat=${lngLat.lat}&lng=${lngLat.lng}`).then((response) => {
+        if (response.data) {
+            callback(response.data as PropertyInterface)
+        } else {
+            callback(null)
+        }
+    }).catch((error) => {
+        if (error.response && error.response.status === 404) {
+            // perhaps there is other way to stop axios printing 404 to log?
+            console.clear()
+        }
         callback(null)
     })
 }

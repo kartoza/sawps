@@ -21,7 +21,8 @@ from frontend.api_views.map import (
     MapStyles,
     AerialTile,
     PropertiesLayerMVTTiles,
-    FindParcelByCoord
+    FindParcelByCoord,
+    FindPropertyByCoord
 )
 from frontend.api_views.property import (
     CreateNewProperty,
@@ -33,6 +34,11 @@ urlpatterns = [
         r'^api/map/search/parcel/?$',
         FindParcelByCoord.as_view(),
         name='find-parcel'
+    ),
+    re_path(
+        r'^api/map/search/property/?$',
+        FindPropertyByCoord.as_view(),
+        name='find-property'
     ),
     re_path(
         r'^api/map/search/context_layer/list/?$',
@@ -50,10 +56,11 @@ urlpatterns = [
         AerialTile.as_view(),
         name='aerial-map-layer'
     ),
-    re_path(r'^api/map/layer/properties/'
-            r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
-            PropertiesLayerMVTTiles.as_view(),
-            name='properties-map-layer'
+    re_path(
+        r'^api/map/layer/properties/'
+        r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
+        PropertiesLayerMVTTiles.as_view(),
+        name='properties-map-layer'
     ),
     re_path(
         r'^api/property/create/?$',

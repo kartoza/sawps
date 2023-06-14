@@ -2,7 +2,13 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { IControl } from 'maplibre-gl';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { setMapReady, toggleParcelSelectedState, resetSelectedParcels } from '../../../reducers/MapState';
+import { 
+  setMapReady,
+  toggleParcelSelectedState,
+  setSelectedProperty,
+  resetSelectedProperty,
+  resetAnySelection
+} from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
 import { MapSelectionMode } from "../../../models/MapSelectionMode";
 import './index.scss';
@@ -12,8 +18,10 @@ import {
   renderHighlightParcelLayers,
   removeHighlightParcelLayers,
   findParcelLayer,
-  searchParcel
+  searchParcel,
+  searchProperty
 } from './MapUtility';
+import PropertyInterface from '../../../models/Property';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_SOURCES = ['sanbi', 'properties']
@@ -35,7 +43,9 @@ export default function Map() {
     const _layers = _mapObj.getStyle().layers
     for (let i=0; i < _layers.length; ++i) {
       let _layer:any = _layers[i]
+      // skip any layer that is not from sanbi and property sources
       if (!('source' in _layer) || !('source-layer' in _layer) || !MAP_SOURCES.includes(_layer['source'])) continue
+      // skip if current selection mode is parcel selection and highlighted layer for selecting parcel
       if (selectionMode === MapSelectionMode.Parcel && _layer['id'].includes('-select-parcel')) continue
       const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
@@ -64,7 +74,7 @@ export default function Map() {
           { 'parcel-selected': false }
         );
       }
-      dispatch(resetSelectedParcels())
+      dispatch(resetAnySelection())
     }
   }, [selectionMode])
 
@@ -109,6 +119,15 @@ export default function Map() {
             { 'parcel-selected': !_selected }
           );
           dispatch(toggleParcelSelectedState(parcel))
+        }
+      })
+    } else if (selectionMode === MapSelectionMode.Property) {
+      // find parcel
+      searchProperty(e.lngLat, (property: PropertyInterface) => {
+        if (property) {
+          dispatch(setSelectedProperty(property))
+        } else {
+          dispatch(resetSelectedProperty())
         }
       })
     }

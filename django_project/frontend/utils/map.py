@@ -71,7 +71,6 @@ def get_map_template_style(request, theme_choice: int = 0):
             "minzoom": 12,
             "maxzoom": 24
         }
-        # TODO: find index to insert into
         # FF5252
         styles['layers'].append({
             "id": "properties",
@@ -81,7 +80,10 @@ def get_map_template_style(request, theme_choice: int = 0):
             "minzoom": 12,
             "maxzoom": 24,
             "layout": {"visibility": "visible"},
-            "paint": {"fill-color": "rgba(255, 82, 82, 1)", "fill-opacity": 0.8}
+            "paint": {
+                "fill-color": "rgba(255, 82, 82, 1)",
+                "fill-opacity": 0.8
+            }
         })
     # update maptiler api key
     styles = replace_maptiler_api_key(styles)

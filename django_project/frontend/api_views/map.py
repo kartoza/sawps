@@ -1,6 +1,7 @@
 """API Views related to map."""
 from typing import Tuple, List
 import requests
+from django.db.models import Q
 from django.db import connection
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, Http404
@@ -8,6 +9,12 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.gis.geos import Point
+from property.models import (
+    Property
+)
+from stakeholder.models import (
+    OrganisationUser
+)
 from frontend.models.context_layer import ContextLayer
 from frontend.serializers.context_layer import ContextLayerSerializer
 from frontend.utils.map import get_map_template_style
@@ -22,6 +29,9 @@ from frontend.serializers.parcel import (
     HoldingParcelSerializer,
     FarmPortionParcelSerializer,
     ParentFarmParcelSerializer
+)
+from frontend.serializers.property import (
+    PropertySerializer
 )
 
 User = get_user_model()
@@ -190,7 +200,6 @@ class FindParcelByCoord(APIView):
         return None
 
     def get(self, *args, **kwargs):
-        # Note: we can cache this API
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
         point = Point(float(lng), float(lat), srid=4326)
@@ -212,3 +221,26 @@ class FindParcelByCoord(APIView):
         if parcel:
             return Response(status=200, data=parcel)
         return Response(status=404)
+
+
+class FindPropertyByCoord(APIView):
+    """Find property that contains coordinate."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        lat = self.request.GET.get('lat', 0)
+        lng = self.request.GET.get('lng', 0)
+        point = Point(float(lng), float(lat), srid=4326)
+        properties = Property.objects.filter(geometry__contains=point)
+        if not self.request.user.is_superuser:
+            user_organisations = OrganisationUser.objects.filter(
+                user=self.request.user
+            ).values_list('organisation_id', flat=True)
+            properties = properties.filter(
+                Q(created_by_id=self.request.user.id) |
+                Q(organisation_id__in=user_organisations)
+            )
+        property = properties.order_by('id').first()
+        if not property:
+            return Response(status=404)
+        return Response(status=200, data=PropertySerializer(property).data)
