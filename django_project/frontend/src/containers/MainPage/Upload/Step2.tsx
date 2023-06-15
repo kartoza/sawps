@@ -51,7 +51,7 @@ export default function Step2(props: Step2Interface) {
             response => {
                 setSavingProperty(false)
                 // reset parcel selection mode
-                dispatch(toggleParcelSelectionMode())
+                dispatch(toggleParcelSelectionMode(uploadMode))
                 // trigger event to refresh properties layer
                 dispatch(triggerMapEvent({
                     'id': uuidv4(),

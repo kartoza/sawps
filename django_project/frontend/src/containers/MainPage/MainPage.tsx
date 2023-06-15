@@ -17,6 +17,12 @@ import { UploadMode } from "../../models/Upload";
 import {
     setUploadState
 } from '../../reducers/UploadState';
+import {
+    setSelectedParcels,
+    resetSelectedProperty,
+    setMapSelectionMode
+} from '../../reducers/MapState';
+
 
 enum RightSideBarMode {
   None = -1,
@@ -38,6 +44,9 @@ function MainPage() {
       dispatch(setUploadState(UploadMode.SelectProperty))
     } else {
       dispatch(setUploadState(UploadMode.None))
+      dispatch(setMapSelectionMode(MapSelectionMode.Property))
+      dispatch(resetSelectedProperty())
+      dispatch(setSelectedParcels([]))
     }
   }, [rightSideBarMode])
 

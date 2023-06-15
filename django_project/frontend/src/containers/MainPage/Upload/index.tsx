@@ -16,7 +16,8 @@ import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {
     setSelectedProperty,
     setSelectedParcels,
-    triggerMapEvent
+    triggerMapEvent,
+    resetSelectedProperty
 } from '../../../reducers/MapState';
 import {
     setUploadState
@@ -137,7 +138,11 @@ function Upload() {
                                         </FormControl>
                                     </Grid>
                                     <Grid item className='ButtonContainer'>
-                                        <Button variant='contained' disabled={loading} onClick={() => dispatch(setUploadState(UploadMode.CreateNew)) }>CREATE A NEW PROPERTY</Button>
+                                        <Button variant='contained' disabled={loading} onClick={() => {
+                                            dispatch(resetSelectedProperty())
+                                            dispatch(setSelectedParcels([]))
+                                            dispatch(setUploadState(UploadMode.CreateNew))
+                                        }}>CREATE A NEW PROPERTY</Button>
                                     </Grid>
                                 </Grid>
                             }

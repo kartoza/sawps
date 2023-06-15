@@ -40,13 +40,16 @@ export const MapStateSlice = createSlice({
         setMapReady: (state, action: PayloadAction<boolean>) => {
             state.isMapReady = action.payload
         },
+        setMapSelectionMode: (state, action: PayloadAction<MapSelectionMode>) => {
+            state.selectionMode = action.payload
+        },
         toggleParcelSelectionMode: (state, action: PayloadAction<UploadMode>) => {
             // reset selectedProperty
             state.selectedProperty = createNewProperty()
             if (state.selectionMode === MapSelectionMode.Parcel) {
                 // disable parcel selection mode
                 state.selectionMode = DEFAULT_SELECTION_MODE
-                if (action.payload !== UploadMode.PropertySelected) {
+                if (action.payload !== UploadMode.PropertySelected && action.payload !== UploadMode.CreateNew) {
                     // remove selectedParcels if not selected parcel mode
                     state.selectedParcels = resetSelectedParcels(state.selectedParcels)
                 }
@@ -66,7 +69,13 @@ export const MapStateSlice = createSlice({
             }
         },
         setSelectedParcels: (state, action: PayloadAction<ParcelInterface[]>) => {
-            state.selectedParcels = [...action.payload]
+            // current selectedParcels must be empty or the action.payload must be empty
+            if (state.selectedParcels.length === 0 && action.payload.length) {
+                state.selectedParcels = [...action.payload]
+            } else if (state.selectedParcels.length > 0 && action.payload.length === 0) {
+                // remove selectedParcels if not selected parcel mode
+                state.selectedParcels = resetSelectedParcels(state.selectedParcels)
+            }
         },
         setSelectedProperty: (state, action: PayloadAction<PropertyInterface>) => {
             state.selectedProperty = {...action.payload}
@@ -102,6 +111,7 @@ export const MapStateSlice = createSlice({
 
 export const {
     setMapReady,
+    setMapSelectionMode,
     toggleParcelSelectionMode,
     toggleParcelSelectedState,
     setSelectedParcels,
