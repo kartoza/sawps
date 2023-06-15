@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('notification.urls')),
     path('', include('stakeholder.urls')),
     path('', include('swaps.urls')),
+    path('', include('species.urls')),
 ]
 
 if settings.DEBUG:
