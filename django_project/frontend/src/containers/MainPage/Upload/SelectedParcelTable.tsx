@@ -36,7 +36,7 @@ export default function SelectedParcelTable(props: SelectedParcelTableInterface)
                         return (
                             <TableRow key={index}>
                                 <TableCell>
-                                    <FormControlLabel control={<Checkbox checked defaultChecked onChange={() => props.onRemoveParcel(parcel)} />} label={parcel.cname} />
+                                    <FormControlLabel control={<Checkbox checked onChange={() => props.onRemoveParcel(parcel)} />} label={parcel.cname} />
                                 </TableCell>
                                 <TableCell>
                                     {capitalize(parcel.type)}

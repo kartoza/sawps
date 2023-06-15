@@ -7,10 +7,11 @@ import {
   toggleParcelSelectedState,
   setSelectedProperty,
   resetSelectedProperty,
-  selectedParcelsOnRenderFinished
+  selectedParcelsOnRenderFinished,
+  onMapEventProcessed
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
-import { MapSelectionMode } from "../../../models/MapSelectionMode";
+import { MapSelectionMode } from "../../../models/Map";
 import { UploadMode } from "../../../models/Upload";
 import './index.scss';
 import CustomNavControl from './NavControl';
@@ -27,6 +28,8 @@ import PropertyInterface from '../../../models/Property';
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_SOURCES = ['sanbi', 'properties']
 
+const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
+
 export default function Map() {
   const dispatch = useAppDispatch()
   const contextLayers = useAppSelector((state: RootState) => state.layerFilter.contextLayers)
@@ -34,6 +37,7 @@ export default function Map() {
   const selectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
   const selectedParcels = useAppSelector((state: RootState) => state.mapState.selectedParcels)
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
+  const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
   const mapContainer = useRef(null);
   const map = useRef(null);
 
@@ -142,6 +146,32 @@ export default function Map() {
       dispatch(selectedParcelsOnRenderFinished())
     }
   }, [selectedParcels])
+
+  useEffect(() => {
+    if (mapEvents.length === 0) return
+    let _mapObj: maplibregl.Map = map.current
+    for (let i=0; i < mapEvents.length; ++i) {
+      let _event = mapEvents[i]
+      if (_event.name === 'REFRESH_PROPERTIES_LAYER') {
+        // add query param t to properties layer to refresh it
+        let _properties_source = _mapObj.getSource('properties') as any;
+        let _url = _properties_source['tiles'][0]
+        _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}`)
+        // Set the tile url to a cache-busting url (to circumvent browser caching behaviour):
+        _properties_source.tiles = [ _url ]
+
+        // Remove the tiles for a particular source
+        _mapObj.style.sourceCaches['properties'].clearTiles()
+
+        // Load the new tiles for the current viewport (map.transform -> viewport)
+        _mapObj.style.sourceCaches['properties'].update(_mapObj.transform)
+
+        // Force a repaint, so that the map will be repainted without you having to touch the map
+        _mapObj.triggerRepaint()
+      }
+    }
+    dispatch(onMapEventProcessed([...mapEvents]))
+  }, [mapEvents])
 
   return (
       <div className="map-wrap">

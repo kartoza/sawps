@@ -158,34 +158,32 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                             </FormControl>
                         </TableCell>
                     </TableRow>
-                    { props.property.id !== 0 &&
-                        <TableRow key='province'>
-                            <TableCell component="th" scope="row">
-                                Province
-                            </TableCell>
-                            <TableCell>
-                                <FormControl fullWidth size="small">
-                                    <Select
-                                        id="province-select"
-                                        error={props.validationError?.province}
-                                        value={props.property.province_id ? props.property.province_id.toString() : ''}
-                                        displayEmpty
-                                        disabled={loading || !props.enableForm}
-                                        onChange={(event: SelectChangeEvent) => {
-                                            let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
-                                            props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})}
-                                        }
-                                    >
-                                        { provinceList.map((province: ProvinceInterface) => {
-                                            return (
-                                                <MenuItem key={province.id} value={province.id}>{province.name}</MenuItem>
-                                            )
-                                        })}
-                                    </Select>
-                                </FormControl>
-                            </TableCell>
-                        </TableRow>
-                    }
+                    <TableRow key='province'>
+                        <TableCell component="th" scope="row">
+                            Province
+                        </TableCell>
+                        <TableCell>
+                            <FormControl fullWidth size="small">
+                                <Select
+                                    id="province-select"
+                                    error={props.validationError?.province}
+                                    value={props.property.province_id ? props.property.province_id.toString() : ''}
+                                    displayEmpty
+                                    disabled={loading || !props.enableForm}
+                                    onChange={(event: SelectChangeEvent) => {
+                                        let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
+                                        props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})}
+                                    }
+                                >
+                                    { provinceList.map((province: ProvinceInterface) => {
+                                        return (
+                                            <MenuItem key={province.id} value={province.id}>{province.name}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </TableCell>
+                    </TableRow>
                     { props.property.id !== 0 &&
                         <TableRow key='size'>
                             <TableCell component="th" scope="row">

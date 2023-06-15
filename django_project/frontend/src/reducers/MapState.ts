@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import ParcelInterface from "../models/Parcel";
-import { MapSelectionMode } from "../models/MapSelectionMode";
+import { MapSelectionMode, MapEventInterface } from "../models/Map";
 import PropertyInterface, { createNewProperty } from "../models/Property";
 
 const DEFAULT_SELECTION_MODE = MapSelectionMode.Property
@@ -11,13 +11,15 @@ export interface MapStateInterface {
     selectionMode: MapSelectionMode; // none, property, parcel, digitise, parcelJSON,
     selectedParcels: ParcelInterface[];
     selectedProperty: PropertyInterface;
+    mapEvents: MapEventInterface[];
 }
 
 const initialState: MapStateInterface = {
     isMapReady: false,
     selectionMode: DEFAULT_SELECTION_MODE,
     selectedParcels: [],
-    selectedProperty: createNewProperty()
+    selectedProperty: createNewProperty(),
+    mapEvents: []
 }
 
 /* reset all selectedParcels */
@@ -76,6 +78,18 @@ export const MapStateSlice = createSlice({
                 }
             })
             state.selectedParcels = _selection
+        },
+        triggerMapEvent: (state, action: PayloadAction<MapEventInterface>) => {
+            state.mapEvents = [...state.mapEvents, action.payload]
+        },
+        onMapEventProcessed: (state, action: PayloadAction<MapEventInterface[]>) => {
+            let _events = [...state.mapEvents]
+            _events.forEach(function(item, index, object) {
+                if (action.payload.find((e: MapEventInterface) => e.id === item.id)) {
+                    object.splice(index, 1)
+                }
+            })
+            state.mapEvents = _events
         }
     }
 })
@@ -86,7 +100,9 @@ export const {
     toggleParcelSelectedState,
     setSelectedProperty,
     resetSelectedProperty,
-    selectedParcelsOnRenderFinished
+    selectedParcelsOnRenderFinished,
+    triggerMapEvent,
+    onMapEventProcessed
 } = MapStateSlice.actions
 
 export default MapStateSlice.reducer;

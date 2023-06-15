@@ -1,6 +1,7 @@
 """Helper function for map."""
 import os
 import json
+import time
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.urls import reverse
@@ -65,6 +66,8 @@ def get_map_template_style(request, theme_choice: int = 0):
         if not settings.DEBUG:
             # if not dev env, then replace with https
             url = url.replace('http://', 'https://')
+        # add epoch datetime
+        url = url + f'?t={int(time.time())}'
         styles['sources']['properties'] = {
             "type": "vector",
             "tiles": [url],

@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
+import {v4 as uuidv4} from 'uuid';
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import { toggleParcelSelectionMode, toggleParcelSelectedState } from '../../../reducers/MapState';
+import { 
+    toggleParcelSelectionMode,
+    toggleParcelSelectedState,
+    triggerMapEvent
+} from '../../../reducers/MapState';
 import {RootState} from '../../../app/store';
 import {postData} from "../../../utils/Requests";
 import AlertMessage from '../../../components/AlertMessage';
 import PropertyInterface from '../../../models/Property';
-import { MapSelectionMode } from "../../../models/MapSelectionMode";
+import { MapSelectionMode } from "../../../models/Map";
 import SelectedParcelTable from './SelectedParcelTable';
 import ParcelInterface from '../../../models/Parcel';
 
@@ -41,6 +46,12 @@ export default function Step2(props: Step2Interface) {
                 setSavingProperty(false)
                 // reset parcel selection mode
                 dispatch(toggleParcelSelectionMode())
+                // trigger event to refresh properties layer
+                dispatch(triggerMapEvent({
+                    'id': uuidv4(),
+                    'name': 'REFRESH_PROPERTIES_LAYER',
+                    'date': Date.now()
+                }))
                 // trigger to next step
                 props.onSave({...props.property, id:response.data['id']})
             }

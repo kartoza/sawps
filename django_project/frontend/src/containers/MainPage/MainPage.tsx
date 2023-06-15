@@ -12,7 +12,7 @@ import Upload from './Upload';
 import Map from './Map';
 import './index.scss';
 import { PropertySummary } from './Property';
-import { MapSelectionMode } from "../../models/MapSelectionMode";
+import { MapSelectionMode } from "../../models/Map";
 import { UploadMode } from "../../models/Upload";
 import {
     setUploadState
