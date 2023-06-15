@@ -43,23 +43,25 @@ export default function UploadWizard(props: UploadWizardInterface) {
                         <Tab key={2} label={'STEP 3'} {...a11yProps(2)} disabled={property.id===0} sx={{flex:1}} />
                 </Tabs>
             </Box>
-            <Box className='TabPanels'>
-                <TabPanel key={0} value={selectedTab} index={0} noPadding>
-                    <Step1 onSave={(data: PropertyInterface) => {
-                        setProperty(data)
-                        setIsPropertyInfoValid(true)
-                        setSelectedTab(1)
-                    }} initialProperty={property} />
-                </TabPanel>
-                <TabPanel key={1} value={selectedTab} index={1} noPadding>
-                    <Step2 property={property} onSave={(data: PropertyInterface) => {
-                        setProperty(data)
-                        setSelectedTab(2)
-                    }} />
-                </TabPanel>
-                <TabPanel key={2} value={selectedTab} index={2} noPadding>
-                    <Step3 property={property} onUpdateBoundary={() => setSelectedTab(1)}/>
-                </TabPanel>
+            <Box className='TabPanels FlexContainerFill'>
+                <Box className='UploadWizardContent'>
+                    <TabPanel key={0} value={selectedTab} index={0} noPadding>
+                        <Step1 onSave={(data: PropertyInterface) => {
+                            setProperty(data)
+                            setIsPropertyInfoValid(true)
+                            setSelectedTab(1)
+                        }} initialProperty={property} />
+                    </TabPanel>
+                    <TabPanel key={1} value={selectedTab} index={1} noPadding>
+                        <Step2 property={property} onSave={(data: PropertyInterface) => {
+                            setProperty(data)
+                            setSelectedTab(2)
+                        }} />
+                    </TabPanel>
+                    <TabPanel key={2} value={selectedTab} index={2} noPadding>
+                        <Step3 property={property} onUpdateBoundary={() => setSelectedTab(1)}/>
+                    </TabPanel>
+                </Box>
             </Box>
         </Grid>
     )

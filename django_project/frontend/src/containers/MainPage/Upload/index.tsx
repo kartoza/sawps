@@ -77,7 +77,7 @@ function Upload() {
             <Grid item className='Header'>
                 DATA UPLOAD
             </Grid>
-            <Grid item>
+            <Grid item className='FlexContainerFill'>
                 <Grid container className='UploadContainer'>
                     { uploadMode === UploadMode.SelectProperty &&
                     <Grid item>
@@ -101,7 +101,7 @@ function Upload() {
                         </FormControl>
                     </Grid>
                     }
-                    <Grid item>
+                    <Grid item className='FlexContainerFill'>
                         <Grid container className='UploadContent'>
                             { uploadMode === UploadMode.SelectProperty &&
                                 <Grid container flexDirection={'column'}>
@@ -130,12 +130,12 @@ function Upload() {
                                 </Grid>
                             }
                             { uploadMode === UploadMode.CreateNew && 
-                                <Grid item>
+                                <Grid item className='FlexContainerFillHeight'>
                                     <UploadWizard />
                                 </Grid>
                             }
                             { uploadMode === UploadMode.PropertySelected && selectedProperty && 
-                                <Grid item>
+                                <Grid item className='FlexContainerFillHeight'>
                                     <UploadWizard initialProperty={selectedProperty} />
                                 </Grid>
                             }

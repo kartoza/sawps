@@ -1,4 +1,6 @@
 .Upload {
+    height: 100%;
+    flex-wrap: nowrap;
     .Header {
         min-height: 48px;
         text-align: center;
@@ -9,6 +11,8 @@
     .UploadContainer {
         width: 100%;
         flex-direction: column;
+        flex: 1;
+        flex-wrap: nowrap;
     }
     .SearchArea {
         margin-top: 8px;
@@ -21,14 +25,26 @@
         padding: 10px;
         display: flex;
         flex-direction: column;
+        height: 100%;
 
         .UploadWizard {
+            height: 100%;
+
             .TabHeaders {
                 padding-left: 0px;
         
                 .MuiTab-root {
                     min-width: unset;
                 }
+            }
+
+            .UploadWizardContent {
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                flex-wrap: nowrap;
+                flex: 1 1 auto;
+                height: 0px;
             }
         }
 

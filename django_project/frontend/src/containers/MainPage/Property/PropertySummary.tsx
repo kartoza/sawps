@@ -12,9 +12,7 @@ export default function PropertySummary() {
 
     return (
         <Grid container flexDirection={'column'} className='PropertySummary'>
-            <Grid item className='EmptyHeader'>
-                
-            </Grid>
+            <Grid item className='EmptyHeader'></Grid>
             <Grid item className='FlexContainerFill'>
                 <Grid container className='ContentContainer'>
                     <Grid item className='Header'>
