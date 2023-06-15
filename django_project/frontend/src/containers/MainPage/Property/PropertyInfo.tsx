@@ -18,7 +18,7 @@ import './index.scss';
 interface PropertyInfoInterface {
     property: PropertyInterface,
     enableForm: boolean,
-    onUpdated: (data: PropertyInterface, validation: PropertyValidation) => void,
+    onUpdated?: (data: PropertyInterface, validation: PropertyValidation) => void,
     validationError?: PropertyValidation
 }
 
@@ -55,7 +55,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                 if (response.data['user_email']) {
                     _initial_data['owner_email'] = response.data['user_email']
                 }
-                if (_initial_data) {
+                if (_initial_data && props.onUpdated) {
                     props.onUpdated({ ...props.property, ..._initial_data }, {})
                 }
             }
@@ -94,7 +94,11 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 id="input_propertyname"
                                 hiddenLabel={true}
                                 type={"text"}
-                                onChange={val => props.onUpdated({ ...props.property, name: val.target.value }, {name:false})}
+                                onChange={val => {
+                                    if (props.onUpdated) {
+                                        props.onUpdated({ ...props.property, name: val.target.value }, {name:false})
+                                    }
+                                }}
                                 value={props.property.name}
                                 sx={{ width: '100%' }}
                             />
@@ -126,7 +130,11 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 id="input_owneremail"
                                 hiddenLabel={true}
                                 type={"text"}
-                                onChange={val => props.onUpdated({ ...props.property, owner_email: val.target.value }, {email:false})}
+                                onChange={val => {
+                                    if (props.onUpdated) {
+                                        props.onUpdated({ ...props.property, owner_email: val.target.value }, {email:false})
+                                    }
+                                }}
                                 value={props.property.owner_email}
                                 sx={{ width: '100%' }}
                             />
@@ -145,9 +153,11 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
                                     onChange={(event: SelectChangeEvent) => {
-                                        let _selected = propertyTypeList.find(e => e.id === parseInt(event.target.value))
-                                        props.onUpdated({ ...props.property, property_type_id: _selected.id,  property_type: _selected.name }, {property_type:false})}
-                                    }
+                                        if (props.onUpdated) {
+                                            let _selected = propertyTypeList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, property_type_id: _selected.id,  property_type: _selected.name }, {property_type:false})
+                                        }
+                                    }}
                                 >
                                     { propertyTypeList.map((property_type: PropertyTypeInterface) => {
                                         return (
@@ -171,9 +181,11 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
                                     onChange={(event: SelectChangeEvent) => {
-                                        let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
-                                        props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})}
-                                    }
+                                        if (props.onUpdated) {
+                                            let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})
+                                        }
+                                    }}
                                 >
                                     { provinceList.map((province: ProvinceInterface) => {
                                         return (
@@ -214,9 +226,11 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
                                     onChange={(event: SelectChangeEvent) => {
-                                        let _selected = organisationList.find(e => e.id === parseInt(event.target.value))
-                                        props.onUpdated({ ...props.property, organisation: _selected.name, organisation_id: _selected.id }, {organisation:false})}
-                                    }
+                                        if (props.onUpdated) {
+                                            let _selected = organisationList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, organisation: _selected.name, organisation_id: _selected.id }, {organisation:false})
+                                        }
+                                    }}
                                 >
                                     { organisationList.map((organisation: OrganisationInterface) => {
                                         return (

@@ -11,7 +11,7 @@ import Step3 from './Step3';
 import './index.scss';
 
 interface UploadWizardInterface {
-    selectedPropertyId?: number
+    initialProperty?: PropertyInterface;
 }
 
 
@@ -21,11 +21,13 @@ export default function UploadWizard(props: UploadWizardInterface) {
     const [selectedTab, setSelectedTab] = useState(0)
 
     useEffect(() => {
-        if (props.selectedPropertyId) {
+        if (props.initialProperty?.id) {
             // has selection, redirect to step 3
+            setProperty({...props.initialProperty})
+            setIsPropertyInfoValid(true)
             setSelectedTab(2)
         }
-    }, [props.selectedPropertyId])
+    }, [props.initialProperty])
 
 
     return (
@@ -38,7 +40,7 @@ export default function UploadWizard(props: UploadWizardInterface) {
                 >
                         <Tab key={0} label={'STEP 1'} {...a11yProps(0)} sx={{flex:1}} />
                         <Tab key={1} label={'STEP 2'} {...a11yProps(1)} disabled={!isPropertyInfoValid} sx={{flex:1}} />
-                        <Tab key={2} label={'STEP 3'} {...a11yProps(2)} disabled={property.id === 0 } sx={{flex:1}} />
+                        <Tab key={2} label={'STEP 3'} {...a11yProps(2)} disabled={property.id===0} sx={{flex:1}} />
                 </Tabs>
             </Box>
             <Box className='TabPanels'>
@@ -56,7 +58,7 @@ export default function UploadWizard(props: UploadWizardInterface) {
                     }} />
                 </TabPanel>
                 <TabPanel key={2} value={selectedTab} index={2} noPadding>
-                    
+                    <Step3 property={property} onUpdateBoundary={() => setSelectedTab(1)}/>
                 </TabPanel>
             </Box>
         </Grid>

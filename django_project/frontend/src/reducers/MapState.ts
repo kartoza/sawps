@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import ParcelInterface from "../models/Parcel";
 import { MapSelectionMode, MapEventInterface } from "../models/Map";
 import PropertyInterface, { createNewProperty } from "../models/Property";
+import { UploadMode } from "../models/Upload";
 
 const DEFAULT_SELECTION_MODE = MapSelectionMode.Property
 
@@ -39,14 +40,16 @@ export const MapStateSlice = createSlice({
         setMapReady: (state, action: PayloadAction<boolean>) => {
             state.isMapReady = action.payload
         },
-        toggleParcelSelectionMode: (state, action: PayloadAction<null>) => {
+        toggleParcelSelectionMode: (state, action: PayloadAction<UploadMode>) => {
             // reset selectedProperty
             state.selectedProperty = createNewProperty()
             if (state.selectionMode === MapSelectionMode.Parcel) {
                 // disable parcel selection mode
                 state.selectionMode = DEFAULT_SELECTION_MODE
-                // remove selectedParcels
-                state.selectedParcels = resetSelectedParcels(state.selectedParcels)
+                if (action.payload !== UploadMode.PropertySelected) {
+                    // remove selectedParcels if not selected parcel mode
+                    state.selectedParcels = resetSelectedParcels(state.selectedParcels)
+                }
             } else {
                 state.selectionMode = MapSelectionMode.Parcel
             }
@@ -61,6 +64,9 @@ export const MapStateSlice = createSlice({
             } else {
                 state.selectedParcels = [...state.selectedParcels, action.payload]
             }
+        },
+        setSelectedParcels: (state, action: PayloadAction<ParcelInterface[]>) => {
+            state.selectedParcels = [...action.payload]
         },
         setSelectedProperty: (state, action: PayloadAction<PropertyInterface>) => {
             state.selectedProperty = {...action.payload}
@@ -98,6 +104,7 @@ export const {
     setMapReady,
     toggleParcelSelectionMode,
     toggleParcelSelectedState,
+    setSelectedParcels,
     setSelectedProperty,
     resetSelectedProperty,
     selectedParcelsOnRenderFinished,

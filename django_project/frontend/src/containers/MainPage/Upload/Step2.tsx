@@ -18,6 +18,7 @@ import SelectedParcelTable from './SelectedParcelTable';
 import ParcelInterface from '../../../models/Parcel';
 
 const CREATE_NEW_PROPERTY_URL = '/api/property/create/'
+const PROPERTY_UPDATE_BOUNDARIES_URL = '/api/property/boundaries/update/'
 
 interface Step2Interface {
     property: PropertyInterface;
@@ -28,6 +29,7 @@ export default function Step2(props: Step2Interface) {
     const dispatch = useAppDispatch()
     const mapSelectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
     const selectedParcels = useAppSelector((state: RootState) => state.mapState.selectedParcels)
+    const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
     const [savingProperty, setSavingProperty] = useState(false)
     const [alertMessage, setAlertMessage] = useState<string>('')
 
@@ -41,7 +43,11 @@ export default function Step2(props: Step2Interface) {
             ...props.property,
             parcels: selectedParcels
         }
-        postData(`${CREATE_NEW_PROPERTY_URL}`, _data).then(
+        let _url = CREATE_NEW_PROPERTY_URL
+        if (props.property.id) {
+            _url = PROPERTY_UPDATE_BOUNDARIES_URL
+        }
+        postData(`${_url}`, _data).then(
             response => {
                 setSavingProperty(false)
                 // reset parcel selection mode
@@ -53,13 +59,13 @@ export default function Step2(props: Step2Interface) {
                     'date': Date.now()
                 }))
                 // trigger to next step
-                props.onSave({...props.property, id:response.data['id']})
+                props.onSave({...props.property, ...response.data})
             }
-          ).catch(error => {
+        ).catch(error => {
             setSavingProperty(false)
             console.log('error ', error)
             alert('Error saving property...')
-          })
+        })    
     }
 
     return (
@@ -79,8 +85,8 @@ export default function Step2(props: Step2Interface) {
                     <Grid item>
                         <Grid container flexDirection={'column'} flexWrap={'nowrap'} rowGap={2} className='ButtonContainer'>
                             { mapSelectionMode === MapSelectionMode.Parcel ? 
-                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode()) }>CANCEL</Button> :
-                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode()) }>SELECT</Button>
+                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>CANCEL</Button> :
+                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>SELECT</Button>
                             } 
                             <Button variant='contained' className='Digitise'>DIGITISE</Button>
                             <Button variant='contained' className='Upload'>UPLOAD</Button>

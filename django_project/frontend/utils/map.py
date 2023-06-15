@@ -6,6 +6,12 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.urls import reverse
 from core.settings.utils import absolute_path
+from frontend.models.parcels import (
+    Erf,
+    Holding,
+    FarmPortion,
+    ParentFarm
+)
 
 
 def get_map_template_style(request, theme_choice: int = 0):
@@ -102,3 +108,20 @@ def replace_maptiler_api_key(styles):
             map_tiler_key
         )
     return styles
+
+
+def find_layer_by_cname(cname: str):
+    """Find layer name+id by cname."""
+    obj = Erf.objects.filter(cname=cname).first()
+    if obj:
+        return 'erf', obj.id
+    obj = Holding.objects.filter(cname=cname).first()
+    if obj:
+        return 'holding', obj.id
+    obj = FarmPortion.objects.filter(cname=cname).first()
+    if obj:
+        return 'farm_portion', obj.id
+    obj = ParentFarm.objects.filter(cname=cname).first()
+    if obj:
+        return 'parent_farm', obj.id
+    return None, None

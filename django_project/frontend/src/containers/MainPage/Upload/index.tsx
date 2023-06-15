@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import FormControl from '@mui/material/FormControl';
@@ -12,34 +13,62 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {
+    setSelectedProperty,
+    setSelectedParcels
+} from '../../../reducers/MapState';
+import {
     setUploadState
 } from '../../../reducers/UploadState';
 import UploadWizard from './UploadWizard';
-import { PropertySelectItem } from '../../../models/Property';
+import PropertyInterface from '../../../models/Property';
 import { UploadMode } from '../../../models/Upload';
 import './index.scss';
 
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
+const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
 function Upload() {
     const dispatch = useAppDispatch()
     const [loading, setLoading] = useState(false)
     const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
     const [selectedPropertyId, setSelectedPropertyId] = useState<number>(0)
-    const [propertyList, setPropertyList] = useState<PropertySelectItem[]>([
-        {
-            'id': 1,
-            'name': 'test123'
-        }
-    ])
+    const selectedProperty = useAppSelector((state: RootState) => state.mapState.selectedProperty)
+    const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
 
     const fetchPropertyList = () => {
         setLoading(true)
+        axios.get(FETCH_PROPERTY_LIST_URL).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setPropertyList(response.data as PropertyInterface[])
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
     }
 
     useEffect(() => {
+        fetchPropertyList()
+    }, [])
+
+    useEffect(() => {
         if (selectedPropertyId) {
-            dispatch(setUploadState(UploadMode.PropertySelected))
+            // fetch property detail
+            setLoading(true)
+            axios.get(`${FETCH_PROPERTY_DETAIL_URL}${selectedPropertyId}/`).then((response) => {
+                setLoading(false)
+                if (response.data) {
+                    // set selected parcels+property
+                    let _property = response.data as PropertyInterface
+                    dispatch(setSelectedProperty(_property))
+                    dispatch(setSelectedParcels(_property.parcels))
+                    dispatch(setUploadState(UploadMode.PropertySelected))
+                }
+            }).catch((error) => {
+                setLoading(false)
+                console.log(error)
+            })
         }
     }, [selectedPropertyId])
 
@@ -87,7 +116,7 @@ function Upload() {
                                                     setSelectedPropertyId(parseInt(event.target.value))
                                                 }}
                                             >
-                                                { propertyList.map((property: PropertySelectItem) => {
+                                                { propertyList.map((property: PropertyInterface) => {
                                                     return (
                                                         <MenuItem key={property.id} value={property.id}>{property.name}</MenuItem>
                                                     )
@@ -96,7 +125,7 @@ function Upload() {
                                         </FormControl>
                                     </Grid>
                                     <Grid item className='ButtonContainer'>
-                                        <Button variant='contained' onClick={() => dispatch(setUploadState(UploadMode.CreateNew)) }>CREATE A NEW PROPERTY</Button>
+                                        <Button variant='contained' disabled={loading} onClick={() => dispatch(setUploadState(UploadMode.CreateNew)) }>CREATE A NEW PROPERTY</Button>
                                     </Grid>
                                 </Grid>
                             }
@@ -105,9 +134,9 @@ function Upload() {
                                     <UploadWizard />
                                 </Grid>
                             }
-                            { uploadMode === UploadMode.PropertySelected && selectedPropertyId && 
+                            { uploadMode === UploadMode.PropertySelected && selectedProperty && 
                                 <Grid item>
-                                    <UploadWizard selectedPropertyId={selectedPropertyId} />
+                                    <UploadWizard initialProperty={selectedProperty} />
                                 </Grid>
                             }
                         </Grid>
