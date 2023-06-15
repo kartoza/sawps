@@ -1,12 +1,13 @@
 from allauth.account.forms import SignupForm
 from django import forms
 from django.contrib.auth.models import Group
-from django.contrib import messages
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from swaps.email_verification_token import email_verification_token
 from django.contrib.sites.models import Site
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 class CustomSignupForm(SignupForm):
@@ -31,18 +32,28 @@ class CustomSignupForm(SignupForm):
         user.save()
 
         token = email_verification_token.make_token(user)
-        subject = 'Verify you e-mail adresse on SWAPS'
+        subject = 'Verification Email on {domain}'.format(
+            domain=Site.objects.get_current().name
+        )
         message = render_to_string(
             'email/email_verification.html',
             {
-                'email': user.email,
+                'last_name': user.last_name,
                 'domain': Site.objects.get_current().domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': token,
             },
         )
 
-        user.email_user(subject, message)
+        send_mail(
+            subject, 
+            None, 
+            settings.SERVER_EMAIL,
+            [user.email],
+            html_message=message
+        
+        )
+    
 
         return user
 
