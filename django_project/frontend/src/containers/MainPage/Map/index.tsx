@@ -37,6 +37,7 @@ export default function Map() {
   const isMapReady = useAppSelector((state: RootState) => state.mapState.isMapReady)
   const selectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
   const selectedParcels = useAppSelector((state: RootState) => state.mapState.selectedParcels)
+  const selectedProperty = useAppSelector((state: RootState) => state.mapState.selectedProperty)
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
   const mapContainer = useRef(null);
@@ -128,11 +129,10 @@ export default function Map() {
     if (selectionMode === MapSelectionMode.None) return;
     let _parcelLayer = findParcelLayer(contextLayers)
     if (typeof _parcelLayer === 'undefined') return;
-    let _mapObj: maplibregl.Map = map.current
     if (selectionMode === MapSelectionMode.Parcel) {
       // TODO: perhaps skip search if not in the parcel zoom?
       // find parcel
-      searchParcel(e.lngLat, (parcel: ParcelInterface) => {
+      searchParcel(e.lngLat, selectedProperty.id, (parcel: ParcelInterface) => {
         if (parcel) {
           dispatch(toggleParcelSelectedState(parcel))
         }
@@ -148,14 +148,14 @@ export default function Map() {
         }
       })
     }
-  }, [contextLayers, selectionMode, uploadMode])
+  }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
   useEffect(() => {
     map.current.on('click', mapOnClick)
     return () => {
       map.current.off('click', mapOnClick)
     }
-  }, [contextLayers, selectionMode, uploadMode])
+  }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
   // render selected+unselected parcel
   useEffect(() => {

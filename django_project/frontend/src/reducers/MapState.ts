@@ -44,8 +44,10 @@ export const MapStateSlice = createSlice({
             state.selectionMode = action.payload
         },
         toggleParcelSelectionMode: (state, action: PayloadAction<UploadMode>) => {
-            // reset selectedProperty
-            state.selectedProperty = createNewProperty()
+            // reset selectedProperty if uploadMode is None
+            if (action.payload === UploadMode.None) {
+                state.selectedProperty = createNewProperty()
+            }
             if (state.selectionMode === MapSelectionMode.Parcel) {
                 // disable parcel selection mode
                 state.selectionMode = DEFAULT_SELECTION_MODE

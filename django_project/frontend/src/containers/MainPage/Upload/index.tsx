@@ -64,6 +64,7 @@ function Upload() {
                 if (response.data) {
                     // set selected parcels+property
                     let _property = response.data as PropertyInterface
+                    console.log(_property)
                     dispatch(setSelectedProperty(_property))
                     dispatch(setSelectedParcels(_property.parcels))
                     dispatch(setUploadState(UploadMode.PropertySelected))

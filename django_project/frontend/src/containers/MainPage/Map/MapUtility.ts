@@ -110,8 +110,8 @@ export const findParcelLayer = (contextLayers: ContextLayerInterface[]): Context
  * @param lngLat 
  * @param callback 
  */
-export const searchParcel = (lngLat: maplibregl.LngLat, callback: (parcel: ParcelInterface) => void) => {
-    axios.get(SEARCH_PARCEL_URL + `?lat=${lngLat.lat}&lng=${lngLat.lng}`).then((response) => {
+export const searchParcel = (lngLat: maplibregl.LngLat, propertyId: number, callback: (parcel: ParcelInterface) => void) => {
+    axios.get(SEARCH_PARCEL_URL + `?lat=${lngLat.lat}&lng=${lngLat.lng}&property_id=${propertyId}`).then((response) => {
         if (response.data) {
             callback(response.data as ParcelInterface)
         } else {
