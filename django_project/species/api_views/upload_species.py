@@ -9,6 +9,7 @@ from species.serializers import FileUploadSerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from tasks.upload_species import upload_species_data
 
 
 
@@ -29,8 +30,10 @@ class SpeciesUploader(generics.CreateAPIView):
                 'message': 'CSV file not valide',
             })
 
-        upload_session, e  = UploadSession.objects.get_or_create(
-            success_file=''
+        upload_session  = UploadSession.objects.create(
+            process_file= species_file,
+            uploader=self.request.user,
+            uploaded_at=datetime.now(),
         )
         reader = csv.DictReader(codecs.iterdecode(species_file, 'utf-8'))
         headers = reader.fieldnames
@@ -53,12 +56,6 @@ class SpeciesUploader(generics.CreateAPIView):
 
         finished = True
         if finished:
-            upload_session.uploader=self.request.user,
-            upload_session.process_file=species_file,
-            upload_session.uploaded_at=datetime.now(),
-            uploaded_at=datetime.now(),
-            upload_session.save()
-
             task = upload_species_data.delay(
                 upload_session.id
             )

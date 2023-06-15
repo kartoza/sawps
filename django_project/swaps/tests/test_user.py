@@ -1,8 +1,5 @@
 from django.test import TestCase
-from swaps.tests.models.account_factory import (
-    UserF,
-    GroupF,
-)
+from stakeholder.factories import userFactory
 
 from swaps.forms.sign_up import CustomSignupForm
 
@@ -22,22 +19,19 @@ class TestCustomSignupForm(TestCase):
         pass
 
     def test_user_form(self):
-        group = GroupF.create(id=1, name='Test')
-        group.save()
-
+        
         request = {
             'first_name': 'Fan',
             'last_name': 'Andria',
             'email': 'faneva@kartoza.com',
-            'password1': 'Test02',
-            'password2': 'Test02',
+            'password1': 'Test02#FRq8hqcl*@',
+            'password2': 'Test02#FRq8hqcl*@',
         }
-
-        user = UserF.create()
 
         form = CustomSignupForm(data=request)
         self.assertEqual(form.is_valid(), True)
 
+        user = userFactory.create()
         user = form.custom_signup(request, user)
         self.assertEqual(user.first_name, request['first_name'])
         self.assertFalse(user.is_active)

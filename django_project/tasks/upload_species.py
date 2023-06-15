@@ -1,3 +1,5 @@
+import logging
+from celery import shared_task
 from swaps.models import UploadSession
 from scripts.csv_headers import CSV_FILE_HEADERS
 from property.models import (
@@ -9,18 +11,23 @@ from species.models import Taxon, OwnedSpecies
 from population_data.models import CountMethod, PopulationCountAbstract
 
 
+logger = logging.getLogger('swaps')
+
 
 @shared_task(name='swaps.tasks.upload_species_data', queue='upload')
 def upload_species_data(upload_session_id):
 
+
     try:
         upload_session = UploadSession.objects.get(id=upload_session_id)
     except UploadSession.DoesNotExist:
-        log("upload session doesn't exis")   
+        logger.error("upload session doesn't exist")
+        return  
 
     encoding = 'utf-8-sig'
+
     
-    with open(upload_session.process_file.path, encoding=encoding
+    with open(uploads_session.process_file.path, encoding=encoding
         ) as csv_file:
         reader = csv.DictReader(csv_file)
         headers = reader.fieldnames
