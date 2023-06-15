@@ -50,6 +50,7 @@ function Upload() {
             </Grid>
             <Grid item>
                 <Grid container className='UploadContainer'>
+                    { uploadMode === UploadMode.SelectProperty &&
                     <Grid item>
                         <FormControl className='SearchArea' variant="outlined">
                             <InputLabel htmlFor="search-area">Search area</InputLabel>
@@ -70,6 +71,7 @@ function Upload() {
                             />
                         </FormControl>
                     </Grid>
+                    }
                     <Grid item>
                         <Grid container className='UploadContent'>
                             { uploadMode === UploadMode.SelectProperty &&
