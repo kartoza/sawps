@@ -168,6 +168,15 @@ export default function Map() {
 
         // Force a repaint, so that the map will be repainted without you having to touch the map
         _mapObj.triggerRepaint()
+      } else if (_event.name === 'PROPERTY_SELECTED') {
+        // parse bbox from payload
+        if (_event.payload && _event.payload.length === 4) {
+          let _bbox = _event.payload.map(Number)
+          _mapObj.fitBounds([[_bbox[0], _bbox[1]], [_bbox[2], _bbox[3]]], {
+              padding: 100,
+              maxZoom: 16
+          })
+        }
       }
     }
     dispatch(onMapEventProcessed([...mapEvents]))

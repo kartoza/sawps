@@ -11,4 +11,5 @@ export interface MapEventInterface {
     id: string;
     name: string;
     date: number;
+    payload?: string[];
 }

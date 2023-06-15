@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {v4 as uuidv4} from 'uuid';
 import axios from "axios";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
@@ -14,7 +15,8 @@ import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {
     setSelectedProperty,
-    setSelectedParcels
+    setSelectedParcels,
+    triggerMapEvent
 } from '../../../reducers/MapState';
 import {
     setUploadState
@@ -64,6 +66,16 @@ function Upload() {
                     dispatch(setSelectedProperty(_property))
                     dispatch(setSelectedParcels(_property.parcels))
                     dispatch(setUploadState(UploadMode.PropertySelected))
+                    // trigger map zoom to bbox
+                    if (_property.bbox && _property.bbox.length === 4) {
+                        let _bbox = _property.bbox.map(String)
+                        dispatch(triggerMapEvent({
+                            'id': uuidv4(),
+                            'name': 'PROPERTY_SELECTED',
+                            'date': Date.now(),
+                            'payload': _bbox
+                        }))
+                    }
                 }
             }).catch((error) => {
                 setLoading(false)
