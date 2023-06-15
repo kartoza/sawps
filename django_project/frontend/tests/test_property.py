@@ -128,7 +128,7 @@ class TestPropertyAPIViews(TestCase):
         view = PropertyMetadataList.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-    
+
     def test_property_list(self):
         property = PropertyFactory.create(
             geometry=self.holding_1.geom,
@@ -146,7 +146,7 @@ class TestPropertyAPIViews(TestCase):
         _property = response.data[0]
         self.assertEqual(_property['id'], property.id)
         self.assertEqual(_property['name'], property.name)
-    
+
     def test_update_property(self):
         property_type = PropertyType.objects.all().first()
         property = PropertyFactory.create(
@@ -173,7 +173,7 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.status_code, 204)
         updated = Property.objects.get(id=property.id)
         self.assertEqual(updated.name, data['name'])
-    
+
     def test_update_boundaries(self):
         property_type = PropertyType.objects.all().first()
         data = {
