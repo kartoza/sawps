@@ -221,11 +221,8 @@ a:hover{
 }
 
 .password-help-text{
-  margin: auto;
-  position: relative;
-  display: block;
-  justify-content: center;
-  text-align: center;
+  margin-top: -5px !important;
+  font-size: small;
 }
 
 .form-group label{
