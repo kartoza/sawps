@@ -42,7 +42,7 @@ function MainPage() {
   useEffect(() => {
     if (rightSideBarMode === RightSideBarMode.Upload) {
       dispatch(setUploadState(UploadMode.SelectProperty))
-    } else {
+    } else if (rightSideBarMode !== RightSideBarMode.PropertySummary) {
       dispatch(setUploadState(UploadMode.None))
       dispatch(setMapSelectionMode(MapSelectionMode.Property))
       dispatch(resetSelectedProperty())
