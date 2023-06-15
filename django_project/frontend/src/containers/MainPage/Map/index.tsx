@@ -21,7 +21,8 @@ import {
   removeHighlightParcelLayers,
   findParcelLayer,
   searchParcel,
-  searchProperty
+  searchProperty,
+  getSelectParcelLayerNames
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 
@@ -41,6 +42,17 @@ export default function Map() {
   const mapContainer = useRef(null);
   const map = useRef(null);
 
+  const onMapMouseEnter = () => {
+    if (!map.current) return;    
+    // Change the cursor style as a UI indicator.
+    map.current.getCanvas().style.cursor = 'pointer';
+  }
+
+  const onMapMouseLeave = () => {
+    if (!map.current) return;
+    map.current.getCanvas().style.cursor = '';
+  }
+
   useEffect(() => {
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
@@ -55,6 +67,19 @@ export default function Map() {
       if (selectionMode === MapSelectionMode.Parcel && _layer['id'].includes('-select-parcel')) continue
       const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
+    }
+
+    let _parcelLayer = findParcelLayer(contextLayers)
+    let _selectParcelLayers = getSelectParcelLayerNames(_parcelLayer.layer_names)
+    for (let i=0; i < _selectParcelLayers.length; ++i) {
+      _mapObj.on('mouseenter', _selectParcelLayers[i], onMapMouseEnter)
+      _mapObj.on('mouseleave', _selectParcelLayers[i], onMapMouseLeave)
+    }
+    return () => {
+      for (let i=0; i < _selectParcelLayers.length; ++i) {
+        _mapObj.off('mouseenter', _selectParcelLayers[i], onMapMouseEnter)
+        _mapObj.off('mouseleave', _selectParcelLayers[i], onMapMouseLeave)
+      }
     }
   }, [contextLayers, isMapReady])
 
@@ -87,8 +112,14 @@ export default function Map() {
       }), 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
-      })
 
+        map.current.on('mouseenter', 'properties', onMapMouseEnter)
+        map.current.on('mouseleave', 'properties', onMapMouseLeave)
+      })
+      return () => {
+        map.current.off('mouseenter', ['properties'], onMapMouseEnter)
+        map.current.off('mouseleave', 'properties', onMapMouseLeave)
+      }
   }, []);
 
   /* Callback when map is on click. */

@@ -21,6 +21,20 @@ export const checkLayerVisibility = (source_layer: string, contextLayers: Contex
 }
 
 /**
+ * Return all layers for select parcels
+ * @param layer_names 
+ * @returns 
+ */
+export const getSelectParcelLayerNames = (layer_names: string[]) => {
+    let _results: string[] = []
+    for (let _idx = 0; _idx < layer_names.length; ++_idx) {
+        let _layer_name = `${layer_names[_idx]}-select-parcel`
+        _results.push(_layer_name)
+    }
+    return _results
+}
+
+/**
  * Render parcel layers for selection
  * @param map 
  * @param layer_names 
