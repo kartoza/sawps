@@ -7,7 +7,7 @@ import {
   toggleParcelSelectedState,
   setSelectedProperty,
   resetSelectedProperty,
-  resetAnySelection
+  selectedParcelsOnRenderFinished
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
 import { MapSelectionMode } from "../../../models/MapSelectionMode";
@@ -67,16 +67,6 @@ export default function Map() {
       renderHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
     } else {
       removeHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
-      // need to reset any feature-state that has been set
-      for (let i = 0; i < selectedParcels.length; ++i) {
-        let _parcel = selectedParcels[i]
-        let _feature_id = { source: 'sanbi', sourceLayer: _parcel.layer, id: _parcel.id }
-        _mapObj.setFeatureState(
-          _feature_id,
-          { 'parcel-selected': false }
-        );
-      }
-      dispatch(resetAnySelection())
     }
   }, [selectionMode])
 
@@ -109,16 +99,6 @@ export default function Map() {
       // find parcel
       searchParcel(e.lngLat, (parcel: ParcelInterface) => {
         if (parcel) {
-          // toggle selection
-          let _feature_id = { source: 'sanbi', sourceLayer: parcel.layer, id: parcel.id }
-          let _selected = _mapObj.getFeatureState(_feature_id)
-          if (_selected) {
-            _selected = _selected['parcel-selected']
-          }
-          _mapObj.setFeatureState(
-            _feature_id,
-            { 'parcel-selected': !_selected }
-          );
           dispatch(toggleParcelSelectedState(parcel))
         }
       })
@@ -141,6 +121,27 @@ export default function Map() {
       map.current.off('click', mapOnClick)
     }
   }, [contextLayers, selectionMode, uploadMode])
+
+  // render selected+unselected parcel
+  useEffect(() => {
+    let _mapObj: maplibregl.Map = map.current
+    let _has_removed = false
+    for (let i = 0; i < selectedParcels.length; ++i) {
+      let parcel = selectedParcels[i]
+      let _feature_id = { source: 'sanbi', sourceLayer: parcel.layer, id: parcel.id }
+      let _selected = parcel.isRemoved ? false : true
+      _mapObj.setFeatureState(
+        _feature_id,
+        { 'parcel-selected': _selected }
+      )
+      if (parcel.isRemoved) {
+        _has_removed = true
+      }
+    }
+    if (_has_removed) {
+      dispatch(selectedParcelsOnRenderFinished())
+    }
+  }, [selectedParcels])
 
   return (
       <div className="map-wrap">

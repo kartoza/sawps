@@ -20,6 +20,16 @@ const initialState: MapStateInterface = {
     selectedProperty: createNewProperty()
 }
 
+/* reset all selectedParcels */
+const resetSelectedParcels = (parcels: ParcelInterface[]): ParcelInterface[] => {
+    let _selection = [...parcels]
+    _selection.forEach(function(item, index, object) {
+        item.isRemoved = true
+    })
+    return _selection
+}
+
+
 export const MapStateSlice = createSlice({
     name: 'MapState',
     initialState,
@@ -27,14 +37,14 @@ export const MapStateSlice = createSlice({
         setMapReady: (state, action: PayloadAction<boolean>) => {
             state.isMapReady = action.payload
         },
-        resetSelectedParcels: (state, action: PayloadAction<null>) => {
-            // reset selectedParcels
-            state.selectedParcels = []
-        },
         toggleParcelSelectionMode: (state, action: PayloadAction<null>) => {
+            // reset selectedProperty
+            state.selectedProperty = createNewProperty()
             if (state.selectionMode === MapSelectionMode.Parcel) {
                 // disable parcel selection mode
                 state.selectionMode = DEFAULT_SELECTION_MODE
+                // remove selectedParcels
+                state.selectedParcels = resetSelectedParcels(state.selectedParcels)
             } else {
                 state.selectionMode = MapSelectionMode.Parcel
             }
@@ -44,7 +54,7 @@ export const MapStateSlice = createSlice({
             if (_idx > -1) {
                 // remove selection
                 let _selection = [...state.selectedParcels]
-                _selection.splice(_idx, 1)
+                _selection[_idx].isRemoved = true
                 state.selectedParcels = _selection
             } else {
                 state.selectedParcels = [...state.selectedParcels, action.payload]
@@ -57,11 +67,15 @@ export const MapStateSlice = createSlice({
             // reset selectedProperty
             state.selectedProperty = createNewProperty()
         },
-        resetAnySelection: (state, action: PayloadAction<null>) => {
-            // reset selectedParcels
-            state.selectedParcels = []
-            // reset selectedProperty
-            state.selectedProperty = createNewProperty()
+        selectedParcelsOnRenderFinished: (state, action: PayloadAction<null>) => {
+            // called when selected parcels have been rendered
+            let _selection = [...state.selectedParcels]
+            _selection.forEach(function(item, index, object) {
+                if (item.isRemoved) {
+                  object.splice(index, 1);
+                }
+            })
+            state.selectedParcels = _selection
         }
     }
 })
@@ -70,10 +84,9 @@ export const {
     setMapReady,
     toggleParcelSelectionMode,
     toggleParcelSelectedState,
-    resetSelectedParcels,
     setSelectedProperty,
     resetSelectedProperty,
-    resetAnySelection
+    selectedParcelsOnRenderFinished
 } = MapStateSlice.actions
 
 export default MapStateSlice.reducer;

@@ -3,12 +3,14 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import { toggleParcelSelectionMode } from '../../../reducers/MapState';
+import { toggleParcelSelectionMode, toggleParcelSelectedState } from '../../../reducers/MapState';
 import {RootState} from '../../../app/store';
 import {postData} from "../../../utils/Requests";
 import AlertMessage from '../../../components/AlertMessage';
 import PropertyInterface from '../../../models/Property';
 import { MapSelectionMode } from "../../../models/MapSelectionMode";
+import SelectedParcelTable from './SelectedParcelTable';
+import ParcelInterface from '../../../models/Parcel';
 
 const CREATE_NEW_PROPERTY_URL = '/api/property/create/'
 
@@ -50,15 +52,12 @@ export default function Step2(props: Step2Interface) {
     }
 
     return (
-        <Grid container className='UploadSection Step2'>
-            <Grid item>
-                <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
-            </Grid>
+        <Grid container className='UploadSection Step2' rowGap={2}>
             <Grid item className='UploadSectionHeader'>
                 <span className='UploadSectionHeaderIcon Boundary'></span>
                 <span>Create Property Boundary</span>
             </Grid>
-            <Grid item className='UploadSectionContent CreateBoundary'>
+            <Grid item className='UploadSectionContent'>
                 <Grid container flexDirection={'column'}>
                     <Grid item>
                         <p>
@@ -82,6 +81,25 @@ export default function Step2(props: Step2Interface) {
                         </Grid>
                     </Grid>
                 </Grid>
+            </Grid>
+            <Grid item className='UploadSectionHeader'>
+                <span className='UploadSectionHeaderIcon Boundary'></span>
+                <span>Selected Parcels</span>
+            </Grid>
+            <Grid item className='UploadSectionContent'>
+                <Grid container flexDirection={'column'}>
+                    <Grid item>
+                        <p>
+                            View the parcels you have selected below
+                        </p>
+                    </Grid>
+                    <Grid item>
+                        <SelectedParcelTable parcels={selectedParcels} onRemoveParcel={(parcel: ParcelInterface) => dispatch(toggleParcelSelectedState(parcel))} />
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item>
+                <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
             </Grid>
         </Grid>
     )

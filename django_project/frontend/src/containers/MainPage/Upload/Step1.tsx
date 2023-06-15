@@ -45,6 +45,7 @@ export default function Step1(props: Step1Interface) {
             return
         }
         props.onSave({...property})
+        // TODO: if it has property.id, then this is to update property
     }
 
     return (

@@ -75,17 +75,16 @@
 
             .UploadSectionContent {
                 p {
-                    padding-top: 10px;
-                    padding-bottom: 10px;
                     text-align: left;
                     font-size: 0.8rem;
+                    margin-bottom: 0;
                 }
             }
 
             &.Step2 {
                 .ButtonContainer {
-                    margin-top: 10px;
                     width: 100%;
+                    padding-bottom: 10px;
 
                     .Select.MuiButton-root {
                         background: #FAA755;
