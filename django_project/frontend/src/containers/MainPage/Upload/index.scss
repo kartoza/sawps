@@ -80,16 +80,36 @@
                     text-align: left;
                     font-size: 0.8rem;
                 }
-                &.CreateBoundary {
-                    .MuiButton-root {
-                        min-width: 100px;
-                    }
-                }
             }
 
             &.Step2 {
                 .ButtonContainer {
                     margin-top: 10px;
+                    width: 100%;
+
+                    .Select.MuiButton-root {
+                        background: #FAA755;
+                    }
+
+                    .Select.MuiButton-root:hover {
+                        background: #976534;
+                    }
+
+                    .Digitise.MuiButton-root {
+                        background: #9D85BE;
+                    }
+
+                    .Digitise.MuiButton-root:hover {
+                        background: #72608a;
+                    }
+
+                    .Upload.MuiButton-root {
+                        background: rgba(40, 40, 41, 0.8);
+                    }
+
+                    .Upload.MuiButton-root:hover {
+                        background: rgba(40, 40, 41, 0.5);
+                    }
                 }
             }
         }

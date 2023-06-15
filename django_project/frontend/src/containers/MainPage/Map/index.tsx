@@ -11,6 +11,7 @@ import {
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
 import { MapSelectionMode } from "../../../models/MapSelectionMode";
+import { UploadMode } from "../../../models/Upload";
 import './index.scss';
 import CustomNavControl from './NavControl';
 import {
@@ -32,6 +33,7 @@ export default function Map() {
   const isMapReady = useAppSelector((state: RootState) => state.mapState.isMapReady)
   const selectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
   const selectedParcels = useAppSelector((state: RootState) => state.mapState.selectedParcels)
+  const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const mapContainer = useRef(null);
   const map = useRef(null);
 
@@ -103,6 +105,7 @@ export default function Map() {
     if (typeof _parcelLayer === 'undefined') return;
     let _mapObj: maplibregl.Map = map.current
     if (selectionMode === MapSelectionMode.Parcel) {
+      // TODO: perhaps skip search if not in the parcel zoom?
       // find parcel
       searchParcel(e.lngLat, (parcel: ParcelInterface) => {
         if (parcel) {
@@ -119,7 +122,8 @@ export default function Map() {
           dispatch(toggleParcelSelectedState(parcel))
         }
       })
-    } else if (selectionMode === MapSelectionMode.Property) {
+    } else if (selectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
+      // TODO: perhaps skip search if not in the properties zoom?
       // find parcel
       searchProperty(e.lngLat, (property: PropertyInterface) => {
         if (property) {
@@ -129,14 +133,14 @@ export default function Map() {
         }
       })
     }
-  }, [contextLayers, selectionMode])
+  }, [contextLayers, selectionMode, uploadMode])
 
   useEffect(() => {
     map.current.on('click', mapOnClick)
     return () => {
       map.current.off('click', mapOnClick)
     }
-  }, [contextLayers, selectionMode])
+  }, [contextLayers, selectionMode, uploadMode])
 
   return (
       <div className="map-wrap">

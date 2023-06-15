@@ -8,6 +8,7 @@ import {RootState} from '../../../app/store';
 import {postData} from "../../../utils/Requests";
 import AlertMessage from '../../../components/AlertMessage';
 import PropertyInterface from '../../../models/Property';
+import { MapSelectionMode } from "../../../models/MapSelectionMode";
 
 const CREATE_NEW_PROPERTY_URL = '/api/property/create/'
 
@@ -66,13 +67,13 @@ export default function Step2(props: Step2Interface) {
                         </p>
                     </Grid>
                     <Grid item>
-                        <Grid container flexDirection={'column'} flexWrap={'nowrap'} spacing={2} rowGap={2} className='ButtonContainer'>
-                            { mapSelectionMode === 'parcel' ? 
-                                <Button variant='contained' onClick={() => dispatch(toggleParcelSelectionMode()) } sx={{ background: '#FAA755' }} >CANCEL</Button> :
-                                <Button variant='contained' onClick={() => dispatch(toggleParcelSelectionMode()) } sx={{ background: '#FAA755' }}>SELECT</Button>
+                        <Grid container flexDirection={'column'} flexWrap={'nowrap'} rowGap={2} className='ButtonContainer'>
+                            { mapSelectionMode === MapSelectionMode.Parcel ? 
+                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode()) }>CANCEL</Button> :
+                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode()) }>SELECT</Button>
                             } 
-                            <Button variant='contained' sx={{ background: '#9D85BE' }}>DIGITISE</Button>
-                            <Button variant='contained' sx={{ background: 'rgba(40, 40, 41, 0.8)' }}>UPLOAD</Button>
+                            <Button variant='contained' className='Digitise'>DIGITISE</Button>
+                            <Button variant='contained' className='Upload'>UPLOAD</Button>
                             { savingProperty ? (
                                 <Button variant='contained' disabled={savingProperty}><CircularProgress size={16} sx={{marginRight: '5px' }}/> SAVING BOUNDARY...</Button>
                             ) : (

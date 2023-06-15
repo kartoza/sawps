@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import {RootState} from '../../app/store';
-import {useAppSelector } from '../../app/hooks';
+import {useAppDispatch, useAppSelector } from '../../app/hooks';
 import ResponsiveNavbar from '../../components/Navbar';
 import TabPanel, { a11yProps } from '../../components/TabPanel';
 import { LeftSideBar, RightSideBar } from './SideBar';
@@ -12,6 +12,11 @@ import Upload from './Upload';
 import Map from './Map';
 import './index.scss';
 import { PropertySummary } from './Property';
+import { MapSelectionMode } from "../../models/MapSelectionMode";
+import { UploadMode } from "../../models/Upload";
+import {
+    setUploadState
+} from '../../reducers/UploadState';
 
 enum RightSideBarMode {
   None = -1,
@@ -21,26 +26,39 @@ enum RightSideBarMode {
 }
 
 function MainPage() {
+  const dispatch = useAppDispatch()
+  const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const [selectedTab, setSelectedTab] = useState(0)
   const [rightSideBarMode, setRightSideBarMode] = useState(RightSideBarMode.None) // 0: upload data, 1: property summary, 2: filtered properties summary
   const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
+  const mapSelectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
+
+  useEffect(() => {
+    if (rightSideBarMode === RightSideBarMode.Upload) {
+      dispatch(setUploadState(UploadMode.SelectProperty))
+    } else {
+      dispatch(setUploadState(UploadMode.None))
+    }
+  }, [rightSideBarMode])
 
   useEffect(() => {
     if (selectedTab === 3) {
       setRightSideBarMode(RightSideBarMode.Upload)
-    } else if (selectedTab === 1 || selectedTab === 2) {
+    } else {
       setRightSideBarMode(RightSideBarMode.None)
     }
   }, [selectedTab])
 
   useEffect(() => {
-    if (propertyItem.id > 0) {
-      // show right side bar
-      setRightSideBarMode(RightSideBarMode.PropertySummary)
-    } else {
-      setRightSideBarMode(RightSideBarMode.None)
+    if (mapSelectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
+      if (propertyItem.id > 0) {
+        // show right side bar
+        setRightSideBarMode(RightSideBarMode.PropertySummary)
+      } else {
+        setRightSideBarMode(RightSideBarMode.None)
+      }
     }
-  }, [propertyItem])
+  }, [propertyItem, mapSelectionMode, uploadMode])
 
   return (
     <div className="App">

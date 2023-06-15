@@ -9,21 +9,22 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from '@mui/icons-material/Search';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import {RootState} from '../../../app/store';
+import {useAppDispatch, useAppSelector } from '../../../app/hooks';
+import {
+    setUploadState
+} from '../../../reducers/UploadState';
 import UploadWizard from './UploadWizard';
 import { PropertySelectItem } from '../../../models/Property';
+import { UploadMode } from '../../../models/Upload';
 import './index.scss';
 
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 
-enum UploadMode {
-    None = 'none',
-    CreateNew = 'CreateNew',
-    PropertySelected = 'PropertySelected'
-}
-
 function Upload() {
+    const dispatch = useAppDispatch()
     const [loading, setLoading] = useState(false)
-    const [uploadMode, setUploadMode] = useState(UploadMode.None)
+    const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
     const [selectedPropertyId, setSelectedPropertyId] = useState<number>(0)
     const [propertyList, setPropertyList] = useState<PropertySelectItem[]>([
         {
@@ -38,7 +39,7 @@ function Upload() {
 
     useEffect(() => {
         if (selectedPropertyId) {
-            setUploadMode(UploadMode.PropertySelected)
+            dispatch(setUploadState(UploadMode.PropertySelected))
         }
     }, [selectedPropertyId])
 
@@ -71,7 +72,7 @@ function Upload() {
                     </Grid>
                     <Grid item>
                         <Grid container className='UploadContent'>
-                            { uploadMode === UploadMode.None &&
+                            { uploadMode === UploadMode.SelectProperty &&
                                 <Grid container flexDirection={'column'}>
                                     <Grid item>
                                         <FormControl fullWidth>
@@ -93,7 +94,7 @@ function Upload() {
                                         </FormControl>
                                     </Grid>
                                     <Grid item className='ButtonContainer'>
-                                        <Button variant='contained' onClick={() => setUploadMode(UploadMode.CreateNew) }>CREATE A NEW PROPERTY</Button>
+                                        <Button variant='contained' onClick={() => dispatch(setUploadState(UploadMode.CreateNew)) }>CREATE A NEW PROPERTY</Button>
                                     </Grid>
                                 </Grid>
                             }
