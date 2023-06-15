@@ -40,23 +40,13 @@ function MainPage() {
   const mapSelectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
 
   useEffect(() => {
-    if (rightSideBarMode === RightSideBarMode.Upload) {
-      dispatch(setUploadState(UploadMode.SelectProperty))
-    } else if (rightSideBarMode !== RightSideBarMode.PropertySummary) {
+    if (rightSideBarMode === RightSideBarMode.None) {
       dispatch(setUploadState(UploadMode.None))
       dispatch(setMapSelectionMode(MapSelectionMode.Property))
       dispatch(resetSelectedProperty())
       dispatch(setSelectedParcels([]))
     }
   }, [rightSideBarMode])
-
-  useEffect(() => {
-    if (selectedTab === 3) {
-      setRightSideBarMode(RightSideBarMode.Upload)
-    } else {
-      setRightSideBarMode(RightSideBarMode.None)
-    }
-  }, [selectedTab])
 
   useEffect(() => {
     if (mapSelectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
@@ -66,6 +56,9 @@ function MainPage() {
       } else {
         setRightSideBarMode(RightSideBarMode.None)
       }
+    } else if (uploadMode === UploadMode.PropertySelected && rightSideBarMode !== RightSideBarMode.Upload) {
+      setSelectedTab(3)
+      setRightSideBarMode(RightSideBarMode.Upload)
     }
   }, [propertyItem, mapSelectionMode, uploadMode])
 
@@ -84,6 +77,12 @@ function MainPage() {
                   <Tabs value={selectedTab}
                       onChange={(event: React.SyntheticEvent, newValue: number) => {
                         setSelectedTab(newValue)
+                        if (newValue === 3) {
+                          setRightSideBarMode(RightSideBarMode.Upload)
+                          dispatch(setUploadState(UploadMode.SelectProperty))
+                        } else {
+                          setRightSideBarMode(RightSideBarMode.None)
+                        }
                       }} aria-label="Main Page Tabs"
                   >
                       <Tab key={0} label={'MAP'} {...a11yProps(0)} />
