@@ -29,19 +29,18 @@
               <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
               <path d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3V320c0 17.7 14.3 32 32 32s32-14.3 32-32V109.3l73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 53 43 96 96 96H352c53 0 96-43 96-96V352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V352z"/>
             </svg>Upload profile picture</span></p>
-            <button class="green-button mt-0">update Password</button>
-            <a href="{% url 'two-factor-setup' %}"><button class="purple-button my-2">Set up two factor authentication</button></a>
+            <a href="{% url 'account_change_password' %}"><button class="swaps-small-font-button green-button mt-0" data-toggle="modal" data-target="#updatePasswordModal">update Password</button></a>
+            <a href="{% url 'two-factor-setup' %}"><button class="swaps-small-font-button purple-button my-2">Set up two factor authentication</button></a>
         </div>
        
     </div>
+    <!-- Upload profile picture modal -->
     <div class="modal fade" id="uploadPictureModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="uploadPictureModalLabel">Upload profile picture</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <hr class="default-separator">
           </div>
           <div class="modal-body">
             <form method = "post" enctype="multipart/form-data" action="{%  url 'profile' user.username %}">
@@ -53,9 +52,11 @@
            
           </div>
           <div class="mb-4">
-            <button type="submit" class="swaps-from-submit account-button">Upload</button>
+            <button type="submit" class="swaps-from-submit green-button swaps-font-button">Upload</button>
           </div>
           </form>
         </div>
       </div>
     </div>
+
+
