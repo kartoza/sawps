@@ -6,3 +6,10 @@ export enum MapSelectionMode {
     Digitise = "digitise",
     ParcelJSON = "parcelJSON"
 }
+
+export interface MapEventInterface {
+    id: string;
+    name: string;
+    date: number;
+    payload?: string[];
+}

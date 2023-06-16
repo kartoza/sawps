@@ -22,6 +22,7 @@ class ParcelBase(models.Model):
         max_length=60,
         blank=True,
         null=True,
+        db_index=True
     )
 
     class Meta:

@@ -10,7 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.gis.geos import Point
 from property.models import (
-    Property
+    Property,
+    Parcel
 )
 from stakeholder.models import (
     OrganisationUser
@@ -198,27 +199,42 @@ class FindParcelByCoord(APIView):
                 parcel.first()
             ).data
         return None
+    
+    def check_used_parcel(self, cname: str, existing_property_id: int):
+        parcels = Parcel.objects.filter(sg_number=cname)
+        if existing_property_id:
+            parcels = parcels.exclude(property_id=existing_property_id)
+        return parcels.exists()
 
     def get(self, *args, **kwargs):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
+        property_id = self.request.GET.get('property_id', 0)
         point = Point(float(lng), float(lat), srid=4326)
         point.transform(3857)
         # find erf
         parcel = self.find_erf(point)
         if parcel:
+            if self.check_used_parcel(parcel['cname'], property_id):
+                return Response(status=404)
             return Response(status=200, data=parcel)
         # find holding
         parcel = self.find_holding(point)
         if parcel:
+            if self.check_used_parcel(parcel['cname'], property_id):
+                return Response(status=404)
             return Response(status=200, data=parcel)
         # find farm_portion
         parcel = self.find_farm_portion(point)
         if parcel:
+            if self.check_used_parcel(parcel['cname'], property_id):
+                return Response(status=404)
             return Response(status=200, data=parcel)
         # find parent_farm
         parcel = self.find_parent_farm(point)
         if parcel:
+            if self.check_used_parcel(parcel['cname'], property_id):
+                return Response(status=404)
             return Response(status=200, data=parcel)
         return Response(status=404)
 
