@@ -10,8 +10,7 @@
     {% include "profile_config_base.html" %}
 
       <div class="col-lg-8">
-        <div class="card mb-4">
-          <div class="card-body">
+          <div class="profile-form">
               <form method="post" action="{% url 'profile' object.username %}">
               {% csrf_token %}
               <div class="form-group">
@@ -50,7 +49,6 @@
             </form>
           </div>
         </div>
-      </div>
   </div>
 </section>
 

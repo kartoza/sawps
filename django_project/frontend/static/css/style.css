@@ -228,7 +228,56 @@ a:hover{
   text-align: center;
 }
 
-.form-group label{
+.signup .form-group label{
   justify-content: center;
   display: flex;
 }
+
+.page-title{
+  color: var(--green)
+}
+
+hr.default-separator{
+  border-top: 1px solid var(--green);
+}
+
+.profile-actions{
+  justify-content: center;
+}
+
+.profile-actions button{
+  width: 100%;
+  color: #fff;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.green-button{
+  background-color: var(--green);
+  border: 2px solid var(--green);
+  border-radius: 5px;
+}
+
+.purple-button{
+  background-color: var(--purple);
+  border: 2px solid var(--purple);
+  border-radius: 5px;
+}
+.profile-picture{
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: .25rem;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: var(--green);
+  background-color: var(--white);
+  border-bottom:  1px solid var(--green);
+
+}
+
+.nav-pills .nav-link {
+  border-radius: 0;
+  width: 20%;
+  text-align: center;
+}
+
