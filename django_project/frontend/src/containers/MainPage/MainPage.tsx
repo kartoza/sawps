@@ -64,7 +64,7 @@ function MainPage() {
 
   return (
     <div className="App">
-      <ResponsiveNavbar />
+      {/* <ResponsiveNavbar /> */}
       <div className="MainPage">
         <Grid container flexDirection={'row'}>
           <Grid item>
