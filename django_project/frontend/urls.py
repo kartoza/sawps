@@ -26,7 +26,11 @@ from frontend.api_views.map import (
 )
 from frontend.api_views.property import (
     CreateNewProperty,
-    PropertyMetadataList
+    PropertyMetadataList,
+    PropertyList,
+    UpdatePropertyInformation,
+    UpdatePropertyBoundaries,
+    PropertyDetail
 )
 
 urlpatterns = [
@@ -66,6 +70,26 @@ urlpatterns = [
         r'^api/property/create/?$',
         CreateNewProperty.as_view(),
         name='property-create'
+    ),
+    re_path(
+        r'^api/property/list/?$',
+        PropertyList.as_view(),
+        name='property-list'
+    ),
+    re_path(
+        r'^api/property/detail/(?P<id>\d+)/?$',
+        PropertyDetail.as_view(),
+        name='property-detail'
+    ),
+    re_path(
+        r'^api/property/detail/update/?$',
+        UpdatePropertyInformation.as_view(),
+        name='property-update-detail'
+    ),
+    re_path(
+        r'^api/property/boundaries/update/?$',
+        UpdatePropertyBoundaries.as_view(),
+        name='property-update-boundaries'
     ),
     re_path(
         r'^api/property/metadata/list/?$',
