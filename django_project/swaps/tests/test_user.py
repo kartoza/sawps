@@ -4,7 +4,7 @@ from swaps.tests.models.account_factory import (
     GroupF,
 )
 
-from swaps.forms.sign_up import CustomSignupForm
+from swaps.forms.account_forms import CustomSignupForm
 
 import logging
 
