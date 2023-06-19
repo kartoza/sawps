@@ -20,7 +20,6 @@ from .views.help import HelpView
 from .views.about import AboutView
 from .views.contact import ContactView
 
-
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
