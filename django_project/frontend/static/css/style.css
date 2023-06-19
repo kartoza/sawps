@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 html, body {
   height: 100%;
 }
@@ -46,7 +44,6 @@ body {
   --black-transparent: rgba(0, 0, 0, 0.12);
   --black-custom-primary: #282829;
 }
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 
 .btn-primary {
     --bs-btn-color: #fff;
@@ -82,30 +79,6 @@ body {
   position: relative;
   background: url("/static/images/lion.png") no-repeat;
   background-size: contain;
-<<<<<<< HEAD
-  padding-top: 7rem;
-  padding-bottom: 7rem;
-
-}
-
-.login-page{
-  position: relative;
-  background: url("/static/images/leopard.jpg") no-repeat;
-  background-size: contain;
-  padding-top: 7rem;
-  padding-bottom: 7rem;
-
-}
-
-
-.account-button{
-  color: #000000 !important;
-  border-radius: 2px;
-  background-color: #FAA755;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  border: 2px solid #FAA755;
-=======
 
 }
 
@@ -121,7 +94,6 @@ body {
   color: #000000 !important;
   background-color: var(--orange);
   border: 2px solid var(--orange);
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
   text-transform: uppercase;
   padding: 3px 20px !important;
   border-radius: 5px;
@@ -141,16 +113,10 @@ body {
 .account-form{
   background: #282829;
   border-radius: 4px;
-<<<<<<< HEAD
-  float: right;
-  margin-left: auto;
-  margin-top: -35px;
-=======
   color: var(--white);
   width: max-content;
   padding: 20px;
   margin-top: 10vh;
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 }
 
 .custom-form-container{
@@ -164,20 +130,12 @@ body {
 }
 
 .login-help{
-<<<<<<< HEAD
-  color: #9D85BE;
-=======
   color: var(--white);
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
   font-size: 12px;
   line-height: 24px;
 }
 .login-help > a{
-<<<<<<< HEAD
-  color: #9D85BE;
-=======
   color: var(--white);
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
   text-decoration: none;
 }
 
@@ -189,21 +147,14 @@ body {
 
 
 .swaps-text-primary{
-<<<<<<< HEAD
-=======
   display: flex;
   justify-content: center;
   height: max-content;
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
   color: #70B276;
 }
 
 hr.separator{
-<<<<<<< HEAD
-  border-top: 1px solid #70B276;
-=======
   border-top: 1px solid var(--white);
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 }
 
 .swaps-text-primary, a {
@@ -216,8 +167,6 @@ a:hover{
 
 .upload-picture{
   cursor: pointer;
-<<<<<<< HEAD
-=======
 }
 
 .swaps-text-primary, a {
@@ -276,8 +225,80 @@ a:hover{
   font-size: small;
 }
 
-.form-group label{
+.signup .form-group label{
   justify-content: center;
   display: flex;
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 }
+
+.page-title{
+  color: var(--green)
+}
+
+hr.default-separator{
+  border-top: 1px solid var(--green);
+}
+
+.profile-actions{
+  justify-content: center;
+}
+
+.profile-actions button{
+  width: 100%;
+}
+
+.swaps-small-font-button{
+  color: #fff;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.swaps-font-button{
+  color: #fff;
+  text-transform: uppercase;
+  padding: 3px 20px !important;
+}
+
+.green-button{
+  background-color: var(--green);
+  border: 2px solid var(--green);
+  border-radius: 5px;
+}
+
+.purple-button{
+  background-color: var(--purple);
+  border: 2px solid var(--purple);
+  border-radius: 5px;
+}
+
+.orange-button{
+  background-color: var(--orange);
+  border: 2px solid var(--orange);
+  border-radius: 5px;
+}
+.profile-picture{
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: .25rem;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: var(--green);
+  background-color: var(--white);
+  border-bottom:  1px solid var(--green);
+
+}
+
+.nav-pills .nav-link {
+  border-radius: 0;
+  width: 20%;
+  text-align: center;
+}
+
+/* Customize modal */
+.modal-header {
+  display: -ms-flexbox;
+  border-bottom: 0;
+  color: var(--green);
+  display: block;
+  text-align: center;
+}
+

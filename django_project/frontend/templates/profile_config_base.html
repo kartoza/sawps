@@ -8,17 +8,26 @@
 
 <div class="col">
         <h3 class="page-title swaps-text-menu mb-3">Profile Configuration</h3>
+<<<<<<< HEAD
         <nav class="navbar navbar-expand-lg" style="background-color: #fff;">
           <ol class="navbar-nav mb-0 swap-text-green">
 >>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
             <li class="nav-item"><a class="primary-text-color nav-link" href="#">PROFILE</a></li>
             <li class="nav-item"><a class="nav-link" href="#">REMINDERS</a></li>
             <li class="nav-item" aria-current="page"><a class="nav-link"href="#">NOTIFICATIONS</a></li>
+=======
+        <hr class="default-separator">
+        <nav class="nav nav-pills nav-justified mb-4">
+          <a class="nav-link active" href href="#">PROFILE</a>
+          <a class="nav-link" href href="#">REMINDERS</a>
+          <a class="nav-link" href href="#">NOTIFICATIONS</a>
+>>>>>>> 58a132dcf10bc5c828b304a4b18e27a75325b791
           </ol>
         </nav>
       </div>
     </div>
     <div class="row">
+<<<<<<< HEAD
     <div class="col-lg-4">
 <<<<<<< HEAD
         <div class="card mb-4">
@@ -33,31 +42,37 @@
 =======
         <div class="card mb-0">
           <div class="card-body text-center">
+=======
+    <div class="col-sm-3">
+        <div class="mb-0 card">
+          <div class="text-center">
+>>>>>>> 58a132dcf10bc5c828b304a4b18e27a75325b791
             {% if user.user_profile.picture %}
             <img src="{% get_media_prefix %}{{ user.user_profile.picture }}" alt="avatar"
-            class="rounded-circle img-fluid" style="width: 150px;">
+            class="img-fluid" style="width: 100%;">
             {% else %}
-            <svg class="img-fluid" width="150px"  style="fill:#6c757dd9" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"/></svg>
+            <svg class="img-fluid" width="100%;"  style="fill:#6c757dd9" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"/></svg>
             {% endif %}
-            <p class="text-muted my-2 upload-picture"><span data-toggle="modal" data-target="#uploadPictureModal">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="15px" class="mb-2 mr-1" style="fill:#6c757dd9">
-                <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                <path d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3V320c0 17.7 14.3 32 32 32s32-14.3 32-32V109.3l73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 53 43 96 96 96H352c53 0 96-43 96-96V352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V352z"/>
-              </svg>Upload profile picture</span></p>
           </div>
         </div>
-        <ul class="navbar-nav mb-0 swap-text-green">
-          <li class="nav-item"><a class="primary-text-color nav-link" href="{% url 'two-factor-setup' %}">Setup 2fa</a></li>
-        </ul>
+        <div class="profile-actions">
+          <p class="text-muted my-2 upload-picture text-center"><span data-toggle="modal" data-target="#uploadPictureModal">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="15px" class="mb-2 mr-1" style="fill:#6c757dd9">
+              <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <path d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3V320c0 17.7 14.3 32 32 32s32-14.3 32-32V109.3l73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 53 43 96 96 96H352c53 0 96-43 96-96V352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V352z"/>
+            </svg>Upload profile picture</span></p>
+            <a href="{% url 'account_change_password' %}"><button class="swaps-small-font-button green-button mt-0" data-toggle="modal" data-target="#updatePasswordModal">update Password</button></a>
+            <a href="{% url 'two-factor-setup' %}"><button class="swaps-small-font-button purple-button my-2">Set up two factor authentication</button></a>
+        </div>
+       
     </div>
+    <!-- Upload profile picture modal -->
     <div class="modal fade" id="uploadPictureModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="uploadPictureModalLabel">Upload profile picture</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <hr class="default-separator">
           </div>
           <div class="modal-body">
             <form method = "post" enctype="multipart/form-data" action="{%  url 'profile' user.username %}">
@@ -69,10 +84,15 @@
            
           </div>
           <div class="mb-4">
-            <button type="submit" class="swaps-from-submit account-button">Upload</button>
+            <button type="submit" class="swaps-from-submit green-button swaps-font-button">Upload</button>
           </div>
           </form>
         </div>
       </div>
     </div>
+<<<<<<< HEAD
 >>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
+=======
+
+
+>>>>>>> 58a132dcf10bc5c828b304a4b18e27a75325b791
