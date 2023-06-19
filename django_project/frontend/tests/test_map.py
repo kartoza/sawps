@@ -1,4 +1,7 @@
 import json
+import mock
+from importlib import import_module
+from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.urls import reverse
@@ -16,8 +19,13 @@ from frontend.api_views.map import (
     MapStyles,
     PropertiesLayerMVTTiles,
     FindParcelByCoord,
-    FindPropertyByCoord
+    FindPropertyByCoord,
+    MapAuthenticate
 )
+
+
+def mocked_set_cache(cache_key, allowed, redis_time_cache):
+    return True
 
 
 class TestMapAPIViews(TestCase):
@@ -56,11 +64,17 @@ class TestMapAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
 
+    @mock.patch('frontend.api_views.map.cache.set',
+                mock.Mock(side_effect=mocked_set_cache))
     def test_get_map_styles(self):
         request = self.factory.get(
             reverse('map-style')
         )
         request.user = self.user_1
+        # add session
+        engine = import_module(settings.SESSION_ENGINE)
+        session_key = None
+        request.session = engine.SessionStore(session_key)
         view = MapStyles.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
@@ -135,3 +149,21 @@ class TestMapAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], property.name)
+
+    @mock.patch('frontend.api_views.map.cache.get')
+    def test_map_authenticate(self, mocked_cache):
+        token = 'test_token'
+        # no record in cache, 403
+        mocked_cache.return_value = None
+        request = self.factory.get(
+            reverse('map-authenticate') + (
+                f'/?token={token}'
+            )
+        )
+        view = MapAuthenticate.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 403)
+        # has record in cache, 200
+        mocked_cache.return_value = True
+        response = view(request)
+        self.assertEqual(response.status_code, 200)

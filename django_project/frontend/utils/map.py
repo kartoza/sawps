@@ -7,7 +7,7 @@ from django.urls import reverse
 from core.settings.utils import absolute_path
 
 
-def get_map_template_style(request, theme_choice: int = 0):
+def get_map_template_style(request, theme_choice: int = 0, token: str = None):
     """
     Fetch map template style from file.
 
@@ -37,6 +37,8 @@ def get_map_template_style(request, theme_choice: int = 0):
         tile_url = f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}'
         if settings.DEBUG:
             tile_url = tile_url + '.pbf'
+        if not settings.DEBUG and token:
+            tile_url = tile_url + f'?token={token}'
         styles['sources']['sanbi']['tiles'] = [tile_url]
     if 'sources' in styles and 'NGI Aerial Imagery' in styles['sources']:
         url = (

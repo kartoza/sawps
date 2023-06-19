@@ -1,12 +1,13 @@
 """API Views related to map."""
 from typing import Tuple, List
 import requests
+from django.core.cache import cache
 from django.db.models import Q
 from django.db import connection
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseForbidden
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.gis.geos import Point
 from property.models import (
@@ -54,12 +55,22 @@ class MapStyles(APIView):
     """Fetch map styles."""
     permission_classes = [IsAuthenticated]
 
+    def get_token_for_map(self):
+        token = self.request.session.session_key
+        expiry_in_seconds = self.request.session.get_expiry_age()
+        cache_key = f'map-auth-{token}'
+        cache.set(cache_key, True, expiry_in_seconds)
+        return token
+
     def get(self, *args, **kwargs):
         """Retrieve map styles."""
         theme = self.request.GET.get('theme', 'light')
         styles = get_map_template_style(
             self.request,
-            0 if theme == 'light' else 1
+            theme_choice=(
+                0 if theme == 'light' else 1
+            ),
+            token=self.get_token_for_map()
         )
         return Response(
             status=200,
@@ -244,3 +255,20 @@ class FindPropertyByCoord(APIView):
         if not property:
             return Response(status=404)
         return Response(status=200, data=PropertySerializer(property).data)
+
+
+class MapAuthenticate(APIView):
+    """Check against the token of user."""
+    permission_classes = [AllowAny]
+
+    def get(self, *args, **kwargs):
+        """Return success 200, so nginx can cache the auth result."""
+        token = self.request.query_params.get("token", None)
+        if token is None:
+            return HttpResponseForbidden()
+        cache_key = f'map-auth-{token}'
+        allowed = cache.get(cache_key)
+        if allowed is not None:
+            if allowed:
+                return HttpResponse('OK')
+        return HttpResponseForbidden()
