@@ -1,4 +1,4 @@
-from allauth.account.forms import SignupForm, LoginForm
+from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
 from django.contrib.auth.models import Group
 from django.template.loader import render_to_string
@@ -73,5 +73,16 @@ class CustomLoginForm(LoginForm):
         super().__init__(*args, **kwargs)
         self.fields['login'].label = 'Email'
         self.label_suffix = ""
+
+
+class CustomChangePasswordForm(ChangePasswordForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['password2'].label = 'Confirm New Password'
+        self.label_suffix = ""
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = ''
     
     
