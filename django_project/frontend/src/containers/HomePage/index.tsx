@@ -2,6 +2,10 @@ import React from 'react';
 import ResponsiveNavbar from '../../components/Navbar';
 import './index.scss';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
+import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
+import LandingPagePopulationOverview from '../../components/LandingPage/LandingPagePopulationOverview';
+
+
 
 function Banner() {
   return (
@@ -41,7 +45,9 @@ function Banner() {
 function HomePage() {
   return (
     <div className="App">
-      <Banner/>
+      {/* <Banner/> */}
+      <LandingPageBanner />
+      <LandingPagePopulationOverview/>  
     </div>
   );
 }

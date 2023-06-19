@@ -1,0 +1,40 @@
+$text-color: #fff;
+$hr-border-color:#fff;
+
+
+.landing-page-population-overview-header{
+    color: $text-color;
+    margin-top: 50px;
+}
+
+
+
+.landing-page-population-overview-header{
+    width: 100%;
+    color:$text-color;
+    text-align: center;
+    margin-top:50px;
+    font-size: 34px;
+}
+
+.landing-page-population-overview-header-separator{
+    width: 58%;
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 5px;
+    border-bottom: 0px;
+    border-bottom:0px;
+    border-color:$hr-border-color;
+}
+
+@media screen and (min-width: 500px) and (max-width: 689px){
+    .landing-page-population-overview-header{
+        color: white;
+        margin-top: 50px;
+    }
+
+}
