@@ -67,7 +67,8 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_FORMS = {
     'signup': 'swaps.forms.CustomSignupForm',
-    'login': 'swaps.forms.CustomLoginForm'
+    'login': 'swaps.forms.CustomLoginForm',
+    'change_password': 'swaps.forms.CustomChangePasswordForm',
 }
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
