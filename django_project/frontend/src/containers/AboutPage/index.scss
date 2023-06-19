@@ -1,5 +1,5 @@
 .about-image-container{
-    background-image: url('/public/about/about_page_main_img.png');
+    background-image: url('/static/images/about/about_page_main_img.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat; 
@@ -8,6 +8,7 @@
 .about-content-title{
     color: var(--white);
     font-size: 25px;
+    font-family: Roboto;
     height: 70px;
     padding-top: 36px;
 }   
@@ -18,6 +19,7 @@
     margin-top: 10px;
     width: 80%;
     font-size: 15px;
+    font-family: Roboto;
 }
 
 .about-subsection-1-video-holder {
@@ -27,7 +29,7 @@
 }
 
 .about-subsection-2{
-    background-image: url('/public/about/about_page_feature1.png');
+    background-image: url('/static/images/about/about_page_feature1.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat; 
@@ -38,7 +40,7 @@
 }
 
 .about-subsection-3{
-    background-image: url('/public/about/about_page_feature2.png');
+    background-image: url('/static/images/about/about_page_feature2.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat; 
@@ -48,7 +50,7 @@
 }
 
 .about-subsection-4{
-    background-image: url('/public/about/about_page_feature3.png');
+    background-image: url('/static/images/about/about_page_feature3.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat; 
@@ -59,7 +61,7 @@
 }
 
 .about-subsection-5{
-    background-image: url('/public/about/about_page_feature4.png');
+    background-image: url('/static/images/about/about_page_feature4.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat; 

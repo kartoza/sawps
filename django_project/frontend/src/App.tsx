@@ -7,7 +7,6 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './utils/Theme';
 
-
 const rootElement = document.getElementById('app')!
 const root = createRoot(rootElement);
 
