@@ -70,4 +70,3 @@ services:
       - "${HTTP_PORT:-8888}:80"
     links:
       - django
-      - tegola
