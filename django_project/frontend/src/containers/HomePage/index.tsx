@@ -2,12 +2,12 @@ import React from 'react';
 import ResponsiveNavbar from '../../components/Navbar';
 import './index.scss';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
-import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
 import LandingPagePopulationOverview from '../../components/LandingPage/LandingPagePopulationOverview';
 import CustomButton from '../../components/Button';
 import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
 
 const isLoggedIn = (window as any).isLoggedIn;
+
 
 function Banner() {
   return (
@@ -55,6 +55,7 @@ function HomePage() {
     <div className="App">
       {/* <Banner/> */}
       <LandingPageBanner/>
+      <LandingPagePopulationOverview/>
     </div>
   );
 }
