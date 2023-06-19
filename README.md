@@ -16,7 +16,7 @@ This project is implemented by [Kartoza](https://kartoza.com/) under contract to
 > the Free Software Foundation; either version 3 of the License, or
 > (at your option) any later version.
 
-Read the [full license](LICENSE.md).
+Read the [full license](LICENSE).
 
 ## 🧑🏽‍💻 Development
 
