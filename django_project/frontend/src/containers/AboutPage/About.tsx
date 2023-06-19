@@ -6,7 +6,7 @@ interface IAbout{}
 const About:FC<IAbout> = ()=>{
     return(
         <>
-            <div className='about-container' dataset-testid='about-page-container'>
+            <div className='about-container' data-testid='about-page-container'>
                 <div className='about-image-container'>
                     {/* <img src="about/about_page_main_img.png"/> */}
                 </div>
@@ -16,7 +16,7 @@ const About:FC<IAbout> = ()=>{
                     </div>
                      <div className='about-subsection-1'>
                         <div className='about-subsection-1-video-holder'>
-                        <iframe src="https://www.youtube.com/embed/iM2fkxVmq9w" title="Kruger National Park: Sightings from Northern Kruger" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen dataset-testid='about-page-video-frame'></iframe> 
+                        <iframe src="https://www.youtube.com/embed/iM2fkxVmq9w" title="Kruger National Park: Sightings from Northern Kruger" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen data-testid='about-page-video-frame'></iframe> 
                         </div>
                         <div className='about-subsection-1-text'>
                             <p>The WLPS is a coordinated system of wildlife trade monitoring with centralised/shared information about priority species such as
