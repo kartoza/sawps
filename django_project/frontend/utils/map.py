@@ -34,13 +34,10 @@ def get_map_template_style(request, theme_choice: int = 0):
     elif 'localhost' in domain:
         schema = 'http://'
     if 'sources' in styles and 'sanbi' in styles['sources']:
-        styles['sources']['sanbi']['tiles'] = [
-            f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}'
-        ]
+        tile_url = f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}'
         if settings.DEBUG:
-            styles['sources']['sanbi']['tiles'] = (
-                styles['sources']['sanbi']['tiles'] + '.pbf'
-            )
+            tile_url = tile_url + '.pbf'
+        styles['sources']['sanbi']['tiles'] = [tile_url]
     if 'sources' in styles and 'NGI Aerial Imagery' in styles['sources']:
         url = (
             reverse('aerial-map-layer', kwargs={
