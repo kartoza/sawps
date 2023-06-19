@@ -1,12 +1,13 @@
 import React, { FC } from 'react';
 import './styles.scss'
-import LandingPageBannerTextButton from '../BannerTextButtons'
+import CustomButton from '../../../Button';
+
 
 interface ILandingPageBannerImage{}
 
 const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
     const btnProps = [
-        {"text":"About", "color":"#70B276","url":"/about"},{"text":"Login", "color":"#FAA755","url":"/login"},{"text":"Register","color":"#9D85BE","url":"/register"}
+        {"text":"About", "color":"green","url":"/about"},{"text":"Login", "color":"orange","url":"/login"},{"text":"Register","color":"purple","url":"/register"}
     ]
     return (
         <>
@@ -17,11 +18,33 @@ const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
                 <div className='landing-page-banner-text-btns-container'>
                     {
                         btnProps.map((prop, index) => {
-                            return (
-                               <div className='landing-page-banner-text-btns' key={index}>
-                                    <LandingPageBannerTextButton btn={prop}/>
-                                </div>
-                            )
+                            if(prop.color=='green'){
+                                return (
+                                    <div className='landing-page-banner-text-btns' key={index}>
+                                         <CustomButton color='green' buttonText={prop.text} sx={{width:150,mr:2}}/>
+                                     </div>
+                                 )
+
+                            }
+
+                            else if(prop.color=='orange'){
+                                return (
+                                    <div className='landing-page-banner-text-btns' key={index}>
+                                         <CustomButton color='orange' buttonText={prop.text} sx={{width:150, mr:2}}/>
+                                     </div>
+                                 )
+     
+                            }
+
+                            else{
+                                return (
+                                    <div className='landing-page-banner-text-btns' key={index}>
+                                         <CustomButton color="purple" buttonText={prop.text} sx={{width:150,mr:2}}/>
+                                     </div>
+                                 )
+     
+                            }
+
                         })
                     }
                 </div>
