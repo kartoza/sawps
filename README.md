@@ -2,6 +2,21 @@
 
 The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
 
+![image](https://github.com/kartoza/sawps/assets/178003/09311bc9-6862-4fc1-a526-1ec998d994b4)
+
+The work is funded by the [South African National Biodiversity Institute](https://www.sanbi.org/) 
+
+
+This project is implemented by [Kartoza](https://kartoza.com/) under contract to [IDS](https://ids-cc.co.za/).
+
+## 📒 License
+
+> This program is free software; you can redistribute it and/or modify
+> it under the terms of the GNU Affero General Public License as published by
+> the Free Software Foundation; either version 3 of the License, or
+> (at your option) any later version.
+
+Read the [full license](LICENSE.md).
 
 ## 🧑🏽‍💻 Development
 
