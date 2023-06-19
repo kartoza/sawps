@@ -3,8 +3,7 @@ import { Button, styled, useTheme } from '@mui/material';
 
 type ButtonColor = 'green' | 'orange' | 'purple';
 
-
-const StyledButton = styled(Button)<{ bgcolor: string }>(({ bgcolor }) => ({
+const StyledButton = styled(Button)<{ bgcolor: string}>(({ bgcolor}) => ({
   background: bgcolor,
   color: 'black !important',
   borderColor: bgcolor,
@@ -15,7 +14,9 @@ const StyledButton = styled(Button)<{ bgcolor: string }>(({ bgcolor }) => ({
 
 
 interface CustomButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  color: ButtonColor;
+  color: ButtonColor,
+  buttonText?:string,
+  sx?:any
 }
 
 const CustomButton: React.FC<CustomButtonProps> = (props) => {
@@ -27,14 +28,15 @@ const CustomButton: React.FC<CustomButtonProps> = (props) => {
         return theme.palette.customColors.green;
       case 'orange':
         return theme.palette.customColors.orange;
-      case 'purple':
+      case 'purple': 
         return theme.palette.customColors.purple;
       default:
         return '#3F51B5';
     }
   };
+  console.log(other)
   return (
-    <StyledButton bgcolor={getColor(color)} {...other} />
+    <StyledButton bgcolor={getColor(color)} {...other}>{props.buttonText}</StyledButton>
   );
 };
 
