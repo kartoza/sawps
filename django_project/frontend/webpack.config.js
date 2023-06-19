@@ -18,6 +18,7 @@ let conf = {
         Help: './src/containers/HelpPage/index.tsx',
         Main: './src/containers/MainPage/index.tsx',
         About: './src/containers/AboutPage/index.tsx',
+        Contact: './src/containers/ContactPage/index.tsx',
     },
     output: {
         path: path.resolve(__dirname, "./bundles/frontend"),
