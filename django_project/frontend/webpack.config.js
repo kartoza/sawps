@@ -15,6 +15,7 @@ const minimized = !isDev;
 let conf = {
     entry: {
         Home: './src/App.tsx',
+        Help: './src/containers/HelpPage/index.tsx',
         Main: './src/containers/MainPage/index.tsx',
         About: './src/containers/AboutPage/index.tsx',
     },
