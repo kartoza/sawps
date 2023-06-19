@@ -35,8 +35,12 @@ def get_map_template_style(request, theme_choice: int = 0):
         schema = 'http://'
     if 'sources' in styles and 'sanbi' in styles['sources']:
         styles['sources']['sanbi']['tiles'] = [
-            f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}.pbf'
+            f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}'
         ]
+        if settings.DEBUG:
+            styles['sources']['sanbi']['tiles'] = (
+                styles['sources']['sanbi']['tiles'] + '.pbf'
+            )
     if 'sources' in styles and 'NGI Aerial Imagery' in styles['sources']:
         url = (
             reverse('aerial-map-layer', kwargs={
@@ -49,7 +53,7 @@ def get_map_template_style(request, theme_choice: int = 0):
         url = url.replace('/0/0/0', '/{z}/{x}/{y}')
         if not settings.DEBUG:
             # if not dev env, then replace with https
-            url = url.replace('http://', 'https://')
+            url = url.replace('http://', schema)
         styles['sources']['NGI Aerial Imagery']['tiles'] = [url]
     # add properties layer
     if 'sources' in styles:
@@ -64,7 +68,7 @@ def get_map_template_style(request, theme_choice: int = 0):
         url = url.replace('/0/0/0', '/{z}/{x}/{y}')
         if not settings.DEBUG:
             # if not dev env, then replace with https
-            url = url.replace('http://', 'https://')
+            url = url.replace('http://', schema)
         styles['sources']['properties'] = {
             "type": "vector",
             "tiles": [url],
