@@ -2,16 +2,11 @@ import React from 'react';
 import ResponsiveNavbar from '../../components/Navbar';
 import './index.scss';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
-<<<<<<< HEAD
 import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
 import LandingPagePopulationOverview from '../../components/LandingPage/LandingPagePopulationOverview';
-
-
-=======
 import CustomButton from '../../components/Button';
 
 const isLoggedIn = (window as any).isLoggedIn;
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 
 function Banner() {
   return (
