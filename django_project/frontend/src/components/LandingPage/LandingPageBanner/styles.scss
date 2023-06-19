@@ -1,5 +1,5 @@
-$banner-text-color:white; 
-$banner-background-color:black;
+$banner-text-color:var(--white); 
+$banner-background-color:var(--black);
 
 @media screen and (min-width: 950px){
 .landing-page-banner{

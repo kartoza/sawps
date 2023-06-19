@@ -1,7 +1,6 @@
 .landing-page-banner-btn{
-    border: 1px solid #000;
+    border: 1px solid var(--black);
     border-radius: 4px;
-    color: #000;
     cursor: pointer;
     display: inline-block;
     font-size: 14px;
@@ -16,5 +15,5 @@
     vertical-align: middle;
     white-space: nowrap;
     width: 200px;
-    color:black !important;
+    color:var(--black) !important;
 }

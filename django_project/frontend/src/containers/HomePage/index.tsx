@@ -5,6 +5,7 @@ import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
 import LandingPagePopulationOverview from '../../components/LandingPage/LandingPagePopulationOverview';
 import CustomButton from '../../components/Button';
+import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
 
 const isLoggedIn = (window as any).isLoggedIn;
 
@@ -53,8 +54,7 @@ function HomePage() {
   return (
     <div className="App">
       {/* <Banner/> */}
-      <LandingPageBanner />
-      <LandingPagePopulationOverview/>  
+      <LandingPageBanner/>
     </div>
   );
 }

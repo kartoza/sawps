@@ -1,14 +1,13 @@
 import React, { FC } from 'react';
-import {useState} from 'react';
 import './styles.scss'
 import LandingPageBannerTextButton from '../BannerTextButtons'
 
 interface ILandingPageBannerImage{}
 
 const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
-    const [btn_props, set_btn_text] = useState([
+    const btnProps = [
         {"text":"About", "color":"#70B276","url":"/about"},{"text":"Login", "color":"#FAA755","url":"/login"},{"text":"Register","color":"#9D85BE","url":"/register"}
-    ])
+    ]
     return (
         <>
             <div className="landing-page-banner-text-container">
@@ -17,7 +16,7 @@ const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
                 </div>
                 <div className='landing-page-banner-text-btns-container'>
                     {
-                        btn_props.map((prop, index) => {
+                        btnProps.map((prop, index) => {
                             return (
                                <div className='landing-page-banner-text-btns' key={index}>
                                     <LandingPageBannerTextButton btn={prop}/>
