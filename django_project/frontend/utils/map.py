@@ -1,10 +1,17 @@
 """Helper function for map."""
 import os
 import json
+import time
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.urls import reverse
 from core.settings.utils import absolute_path
+from frontend.models.parcels import (
+    Erf,
+    Holding,
+    FarmPortion,
+    ParentFarm
+)
 
 
 def get_map_template_style(request, theme_choice: int = 0, token: str = None):
@@ -68,6 +75,8 @@ def get_map_template_style(request, theme_choice: int = 0, token: str = None):
         if not settings.DEBUG:
             # if not dev env, then replace with https
             url = url.replace('http://', schema)
+        # add epoch datetime
+        url = url + f'?t={int(time.time())}'
         styles['sources']['properties'] = {
             "type": "vector",
             "tiles": [url],
@@ -102,3 +111,20 @@ def replace_maptiler_api_key(styles):
             map_tiler_key
         )
     return styles
+
+
+def find_layer_by_cname(cname: str):
+    """Find layer name+id by cname."""
+    obj = Erf.objects.filter(cname=cname).first()
+    if obj:
+        return 'erf', obj.id
+    obj = Holding.objects.filter(cname=cname).first()
+    if obj:
+        return 'holding', obj.id
+    obj = FarmPortion.objects.filter(cname=cname).first()
+    if obj:
+        return 'farm_portion', obj.id
+    obj = ParentFarm.objects.filter(cname=cname).first()
+    if obj:
+        return 'parent_farm', obj.id
+    return None, None

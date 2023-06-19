@@ -16,6 +16,9 @@ Including another URLconf
 from django.urls import path, re_path
 from .views.home import HomeView
 from .views.map import MapView
+from .views.help import HelpView
+from .views.about import AboutView
+
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
@@ -27,7 +30,11 @@ from frontend.api_views.map import (
 )
 from frontend.api_views.property import (
     CreateNewProperty,
-    PropertyMetadataList
+    PropertyMetadataList,
+    PropertyList,
+    UpdatePropertyInformation,
+    UpdatePropertyBoundaries,
+    PropertyDetail
 )
 
 urlpatterns = [
@@ -74,10 +81,32 @@ urlpatterns = [
         name='property-create'
     ),
     re_path(
+        r'^api/property/list/?$',
+        PropertyList.as_view(),
+        name='property-list'
+    ),
+    re_path(
+        r'^api/property/detail/(?P<id>\d+)/?$',
+        PropertyDetail.as_view(),
+        name='property-detail'
+    ),
+    re_path(
+        r'^api/property/detail/update/?$',
+        UpdatePropertyInformation.as_view(),
+        name='property-update-detail'
+    ),
+    re_path(
+        r'^api/property/boundaries/update/?$',
+        UpdatePropertyBoundaries.as_view(),
+        name='property-update-boundaries'
+    ),
+    re_path(
         r'^api/property/metadata/list/?$',
         PropertyMetadataList.as_view(),
         name='property-metadata'
     ),
     path('map/', MapView.as_view(), name='map'),
+    path('help/', HelpView.as_view(), name='help'),
     path('', HomeView.as_view(), name='home'),
+    path('about/', AboutView.as_view(), name='about'),
 ]

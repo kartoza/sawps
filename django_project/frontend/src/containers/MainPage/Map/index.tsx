@@ -7,10 +7,12 @@ import {
   toggleParcelSelectedState,
   setSelectedProperty,
   resetSelectedProperty,
-  resetAnySelection
+  selectedParcelsOnRenderFinished,
+  onMapEventProcessed
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
-import { MapSelectionMode } from "../../../models/MapSelectionMode";
+import { MapSelectionMode } from "../../../models/Map";
+import { UploadMode } from "../../../models/Upload";
 import './index.scss';
 import CustomNavControl from './NavControl';
 import {
@@ -19,12 +21,15 @@ import {
   removeHighlightParcelLayers,
   findParcelLayer,
   searchParcel,
-  searchProperty
+  searchProperty,
+  getSelectParcelLayerNames
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_SOURCES = ['sanbi', 'properties']
+
+const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
 
 export default function Map() {
   const dispatch = useAppDispatch()
@@ -32,8 +37,22 @@ export default function Map() {
   const isMapReady = useAppSelector((state: RootState) => state.mapState.isMapReady)
   const selectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
   const selectedParcels = useAppSelector((state: RootState) => state.mapState.selectedParcels)
+  const selectedProperty = useAppSelector((state: RootState) => state.mapState.selectedProperty)
+  const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
+  const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
   const mapContainer = useRef(null);
   const map = useRef(null);
+
+  const onMapMouseEnter = () => {
+    if (!map.current) return;    
+    // Change the cursor style as a UI indicator.
+    map.current.getCanvas().style.cursor = 'pointer';
+  }
+
+  const onMapMouseLeave = () => {
+    if (!map.current) return;
+    map.current.getCanvas().style.cursor = '';
+  }
 
   useEffect(() => {
     if (!isMapReady) return;
@@ -50,6 +69,19 @@ export default function Map() {
       const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
     }
+
+    let _parcelLayer = findParcelLayer(contextLayers)
+    let _selectParcelLayers = getSelectParcelLayerNames(_parcelLayer.layer_names)
+    for (let i=0; i < _selectParcelLayers.length; ++i) {
+      _mapObj.on('mouseenter', _selectParcelLayers[i], onMapMouseEnter)
+      _mapObj.on('mouseleave', _selectParcelLayers[i], onMapMouseLeave)
+    }
+    return () => {
+      for (let i=0; i < _selectParcelLayers.length; ++i) {
+        _mapObj.off('mouseenter', _selectParcelLayers[i], onMapMouseEnter)
+        _mapObj.off('mouseleave', _selectParcelLayers[i], onMapMouseLeave)
+      }
+    }
   }, [contextLayers, isMapReady])
 
   /* Called when selectionMode is changed */
@@ -65,16 +97,6 @@ export default function Map() {
       renderHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
     } else {
       removeHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
-      // need to reset any feature-state that has been set
-      for (let i = 0; i < selectedParcels.length; ++i) {
-        let _parcel = selectedParcels[i]
-        let _feature_id = { source: 'sanbi', sourceLayer: _parcel.layer, id: _parcel.id }
-        _mapObj.setFeatureState(
-          _feature_id,
-          { 'parcel-selected': false }
-        );
-      }
-      dispatch(resetAnySelection())
     }
   }, [selectionMode])
 
@@ -91,8 +113,14 @@ export default function Map() {
       }), 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
-      })
 
+        map.current.on('mouseenter', 'properties', onMapMouseEnter)
+        map.current.on('mouseleave', 'properties', onMapMouseLeave)
+      })
+      return () => {
+        map.current.off('mouseenter', ['properties'], onMapMouseEnter)
+        map.current.off('mouseleave', 'properties', onMapMouseLeave)
+      }
   }, []);
 
   /* Callback when map is on click. */
@@ -101,25 +129,16 @@ export default function Map() {
     if (selectionMode === MapSelectionMode.None) return;
     let _parcelLayer = findParcelLayer(contextLayers)
     if (typeof _parcelLayer === 'undefined') return;
-    let _mapObj: maplibregl.Map = map.current
     if (selectionMode === MapSelectionMode.Parcel) {
+      // TODO: perhaps skip search if not in the parcel zoom?
       // find parcel
-      searchParcel(e.lngLat, (parcel: ParcelInterface) => {
+      searchParcel(e.lngLat, selectedProperty.id, (parcel: ParcelInterface) => {
         if (parcel) {
-          // toggle selection
-          let _feature_id = { source: 'sanbi', sourceLayer: parcel.layer, id: parcel.id }
-          let _selected = _mapObj.getFeatureState(_feature_id)
-          if (_selected) {
-            _selected = _selected['parcel-selected']
-          }
-          _mapObj.setFeatureState(
-            _feature_id,
-            { 'parcel-selected': !_selected }
-          );
           dispatch(toggleParcelSelectedState(parcel))
         }
       })
-    } else if (selectionMode === MapSelectionMode.Property) {
+    } else if (selectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
+      // TODO: perhaps skip search if not in the properties zoom?
       // find parcel
       searchProperty(e.lngLat, (property: PropertyInterface) => {
         if (property) {
@@ -129,14 +148,70 @@ export default function Map() {
         }
       })
     }
-  }, [contextLayers, selectionMode])
+  }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
   useEffect(() => {
     map.current.on('click', mapOnClick)
     return () => {
       map.current.off('click', mapOnClick)
     }
-  }, [contextLayers, selectionMode])
+  }, [contextLayers, selectionMode, uploadMode, selectedProperty])
+
+  // render selected+unselected parcel
+  useEffect(() => {
+    let _mapObj: maplibregl.Map = map.current
+    let _has_removed = false
+    for (let i = 0; i < selectedParcels.length; ++i) {
+      let parcel = selectedParcels[i]
+      let _feature_id = { source: 'sanbi', sourceLayer: parcel.layer, id: parcel.id }
+      let _selected = parcel.isRemoved ? false : true
+      _mapObj.setFeatureState(
+        _feature_id,
+        { 'parcel-selected': _selected }
+      )
+      if (parcel.isRemoved) {
+        _has_removed = true
+      }
+    }
+    if (_has_removed) {
+      dispatch(selectedParcelsOnRenderFinished())
+    }
+  }, [selectedParcels])
+
+  useEffect(() => {
+    if (mapEvents.length === 0) return
+    let _mapObj: maplibregl.Map = map.current
+    for (let i=0; i < mapEvents.length; ++i) {
+      let _event = mapEvents[i]
+      if (_event.name === 'REFRESH_PROPERTIES_LAYER') {
+        // add query param t to properties layer to refresh it
+        let _properties_source = _mapObj.getSource('properties') as any;
+        let _url = _properties_source['tiles'][0]
+        _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}`)
+        // Set the tile url to a cache-busting url (to circumvent browser caching behaviour):
+        _properties_source.tiles = [ _url ]
+
+        // Remove the tiles for a particular source
+        _mapObj.style.sourceCaches['properties'].clearTiles()
+
+        // Load the new tiles for the current viewport (map.transform -> viewport)
+        _mapObj.style.sourceCaches['properties'].update(_mapObj.transform)
+
+        // Force a repaint, so that the map will be repainted without you having to touch the map
+        _mapObj.triggerRepaint()
+      } else if (_event.name === 'PROPERTY_SELECTED') {
+        // parse bbox from payload
+        if (_event.payload && _event.payload.length === 4) {
+          let _bbox = _event.payload.map(Number)
+          _mapObj.fitBounds([[_bbox[0], _bbox[1]], [_bbox[2], _bbox[3]]], {
+              padding: 100,
+              maxZoom: 16
+          })
+        }
+      }
+    }
+    dispatch(onMapEventProcessed([...mapEvents]))
+  }, [mapEvents])
 
   return (
       <div className="map-wrap">
