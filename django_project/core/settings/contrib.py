@@ -67,7 +67,36 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_FORMS = {
     'signup': 'swaps.forms.CustomSignupForm',
+    'login': 'swaps.forms.CustomLoginForm'
 }
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 AUTH_WITH_EMAIL_ONLY = True
+
+# Password validator
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 12,
+        },
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+    {
+        "NAME": "swaps.password_validation.NumberValidator",
+    },
+    {
+        "NAME": "swaps.password_validation.UppercaseValidator",
+    },
+    {
+        "NAME": "swaps.password_validation.SymbolValidator",
+    },
+]

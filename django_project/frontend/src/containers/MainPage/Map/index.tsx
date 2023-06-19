@@ -1,121 +1,58 @@
-import React, { useRef, useEffect, useState } from 'react';
-import ReactDOM from "react-dom/client";
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { IControl } from 'maplibre-gl';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { setMapReady } from '../../../reducers/MapStatus';
-import ContextLayerInterface from '../../../models/ContextLayer';
+import { 
+  setMapReady,
+  toggleParcelSelectedState,
+  setSelectedProperty,
+  resetSelectedProperty,
+  selectedParcelsOnRenderFinished,
+  onMapEventProcessed
+} from '../../../reducers/MapState';
+import ParcelInterface from '../../../models/Parcel';
+import { MapSelectionMode } from "../../../models/Map";
+import { UploadMode } from "../../../models/Upload";
 import './index.scss';
+import CustomNavControl from './NavControl';
+import {
+  checkLayerVisibility,
+  renderHighlightParcelLayers,
+  removeHighlightParcelLayers,
+  findParcelLayer,
+  searchParcel,
+  searchProperty,
+  getSelectParcelLayerNames
+} from './MapUtility';
+import PropertyInterface from '../../../models/Property';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
+const MAP_SOURCES = ['sanbi', 'properties']
 
-class CustomNavControl extends maplibregl.NavigationControl {
-
-  _print: HTMLButtonElement;
-  _printIcon: HTMLElement;
-  _baseMapSelect: HTMLButtonElement;
-  _baseMapSelectIcon: HTMLElement;
-
-  constructor(options?: maplibregl.NavigationOptions) {
-    // note: this can work for es6 target in tsconfig.json
-    super(options);
-
-    // add print icon
-    this._print = this._createButton('maplibregl-ctrl-print', (e) => {
-      // not implemented yet
-    });
-    this._printIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._print);
-    this._printIcon.setAttribute('aria-hidden', 'true');
-
-    
-    // add change base map icon
-    this._baseMapSelect = this._createButton('maplibregl-ctrl-base-map-select', (e) => {
-      // not implemented yet
-    });
-    this._baseMapSelectIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._baseMapSelect);
-    this._baseMapSelectIcon.setAttribute('aria-hidden', 'true');
-  }
-
-  onAdd(map: maplibregl.Map) {
-    const _container = super.onAdd(map)
-    this._print.title = 'Print'
-    this._print.ariaLabel = 'Print'
-
-    this._baseMapSelect.title = 'Change Base Map'
-    this._baseMapSelect.ariaLabel = 'Change Base Map'
-    return _container
-  }
-
-  _create_element<K extends keyof HTMLElementTagNameMap>(tagName: K, className?: string, container?: HTMLElement): HTMLElementTagNameMap[K] {
-    const el = window.document.createElement(tagName);
-    if (className !== undefined) el.className = className;
-    if (container) container.appendChild(el);
-    return el;
-  }
-
-}
-
-function LegendPlaceholder(props: any) {
-  return (
-    <div className='legend-placeholder'>
-      <div className='legend-header'>
-        LEGEND
-      </div>
-      <div className='legend-item'>
-        Properties
-      </div>
-      <div className='legend-item'>
-        Rivers
-      </div>
-      <div className='legend-item'>
-        Roads
-      </div>
-      <div className='legend-item'>
-        Places
-      </div>
-    </div>
-  )
-}
-
-class LegendControl<IControl> {
-  _map: maplibregl.Map;
-  _container: HTMLElement;
-
-  constructor() {
-
-  }
-
-  onAdd(map: maplibregl.Map){
-    this._map = map;
-    this._container = document.createElement('div');
-    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group mapboxgl-ctrl mapboxgl-ctrl-group';
-    const divRoot = ReactDOM.createRoot(this._container)
-    divRoot.render(<LegendPlaceholder />);
-    return this._container;
-  }
-
-  onRemove() {
-      this._container.parentNode.removeChild(this._container)
-      this._map = undefined
-  }
-
-}
-
-const checkLayerVisibility = (source_layer: string, contextLayers: ContextLayerInterface[]): boolean => {
-  const contextLayer = contextLayers.find(element => element.layer_names && element.layer_names.includes(source_layer))
-  if (contextLayer) {
-    return contextLayer.isSelected
-  }  
-  return true
-}
+const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
 
 export default function Map() {
   const dispatch = useAppDispatch()
   const contextLayers = useAppSelector((state: RootState) => state.layerFilter.contextLayers)
-  const isMapReady = useAppSelector((state: RootState) => state.mapStatus.isMapReady)
+  const isMapReady = useAppSelector((state: RootState) => state.mapState.isMapReady)
+  const selectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
+  const selectedParcels = useAppSelector((state: RootState) => state.mapState.selectedParcels)
+  const selectedProperty = useAppSelector((state: RootState) => state.mapState.selectedProperty)
+  const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
+  const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const legendRef = useRef(null);
+
+  const onMapMouseEnter = () => {
+    if (!map.current) return;    
+    // Change the cursor style as a UI indicator.
+    map.current.getCanvas().style.cursor = 'pointer';
+  }
+
+  const onMapMouseLeave = () => {
+    if (!map.current) return;
+    map.current.getCanvas().style.cursor = '';
+  }
 
   useEffect(() => {
     if (!isMapReady) return;
@@ -125,11 +62,43 @@ export default function Map() {
     const _layers = _mapObj.getStyle().layers
     for (let i=0; i < _layers.length; ++i) {
       let _layer:any = _layers[i]
-      if (!('source' in _layer) || !('source-layer' in _layer) || _layer['source'] !== 'sanbi') continue
+      // skip any layer that is not from sanbi and property sources
+      if (!('source' in _layer) || !('source-layer' in _layer) || !MAP_SOURCES.includes(_layer['source'])) continue
+      // skip if current selection mode is parcel selection and highlighted layer for selecting parcel
+      if (selectionMode === MapSelectionMode.Parcel && _layer['id'].includes('-select-parcel')) continue
       const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
     }
+
+    let _parcelLayer = findParcelLayer(contextLayers)
+    let _selectParcelLayers = getSelectParcelLayerNames(_parcelLayer.layer_names)
+    for (let i=0; i < _selectParcelLayers.length; ++i) {
+      _mapObj.on('mouseenter', _selectParcelLayers[i], onMapMouseEnter)
+      _mapObj.on('mouseleave', _selectParcelLayers[i], onMapMouseLeave)
+    }
+    return () => {
+      for (let i=0; i < _selectParcelLayers.length; ++i) {
+        _mapObj.off('mouseenter', _selectParcelLayers[i], onMapMouseEnter)
+        _mapObj.off('mouseleave', _selectParcelLayers[i], onMapMouseLeave)
+      }
+    }
   }, [contextLayers, isMapReady])
+
+  /* Called when selectionMode is changed */
+  useEffect(() => {
+    if (!isMapReady) return;
+    if (contextLayers.length === 0) return;
+    if (!map.current) return;
+    
+    let _mapObj: maplibregl.Map = map.current
+    let _parcelLayer = findParcelLayer(contextLayers)
+    if (typeof _parcelLayer === 'undefined') return;
+    if (selectionMode === MapSelectionMode.Parcel) {
+      renderHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
+    } else {
+      removeHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
+    }
+  }, [selectionMode])
 
   useEffect(() => {
       if (map.current) return; //stops map from intializing more than once
@@ -139,13 +108,110 @@ export default function Map() {
         minZoom: 5
       })
       map.current.addControl(new CustomNavControl({
-        showCompass: true,
+        showCompass: false,
         showZoom: true
       }), 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
+
+        map.current.on('mouseenter', 'properties', onMapMouseEnter)
+        map.current.on('mouseleave', 'properties', onMapMouseLeave)
       })
-  });
+      return () => {
+        map.current.off('mouseenter', ['properties'], onMapMouseEnter)
+        map.current.off('mouseleave', 'properties', onMapMouseLeave)
+      }
+  }, []);
+
+  /* Callback when map is on click. */
+  const mapOnClick = useCallback((e: any) => {
+    if (contextLayers.length === 0) return;
+    if (selectionMode === MapSelectionMode.None) return;
+    let _parcelLayer = findParcelLayer(contextLayers)
+    if (typeof _parcelLayer === 'undefined') return;
+    if (selectionMode === MapSelectionMode.Parcel) {
+      // TODO: perhaps skip search if not in the parcel zoom?
+      // find parcel
+      searchParcel(e.lngLat, selectedProperty.id, (parcel: ParcelInterface) => {
+        if (parcel) {
+          dispatch(toggleParcelSelectedState(parcel))
+        }
+      })
+    } else if (selectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
+      // TODO: perhaps skip search if not in the properties zoom?
+      // find parcel
+      searchProperty(e.lngLat, (property: PropertyInterface) => {
+        if (property) {
+          dispatch(setSelectedProperty(property))
+        } else {
+          dispatch(resetSelectedProperty())
+        }
+      })
+    }
+  }, [contextLayers, selectionMode, uploadMode, selectedProperty])
+
+  useEffect(() => {
+    map.current.on('click', mapOnClick)
+    return () => {
+      map.current.off('click', mapOnClick)
+    }
+  }, [contextLayers, selectionMode, uploadMode, selectedProperty])
+
+  // render selected+unselected parcel
+  useEffect(() => {
+    let _mapObj: maplibregl.Map = map.current
+    let _has_removed = false
+    for (let i = 0; i < selectedParcels.length; ++i) {
+      let parcel = selectedParcels[i]
+      let _feature_id = { source: 'sanbi', sourceLayer: parcel.layer, id: parcel.id }
+      let _selected = parcel.isRemoved ? false : true
+      _mapObj.setFeatureState(
+        _feature_id,
+        { 'parcel-selected': _selected }
+      )
+      if (parcel.isRemoved) {
+        _has_removed = true
+      }
+    }
+    if (_has_removed) {
+      dispatch(selectedParcelsOnRenderFinished())
+    }
+  }, [selectedParcels])
+
+  useEffect(() => {
+    if (mapEvents.length === 0) return
+    let _mapObj: maplibregl.Map = map.current
+    for (let i=0; i < mapEvents.length; ++i) {
+      let _event = mapEvents[i]
+      if (_event.name === 'REFRESH_PROPERTIES_LAYER') {
+        // add query param t to properties layer to refresh it
+        let _properties_source = _mapObj.getSource('properties') as any;
+        let _url = _properties_source['tiles'][0]
+        _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}`)
+        // Set the tile url to a cache-busting url (to circumvent browser caching behaviour):
+        _properties_source.tiles = [ _url ]
+
+        // Remove the tiles for a particular source
+        _mapObj.style.sourceCaches['properties'].clearTiles()
+
+        // Load the new tiles for the current viewport (map.transform -> viewport)
+        _mapObj.style.sourceCaches['properties'].update(_mapObj.transform)
+
+        // Force a repaint, so that the map will be repainted without you having to touch the map
+        _mapObj.triggerRepaint()
+      } else if (_event.name === 'PROPERTY_SELECTED') {
+        // parse bbox from payload
+        if (_event.payload && _event.payload.length === 4) {
+          let _bbox = _event.payload.map(Number)
+          _mapObj.fitBounds([[_bbox[0], _bbox[1]], [_bbox[2], _bbox[3]]], {
+              padding: 100,
+              maxZoom: 16
+          })
+        }
+      }
+    }
+    dispatch(onMapEventProcessed([...mapEvents]))
+  }, [mapEvents])
 
   return (
       <div className="map-wrap">

@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('frontend.urls')),
     path('admin/', admin.site.urls),
     path('', include('notification.urls')),
+    path('', include('stakeholder.urls')),
     path('', include('swaps.urls')),
 ]
 

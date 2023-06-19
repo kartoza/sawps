@@ -1,0 +1,248 @@
+import React, {useEffect, useState} from 'react';
+import axios from "axios";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import PropertyInterface, { PropertyValidation, PropertyTypeInterface, ProvinceInterface } from '../../../models/Property';
+import { OrganisationInterface } from '../../../models/Stakeholder';
+import './index.scss';
+
+interface PropertyInfoInterface {
+    property: PropertyInterface,
+    enableForm: boolean,
+    onUpdated?: (data: PropertyInterface, validation: PropertyValidation) => void,
+    validationError?: PropertyValidation
+}
+
+const PROPERTY_METADATA_URL = '/api/property/metadata/list/'
+
+
+/**
+ * Display property information table with input
+ * @param props PropertyInfoInterface
+ * @returns 
+ */
+export default function PropertyInfo(props: PropertyInfoInterface) {
+    const [loading, setLoading] = useState(false)
+    const [propertyTypeList, setPropertyTypeList] = useState<PropertyTypeInterface[]>([])
+    const [provinceList, setProvinceList] = useState<ProvinceInterface[]>([])
+    const [organisationList, setOrganisationList] = useState<OrganisationInterface[]>([])
+
+    const fetchMetadataList = () => {
+        setLoading(true)
+        axios.get(PROPERTY_METADATA_URL).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setPropertyTypeList(response.data['types'])
+                setProvinceList(response.data['provinces'])
+                setOrganisationList(response.data['organisations'])
+                let _initial_data:any = {}
+                if (response.data['organisations'].length === 1) {
+                    _initial_data['organisation'] = response.data['organisations'][0]['name']
+                    _initial_data['organisation_id'] = response.data['organisations'][0]['id']
+                }
+                if (response.data['user_name']) {
+                    _initial_data['owner'] = response.data['user_name']
+                }
+                if (response.data['user_email']) {
+                    _initial_data['owner_email'] = response.data['user_email']
+                }
+                if (_initial_data && props.onUpdated) {
+                    props.onUpdated({ ...props.property, ..._initial_data }, {})
+                }
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
+    useEffect(() => {
+        fetchMetadataList()
+    }, [])
+
+    return (
+        <TableContainer component={Paper}>
+            <Table className='PropertyInfoTable' aria-label="property info table" size='small'>
+                <colgroup>
+                    <col width="50%" />
+                    <col width="50%" />
+                </colgroup>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Property Information</TableCell>
+                        <TableCell>Input</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    <TableRow key='property_name'>
+                        <TableCell component="th" scope="row">
+                            Property Name
+                        </TableCell>
+                        <TableCell>
+                            <TextField
+                                error={props.validationError?.name}
+                                disabled={loading || !props.enableForm}
+                                id="input_propertyname"
+                                hiddenLabel={true}
+                                type={"text"}
+                                onChange={val => {
+                                    if (props.onUpdated) {
+                                        props.onUpdated({ ...props.property, name: val.target.value }, {name:false})
+                                    }
+                                }}
+                                value={props.property.name}
+                                sx={{ width: '100%' }}
+                            />
+                        </TableCell>
+                    </TableRow>
+                    <TableRow key='owner_name'>
+                        <TableCell component="th" scope="row">
+                            Owner Name
+                        </TableCell>
+                        <TableCell>
+                            <TextField
+                                disabled={true}
+                                id="input_ownername"
+                                hiddenLabel={true}
+                                type={"text"}
+                                value={props.property.owner}
+                                sx={{ width: '100%' }}
+                            />
+                        </TableCell>
+                    </TableRow>
+                    <TableRow key='owner_email'>
+                        <TableCell component="th" scope="row">
+                            Owner Email
+                        </TableCell>
+                        <TableCell>
+                            <TextField
+                                error={props.validationError?.email}
+                                disabled={true}
+                                id="input_owneremail"
+                                hiddenLabel={true}
+                                type={"text"}
+                                onChange={val => {
+                                    if (props.onUpdated) {
+                                        props.onUpdated({ ...props.property, owner_email: val.target.value }, {email:false})
+                                    }
+                                }}
+                                value={props.property.owner_email}
+                                sx={{ width: '100%' }}
+                            />
+                        </TableCell>
+                    </TableRow>
+                    <TableRow key='property_type'>
+                        <TableCell component="th" scope="row">
+                            Property Type
+                        </TableCell>
+                        <TableCell>
+                            <FormControl fullWidth size="small">
+                                <Select
+                                    id="property-type-select"
+                                    error={props.validationError?.property_type}
+                                    value={ props.property.property_type_id ? props.property.property_type_id.toString() : ''}
+                                    displayEmpty
+                                    disabled={loading || !props.enableForm}
+                                    onChange={(event: SelectChangeEvent) => {
+                                        if (props.onUpdated) {
+                                            let _selected = propertyTypeList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, property_type_id: _selected.id,  property_type: _selected.name }, {property_type:false})
+                                        }
+                                    }}
+                                >
+                                    { propertyTypeList.map((property_type: PropertyTypeInterface) => {
+                                        return (
+                                            <MenuItem key={property_type.id} value={property_type.id}>{property_type.name}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow key='province'>
+                        <TableCell component="th" scope="row">
+                            Province
+                        </TableCell>
+                        <TableCell>
+                            <FormControl fullWidth size="small">
+                                <Select
+                                    id="province-select"
+                                    error={props.validationError?.province}
+                                    value={props.property.province_id ? props.property.province_id.toString() : ''}
+                                    displayEmpty
+                                    disabled={loading || !props.enableForm}
+                                    onChange={(event: SelectChangeEvent) => {
+                                        if (props.onUpdated) {
+                                            let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})
+                                        }
+                                    }}
+                                >
+                                    { provinceList.map((province: ProvinceInterface) => {
+                                        return (
+                                            <MenuItem key={province.id} value={province.id}>{province.name}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </TableCell>
+                    </TableRow>
+                    { props.property.id !== 0 &&
+                        <TableRow key='size'>
+                            <TableCell component="th" scope="row">
+                                Property Size (in ha)
+                            </TableCell>
+                            <TableCell>
+                                <TextField
+                                    disabled={true}
+                                    id="input_size"
+                                    hiddenLabel={true}
+                                    type={"text"}
+                                    value={props.property.size}
+                                    sx={{ width: '100%' }}
+                                />                            
+                            </TableCell>
+                        </TableRow>
+                    }
+                    <TableRow key='organisation'>
+                        <TableCell component="th" scope="row">
+                            Organisation
+                        </TableCell>
+                        <TableCell>
+                            <FormControl fullWidth size="small">
+                                <Select
+                                    id="organisation-select"
+                                    error={props.validationError?.organisation}
+                                    value={props.property.organisation_id ? props.property.organisation_id.toString() : ''}
+                                    displayEmpty
+                                    disabled={loading || !props.enableForm}
+                                    onChange={(event: SelectChangeEvent) => {
+                                        if (props.onUpdated) {
+                                            let _selected = organisationList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, organisation: _selected.name, organisation_id: _selected.id }, {organisation:false})
+                                        }
+                                    }}
+                                >
+                                    { organisationList.map((organisation: OrganisationInterface) => {
+                                        return (
+                                            <MenuItem key={organisation.id} value={organisation.id}>{organisation.name}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
+    )
+}

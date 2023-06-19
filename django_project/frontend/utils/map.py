@@ -1,25 +1,32 @@
 """Helper function for map."""
 import os
 import json
+import time
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.urls import reverse
 from core.settings.utils import absolute_path
+from frontend.models.parcels import (
+    Erf,
+    Holding,
+    FarmPortion,
+    ParentFarm
+)
 
 
 def get_map_template_style(request, theme_choice: int = 0):
     """
     Fetch map template style from file.
-    
+
     :param theme_choice: 0 light, 1 dark
     :return: json map style
     """
     style_file_path = absolute_path(
-        'frontend', 'utils', 'sanbi_styling_v7_light.json'
+        'frontend', 'utils', 'sanbi_styling_light.json'
     )
     if theme_choice == 1:
         style_file_path = absolute_path(
-            'frontend', 'utils', 'sanbi_styling_v7_dark.json'
+            'frontend', 'utils', 'sanbi_styling_dark.json'
         )
     styles = {}
     with open(style_file_path) as config_file:
@@ -39,7 +46,7 @@ def get_map_template_style(request, theme_choice: int = 0):
         ]
     if 'sources' in styles and 'NGI Aerial Imagery' in styles['sources']:
         url = (
-            reverse('aerial-map-tile', kwargs={
+            reverse('aerial-map-layer', kwargs={
                 'z': 0,
                 'x': 0,
                 'y': 0
@@ -51,6 +58,42 @@ def get_map_template_style(request, theme_choice: int = 0):
             # if not dev env, then replace with https
             url = url.replace('http://', 'https://')
         styles['sources']['NGI Aerial Imagery']['tiles'] = [url]
+    # add properties layer
+    if 'sources' in styles:
+        url = (
+            reverse('properties-map-layer', kwargs={
+                'z': 0,
+                'x': 0,
+                'y': 0
+            })
+        )
+        url = request.build_absolute_uri(url)
+        url = url.replace('/0/0/0', '/{z}/{x}/{y}')
+        if not settings.DEBUG:
+            # if not dev env, then replace with https
+            url = url.replace('http://', 'https://')
+        # add epoch datetime
+        url = url + f'?t={int(time.time())}'
+        styles['sources']['properties'] = {
+            "type": "vector",
+            "tiles": [url],
+            "minzoom": 12,
+            "maxzoom": 24
+        }
+        # FF5252
+        styles['layers'].append({
+            "id": "properties",
+            "type": "fill",
+            "source": "properties",
+            "source-layer": "properties",
+            "minzoom": 12,
+            "maxzoom": 24,
+            "layout": {"visibility": "visible"},
+            "paint": {
+                "fill-color": "rgba(255, 82, 82, 1)",
+                "fill-opacity": 0.8
+            }
+        })
     # update maptiler api key
     styles = replace_maptiler_api_key(styles)
     return styles
@@ -65,3 +108,20 @@ def replace_maptiler_api_key(styles):
             map_tiler_key
         )
     return styles
+
+
+def find_layer_by_cname(cname: str):
+    """Find layer name+id by cname."""
+    obj = Erf.objects.filter(cname=cname).first()
+    if obj:
+        return 'erf', obj.id
+    obj = Holding.objects.filter(cname=cname).first()
+    if obj:
+        return 'holding', obj.id
+    obj = FarmPortion.objects.filter(cname=cname).first()
+    if obj:
+        return 'farm_portion', obj.id
+    obj = ParentFarm.objects.filter(cname=cname).first()
+    if obj:
+        return 'parent_farm', obj.id
+    return None, None

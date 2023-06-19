@@ -16,7 +16,7 @@ class userRoleTypeFactory(factory.django.DjangoModelFactory):
     )
     description = factory.Faker('text', max_nb_chars=200)
 
-    
+
 class loginStatusFactory(factory.django.DjangoModelFactory):
     """Factory class for login status models."""
 
@@ -27,7 +27,7 @@ class loginStatusFactory(factory.django.DjangoModelFactory):
         'random_element', elements=('logged in', 'logged out')
     )
 
-      
+
 class userTitleFactory(factory.django.DjangoModelFactory):
     """Factory class for user title models."""
 

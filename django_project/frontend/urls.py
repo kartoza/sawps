@@ -19,23 +19,83 @@ from .views.map import MapView
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
-    AerialTile
+    AerialTile,
+    PropertiesLayerMVTTiles,
+    FindParcelByCoord,
+    FindPropertyByCoord
+)
+from frontend.api_views.property import (
+    CreateNewProperty,
+    PropertyMetadataList,
+    PropertyList,
+    UpdatePropertyInformation,
+    UpdatePropertyBoundaries,
+    PropertyDetail
 )
 
 urlpatterns = [
     re_path(
-         r'^api/map/context_layer/list/?$',
+        r'^api/map/search/parcel/?$',
+        FindParcelByCoord.as_view(),
+        name='find-parcel'
+    ),
+    re_path(
+        r'^api/map/search/property/?$',
+        FindPropertyByCoord.as_view(),
+        name='find-property'
+    ),
+    re_path(
+        r'^api/map/search/context_layer/list/?$',
         ContextLayerList.as_view(),
-        name='context-layer-list'),
+        name='context-layer-list'
+    ),
     re_path(
-         r'^api/map/styles/?$',
+        r'^api/map/styles/?$',
         MapStyles.as_view(),
-        name='map-style'),
+        name='map-style'
+    ),
     re_path(
-         r'^api/map/aerial/'
-         r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
+        r'^api/map/layer/aerial/'
+        r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
         AerialTile.as_view(),
-        name='aerial-map-tile'),
+        name='aerial-map-layer'
+    ),
+    re_path(
+        r'^api/map/layer/properties/'
+        r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
+        PropertiesLayerMVTTiles.as_view(),
+        name='properties-map-layer'
+    ),
+    re_path(
+        r'^api/property/create/?$',
+        CreateNewProperty.as_view(),
+        name='property-create'
+    ),
+    re_path(
+        r'^api/property/list/?$',
+        PropertyList.as_view(),
+        name='property-list'
+    ),
+    re_path(
+        r'^api/property/detail/(?P<id>\d+)/?$',
+        PropertyDetail.as_view(),
+        name='property-detail'
+    ),
+    re_path(
+        r'^api/property/detail/update/?$',
+        UpdatePropertyInformation.as_view(),
+        name='property-update-detail'
+    ),
+    re_path(
+        r'^api/property/boundaries/update/?$',
+        UpdatePropertyBoundaries.as_view(),
+        name='property-update-boundaries'
+    ),
+    re_path(
+        r'^api/property/metadata/list/?$',
+        PropertyMetadataList.as_view(),
+        name='property-metadata'
+    ),
     path('map/', MapView.as_view(), name='map'),
     path('', HomeView.as_view(), name='home'),
 ]

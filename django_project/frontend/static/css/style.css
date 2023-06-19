@@ -1,3 +1,52 @@
+<<<<<<< HEAD
+=======
+html, body {
+  height: 100%;
+}
+
+.fs-background {
+  height: calc(100% - 98px); 
+}
+
+.full-height {
+  height: 100%
+}
+
+.half-height {
+  height: 100%
+}
+
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --white: #fff;
+  --black: #000;
+  --primary-color: #70B276;
+  --secondary-color: #FAA755;
+  --green: #70B276;
+  --orange: #FAA755;
+  --purple: #9D85BE;
+  --space-unit: 1em;
+  --space-xxs: calc(0.25 * var(--space-unit));
+  --space-xs: calc(0.5 * var(--space-unit));
+  --space-sm: calc(0.75 * var(--space-unit));
+  --space-md: calc(1.25 * var(--space-unit));
+  --space-lg: calc(2 * var(--space-unit));
+  --space-xl: calc(3.25 * var(--space-unit));
+  --space-xxl: calc(5.25 * var(--space-unit));
+  --green-darken-1: #43A047;
+  --black-gray: rgba(0, 0, 0, 0.6);
+  --black-darker: rgba(0, 0, 0, 0.87);
+  --black-transparent: rgba(0, 0, 0, 0.12);
+  --black-custom-primary: #282829;
+}
+>>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 
 .btn-primary {
     --bs-btn-color: #fff;
@@ -23,7 +72,7 @@
     text-transform: uppercase;
   }
 
-  .btn-primary:hover {
+  .btn-primary:hover, .btn-primary:focus, .btn-primary:visited, .btn-primary:active {
     color: #000000;
     background-color: #FAA755;
     border-color: #FAA755;
@@ -33,6 +82,7 @@
   position: relative;
   background: url("/static/images/lion.png") no-repeat;
   background-size: contain;
+<<<<<<< HEAD
   padding-top: 7rem;
   padding-bottom: 7rem;
 
@@ -55,7 +105,26 @@
   padding-top: 3px;
   padding-bottom: 3px;
   border: 2px solid #FAA755;
+=======
+
+}
+
+.login-page{
+  position: relative;
+  background: url("/static/images/leopard.jpg") no-repeat;
+  background-size: contain;
+
+}
+
+
+.account-button{
+  color: #000000 !important;
+  background-color: var(--orange);
+  border: 2px solid var(--orange);
+>>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
   text-transform: uppercase;
+  padding: 3px 20px !important;
+  border-radius: 5px;
 }
 
 .account-action:before {
@@ -72,9 +141,16 @@
 .account-form{
   background: #282829;
   border-radius: 4px;
+<<<<<<< HEAD
   float: right;
   margin-left: auto;
   margin-top: -35px;
+=======
+  color: var(--white);
+  width: max-content;
+  padding: 20px;
+  margin-top: 10vh;
+>>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 }
 
 .custom-form-container{
@@ -82,18 +158,26 @@
 }
 
 .account-form-title{
-  color: #70B276;
+  color: var(--white);
   size:34px;
   text-align: center;
 }
 
 .login-help{
+<<<<<<< HEAD
   color: #9D85BE;
+=======
+  color: var(--white);
+>>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
   font-size: 12px;
   line-height: 24px;
 }
 .login-help > a{
+<<<<<<< HEAD
   color: #9D85BE;
+=======
+  color: var(--white);
+>>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
   text-decoration: none;
 }
 
@@ -105,11 +189,21 @@
 
 
 .swaps-text-primary{
+<<<<<<< HEAD
+=======
+  display: flex;
+  justify-content: center;
+  height: max-content;
+>>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
   color: #70B276;
 }
 
 hr.separator{
+<<<<<<< HEAD
   border-top: 1px solid #70B276;
+=======
+  border-top: 1px solid var(--white);
+>>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 }
 
 .swaps-text-primary, a {
@@ -122,4 +216,68 @@ a:hover{
 
 .upload-picture{
   cursor: pointer;
+<<<<<<< HEAD
+=======
+}
+
+.swaps-text-primary, a {
+  color: #86BC8B;
+}
+
+a:hover{
+  color: #70B276;
+}
+
+.upload-picture{
+  cursor: pointer;
+}
+
+
+.navbar {
+  background-color: #282829;
+  color: var(--black);
+}
+
+.custom-form-container p{
+  display: flex;
+  flex-direction: column;
+}
+
+ .custom-form-container p label {
+   text-align: center;
+   color: var(--white);
+ }
+
+.custom-form-container p input[type="text"],
+.custom-form-container p input[type="email"],
+.custom-form-container p input[type="password"] {
+   width: 100%;
+   box-sizing: border-box;
+   background-color: var(--white);
+   border-radius: 4px;
+   border: 0;
+   height: 40px;
+   padding-left: 10px;
+ }
+
+.error-list, .errorlist {
+  list-style-type: none;
+  padding: 0;
+  color: var(--orange);
+}
+
+.navbar-nav.ml-auto {
+  display: flex;
+  align-items: center;
+}
+
+.password-help-text{
+  margin-top: -5px !important;
+  font-size: small;
+}
+
+.form-group label{
+  justify-content: center;
+  display: flex;
+>>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
 }

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %}Your Profile{% endblock %}
+
+{% block content %}
+<section>
+  <div class="container py-5">
+  <div class="row">
+    {% include "profile_config_base.html" %}
+
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+              <form method="post" action="{% url 'profile' object.username %}">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="first-name">First name</label>
+                <input type="text" class="form-control" id="first-name" name="first-name" aria-describedby="firstNameHelp" value={{object.first_name}}>
+              </div>
+              <div class="form-group">
+                <label for="last-nameame">Name</label>
+                <input type="text" class="form-control" name="last-name" aria-describedby="nameHelp" value={{object.last_name}}>
+              </div>
+              <div class="form-group">
+                <label for="title">Title</label>
+                <select class="form-control" name="title" id="title">
+                  {% for title in titles %}
+                    <option value="{{ title.id }}"> {{ title.name }} </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="organization">Organisation</label>
+                <input type="text" class="form-control" name="organization" placeholder="Organisation">
+              </div>
+              <div class="form-group">
+                <label for="role">Role</label>
+                <select class="form-control" name="role"id="role">
+                  {% for role in roles %}
+                    <option value="{{ role.id }}"> {{ role.name }} </option>
+                  {% endfor %}
+                </select>
+              </div>
+               <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" class="form-control" name="email" aria-describedby="emailHelp" value={{object.email}}>
+              </div>
+              <button type="submit" class="account-button">Update</button>
+            </form>
+          </div>
+        </div>
+      </div>
+  </div>
+</section>
+
+{% endblock %}

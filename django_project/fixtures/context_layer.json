@@ -74,7 +74,10 @@
                 "erf",
                 "farm_portion",
                 "holding",
-                "parent_farm"
+                "parent_farm",
+                "farm_portion_labels",
+                "holding_labels",
+                "erf_labels"
             ]
         }
     },
@@ -91,6 +94,16 @@
                 "place_name_smallest_scale"
             ]
         }
+    },
+    {
+        "model": "frontend.contextlayer",
+        "pk": 9,
+        "fields": {
+            "name": "Properties",
+            "is_static": false,
+            "layer_names": [
+                "properties"
+            ]
+        }
     }
 ]
-    

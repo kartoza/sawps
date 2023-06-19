@@ -18,7 +18,10 @@ code {
   --white: #fff;
   --black: #000;
   --primary-color: #70B276;
-  --secondary-color: #db901f;
+  --secondary-color: #FAA755;
+  --green: #70B276;
+  --orange: #FAA755;
+  --purple: #9D85BE;
   --space-unit: 1em;
   --space-xxs:  calc(0.25 * var(--space-unit));
   --space-xs:   calc(0.5 * var(--space-unit));
@@ -35,4 +38,23 @@ code {
   --black-gray: rgba(0, 0, 0, 0.6);
   --black-darker: rgba(0, 0, 0, 0.87);
   --black-transparent: rgba(0, 0, 0, 0.12); // for highlighting
+  --black-custom-primary: #282829;
+}
+
+// utility/helper classes
+// class to make grid item grow fill the space
+.FlexContainerFill {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 100%;
+  flex: 1;
+}
+
+// class to make grid item grow using height 100
+.FlexContainerFillHeight {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 100%;
 }

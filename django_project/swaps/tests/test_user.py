@@ -1,7 +1,10 @@
 from django.test import TestCase
-from swaps.tests.models.account_factory import UserF, GroupF
+from swaps.tests.models.account_factory import (
+    UserF,
+    GroupF,
+)
 
-from swaps.forms.sign_up import CustomSignupForm
+from swaps.forms.account_forms import CustomSignupForm
 
 import logging
 
@@ -25,9 +28,7 @@ class TestCustomSignupForm(TestCase):
         request = {
             'first_name': 'Fan',
             'last_name': 'Andria',
-            'organisation': 'Kartoza',
             'email': 'faneva@kartoza.com',
-            'groups': '1',
             'password1': 'Test02',
             'password2': 'Test02',
         }
@@ -39,5 +40,4 @@ class TestCustomSignupForm(TestCase):
 
         user = form.custom_signup(request, user)
         self.assertEqual(user.first_name, request['first_name'])
-        self.assertEqual(user.organisation, request['organisation'])
-        self.assertIsNotNone(user.groups)
+        self.assertFalse(user.is_active)

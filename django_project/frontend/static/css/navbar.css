@@ -64,6 +64,9 @@
     margin-bottom: 0;
     list-style: none;
   }
+  .navbar-dark .navbar-nav .nav-link {
+    color: var(--white);
+  }
   .navbar-nav .show > .nav-link,
   .navbar-nav .nav-link.active {
     color: var(--bs-navbar-active-color);
@@ -432,3 +435,13 @@
   .navbar-dark {
     color: rgba(255,255,255,.5);
   }
+
+.navbar-brand img {
+  border: 4px solid white;
+  border-radius: 2px;
+}
+
+.nav-item {
+  padding: 0 10px;
+  font-size: 16px;
+}
