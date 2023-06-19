@@ -10,8 +10,7 @@
     {% include "profile_config_base.html" %}
 
       <div class="col-lg-8">
-        <div class="card mb-4">
-          <div class="card-body">
+          <div class="profile-form">
               <form method="post" action="{% url 'profile' object.username %}">
               {% csrf_token %}
               <div class="form-group">
@@ -31,26 +30,45 @@
                 </select>
               </div>
               <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" class="form-control" name="email" aria-describedby="emailHelp" value={{object.email}}>
+              </div>
+              <div class="form-group">
+                <small id="organization" class="form-text text-muted">To prevent the misassignment of roles and organisations, 
+                  these must be requested from an admin who will verify that the user is assigned the correct role and is a member of the organisations requested. </small>
+              </div>
+              <div class="form-group">
                 <label for="organization">Organisation</label>
-                <input type="text" class="form-control" name="organization" placeholder="Organisation">
+                <button class="swaps-small-font-button green-button float-right">Request organisation and role</button> 
+                <input type="text" disabled class="form-control" name="organization" value="{{object.user_profile}}">
               </div>
               <div class="form-group">
                 <label for="role">Role</label>
-                <select class="form-control" name="role"id="role">
-                  {% for role in roles %}
-                    <option value="{{ role.id }}"> {{ role.name }} </option>
-                  {% endfor %}
-                </select>
+                  <input value="{{ role.id }}" disabled class="form-control" name="role" value="{{object.user_profile}}" >
               </div>
-               <div class="form-group">
-                <label for="email">Email address</label>
-                <input type="email" class="form-control" name="email" aria-describedby="emailHelp" value={{object.email}}>
+              <div class="form-group">
+                <small id="data-privacy" class="form-text text-muted">How would you like your data to be used see the SANBI data sharing agreement. 
+                  Switching the toggle will be taken as full agreement to the terms of the option chosen</small>
+              </div>
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="onlySANBI">
+                <label class="custom-control-label text-muted small" for="onlySANBI">Use of data by SANBI only</label>
+              </div>
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="hostingDataSANBI">
+                <label class="custom-control-label text-muted small" for="hostingDataSANBI">Hosting / serving the data through SANBI platforms and portals</label>
+              </div>
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther">
+                <label class="custom-control-label text-muted small" for="hostingDataSANBIOther">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the datas</label>
+              </div>
+              <div class="form-group">
+                <small id="data-privacy" class="form-text text-muted">Select user lists  you need to receive communications from</small>
               </div>
               <button type="submit" class="account-button">Update</button>
             </form>
           </div>
         </div>
-      </div>
   </div>
 </section>
 
