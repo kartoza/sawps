@@ -16,6 +16,11 @@ Including another URLconf
 from django.urls import path, re_path
 from .views.home import HomeView
 from .views.map import MapView
+from .views.help import HelpView
+from .views.about import AboutView
+from .views.contact import ContactView
+
+
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
@@ -97,5 +102,8 @@ urlpatterns = [
         name='property-metadata'
     ),
     path('map/', MapView.as_view(), name='map'),
+    path('help/', HelpView.as_view(), name='help'),
     path('', HomeView.as_view(), name='home'),
+    path('about/', AboutView.as_view(), name='about'),
+    path('contact/', ContactView.as_view(), name='contact'),
 ]

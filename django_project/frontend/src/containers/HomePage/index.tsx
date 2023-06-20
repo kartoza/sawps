@@ -3,6 +3,7 @@ import ResponsiveNavbar from '../../components/Navbar';
 import './index.scss';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import CustomButton from '../../components/Button';
+import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
 
 const isLoggedIn = (window as any).isLoggedIn;
 import LandingPagePopulationOverview from '../../../src/components/LandingPage/LandingPagePopulationOverview'
@@ -52,7 +53,7 @@ function HomePage() {
   return (
     <div className="App">
       {/* <Banner/> */}
-
+      <LandingPageBanner/>
       <LandingPagePopulationOverview/>
     </div>
   );
