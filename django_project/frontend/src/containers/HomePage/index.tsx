@@ -54,8 +54,8 @@ function HomePage() {
   return (
     <div className="App">
       {/* <Banner/> */}
-            <LandingPageBanner/>
-            <LandingPagePopulationOverview/>
+      <LandingPageBanner/>
+      <LandingPagePopulationOverview/>
     </div>
   );
 }
