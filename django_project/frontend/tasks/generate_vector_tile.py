@@ -13,3 +13,22 @@ def generate_vector_tiles_task(tiling_task_id: str,
     tiling_task = ContextLayerTilingTask.objects.get(id=tiling_task_id)
     logger.info(f'Generating vector tiles - {tiling_task_id}')
     generate_vector_tiles(tiling_task, overwrite=overwrite)
+
+
+def resume_ongoing_vector_tile_task():
+    """
+    Resume any ongoing vector tile task.
+
+    This should be called at startup.
+    """
+    from frontend.models.context_layer import ContextLayerTilingTask
+
+    tiling_task = ContextLayerTilingTask.objects.filter(
+        status=ContextLayerTilingTask.TileStatus.PROCESSING
+    ).order_by('-id').first()
+    if tiling_task:
+        task = generate_vector_tiles_task.delay(tiling_task.id, False)
+        tiling_task.task_id = task.id
+        tiling_task.save()
+        return tiling_task.id
+    return 0
