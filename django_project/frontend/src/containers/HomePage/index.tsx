@@ -6,6 +6,7 @@ import CustomButton from '../../components/Button';
 import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
 
 const isLoggedIn = (window as any).isLoggedIn;
+import LandingPagePopulationOverview from '../../../src/components/LandingPage/LandingPagePopulationOverview'
 
 function Banner() {
   return (
@@ -53,6 +54,7 @@ function HomePage() {
     <div className="App">
       {/* <Banner/> */}
       <LandingPageBanner/>
+      <LandingPagePopulationOverview/>
     </div>
   );
 }
