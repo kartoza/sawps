@@ -71,6 +71,7 @@ Review the list of forwarded ports from the container to your local host:
 
 Open your web browser and go to localhost:8000 to view the running application.
 
+
 ### 👩‍🏭 Create a super user
 
 ![django-superuser1](https://github.com/timlinux/sawps/assets/178003/a7cfc797-5738-4de8-bdaa-deffce905c53)
