@@ -4,11 +4,6 @@ from django.test import TestCase
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APIRequestFactory
-from core.settings.utils import absolute_path
-from frontend.models.parcels import (
-    Erf,
-    Holding
-)
 from frontend.tests.model_factories import UserF
 from frontend.models.boundary_search import (
     BoundaryFile,

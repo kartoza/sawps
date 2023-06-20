@@ -180,7 +180,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     geom_str = json.dumps(feature['geometry'])
                     geom = GEOSGeometry(geom_str, srid=4326)
                 except Exception as ex:
-                    pass
+                    print(ex)
                 if geom is None:
                     continue
                 if isinstance(geom, Polygon):

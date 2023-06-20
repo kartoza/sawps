@@ -48,4 +48,4 @@ area==1.1.1
 Pillow==9.5.0
 
 # For reading shapefile
-fiona==1.9.4.post1
+fiona==1.8.21
