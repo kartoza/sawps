@@ -1,5 +1,5 @@
-![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.0-blue.svg)
-![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Status:-NA-green.svg)
+![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--e38796f-blue.svg)
+![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Build%20Status:-SUCCESS-green.svg)
 
 # 🦏 SANBI WPS
 
