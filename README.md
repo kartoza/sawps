@@ -1,10 +1,13 @@
+![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--6b5660e-blue.svg)
+![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Build%20Status:-SUCCESS-green.svg)
+
 # 🦏 SANBI WPS
 
 The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
 
 ![image](https://github.com/kartoza/sawps/assets/178003/09311bc9-6862-4fc1-a526-1ec998d994b4)
 
-The work is funded by the [South African National Biodiversity Institute](https://www.sanbi.org/) 
+The work is funded by the [South African National Biodiversity Institute](https://www.sanbi.org/)
 
 
 This project is implemented by [Kartoza](https://kartoza.com/) under contract to [IDS](https://ids-cc.co.za/).
