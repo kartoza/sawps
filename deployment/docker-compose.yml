@@ -135,3 +135,4 @@ services:
       - layer-tiles:/home/web/layer_tiles
     links:
       - django
+      - tegola
