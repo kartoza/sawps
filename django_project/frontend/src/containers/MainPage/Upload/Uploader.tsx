@@ -145,7 +145,6 @@ export default function Uploader(props: UploaderInterface) {
             setLoading(false)
             setSavingBoundaryFiles(true)
             dispatch(setSelectedParcels([]))
-            dispatch(toggleParcelSelectionMode(uploadMode))
         }).catch((error) => {
             setLoading(false)
             console.log(error)
@@ -160,6 +159,7 @@ export default function Uploader(props: UploaderInterface) {
                     setSavingBoundaryFiles(false)
                     let _parcels = response.data['parcels'] as ParcelInterface[]
                     dispatch(setSelectedParcels(_parcels))
+                    dispatch(toggleParcelSelectionMode(uploadMode))
                     // trigger map zoom to bbox
                     let _bbox = response.data['bbox']
                     if (_bbox && _bbox.length === 4) {
