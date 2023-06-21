@@ -184,12 +184,13 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 if geom is None:
                     continue
                 if isinstance(geom, Polygon):
-                    geom = MultiPolygon([geom])
+                    geom = MultiPolygon([geom], srid=4326)
+                search_geom = geom.transform(3857, clone=True)
                 # find from Erf table
                 parcels, keys = find_parcel_base(
                     Erf,
                     ErfParcelSerializer,
-                    geom,
+                    search_geom,
                     parcel_keys
                 )
                 if keys:
@@ -200,7 +201,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 parcels, keys = find_parcel_base(
                     Holding,
                     HoldingParcelSerializer,
-                    geom,
+                    search_geom,
                     parcel_keys
                 )
                 if keys:
@@ -211,7 +212,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 parcels, keys = find_parcel_base(
                     FarmPortion,
                     FarmPortionParcelSerializer,
-                    geom,
+                    search_geom,
                     parcel_keys
                 )
                 if keys:
@@ -222,7 +223,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 parcels, keys = find_parcel_base(
                     ParentFarm,
                     ParentFarmParcelSerializer,
-                    geom,
+                    search_geom,
                     parcel_keys
                 )
                 if keys:
@@ -241,4 +242,5 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     request.progress = 100
     request.parcels = results
     request.geometry = union_geom
+    request.status = DONE
     request.save()

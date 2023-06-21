@@ -6,6 +6,9 @@ from frontend.models.parcels import (
     FarmPortion,
     ParentFarm
 )
+from property.models import (
+    Parcel
+) 
 
 
 def find_layer_by_cname(cname: str):
@@ -34,9 +37,16 @@ def find_parcel_base(cls, serialize_cls,
             cname__in=parcel_keys
         )
     if parcels:
-        results = serialize_cls(
-            parcels,
-            many=True
-        ).data
-        return results, [a['cname'] for a in results]
+        cname_list = [a.cname for a in parcels]
+        used_parcels = Parcel.objects.filter(
+            sg_number__in=cname_list
+        ).values_list('sg_number', flat=True)
+        filtered_parcels = [a for a in parcels if
+                            a.cname not in used_parcels]
+        if filtered_parcels:
+            results = serialize_cls(
+                filtered_parcels,
+                many=True
+            ).data
+            return results, cname_list
     return [], []

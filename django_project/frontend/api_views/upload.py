@@ -55,7 +55,7 @@ class BoundaryFileUpload(APIView):
     def check_crs_type(self, file_obj: any, type: any):
         epsg_mapping = from_epsg(4326)
         crs = get_uploaded_file_crs(file_obj, type)
-        return crs == epsg_mapping['init'].upper(), crs
+        return crs.upper() == epsg_mapping['init'].upper(), crs
 
     def post(self, request, format=None):
         file_obj = request.FILES['file']
@@ -161,14 +161,20 @@ class BoundaryFileSearchStatus(APIView):
 
     def get(self, *args, **kwargs):
         session = kwargs.get('session')
-        search_request = BoundarySearchRequest.objects.get(
+        search_request = BoundarySearchRequest.objects.filter(
             session=session
-        )
+        ).order_by('-id').first()
+        if not search_request:
+            return Response(status=404)
         return Response(
             status=200,
             data={
                 'status': search_request.status,
-                'parcels': search_request.parcels
+                'parcels': search_request.parcels,
+                'bbox': (
+                    list(search_request.geometry.extent) if
+                    search_request.geometry else []
+                )
             }
         )
 

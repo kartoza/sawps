@@ -165,5 +165,24 @@
                 }
             }
         }
+
+        .PropertySiteDetailTable {
+            label {
+                color: unset;
+            }
+        }
+    }
+}
+
+.Uploader {
+    .MuiDialogTitle-root {
+        text-align: center;
+    }
+
+    .UploaderContent {
+        min-width: 500px;
+        min-height: 500px;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 }
