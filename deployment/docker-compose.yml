@@ -99,7 +99,7 @@ services:
   tegola:
     image: *tegola-image
     entrypoint: /opt/tegola
-    command: serve --config /opt/tegola_config/tegola_dev.conf
+    command: serve --config /opt/tegola_config/tegola.conf
     volumes:
       - layer-tiles:/opt/layer_tiles
     links:
