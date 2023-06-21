@@ -4,11 +4,12 @@ import {v4 as uuidv4} from 'uuid';
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import Dropzone, { IFileWithMeta, ILayoutProps } from "react-dropzone-uploader";
+import Dropzone, { ILayoutProps, IInputProps } from "react-dropzone-uploader";
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {RootState} from '../../../app/store';
 import ParcelInterface from '../../../models/Parcel';
@@ -38,6 +39,57 @@ const nameIdSeparator = '@+@'
 const UPLOAD_FILE_URL = '/api/upload/boundary-file/'
 const REMOVE_FILE_URL = '/api/upload/boundary-file/remove/'
 const PROCESS_FILE_URL = '/api/upload/boundary-file/'
+
+const CustomInput = (props: IInputProps) => {
+    const {
+      className,
+      labelClassName,
+      labelWithFilesClassName,
+      style,
+      labelStyle,
+      labelWithFilesStyle,
+      getFilesFromEvent,
+      accept,
+      multiple,
+      disabled,
+      content,
+      withFilesContent,
+      onFiles,
+      files,
+    } = props
+  
+    return (
+    <Grid container flexDirection={'column'}>
+        <Grid item>
+            <span className='CloudUploadIcon'/>
+        </Grid>
+        <Grid item className='CenterItem'>
+            <label>
+                <span>Drag & drop files or </span><span className='BrowseLink'>Browse</span>
+                <input
+                className={className}
+                style={style}
+                type="file"
+                accept={accept}
+                multiple={multiple}
+                disabled={disabled}
+                onChange={async e => {
+                    const target = e.target
+                    const chosenFiles = await getFilesFromEvent(e)
+                    onFiles(chosenFiles)
+                    //@ts-ignore
+                    target.value = null
+                }}
+                />
+            </label>
+        </Grid>
+        <Grid item className='CenterItem'>
+            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported formats: zip, json, geojson, gpkg (CRS 4326)</Typography>
+        </Grid>
+    </Grid>
+      
+    )
+  }
 
 export default function Uploader(props: UploaderInterface) {
     const dispatch = useAppDispatch()
@@ -134,7 +186,7 @@ export default function Uploader(props: UploaderInterface) {
     }
 
     const handleClose = (event: any, reason: any) => {
-        if (reason && reason == "backdropClick") 
+        if (reason && (reason == 'backdropClick' || reason == 'escapeKeyDown'))
             return;
         onClose();
     };
@@ -192,6 +244,29 @@ export default function Uploader(props: UploaderInterface) {
         }
     }, [savingBoundaryFiles])
 
+    const CustomLayout = ({ input, previews, submitButton, dropzoneProps, files, extra: { maxFiles } }: ILayoutProps) => {
+        return (
+            <Grid container flexDirection={'column'} rowSpacing={2} className='uploader-container'>
+                <Grid item>
+                    <div {...dropzoneProps}>
+                        {input}
+                    </div>
+                </Grid>
+                <Grid item>
+                    <Grid container flexDirection={'column'}>
+                        <Grid item>
+                            <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
+                                Uploaded Files
+                            </Typography>
+                        </Grid>
+                        <Grid item className='UploadedFilesPreview'>
+                            {previews}
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        )
+    }
 
     return (
         <Dialog onClose={handleClose} open={open} className='Uploader'>
@@ -208,23 +283,12 @@ export default function Uploader(props: UploaderInterface) {
                     <Dropzone
                         ref={dropZone}
                         disabled={loading || savingBoundaryFiles}
-                        // PreviewComponent={(props_preview) => <UploadComponent
-                        //     key={props_preview.meta.id}
-                        //     meta={props_preview.meta}
-                        //     fileWithMeta={props_preview.fileWithMeta}
-                        //     level={(levels as Level)![props_preview.meta.id]}
-                        //     totalLevel={levels?Object.keys(levels).length:0}
-                        //     moveLevelUp={moveLevelUp}
-                        //     moveLevelDown={moveLevelDown}
-                        //     downloadLayerFile={downloadLayerFile}
-                        //     uploadLevel0={uploadLevel0}
-                        //     isReadOnly={props.isReadOnly}
-                        //     />
-                        // }
+                        InputComponent={CustomInput}
+                        maxFiles={5}
                         getUploadParams={getUploadParams}
                         onChangeStatus={handleChangeStatus}
                         accept={ALLOWABLE_FILE_TYPES.join(', ')}
-                        // LayoutComponent={CustomLayout}
+                        LayoutComponent={CustomLayout}
                     />
                 </Grid>
                 <Grid item>
