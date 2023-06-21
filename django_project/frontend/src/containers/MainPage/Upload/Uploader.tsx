@@ -106,6 +106,10 @@ export default function Uploader(props: UploaderInterface) {
     useEffect(() => {
         if (open) {
             setSession(uuidv4())
+            setIsError(false)
+            setAlertMessage('')
+            setSavingBoundaryFiles(false)
+            setTotalFile(0)
         }
     }, [open])
 
@@ -274,7 +278,7 @@ export default function Uploader(props: UploaderInterface) {
             <Grid container flexDirection={'column'} className='UploaderContent' rowSpacing={2}>
                 <Grid item>
                 { alertMessage ?
-                    <Alert style={{ width: '750px', textAlign: 'left' }} severity={ isError ? 'error' : 'success' }>
+                    <Alert style={{ width: '100%', textAlign: 'left' }} severity={ isError ? 'error' : 'success' }>
                     <AlertTitle>{ isError ? 'Error' : 'Success' }</AlertTitle>
                     <p className="display-linebreak">
                         { alertMessage }
