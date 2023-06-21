@@ -1,18 +1,17 @@
 import json
 import uuid
+import fiona
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.settings.utils import absolute_path
 from frontend.models.parcels import (
-    Erf,
     Holding
 )
 from frontend.tests.model_factories import UserF
 from frontend.tests.model_factories import BoundaryFileF
 from frontend.models.boundary_search import (
-    BoundarySearchRequest,
-    SHAPEFILE
+    BoundarySearchRequest
 )
 from frontend.utils.upload_file import (
     search_parcels_by_boundary_files
@@ -26,27 +25,26 @@ class TestUploadFileUtils(TestCase):
         # insert geom 1 and 2
         geom_path = absolute_path(
             'frontend', 'tests',
-            'geojson', 'geom_1.geojson')
-        with open(geom_path) as geojson:
-            data = json.load(geojson)
-            geom_str = json.dumps(data['features'][1]['geometry'])
-            self.erf_1 = Erf.objects.create(
-                geom=GEOSGeometry(geom_str),
-                cname='C1234ABC'
-            )
-            geom_str = json.dumps(data['features'][0]['geometry'])
-            self.holding_1 = Holding.objects.create(
-                geom=GEOSGeometry(geom_str),
-                cname='C1235DEF'
-            )
+            'geojson', 'parcel_1.geojson')
+        with fiona.open(geom_path, encoding='utf-8') as layer:
+            # 1 feature only
+            for feature in layer:
+                geom_str = json.dumps(feature['geometry'])
+                # geom_str without crs info is assumed to be in 4326
+                geom = GEOSGeometry(GEOSGeometry(geom_str).wkt, srid=3857)
+                self.holding_1 = Holding.objects.create(
+                    geom=geom,
+                    cname='C1235DEF'
+                )
+                break
 
     def test_search_parcels(self):
         session = str(uuid.uuid4())
         shapefile_path = absolute_path(
             'frontend', 'tests',
-            'shapefile', 'test_within.zip')
+            'shapefile', 'shapefile_1.zip')
         with open(shapefile_path, 'rb') as infile:
-            _file = SimpleUploadedFile('test_within.zip', infile.read())
+            _file = SimpleUploadedFile('shapefile_1.zip', infile.read())
             BoundaryFileF.create(
                 session=session,
                 file_type='SHAPEFILE',

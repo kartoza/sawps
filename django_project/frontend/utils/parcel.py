@@ -8,7 +8,7 @@ from frontend.models.parcels import (
 )
 from property.models import (
     Parcel
-) 
+)
 
 
 def find_layer_by_cname(cname: str):

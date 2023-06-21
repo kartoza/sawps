@@ -32,10 +32,10 @@ def create_clear_uploaded_boundary_files():
     except ValidationError as e:
         print(e)
 
+
 class FrontendConfig(AppConfig):
     name = 'frontend'
 
     def ready(self):
         # Create a task to clear old boundary files
         create_clear_uploaded_boundary_files()
-

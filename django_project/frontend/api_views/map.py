@@ -199,7 +199,7 @@ class FindParcelByCoord(APIView):
                 parcel.first()
             ).data
         return None
-    
+
     def check_used_parcel(self, cname: str, existing_property_id: int):
         parcels = Parcel.objects.filter(sg_number=cname)
         if existing_property_id:

@@ -9,6 +9,7 @@ GEOJSON = 'GEOJSON'
 SHAPEFILE = 'SHAPEFILE'
 GEOPACKAGE = 'GEOPACKAGE'
 
+
 class BoundaryFile(models.Model):
     """Boundary uploaded file."""
 

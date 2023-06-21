@@ -3,7 +3,6 @@ import os
 from datetime import datetime
 import json
 import fiona
-from fiona.crs import from_epsg
 from fiona.io import (
     MemoryFile
 )
@@ -16,9 +15,7 @@ from django.core.files.uploadedfile import (
     TemporaryUploadedFile
 )
 from frontend.models.base_task import (
-    PROCESSING,
-    DONE,
-    ERROR
+    DONE
 )
 from frontend.models.parcels import (
     Erf,
@@ -168,7 +165,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     current_progress = 0
     results = []
     parcel_keys = []
-    union_geom:GEOSGeometry = None
+    union_geom: GEOSGeometry = None
     for boundary_file in files:
         file_path = boundary_file.file.path
         if boundary_file.file_type == SHAPEFILE:
@@ -229,7 +226,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 if keys:
                     parcel_keys.extend(keys)
                 if parcels:
-                    results.extend(parcels)                
+                    results.extend(parcels)
                 # add to union geom
                 if union_geom:
                     union_geom = union_geom.union(geom)

@@ -93,7 +93,7 @@ class BoundaryFileUpload(APIView):
             session=session,
             uploader=self.request.user,
             file_type=file_type,
-            meta_id=request.data.get('meta_id',''),
+            meta_id=request.data.get('meta_id', ''),
             defaults={
                 'upload_date': datetime.now(),
                 'file': file_obj
@@ -177,4 +177,3 @@ class BoundaryFileSearchStatus(APIView):
                 )
             }
         )
-
