@@ -8,7 +8,6 @@ volumes:
   nginx-cache:
   backups-data:
   data-volume:
-  tegola-data:
   layer-tiles:
 
 x-tegola-image: &tegola-image gospatial/tegola:v0.16.0
@@ -79,9 +78,6 @@ services:
   django:
     <<: *default-common-django
     command: 'uwsgi --ini /uwsgi.conf'
-    volumes:
-      - tegola-data:/opt/tegola_config
-      - layer-tiles:/opt/layer_tiles
     links:
       - db
       - worker
@@ -91,7 +87,6 @@ services:
     entrypoint: []
     command: 'celery -A core worker -l info'
     volumes:
-      - tegola-data:/opt/tegola_config
       - layer-tiles:/opt/layer_tiles
     links:
       - redis
@@ -100,16 +95,12 @@ services:
     image: kartoza/sanbi_dev
     <<: *default-common-django
     entrypoint: []
-    volumes:
-      - tegola-data:/opt/tegola_config
-      - layer-tiles:/opt/layer_tiles
 
   tegola:
     image: *tegola-image
     entrypoint: /opt/tegola
     command: serve --config /opt/tegola_config/tegola_dev.conf
     volumes:
-      - tegola-data:/opt/tegola_config
       - layer-tiles:/opt/layer_tiles
     links:
       - db

@@ -39,9 +39,18 @@ def generate_configuration_file() -> str:
     )
     result = ''
     try:
+        directory = os.path.join(
+            '/',
+            'opt',
+            'layer_tiles',
+            'tegola_config'
+        )
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         out_config_file = os.path.join(
             '/',
             'opt',
+            'layer_tiles',
             'tegola_config',
             f'context-layer-{uuid4()}.conf'
         )
@@ -91,7 +100,10 @@ def generate_vector_tiles(tiling_task: ContextLayerTilingTask,
                           overwrite: bool = False):
     """Generate vector tiles for static context layers."""
     bbox = get_country_bounding_box()
-    if not overwrite and tiling_task.config_path:
+    if (
+        not overwrite and tiling_task.config_path and
+        os.path.exists(tiling_task.config_path)
+    ):
         config_file = tiling_task.config_path
     else:
         config_file = generate_configuration_file()

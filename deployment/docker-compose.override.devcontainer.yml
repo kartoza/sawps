@@ -20,9 +20,7 @@ services:
     volumes:
       - ../:/home/web/project
       - ../django_project:/home/web/django_project
-      - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
-      - ./volumes/tegola_data:/opt/tegola_config
       - ./volumes/layer_tiles:/opt/layer_tiles
 
   dev:
@@ -36,8 +34,6 @@ services:
       - ../:/home/web/project
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
-      - ./volumes/tegola_data:/opt/tegola_config
-      - ./volumes/layer_tiles:/opt/layer_tiles
     links:
       - db
       - worker
