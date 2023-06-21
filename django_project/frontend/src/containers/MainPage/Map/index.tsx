@@ -27,7 +27,8 @@ import {
 import PropertyInterface from '../../../models/Property';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
-const MAP_SOURCES = ['sanbi', 'properties']
+const MAP_SOURCES = ['sanbi', 'properties', 'NGI Aerial Imagery']
+const AERIAL_SOURCE_ID = 'NGI Aerial Imagery'
 
 const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
 
@@ -63,10 +64,13 @@ export default function Map() {
     for (let i=0; i < _layers.length; ++i) {
       let _layer:any = _layers[i]
       // skip any layer that is not from sanbi and property sources
-      if (!('source' in _layer) || !('source-layer' in _layer) || !MAP_SOURCES.includes(_layer['source'])) continue
+      if (!('source' in _layer) || !MAP_SOURCES.includes(_layer['source'])) continue
+      // skip if no source-layer and not NGI aerial imagery
+      if (!('source-layer' in _layer) && _layer['source'] !== AERIAL_SOURCE_ID) continue
       // skip if current selection mode is parcel selection and highlighted layer for selecting parcel
       if (selectionMode === MapSelectionMode.Parcel && _layer['id'].includes('-select-parcel')) continue
-      const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
+      let _source_layer = 'source-layer' in _layer ? _layer['source-layer'] : _layer['source']
+      const _is_visible = checkLayerVisibility(_source_layer, contextLayers)
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
     }
 
