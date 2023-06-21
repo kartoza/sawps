@@ -1,4 +1,6 @@
 from celery import shared_task
+import os
+import shutil
 import logging
 from frontend.utils.vector_tile import generate_vector_tiles
 
@@ -32,3 +34,15 @@ def resume_ongoing_vector_tile_task():
         tiling_task.save()
         return tiling_task.id
     return 0
+
+
+@shared_task(name="clear_older_vector_tiles")
+def clear_older_vector_tiles():
+    tile_path = os.path.join(
+        '/',
+        'opt',
+        'layer_tiles',
+        'sanbi'
+    )
+    if os.path.exists(tile_path):
+        shutil.rmtree(tile_path)
