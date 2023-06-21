@@ -3,7 +3,10 @@ from django.contrib import admin, messages
 from celery.result import AsyncResult
 from core.celery import app
 from frontend.models import ContextLayer, ContextLayerTilingTask
-from frontend.tasks import generate_vector_tiles_task
+from frontend.tasks import (
+    generate_vector_tiles_task,
+    clear_older_vector_tiles
+)
 
 
 def cancel_other_processing_tasks(task_id=None):
@@ -92,11 +95,21 @@ def cancel_generate_vector_tiles(modeladmin, request, queryset):
     )
 
 
+@admin.action(description='Clear Vector Tile Directory')
+def clear_vector_tiles(modeladmin, request, queryset):
+    clear_older_vector_tiles.delay()
+    modeladmin.message_user(
+        request,
+        'Vector tile directory will be cleared in background!',
+        messages.SUCCESS
+    )
+
+
 class TilingTaskAdmin(admin.ModelAdmin):
     list_display = ('status', 'started_at',
                     'finished_at', 'total_size')
     actions = [generate_vector_tiles, resume_generate_vector_tiles,
-               cancel_generate_vector_tiles]
+               cancel_generate_vector_tiles, clear_vector_tiles]
 
 
 admin.site.register(ContextLayer)
