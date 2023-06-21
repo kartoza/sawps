@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("frontend", "0005_alter_erf_cname_alter_farmportion_cname_and_more"),
+        ("frontend", "0006_merge_20230619_0800"),
     ]
 
     # altering world geometry to make SADC countries line up
