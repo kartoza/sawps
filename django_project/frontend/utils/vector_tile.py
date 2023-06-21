@@ -91,7 +91,10 @@ def generate_vector_tiles(tiling_task: ContextLayerTilingTask,
                           overwrite: bool = False):
     """Generate vector tiles for static context layers."""
     bbox = get_country_bounding_box()
-    config_file = generate_configuration_file()
+    if not overwrite and tiling_task.config_path:
+        config_file = tiling_task.config_path
+    else:
+        config_file = generate_configuration_file()
     tiling_task.status = ContextLayerTilingTask.TileStatus.PROCESSING
     tiling_task.started_at = datetime.now()
     tiling_task.finished_at = None
