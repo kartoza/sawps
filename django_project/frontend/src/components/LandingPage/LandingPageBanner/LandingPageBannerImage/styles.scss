@@ -1,0 +1,20 @@
+
+.landing-page-banner-image-container{
+    flex-basis: 48%;
+}
+
+.landing-page-banner-image-inner-container{
+    height:87%;
+    width:90%;
+}
+
+.landing-page-banner-image{
+    height:100%;
+    width:100%;
+    background-image: url('/static/images/species/rino_background.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding-left:10%; 
+
+}

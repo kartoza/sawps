@@ -11,10 +11,10 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link navbar-text" href="/">About</a>
+                    <a class="nav-link navbar-text" href="/about">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link navbar-text" href="/">Contact</a>
+                    <a class="nav-link navbar-text" href="/contact">Contact</a>
                 </li>
 
                 {% if user.is_authenticated %}
@@ -27,7 +27,7 @@
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user.username }}</a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
                             <a class="dropdown-item" href="/profile">Profile</a>
-                            <a class="dropdown-item" href="/">Account</a>
+                            <a class="dropdown-item" href="/about">Account</a>
                             <a class="dropdown-item" href="/">Dashboard</a>
                             <a class="dropdown-item" href="/accounts/logout">Logout</a>
                         </div>
