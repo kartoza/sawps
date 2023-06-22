@@ -9,7 +9,8 @@ import {
   resetSelectedProperty,
   selectedParcelsOnRenderFinished,
   onMapEventProcessed,
-  toggleMapTheme
+  toggleMapTheme,
+  setInitialMapTheme
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
 import { MapSelectionMode, MapTheme } from "../../../models/Map";
@@ -26,6 +27,7 @@ import {
   getSelectParcelLayerNames
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
+import useThemeDetector from '../../../components/ThemeDetector';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_SOURCES = ['sanbi', 'properties', 'NGI Aerial Imagery']
@@ -43,8 +45,9 @@ export default function Map() {
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
   const mapTheme = useAppSelector((state: RootState) => state.mapState.theme)
-  const mapContainer = useRef(null);
-  const map = useRef(null);
+  const mapContainer = useRef(null)
+  const map = useRef(null)
+  const isDarkTheme = useThemeDetector()
 
   const onMapMouseEnter = () => {
     if (!map.current) return;    
@@ -56,6 +59,10 @@ export default function Map() {
     if (!map.current) return;
     map.current.getCanvas().style.cursor = '';
   }
+
+  useEffect(() => {
+    dispatch(setInitialMapTheme(isDarkTheme ? MapTheme.Dark : MapTheme.Light))
+  }, [isDarkTheme])
 
   useEffect(() => {
     if (!isMapReady) return;

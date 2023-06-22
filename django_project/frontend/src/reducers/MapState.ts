@@ -22,7 +22,7 @@ const initialState: MapStateInterface = {
     selectedParcels: [],
     selectedProperty: createNewProperty(),
     mapEvents: [],
-    theme: MapTheme.Light
+    theme: MapTheme.None
 }
 
 /* reset all selectedParcels */
@@ -113,9 +113,12 @@ export const MapStateSlice = createSlice({
         toggleMapTheme: (state, action: PayloadAction<null>) => {
             if (state.theme === MapTheme.Light) {
                 state.theme = MapTheme.Dark
-            } else {
+            } else if (state.theme === MapTheme.Dark) {
                 state.theme = MapTheme.Light
             }
+        },
+        setInitialMapTheme: (state, action: PayloadAction<MapTheme>) => {
+            state.theme = action.payload
         }
     }
 })
@@ -131,7 +134,8 @@ export const {
     selectedParcelsOnRenderFinished,
     triggerMapEvent,
     onMapEventProcessed,
-    toggleMapTheme
+    toggleMapTheme,
+    setInitialMapTheme
 } = MapStateSlice.actions
 
 export default MapStateSlice.reducer;
