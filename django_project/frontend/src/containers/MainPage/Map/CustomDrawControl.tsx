@@ -10,7 +10,7 @@ interface ControlButtonInterface {
     action: () => void;
     classes: string[];
     content: Element | string;
-    elButton?: Element;
+    elButton?: HTMLButtonElement;
 }
 
 
@@ -83,5 +83,23 @@ export default class CustomDrawControl implements IControl {
 
     getMapBoxDraw() {
         return this._draw
+    }
+
+    disableButtons() {
+        let ctrl = this;
+        let children = ctrl._elContainer.children;
+        for (let i = 0; i < children.length; ++i) {
+            let child = children[i] as HTMLButtonElement
+            child.disabled = true
+        }
+    }
+
+    enableButtons() {
+        let ctrl = this;
+        let children = ctrl._elContainer.children;
+        for (let i = 0; i < children.length; ++i) {
+            let child = children[i] as HTMLButtonElement
+            child.disabled = false
+        }
     }
 }

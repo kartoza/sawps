@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import maplibregl from 'maplibre-gl';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import React, { useRef, useEffect, useCallback } from 'react';
+import maplibregl, {Map as MapLibreMap} from 'maplibre-gl';
+import MapboxDraw, { constants as MapboxDrawConstant } from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
@@ -29,12 +29,15 @@ import {
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
+import LoadingIndicatorControl from './LoadingIndicatorControl';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_SOURCES = ['sanbi', 'properties', 'NGI Aerial Imagery']
 const AERIAL_SOURCE_ID = 'NGI Aerial Imagery'
 
 const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
+
+
 
 export default function Map() {
   const dispatch = useAppDispatch()
@@ -62,13 +65,27 @@ export default function Map() {
 
   const onDrawSaved = () => {
     if (!mapDraw.current) return;
-    // get the features from drawing
+    let _mapObj: MapLibreMap = map.current
     let _drawObj: CustomDrawControl = mapDraw.current
-    console.log(JSON.stringify(_drawObj.getMapBoxDraw().getAll()));
+    let _mapBoxDraw = _drawObj.getMapBoxDraw()
+    // get the features from drawing
+    console.log(JSON.stringify(_mapBoxDraw.getAll()));
+    // change to simple_select mode
+    _mapBoxDraw.changeMode(MapboxDrawConstant.modes.SIMPLE_SELECT)
     // show backdrop processing
+    let _loading = new LoadingIndicatorControl({
+      label: 'Processing Geometries...'
+    })
+    _mapObj.addControl(_loading, 'top-left')
+    _drawObj.disableButtons()
+    // simulate API
+    setTimeout(() => {
+      _mapObj.removeControl(_loading)
+      _drawObj.enableButtons()
+    }, 20000)
     // call API to fetch parcels based on geometries
-    // exit mode
-    onDrawCancelled()
+    // exit draw mode
+    // onDrawCancelled()
   }
 
   const onDrawCancelled = () => {
