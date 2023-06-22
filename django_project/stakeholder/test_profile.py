@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from swaps.tests.models.account_factory import UserF
+from sawps.tests.models.account_factory import UserF
 from stakeholder.factories import userProfileFactory, userTitleFactory, userRoleTypeFactory
 
 
