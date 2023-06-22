@@ -1,10 +1,11 @@
 """View to switch organisation."""
 from django.http import HttpResponseRedirect
 from stakeholder.models import OrganisationUser
-from frontend.views.base_view import (
+from frontend.utils.organisation import (
     CURRENT_ORGANISATION_ID_KEY,
     CURRENT_ORGANISATION_KEY
 )
+
 
 def switch_organisation(request, organisation_id):
     """Switch organisation."""

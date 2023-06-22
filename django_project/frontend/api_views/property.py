@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.contrib.gis.geos import (
     GEOSGeometry, Polygon, MultiPolygon
 )
-from django.db.models import Q
 from django.contrib.gis.db.models import Union
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -37,6 +36,9 @@ from frontend.serializers.property import (
 )
 from frontend.serializers.stakeholder import (
     OrganisationSerializer
+)
+from frontend.utils.organisation import (
+    CURRENT_ORGANISATION_ID_KEY
 )
 
 
@@ -126,6 +128,18 @@ class CreateNewProperty(APIView):
         parcels = request.data.get('parcels')
         geom = self.get_geometry(parcels)
         ownership_status = OwnershipStatus.objects.all().first()
+        organisation_id = self.request.session.get(
+            CURRENT_ORGANISATION_ID_KEY, 0)
+        if not organisation_id:
+            return Response(status=400, data='Invalid Organisation!')
+        # validate if user belongs to the organisation
+        if not self.request.user.is_superuser:
+            organisation_user = OrganisationUser.objects.filter(
+                organisation_id=organisation_id,
+                user=self.request.user
+            )
+            if not organisation_user.exists():
+                return Response(status=400, data='Invalid Organisation!')
         data = {
             'name': request.data.get('name'),
             'owner_email': request.data.get('owner_email'),
@@ -151,10 +165,9 @@ class PropertyMetadataList(APIView):
     def get(self, *args, **kwargs):
         provinces = Province.objects.all().order_by('name')
         types = PropertyType.objects.all().order_by('name')
-        organisations = Organisation.objects.all().order_by('name')
-        if not self.request.user.is_superuser:
-            # filter by organisation that the user belongs to
-            pass
+        organisations = Organisation.objects.filter(
+            id=self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0)
+        ).order_by('name')
         return Response(status=200, data={
             'provinces': (
                 ProvinceSerializer(provinces, many=True).data
@@ -179,16 +192,11 @@ class PropertyList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        properties = Property.objects.all()
-        if not self.request.user.is_superuser:
-            user_organisations = OrganisationUser.objects.filter(
-                user=self.request.user
-            ).values_list('organisation_id', flat=True)
-            properties = properties.filter(
-                Q(created_by_id=self.request.user.id) |
-                Q(organisation_id__in=user_organisations)
-            )
-        properties = properties.order_by('name')
+        organisation_id = self.request.session.get(
+            CURRENT_ORGANISATION_ID_KEY, 0)
+        properties = Property.objects.filter(
+            organisation_id=organisation_id
+        ).order_by('name')
         return Response(
             status=200,
             data=PropertySerializer(properties, many=True).data

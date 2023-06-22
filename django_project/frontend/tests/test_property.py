@@ -15,7 +15,8 @@ from property.factories import (
     PropertyFactory
 )
 from stakeholder.factories import (
-    organisationFactory
+    organisationFactory,
+    organisationUserFactory
 )
 from frontend.models.parcels import (
     Erf,
@@ -30,6 +31,7 @@ from frontend.api_views.property import (
     UpdatePropertyBoundaries,
     PropertyDetail
 )
+from frontend.tests.request_factories import OrganisationAPIRequestFactory
 
 
 class TestPropertyAPIViews(TestCase):
@@ -39,13 +41,13 @@ class TestPropertyAPIViews(TestCase):
     ]
 
     def setUp(self) -> None:
-        self.factory = APIRequestFactory()
+        # insert organisation
+        self.organisation = organisationFactory.create()
+        self.factory = OrganisationAPIRequestFactory(self.organisation)
         self.user_1 = UserF.create(username='test_1')
         self.user_2 = UserF.create(username='test_2')
         # insert province
         self.ownership_status = OwnershipStatusFactory.create()
-        # insert organisation
-        self.organisation = organisationFactory.create()
         # insert province
         self.province = ProvinceFactory.create()
         # insert geom 1 and 2
@@ -92,6 +94,20 @@ class TestPropertyAPIViews(TestCase):
             reverse('property-create'), data=data,
             format='json'
         )
+        # without adding to organisation, should return 400
+        request.user = self.user_1
+        view = CreateNewProperty.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        # add to organisation, should return 201
+        organisationUserFactory.create(
+            user=self.user_1,
+            organisation=self.organisation
+        )
+        request = self.factory.post(
+            reverse('property-create'), data=data,
+            format='json'
+        )
         request.user = self.user_1
         view = CreateNewProperty.as_view()
         response = view(request)
@@ -133,7 +149,8 @@ class TestPropertyAPIViews(TestCase):
         property = PropertyFactory.create(
             geometry=self.holding_1.geom,
             name='Property C',
-            created_by=self.user_2
+            created_by=self.user_2,
+            organisation=self.organisation
         )
         request = self.factory.get(
             reverse('property-list')
@@ -202,6 +219,10 @@ class TestPropertyAPIViews(TestCase):
             format='json'
         )
         request.user = self.user_1
+        organisationUserFactory.create(
+            user=self.user_1,
+            organisation=self.organisation
+        )
         view = CreateNewProperty.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 201)

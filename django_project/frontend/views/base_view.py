@@ -2,10 +2,10 @@
 from django.views.generic import TemplateView
 from stakeholder.models import OrganisationUser, Organisation
 from frontend.serializers.stakeholder import OrganisationSerializer
-
-
-CURRENT_ORGANISATION_ID_KEY = 'current_organisation_id'
-CURRENT_ORGANISATION_KEY = 'current_organisation'
+from frontend.utils.organisation import (
+    CURRENT_ORGANISATION_ID_KEY,
+    CURRENT_ORGANISATION_KEY
+)
 
 
 class RegisteredOrganisationBaseView(TemplateView):
