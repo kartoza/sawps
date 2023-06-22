@@ -8,10 +8,11 @@ import {
   setSelectedProperty,
   resetSelectedProperty,
   selectedParcelsOnRenderFinished,
-  onMapEventProcessed
+  onMapEventProcessed,
+  toggleMapTheme
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
-import { MapSelectionMode } from "../../../models/Map";
+import { MapSelectionMode, MapTheme } from "../../../models/Map";
 import { UploadMode } from "../../../models/Upload";
 import './index.scss';
 import CustomNavControl from './NavControl';
@@ -41,6 +42,7 @@ export default function Map() {
   const selectedProperty = useAppSelector((state: RootState) => state.mapState.selectedProperty)
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
+  const mapTheme = useAppSelector((state: RootState) => state.mapState.theme)
   const mapContainer = useRef(null);
   const map = useRef(null);
 
@@ -105,27 +107,32 @@ export default function Map() {
   }, [selectionMode])
 
   useEffect(() => {
-      if (map.current) return; //stops map from intializing more than once
+    if (mapTheme === MapTheme.None) return;
+    if (map.current) {
+      dispatch(setMapReady(false))
+      map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}`)
+    } else {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
-        style: `${MAP_STYLE_URL}`,
+        style: `${MAP_STYLE_URL}?theme=${mapTheme}`,
         minZoom: 5
       })
       map.current.addControl(new CustomNavControl({
         showCompass: false,
         showZoom: true
+      }, {
+        onThemeSwitched: () => { dispatch(toggleMapTheme()) }
       }), 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
-
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
       })
-      return () => {
-        map.current.off('mouseenter', ['properties'], onMapMouseEnter)
-        map.current.off('mouseleave', 'properties', onMapMouseLeave)
-      }
-  }, []);
+      map.current.on('styledata', () => {
+        dispatch(setMapReady(true))
+      })
+    }
+  }, [mapTheme]);
 
   /* Callback when map is on click. */
   const mapOnClick = useCallback((e: any) => {
@@ -155,6 +162,7 @@ export default function Map() {
   }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
   useEffect(() => {
+    if (!map.current) return;
     map.current.on('click', mapOnClick)
     return () => {
       map.current.off('click', mapOnClick)

@@ -13,3 +13,9 @@ export interface MapEventInterface {
     date: number;
     payload?: string[];
 }
+
+export enum MapTheme {
+    None = "none",
+    Light = "light",
+    Dark = "dark"
+}
