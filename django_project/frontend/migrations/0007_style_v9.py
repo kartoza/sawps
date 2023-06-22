@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             """CREATE TABLE IF NOT EXISTS layer.world (
                 id int8 NOT NULL,
-                geom public.geometry(multipolygon, 3857) NULL,
+                geom public.geometry(multipolygon, 4326) NULL,
                 iso_a2 varchar(2) NULL,
                 "NAME" varchar(25) NULL,
                 "FIPS_10_" varchar(3) NULL,
