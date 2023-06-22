@@ -26,7 +26,8 @@ from frontend.api_views.map import (
     AerialTile,
     PropertiesLayerMVTTiles,
     FindParcelByCoord,
-    FindPropertyByCoord
+    FindPropertyByCoord,
+    MapAuthenticate
 )
 from frontend.api_views.property import (
     CreateNewProperty,
@@ -57,6 +58,11 @@ urlpatterns = [
         r'^api/map/styles/?$',
         MapStyles.as_view(),
         name='map-style'
+    ),
+    re_path(
+        r'^api/map/authenticate/?$',
+        MapAuthenticate.as_view(),
+        name='map-authenticate'
     ),
     re_path(
         r'^api/map/layer/aerial/'
