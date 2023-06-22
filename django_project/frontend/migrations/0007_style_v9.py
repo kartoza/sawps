@@ -11,6 +11,20 @@ class Migration(migrations.Migration):
     # altering world geometry to make SADC countries line up
     operations = [
         migrations.RunSQL(
+            """CREATE TABLE IF NOT EXISTS layer.world (
+                id int8 NOT NULL,
+                geom public.geometry(multipolygon, 4326) NULL,
+                iso_a2 varchar(2) NULL,
+                "NAME" varchar(25) NULL,
+                "FIPS_10_" varchar(3) NULL,
+                "ISO_A3" varchar(3) NULL,
+                "WB_A2" varchar(3) NULL,
+                "WB_A3" varchar(3) NULL,
+                CONSTRAINT world_pkey PRIMARY KEY (id)
+            );""",
+            reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
             """alter table layer.world
             alter column geom
             Type Geometry(multipolygon, 3857)
