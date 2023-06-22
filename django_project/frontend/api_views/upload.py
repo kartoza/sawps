@@ -88,7 +88,7 @@ class BoundaryFileUpload(APIView):
                     'detail': f'Incorrect CRS type: {crs}!'
                 }
             )
-        BoundaryFile.objects.get_or_create(
+        BoundaryFile.objects.create(
             name=file_obj.name,
             session=session,
             uploader=self.request.user,
