@@ -52,6 +52,10 @@
                     {% endif %}
                     <hr class="divider" />
                     {% endif %}
+                    {% if user.is_superuser %}
+                    <a class="dropdown-item" href="/admin/">Django Admin</a>
+                    <hr class="divider" />
+                    {% endif %}
                     <a class="dropdown-item" href="/accounts/logout">Logout</a>
                 </div>
         </li>
