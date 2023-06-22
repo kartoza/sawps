@@ -36,7 +36,7 @@
                     {% if organisations %}
                     <span class="dropdown-header">Accessible organisations:</span>
                     {% for organisation in organisations|slice:":3" %}
-                      <a class="dropdown-item" key="{{ organisation.id }}" href="/">{{ organisation.name }}</a>
+                      <a class="dropdown-item" key="{{ organisation.id }}" href="{% url 'switch-organisation' organisation.id %}?next={{ request.get_full_path|urlencode }}">{{ organisation.name }}</a>
                     {% endfor %}
                     {% if organisations|length > 3 %}
                     <span class="submenu-item">
@@ -44,7 +44,7 @@
                         <ul class="dropdown-menu dropdown-submenu dropdown-submenu-left">
                           {% for organisation in organisations|slice:"3:" %}
                           <li>
-                            <a class="dropdown-item" href="#" key="{{ organisation.id }}">{{ organisation.name }}</a>
+                            <a class="dropdown-item" href="{% url 'switch-organisation' organisation.id %}?next={{ request.get_full_path|urlencode }}" key="{{ organisation.id }}">{{ organisation.name }}</a>
                           </li>
                           {% endfor %}
                         </ul>

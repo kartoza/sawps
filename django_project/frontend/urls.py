@@ -19,6 +19,7 @@ from .views.map import MapView
 from .views.help import HelpView
 from .views.about import AboutView
 from .views.contact import ContactView
+from .views.switch_organisation import switch_organisation
 
 
 from frontend.api_views.map import (
@@ -106,6 +107,10 @@ urlpatterns = [
         r'^api/property/metadata/list/?$',
         PropertyMetadataList.as_view(),
         name='property-metadata'
+    ),
+    path('switch-organisation/<int:organisation_id>/',
+         switch_organisation,
+         name='switch-organisation'
     ),
     path('map/', MapView.as_view(), name='map'),
     path('help/', HelpView.as_view(), name='help'),
