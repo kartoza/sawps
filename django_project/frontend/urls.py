@@ -108,9 +108,10 @@ urlpatterns = [
         PropertyMetadataList.as_view(),
         name='property-metadata'
     ),
-    path('switch-organisation/<int:organisation_id>/',
-         switch_organisation,
-         name='switch-organisation'
+    path(
+        'switch-organisation/<int:organisation_id>/',
+        switch_organisation,
+        name='switch-organisation'
     ),
     path('map/', MapView.as_view(), name='map'),
     path('help/', HelpView.as_view(), name='help'),

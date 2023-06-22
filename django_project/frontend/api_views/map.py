@@ -13,9 +13,6 @@ from property.models import (
     Property,
     Parcel
 )
-from stakeholder.models import (
-    OrganisationUser
-)
 from frontend.models.context_layer import ContextLayer
 from frontend.serializers.context_layer import ContextLayerSerializer
 from frontend.utils.map import get_map_template_style
@@ -205,7 +202,7 @@ class FindParcelByCoord(APIView):
                 parcel.first()
             ).data
         return None
-    
+
     def check_used_parcel(self, cname: str, existing_property_id: int):
         parcels = Parcel.objects.filter(sg_number=cname)
         if existing_property_id:

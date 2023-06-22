@@ -9,12 +9,12 @@ from frontend.utils.organisation import (
 
 class OrganisationAPIRequestFactory(APIRequestFactory):
 
-    def __init__(self, organisation: Organisation=None):
+    def __init__(self, organisation: Organisation = None):
         self.organisation = organisation
         self.middleware = SessionMiddleware(lambda x: None)
         super().__init__()
 
-    def process_session(self, request, organisation_id=None):
+    def process_session(self, request, organisation_id = None):
         self.middleware.process_request(request)
         org_id = organisation_id
         if org_id is None and self.organisation:

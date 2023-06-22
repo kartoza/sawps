@@ -2,7 +2,6 @@ import json
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework.test import APIRequestFactory
 from core.settings.utils import absolute_path
 from property.models import (
     PropertyType,
