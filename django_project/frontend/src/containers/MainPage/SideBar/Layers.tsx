@@ -29,6 +29,10 @@ function Layers() {
               let _layers = response.data as ContextLayerInterface[]
               _layers = _layers.map((layer) => {
                 layer.isSelected = true
+                // disable NGI Aerial Imagery by default
+                if (layer.name === 'NGI Aerial Imagery') {
+                    layer.isSelected = false
+                }
                 return layer
               })
               dispatch(setContextLayers(_layers))
