@@ -1,4 +1,5 @@
 import maplibregl from 'maplibre-gl';
+import CustomExportControl from './CustomExportControl';
 
 export default class CustomNavControl extends maplibregl.NavigationControl {
 
@@ -6,14 +7,18 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
     _printIcon: HTMLElement;
     _baseMapSelect: HTMLButtonElement;
     _baseMapSelectIcon: HTMLElement;
+    _exportControl: CustomExportControl;
   
     constructor(options?: maplibregl.NavigationOptions) {
       // note: this can work for es6 target in tsconfig.json
       super(options);
+
+      this._exportControl = new CustomExportControl()
   
       // add print icon
       this._print = this._createButton('maplibregl-ctrl-print', (e) => {
-        // not implemented yet
+        this._exportControl.showExporter()
+        e.preventDefault()
       });
       this._printIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._print);
       this._printIcon.setAttribute('aria-hidden', 'true');
@@ -42,6 +47,10 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
       if (className !== undefined) el.className = className;
       if (container) container.appendChild(el);
       return el;
+    }
+
+    getExportControl() {
+      return this._exportControl
     }
   
   }

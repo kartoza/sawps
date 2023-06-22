@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { IControl } from 'maplibre-gl';
+import { MaplibreExportControl, Size, PageOrientation, Format, DPI} from "@watergis/maplibre-gl-export";
+import '@watergis/maplibre-gl-export/dist/maplibre-gl-export.css';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { 
@@ -25,6 +27,7 @@ import {
   getSelectParcelLayerNames
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
+import CustomExportControl from './CustomExportControl';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_SOURCES = ['sanbi', 'properties', 'NGI Aerial Imagery']
@@ -111,10 +114,13 @@ export default function Map() {
         style: `${MAP_STYLE_URL}`,
         minZoom: 5
       })
-      map.current.addControl(new CustomNavControl({
+      let _navControl = new CustomNavControl({
         showCompass: false,
         showZoom: true
-      }), 'bottom-left')
+      })
+      map.current.addControl(_navControl, 'bottom-left')
+      // add exporter dialog
+      map.current.addControl(_navControl.getExportControl(), 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
 
