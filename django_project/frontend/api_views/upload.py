@@ -94,10 +94,8 @@ class BoundaryFileUpload(APIView):
             uploader=self.request.user,
             file_type=file_type,
             meta_id=request.data.get('meta_id', ''),
-            defaults={
-                'upload_date': datetime.now(),
-                'file': file_obj
-            }
+            upload_date=datetime.now(),
+            file=file_obj
         )
         self.remove_temp_file(file_obj)
         return Response(status=204)

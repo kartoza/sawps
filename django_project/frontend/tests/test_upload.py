@@ -54,7 +54,6 @@ class TestUploadAPIViews(TestCase):
         request.user = UserF.create()
         view = BoundaryFileUpload.as_view()
         response = view(request)
-        print(response.data)
         self.assertEqual(response.status_code, 204)
         self.assertTrue(BoundaryFile.objects.filter(
             name='admin.geojson',
