@@ -1,7 +1,7 @@
-from django.views.generic import TemplateView
+from .base_view import RegisteredOrganisationBaseView
 
 
-class HomeView(TemplateView):
+class HomeView(RegisteredOrganisationBaseView):
     """
     HomeView displays the home page by rendering the 'home.html' template.
     """

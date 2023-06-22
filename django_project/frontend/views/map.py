@@ -1,8 +1,8 @@
-from django.views.generic import TemplateView
 from django.conf import settings
+from .base_view import RegisteredOrganisationBaseView
 
 
-class MapView(TemplateView):
+class MapView(RegisteredOrganisationBaseView):
     """
     MapView displays the map page by rendering the 'map.html' template.
     """
