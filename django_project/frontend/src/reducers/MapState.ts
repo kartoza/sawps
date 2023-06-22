@@ -43,6 +43,13 @@ export const MapStateSlice = createSlice({
         setMapSelectionMode: (state, action: PayloadAction<MapSelectionMode>) => {
             state.selectionMode = action.payload
         },
+        toggleDigitiseSelectionMode: (state, action: PayloadAction<null>) => {
+            if (state.selectionMode === MapSelectionMode.Digitise) {
+                state.selectionMode = DEFAULT_SELECTION_MODE
+            } else {
+                state.selectionMode = MapSelectionMode.Digitise
+            }
+        },
         toggleParcelSelectionMode: (state, action: PayloadAction<UploadMode>) => {
             // reset selectedProperty if uploadMode is None
             if (action.payload === UploadMode.None) {
@@ -114,6 +121,7 @@ export const MapStateSlice = createSlice({
 export const {
     setMapReady,
     setMapSelectionMode,
+    toggleDigitiseSelectionMode,
     toggleParcelSelectionMode,
     toggleParcelSelectedState,
     setSelectedParcels,

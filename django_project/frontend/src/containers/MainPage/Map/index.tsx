@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import maplibregl, { IControl } from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { 
@@ -8,7 +10,8 @@ import {
   setSelectedProperty,
   resetSelectedProperty,
   selectedParcelsOnRenderFinished,
-  onMapEventProcessed
+  onMapEventProcessed,
+  toggleDigitiseSelectionMode
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
 import { MapSelectionMode } from "../../../models/Map";
@@ -25,6 +28,7 @@ import {
   getSelectParcelLayerNames
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
+import CustomDrawControl from './CustomDrawControl';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_SOURCES = ['sanbi', 'properties', 'NGI Aerial Imagery']
@@ -43,6 +47,7 @@ export default function Map() {
   const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
   const mapContainer = useRef(null);
   const map = useRef(null);
+  const mapDraw = useRef(null);
 
   const onMapMouseEnter = () => {
     if (!map.current) return;    
@@ -53,6 +58,59 @@ export default function Map() {
   const onMapMouseLeave = () => {
     if (!map.current) return;
     map.current.getCanvas().style.cursor = '';
+  }
+
+  const onDrawSaved = () => {
+    if (!mapDraw.current) return;
+    // get the features from drawing
+    let _drawObj: CustomDrawControl = mapDraw.current
+    console.log(JSON.stringify(_drawObj.getMapBoxDraw().getAll()));
+    // show backdrop processing
+    // call API to fetch parcels based on geometries
+    // exit mode
+    onDrawCancelled()
+  }
+
+  const onDrawCancelled = () => {
+    if (!mapDraw.current) return;
+    let _mapObj: maplibregl.Map = map.current
+    _mapObj.removeControl(mapDraw.current)
+    mapDraw.current = null
+    dispatch(toggleDigitiseSelectionMode())
+  }
+
+  const createMapDrawTool = () => {
+    // add mapbox draw
+    let _draw = new MapboxDraw({
+      displayControlsDefault: false,
+      controls: {
+        polygon: true,
+        trash: true
+      }
+    })
+    let _save_button = document.createElement('span')
+    _save_button.className = 'mapboxgl-ctrl-icon'
+    _save_button.title = 'Save'
+    _save_button.ariaLabel = 'Save'
+    
+    let _cancel_button = document.createElement('span')
+    _cancel_button.className = 'mapboxgl-ctrl-icon'
+    _cancel_button.title = 'Cancel'
+    _cancel_button.ariaLabel = 'Cancel'
+    return new CustomDrawControl({
+      draw: _draw,
+      buttons: [{
+        on: 'click',
+        action: onDrawSaved,
+        classes: ['maplibregl-ctrl-draw-save'],
+        content: _save_button
+      }, {
+        on: 'click',
+        action: onDrawCancelled,
+        classes: ['maplibregl-ctrl-draw-cancel'],
+        content: _cancel_button
+      }]
+    })
   }
 
   useEffect(() => {
@@ -101,6 +159,18 @@ export default function Map() {
       renderHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
     } else {
       removeHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
+    }
+    if (selectionMode === MapSelectionMode.Digitise) {
+      // add Draw Control to the map
+      if (!mapDraw.current) {
+        mapDraw.current = createMapDrawTool()
+        _mapObj.addControl(mapDraw.current, 'top-left')
+      }
+    } else {
+      if (mapDraw.current) {
+        _mapObj.removeControl(mapDraw.current)
+        mapDraw.current = null
+      }
     }
   }, [selectionMode])
 

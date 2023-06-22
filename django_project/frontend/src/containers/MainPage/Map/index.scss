@@ -23,6 +23,14 @@
     background-image: url("data:image/svg+xml,%3Csvg width='25' height='25' viewBox='0 0 25 25' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.625 21.875L9.375 19.6875L3.125 22.1094V5.26042L9.375 3.125L15.625 5.3125L21.875 2.89062V19.7396L15.625 21.875ZM14.5833 19.3229V7.13542L10.4167 5.67708V17.8646L14.5833 19.3229Z' fill='%23696969'/%3E%3C/svg%3E%0A");
 }
 
+.maplibregl-ctrl-draw-save .mapboxgl-ctrl-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512' id='IconChangeColor' height='16' width='16'%3E%3C!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --%3E%3Cpath d='M433.1 129.1l-83.9-83.9C342.3 38.32 327.1 32 316.1 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V163.9C448 152.9 441.7 137.7 433.1 129.1zM224 416c-35.34 0-64-28.66-64-64s28.66-64 64-64s64 28.66 64 64S259.3 416 224 416zM320 208C320 216.8 312.8 224 304 224h-224C71.16 224 64 216.8 64 208v-96C64 103.2 71.16 96 80 96h224C312.8 96 320 103.2 320 112V208z' id='mainIconPathAttribute'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.maplibregl-ctrl-draw-cancel .mapboxgl-ctrl-icon {
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' id='IconChangeColor'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM15.7071 9.70711C16.0976 9.31658 16.0976 8.68342 15.7071 8.29289C15.3166 7.90237 14.6834 7.90237 14.2929 8.29289L12 10.5858L9.70711 8.29291C9.31658 7.90238 8.68342 7.90238 8.29289 8.29291C7.90237 8.68343 7.90237 9.3166 8.29289 9.70712L10.5858 12L8.2929 14.2929C7.90238 14.6834 7.90238 15.3166 8.2929 15.7071C8.68342 16.0976 9.31659 16.0976 9.70711 15.7071L12 13.4142L14.2929 15.7071C14.6834 16.0976 15.3166 16.0976 15.7071 15.7071C16.0976 15.3166 16.0976 14.6834 15.7071 14.2929L13.4142 12L15.7071 9.70711Z' fill='black' id='mainIconPathAttribute'%3E%3C/path%3E%3C/svg%3E");
+}
+
 .legend-placeholder {
     padding: 0px 10px 5px 10px;
     text-align: left;
