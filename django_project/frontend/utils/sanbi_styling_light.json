@@ -141,7 +141,7 @@
       "type": "raster",
       "source": "NGI Aerial Imagery",
       "minzoom": 10,
-      "layout": {"visibility": "visible"}
+      "layout": {"visibility": "none"}
     },
     {
       "id": "ecosystems_10",
