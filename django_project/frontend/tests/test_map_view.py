@@ -1,10 +1,10 @@
-from frontend.views.home import HomeView
+from frontend.views.map import MapView
 from django_project.frontend.tests.base_view import RegisteredBaseViewTestBase
 
 
 class TestHomeView(RegisteredBaseViewTestBase):
-    view_name = 'home'
-    view_cls = HomeView
+    view_name = 'map'
+    view_cls = MapView
 
     def test_organisation_selector(self):
         self.do_test_anonymous_user()
