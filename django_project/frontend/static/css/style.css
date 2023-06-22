@@ -42,6 +42,7 @@ body {
   --black-gray: rgba(0, 0, 0, 0.6);
   --black-darker: rgba(0, 0, 0, 0.87);
   --black-transparent: rgba(0, 0, 0, 0.12);
+  --dark-gray: rgb(40, 40, 41);
   --black-custom-primary: #282829;
 }
 

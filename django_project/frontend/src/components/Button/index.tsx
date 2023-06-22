@@ -1,7 +1,7 @@
 import React, { ButtonHTMLAttributes } from 'react';
 import { Button, styled, useTheme } from '@mui/material';
 
-type ButtonColor = 'green' | 'orange' | 'purple';
+export type ButtonColor = 'green' | 'orange' | 'purple';
 
 const StyledButton = styled(Button)<{ bgcolor: string}>(({ bgcolor}) => ({
   background: bgcolor,
