@@ -439,6 +439,8 @@
 .navbar-brand img {
   border: 4px solid white;
   border-radius: 2px;
+  height: auto;
+  max-width: calc(100% - 16px);
 }
 
 .nav-item {
