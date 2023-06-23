@@ -2,7 +2,6 @@
 from typing import Tuple, List
 import requests
 from django.core.cache import cache
-from django.db.models import Q
 from django.db import connection
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, Http404, HttpResponseForbidden
@@ -13,9 +12,6 @@ from django.contrib.gis.geos import Point
 from property.models import (
     Property,
     Parcel
-)
-from stakeholder.models import (
-    OrganisationUser
 )
 from frontend.models.context_layer import ContextLayer
 from frontend.serializers.context_layer import ContextLayerSerializer
@@ -34,6 +30,9 @@ from frontend.serializers.parcel import (
 )
 from frontend.serializers.property import (
     PropertySerializer
+)
+from frontend.utils.organisation import (
+    CURRENT_ORGANISATION_ID_KEY
 )
 
 User = get_user_model()
@@ -103,7 +102,7 @@ class PropertiesLayerMVTTiles(APIView):
 
     def generate_query_for_map(
             self,
-            user: User,
+            organisation_id: int,
             z: int,
             x: int,
             y: int,) -> Tuple[str, List[str]]:
@@ -115,29 +114,22 @@ class PropertiesLayerMVTTiles(APIView):
             'from property p '
             'where p.geometry && TileBBox(%s, %s, %s, 4326) '
         )
+        # add filter by selected organisation
+        sql = (
+            sql +
+            'AND p.organisation_id=%s '
+        )
         query_values = [
             z, x, y,
             z, x, y,
+            organisation_id
         ]
-        if not user.is_superuser:
-            sql = (
-                sql +
-                'AND (p.created_by_id=%s OR '
-                '     p.organisation_id in (SELECT ou.organisation_id '
-                '     FROM organisation_user ou WHERE ou.user_id=%s)) '
-            )
-            query_values = [
-                z, x, y,
-                z, x, y,
-                user.id,
-                user.id,
-            ]
         return sql, query_values
 
     def get(self, *args, **kwargs):
         sql, query_values = (
             self.generate_query_for_map(
-                self.request.user,
+                self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0),
                 kwargs.get('z'),
                 kwargs.get('x'),
                 kwargs.get('y')
@@ -210,7 +202,7 @@ class FindParcelByCoord(APIView):
                 parcel.first()
             ).data
         return None
-    
+
     def check_used_parcel(self, cname: str, existing_property_id: int):
         parcels = Parcel.objects.filter(sg_number=cname)
         if existing_property_id:
@@ -258,15 +250,13 @@ class FindPropertyByCoord(APIView):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
         point = Point(float(lng), float(lat), srid=4326)
-        properties = Property.objects.filter(geometry__contains=point)
-        if not self.request.user.is_superuser:
-            user_organisations = OrganisationUser.objects.filter(
-                user=self.request.user
-            ).values_list('organisation_id', flat=True)
-            properties = properties.filter(
-                Q(created_by_id=self.request.user.id) |
-                Q(organisation_id__in=user_organisations)
+        properties = Property.objects.filter(
+            geometry__contains=point
+        ).filter(
+            organisation_id=(
+                self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0)
             )
+        )
         property = properties.order_by('id').first()
         if not property:
             return Response(status=404)
