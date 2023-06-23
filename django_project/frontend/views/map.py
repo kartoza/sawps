@@ -1,8 +1,9 @@
 from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 
 
-class MapView(TemplateView):
+class MapView(LoginRequiredMixin, TemplateView):
     """
     MapView displays the map page by rendering the 'map.html' template.
     """

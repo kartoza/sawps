@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.views.generic import View
-from swaps.email_verification_token import email_verification_token
+from sawps.email_verification_token import email_verification_token
 
 
 class ActivateAccount(View):

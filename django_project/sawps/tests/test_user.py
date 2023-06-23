@@ -1,10 +1,10 @@
 from django.test import TestCase
-from swaps.tests.models.account_factory import (
+from sawps.tests.models.account_factory import (
     UserF,
     GroupF,
 )
 
-from swaps.forms.account_forms import CustomSignupForm
+from sawps.forms.account_forms import CustomSignupForm
 
 import logging
 

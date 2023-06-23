@@ -57,3 +57,20 @@
   justify-content: center;
   text-transform: uppercase;
 }
+
+.footer {
+  padding: var(--space-md);
+  color: var(--white);
+  background-color: var(--dark-gray);
+  font-size: 13px;
+}
+
+.footer .heart {
+  width: 13px;
+  filter: invert(1);
+}
+
+.footer .kartoza-logo {
+  width: 25px;
+  padding-left: var(--space-xxs);
+}

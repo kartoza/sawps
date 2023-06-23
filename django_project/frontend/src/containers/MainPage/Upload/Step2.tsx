@@ -17,6 +17,7 @@ import PropertyInterface from '../../../models/Property';
 import { MapSelectionMode } from "../../../models/Map";
 import SelectedParcelTable from './SelectedParcelTable';
 import ParcelInterface from '../../../models/Parcel';
+import Uploader from './Uploader';
 
 const CREATE_NEW_PROPERTY_URL = '/api/property/create/'
 const PROPERTY_UPDATE_BOUNDARIES_URL = '/api/property/boundaries/update/'
@@ -33,6 +34,7 @@ export default function Step2(props: Step2Interface) {
     const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
     const [savingProperty, setSavingProperty] = useState(false)
     const [alertMessage, setAlertMessage] = useState<string>('')
+    const [openUploader, setOpenUploader] = useState(false)
 
     const saveProperty = () => {
         if (selectedParcels.length === 0) {
@@ -118,6 +120,9 @@ export default function Step2(props: Step2Interface) {
             </Grid>
             <Grid item>
                 <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
+            </Grid>
+            <Grid item>
+                <Uploader open={openUploader} onClose={() => setOpenUploader(false)} />
             </Grid>
         </Grid>
     )
