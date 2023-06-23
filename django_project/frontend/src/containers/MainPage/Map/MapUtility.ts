@@ -71,7 +71,7 @@ export const renderHighlightParcelLayers = (map: maplibregl.Map, layer_names: st
                     0
                 ]
                 }
-            });
+            }, `${layer_names[_idx]}-highlighted`);
         }    
     }
 }

@@ -14,7 +14,8 @@ import {capitalize} from '../../../utils/Helpers';
 
 interface SelectedParcelTableInterface {
     parcels: ParcelInterface[];
-    onRemoveParcel: (parcel: ParcelInterface) => void
+    onRemoveParcel: (parcel: ParcelInterface) => void;
+    onParcelHovered?: (parcel: ParcelInterface) => void;
 }
 
 export default function SelectedParcelTable(props: SelectedParcelTableInterface) {
@@ -31,7 +32,10 @@ export default function SelectedParcelTable(props: SelectedParcelTableInterface)
                 <TableBody>
                     { props.parcels.map((parcel: ParcelInterface, index: number) => {
                         return (
-                            <TableRow key={index}>
+                            <TableRow key={index}
+                                onMouseOver={() => { props.onParcelHovered ? props.onParcelHovered(parcel) : null}}
+                                onMouseLeave={() => { props.onParcelHovered ? props.onParcelHovered(null) : null}}
+                                >
                                 <TableCell style={{width: '60%'}}>
                                     {parcel.cname}
                                 </TableCell>

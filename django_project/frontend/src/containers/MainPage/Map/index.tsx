@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import maplibregl, { IControl } from 'maplibre-gl';
+import maplibregl, { FeatureIdentifier, IControl } from 'maplibre-gl';
 import { MaplibreExportControl, Size, PageOrientation, Format, DPI} from "@watergis/maplibre-gl-export";
 import '@watergis/maplibre-gl-export/dist/maplibre-gl-export.css';
 import {RootState} from '../../../app/store';
@@ -38,6 +38,14 @@ const AERIAL_SOURCE_ID = 'NGI Aerial Imagery'
 
 const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
 
+const getEmptyFeature = (): FeatureIdentifier => {
+  return {
+    id: '',
+    source: '',
+    sourceLayer: ''
+  }
+}
+
 export default function Map() {
   const dispatch = useAppDispatch()
   const contextLayers = useAppSelector((state: RootState) => state.layerFilter.contextLayers)
@@ -52,6 +60,7 @@ export default function Map() {
   const map = useRef(null)
   const mapNavControl = useRef(null)
   const isDarkTheme = useThemeDetector()
+  const [highlightedParcel, setHighlightedParcel] = useState<FeatureIdentifier>(getEmptyFeature())
 
   const onMapMouseEnter = () => {
     if (!map.current) return;    
@@ -237,6 +246,33 @@ export default function Map() {
               padding: 100,
               maxZoom: 16
           })
+        }
+      } else if (_event.name === 'HIGHLIGHT_SELECTED_PARCEL') {
+        if (_event.payload && _event.payload.length === 2) {
+          if (highlightedParcel.id) {
+            // remove current highlight
+            _mapObj.setFeatureState(
+              highlightedParcel,
+              { 'parcel-selected-highlighted': false }
+            )
+          }
+          let _feature_id:FeatureIdentifier = {
+            id: _event.payload[0],
+            source: 'sanbi',
+            sourceLayer: _event.payload[1],
+          }
+          _mapObj.setFeatureState(
+            _feature_id,
+            { 'parcel-selected-highlighted': true }
+          )
+          setHighlightedParcel(_feature_id)
+        } else if (highlightedParcel.id) {
+          // remove highlight
+          _mapObj.setFeatureState(
+            highlightedParcel,
+            { 'parcel-selected-highlighted': false }
+          )
+          setHighlightedParcel(getEmptyFeature())
         }
       }
     }
