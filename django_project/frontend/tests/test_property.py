@@ -93,11 +93,11 @@ class TestPropertyAPIViews(TestCase):
             reverse('property-create'), data=data,
             format='json'
         )
-        # without adding to organisation, should return 400
+        # without adding to organisation, should return 403
         request.user = self.user_1
         view = CreateNewProperty.as_view()
         response = view(request)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
         # add to organisation, should return 201
         organisationUserFactory.create(
             user=self.user_1,

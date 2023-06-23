@@ -25,7 +25,10 @@ class RegisteredOrganisationBaseView(TemplateView):
                 CURRENT_ORGANISATION_KEY] = ''
 
     def get_or_set_current_organisation(self):
-        if CURRENT_ORGANISATION_ID_KEY in self.request.session:
+        if (
+            CURRENT_ORGANISATION_ID_KEY in self.request.session and
+            CURRENT_ORGANISATION_KEY in self.request.session
+        ):
             return (
                 self.request.session[CURRENT_ORGANISATION_ID_KEY],
                 self.request.session[CURRENT_ORGANISATION_KEY]
