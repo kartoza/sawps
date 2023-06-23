@@ -13,8 +13,6 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
     _themeSwitcherIcon: HTMLElement;
     _print: HTMLButtonElement;
     _printIcon: HTMLElement;
-    _baseMapSelect: HTMLButtonElement;
-    _baseMapSelectIcon: HTMLElement;
     _exportControl: CustomExportControl;
     _currentTheme: string;
   
@@ -44,14 +42,6 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
       });
       this._printIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._print);
       this._printIcon.setAttribute('aria-hidden', 'true');
-  
-      
-      // add change base map icon
-      this._baseMapSelect = this._createButton('maplibregl-ctrl-base-map-select', (e) => {
-        // not implemented yet
-      });
-      this._baseMapSelectIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._baseMapSelect);
-      this._baseMapSelectIcon.setAttribute('aria-hidden', 'true');
     }
   
     onAdd(map: maplibregl.Map) {
@@ -66,9 +56,6 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
 
       this._print.title = 'Print'
       this._print.ariaLabel = 'Print'
-  
-      this._baseMapSelect.title = 'Change Base Map'
-      this._baseMapSelect.ariaLabel = 'Change Base Map'
       return _container
     }
   
