@@ -80,11 +80,11 @@ Open your web browser and go to localhost:8000 to view the running application.
 
 ### 💽 Restoring layer schema for map
 
-The full dump file for layer schema is ~5.3GB, meanwhile compact dump file is 24MB.
+The full dump file for layer schema is ~5.3GB, meanwhile compact dump file is only 24MB.
 [Download Compact Dump File for Layer.](https://drive.google.com/file/d/1Q0WhUP74MCoC_JcD4qMK1Egs575xrhqQ/view?usp=sharing)
 
 Preview for compact dump file:
-
+![sanbi_maps_compact](https://github.com/danangmassandy/sawps/assets/5819076/7bac8cef-142a-4512-a7d2-93c189abc0f1)
 
 Copy the dump file to db container. Then run pg_restore from inside db container to restore the dump file.
 
