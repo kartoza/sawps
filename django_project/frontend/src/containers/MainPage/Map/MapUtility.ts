@@ -41,6 +41,7 @@ export const getSelectParcelLayerNames = (layer_names: string[]) => {
  */
 export const renderHighlightParcelLayers = (map: maplibregl.Map, layer_names: string[]) => {
     for (let _idx = 0; _idx < layer_names.length; ++_idx) {
+        if (layer_names[_idx].indexOf('_labels') > -1) continue
         let _layer_name = `${layer_names[_idx]}-select-parcel`
         if (typeof map.getLayer(_layer_name) === 'undefined') {
             map.addLayer({
