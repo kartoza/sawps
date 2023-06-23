@@ -41,11 +41,11 @@ django-allauth==0.54.0
 # for the 2fa
 django-otp==1.2.1
 django-allauth-2fa==0.10.0
-<<<<<<< HEAD
-=======
 
 # area calculation
 area==1.1.1
 # For django image field
 Pillow==9.5.0
->>>>>>> d9838092f283ec62aa7e43ee7db437a7dfe2578b
+
+# For reading shapefile
+fiona==1.8.21

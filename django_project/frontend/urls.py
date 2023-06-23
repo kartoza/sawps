@@ -37,6 +37,13 @@ from frontend.api_views.property import (
     UpdatePropertyBoundaries,
     PropertyDetail
 )
+from frontend.api_views.upload import (
+    BoundaryFileUpload,
+    BoundaryFileRemove,
+    BoundaryFileList,
+    BoundaryFileSearch,
+    BoundaryFileSearchStatus
+)
 
 urlpatterns = [
     re_path(
@@ -105,6 +112,31 @@ urlpatterns = [
         r'^api/property/metadata/list/?$',
         PropertyMetadataList.as_view(),
         name='property-metadata'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/remove/?$',
+        BoundaryFileRemove.as_view(),
+        name='boundary-file-remove'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/list/?$',
+        BoundaryFileList.as_view(),
+        name='boundary-file-list'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/search/?$',
+        BoundaryFileSearch.as_view(),
+        name='boundary-file-search'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/status/?$',
+        BoundaryFileSearchStatus.as_view(),
+        name='boundary-file-status'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/?$',
+        BoundaryFileUpload.as_view(),
+        name='boundary-file-upload'
     ),
     path('map/', MapView.as_view(), name='map'),
     path('help/', HelpView.as_view(), name='help'),

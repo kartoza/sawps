@@ -1,5 +1,5 @@
 from django.urls import path
-from swaps.views import ActivateAccount
+from sawps.views import ActivateAccount
 
 urlpatterns = [
     path(

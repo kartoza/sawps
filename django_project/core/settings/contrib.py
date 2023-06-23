@@ -66,9 +66,9 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_FORMS = {
-    'signup': 'swaps.forms.CustomSignupForm',
-    'login': 'swaps.forms.CustomLoginForm',
-    'change_password': 'swaps.forms.CustomChangePasswordForm',
+    'signup': 'sawps.forms.CustomSignupForm',
+    'login': 'sawps.forms.CustomLoginForm',
+    'change_password': 'sawps.forms.CustomChangePasswordForm',
 }
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
@@ -92,12 +92,12 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
     {
-        "NAME": "swaps.password_validation.NumberValidator",
+        "NAME": "sawps.password_validation.NumberValidator",
     },
     {
-        "NAME": "swaps.password_validation.UppercaseValidator",
+        "NAME": "sawps.password_validation.UppercaseValidator",
     },
     {
-        "NAME": "swaps.password_validation.SymbolValidator",
+        "NAME": "sawps.password_validation.SymbolValidator",
     },
 ]

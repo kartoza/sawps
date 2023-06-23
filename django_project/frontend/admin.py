@@ -2,7 +2,12 @@
 from django.contrib import admin, messages
 from celery.result import AsyncResult
 from core.celery import app
-from frontend.models import ContextLayer, ContextLayerTilingTask
+from frontend.models import (
+    ContextLayer,
+    ContextLayerTilingTask,
+    BoundaryFile,
+    BoundarySearchRequest
+)
 from frontend.tasks import (
     generate_vector_tiles_task,
     clear_older_vector_tiles
@@ -112,5 +117,15 @@ class TilingTaskAdmin(admin.ModelAdmin):
                cancel_generate_vector_tiles, clear_vector_tiles]
 
 
+class BoundaryFileAdmin(admin.ModelAdmin):
+    list_display = ('meta_id', 'name', 'upload_date', 'session', 'file_type')
+
+
+class BoundarySearchRequestAdmin(admin.ModelAdmin):
+    list_display = ('session', 'type', 'status', 'progress')
+
+
 admin.site.register(ContextLayer)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
+admin.site.register(BoundaryFile, BoundaryFileAdmin)
+admin.site.register(BoundarySearchRequest, BoundarySearchRequestAdmin)

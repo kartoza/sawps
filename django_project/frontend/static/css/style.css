@@ -140,14 +140,14 @@ body {
   text-decoration: none;
 }
 
-.swaps-from-submit{
+.sawps-from-submit{
   display: block;
   margin: 0 auto !important;
   position: relative;
 }
 
 
-.swaps-text-primary{
+.sawps-text-primary{
   display: flex;
   justify-content: center;
   height: max-content;
@@ -158,7 +158,7 @@ hr.separator{
   border-top: 1px solid var(--white);
 }
 
-.swaps-text-primary, a {
+.sawps-text-primary, a {
   color: #86BC8B;
 }
 
@@ -170,7 +170,7 @@ a:hover{
   cursor: pointer;
 }
 
-.swaps-text-primary, a {
+.sawps-text-primary, a {
   color: #86BC8B;
 }
 
@@ -247,13 +247,13 @@ hr.default-separator{
   width: 100%;
 }
 
-.swaps-small-font-button{
+.sawps-small-font-button{
   color: #fff;
   font-size: 13px;
   text-transform: uppercase;
 }
 
-.swaps-font-button{
+.sawps-font-button{
   color: #fff;
   text-transform: uppercase;
   padding: 3px 20px !important;
