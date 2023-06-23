@@ -139,7 +139,10 @@ class CreateNewProperty(APIView):
                 user=self.request.user
             )
             if not organisation_user.exists():
-                return Response(status=400, data='Invalid Organisation!')
+                return Response(
+                    status=403,
+                    data='User does not belong to this organisation!'
+                )
         data = {
             'name': request.data.get('name'),
             'owner_email': request.data.get('owner_email'),
