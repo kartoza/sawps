@@ -165,5 +165,60 @@
                 }
             }
         }
+
+        .PropertySiteDetailTable {
+            label {
+                color: unset;
+            }
+        }
+    }
+}
+
+.Uploader {
+    .MuiDialogTitle-root {
+        text-align: center;
+    }
+
+    .UploaderContent {
+        min-width: 550px;
+        min-height: 500px;
+        padding: 20px;
+
+        label {
+            color: unset;
+        }
+
+        .dzu-dropzone {
+            overflow: hidden;
+            height: 250px;
+            background: rgba(134, 188, 139, 0.1);
+            border: 1px dashed #75B37A;
+            border-radius: 4px;
+            padding: 25px;
+        }
+
+        .CloudUploadIcon {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 166px;
+            height: 138px;
+            background-image: url("data:image/svg+xml,%3Csvg width='166' height='138' viewBox='0 0 166 138' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M83 92V126.5M83 92L96.75 103.5M83 92L69.25 103.5' stroke='%2386BC8B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M151.75 76.7798C151.75 90.252 141.822 101.81 127.688 106.72M99.3694 46.1553C103.58 44.9283 108.008 44.3042 112.466 44.3095C116.962 44.3095 121.287 44.9363 125.323 46.0863M125.323 46.0863C123.129 29.8655 106.485 17.25 86.2725 17.25C64.575 17.25 46.9888 31.786 46.9888 49.7203C46.9832 53.5725 47.8076 57.394 49.4225 61.0018M125.323 46.0863C131.358 47.8163 136.801 50.7465 141.183 54.625M49.4225 61.0018C47.5424 60.696 45.6316 60.5419 43.7162 60.5418C27.4431 60.5475 14.25 71.4495 14.25 84.8988C14.25 95.8008 22.9194 105.03 34.875 108.135M49.4225 61.0018C53.2264 61.6196 56.8475 62.8584 60.0788 64.6473' stroke='%2386BC8B' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+        }
+
+        .CenterItem {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .BrowseLink {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .UploadedFilesPreview {
+            overflow-y: auto;
+            max-height: 330px;
+        }
     }
 }

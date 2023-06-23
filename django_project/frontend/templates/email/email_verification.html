@@ -119,8 +119,8 @@ style="border:none;vertical-align:middle;" width="100%">
 word-break:break-word;">
 <table border="0" cellpadding="0" cellspacing="0" role="none" 
 style="border-collapse:collapse;border-spacing:0;">
-<tbody><tr><td style="width:150px;"> 
-<img alt src="https://{{ domain }}/static/images/sanbi-logo-1x.png" 
+<tbody><tr><td style="width:180px;"> 
+<img alt src="https://{{ domain }}/static/images/SANBI-logo.jpg" 
 style="border:0;display:block;outline:none;text-decoration:none;
 height:auto;width:100%;font-size:13px;" title width="123" height="auto">
 </td></tr></tbody></table>
@@ -159,7 +159,7 @@ style="border:none;vertical-align:middle;" width="100%"><tbody>
 <div style="text-align:left;">
 <p style="Margin:0;text-align:left;mso-line-height-alt:150%">
 <span style="font-size:12px;font-family:Inter,Arial,sans-serif;
-font-weight:400;color:#000000;line-height:150%;">Dear {{last_name}},
+font-weight:400;color:#000000;line-height:150%;">Dear {{name}},
 </span></p>
 <p style="Margin:0;mso-line-height-alt:150%">
 <span style="font-size:12px;font-family:Inter,Arial,sans-serif;
@@ -167,7 +167,7 @@ font-weight:400;color:#000000;line-height:150%;">&nbsp;</span></p>
 <p style="Margin:0;mso-line-height-alt:150%"><span style="font-size:12px;
 font-family:Inter,Arial,sans-serif;font-weight:400;color:#000000;
 line-height:150%;">Thank you for registering with the South African Wildlife
-Population System (SAWPS). Your account has been successfully created.
+Population System (SAWPS). Your account has been successfully created!
 </span></p>
 <p style="Margin:0;mso-line-height-alt:150%"><span 
 style="font-size:12px;font-family:Inter,Arial,sans-serif;
@@ -175,12 +175,16 @@ font-weight:400;color:#000000;line-height:150%;">&nbsp;</span></p>
 <p style="Margin:0;mso-line-height-alt:150%"><span 
 style="font-size:12px;font-family:Inter,Arial,sans-serif;
 font-weight:400;color:#000000;line-height:150%;">To get started, 
-please click on the following link to verify and activate 
-your account: </span><span><a
+please click on the following button to verify and activate 
+your account.</span></p>
+<p style="Margin:0;mso-line-height-alt:150%"><span 
+style="font-size:12px;font-family:Inter,Arial,sans-serif;
+font-weight:400;color:#000000;line-height:150%;">&nbsp;</span></p> 
+<p style="Margin:0;mso-line-height-alt:150%;text-align:center"><a
 href='https://{{ domain }}{% url 'activate' uidb64=uid token=token %}'
-style="font-size:12px;font-family:Inter,Arial,sans-serif;font-weight:400;
-color:#0500ff;line-height:150%;text-decoration:underline;">
-Verification Link</a></span></p>
+><button style="background-color:#70B276;border:2px solid #70B276;
+border-radius:5px;text-transform:uppercase;padding:3px 20px !important;
+cursor:pointer;">Verification Link</button></a></span></p>
 <p style="Margin:0;mso-line-height-alt:150%"><span 
 style="font-size:12px;font-family:Inter,Arial,sans-serif;
 font-weight:400;color:#0500ff;line-height:150%;text-decoration:none;">
@@ -190,7 +194,7 @@ font-weight:400;color:#0500ff;line-height:150%;text-decoration:none;">
 </span><span style="font-size:12px;font-family:Inter,Arial,sans-serif;
 font-weight:400;color:#000000;line-height:150%;">If you have any 
 questions or need further assistance, please don't hesitate to 
-contact our support team at [Support Email]</span></p>
+contact our support team at {{support_email}}.</span></p>
 <p style="Margin:0;mso-line-height-alt:150%">
 <span style="font-size:12px;font-family:Inter,Arial,sans-serif;
 font-weight:400;color:#000000;line-height:150%;">&nbsp;</span></p>
@@ -198,12 +202,12 @@ font-weight:400;color:#000000;line-height:150%;">&nbsp;</span></p>
 <span style="font-size:12px;font-family:Inter,Arial,sans-serif;
 font-weight:400;color:#000000;line-height:150%;">We look forward 
 to having you as part of our community and hope you enjoy using 
-the SWAPS.</span></p><p style="Margin:0;mso-line-height-alt:150%">
+the sawps.</span></p><p style="Margin:0;mso-line-height-alt:150%">
 <span style="font-size:12px;font-family:Inter,Arial,sans-serif;
 font-weight:400;color:#000000;line-height:150%;">&nbsp;
 <br class="sb"><br class="sb">Best regards</span></p><p 
 style="Margin:0;mso-line-height-alt:150%"><span style="font-size:12px;
 font-family:Inter,Arial,sans-serif;font-weight:400;color:#000000;
-line-height:150%;">&nbsp;<br class="sb">The SWAPS Team<br class="sb">
+line-height:150%;">&nbsp;<br class="sb">The SAWPS Team<br class="sb">
 </span></p></div></td></tr></tbody></table></div></td></tr></tbody>
 </table></div></div></body></html>

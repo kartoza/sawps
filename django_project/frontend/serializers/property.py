@@ -8,7 +8,7 @@ from property.models import (
     Property,
     Parcel
 )
-from frontend.utils.map import find_layer_by_cname
+from frontend.utils.parcel import find_layer_by_cname
 
 
 class PropertyTypeSerializer(NameObjectBaseSerializer):

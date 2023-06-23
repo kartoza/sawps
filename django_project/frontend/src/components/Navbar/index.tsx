@@ -56,7 +56,7 @@ function ResponsiveNavbar() {
           <Box sx={{ p: 1, display: { xs: 'none', md: 'flex' } }}>
             <a href='/'>
               <img
-                src='/static/images/sanbi-logo-1x.png'
+                src='/static/images/SANBI-logo.jpg'
                 alt="Logo"
                 style={{
                   height: 'auto',

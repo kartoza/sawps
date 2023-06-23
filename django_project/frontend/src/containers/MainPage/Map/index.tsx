@@ -218,7 +218,7 @@ export default function Map() {
 
         // Force a repaint, so that the map will be repainted without you having to touch the map
         _mapObj.triggerRepaint()
-      } else if (_event.name === 'PROPERTY_SELECTED') {
+      } else if (_event.name === 'PROPERTY_SELECTED' || _event.name === 'BOUNDARY_FILES_UPLOADED') {
         // parse bbox from payload
         if (_event.payload && _event.payload.length === 4) {
           let _bbox = _event.payload.map(Number)

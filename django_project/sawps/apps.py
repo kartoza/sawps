@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SwapsConfig(AppConfig):
+class sawpsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'swaps'
+    name = 'sawps'
