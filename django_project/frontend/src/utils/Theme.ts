@@ -32,7 +32,7 @@ const createColor = (mainColor: any) => augmentColor({
 
 const theme = createTheme({
   typography: {
-    fontFamily: '"Poppins", sans-serif',
+    fontFamily: '"Inter", sans-serif',
   },
   palette: {
     mode: 'light',

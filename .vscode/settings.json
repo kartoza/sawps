@@ -1,0 +1,10 @@
+{
+    "python.testing.pytestArgs": [
+        "django_project",
+        "-s",
+        "-c",
+        "${workspaceFolder}/django_project/pytest.ini"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

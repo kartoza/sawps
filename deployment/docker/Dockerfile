@@ -25,6 +25,10 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt-get install nodejs -y
 
+# Tegola
+RUN wget https://github.com/go-spatial/tegola/releases/download/v0.16.0/tegola_linux_amd64.zip -P /home/web/
+RUN unzip /home/web/tegola_linux_amd64.zip -d /opt/
+
 ADD django_project /home/web/django_project
 
 EXPOSE 8080
