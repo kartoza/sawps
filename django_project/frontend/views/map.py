@@ -1,9 +1,9 @@
-from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from .base_view import RegisteredOrganisationBaseView
 
 
-class MapView(LoginRequiredMixin, TemplateView):
+class MapView(LoginRequiredMixin, RegisteredOrganisationBaseView):
     """
     MapView displays the map page by rendering the 'map.html' template.
     """

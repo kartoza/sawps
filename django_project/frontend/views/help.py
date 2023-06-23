@@ -1,7 +1,7 @@
-from django.views.generic import TemplateView
+from .base_view import RegisteredOrganisationBaseView
 
 
-class HelpView(TemplateView):
+class HelpView(RegisteredOrganisationBaseView):
     """
     HelpView displays the help page by rendering the 'help.html' template.
     """
