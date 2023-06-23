@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { IControl } from 'maplibre-gl';
+import { MaplibreExportControl, Size, PageOrientation, Format, DPI} from "@watergis/maplibre-gl-export";
+import '@watergis/maplibre-gl-export/dist/maplibre-gl-export.css';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { 
@@ -27,6 +29,7 @@ import {
   getSelectParcelLayerNames
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
+import CustomExportControl from './CustomExportControl';
 import useThemeDetector from '../../../components/ThemeDetector';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
@@ -128,6 +131,7 @@ export default function Map() {
         style: `${MAP_STYLE_URL}?theme=${mapTheme}`,
         minZoom: 5
       })
+      // add exporter dialog
       mapNavControl.current = new CustomNavControl({
         showCompass: false,
         showZoom: true
@@ -136,6 +140,7 @@ export default function Map() {
         onThemeSwitched: () => { dispatch(toggleMapTheme()) }
       })
       map.current.addControl(mapNavControl.current, 'bottom-left')
+      map.current.addControl(mapNavControl.current.getExportControl(), 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
