@@ -1,8 +1,5 @@
-<div class="col">
-        <h3 class="page-title swaps-text-primary mb-3">Profile Configuration</h3>
-        <nav class="navbar navbar-expand-lg">
-          <ol class="navbar-nav mb-0 ">
 {% load static %}
+
 <div class="col">
         <h3 class="page-title sawps-text-menu mb-3">Profile Configuration</h3>
         <hr class="default-separator">
@@ -15,20 +12,6 @@
       </div>
     </div>
     <div class="row">
-
-    <div class="col-lg-4">
-
-        <div class="card mb-4">
-          <div class="card-body text-center">
-
-            <img src={% if object.user_profile.picture %}{{object.user_profile.picture.url}}{% else %}"https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp{% endif %}" alt="avatar"
-              class="rounded-circle img-fluid" style="width: 150px;">
-            <p class="text-muted my-2 upload-picture"><span data-toggle="modal" data-target="#uploadPictureModal"><i class="fa-solid fa-upload mr-2"></i>Upload profile picture</span></p>
-          </div>
-        </div>
-      </div>
-        <div class="card mb-0">
-          <div class="card-body text-center">
     <div class="col-sm-3">
         <div class="mb-0 card">
           <div class="text-center">
@@ -75,4 +58,3 @@
         </div>
       </div>
     </div>
-
