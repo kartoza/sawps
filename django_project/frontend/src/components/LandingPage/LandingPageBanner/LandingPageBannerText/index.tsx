@@ -16,7 +16,7 @@ const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
             <div className="landing-page-banner-text-container">
                 <div className='landing-page-banner-text-header-container'>
                     <div className='landing-page-banner-text-header'>
-                        SOUTH AFRICAN WILDLIFE POPULATION SYSTEM <br/>
+                        SOUTH AFRICAN WILDLIFE POPULATION SYSTEM
                         MONITORING TRADED WILDLIFE IN SOUTH AFRICA
                     </div>
                 </div>
@@ -30,8 +30,8 @@ const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
                     }
                 </div>
                 <div className="landing-page-banner-text-paragraph">
-                    <h4>Securely contribute, store, visualise and analyse species population data.
-                        Automatically get species population reports for <br className='landing-page-text-separator'/>priority species on your properties.</h4>
+                    <p>Securely contribute, store, visualise and analyse species population data.
+                        Automatically get species population reports for priority species on your properties.</p>
                 </div>
             </div>
         </>
