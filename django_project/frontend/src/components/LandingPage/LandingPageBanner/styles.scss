@@ -19,3 +19,18 @@ $banner-background-color:var(--black);
         flex-direction: column;
     }    
 }
+
+
+@media screen and (min-width: 300px) and (max-width:499px) {
+    .landing-page-banner{
+        height:100vh;
+        color:$banner-text-color;
+        background-color: $banner-background-color;
+        display: flex;   
+        flex-direction: column;
+
+        div{
+            margin-bottom: 10px;
+        } 
+    }    
+}

@@ -29,6 +29,10 @@
 
 }
 
+.vendors-logos-container{
+    margin-top:15px;
+}
+
 .ids-logo{
     width:50px;
     height:41px;
@@ -38,4 +42,36 @@
 .kartoza-white-logo{
     width:117px;
     height:38px;
+}
+
+
+@media screen and (min-width:500px) and (max-width:799px) {
+    .footer{
+        flex-direction: column;
+    }
+
+    .footer-nav{
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .vendors-logos-container{
+        margin-top:15px;
+    }
+}
+
+
+@media screen and (min-width:300px) and (max-width:499px) {
+    .footer{
+        flex-direction: column;
+    }
+
+    .footer-nav{
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .vendors-logos-container{
+        margin-top:10px;
+    }
 }
