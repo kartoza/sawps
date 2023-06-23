@@ -10,7 +10,7 @@
     <div class="container-fluid full-height">
         <div class="row half-height">
             <div class="col-7"></div>
-            <div class="col-5 swaps-text-primary">
+            <div class="col-5 sawps-text-primary">
             <div class="account-form content">
 
             {% csrf_token %}
@@ -32,7 +32,7 @@
                         {% if redirect_field_value %}
                             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                         {% endif %}
-                        <button class="swaps-from-submit account-button" type="submit">{% trans "LOGIN" %}</button>
+                        <button class="sawps-from-submit account-button" type="submit">{% trans "LOGIN" %}</button>
                     </form>
                     <div class="login-help text-center">
                     Don’t have an account? Register <a href="{% url 'account_signup' %}">Here</a>                            </div>

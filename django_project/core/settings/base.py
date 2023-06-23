@@ -76,7 +76,7 @@ MIDDLEWARE = (
     'django_otp.middleware.OTPMiddleware',
     'allauth_2fa.middleware.AllauthTwoFactorMiddleware',
     # request 2fa to all active user
-    'swaps.middleware.RequireSuperuser2FAMiddleware',
+    'sawps.middleware.RequireSuperuser2FAMiddleware',
 )
 
 ROOT_URLCONF = 'core.urls'
@@ -139,7 +139,7 @@ INSTALLED_APPS = (
     'regulatory_permit',
     'property',
     'stakeholder',
-    'swaps',
+    'sawps',
     'population_data',
     'species',
 )

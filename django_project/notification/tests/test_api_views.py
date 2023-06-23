@@ -2,7 +2,7 @@ from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework import status
 from django.test import TestCase
 from notification.tests.reminder_factory import ReminderF
-from swaps.tests.models.account_factory import UserF
+from sawps.tests.models.account_factory import UserF
 
 
 class TestApiView(TestCase):
