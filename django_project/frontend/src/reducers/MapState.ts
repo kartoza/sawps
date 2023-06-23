@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import ParcelInterface from "../models/Parcel";
-import { MapSelectionMode, MapEventInterface } from "../models/Map";
+import { MapSelectionMode, MapEventInterface, MapTheme } from "../models/Map";
 import PropertyInterface, { createNewProperty } from "../models/Property";
 import { UploadMode } from "../models/Upload";
 
@@ -13,6 +13,7 @@ export interface MapStateInterface {
     selectedParcels: ParcelInterface[];
     selectedProperty: PropertyInterface;
     mapEvents: MapEventInterface[];
+    theme: MapTheme;
 }
 
 const initialState: MapStateInterface = {
@@ -20,7 +21,8 @@ const initialState: MapStateInterface = {
     selectionMode: DEFAULT_SELECTION_MODE,
     selectedParcels: [],
     selectedProperty: createNewProperty(),
-    mapEvents: []
+    mapEvents: [],
+    theme: MapTheme.None
 }
 
 /* reset all selectedParcels */
@@ -114,6 +116,16 @@ export const MapStateSlice = createSlice({
                 }
             })
             state.mapEvents = _events
+        },
+        toggleMapTheme: (state, action: PayloadAction<null>) => {
+            if (state.theme === MapTheme.Light) {
+                state.theme = MapTheme.Dark
+            } else if (state.theme === MapTheme.Dark) {
+                state.theme = MapTheme.Light
+            }
+        },
+        setInitialMapTheme: (state, action: PayloadAction<MapTheme>) => {
+            state.theme = action.payload
         }
     }
 })
@@ -129,7 +141,9 @@ export const {
     resetSelectedProperty,
     selectedParcelsOnRenderFinished,
     triggerMapEvent,
-    onMapEventProcessed
+    onMapEventProcessed,
+    toggleMapTheme,
+    setInitialMapTheme
 } = MapStateSlice.actions
 
 export default MapStateSlice.reducer;

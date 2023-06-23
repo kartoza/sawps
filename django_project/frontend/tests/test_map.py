@@ -5,10 +5,12 @@ from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework.test import APIRequestFactory
+from django.contrib.sessions.middleware import SessionMiddleware
 from core.settings.utils import absolute_path
 from property.factories import PropertyFactory
-from stakeholder.factories import organisationUserFactory
+from stakeholder.factories import (
+    organisationFactory
+)
 from frontend.models.parcels import (
     Erf,
     Holding
@@ -22,6 +24,7 @@ from frontend.api_views.map import (
     FindPropertyByCoord,
     MapAuthenticate
 )
+from frontend.tests.request_factories import OrganisationAPIRequestFactory
 
 
 def mocked_set_cache(cache_key, allowed, redis_time_cache):
@@ -31,7 +34,9 @@ def mocked_set_cache(cache_key, allowed, redis_time_cache):
 class TestMapAPIViews(TestCase):
 
     def setUp(self) -> None:
-        self.factory = APIRequestFactory()
+        self.organisation_1 = organisationFactory.create()
+        self.factory = OrganisationAPIRequestFactory(self.organisation_1)
+        self.middleware = SessionMiddleware(lambda x: None)
         self.user_1 = UserF.create(username='test_1')
         self.superuser = UserF.create(
             username='test_2',
@@ -128,7 +133,8 @@ class TestMapAPIViews(TestCase):
         request = self.factory.get(
             reverse('find-property') + (
                 f'/?lat={lat}&lng={lng}'
-            )
+            ),
+            organisation_id=property.organisation.id
         )
         # should find 1
         request.user = self.user_1
@@ -136,19 +142,17 @@ class TestMapAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], property.name)
-        # user 2 should have no access
-        request.user = self.user_2
+        # set current organisation_2 in the request
+        request = self.factory.get(
+            reverse('find-property') + (
+                f'/?lat={lat}&lng={lng}'
+            ),
+            organisation_id=self.organisation_1.id
+        )
+        request.user = self.user_1
+        # should find 0
         response = view(request)
         self.assertEqual(response.status_code, 404)
-        # add user 2 to the organisation, should have access
-        organisationUserFactory.create(
-            organisation=property.organisation,
-            user=self.user_2
-        )
-        request.user = self.user_2
-        response = view(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['name'], property.name)
 
     @mock.patch('frontend.api_views.map.cache.get')
     def test_map_authenticate(self, mocked_cache):

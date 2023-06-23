@@ -1,7 +1,7 @@
-from django.views.generic import TemplateView
+from .base_view import RegisteredOrganisationBaseView
 
 
-class ContactView(TemplateView):
+class ContactView(RegisteredOrganisationBaseView):
     """
     ContactView displays the contact page by rendering the 'contact.html' template.
     """
