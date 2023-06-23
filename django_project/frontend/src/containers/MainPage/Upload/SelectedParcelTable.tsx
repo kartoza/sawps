@@ -6,8 +6,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import ParcelInterface from '../../../models/Parcel';
 import {capitalize} from '../../../utils/Helpers';
 
@@ -21,25 +21,27 @@ export default function SelectedParcelTable(props: SelectedParcelTableInterface)
     return (
         <TableContainer component={Paper}>
             <Table className='PropertySiteDetailTable' aria-label="property site detail table" size='medium'>
-                <colgroup>
-                    <col width="60%" />
-                    <col width="40%" />
-                </colgroup>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Parcel ID</TableCell>
-                        <TableCell>Parcel Type</TableCell>
+                        <TableCell style={{width: '60%'}}>Parcel ID</TableCell>
+                        <TableCell style={{width: '30%'}}>Parcel Type</TableCell>
+                        <TableCell style={{width: '10%'}}></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     { props.parcels.map((parcel: ParcelInterface, index: number) => {
                         return (
                             <TableRow key={index}>
-                                <TableCell>
-                                    <FormControlLabel control={<Checkbox checked onChange={() => props.onRemoveParcel(parcel)} />} label={parcel.cname} />
+                                <TableCell style={{width: '60%'}}>
+                                    {parcel.cname}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell style={{width: '30%'}}>
                                     {capitalize(parcel.type)}
+                                </TableCell>
+                                <TableCell style={{width: '10%'}}>
+                                    <IconButton aria-label='Delete' title='Delete' onClick={() => props.onRemoveParcel(parcel)}>
+                                        <DeleteOutlinedIcon />
+                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         )

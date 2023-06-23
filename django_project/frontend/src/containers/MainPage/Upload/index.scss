@@ -20,6 +20,11 @@
         width: 100%;
         padding-left: 10px;
         padding-right: 10px;
+
+        label.MuiInputLabel-root {
+            padding-left: 14px;
+        }
+
     }
     .UploadContent {
         padding: 10px;
@@ -50,10 +55,6 @@
 
         .ButtonContainer {
             margin-top: 20px;
-
-            .MuiButton-root {
-                width: 100%;
-            }
         }
 
         .UploadSection {
@@ -101,6 +102,11 @@
                     margin-bottom: 0;
                 }
             }
+            
+            .UploadSectionHelpIcon {
+                padding-left: 5px;
+            }
+
 
             &.Step2 {
                 .ButtonContainer {
@@ -108,6 +114,7 @@
                     padding-bottom: 10px;
 
                     .Select.MuiButton-root {
+                        min-width: 110px;
                         background: #FAA755;
                     }
 
@@ -116,6 +123,7 @@
                     }
 
                     .Digitise.MuiButton-root {
+                        min-width: 110px;
                         background: #9D85BE;
                     }
 
@@ -124,11 +132,16 @@
                     }
 
                     .Upload.MuiButton-root {
+                        min-width: 110px;
                         background: rgba(40, 40, 41, 0.8);
                     }
 
                     .Upload.MuiButton-root:hover {
                         background: rgba(40, 40, 41, 0.5);
+                    }
+
+                    .Save {
+                        width: 100%;
                     }
                 }
             }
@@ -140,6 +153,8 @@
                     padding-bottom: 10px;
 
                     .ManualForm.MuiButton-root {
+                        flex: 1 1 0px;
+                        margin: 10px;
                         background: #FAA755;
                     }
 
@@ -148,6 +163,8 @@
                     }
 
                     .Download.MuiButton-root {
+                        flex: 1 1 0px;
+                        margin: 10px;
                         background: #9D85BE;
                     }
 
@@ -156,6 +173,8 @@
                     }
 
                     .Upload.MuiButton-root {
+                        flex: 1 1 0px;
+                        margin: 10px;
                         background: rgba(40, 40, 41, 0.8);
                     }
 
@@ -167,9 +186,28 @@
         }
 
         .PropertySiteDetailTable {
+            &.MuiTable-root {
+                table-layout: fixed;
+                
+                .MuiTableCell-root {
+                    padding: 16px 8px;
+                }
+
+                .MuiIconButton-root {
+                    padding: 0;
+                }
+            }
+            
             label {
                 color: unset;
             }
+        }
+
+        .SelectPlaceHolder {
+            text-align: left;
+            width: 100%;
+            display: inline-block;
+            color: rgba(0, 0, 0, 0.6);
         }
     }
 }

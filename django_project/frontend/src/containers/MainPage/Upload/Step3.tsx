@@ -18,11 +18,10 @@ export default function Step3(props: Step3Interface) {
                 <span>Upload Species Population Data</span>
             </Grid>
             <Grid item className='UploadSectionContent'>
-                <Grid container flexDirection={'column'} flexWrap={'nowrap'} rowGap={2} className='ButtonContainer'>
-                    <Button variant='contained' className='ManualForm'>MANUAL FORM</Button>
-                    <Button variant='contained' className='Download'>DOWNLOAD SPREADSHEET TEMPLATE</Button>
-                    <Button variant='contained' className='Upload'>UPLOAD SPREADSHEET</Button>
-                    <Button variant='contained' className='Save'>SAVE</Button>
+                <Grid container flexDirection={'row'} flexWrap={'nowrap'} justifyContent={'space-between'} rowGap={2} className='ButtonContainer'>
+                    <Button variant='contained' className='ManualForm'>ONLINE FORM</Button>
+                    <Button variant='contained' className='Download'>DOWNLOAD TEMPLATE</Button>
+                    <Button variant='contained' className='Upload'>UPLOAD TEMPLATE</Button>
                 </Grid>
             </Grid>
             <Grid item className='UploadSectionHeader'>
@@ -30,12 +29,12 @@ export default function Step3(props: Step3Interface) {
                 <span>Selected Property Information</span>
             </Grid>
             <Grid item className='UploadSectionContent'>
-                <PropertyInfo property={props.property} enableForm={false} />
+                <Grid container flexDirection={'column'} flexWrap={'nowrap'} rowGap={2} className='ButtonContainer'>
+                    <Button variant='contained' className='UpdateBoundary' onClick={props.onUpdateBoundary}>UPDATE PROPERTY BOUNDARY</Button>
+                </Grid>
             </Grid>
             <Grid item className='UploadSectionContent'>
-                <Grid container flexDirection={'column'} flexWrap={'nowrap'} rowGap={2} className='ButtonContainer'>
-                    <Button variant='contained' className='Upload' onClick={props.onUpdateBoundary}>UPDATE PROPERTY BOUNDARY</Button>
-                </Grid>
+                <PropertyInfo property={props.property} enableForm={false} />
             </Grid>
         </Grid>
     )
