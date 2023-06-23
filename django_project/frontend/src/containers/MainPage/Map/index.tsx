@@ -47,6 +47,7 @@ export default function Map() {
   const mapTheme = useAppSelector((state: RootState) => state.mapState.theme)
   const mapContainer = useRef(null)
   const map = useRef(null)
+  const mapNavControl = useRef(null)
   const isDarkTheme = useThemeDetector()
 
   const onMapMouseEnter = () => {
@@ -118,18 +119,23 @@ export default function Map() {
     if (map.current) {
       dispatch(setMapReady(false))
       map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}`)
+      if (mapNavControl.current) {
+        mapNavControl.current.updateThemeSwitcherIcon(mapTheme)
+      }
     } else {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
         style: `${MAP_STYLE_URL}?theme=${mapTheme}`,
         minZoom: 5
       })
-      map.current.addControl(new CustomNavControl({
+      mapNavControl.current = new CustomNavControl({
         showCompass: false,
         showZoom: true
       }, {
+        initialTheme: mapTheme,
         onThemeSwitched: () => { dispatch(toggleMapTheme()) }
-      }), 'bottom-left')
+      })
+      map.current.addControl(mapNavControl.current, 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
