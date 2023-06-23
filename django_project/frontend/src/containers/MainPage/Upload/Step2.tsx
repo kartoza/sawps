@@ -81,9 +81,9 @@ export default function Step2(props: Step2Interface) {
                     <HelpOutlineOutlinedIcon fontSize='small' className='UploadSectionHelpIcon' />
                 </LightTooltip>
             </Grid>
-            <Grid item className='UploadSectionContent'>
-                <Grid container flexDirection={'column'}>
-                    <Grid item>
+            <Grid item className='UploadSectionContent' sx={{flex: 1}}>
+                <Grid container flexDirection={'column'} className='SelectedParcelContainerParent'>
+                    <Grid item className='SelectedParcelContainer'>
                         <SelectedParcelTable parcels={selectedParcels} onRemoveParcel={(parcel: ParcelInterface) => dispatch(toggleParcelSelectedState(parcel))} />
                     </Grid>
                 </Grid>
@@ -110,14 +110,12 @@ export default function Step2(props: Step2Interface) {
                                 )}
                             </Grid>
                         </Grid>
+                    </Grid>        
+                    <Grid item>
+                        <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
+                        <Uploader open={openUploader} onClose={() => setOpenUploader(false)} />
                     </Grid>
                 </Grid>
-            </Grid>
-            <Grid item>
-                <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
-            </Grid>
-            <Grid item>
-                <Uploader open={openUploader} onClose={() => setOpenUploader(false)} />
             </Grid>
         </Grid>
     )
