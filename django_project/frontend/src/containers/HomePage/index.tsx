@@ -1,48 +1,16 @@
 import React from 'react';
-import ResponsiveNavbar from '../../components/Navbar';
 import './index.scss';
-import { Box, Button, Grid, Paper, Typography } from '@mui/material';
-import CustomButton from '../../components/Button';
+import LandingPageBanner from '../../components/LandingPage/LandingPageBanner';
 
 const isLoggedIn = (window as any).isLoggedIn;
+import LandingPagePopulationOverview from '../../../src/components/LandingPage/LandingPagePopulationOverview'
 
-function Banner() {
+function Footer() {
   return (
-    <Paper
-      sx={{
-        color: '#fff',
-        height: { xs: 500, md: 800 },
-        maxWidth: '100%',
-        backgroundImage: `url(/static/images/not-lion.png)`,
-        backgroundSize: { xs: '70%', md: 'auto 90%' },
-        backgroundPosition: 'left',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: '#000',
-        borderRadius: 0
-      }}
-    >
-      <Grid container spacing={1} sx={{ height: '100%' }}>
-        <Grid item xs={1} md={6} xl={5}></Grid>
-        <Grid item xs={5}>
-          <Box className='banner-description'>
-            <Typography variant="h3" component="h3" gutterBottom>
-              Wild life population system monitoring traded wildlife in South Africa
-            </Typography>
-            <Box className='banner-button-container'>
-              <CustomButton color='green' title='About'>About</CustomButton>
-              {isLoggedIn ? <>
-                <CustomButton color='orange' title='About' onClick={() => window.location.href = '/map'}>Explore</CustomButton>
-                <CustomButton color='purple' title='About'>Upload Your Data</CustomButton>
-              </> : <>
-                <CustomButton color='orange' title='About' onClick={() => window.location.href = '/accounts/login/'}>Login</CustomButton>
-                <CustomButton color='purple' title='About' onClick={() => window.location.href = '/accounts/signup/'}>Register</CustomButton>
-              </>}
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
-
-    </Paper>
+    <div className='footer'>
+        Made with <img className='heart' src='/static/images/heart-icon.png'/> by&nbsp; 
+        <a href='https://kartoza.com' target='_blank' style={{ color: "var(--white)"}}>Kartoza</a>
+    </div>
   );
 }
 
@@ -50,7 +18,9 @@ function Banner() {
 function HomePage() {
   return (
     <div className="App">
-      <Banner/>
+      <LandingPageBanner/>
+      <LandingPagePopulationOverview/>
+      <Footer/>
     </div>
   );
 }

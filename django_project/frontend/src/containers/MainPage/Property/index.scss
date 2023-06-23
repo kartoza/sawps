@@ -10,6 +10,13 @@
     .MuiSelect-select {
         font-size: 14px;
     }
+
+    td.TableCellText {
+        span {
+            height: 40px;
+            line-height: 40px;
+        }
+    }
 }
 
 .PropertySummary {

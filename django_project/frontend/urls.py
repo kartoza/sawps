@@ -16,14 +16,20 @@ Including another URLconf
 from django.urls import path, re_path
 from .views.home import HomeView
 from .views.map import MapView
+from .views.help import HelpView
 from .views.about import AboutView
+from .views.contact import ContactView
+from .views.switch_organisation import switch_organisation
+
+
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
     AerialTile,
     PropertiesLayerMVTTiles,
     FindParcelByCoord,
-    FindPropertyByCoord
+    FindPropertyByCoord,
+    MapAuthenticate
 )
 from frontend.api_views.property import (
     CreateNewProperty,
@@ -32,6 +38,13 @@ from frontend.api_views.property import (
     UpdatePropertyInformation,
     UpdatePropertyBoundaries,
     PropertyDetail
+)
+from frontend.api_views.upload import (
+    BoundaryFileUpload,
+    BoundaryFileRemove,
+    BoundaryFileList,
+    BoundaryFileSearch,
+    BoundaryFileSearchStatus
 )
 
 urlpatterns = [
@@ -54,6 +67,11 @@ urlpatterns = [
         r'^api/map/styles/?$',
         MapStyles.as_view(),
         name='map-style'
+    ),
+    re_path(
+        r'^api/map/authenticate/?$',
+        MapAuthenticate.as_view(),
+        name='map-authenticate'
     ),
     re_path(
         r'^api/map/layer/aerial/'
@@ -97,7 +115,39 @@ urlpatterns = [
         PropertyMetadataList.as_view(),
         name='property-metadata'
     ),
+    re_path(
+        r'^api/upload/boundary-file/remove/?$',
+        BoundaryFileRemove.as_view(),
+        name='boundary-file-remove'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/list/?$',
+        BoundaryFileList.as_view(),
+        name='boundary-file-list'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/search/?$',
+        BoundaryFileSearch.as_view(),
+        name='boundary-file-search'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/status/?$',
+        BoundaryFileSearchStatus.as_view(),
+        name='boundary-file-status'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/?$',
+        BoundaryFileUpload.as_view(),
+        name='boundary-file-upload'
+    ),
+    path(
+        'switch-organisation/<int:organisation_id>/',
+        switch_organisation,
+        name='switch-organisation'
+    ),
     path('map/', MapView.as_view(), name='map'),
+    path('help/', HelpView.as_view(), name='help'),
     path('', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
+    path('contact/', ContactView.as_view(), name='contact'),
 ]

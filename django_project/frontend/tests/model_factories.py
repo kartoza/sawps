@@ -9,6 +9,7 @@ from frontend.models.parcels import (
     Holding,
     ParentFarm
 )
+from frontend.models.boundary_search import BoundaryFile
 
 
 class UserF(factory.django.DjangoModelFactory):
@@ -75,3 +76,24 @@ class ParentFarmF(factory.django.DjangoModelFactory):
     cname = factory.Sequence(
         lambda n: f'parent-farm-{n}'
     )
+
+
+class BoundaryFileF(factory.django.DjangoModelFactory):
+    """Factory for BoundaryFile."""
+    class Meta:
+        """Meta class Factory for BoundaryFile Model."""
+        model = BoundaryFile
+
+    meta_id = factory.Sequence(
+        lambda n: u'meta_id_%s' % n
+    )
+
+    name = factory.Sequence(
+        lambda n: u'name %s' % n
+    )
+
+    session = factory.Sequence(
+        lambda n: u'session_%s' % n
+    )
+
+    file = factory.django.FileField(filename='admin.geojson')

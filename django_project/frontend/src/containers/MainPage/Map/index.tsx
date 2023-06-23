@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import maplibregl, { IControl } from 'maplibre-gl';
+import { MaplibreExportControl, Size, PageOrientation, Format, DPI} from "@watergis/maplibre-gl-export";
+import '@watergis/maplibre-gl-export/dist/maplibre-gl-export.css';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { 
@@ -8,10 +10,12 @@ import {
   setSelectedProperty,
   resetSelectedProperty,
   selectedParcelsOnRenderFinished,
-  onMapEventProcessed
+  onMapEventProcessed,
+  toggleMapTheme,
+  setInitialMapTheme
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
-import { MapSelectionMode } from "../../../models/Map";
+import { MapSelectionMode, MapTheme } from "../../../models/Map";
 import { UploadMode } from "../../../models/Upload";
 import './index.scss';
 import CustomNavControl from './NavControl';
@@ -25,9 +29,12 @@ import {
   getSelectParcelLayerNames
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
+import CustomExportControl from './CustomExportControl';
+import useThemeDetector from '../../../components/ThemeDetector';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
-const MAP_SOURCES = ['sanbi', 'properties']
+const MAP_SOURCES = ['sanbi', 'properties', 'NGI Aerial Imagery']
+const AERIAL_SOURCE_ID = 'NGI Aerial Imagery'
 
 const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
 
@@ -40,8 +47,11 @@ export default function Map() {
   const selectedProperty = useAppSelector((state: RootState) => state.mapState.selectedProperty)
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
-  const mapContainer = useRef(null);
-  const map = useRef(null);
+  const mapTheme = useAppSelector((state: RootState) => state.mapState.theme)
+  const mapContainer = useRef(null)
+  const map = useRef(null)
+  const mapNavControl = useRef(null)
+  const isDarkTheme = useThemeDetector()
 
   const onMapMouseEnter = () => {
     if (!map.current) return;    
@@ -55,6 +65,10 @@ export default function Map() {
   }
 
   useEffect(() => {
+    dispatch(setInitialMapTheme(isDarkTheme ? MapTheme.Dark : MapTheme.Light))
+  }, [isDarkTheme])
+
+  useEffect(() => {
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
     if (!map.current) return;
@@ -63,10 +77,13 @@ export default function Map() {
     for (let i=0; i < _layers.length; ++i) {
       let _layer:any = _layers[i]
       // skip any layer that is not from sanbi and property sources
-      if (!('source' in _layer) || !('source-layer' in _layer) || !MAP_SOURCES.includes(_layer['source'])) continue
+      if (!('source' in _layer) || !MAP_SOURCES.includes(_layer['source'])) continue
+      // skip if no source-layer and not NGI aerial imagery
+      if (!('source-layer' in _layer) && _layer['source'] !== AERIAL_SOURCE_ID) continue
       // skip if current selection mode is parcel selection and highlighted layer for selecting parcel
       if (selectionMode === MapSelectionMode.Parcel && _layer['id'].includes('-select-parcel')) continue
-      const _is_visible = checkLayerVisibility(_layer['source-layer'], contextLayers)
+      let _source_layer = 'source-layer' in _layer ? _layer['source-layer'] : _layer['source']
+      const _is_visible = checkLayerVisibility(_source_layer, contextLayers)
       _mapObj.setLayoutProperty(_layer['id'], 'visibility', _is_visible ? 'visible' : 'none')
     }
 
@@ -101,27 +118,39 @@ export default function Map() {
   }, [selectionMode])
 
   useEffect(() => {
-      if (map.current) return; //stops map from intializing more than once
+    if (mapTheme === MapTheme.None) return;
+    if (map.current) {
+      dispatch(setMapReady(false))
+      map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}`)
+      if (mapNavControl.current) {
+        mapNavControl.current.updateThemeSwitcherIcon(mapTheme)
+      }
+    } else {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
-        style: `${MAP_STYLE_URL}`,
+        style: `${MAP_STYLE_URL}?theme=${mapTheme}`,
         minZoom: 5
       })
-      map.current.addControl(new CustomNavControl({
+      // add exporter dialog
+      mapNavControl.current = new CustomNavControl({
         showCompass: false,
         showZoom: true
-      }), 'bottom-left')
+      }, {
+        initialTheme: mapTheme,
+        onThemeSwitched: () => { dispatch(toggleMapTheme()) }
+      })
+      map.current.addControl(mapNavControl.current, 'bottom-left')
+      map.current.addControl(mapNavControl.current.getExportControl(), 'bottom-left')
       map.current.on('load', () => {
         dispatch(setMapReady(true))
-
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
       })
-      return () => {
-        map.current.off('mouseenter', ['properties'], onMapMouseEnter)
-        map.current.off('mouseleave', 'properties', onMapMouseLeave)
-      }
-  }, []);
+      map.current.on('styledata', () => {
+        dispatch(setMapReady(true))
+      })
+    }
+  }, [mapTheme]);
 
   /* Callback when map is on click. */
   const mapOnClick = useCallback((e: any) => {
@@ -151,6 +180,7 @@ export default function Map() {
   }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
   useEffect(() => {
+    if (!map.current) return;
     map.current.on('click', mapOnClick)
     return () => {
       map.current.off('click', mapOnClick)
@@ -199,7 +229,7 @@ export default function Map() {
 
         // Force a repaint, so that the map will be repainted without you having to touch the map
         _mapObj.triggerRepaint()
-      } else if (_event.name === 'PROPERTY_SELECTED') {
+      } else if (_event.name === 'PROPERTY_SELECTED' || _event.name === 'BOUNDARY_FILES_UPLOADED') {
         // parse bbox from payload
         if (_event.payload && _event.payload.length === 4) {
           let _bbox = _event.payload.map(Number)

@@ -217,28 +217,8 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                         <TableCell component="th" scope="row">
                             Organisation
                         </TableCell>
-                        <TableCell>
-                            <FormControl fullWidth size="small">
-                                <Select
-                                    id="organisation-select"
-                                    error={props.validationError?.organisation}
-                                    value={props.property.organisation_id ? props.property.organisation_id.toString() : ''}
-                                    displayEmpty
-                                    disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => {
-                                        if (props.onUpdated) {
-                                            let _selected = organisationList.find(e => e.id === parseInt(event.target.value))
-                                            props.onUpdated({ ...props.property, organisation: _selected.name, organisation_id: _selected.id }, {organisation:false})
-                                        }
-                                    }}
-                                >
-                                    { organisationList.map((organisation: OrganisationInterface) => {
-                                        return (
-                                            <MenuItem key={organisation.id} value={organisation.id}>{organisation.name}</MenuItem>
-                                        )
-                                    })}
-                                </Select>
-                            </FormControl>
+                        <TableCell className='TableCellText'>
+                            <span>{props.property.organisation ? props.property.organisation : '-'}</span>
                         </TableCell>
                     </TableRow>
                 </TableBody>

@@ -1,0 +1,13 @@
+
+.landing-page-population-overview-container {
+    background-color: rgb(40,40,41);
+    height:auto;
+    display:flex;
+    flex-direction:column;
+    overflow-x: hidden;
+}
+
+.species-card-image-container hr {
+    width: 80%;
+    border: 1px solid var(--white);
+}

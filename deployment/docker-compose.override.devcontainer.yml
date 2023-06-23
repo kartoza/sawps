@@ -19,8 +19,9 @@ services:
       target: vscode
     volumes:
       - ../:/home/web/project
-      - ./volumes/static:/home/web/static
+      - ../django_project:/home/web/django_project
       - ./volumes/media:/home/web/media
+      - ./volumes/layer_tiles:/opt/layer_tiles
 
   dev:
     image: kartoza/sanbi_dev

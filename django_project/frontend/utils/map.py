@@ -6,15 +6,9 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.urls import reverse
 from core.settings.utils import absolute_path
-from frontend.models.parcels import (
-    Erf,
-    Holding,
-    FarmPortion,
-    ParentFarm
-)
 
 
-def get_map_template_style(request, theme_choice: int = 0):
+def get_map_template_style(request, theme_choice: int = 0, token: str = None):
     """
     Fetch map template style from file.
 
@@ -41,9 +35,12 @@ def get_map_template_style(request, theme_choice: int = 0):
     elif 'localhost' in domain:
         schema = 'http://'
     if 'sources' in styles and 'sanbi' in styles['sources']:
-        styles['sources']['sanbi']['tiles'] = [
-            f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}.pbf'
-        ]
+        tile_url = f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}'
+        if settings.DEBUG:
+            tile_url = tile_url + '.pbf'
+        if not settings.DEBUG and token:
+            tile_url = tile_url + f'?token={token}'
+        styles['sources']['sanbi']['tiles'] = [tile_url]
     if 'sources' in styles and 'NGI Aerial Imagery' in styles['sources']:
         url = (
             reverse('aerial-map-layer', kwargs={
@@ -56,7 +53,7 @@ def get_map_template_style(request, theme_choice: int = 0):
         url = url.replace('/0/0/0', '/{z}/{x}/{y}')
         if not settings.DEBUG:
             # if not dev env, then replace with https
-            url = url.replace('http://', 'https://')
+            url = url.replace('http://', schema)
         styles['sources']['NGI Aerial Imagery']['tiles'] = [url]
     # add properties layer
     if 'sources' in styles:
@@ -71,7 +68,7 @@ def get_map_template_style(request, theme_choice: int = 0):
         url = url.replace('/0/0/0', '/{z}/{x}/{y}')
         if not settings.DEBUG:
             # if not dev env, then replace with https
-            url = url.replace('http://', 'https://')
+            url = url.replace('http://', schema)
         # add epoch datetime
         url = url + f'?t={int(time.time())}'
         styles['sources']['properties'] = {
@@ -108,20 +105,3 @@ def replace_maptiler_api_key(styles):
             map_tiler_key
         )
     return styles
-
-
-def find_layer_by_cname(cname: str):
-    """Find layer name+id by cname."""
-    obj = Erf.objects.filter(cname=cname).first()
-    if obj:
-        return 'erf', obj.id
-    obj = Holding.objects.filter(cname=cname).first()
-    if obj:
-        return 'holding', obj.id
-    obj = FarmPortion.objects.filter(cname=cname).first()
-    if obj:
-        return 'farm_portion', obj.id
-    obj = ParentFarm.objects.filter(cname=cname).first()
-    if obj:
-        return 'parent_farm', obj.id
-    return None, None

@@ -8,7 +8,7 @@
     <div class="container-fluid full-height position-absolute">
     <div class="row half-height">
         <div class="col-7"></div>
-        <div class="col-5 swaps-text-primary">
+        <div class="col-5 sawps-text-primary">
             <div class="account-form content" style="width: 700px">
                     {% csrf_token %}
                     <div class="container">
@@ -69,18 +69,15 @@
                                 {% if redirect_field_value %}
                                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                                 {% endif %}
-                                <div class="password-help-text text-justify mt-0">
+                                <div class="password-help-text mt-0">
                                     <span>Your password should consist of a minimum of twelve characters, including at least one lowercase letter, 
                                     one uppercase letter, one numeric character, and one special character. We highly recommend utilizing a 
-                                    password manager tool that can assist you in generating a strong password. As an example, you may consider 
-                                    a password similar to the sample below.</span>
-                                    <p class="text-center" style="display: inherit;">mq<b style="color: var(--orange);">46</b>en<b style="color: var(--orange);">9</b>VoY<b style="color: var(--green);">!</b>w</p>
-                                    
+                                    password manager tool that can assist you in generating a strong password.</span>                                    
 
                                 </ul>
                                 </div> 
 
-                                <button id="submit-button" class="swaps-from-submit account-button" type="submit">{% trans "Register" %}</button>
+                                <button id="submit-button" class="sawps-from-submit account-button" type="submit">{% trans "Register" %}</button>
                             </form>
 
                         </div>

@@ -1,7 +1,7 @@
-from django.views.generic import TemplateView
+from .base_view import RegisteredOrganisationBaseView
 
 
-class AboutView(TemplateView):
+class AboutView(RegisteredOrganisationBaseView):
     """
     AboutView displays the about page by rendering the 'about.html' template.
     """

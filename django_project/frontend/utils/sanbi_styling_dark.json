@@ -5,7 +5,7 @@
     "maputnik:license": "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
     "maputnik:renderer": "mbgljs",
     "openmaptiles:version": "3.x",
-    "sanbi:version": "8",
+    "sanbi:version": "10",
     "sanbi:theme": "dark"
   },
   "center": [25.86, -28.52],
@@ -14,7 +14,7 @@
     "sanbi": {
       "type": "vector",
       "tiles": ["http://localhost:9090/maps/sanbi/{z}/{x}/{y}.pbf"],
-      "minzoom": 5,
+      "minZoom": 5,
       "maxzoom": 24
     },
     "NGI Aerial Imagery": {
@@ -26,7 +26,7 @@
       "maxzoom": 24
     }
   },
-  "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
+  "sprite": "",
   "glyphs": "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key={{MAPTILER_API_KEY}}",
   "layers": [
     {
@@ -38,11 +38,58 @@
       "paint": {"background-color": "rgba(0, 0, 0, 1)", "background-opacity": 1}
     },
     {
+      "id": "sadc_countries",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "world",
+      "maxzoom": 6,
+      "filter": [
+        "any",
+        ["==", "iso_a2", "NA"],
+        ["==", "iso_a2", "BW"],
+        ["==", "iso_a2", "ZW"],
+        ["==", "iso_a2", "MZ"],
+        ["==", "iso_a2", "SZ"],
+        ["==", "iso_a2", "LS"]
+      ],
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(10, 10, 10, 1)"}
+    },
+    {
+      "id": "sadc_zaf",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "world",
+      "maxzoom": 6,
+      "filter": ["any", ["==", "iso_a2", "ZA"]],
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(40, 40, 41, 1)"}
+    },
+    {
+      "id": "sadc_countries_outline",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "world",
+      "maxzoom": 6,
+      "filter": [
+        "any",
+        ["==", "iso_a2", "NA"],
+        ["==", "iso_a2", "BW"],
+        ["==", "iso_a2", "ZW"],
+        ["==", "iso_a2", "MZ"],
+        ["==", "iso_a2", "SZ"],
+        ["==", "iso_a2", "LS"],
+        ["==", "iso_a2", "ZA"]
+      ],
+      "layout": {"visibility": "visible"},
+      "paint": {"line-color": "rgba(153, 153, 153, 1)"}
+    },
+    {
       "id": "zaf_boundary_small_scale",
       "type": "fill",
       "source": "sanbi",
       "source-layer": "zaf_boundary_small_scale",
-      "minzoom": 5,
+      "minzoom": 6,
       "maxzoom": 10,
       "layout": {"visibility": "visible"},
       "paint": {"fill-color": "rgba(40, 40, 41, 1)", "fill-opacity": 1}
@@ -52,7 +99,7 @@
       "type": "line",
       "source": "sanbi",
       "source-layer": "zaf_boundary_small_scale",
-      "minzoom": 5,
+      "minzoom": 6,
       "maxzoom": 10,
       "layout": {"visibility": "visible"},
       "paint": {"line-color": "rgba(60, 60, 60, 1)"}
@@ -81,7 +128,7 @@
       "type": "raster",
       "source": "NGI Aerial Imagery",
       "minzoom": 10,
-      "layout": {"visibility": "visible"}
+      "layout": {"visibility": "none"}
     },
     {
       "id": "ecosystems_10",
@@ -929,36 +976,6 @@
       "paint": {"fill-color": "rgba(55, 68, 57, 1)", "fill-opacity": 0.2}
     },
     {
-      "id": "waterbodies_dws_dams_50k",
-      "type": "fill",
-      "source": "sanbi",
-      "source-layer": "dws_dams_50k",
-      "minzoom": 14,
-      "maxzoom": 24,
-      "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
-    },
-    {
-      "id": "waterbodies_midscale_dws_dams_50k",
-      "type": "fill",
-      "source": "sanbi",
-      "source-layer": "midscale_dws_dams_50k",
-      "minzoom": 10,
-      "maxzoom": 14,
-      "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
-    },
-    {
-      "id": "waterbodies_major_dws_dams_50k",
-      "type": "fill",
-      "source": "sanbi",
-      "source-layer": "major_dws_dams_50k",
-      "minzoom": 5,
-      "maxzoom": 10,
-      "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
-    },
-    {
       "id": "rivers_all",
       "type": "line",
       "source": "sanbi",
@@ -989,8 +1006,38 @@
       },
       "paint": {
         "line-color": "rgba(27, 88, 123, 1)",
-        "line-width": {"stops": [[5, 1], [12, 5]]}
+        "line-width": {"stops": [[5.25, 0], [12, 5]]}
       }
+    },
+    {
+      "id": "waterbodies_dws_dams_50k",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "dws_dams_50k",
+      "minzoom": 14,
+      "maxzoom": 24,
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
+    },
+    {
+      "id": "waterbodies_midscale_dws_dams_50k",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "midscale_dws_dams_50k",
+      "minzoom": 10,
+      "maxzoom": 14,
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
+    },
+    {
+      "id": "waterbodies_major_dws_dams_50k",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "major_dws_dams_50k",
+      "minzoom": 5,
+      "maxzoom": 10,
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
     },
     {
       "id": "roads_all_track",
@@ -1092,7 +1139,7 @@
         ["==", "highway", "primary_link"]
       ],
       "layout": {
-        "line-cap": "butt",
+        "line-cap": "round",
         "line-join": "round",
         "visibility": "visible"
       },
@@ -1135,7 +1182,7 @@
         ["==", "highway", "trunk"],
         ["==", "highway", "trunk_link"]
       ],
-      "layout": {"line-cap": "butt", "line-join": "round"},
+      "layout": {"line-cap": "round", "line-join": "round"},
       "paint": {
         "line-color": "rgba(116, 116, 116, 1)",
         "line-width": {"stops": [[14, 2], [20, 20]]}
@@ -1177,7 +1224,7 @@
         ["==", "highway", "motorway_link"],
         ["==", "highway", "highway_link"]
       ],
-      "layout": {"line-cap": "butt", "line-join": "round"},
+      "layout": {"line-cap": "round", "line-join": "round"},
       "paint": {
         "line-color": "rgba(98, 98, 98, 1)",
         "line-width": {"stops": [[14, 5], [20, 30]]}
@@ -1208,13 +1255,17 @@
       "type": "line",
       "source": "sanbi",
       "source-layer": "midscale_zaf_roads",
-      "minzoom": 12,
+      "minzoom": 7,
       "maxzoom": 14,
       "filter": ["all", ["==", "highway", "primary"]],
-      "layout": {"visibility": "visible"},
+      "layout": {
+        "visibility": "visible",
+        "line-join": "round",
+        "line-cap": "round"
+      },
       "paint": {
         "line-color": "rgba(116, 116, 116, 1)",
-        "line-width": {"stops": [[12, 2], [14, 3]]}
+        "line-width": {"stops": [[8, 0.75], [14, 3]]}
       }
     },
     {
@@ -1222,13 +1273,17 @@
       "type": "line",
       "source": "sanbi",
       "source-layer": "midscale_zaf_roads",
-      "minzoom": 12,
+      "minzoom": 7,
       "maxzoom": 14,
       "filter": ["all", ["==", "highway", "primary"]],
-      "layout": {"visibility": "visible"},
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
       "paint": {
         "line-color": "rgba(98, 98, 98, 1)",
-        "line-width": {"stops": [[12, 1], [14, 2]]}
+        "line-width": {"stops": [[8, 0.75], [14, 2]]}
       }
     },
     {
@@ -1239,7 +1294,11 @@
       "minzoom": 12,
       "maxzoom": 14,
       "filter": ["all", ["==", "highway", "trunk"]],
-      "layout": {"visibility": "visible"},
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
       "paint": {
         "line-color": "rgba(116, 116, 116, 1)",
         "line-width": {"stops": [[12, 2], [14, 3]]}
@@ -1253,7 +1312,11 @@
       "minzoom": 12,
       "maxzoom": 14,
       "filter": ["all", ["==", "highway", "trunk"]],
-      "layout": {"visibility": "visible"},
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
       "paint": {
         "line-color": "rgba(98, 98, 98, 1)",
         "line-width": {"stops": [[12, 1], [14, 2]]}
@@ -1273,8 +1336,8 @@
       ],
       "layout": {
         "visibility": "visible",
-        "line-cap": "butt",
-        "line-join": "miter"
+        "line-cap": "round",
+        "line-join": "round"
       },
       "paint": {
         "line-color": "rgba(98, 98, 98, 1)",
@@ -1310,10 +1373,14 @@
       "source-layer": "zaf_highways",
       "minzoom": 5,
       "maxzoom": 12,
-      "layout": {"visibility": "visible", "line-join": "miter"},
+      "layout": {
+        "visibility": "visible",
+        "line-join": "round",
+        "line-cap": "round"
+      },
       "paint": {
         "line-color": "rgba(98, 98, 98, 1)",
-        "line-width": {"stops": [[5, 2], [12, 4]]}
+        "line-width": {"stops": [[5.25, 0], [12, 4]]}
       }
     },
     {
@@ -1339,11 +1406,11 @@
       "source": "sanbi",
       "source-layer": "zaf_provinces_small_scale",
       "minzoom": 5,
-      "maxzoom": 8,
+      "maxzoom": 24,
       "layout": {"visibility": "visible"},
       "paint": {
         "line-opacity": 1,
-        "line-width": 1,
+        "line-width": {"stops": [[4, 0], [20, 10]]},
         "line-color": "rgba(153, 153, 153, 1)"
       }
     },
@@ -1416,13 +1483,15 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-size": 14,
-        "text-font": ["Open Sans Regular"],
-        "text-padding": 10,
-        "icon-padding": 2
+        "text-font": ["Open Sans Bold"],
+        "text-padding": 24,
+        "text-transform": "uppercase",
+        "text-offset": [0, -0.6],
+        "text-keep-upright": true
       },
       "paint": {
         "text-halo-color": "rgba(45, 45, 45, 1)",
-        "text-color": "rgba(255, 255, 255, 1)",
+        "text-color": "rgba(210, 210, 210, 1)",
         "text-halo-width": 1
       }
     },
@@ -1439,12 +1508,15 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-size": 14,
-        "text-font": ["Open Sans Regular"],
-        "text-padding": 24
+        "text-font": ["Open Sans Bold"],
+        "text-padding": 24,
+        "text-transform": "uppercase",
+        "text-offset": [0, -0.6],
+        "text-keep-upright": true
       },
       "paint": {
         "text-halo-color": "rgba(45, 45, 45, 1)",
-        "text-color": "rgba(255, 255, 255, 1)",
+        "text-color": "rgba(210, 210, 210, 1)",
         "text-halo-width": 1
       }
     },
@@ -1457,16 +1529,19 @@
       "maxzoom": 12,
       "filter": ["all", ["!=", "lname", "none"]],
       "layout": {
-        "text-field": "{lname}",
+        "text-field": "{name}",
         "visibility": "visible",
         "symbol-placement": "line",
         "text-size": 14,
-        "text-font": ["Open Sans Regular"],
-        "text-padding": 24
+        "text-font": ["Open Sans Bold"],
+        "text-padding": 24,
+        "text-transform": "uppercase",
+        "text-offset": [0, -0.6],
+        "text-keep-upright": true
       },
       "paint": {
         "text-halo-color": "rgba(45, 45, 45, 1)",
-        "text-color": "rgba(255, 255, 255, 1)",
+        "text-color": "rgba(210, 210, 210, 1)",
         "text-halo-width": 1
       }
     },
@@ -1481,12 +1556,13 @@
         "text-field": "{name}",
         "visibility": "visible",
         "symbol-placement": "point",
-        "text-size": 18,
-        "text-font": ["Open Sans Regular", "Amatic SC Bold"]
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase"
       },
       "paint": {
         "text-halo-color": "rgba(0, 0, 0, 1)",
-        "text-color": "rgba(255, 255, 255, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
         "text-halo-width": 2
       }
     },
@@ -1501,12 +1577,13 @@
         "text-field": "{name}",
         "visibility": "visible",
         "symbol-placement": "point",
-        "text-size": 18,
-        "text-font": ["Open Sans Regular"]
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase"
       },
       "paint": {
-        "text-color": "rgba(255, 255, 255, 1)",
         "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
         "text-halo-width": 2
       }
     },
@@ -1521,12 +1598,13 @@
         "text-field": "{name}",
         "visibility": "visible",
         "symbol-placement": "point",
-        "text-size": 18,
-        "text-font": ["Open Sans Regular"]
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase"
       },
       "paint": {
-        "text-color": "rgba(255, 255, 255, 1)",
         "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
         "text-halo-width": 2
       }
     },
@@ -1540,79 +1618,14 @@
         "text-field": "{name}",
         "visibility": "visible",
         "symbol-placement": "point",
-        "text-size": 18,
-        "text-font": ["Open Sans Regular"]
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase"
       },
       "paint": {
-        "text-halo-width": 2,
         "text-halo-color": "rgba(0, 0, 0, 1)",
-        "text-color": "rgba(255, 255, 255, 1)"
-      }
-    },
-    {
-      "id": "farm_portion_label",
-      "type": "symbol",
-      "source": "sanbi",
-      "source-layer": "farm_portion_labels",
-      "minzoom": 12,
-      "layout": {
-        "text-field": "{cname}",
-        "text-allow-overlap": false,
-        "text-ignore-placement": false,
-        "text-max-width": 1000,
-        "symbol-placement": "point",
-        "text-font": ["Open Sans Regular"],
-        "text-size": 12,
-        "visibility": "visible"
-      },
-      "paint": {
-        "text-color": "rgba(255, 255, 255, 1)",
-        "text-halo-color": "rgba(62, 62, 62, 1)",
-        "text-halo-width": 1
-      }
-    },
-    {
-      "id": "holding_label",
-      "type": "symbol",
-      "source": "sanbi",
-      "source-layer": "holding_labels",
-      "minzoom": 12,
-      "layout": {
-        "text-field": "{cname}",
-        "text-allow-overlap": false,
-        "text-ignore-placement": false,
-        "text-max-width": 1000,
-        "symbol-placement": "point",
-        "text-font": ["Open Sans Regular"],
-        "text-size": 12,
-        "visibility": "visible"
-      },
-      "paint": {
-        "text-color": "rgba(255, 255, 255, 1)",
-        "text-halo-color": "rgba(62, 62, 62, 1)",
-        "text-halo-width": 1
-      }
-    },
-    {
-      "id": "erf_label",
-      "type": "symbol",
-      "source": "sanbi",
-      "source-layer": "erf_labels",
-      "minzoom": 12,
-      "layout": {
-        "text-field": "{cname}",
-        "text-allow-overlap": false,
-        "text-ignore-placement": false,
-        "text-max-width": 1000,
-        "symbol-placement": "point",
-        "text-font": ["Open Sans Regular"],
-        "text-size": 12,
-        "visibility": "visible"
-      },
-      "paint": {
-        "text-color": "rgba(255, 255, 255, 1)",
-        "text-halo-color": "rgba(62, 62, 62, 1)",
-        "text-halo-width": 1
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
       }
     }
   ],
