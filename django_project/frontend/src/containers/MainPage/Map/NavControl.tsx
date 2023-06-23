@@ -1,4 +1,5 @@
 import maplibregl from 'maplibre-gl';
+import CustomExportControl from './CustomExportControl';
 
 interface CustomNavControlActions {
   initialTheme: string;
@@ -12,13 +13,15 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
     _themeSwitcherIcon: HTMLElement;
     _print: HTMLButtonElement;
     _printIcon: HTMLElement;
-    _baseMapSelect: HTMLButtonElement;
-    _baseMapSelectIcon: HTMLElement;
+    _exportControl: CustomExportControl;
     _currentTheme: string;
   
     constructor(options?: maplibregl.NavigationOptions, customOptions?: CustomNavControlActions) {
       // note: this can work for es6 target in tsconfig.json
       super(options);
+
+      this._exportControl = new CustomExportControl()
+  
       this._currentTheme = customOptions.initialTheme
       // add theme switcher icon
       this._themeSwitcher = this._createButton('maplibregl-ctrl-theme-switcher', (e) => {
@@ -34,18 +37,11 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
 
       // add print icon
       this._print = this._createButton('maplibregl-ctrl-print', (e) => {
-        // not implemented yet
+        this._exportControl.showExporter()
+        e.preventDefault()
       });
       this._printIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._print);
       this._printIcon.setAttribute('aria-hidden', 'true');
-  
-      
-      // add change base map icon
-      this._baseMapSelect = this._createButton('maplibregl-ctrl-base-map-select', (e) => {
-        // not implemented yet
-      });
-      this._baseMapSelectIcon = this._create_element('span', 'maplibregl-ctrl-icon', this._baseMapSelect);
-      this._baseMapSelectIcon.setAttribute('aria-hidden', 'true');
     }
   
     onAdd(map: maplibregl.Map) {
@@ -60,9 +56,6 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
 
       this._print.title = 'Print'
       this._print.ariaLabel = 'Print'
-  
-      this._baseMapSelect.title = 'Change Base Map'
-      this._baseMapSelect.ariaLabel = 'Change Base Map'
       return _container
     }
   
@@ -73,6 +66,10 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
       return el;
     }
 
+    getExportControl() {
+      return this._exportControl
+    }
+  
     _toggleThemeSwitcherIcon() {
       if (this._currentTheme === 'light') {
         this._currentTheme = 'dark'
