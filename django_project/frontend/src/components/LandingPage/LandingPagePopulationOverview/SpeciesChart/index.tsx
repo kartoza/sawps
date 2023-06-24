@@ -33,10 +33,10 @@ interface ISpeciesChartProps{
 
 const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
     const data={
-        labels:['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels:['January', 'March', 'May','July','September', 'December'],
         datasets:[{
             label:props.species_name,
-            data:[65, 59, 80, 81, 56, 55, 40],
+            data:[65, 75, 78, 73, 78, 75],
             borderColor:props.lineColor,
             fill:false,
         }]
@@ -51,15 +51,15 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
             let numberOfDataPoints:number = chart.data.labels.length;
             ctx.save()
             ctx.beginPath();
-            ctx.moveTo(chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y+(tickHeight*15));
+            ctx.moveTo(chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y+(tickHeight*30));
             for(let i=1; i<numberOfDataPoints;i++){
-                ctx.lineTo(chart.getDatasetMeta(0).data[i].x, chart.getDatasetMeta(0).data[i].y+(tickHeight*15));
+                ctx.lineTo(chart.getDatasetMeta(0).data[i].x, chart.getDatasetMeta(0).data[i].y+(tickHeight*30));
             };
 
             for(let i=numberOfDataPoints-1;0<i;i--){
-                ctx.lineTo(chart.getDatasetMeta(0).data[i].x, chart.getDatasetMeta(0).data[i].y-(tickHeight*15));
+                ctx.lineTo(chart.getDatasetMeta(0).data[i].x, chart.getDatasetMeta(0).data[i].y-(tickHeight*30));
             }
-            ctx.lineTo(chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y-(tickHeight*15));
+            ctx.lineTo(chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y-(tickHeight*30));
             ctx.closePath();
             ctx.fillStyle = props.areaFillColor;
             ctx.fill();
@@ -69,6 +69,9 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
     }
 
     const options:object={
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio:1.5,
         scales:{
             y:{grace:50},
         }
@@ -76,7 +79,7 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
     
     return(
         <>
-            <div className="chart-container" data-testid="species-chart">
+            <div className="species-chart-container" data-testid="species-chart">
                 <Line
                     data={data}
                     options={options}
