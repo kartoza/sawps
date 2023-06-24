@@ -1,9 +1,28 @@
+.species-card-container{
+    display: flex;
+    flex-direction: column;
+}
+
 .species-card-image{
     height: 60px;
   
 }
 
+.species-card-text-container{
+    margin-top:10px;
+}
+
 .species-card-text{
     color:white;
     text-align: center;
+}
+
+.ChartHolder{
+    margin-top:15px;
+}
+
+@media screen and (min-width:300px) and (max-width:499px) {
+    .species-card-container{
+        margin-bottom:50px;
+    }
 }

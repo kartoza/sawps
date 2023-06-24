@@ -14,7 +14,7 @@ export default function Loading(props: LoadingInterface) {
     return (
         <div className="loading-container">
             <CircularProgress size={props.size} color={props.color} style={props.style}/>
-            { props.label ? <Typography sx={{ fontSize: 15 }} style={{ marginTop: 10 }}>{ props.label }</Typography> : '' }
+            { props.label ? <Typography sx={{ fontSize: 15 }} style={{ marginLeft: 10 }}>{ props.label }</Typography> : '' }
         </div>
     )
 }

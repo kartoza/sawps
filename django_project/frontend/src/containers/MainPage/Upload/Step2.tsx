@@ -7,7 +7,8 @@ import { useAppSelector, useAppDispatch } from '../../../app/hooks';
 import { 
     toggleParcelSelectionMode,
     toggleParcelSelectedState,
-    triggerMapEvent
+    triggerMapEvent,
+    toggleDigitiseSelectionMode
 } from '../../../reducers/MapState';
 import {RootState} from '../../../app/store';
 import {postData} from "../../../utils/Requests";
@@ -88,10 +89,10 @@ export default function Step2(props: Step2Interface) {
                         <Grid container flexDirection={'column'} flexWrap={'nowrap'} rowGap={2} className='ButtonContainer'>
                             { mapSelectionMode === MapSelectionMode.Parcel ? 
                                 <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>CANCEL</Button> :
-                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>SELECT</Button>
+                                <Button variant='contained' className='Select' disabled={mapSelectionMode === MapSelectionMode.Digitise} onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>SELECT</Button>
                             } 
-                            <Button variant='contained' className='Digitise'>DIGITISE</Button>
-                            <Button variant='contained' className='Upload' onClick={() => setOpenUploader(true)}>UPLOAD</Button>
+                            <Button variant='contained' className='Digitise' disabled={mapSelectionMode === MapSelectionMode.Parcel} onClick={() => dispatch(toggleDigitiseSelectionMode()) }>DIGITISE</Button>
+                            <Button variant='contained' className='Upload' disabled={mapSelectionMode === MapSelectionMode.Digitise || mapSelectionMode === MapSelectionMode.Parcel}>UPLOAD</Button>
                             { savingProperty ? (
                                 <Button variant='contained' disabled={savingProperty}><CircularProgress size={16} sx={{marginRight: '5px' }}/> SAVING BOUNDARY...</Button>
                             ) : (
