@@ -7,7 +7,7 @@ const LandingPagePopulationOverviewHeader:FC<ILandingPagePopulationOverviewHeade
     return(
         <>
             <div className='landing-page-population-overview-header' data-testid="landing-page-population-overview-header">
-                <p>SPECIES POPULATION OVERVIEW</p>
+                <p>NATIONAL POPULATION OVERVIEW</p>
                 <hr className='landing-page-population-overview-header-separator' data-testid="landing-page-header-separator"/>
             </div>
         </>
