@@ -35,7 +35,6 @@ const ALLOWABLE_FILE_TYPES = [
     '.gpkg'
 ]
 
-const nameIdSeparator = '@+@'
 const UPLOAD_FILE_URL = '/api/upload/boundary-file/'
 const REMOVE_FILE_URL = '/api/upload/boundary-file/remove/'
 const PROCESS_FILE_URL = '/api/upload/boundary-file/'

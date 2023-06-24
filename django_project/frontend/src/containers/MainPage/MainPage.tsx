@@ -5,7 +5,6 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import {RootState} from '../../app/store';
 import {useAppDispatch, useAppSelector } from '../../app/hooks';
-import ResponsiveNavbar from '../../components/Navbar';
 import TabPanel, { a11yProps } from '../../components/TabPanel';
 import { LeftSideBar, RightSideBar } from './SideBar';
 import Upload from './Upload';
