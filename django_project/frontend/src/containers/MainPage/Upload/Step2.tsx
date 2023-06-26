@@ -118,7 +118,7 @@ export default function Step2(props: Step2Interface) {
                                         <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>CANCEL</Button> :
                                         <Button variant='contained' className='Select' disabled={mapSelectionMode === MapSelectionMode.Digitise} onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>SELECT</Button>
                                     } 
-                                    <Button variant='contained' className='Digitise' disabled={mapSelectionMode === MapSelectionMode.Parcel}>DIGITISE</Button>
+                                    <Button variant='contained' className='Digitise' disabled={mapSelectionMode === MapSelectionMode.Parcel} onClick={() => dispatch(toggleDigitiseSelectionMode()) }>DIGITISE</Button>
                                     <Button variant='contained' className='Upload' disabled={mapSelectionMode === MapSelectionMode.Digitise || mapSelectionMode === MapSelectionMode.Parcel} onClick={() => setOpenUploader(true)}>UPLOAD</Button>
                                 </Grid>
                             </Grid>
