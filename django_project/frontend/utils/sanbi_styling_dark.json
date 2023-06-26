@@ -14,7 +14,7 @@
     "sanbi": {
       "type": "vector",
       "tiles": ["http://localhost:9090/maps/sanbi/{z}/{x}/{y}.pbf"],
-      "maxZoom": 14,
+      "minzoom": 5,
       "maxzoom": 24
     },
     "NGI Aerial Imagery": {
