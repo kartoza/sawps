@@ -128,6 +128,13 @@ function Upload() {
                                                 onChange={(event: SelectChangeEvent) => {
                                                     setSelectedPropertyId(parseInt(event.target.value))
                                                 }}
+                                                renderValue={(selected) => {
+                                                    if (selected.length === 0 || selected === '0') {
+                                                        return <span className='SelectPlaceHolder'>Select Property</span>
+                                                    }
+                                        
+                                                    return selected
+                                                }}
                                             >
                                                 { propertyList.map((property: PropertyInterface) => {
                                                     return (

@@ -3,11 +3,14 @@ import {v4 as uuidv4} from 'uuid';
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import LightTooltip from '../../../components/LightTooltip';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
 import { 
     toggleParcelSelectionMode,
     toggleParcelSelectedState,
-    triggerMapEvent
+    triggerMapEvent,
+    toggleDigitiseSelectionMode
 } from '../../../reducers/MapState';
 import {RootState} from '../../../app/store';
 import {postData} from "../../../utils/Requests";
@@ -75,53 +78,64 @@ export default function Step2(props: Step2Interface) {
             <Grid item className='UploadSectionHeader'>
                 <span className='UploadSectionHeaderIcon Boundary'></span>
                 <span>Create Property Boundary</span>
+                <LightTooltip title='Create your property boundary by either selecting the cadastral parcels that make up the property or manually digitising your property boundary using the tools below'>
+                    <HelpOutlineOutlinedIcon fontSize='small' className='UploadSectionHelpIcon' />
+                </LightTooltip>
+            </Grid>
+            <Grid item className='UploadSectionContent' sx={{flex: 1}}>
+                <Grid container flexDirection={'column'} className='SelectedParcelContainerParent'>
+                    <Grid item className='SelectedParcelContainer'>
+                        <SelectedParcelTable parcels={selectedParcels}
+                            onRemoveParcel={(parcel: ParcelInterface) => dispatch(toggleParcelSelectedState(parcel))}
+                            onParcelHovered={(parcel: ParcelInterface) => {
+                                if (parcel) {
+                                    dispatch(triggerMapEvent({
+                                        'id': uuidv4(),
+                                        'name': 'HIGHLIGHT_SELECTED_PARCEL',
+                                        'date': Date.now(),
+                                        'payload': [parcel.id, parcel.layer]
+                                    }))
+                                } else {
+                                    dispatch(triggerMapEvent({
+                                        'id': uuidv4(),
+                                        'name': 'HIGHLIGHT_SELECTED_PARCEL',
+                                        'date': Date.now(),
+                                        'payload': []
+                                    }))
+                                }
+                            }}
+                        />
+                    </Grid>
+                </Grid>
             </Grid>
             <Grid item className='UploadSectionContent'>
                 <Grid container flexDirection={'column'}>
-                    <Grid item>
-                        <p>
-                            Create your property boundary by either selecting the cadastral parcels that make up the property or
-                            manually digitising your property boundary using the tools below
-                        </p>
-                    </Grid>
                     <Grid item>
                         <Grid container flexDirection={'column'} flexWrap={'nowrap'} rowGap={2} className='ButtonContainer'>
-                            { mapSelectionMode === MapSelectionMode.Parcel ? 
-                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>CANCEL</Button> :
-                                <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>SELECT</Button>
-                            } 
-                            <Button variant='contained' className='Digitise'>DIGITISE</Button>
-                            <Button variant='contained' className='Upload' onClick={() => setOpenUploader(true)}>UPLOAD</Button>
-                            { savingProperty ? (
-                                <Button variant='contained' disabled={savingProperty}><CircularProgress size={16} sx={{marginRight: '5px' }}/> SAVING BOUNDARY...</Button>
-                            ) : (
-                                <Button variant='contained' disabled={savingProperty} onClick={saveProperty}>SAVE BOUNDARY</Button>
-                            )}
+                            <Grid item>
+                                <Grid container flexDirection={'row'} flexWrap={'wrap'} justifyContent={'space-between'}>
+                                    { mapSelectionMode === MapSelectionMode.Parcel ? 
+                                        <Button variant='contained' className='Select' onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>CANCEL</Button> :
+                                        <Button variant='contained' className='Select' disabled={mapSelectionMode === MapSelectionMode.Digitise} onClick={() => dispatch(toggleParcelSelectionMode(uploadMode)) }>SELECT</Button>
+                                    } 
+                                    <Button variant='contained' className='Digitise' disabled={mapSelectionMode === MapSelectionMode.Parcel} onClick={() => dispatch(toggleDigitiseSelectionMode()) }>DIGITISE</Button>
+                                    <Button variant='contained' className='Upload' disabled={mapSelectionMode === MapSelectionMode.Digitise || mapSelectionMode === MapSelectionMode.Parcel} onClick={() => setOpenUploader(true)}>UPLOAD</Button>
+                                </Grid>
+                            </Grid>
+                            <Grid item>
+                                { savingProperty ? (
+                                    <Button variant='contained' className='Save' disabled={savingProperty}><CircularProgress size={16} sx={{marginRight: '5px' }}/> SAVING BOUNDARY...</Button>
+                                ) : (
+                                    <Button variant='contained' className='Save' disabled={savingProperty} onClick={saveProperty}>SAVE BOUNDARY</Button>
+                                )}
+                            </Grid>
                         </Grid>
+                    </Grid>        
+                    <Grid item>
+                        <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
+                        <Uploader open={openUploader} onClose={() => setOpenUploader(false)} />
                     </Grid>
                 </Grid>
-            </Grid>
-            <Grid item className='UploadSectionHeader'>
-                <span className='UploadSectionHeaderIcon Boundary'></span>
-                <span>Selected Parcels</span>
-            </Grid>
-            <Grid item className='UploadSectionContent'>
-                <Grid container flexDirection={'column'}>
-                    <Grid item>
-                        <p>
-                            View the parcels you have selected below
-                        </p>
-                    </Grid>
-                    <Grid item>
-                        <SelectedParcelTable parcels={selectedParcels} onRemoveParcel={(parcel: ParcelInterface) => dispatch(toggleParcelSelectedState(parcel))} />
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item>
-                <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
-            </Grid>
-            <Grid item>
-                <Uploader open={openUploader} onClose={() => setOpenUploader(false)} />
             </Grid>
         </Grid>
     )

@@ -6,7 +6,7 @@ from stakeholder.views import ProfileView
 
 # views urls
 urlpatterns = [  # '',
-    path('profile/<str:username>/', ProfileView.as_view(), name='profile'),
+    path('profile/<str:slug>/', ProfileView.as_view(), name='profile'),
     re_path(
         r'^profile/$',
         login_required(
