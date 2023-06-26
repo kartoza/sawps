@@ -10,7 +10,7 @@ interface RightSideBarInterface {
 
 const RightSideBarContent = (Component: React.ElementType) => {
     return <Component />
-  }
+}
 
 function RightSideBar(props: RightSideBarInterface) {
     return (
