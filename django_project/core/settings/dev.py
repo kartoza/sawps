@@ -1,3 +1,4 @@
+import ast
 from .project import *  # noqa
 
 # Set debug to True for development
@@ -57,3 +58,6 @@ WEBPACK_LOADER['DEFAULT']['CACHE'] = DEBUG
 WEBPACK_LOADER['DEFAULT']['STATS_FILE'] = absolute_path(
     'frontend', 'webpack-stats.dev.json'
 )
+
+if ast.literal_eval(os.environ.get('DISABLE_2FA', 'False')):
+    MIDDLEWARE = [m for m in MIDDLEWARE if m != 'sawps.middleware.RequireSuperuser2FAMiddleware']

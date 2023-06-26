@@ -5,12 +5,29 @@ import CustomButton, { ButtonColor } from '../../../Button';
 
 interface ILandingPageBannerImage{}
 
-const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
-    const btnProps = [
-        {"text":"About", "color":"green","url":"/about"},
-        {"text":"Login", "color":"orange","url":"/accounts/login/"},
-        {"text":"Register","color":"purple","url":"/accounts/signup/"}
+interface BtnPropsInterface {
+    text: string,
+    color: ButtonColor,
+    url: string
+}
+
+let BtnProps: BtnPropsInterface[] = []
+
+if ((window as any).isLoggedIn) {
+    BtnProps = [
+        {text: "About", color: "green", url: "/about"},
+        {text: "Explore", color: "orange", url: "/map"},
+        {text: "Upload your data", color: "purple", url: "/map"},
     ]
+} else {
+    BtnProps = [
+        {text: "About", color: "green", url: "/about"},
+        {text: "Login", color: "orange", url: "/accounts/login/"},
+        {text: "Register", color: "purple", url: "/accounts/signup/"}
+    ]
+}
+
+const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
     return (
         <>
             <div className="landing-page-banner-text-container">
@@ -22,9 +39,9 @@ const LandingPageBannerText:FC<ILandingPageBannerImage> =() =>{
                 </div>
                 <div className='landing-page-banner-text-btns-container'>
                     {
-                        btnProps.map((prop, index) => 
+                        BtnProps.map((prop, index) => 
                             <div className='landing-page-banner-text-btns' key={index}>
-                                <CustomButton onClick={() => window.location.href = prop.url} color={prop.color as ButtonColor} buttonText={prop.text} sx={{ width: 150, mr: 2 }} />
+                                <CustomButton onClick={() => window.location.href = prop.url} color={prop.color as ButtonColor} buttonText={prop.text} sx={{ width: 180, mr: 2 }} />
                             </div>
                         )
                     }
