@@ -1,4 +1,4 @@
-![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--d55b7ef-blue.svg)
+![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--06b032e-blue.svg)
 ![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Build%20Status:-SUCCESS-green.svg)
 
 # 🦏 SANBI WPS
@@ -78,7 +78,22 @@ Open your web browser and go to localhost:8000 to view the running application.
 
 ![django-superuser2](https://github.com/timlinux/sawps/assets/178003/35f9f06e-79c3-405d-b7ce-b82a35ff28ac)
 
+### 💽 Restoring layer schema for map
 
+The full dump file for layer schema is ~5.3GB, meanwhile compact dump file is only 24MB.
+[Download Compact Dump File for Layer.](https://drive.google.com/file/d/1Q0WhUP74MCoC_JcD4qMK1Egs575xrhqQ/view?usp=sharing)
+
+Preview for compact dump file:
+![sanbi_maps_compact](https://github.com/danangmassandy/sawps/assets/5819076/7bac8cef-142a-4512-a7d2-93c189abc0f1)
+
+Copy the dump file to db container. Then run pg_restore from inside db container to restore the dump file.
+
+```
+docker cp sanbi_layer_db_compact.dump deployment-db-1:/home/sanbi_layer_db_compact.dump
+docker exec -it deployment-db-1 /bin/bash
+cd /home
+pg_restore -h 127.0.0.1 -U docker -d django -n layer sanbi_layer_db_compact.dump
+```
 
 
 ## 💻 Resources
@@ -86,3 +101,4 @@ Open your web browser and go to localhost:8000 to view the running application.
 [Database ERD](https://drive.google.com/file/d/1O92w2zwbKm_SARXnXIljHbX-rQPmFiXM/view?usp=sharing)
 
 [Figma Board](https://www.figma.com/file/T6JEAAXTWzA9OIfAQe3iW7/SANBI?node-id=6-2&t=4T7COmsnfif2Nwwn-0)
+

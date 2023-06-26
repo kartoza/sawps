@@ -18,13 +18,17 @@
     }
     
     .landing-page-banner-text-header{
-        font-size: 36px;
+        font-size: 28px;
+        font-family: Inter;
     }
     
     .landing-page-banner-text-paragraph{
         margin-top:15px;
         text-align: left;
         width:100%;
+        p {
+            font-size: 18px;
+        }
     }
 
     .landing-page-banner-text-header-container{
@@ -32,7 +36,6 @@
         width:100%;
     }
     
-
 }
 
 
