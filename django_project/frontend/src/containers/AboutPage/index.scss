@@ -1,8 +1,9 @@
-.about-image-container{
+.about-page{
     background-image: url('/static/images/about/about_page_main_img.png');
-    background-size: cover;
-    background-position: center;
     background-repeat: no-repeat; 
+    background-size: contain;
+    position: relative;
+
 }
 
 .about-content-title{
@@ -27,10 +28,8 @@
 }
 
 .about-subsection-2{
-    background-image: url('/static/images/about/about_page_feature1.png');
     background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat; 
+    background: linear-gradient(90.07deg, #75B37A 70.69%, rgba(117, 179, 122, 0) 103.61%);
     width:100%;
     height:64px;
 
@@ -38,20 +37,16 @@
 }
 
 .about-subsection-3{
-    background-image: url('/static/images/about/about_page_feature2.png');
     background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat; 
+    background: linear-gradient(89.95deg, #F9A95D 67.67%, rgba(249, 169, 93, 0) 101.73%);
     width:100%;
     height:64px;
     margin-top:10px;
 }
 
 .about-subsection-4{
-    background-image: url('/static/images/about/about_page_feature3.png');
     background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat; 
+    background: linear-gradient(90deg, #9F89BF 72.85%, rgba(159, 137, 191, 0) 100%);
     width:100%;
     height:64px;
     margin-top:10px
@@ -59,10 +54,8 @@
 }
 
 .about-subsection-5{
-    background-image: url('/static/images/about/about_page_feature4.png');
     background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat; 
+    background: linear-gradient(90deg, #A2A2A2 72.85%, rgba(159, 137, 191, 0) 100%);
     width:100%;
     height:64px;
     margin-top:10px
