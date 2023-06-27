@@ -91,6 +91,10 @@ def get_map_template_style(request, theme_choice: int = 0, token: str = None):
                 "fill-opacity": 0.8
             }
         })
+        styles['layers'].append(get_highlighted_layer('erf'))
+        styles['layers'].append(get_highlighted_layer('holding'))
+        styles['layers'].append(get_highlighted_layer('farm_portion'))
+        styles['layers'].append(get_highlighted_layer('parent_farm'))
     # update maptiler api key
     styles = replace_maptiler_api_key(styles)
     return styles
@@ -105,3 +109,25 @@ def replace_maptiler_api_key(styles):
             map_tiler_key
         )
     return styles
+
+
+def get_highlighted_layer(layer_name):
+    # green
+    return {
+      "id": f"{layer_name}-highlighted",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": f"{layer_name}",
+      "minzoom": 12,
+      "layout": {"visibility": "visible", "line-join": "bevel"},
+      "paint": {
+        "line-color": "#008000",
+        "line-width": [
+          "case",
+          ["boolean",
+           ["feature-state", "parcel-selected-highlighted"], False], 4,
+          0
+      ],
+        "line-opacity": 1
+      }
+    }

@@ -6,7 +6,11 @@ import Tab from "@mui/material/Tab";
 import {RootState} from '../../app/store';
 import {useAppDispatch, useAppSelector } from '../../app/hooks';
 import TabPanel, { a11yProps } from '../../components/TabPanel';
-import { LeftSideBar, RightSideBar } from './SideBar';
+import {
+  LeftSideBar,
+  RightSideBar,
+  LayerFilterTabs
+} from './SideBar';
 import Upload from './Upload';
 import Map from './Map';
 import './index.scss';
@@ -67,7 +71,7 @@ function MainPage() {
       <div className="MainPage">
         <Grid container flexDirection={'row'}>
           <Grid item>
-            <LeftSideBar />
+            { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} />}
           </Grid>
           <Grid item flex={1}>
             <Grid container className="Content" flexDirection={'column'}>
@@ -103,7 +107,6 @@ function MainPage() {
             </Grid>
           </Grid>
         </Grid>
-        { rightSideBarMode === RightSideBarMode.Upload ? <RightSideBar element={Upload} /> : null}
         { rightSideBarMode === RightSideBarMode.PropertySummary ? <RightSideBar element={PropertySummary} /> : null}
       </div>
     </div>

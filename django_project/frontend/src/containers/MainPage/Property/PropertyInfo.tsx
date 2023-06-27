@@ -199,17 +199,10 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                     { props.property.id !== 0 &&
                         <TableRow key='size'>
                             <TableCell component="th" scope="row">
-                                Property Size (in ha)
+                                Property Size
                             </TableCell>
-                            <TableCell>
-                                <TextField
-                                    disabled={true}
-                                    id="input_size"
-                                    hiddenLabel={true}
-                                    type={"text"}
-                                    value={props.property.size}
-                                    sx={{ width: '100%' }}
-                                />                            
+                            <TableCell className='TableCellText'>
+                                <span>{props.property.size ? props.property.size : '0'} ha</span>                                
                             </TableCell>
                         </TableRow>
                     }

@@ -16,6 +16,10 @@
           ],
           "django": true,
           "justMyCode": true,
+          "env": {
+            "DJANGO_SETTINGS_MODULE": "core.settings.dev",
+            "DISABLE_2FA": "False"
+          }
       },
       {
           "name": "React: Run webpack-dev-server",

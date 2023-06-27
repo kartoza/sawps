@@ -1,4 +1,4 @@
-![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--fa1eb11-blue.svg)
+![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--596ac6b-blue.svg)
 ![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Build%20Status:-SUCCESS-green.svg)
 
 # 🦏 SANBI WPS
@@ -81,6 +81,9 @@ Open your web browser and go to localhost:8000 to view the running application.
 ### 💽 Restoring layer schema for map
 
 The full dump file for layer schema is ~5.3GB, meanwhile compact dump file is only 24MB.
+
+[Download Full Dump File for Layer.](https://drive.google.com/file/d/1-6y5tuMNc2sQ1G3qjyntL4PDV6ubCnbc/view?usp=sharing)
+
 [Download Compact Dump File for Layer.](https://drive.google.com/file/d/1Q0WhUP74MCoC_JcD4qMK1Egs575xrhqQ/view?usp=sharing)
 
 Preview for compact dump file:
