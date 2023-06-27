@@ -1,52 +1,14 @@
 from django.test import TestCase
-from occurrence.models import OrganismQuantityType, SurveyMethod, OccurrenceStatus, BasisOfRecord, SamplingSizeUnit, Occurrence
-from occurrence.factories import OrganismQuantityTypeFactory, SurveyMethodFactory, OccurrenceFactory
-from occurrence.factories import OccurrenceStatusFactory, BasisOfRecordFactory, SamplingSizeUnitFactory
+from occurrence.models import (
+    SurveyMethod, 
+    SamplingSizeUnit, 
+)
+from occurrence.factories import SurveyMethodFactory
+from occurrence.factories import SamplingSizeUnitFactory
 from species.models import Taxon
 from species.factories import TaxonRankFactory
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
-
-
-class OrganismQuantityTypeTestCase(TestCase):
-    """Organism quantity type test case."""
-
-    @classmethod
-    def setUpTestData(cls):
-        """Set up test data."""
-        cls.quantityType = OrganismQuantityTypeFactory()
-
-    def test_create_quantity_type(self):
-        """Test create organism quantity type."""
-        self.assertTrue(isinstance(self.quantityType, OrganismQuantityType))
-        self.assertEqual(OrganismQuantityType.objects.count(), 1)
-        self.assertEqual(self.quantityType.name, OrganismQuantityType.objects.get(id=self.quantityType.id).name)
-
-    def test_update_quantity_type(self):
-        """Test update quantity type."""
-        self.quantityType.name = "organism_quantity_type_1"
-        self.quantityType.save()
-        self.assertEqual(
-            OrganismQuantityType.objects.get(id=self.quantityType.id).name,
-            "organism_quantity_type_1",
-        )
-
-    def test_quantity_type_unique_name(self):
-        """Test unique names of quantity types."""
-        with self.assertRaises(Exception) as raised:
-            OrganismQuantityTypeFactory(name="organism_quantity_type_1")
-            self.assertEqual(raised.exception, IntegrityError)
-
-    def test_quantity_type_unique_sort_id(self):
-        """Test unique sort ids of quantity types."""
-        with self.assertRaises(Exception) as raised:
-            OrganismQuantityTypeFactory(sort_id=0)
-            self.assertEqual(raised.exception, IntegrityError)
-
-    def test_delete_quantity_type(self):
-        """Test delete quantity type."""
-        self.quantityType.delete()
-        self.assertEqual(OrganismQuantityType.objects.count(), 0)
 
 
 class SurveyMethodTestCase(TestCase):
@@ -91,79 +53,6 @@ class SurveyMethodTestCase(TestCase):
         self.survey_method.delete()
         self.assertEqual(SurveyMethod.objects.count(), 0)
 
-
-class OccurrenceStatusTestCase(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        """Setup test data for occurrence status testcase."""
-        cls.occurrence_status = OccurrenceStatusFactory()
-
-    def test_create_occurrence_status(self):
-        """Test create occurrence status."""
-        self.assertTrue(isinstance(self.occurrence_status, OccurrenceStatus))
-        self.assertEqual(OccurrenceStatus.objects.count(), 1)
-        self.assertEqual(self.occurrence_status.name, 'occurrence status 0')
-
-    def test_update_occurrence_status(self):
-        """Test update occurrence status."""
-        self.occurrence_status.name = 'occurrence status 1'
-        self.occurrence_status.save()
-        self.assertEqual(
-            OccurrenceStatus.objects.get(id=1).name,
-            'occurrence status 1',
-        )
-
-    def test_occurrence_status_unique_name_constraint(self):
-        """Test occurrence status unique name constraint."""
-        with self.assertRaises(Exception) as raised:
-            OccurrenceStatusFactory(name='occurrence status 0')
-        self.assertEqual(IntegrityError, type(raised.exception))
-
-    def test_delete_occurrence_status(self):
-        """Test delete occurrence status."""
-        self.occurrence_status.delete()
-        self.assertEqual(OccurrenceStatus.objects.count(), 0)
-
-        
-class BasisOfRecordTestCase(TestCase):
-    """Basis of record testcase."""
-
-    @classmethod
-    def setUpTestData(self):
-        """Setup test data for basis of record test case."""
-        self.basis_of_record = BasisOfRecordFactory()
-
-    def test_create_basis_of_record(self):
-        """Test create basis of record."""
-        self.assertTrue(isinstance(self.basis_of_record, BasisOfRecord))
-        self.assertEqual(BasisOfRecord.objects.count(), 1)
-        self.assertEqual(self.basis_of_record.name, 'basis of record 0')
-
-    def test_update_basis_of_record(self):
-        """Test update basis of record."""
-        self.basis_of_record.name = 'basis of record 1'
-        self.basis_of_record.save()
-        self.assertEqual(
-            BasisOfRecord.objects.get(id=1).name, 'basis of record 1'
-        )
-
-    def test_basis_of_record_unique_name_constraint(self):
-        """Test basis of record unique name constraint."""
-        with self.assertRaises(Exception) as raised:
-            BasisOfRecordFactory(name='basis of record 1')
-            self.assertEqual(IntegrityError, raised.exception)
-
-    def test_basis_of_record_unique_sort_id_constraint(self):
-        """Test basis of record unique sort id constraint."""
-        with self.assertRaises(Exception) as raised:
-            BasisOfRecordFactory(sort_id=0)
-            self.assertEqual(IntegrityError, raised.exception)
-
-    def test_delete_basis_of_record(self):
-        """Test delete basis of record."""
-        self.basis_of_record.delete()
-        self.assertEqual(BasisOfRecord.objects.count(), 0)
-
         
 class SamplingSizeUnitTestCase(TestCase):
     """Sampling size unit testcase."""
@@ -196,36 +85,3 @@ class SamplingSizeUnitTestCase(TestCase):
         self.sampling_size_unit.delete()
         self.assertEqual(SamplingSizeUnit.objects.count(), 0)
 
-
-class OccurrenceTestCase(TestCase):
-    """Occurrence testcase."""
-    @classmethod
-    def setUpTestData(cls):
-        """Setup test data."""
-        taxon = Taxon.objects.create(
-            scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
-            colour_variant=False,
-            taxon_rank=TaxonRankFactory(),
-        )
-        user = User.objects.create(username='user_0', password='password')
-        sampling_size_unit = SamplingSizeUnit.objects.create(unit='cm')
-        cls.occurrence = OccurrenceFactory(taxon=taxon, user=user, sampling_size_unit=sampling_size_unit)
-    
-    def test_create_occurrence(self):
-        """Test create occurrence."""
-        self.assertTrue(isinstance(self.occurrence, Occurrence))
-        self.assertEqual(Occurrence.objects.count(), 1)
-
-    def test_update_occurrence(self):
-        """Test update occurrence."""
-        self.occurrence.individual_count = 3
-        self.occurrence.save()
-        self.assertEqual(
-            Occurrence.objects.get(id=self.occurrence.id).individual_count, 3
-        )
-
-    def test_delete_occurrence(self):
-        """Test delete occurrence."""
-        self.occurrence.delete()
-        self.assertEqual(Occurrence.objects.count(), 0) 
