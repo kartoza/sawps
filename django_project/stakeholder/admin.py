@@ -6,5 +6,12 @@ admin.site.register(UserTitle)
 admin.site.register(LoginStatus)
 admin.site.register(UserProfile)
 admin.site.register(Organisation)
-admin.site.register(OrganisationUser)
-admin.site.register(OrganisationRepresentative)
+
+@admin.register(OrganisationUser)
+class OrganisationUserAdmin(admin.ModelAdmin):
+    list_display = ("user", "organisation")
+
+
+@admin.register(OrganisationRepresentative)
+class OrganisationRepresentativeAdmin(admin.ModelAdmin):
+    list_display = ("user", "organisation")

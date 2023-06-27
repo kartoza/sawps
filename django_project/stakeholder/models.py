@@ -114,6 +114,9 @@ class Organisation(models.Model):
         verbose_name_plural = 'Organisations'
         db_table = "organisation"
 
+    def __str__(self):
+        return self.name
+
 
 class OrganisationPersonnel(models.Model):
     """Organisation personnel abstract model."""
