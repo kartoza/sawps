@@ -1,6 +1,20 @@
 from django.test import TestCase
-from population_data.models import CountMethod, Month, NatureOfPopulation, PopulationCount, PopulationCountPerActivity
-from population_data.factories import CountMethodFactory, MonthFactory, NatureOfPopulationFactory, PopulationCountFactory, PopulationCountPerActivityFactory
+from population_data.models import (
+    CountMethod, 
+    Month, 
+    NatureOfPopulation, 
+    PopulationCount, 
+    PopulationCountPerActivity,
+    Certainity
+)
+from population_data.factories import (
+    CountMethodFactory, 
+    MonthFactory, 
+    NatureOfPopulationFactory, 
+    PopulationCountFactory, 
+    PopulationCountPerActivityFactory,
+    CertainityF
+)
 from species.models import Taxon, OwnedSpecies
 from django.contrib.auth.models import User
 from species.factories import OwnedSpeciesFactory, TaxonRankFactory
@@ -207,3 +221,30 @@ class PopulationCountPerActivityTestCase(TestCase):
         """Test delete population count."""
         self.population_count.delete()
         self.assertEqual(PopulationCountPerActivity.objects.count(), 0)
+
+
+class TestCertainity(TestCase):
+    """Test for certainity model"""
+
+    def setUp(self) -> None:
+        """setup test data"""
+        self.Certainity = CertainityF(name='name', description='text')
+
+    def test_create_certainity(self):
+        """test create certainity"""
+        self.assertEqual(self.Certainity.name, 'name')
+        self.assertEqual(self.Certainity.description, 'text')
+        self.assertEqual(Certainity.objects.count(), 1)
+
+    def test_update_Certainity(self):
+        """test update certainity"""
+        self.Certainity.name = 'Certainity'
+        self.Certainity.description = 'Certainity description'
+        self.Certainity.save()
+        self.assertEqual(self.Certainity.name, 'Certainity')
+        self.assertEqual(self.Certainity.description, 'Certainity description')
+
+    def test_delete_certainity(self):
+        """test delete certainity"""
+        self.Certainity.delete()
+        self.assertEqual(Certainity.objects.count(), 0)

@@ -92,3 +92,21 @@ class PopulationCountPerActivity(PopulationCountAbstract):
         constraints = [models.UniqueConstraint(
             fields=['year', 'owned_species', 'activity_type'],name='unique_population_count_per_activity'
         )]
+
+
+class Certainity(models.Model):
+    """Certainity model"""
+    name = models.CharField(
+        max_length=250, 
+        null=False, 
+        blank=False,
+        default='',
+        unique=True
+    )
+    description = models.TextField(null=True, blank=True, help_text='Description')
+
+    class Meta:
+        verbose_name = 'Certainity'
+        verbose_name_plural = 'Certainities'
+        db_table = 'certainity'
+

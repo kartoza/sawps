@@ -172,6 +172,8 @@ class ParcelTestCase(TestCase):
         self.assertTrue(isinstance(self.parcel, Parcel))
         self.assertEqual(Parcel.objects.count(), 1)
         self.assertEqual(self.parcel.sg_number, 'SG_0')
+        self.assertEqual(self.parcel.farm_number, 0)
+
     
     def test_update_parcel(self):
         """Test update parcel."""

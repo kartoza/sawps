@@ -92,6 +92,18 @@ class Parcel(models.Model):
     year = models.DateField()
     property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
     parcel_type = models.ForeignKey(ParcelType, on_delete=models.CASCADE)
+    farm_number = models.IntegerField(
+        null=False,
+        default=0
+    )
+    farm_name = models.TextField(
+        null=False,
+        default=''
+    )
+    sub_division_number = models.IntegerField(
+        null=False,
+        default=0
+    )
 
     def __str__(self):
         return self.sg_number

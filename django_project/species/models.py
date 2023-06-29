@@ -64,3 +64,16 @@ class OwnedSpecies(models.Model):
         verbose_name = 'Owned Species'
         verbose_name_plural = 'Owned Species'
         db_table = 'owned_species'
+
+
+class TaxonSurveyMethod(models.Model):
+    """taxon survey methods"""
+    taxon = models.ForeignKey(
+        'species.Taxon',
+        on_delete=models.CASCADE
+    )
+    survey_method = models.ForeignKey(
+        'occurrence.SurveyMethod',
+        on_delete=models.CASCADE
+    )
+

@@ -1,6 +1,13 @@
 import factory
-from population_data.models import CountMethod, Month, NatureOfPopulation, PopulationCountAbstract, PopulationCount, PopulationCountPerActivity
-
+from population_data.models import (
+    CountMethod, 
+    Month, 
+    NatureOfPopulation, 
+    PopulationCountAbstract, 
+    PopulationCount, 
+    PopulationCountPerActivity,
+    Certainity
+)
 
 class CountMethodFactory(factory.django.DjangoModelFactory):
     """Count method factory."""
@@ -39,7 +46,7 @@ class PopulationCountAbstractFactory(factory.django.DjangoModelFactory):
         model = PopulationCountAbstract
         abstract = True
 
-    year = factory.Faker('date')
+    year = factory.Faker('year')
     owned_species = factory.SubFactory('species.factories.OwnedSpeciesFactory')
     total = factory.Faker('random_int')
     adult_male = factory.Faker('random_int')
@@ -70,3 +77,12 @@ class PopulationCountPerActivityFactory(PopulationCountAbstractFactory):
     founder_population = True
     reintroduction_source = factory.Sequence(lambda n: 'reintroduction source-{0}'.format(n))
     permit_number = factory.Faker('random_int')
+
+
+class CertainityF(factory.django.DjangoModelFactory):
+    """Certainity factory."""
+
+    class Meta:
+        """meta"""
+
+        model = Certainity
