@@ -4,7 +4,8 @@ from property.models import (
     Province, 
     ParcelType, 
     Parcel, 
-    OwnershipStatus
+    OwnershipStatus,
+    Property
 )
 
 admin.site.register(PropertyType)
@@ -12,3 +13,5 @@ admin.site.register(Province)
 admin.site.register(ParcelType)
 admin.site.register(Parcel)
 admin.site.register(OwnershipStatus)
+admin.site.register(Property)
+

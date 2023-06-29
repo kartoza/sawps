@@ -45,7 +45,7 @@ class NatureOfPopulation(models.Model):
         db_table = 'nature_of_population'
 
 
-class PopulationCountAbstract(models.Model):
+class AnnualPopulation(models.Model):
     """"Population count abstract model."""
     year = models.PositiveIntegerField()
     owned_species = models.ForeignKey('species.OwnedSpecies', on_delete=models.CASCADE)
@@ -55,12 +55,24 @@ class PopulationCountAbstract(models.Model):
     month = models.ForeignKey(Month, on_delete=models.CASCADE)
     juvenile_male = models.IntegerField(null=True, blank=True)
     juvenile_female = models.IntegerField(null=True, blank=True)
+    area_covered = models.FloatField(null=False, default=0.0)
+    sampling_effort = models.FloatField(null=False, default=0.0)
+    group = models.IntegerField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
+    survey_method = models.ForeignKey('occurrence.SurveyMethod', on_delete=models.CASCADE)
+
 
     class Meta:
         abstract = True
+        constraints = [
+            models.CheckConstraint(
+                name='Adult male and adult female must not be greater than total',
+                check=models.Q(total__gte=models.F('adult_male') + models.F('adult_female'))
+            )
+        ]
 
 
-class PopulationCount(PopulationCountAbstract):
+class PopulationCount(AnnualPopulation):
     """Population count model."""
     sub_adult_total = models.IntegerField(null=True, blank=True)
     sub_adult_male = models.IntegerField(null=True, blank=True)
@@ -76,7 +88,7 @@ class PopulationCount(PopulationCountAbstract):
             fields=['year', 'owned_species'],name='unique_population_count'
         )]
 
-class PopulationCountPerActivity(PopulationCountAbstract):
+class PopulationCountPerActivity(AnnualPopulation):
     """Population count per activity model."""
     activity_type = models.ForeignKey('activity.ActivityType', on_delete=models.CASCADE)
     founder_population = models.BooleanField(null=True, blank=True)

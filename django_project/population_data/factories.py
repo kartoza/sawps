@@ -3,7 +3,7 @@ from population_data.models import (
     CountMethod, 
     Month, 
     NatureOfPopulation, 
-    PopulationCountAbstract, 
+    AnnualPopulation, 
     PopulationCount, 
     PopulationCountPerActivity,
     Certainity
@@ -40,10 +40,10 @@ class NatureOfPopulationFactory(factory.django.DjangoModelFactory):
     extensive = True
 
 
-class PopulationCountAbstractFactory(factory.django.DjangoModelFactory):
+class AnnualPopulationFactory(factory.django.DjangoModelFactory):
     """Population count abstract factory."""
     class Meta:
-        model = PopulationCountAbstract
+        model = AnnualPopulation
         abstract = True
 
     year = factory.Faker('year')
@@ -56,7 +56,7 @@ class PopulationCountAbstractFactory(factory.django.DjangoModelFactory):
     juvenile_female = factory.Faker('random_int')
 
 
-class PopulationCountFactory(PopulationCountAbstractFactory):
+class PopulationCountFactory(AnnualPopulationFactory):
     """Population count factory."""
     class Meta:
         model = PopulationCount
@@ -68,7 +68,7 @@ class PopulationCountFactory(PopulationCountAbstractFactory):
     pride = factory.Faker('random_int')
 
 
-class PopulationCountPerActivityFactory(PopulationCountAbstractFactory):
+class PopulationCountPerActivityFactory(AnnualPopulationFactory):
     """Population count per activity factory."""
     class Meta:
         model = PopulationCountPerActivity
