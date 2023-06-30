@@ -52,10 +52,12 @@ class OwnedSpecies(models.Model):
     """Owned species mdoel."""
     management_status = models.ForeignKey('species.ManagementStatus', on_delete=models.CASCADE)
     nature_of_population = models.ForeignKey('population_data.NatureOfPopulation', on_delete=models.CASCADE)
-    count_method = models.ForeignKey('population_data.CountMethod', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     taxon = models.ForeignKey('species.Taxon', on_delete=models.CASCADE)
     property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
+    area_available_to_species = models.FloatField(
+        default=0.0
+    )
 
     def __str__(self):
         return f'Owned species#{self.id}'
