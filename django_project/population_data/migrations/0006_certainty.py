@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Certainity",
+            name="Certainty",
             fields=[
                 (
                     "id",
@@ -28,9 +28,9 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "verbose_name": "Certainity",
-                "verbose_name_plural": "Certainities",
-                "db_table": "certainity",
+                "verbose_name": "Certainty",
+                "verbose_name_plural": "Certainties",
+                "db_table": "certainty",
             },
         ),
     ]

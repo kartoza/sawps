@@ -14,7 +14,6 @@ from property.models import (
     PropertyType,
     Province,
     Property,
-    OwnershipStatus,
     ParcelType,
     Parcel
 )
@@ -127,7 +126,6 @@ class CreateNewProperty(APIView):
         # union of parcels
         parcels = request.data.get('parcels')
         geom = self.get_geometry(parcels)
-        ownership_status = OwnershipStatus.objects.all().first()
         organisation_id = self.request.session.get(
             CURRENT_ORGANISATION_ID_KEY, 0)
         if not organisation_id:
@@ -152,7 +150,6 @@ class CreateNewProperty(APIView):
             'geometry': geom,
             'area_available': 0,
             'property_size_ha': self.get_geom_size_in_ha(geom) if geom else 0,
-            'ownership_status_id': ownership_status.id,
             'created_by_id': self.request.user.id,
             'created_at': datetime.now()
         }

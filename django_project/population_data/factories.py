@@ -3,10 +3,11 @@ from population_data.models import (
     CountMethod, 
     Month, 
     NatureOfPopulation, 
+    AnnualPopulationAbstract, 
     AnnualPopulation, 
-    PopulationCount, 
-    PopulationCountPerActivity,
-    Certainity
+    AnnualPopulationPerActivity,
+    Certainty,
+    OpenCloseSystem
 )
 
 class CountMethodFactory(factory.django.DjangoModelFactory):
@@ -40,10 +41,10 @@ class NatureOfPopulationFactory(factory.django.DjangoModelFactory):
     extensive = True
 
 
-class AnnualPopulationFactory(factory.django.DjangoModelFactory):
+class AnnualPopulationAbstractFactory(factory.django.DjangoModelFactory):
     """Population count abstract factory."""
     class Meta:
-        model = AnnualPopulation
+        model = AnnualPopulationAbstract
         abstract = True
 
     year = factory.Faker('year')
@@ -56,10 +57,10 @@ class AnnualPopulationFactory(factory.django.DjangoModelFactory):
     juvenile_female = factory.Faker('random_int')
 
 
-class PopulationCountFactory(AnnualPopulationFactory):
+class AnnualPopulationF(AnnualPopulationAbstractFactory):
     """Population count factory."""
     class Meta:
-        model = PopulationCount
+        model = AnnualPopulation
 
     sub_adult_total = factory.Faker('random_int')
     sub_adult_male = factory.Faker('random_int')
@@ -68,10 +69,10 @@ class PopulationCountFactory(AnnualPopulationFactory):
     pride = factory.Faker('random_int')
 
 
-class PopulationCountPerActivityFactory(AnnualPopulationFactory):
+class AnnualPopulationPerActivityFactory(AnnualPopulationAbstractFactory):
     """Population count per activity factory."""
     class Meta:
-        model = PopulationCountPerActivity
+        model = AnnualPopulationPerActivity
     
     activity_type = factory.SubFactory('activity.factories.ActivityTypeFactory')
     founder_population = True
@@ -79,10 +80,19 @@ class PopulationCountPerActivityFactory(AnnualPopulationFactory):
     permit_number = factory.Faker('random_int')
 
 
-class CertainityF(factory.django.DjangoModelFactory):
-    """Certainity factory."""
+class CertaintyF(factory.django.DjangoModelFactory):
+    """Certainty factory."""
 
     class Meta:
         """meta"""
 
-        model = Certainity
+        model = Certainty
+
+
+class OpenCloseSystemF(factory.django.DjangoModelFactory):
+    """Open Close System factory."""
+
+    class Meta:
+        """meta"""
+
+        model = OpenCloseSystem

@@ -3,17 +3,19 @@ from population_data.models import (
     CountMethod, 
     Month, 
     NatureOfPopulation, 
-    PopulationCount, 
-    PopulationCountPerActivity,
-    Certainity
+    AnnualPopulation, 
+    AnnualPopulationPerActivity,
+    Certainty,
+    OpenCloseSystem
 )
 from population_data.factories import (
     CountMethodFactory, 
     MonthFactory, 
     NatureOfPopulationFactory, 
-    PopulationCountFactory, 
-    PopulationCountPerActivityFactory,
-    CertainityF
+    AnnualPopulationF, 
+    AnnualPopulationPerActivityFactory,
+    CertaintyF,
+    OpenCloseSystemF
 )
 from species.models import Taxon, OwnedSpecies
 from django.contrib.auth.models import User
@@ -27,7 +29,9 @@ class CountMethodTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         """SetupTestData for count method test case."""
-        cls.count_method = CountMethodFactory()
+        cls.count_method = CountMethodFactory(
+            name='count method-1'
+        )
 
     def test_create_count_method(self):
         """Test create count method."""
@@ -58,7 +62,9 @@ class MonthTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.month = MonthFactory()
+        cls.month = MonthFactory(
+            name='month-0'
+        )
 
     def test_create_month(self):
         """Test create a month."""
@@ -96,7 +102,9 @@ class NatureOfPopulationTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         """SetUpTestData for nature of population test case."""
-        cls.nature_of_population = NatureOfPopulationFactory()
+        cls.nature_of_population = NatureOfPopulationFactory(
+            name='nature of population-0'
+        )
 
     def test_create_nature_of_population(self):
         """Test create nature of population."""
@@ -142,28 +150,33 @@ class PopulationCountTestCase(TestCase):
         )
         user = User.objects.create_user(username='testuser', password='12345')        
         owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
-        cls.population_count = PopulationCountFactory(owned_species=owned_species)
+        cls.population_count = AnnualPopulationF(
+            owned_species=owned_species,
+            total = 120,
+            adult_male=19,
+            adult_female=100
+        )
     
     def test_create_population_count(self):
         """Test create population count."""
         self.assertTrue(
-            isinstance(self.population_count, PopulationCount)
+            isinstance(self.population_count, AnnualPopulation)
         )
-        self.assertEqual(PopulationCount.objects.count(), 1)
+        self.assertEqual(AnnualPopulation.objects.count(), 1)
 
 
     def test_update_population_count(self):
         """Test update population count."""
-        self.population_count.total = 100
+        self.population_count.total = 125
         self.population_count.save()
         self.assertEqual(
-            PopulationCount.objects.get(year=self.population_count.year).total, 100
+            AnnualPopulation.objects.get(year=self.population_count.year).total, 125
         )
 
     def test_year_ownedspecies_fields_unique_toghter_constraint(self):
         """Test both year and ownedspecis are unique togther."""
         with self.assertRaises(Exception) as raised:
-            PopulationCountFactory(
+            AnnualPopulationF(
                 owned_species=self.population_count.owned_species,
                 year=self.population_count.year,
             )
@@ -173,10 +186,19 @@ class PopulationCountTestCase(TestCase):
     def test_delete_population_count(self):
         """Test delete population count."""
         self.population_count.delete()
-        self.assertEqual(PopulationCount.objects.count(), 0)
+        self.assertEqual(AnnualPopulation.objects.count(), 0)
+
+    def test_annual_population_total_constraint(self):
+        """Test update population count."""
+        self.population_count.total = 110
+        with self.assertRaises(Exception) as raised:
+            self.population_count.save()
+            self.assertEqual(raised.exception, IntegrityError)
+        
 
 
-class PopulationCountPerActivityTestCase(TestCase):
+
+class AnnualPopulationPerActivityTestCase(TestCase):
     """Population count test case."""
     @classmethod
     def setUpTestData(cls):
@@ -189,14 +211,14 @@ class PopulationCountPerActivityTestCase(TestCase):
         )
         user = User.objects.create_user(username='testuser', password='12345')        
         owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
-        cls.population_count = PopulationCountPerActivityFactory(owned_species=owned_species)
+        cls.population_count = AnnualPopulationPerActivityFactory(owned_species=owned_species)
     
     def test_create_population_count(self):
         """Test create population count."""
         self.assertTrue(
-            isinstance(self.population_count, PopulationCountPerActivity)
+            isinstance(self.population_count, AnnualPopulationPerActivity)
         )
-        self.assertEqual(PopulationCountPerActivity.objects.count(), 1)
+        self.assertEqual(AnnualPopulationPerActivity.objects.count(), 1)
 
 
     def test_update_population_count(self):
@@ -204,13 +226,13 @@ class PopulationCountPerActivityTestCase(TestCase):
         self.population_count.total = 100
         self.population_count.save()
         self.assertEqual(
-            PopulationCountPerActivity.objects.get(year=self.population_count.year).total, 100
+            AnnualPopulationPerActivity.objects.get(year=self.population_count.year).total, 100
         )
 
     def test_year_ownedspecies_activity_type_fields_unique_toghter_constraint(self):
         """Test year, ownedspecies and activity_type are unique togther."""
         with self.assertRaises(Exception) as raised:
-            PopulationCountPerActivityFactory(
+            AnnualPopulationPerActivityFactory(
                 owned_species=self.population_count.owned_species,
                 year=self.population_count.year,
                 activity_type=self.population_count.activity_type,
@@ -220,31 +242,55 @@ class PopulationCountPerActivityTestCase(TestCase):
     def test_delete_population_count(self):
         """Test delete population count."""
         self.population_count.delete()
-        self.assertEqual(PopulationCountPerActivity.objects.count(), 0)
+        self.assertEqual(AnnualPopulationPerActivity.objects.count(), 0)
 
 
-class TestCertainity(TestCase):
-    """Test for certainity model"""
+class TestCertainty(TestCase):
+    """Test for certainty model"""
 
     def setUp(self) -> None:
         """setup test data"""
-        self.Certainity = CertainityF(name='name', description='text')
+        self.Certainty = CertaintyF(name='name', description='text')
 
-    def test_create_certainity(self):
-        """test create certainity"""
-        self.assertEqual(self.Certainity.name, 'name')
-        self.assertEqual(self.Certainity.description, 'text')
-        self.assertEqual(Certainity.objects.count(), 1)
+    def test_create_certainty(self):
+        """test create certainty"""
+        self.assertEqual(self.Certainty.name, 'name')
+        self.assertEqual(self.Certainty.description, 'text')
+        self.assertEqual(Certainty.objects.count(), 1)
 
-    def test_update_Certainity(self):
-        """test update certainity"""
-        self.Certainity.name = 'Certainity'
-        self.Certainity.description = 'Certainity description'
-        self.Certainity.save()
-        self.assertEqual(self.Certainity.name, 'Certainity')
-        self.assertEqual(self.Certainity.description, 'Certainity description')
+    def test_update_Certainty(self):
+        """test update certainty"""
+        self.Certainty.name = 'Certainty'
+        self.Certainty.description = 'Certainty description'
+        self.Certainty.save()
+        self.assertEqual(self.Certainty.name, 'Certainty')
+        self.assertEqual(self.Certainty.description, 'Certainty description')
 
-    def test_delete_certainity(self):
-        """test delete certainity"""
-        self.Certainity.delete()
-        self.assertEqual(Certainity.objects.count(), 0)
+    def test_delete_certainty(self):
+        """test delete certainty"""
+        self.Certainty.delete()
+        self.assertEqual(Certainty.objects.count(), 0)
+
+
+class TestOpenCloseSystem(TestCase):
+    """Test for open close system model"""
+
+    def setUp(self) -> None:
+        """setup test data"""
+        self.open_close_sustem = OpenCloseSystemF(name='name')
+
+    def test_create_open_close_system(self):
+        """test create pen close system"""
+        self.assertEqual(self.open_close_sustem.name, 'name')
+        self.assertEqual(OpenCloseSystem.objects.count(), 1)
+
+    def test_update_open_close_system(self):
+        """test update pen close system"""
+        self.open_close_sustem.name = 'OpenCloseSystem'
+        self.open_close_sustem.save()
+        self.assertEqual(self.open_close_sustem.name, 'OpenCloseSystem')
+
+    def test_delete_open_close_system(self):
+        """test delete pen close system"""
+        self.open_close_sustem.delete()
+        self.assertEqual(OpenCloseSystem.objects.count(), 0)
