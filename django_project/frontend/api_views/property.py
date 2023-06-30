@@ -258,3 +258,20 @@ class PropertyDetail(APIView):
             status=200,
             data=PropertyDetailSerializer(property).data
         )
+
+
+class Properties(APIView):
+    permission_class = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        properties = Property.objects.all()
+ 
+        property = self.request.query_params.get("name")
+        if property:
+            search_value = property.split(',')
+            properties = Property.objects.filter(name__in=search_value)
+
+        return Response(
+            status=200,
+            data=PropertySerializer(properties, many=True).data
+        )

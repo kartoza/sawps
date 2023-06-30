@@ -37,7 +37,8 @@ from frontend.api_views.property import (
     PropertyList,
     UpdatePropertyInformation,
     UpdatePropertyBoundaries,
-    PropertyDetail
+    PropertyDetail,
+    Properties,
 )
 from frontend.api_views.upload import (
     BoundaryFileUpload,
@@ -45,6 +46,9 @@ from frontend.api_views.upload import (
     BoundaryFileList,
     BoundaryFileSearch,
     BoundaryFileSearchStatus
+)
+from frontend.api_views.species import (
+    TaxonViewSet
 )
 
 urlpatterns = [
@@ -95,6 +99,11 @@ urlpatterns = [
         PropertyList.as_view(),
         name='property-list'
     ),
+    path(
+        'api/property/',
+        Properties.as_view(),
+        name='properties'
+    ),
     re_path(
         r'^api/property/detail/(?P<id>\d+)/?$',
         PropertyDetail.as_view(),
@@ -144,6 +153,11 @@ urlpatterns = [
         'switch-organisation/<int:organisation_id>/',
         switch_organisation,
         name='switch-organisation'
+    ),
+    path(
+        'api/species/',
+        TaxonViewSet.as_view(),
+        name='species'
     ),
     path('map/', MapView.as_view(), name='map'),
     path('help/', HelpView.as_view(), name='help'),
