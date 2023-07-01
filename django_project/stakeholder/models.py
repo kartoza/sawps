@@ -50,7 +50,13 @@ class UserProfile(models.Model):
     """Extend User model with one-to-one mapping."""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name='user_profile')
-    title_id = models.ForeignKey(UserTitle, on_delete=models.DO_NOTHING)
+    title_id = models.ForeignKey(
+        UserTitle, 
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        default=None
+    )
     cell_number = models.CharField(
         max_length=15,
         default='',
@@ -58,7 +64,11 @@ class UserProfile(models.Model):
         blank=True
     )
     user_role_type_id = models.ForeignKey(
-        UserRoleType, on_delete=models.DO_NOTHING
+        UserRoleType, 
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        default=None
     )
     picture = models.ImageField(
         upload_to='profile_pictures', null=True, blank=True
@@ -113,6 +123,9 @@ class Organisation(models.Model):
         verbose_name = 'Organisation'
         verbose_name_plural = 'Organisations'
         db_table = "organisation"
+
+    def __str__(self):
+        return self.name
 
 
 class OrganisationPersonnel(models.Model):
