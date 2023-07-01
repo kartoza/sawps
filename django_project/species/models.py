@@ -38,6 +38,21 @@ class Taxon(models.Model):
     infraspecific_epithet = models.CharField(max_length=250, unique=True, null=True, blank=True)
     taxon_rank = models.ForeignKey('species.TaxonRank', on_delete=models.CASCADE)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    show_on_front_page = models.BooleanField(
+        default=False
+    )
+    is_selected = models.BooleanField(
+        default=False
+    )
+    front_page_order = models.PositiveIntegerField(
+        verbose_name='Front page order',
+        null=False,
+        blank=True,
+        default=0
+    )
+    colour = models.CharField(
+        max_length=20, null=True, blank=True
+    )
 
     def __str__(self):
         return self.scientific_name
