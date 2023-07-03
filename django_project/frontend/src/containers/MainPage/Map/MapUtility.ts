@@ -5,6 +5,12 @@ import PropertyInterface from "../../../models/Property";
 
 const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
 const SEARCH_PROPERTY_URL = '/api/map/search/property/'
+const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
+    'erf': 14,
+    'holding': 12,
+    'farm_portion': 12,
+    'parent_farm': 10
+}
 
 /**
  * Determine layer visibility based on selected context layers
@@ -42,6 +48,8 @@ export const getSelectParcelLayerNames = (layer_names: string[]) => {
 export const renderHighlightParcelLayers = (map: maplibregl.Map, layer_names: string[]) => {
     for (let _idx = 0; _idx < layer_names.length; ++_idx) {
         if (layer_names[_idx].indexOf('_labels') > -1) continue
+        // parent_farm will not be in select mode because it is broken down to smaller parcels (farm_portions)
+        if (layer_names[_idx].indexOf('parent_farm') > -1) continue
         let _layer_name = `${layer_names[_idx]}-select-parcel`
         if (typeof map.getLayer(_layer_name) === 'undefined') {
             map.addLayer({
@@ -49,6 +57,7 @@ export const renderHighlightParcelLayers = (map: maplibregl.Map, layer_names: st
                 'type': 'fill',
                 'source': 'sanbi',
                 'source-layer': `${layer_names[_idx]}`,
+                'minzoom': PARCELS_ORIGINAL_ZOOM_LEVELS[layer_names[_idx]],
                 'layout': {},
                 'paint': {
                 'fill-color': '#F9A95D',
