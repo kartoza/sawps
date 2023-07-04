@@ -147,8 +147,10 @@ class ContextLayerAdmin(admin.ModelAdmin):
         # delete
         ContextLayer.objects.all().delete()
         # load fixtures from json files
-        call_command('loaddata', 'fixtures/context_layer.json', app_label='frontend')
-        call_command('loaddata', 'fixtures/context_layer_legend.json', app_label='frontend')
+        call_command('loaddata', 'fixtures/context_layer.json',
+                     app_label='frontend')
+        call_command('loaddata', 'fixtures/context_layer_legend.json',
+                     app_label='frontend')
         self.message_user(
             request,
             'Context layer fixtures has been successfully reloaded!',
