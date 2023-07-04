@@ -80,7 +80,10 @@ function Layers() {
                                 <List component="div" disablePadding>
                                     {layer.legends.map((legend: ContextLayerLegendInterface) => {
                                         return (
-                                            <ListItem key={legend.name} sx={{ pl: 4 }}>
+                                            <ListItem key={legend.name}>
+                                                <ListItemIcon>
+                                                    <Box className='LegendIcon' sx={{ backgroundColor: legend.colour}} />
+                                                </ListItemIcon>
                                                 <ListItemText primary={legend.name} />
                                             </ListItem>
                                         )
