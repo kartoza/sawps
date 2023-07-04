@@ -34,7 +34,10 @@ import {
   searchProperty,
   getSelectParcelLayerNames,
   MIN_SELECT_PARCEL_ZOOM_LEVEL,
-  MIN_SELECT_PROPERTY_ZOOM_LEVEL
+  MIN_SELECT_PROPERTY_ZOOM_LEVEL,
+  findAreaLayers,
+  isContextLayerSelected,
+  getMapPopupDescription
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -360,16 +363,42 @@ export default function Map() {
         }
       })
     } else if (selectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
-      // perhaps skip search if not in the properties zoom?
-      if (_mapZoom < MIN_SELECT_PROPERTY_ZOOM_LEVEL) return;
-      // find parcel
-      searchProperty(e.lngLat, (property: PropertyInterface) => {
-        if (property) {
-          dispatch(setSelectedProperty(property))
+      // find layers for searching
+      const _layers = map.current.getStyle().layers
+      let _areaSourceLayers = findAreaLayers(contextLayers)
+      if (_mapZoom >= MIN_SELECT_PROPERTY_ZOOM_LEVEL && isContextLayerSelected(contextLayers, 'properties')) {
+        // skip search if not in the properties layer minZoom
+        _areaSourceLayers.push('properties')
+      }
+      const _parcelLayer = findParcelLayer(contextLayers)
+      if (_mapZoom >= MIN_SELECT_PARCEL_ZOOM_LEVEL && _parcelLayer && _parcelLayer.isSelected) {
+        // TODO: need to use invisible parcel layers
+        _areaSourceLayers.push(..._parcelLayer.layer_names)
+      }
+      let _searchLayers = _layers.filter((layer:any) => _areaSourceLayers.includes(layer['source-layer'])).map((layer:any) => layer.id)
+      let features = map.current.queryRenderedFeatures(e.point, { layers: _searchLayers })
+      if (features.length) {
+        const _resultLayers = features.map((e:any) => e.layer.id)
+        // display popup
+        let _description = getMapPopupDescription(features)
+        if (_description) {
+          new maplibregl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(_description)
+            .addTo(map.current)
+        }
+        if (_resultLayers.includes('properties')) {
+          searchProperty(e.lngLat, (property: PropertyInterface) => {
+            if (property) {
+              dispatch(setSelectedProperty(property))
+            } else {
+              dispatch(resetSelectedProperty())
+            }
+          })
         } else {
           dispatch(resetSelectedProperty())
         }
-      })
+      }
     }
   }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 

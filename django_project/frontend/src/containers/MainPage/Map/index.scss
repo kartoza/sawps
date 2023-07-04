@@ -8,6 +8,21 @@
     position: absolute;
     width: 100%;
     height: 100%;
+
+    .maplibregl-popup-close-button:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .maplibregl-popup-content {
+        text-align: left;
+
+        ul {
+            margin-block-start: 0;
+            padding-inline-start: 20px;
+            margin-block-end: 0;
+        }
+    }
 }
 
 .mapboxgl-ctrl-group button, .maplibregl-ctrl-group button {
