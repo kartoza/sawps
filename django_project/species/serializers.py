@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from species.models import Taxon
 
 
@@ -8,4 +7,4 @@ class TaxonSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = Taxon
-        fields = "__all__"
+        fields = ['id', 'common_name_varbatim']
