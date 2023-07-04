@@ -250,7 +250,7 @@ function Filter() {
                                             {loading ? (
                                                 <Loading />
                                             ) : (
-                                                item.filterData.map((each: string, index: number) => {
+                                                item?.filterData?.map((each: string, index: number) => {
                                                     const filterId: string = `checkbox-list-label-${index}`;
                                                     return (
                                                         <ListItemButton
