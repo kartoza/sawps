@@ -7,11 +7,11 @@ const About:FC<IAbout> = ()=>{
     return(
         <>
             <section className='about-page fs-background' style={{ backgroundColor:'#000000'}}>
-                <div className="container-fluid full-height position-absolute">
+                <div className="container-fluid full-height">
                 <div className="row half-height about-container" data-testid='about-page-container'>
-                    <div className='col-5'>
-                    </div>
                     <div className='col-7'>
+                    </div>
+                    <div className='col-5'>
                         <div className='about-content-title'>
                                 The Wild life Population system
                         </div>
