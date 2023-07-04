@@ -1,12 +1,16 @@
 """Admin page for Context Layer models."""
 from django.contrib import admin, messages
+from django.forms import ModelForm
+from django.forms.widgets import TextInput
+from django.utils.html import format_html
 from celery.result import AsyncResult
 from core.celery import app
 from frontend.models import (
     ContextLayer,
     ContextLayerTilingTask,
     BoundaryFile,
-    BoundarySearchRequest
+    BoundarySearchRequest,
+    ContextLayerLegend
 )
 from frontend.tasks import (
     generate_vector_tiles_task,
@@ -125,7 +129,34 @@ class BoundarySearchRequestAdmin(admin.ModelAdmin):
     list_display = ('session', 'type', 'status', 'progress')
 
 
-admin.site.register(ContextLayer)
+class ContextLayerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_static')
+
+
+class ContextLayerLegendForm(ModelForm):
+    class Meta:
+        model = ContextLayerLegend
+        fields = '__all__'
+        widgets = {
+            'colour': TextInput(attrs={'type': 'color'}),
+        }
+
+
+class ContextLayerLegendAdmin(admin.ModelAdmin):
+    list_display = ('name', 'layer', 'display_color')
+    form = ContextLayerLegendForm
+
+    def display_color(self, obj):
+        return format_html(
+            '<span style="width:10px;height:10px;'
+            'display:inline-block;background-color:%s"></span>' % obj.colour
+        )
+    display_color.short_description = 'Colour'
+    display_color.allow_tags = True
+
+
+admin.site.register(ContextLayer, ContextLayerAdmin)
+admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
 admin.site.register(BoundaryFile, BoundaryFileAdmin)
 admin.site.register(BoundarySearchRequest, BoundarySearchRequestAdmin)
