@@ -236,7 +236,6 @@ const concatFeatureValues = (feature_map_key: string, featureValues: string[]): 
 }
 
 export const getMapPopupDescription = (features: Object[]):string => {
-    console.log(features)
     // group by source-layer
     let _groups:{ [id: string] : string[]; } = {}
     for (let i=0; i < features.length; ++i) {
@@ -265,6 +264,5 @@ export const getMapPopupDescription = (features: Object[]):string => {
         }
         _html_result += '</ul>'
     }
-    console.log(_html_result)
     return _html_result
 }

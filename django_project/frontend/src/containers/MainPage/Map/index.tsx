@@ -114,6 +114,7 @@ export default function Map() {
     map.current.getCanvas().style.cursor = '';
   }
 
+  /* Map Draw (Digitise) Mode  */
   const getBoundaryDigitiseStatus = (session: string) => {
     axios.get(`${UPLOAD_FILE_URL}${session}/status/`).then((response) => {
         if (response.data) {
@@ -245,11 +246,14 @@ export default function Map() {
       }]
     })
   }
+  /* End of Map Draw (Digitise) Mode  */
 
+  /* Listen to theme change event */
   useEffect(() => {
     dispatch(setInitialMapTheme(isDarkTheme ? MapTheme.Dark : MapTheme.Light))
   }, [isDarkTheme])
 
+  /* Listen to context layers change (isSelected) */
   useEffect(() => {
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
@@ -311,6 +315,7 @@ export default function Map() {
     }
   }, [selectionMode])
 
+  /* Called when mapTheme is changed */
   useEffect(() => {
     if (mapTheme === MapTheme.None) return;
     if (map.current) {
@@ -402,6 +407,7 @@ export default function Map() {
     }
   }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
+  /* OnClick event */
   useEffect(() => {
     if (!map.current) return;
     map.current.on('click', mapOnClick)
@@ -410,7 +416,7 @@ export default function Map() {
     }
   }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
-  // render selected+unselected parcel
+  /* render selected+unselected parcel */
   useEffect(() => {
     let _mapObj: maplibregl.Map = map.current
     let _has_removed = false
@@ -431,6 +437,7 @@ export default function Map() {
     }
   }, [selectedParcels])
 
+  /* Render/Respond to mapEvents */
   useEffect(() => {
     if (mapEvents.length === 0) return
     let _mapObj: maplibregl.Map = map.current
@@ -493,6 +500,7 @@ export default function Map() {
     dispatch(onMapEventProcessed([...mapEvents]))
   }, [mapEvents])
 
+  /* Check Digitise Boundary Processing status every 3s */
   useEffect(() => {
     if (savingBoundaryDigitise && boundaryDigitiseSession) {
         const interval = setInterval(() => {
