@@ -244,7 +244,9 @@ export const getMapPopupDescription = (features: Object[]):string => {
         let [_feature_map_key, _featureValue] = getPropertyOfFeature(_feature)
         if (_featureValue) {
             if (_feature_map_key in _groups) {
-                _groups[_feature_map_key].push(_featureValue)
+                if (!_groups[_feature_map_key].includes(_featureValue)) {
+                    _groups[_feature_map_key].push(_featureValue)
+                }
             } else {
                 _groups[_feature_map_key] = [_featureValue]
             }
