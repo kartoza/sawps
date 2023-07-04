@@ -37,7 +37,8 @@ import {
   MIN_SELECT_PROPERTY_ZOOM_LEVEL,
   findAreaLayers,
   isContextLayerSelected,
-  getMapPopupDescription
+  getMapPopupDescription,
+  addParcelInvisibleFillLayers
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -347,6 +348,7 @@ export default function Map() {
       })
       map.current.on('styledata', () => {
         dispatch(setMapReady(true))
+        addParcelInvisibleFillLayers(map.current)
       })
     }
   }, [mapTheme]);
@@ -376,11 +378,12 @@ export default function Map() {
         _areaSourceLayers.push('properties')
       }
       const _parcelLayer = findParcelLayer(contextLayers)
+      let _fillParcelLayers:string[] = []
       if (_mapZoom >= MIN_SELECT_PARCEL_ZOOM_LEVEL && _parcelLayer && _parcelLayer.isSelected) {
-        // TODO: need to use invisible parcel layers
-        _areaSourceLayers.push(..._parcelLayer.layer_names)
+        // need to use invisible parcel layers
+        _fillParcelLayers = _parcelLayer.layer_names.map((layer_name) => layer_name !== 'parent_farm' ? `${layer_name}-invisible-fill` : '').filter((layer_name) => layer_name.length > 0)
       }
-      let _searchLayers = _layers.filter((layer:any) => _areaSourceLayers.includes(layer['source-layer'])).map((layer:any) => layer.id)
+      let _searchLayers = _layers.filter((layer:any) => _areaSourceLayers.includes(layer['source-layer']) || _fillParcelLayers.includes(layer['id']) ).map((layer:any) => layer.id)
       let features = map.current.queryRenderedFeatures(e.point, { layers: _searchLayers })
       if (features.length) {
         const _resultLayers = features.map((e:any) => e.layer.id)

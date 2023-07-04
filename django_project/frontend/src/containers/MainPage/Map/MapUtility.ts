@@ -183,7 +183,7 @@ export const searchProperty = (lngLat: maplibregl.LngLat, callback: (parcel: Pro
     }).catch((error) => {
         if (error.response && error.response.status === 404) {
             // perhaps there is other way to stop axios printing 404 to log?
-            // console.clear()
+            console.clear()
         }
         callback(null)
     })
@@ -265,4 +265,53 @@ export const getMapPopupDescription = (features: Object[]):string => {
         _html_result += '</ul>'
     }
     return _html_result
+}
+
+/**
+ * Add invisible fill layers for parcels to handle on click inside the layer
+ * @param mapObj 
+ */
+export const addParcelInvisibleFillLayers = (mapObj: maplibregl.Map) => {
+    if (typeof mapObj.getLayer('erf-invisible-fill') === 'undefined') {
+        mapObj.addLayer({
+            "id": "erf-invisible-fill",
+            "type": "fill",
+            "source": "sanbi",
+            "source-layer": "erf",
+            "minzoom": 14,
+            "layout": {"visibility": "visible"},
+            "paint": {
+                "fill-color": "rgba(255, 255, 255, 0)",
+                "fill-opacity": 0
+            }
+        }, 'erf')
+    }
+    if (typeof mapObj.getLayer('holding-invisible-fill') === 'undefined') {
+        mapObj.addLayer({
+            "id": "holding-invisible-fill",
+            "type": "fill",
+            "source": "sanbi",
+            "source-layer": "holding",
+            "minzoom": 12,
+            "layout": {"visibility": "visible"},
+            "paint": {
+            "fill-color": "rgba(255, 255, 255, 0)",
+            "fill-opacity": 0
+            }
+        }, 'erf')
+    }
+    if (typeof mapObj.getLayer('farm_portion-invisible-fill') === 'undefined') {
+        mapObj.addLayer({
+            "id": "farm_portion-invisible-fill",
+            "type": "fill",
+            "source": "sanbi",
+            "source-layer": "farm_portion",
+            "minzoom": 12,
+            "layout": {"visibility": "visible"},
+            "paint": {
+            "fill-color": "rgba(255, 255, 255, 0)",
+            "fill-opacity": 0
+            }
+        }, 'erf')
+    }
 }
