@@ -36,6 +36,7 @@ def find_parcel_base(cls, serialize_cls,
         parcels = parcels.exclude(
             cname__in=parcel_keys
         )
+    parcels = parcels.order_by('cname').distinct('cname')
     if parcels:
         cname_list = [a.cname for a in parcels]
         used_parcels = Parcel.objects.filter(

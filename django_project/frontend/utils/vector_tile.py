@@ -20,7 +20,8 @@ def get_country_bounding_box():
     iso3 = 'ZAF'
     with connection.cursor() as cursor:
         cursor.execute(
-            'SELECT ST_Extent(ST_TRANSFORM(w.geom, 4326)) as bextent FROM layer.world w '
+            'SELECT ST_Extent(ST_TRANSFORM(w.geom, 4326)) as bextent '
+            'FROM layer.world w '
             'WHERE w."ISO_A3"=%s', [iso3]
         )
         extent = cursor.fetchone()

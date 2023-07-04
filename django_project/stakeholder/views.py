@@ -25,23 +25,20 @@ class ProfileView(DetailView):
         if self.request.POST.get('last-name', ''):
             profile.last_name = self.request.POST.get('last-name', '')
 
-        if self.request.POST.get('organization', ''):
-            profile.organization = self.request.POST.get('organization', '')
-
         if self.request.POST.get('email', ''):
             profile.email = self.request.POST.get('email', '')
 
         if not UserProfile.objects.filter(user=profile).exists():
             UserProfile.objects.create(
                 user=profile,
-                title_id=UserTitle.objects.get(id=self.request.POST.get('title', '')),
-                user_role_type_id=UserRoleType.objects.get(id=self.request.POST.get('role', ''))
             )
 
         if self.request.FILES.get('profile-picture', None):
             profile.user_profile.picture = self.request.FILES.get(
                 'profile-picture', None
             )
+        if self.request.POST.get('title', ''):
+            profile.user.title_id=UserTitle.objects.get(id=self.request.POST.get('title', '')),
 
         profile.user_profile.save()
         profile.save()

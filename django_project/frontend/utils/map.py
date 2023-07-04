@@ -114,20 +114,24 @@ def replace_maptiler_api_key(styles):
 def get_highlighted_layer(layer_name):
     # green
     return {
-      "id": f"{layer_name}-highlighted",
-      "type": "line",
-      "source": "sanbi",
-      "source-layer": f"{layer_name}",
-      "minzoom": 12,
-      "layout": {"visibility": "visible", "line-join": "bevel"},
-      "paint": {
-        "line-color": "#008000",
-        "line-width": [
-          "case",
-          ["boolean",
-           ["feature-state", "parcel-selected-highlighted"], False], 4,
-          0
-      ],
-        "line-opacity": 1
-      }
+        "id": f"{layer_name}-highlighted",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": f"{layer_name}",
+        "minzoom": 12,
+        "layout": {"visibility": "visible", "line-join": "bevel"},
+        "paint": {
+            "line-color": "#008000",
+            "line-width": [
+                "case",
+                [
+                    "boolean",
+                    ["feature-state", "parcel-selected-highlighted"],
+                    False
+                ],
+                4,
+                0
+            ],
+            "line-opacity": 1
+        }
     }
