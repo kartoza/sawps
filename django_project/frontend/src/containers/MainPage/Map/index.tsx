@@ -32,7 +32,9 @@ import {
   findParcelLayer,
   searchParcel,
   searchProperty,
-  getSelectParcelLayerNames
+  getSelectParcelLayerNames,
+  MIN_SELECT_PARCEL_ZOOM_LEVEL,
+  MIN_SELECT_PROPERTY_ZOOM_LEVEL
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -347,8 +349,10 @@ export default function Map() {
     if (selectionMode === MapSelectionMode.None) return;
     let _parcelLayer = findParcelLayer(contextLayers)
     if (typeof _parcelLayer === 'undefined') return;
+    let _mapZoom = map.current.getZoom()
     if (selectionMode === MapSelectionMode.Parcel) {
-      // TODO: perhaps skip search if not in the parcel zoom?
+      // skip search if not in the parcel zoom
+      if (_mapZoom < MIN_SELECT_PARCEL_ZOOM_LEVEL) return;
       // find parcel
       searchParcel(e.lngLat, selectedProperty.id, (parcel: ParcelInterface) => {
         if (parcel) {
@@ -356,7 +360,8 @@ export default function Map() {
         }
       })
     } else if (selectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
-      // TODO: perhaps skip search if not in the properties zoom?
+      // perhaps skip search if not in the properties zoom?
+      if (_mapZoom < MIN_SELECT_PROPERTY_ZOOM_LEVEL) return;
       // find parcel
       searchProperty(e.lngLat, (property: PropertyInterface) => {
         if (property) {
