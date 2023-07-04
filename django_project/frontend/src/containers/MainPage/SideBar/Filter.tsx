@@ -20,10 +20,10 @@ import SpeciesLayer from '../../../models/SpeciesLayer';
 import { setSpeciesFilter, toggleSpecies } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 
-export interface FILTEERSPECIES  {
-    id : number
+export interface FILTEERSPECIES {
+    id: number
 }
-const FETCH_AVAILABLE_SPECIES = '/api/species/'
+const FETCH_AVAILABLE_SPECIES = '/species/'
 const yearRangeStart = 2010;
 const yearRangeEnd = 2023;
 const marks = [
@@ -42,14 +42,58 @@ function Filter() {
     const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
     const [loading, setLoading] = useState(false)
     const [value, setValue] = useState<number[]>([yearRangeStart, yearRangeEnd]);
-    const filterlList: string[] = ['Population Category','Protected Area', 'Activity', 'Critical biodiversity areas', 'Ecosystem type']
-    const [filter, setFilterData] = useState<boolean[]>(Array(filterlList.length).fill(false));
+    const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+    const [filterlList, setFilterList] = useState([
+        {
+            "id": 1,
+            "name": "Population Category",
+            "isSelected": false,
+            "filterData": ['0-10', '11-20', '21-50', '50-100', '101-200', '>200']
+        },
+        {
+            "id": 2,
+            "name": "Protected Area",
+            "isSelected": false,
+            "filterData": ['National Park', 'Heritage sight', 'Nature Reserve']
+        },
+        {
+            "id": 3,
+            "name": "Activity",
+            "isSelected": false,
+            "filterData": ['Hunting', 'Poaching', 'Import', 'Export', 'Translocation', 'Contraseption']
+        },
+        {
+            "id": 4,
+            "name": "Critical biodiversity areas",
+            "isSelected": false,
+            "filterData": ['Critical biodiversity area ', 'Critical biodiversity area 1', 'Critical biodiversity area 2', 'Ecological support area', 'Ecological support area 1']
+        },
+        {
+            "id": 5,
+            "name": "Ecosystem type",
+            "isSelected": false
+        }
+    ])
 
-    const handleArrowClick = (index: number) => {
-        const updatedIsOpen = [...filter];
-        updatedIsOpen[index] = !updatedIsOpen[index];
-        setFilterData(updatedIsOpen);
+    const handleSpectialFilterOption = (each:string,event:any) => {
+        event.stopPropagation();
+        if (selectedOptions.includes(each)) {
+            setSelectedOptions(selectedOptions.filter((selected) => selected !== each));
+          } else {
+            setSelectedOptions([...selectedOptions, each]);
+          }
     };
+
+    const handleArrowClick = (id: number,index:number) => {
+        const _updatedData = filterlList.map((item: any) => {
+            if (id === item.id) {
+                item.isSelected = !item.isSelected
+            }
+            return item;
+        });
+        setFilterList(_updatedData)
+    }
+
 
     const handleChange = (newValue: number | number[]) => {
         setValue(newValue as number[]);
@@ -93,7 +137,7 @@ function Filter() {
             }
         })
     }
-    
+
     useEffect(() => {
         fetchSpeciesList()
     }, [])
@@ -151,7 +195,7 @@ function Filter() {
                 <Box className='sliderYear'>
                     <Slider
                         value={value}
-                        onChange={(e:any)=>handleChange(e)}
+                        onChange={(e: any) => handleChange(e)}
                         valueLabelDisplay="auto"
                         min={yearRangeStart}
                         max={yearRangeEnd}
@@ -195,15 +239,48 @@ function Filter() {
                 <Box>
                     <div className='sidebarArrowsBox'>
                         <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                            {filterlList.map((item: string, index: number) => (
-                                <li key={index} onClick={() => handleArrowClick(index)}>
-                                    {filter[index] ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
-                                    {item}
+                            {filterlList.map((item: any,index:number) => (
+                                <li key={item.id} onClick={() => handleArrowClick(item.id,index)}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        {item.isSelected ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
+                                        <span>{item.name}</span>
+                                    </div>
+                                    {item.isSelected && (
+                                        <List component="nav" aria-label="">
+                                            {loading ? (
+                                                <Loading />
+                                            ) : (
+                                                item.filterData.map((each: string, index: number) => {
+                                                    const filterId: string = `checkbox-list-label-${index}`;
+                                                    return (
+                                                        <ListItemButton
+                                                            key={index}
+                                                            disabled={loading}
+                                                            className='ListItemButton'
+                                                        >
+                                                            <ListItemIcon>
+                                                                <Checkbox
+                                                                    edge="start"
+                                                                    checked={selectedOptions.includes(each)}
+                                                                    tabIndex={-1}
+                                                                    disableRipple
+                                                                    inputProps={{ 'aria-labelledby': filterId }}
+                                                                    onClick={(event) => handleSpectialFilterOption(each,event)}
+                                                                />
+                                                            </ListItemIcon>
+                                                            <ListItemText id={filterId} primary={each} />
+                                                        </ListItemButton>
+                                                    );
+                                                })
+                                            )}
+                                        </List>
+                                    )}
                                 </li>
                             ))}
                         </ul>
                     </div>
                 </Box>
+
             </Box>
         </Box>
     )
