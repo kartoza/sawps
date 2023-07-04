@@ -1,8 +1,11 @@
 """Admin page for Context Layer models."""
 from django.contrib import admin, messages
+from django.urls import path
+from django.http import HttpResponseRedirect
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from django.utils.html import format_html
+from django.core.management import call_command
 from celery.result import AsyncResult
 from core.celery import app
 from frontend.models import (
@@ -130,7 +133,28 @@ class BoundarySearchRequestAdmin(admin.ModelAdmin):
 
 
 class ContextLayerAdmin(admin.ModelAdmin):
+    change_list_template = "admin/context_layer.html"
     list_display = ('name', 'is_static')
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('reload_fixtures/', self.reload_fixtures),
+        ]
+        return my_urls + urls
+
+    def reload_fixtures(self, request):
+        # delete
+        ContextLayer.objects.all().delete()
+        # load fixtures from json files
+        call_command('loaddata', 'fixtures/context_layer.json', app_label='frontend')
+        call_command('loaddata', 'fixtures/context_layer_legend.json', app_label='frontend')
+        self.message_user(
+            request,
+            'Context layer fixtures has been successfully reloaded!',
+            messages.SUCCESS
+        )
+        return HttpResponseRedirect('/admin/frontend/contextlayer/')
 
 
 class ContextLayerLegendForm(ModelForm):
