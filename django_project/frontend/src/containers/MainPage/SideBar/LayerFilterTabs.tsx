@@ -18,14 +18,16 @@ function LayerFilterTabs() {
                         setSelectedTabSideBar(newValue)
                     }} aria-label="Left Side Bar Tabs"
                 >
-                        <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
-                        <Tab key={1} label={'FILTERS'} {...a11yProps(1)} />
+                    <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
+                    <Tab key={1} label={'FILTERS'} {...a11yProps(1)} />
                 </Tabs>
             </Box>
-            <Box className='TabPanels'>
-                <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
-                    <Layers />
-                </TabPanel>
+            <Box className='TabPanels FlexContainerFill'>
+                <Box className='LeftSideBarContent'>
+                    <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
+                        <Layers />
+                    </TabPanel>
+                </Box>
                 <TabPanel key={1} value={selectedTabSideBar} index={1} noPadding>
                     <Filter />
                 </TabPanel>
