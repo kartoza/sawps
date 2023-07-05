@@ -168,6 +168,22 @@ export const searchParcel = (lngLat: maplibregl.LngLat, propertyId: number, call
 }
 
 /**
+ * Add layer to map
+ * @param layerId 
+ * @param mapObj 
+ * @param layerObj 
+ * @param beforeLayerId 
+ * @returns true if layer does not exist
+ */
+export const addLayerToMap = (layerId: string, mapObj: maplibregl.Map, layerObj: any, beforeLayerId?: string): boolean => {
+    if (typeof mapObj.getLayer(layerId) === 'undefined') {
+        mapObj.addLayer(layerObj, beforeLayerId)
+        return true
+    }
+    return false
+}
+
+/**
  * Search property by coordinate
  * Note: LngLat is in srid 4326
  * @param lngLat 
@@ -272,46 +288,40 @@ export const getMapPopupDescription = (features: Object[]):string => {
  * @param mapObj 
  */
 export const addParcelInvisibleFillLayers = (mapObj: maplibregl.Map) => {
-    if (typeof mapObj.getLayer('erf-invisible-fill') === 'undefined') {
-        mapObj.addLayer({
-            "id": "erf-invisible-fill",
-            "type": "fill",
-            "source": "sanbi",
-            "source-layer": "erf",
-            "minzoom": 14,
-            "layout": {"visibility": "visible"},
-            "paint": {
-                "fill-color": "rgba(255, 255, 255, 0)",
-                "fill-opacity": 0
-            }
-        }, 'erf')
-    }
-    if (typeof mapObj.getLayer('holding-invisible-fill') === 'undefined') {
-        mapObj.addLayer({
-            "id": "holding-invisible-fill",
-            "type": "fill",
-            "source": "sanbi",
-            "source-layer": "holding",
-            "minzoom": 12,
-            "layout": {"visibility": "visible"},
-            "paint": {
-            "fill-color": "rgba(255, 255, 255, 0)",
-            "fill-opacity": 0
-            }
-        }, 'erf')
-    }
-    if (typeof mapObj.getLayer('farm_portion-invisible-fill') === 'undefined') {
-        mapObj.addLayer({
-            "id": "farm_portion-invisible-fill",
-            "type": "fill",
-            "source": "sanbi",
-            "source-layer": "farm_portion",
-            "minzoom": 12,
-            "layout": {"visibility": "visible"},
-            "paint": {
-            "fill-color": "rgba(255, 255, 255, 0)",
-            "fill-opacity": 0
-            }
-        }, 'erf')
-    }
+    addLayerToMap('erf-invisible-fill', mapObj, {
+        'id': 'erf-invisible-fill',
+        'type': 'fill',
+        'source': 'sanbi',
+        'source-layer': 'erf',
+        'minzoom': 14,
+        'layout': {'visibility': 'visible'},
+        'paint': {
+            'fill-color': 'rgba(255, 255, 255, 0)',
+            'fill-opacity': 0
+        }
+    }, 'erf')
+    addLayerToMap('holding-invisible-fill', mapObj, {
+        'id': 'holding-invisible-fill',
+        'type': 'fill',
+        'source': 'sanbi',
+        'source-layer': 'holding',
+        'minzoom': 12,
+        'layout': {'visibility': 'visible'},
+        'paint': {
+            'fill-color': 'rgba(255, 255, 255, 0)',
+            'fill-opacity': 0
+        }
+    }, 'erf')
+    addLayerToMap('farm_portion-invisible-fill', mapObj, {
+        'id': 'farm_portion-invisible-fill',
+        'type': 'fill',
+        'source': 'sanbi',
+        'source-layer': 'farm_portion',
+        'minzoom': 12,
+        'layout': {'visibility': 'visible'},
+        'paint': {
+            'fill-color': 'rgba(255, 255, 255, 0)',
+            'fill-opacity': 0
+        }
+    }, 'erf')
 }
