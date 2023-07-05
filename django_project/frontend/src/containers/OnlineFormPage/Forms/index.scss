@@ -1,0 +1,20 @@
+.OnlineFormWizard {
+    height: 100%;
+
+    .TabHeaders {
+        padding-left: 0px;
+
+        .MuiTab-root {
+            min-width: unset;
+        }
+    }
+
+    .OnlineFormWizardContent {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        flex-wrap: nowrap;
+        flex: 1 1 auto;
+        height: 0px;
+    }
+}
