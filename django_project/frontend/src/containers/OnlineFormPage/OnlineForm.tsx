@@ -56,7 +56,7 @@ function OnlineForm() {
                     <Grid item flex={1}>
                         <Grid container className="Content" flexDirection={'column'}>
                             <Grid item className='FlexContainerFillHeight'>
-                                {loading ? <Skeleton sx={{height: '100%'}} /> : <FormWizard /> }
+                                {loading ? <Skeleton sx={{height: '100%'}} /> : <FormWizard propertyItem={property}/> }
                             </Grid>
                         </Grid>
                     </Grid>

@@ -4,15 +4,21 @@ import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import TabPanel, { a11yProps } from '../../../components/TabPanel';
+import {UploadSpeciesDetailInterface, getDefaultUploadSpeciesDetail} from '../../../models/Upload'
 import './index.scss';
+import PropertyInterface from '../../../models/Property';
+import SpeciesDetail from './SpeciesDetail';
 
+interface FormWizardInterface {
+    propertyItem: PropertyInterface;
+}
 
-function FormWizard() {
+function FormWizard(props: FormWizardInterface) {
     const [loading, setLoading] = useState<boolean>(true)
     const [uploadSession, setUploadSession] = useState<string>('')
     const [selectedTab, setSelectedTab] = useState(0)
     const [isDirty, setIsDirty] = useState(false)
-
+    const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(props.propertyItem.id))
 
     return (
         <Grid container className='OnlineFormWizard' flexDirection={'column'}>
@@ -22,25 +28,21 @@ function FormWizard() {
                         setSelectedTab(newValue)
                     }} aria-label="Online Form Wizard Tabs"
                 >
-                        <Tab key={0} label={'SPECIES DETAIL'} {...a11yProps(0)} sx={{flex:1}} />
-                        <Tab key={1} label={'ACTIVITY DETAIL'} {...a11yProps(1)} sx={{flex:1}} />
-                        <Tab key={2} label={'NOTES'} {...a11yProps(2)} sx={{flex:1}} />
-                        <Tab key={3} label={'REVIEW'} {...a11yProps(3)} sx={{flex:1}} />
+                        <Tab key={0} label={'SPECIES DETAIL'} {...a11yProps(0)} />
+                        <Tab key={1} label={'ACTIVITY DETAIL'} {...a11yProps(1)} />
+                        <Tab key={2} label={'REVIEW'} {...a11yProps(2)} />
                 </Tabs>
             </Box>
             <Box className='TabPanels FlexContainerFill'>
                 <Box className='OnlineFormWizardContent'>
                     <TabPanel key={0} value={selectedTab} index={0} noPadding>
-                        <span>SPECIES DETAIL FORM</span>
+                        <SpeciesDetail initialData={data} />
                     </TabPanel>
                     <TabPanel key={1} value={selectedTab} index={1} noPadding>
                         <span>ACTIVITY DETAIL FORM</span>
                     </TabPanel>
                     <TabPanel key={2} value={selectedTab} index={2} noPadding>
-                        <span>NOTES FORM</span>
-                    </TabPanel>
-                    <TabPanel key={3} value={selectedTab} index={3} noPadding>
-                        <span>REVIEW & CONFIRM</span>
+                        <span>REVIEW & Save</span>
                     </TabPanel>
                 </Box>
             </Box>
