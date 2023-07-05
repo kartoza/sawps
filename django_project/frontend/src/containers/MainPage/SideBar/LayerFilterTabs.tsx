@@ -5,6 +5,7 @@ import Tab from "@mui/material/Tab";
 import TabPanel, { a11yProps } from '../../../components/TabPanel';
 import Layers from './Layers';
 import './index.scss';
+import Filter from './Filter';
 
 function LayerFilterTabs() {
     const [selectedTabSideBar, setSelectedTabSideBar] = useState(0)
@@ -21,12 +22,13 @@ function LayerFilterTabs() {
                         <Tab key={1} label={'FILTERS'} {...a11yProps(1)} />
                 </Tabs>
             </Box>
-            <Box className='TabPanels FlexContainerFill'>
-                <Box className='LeftSideBarContent'>
-                    <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
-                        <Layers />
-                    </TabPanel>
-                </Box>
+            <Box className='TabPanels'>
+                <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
+                    <Layers />
+                </TabPanel>
+                <TabPanel key={1} value={selectedTabSideBar} index={1} noPadding>
+                    <Filter />
+                </TabPanel>
             </Box>
         </Box>
     )
