@@ -42,7 +42,9 @@ function OnlineForm() {
                 <Grid container flexDirection={'row'}>
                     <Grid item>
                         <Box className='LeftSideBar'>
-                            <Box className='EmptyHeader'></Box>
+                            <Box className='EmptyHeader'>
+                                DATA UPLOAD
+                            </Box>
                             <Box className='LeftSideBarContent'>
                                 {loading ? <Skeleton sx={{height: '100%'}} /> : <MapPreview propertyItem={property} /> }
                             </Box>
