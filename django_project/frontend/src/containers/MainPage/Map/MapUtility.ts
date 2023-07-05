@@ -256,31 +256,35 @@ export const getMapPopupDescription = (features: Object[]):string => {
     let _groups:{ [id: string] : string[]; } = {}
     for (let i=0; i < features.length; ++i) {
         let _feature:any = features[i]
-        let [_feature_map_key, _featureValue] = getPropertyOfFeature(_feature)
+        let [_featureMapKey, _featureValue] = getPropertyOfFeature(_feature)
         if (_featureValue) {
-            if (_feature_map_key in _groups) {
-                if (!_groups[_feature_map_key].includes(_featureValue)) {
-                    _groups[_feature_map_key].push(_featureValue)
+            if (_featureMapKey in _groups) {
+                if (!_groups[_featureMapKey].includes(_featureValue)) {
+                    _groups[_featureMapKey].push(_featureValue)
                 }
             } else {
-                _groups[_feature_map_key] = [_featureValue]
+                _groups[_featureMapKey] = [_featureValue]
             }
         }
     }
-    let _html_result = ''
-    if (Object.keys(_groups).length === 0) return _html_result
-    if (Object.keys(_groups).length === 1) {
+    let _htmlResult = ''
+    let _groupsLength = Object.keys(_groups).length
+    if (_groupsLength === 0) return _htmlResult
+    if (_groupsLength === 1) {
         let _group = Object.keys(_groups)[0]
-        _html_result += concatFeatureValues(_group, _groups[_group])
+        _htmlResult += concatFeatureValues(_group, _groups[_group])
     } else {
-        _html_result += '<ul>'
+        let _idx = 0
         for (let _group in _groups) {
             let _featureValues = concatFeatureValues(_group, _groups[_group])
-            _html_result += `<li>${_featureValues}</li>`
+            _htmlResult += `${_featureValues}`
+            if (_idx < _groupsLength - 1) {
+                _htmlResult += '<hr/>'
+            }
+            _idx++
         }
-        _html_result += '</ul>'
     }
-    return _html_result
+    return _htmlResult
 }
 
 /**
