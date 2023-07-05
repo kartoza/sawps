@@ -1,9 +1,13 @@
-
+import base64
+from django.test import Client
 from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
 from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies
 from species.factories import TaxonRankFactory, ManagementStatusFactory, OwnedSpeciesFactory
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
+from species.serializers import TaxonSerializer
 
 
 class ManagementStatusTestCase(TestCase):
@@ -81,6 +85,20 @@ class TaxonTestCase(TestCase):
             colour_variant=False,
             taxon_rank=cls.taxonRank,
         )
+        cls.url = reverse('species')
+        
+    def test_get_taxon_list(self):
+        """Taxon list API test"""
+
+        user = User.objects.create_user(username='testuserd', password='testpasswordd')
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' + base64.b64encode(b'testuserd:testpasswordd').decode("ascii"),
+        }
+        client = Client()
+        response = client.get(self.url, **auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = TaxonSerializer([self.taxon], many=True).data
+        self.assertEqual(expected_data, response.data)
 
     def test_create_taxon(self):
         """Test create taxon."""
