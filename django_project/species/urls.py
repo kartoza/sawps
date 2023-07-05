@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import TaxonView
+from .views import TaxonListAPIView
 
 urlpatterns = [
-    path('species/',TaxonView.as_view(),name='species'),
+    path('species/',TaxonListAPIView.as_view(),name='species'),
     ]
