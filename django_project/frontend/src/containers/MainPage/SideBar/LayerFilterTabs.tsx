@@ -21,10 +21,12 @@ function LayerFilterTabs() {
                         <Tab key={1} label={'FILTERS'} {...a11yProps(1)} />
                 </Tabs>
             </Box>
-            <Box className='TabPanels'>
-                <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
-                    <Layers />
-                </TabPanel>
+            <Box className='TabPanels FlexContainerFill'>
+                <Box className='LeftSideBarContent'>
+                    <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
+                        <Layers />
+                    </TabPanel>
+                </Box>
             </Box>
         </Box>
     )

@@ -35,6 +35,10 @@ EXPOSE 8080
 
 ADD deployment/docker/uwsgi.conf /uwsgi.conf
 
+# Build front end
+WORKDIR /home/web/django_project/frontend
+RUN npm install --legacy-peer-deps && npm run build
+
 WORKDIR /home/web/django_project
 ENTRYPOINT ["/home/web/django_project/entrypoint.sh"]
 CMD ["uwsgi", "--ini", "/uwsgi.conf"]

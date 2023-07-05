@@ -35,6 +35,15 @@ export const LayerFilterSlice = createSlice({
                 return layer
             })
             state.contextLayers = [..._layers]
+        },
+        toggleExpandedLayer: (state, action: PayloadAction<number>) => {
+            let _layers = state.contextLayers.map((layer) => {
+                if (action.payload === layer.id) {
+                    layer.isExpanded = !layer.isExpanded
+                }
+                return layer
+            })
+            state.contextLayers = [..._layers]
         }
     }
 })
@@ -42,7 +51,8 @@ export const LayerFilterSlice = createSlice({
 export const {
     setContextLayers,
     setSelectedLayers,
-    toggleLayer
+    toggleLayer,
+    toggleExpandedLayer
 } = LayerFilterSlice.actions
 
 export default LayerFilterSlice.reducer;

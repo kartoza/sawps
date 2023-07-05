@@ -19,6 +19,26 @@ class ContextLayer(models.Model):
         blank=True
     )
 
+    def __str__(self) -> str:
+        return self.name
+
+
+class ContextLayerLegend(models.Model):
+    """Legend for context layer."""
+
+    layer = models.ForeignKey(ContextLayer, on_delete=models.CASCADE)
+
+    name = models.CharField(
+        max_length=512
+    )
+
+    colour = models.CharField(
+        max_length=20, null=True, blank=True
+    )
+
+    def __str__(self) -> str:
+        return self.name
+
 
 class ContextLayerTilingTask(models.Model):
     """Vector tile status for context layer."""
