@@ -102,8 +102,13 @@
     .sidebarArrowsBox {
         text-align: left;
         ul {
+            list-style-type: none; 
+            padding-left: 0;
             li{
                 margin-bottom: 10px;
+                * {
+                    color: #282829;
+                }
             }
         }
     }
