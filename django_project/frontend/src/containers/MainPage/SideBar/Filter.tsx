@@ -41,7 +41,8 @@ function Filter() {
     const dispatch = useAppDispatch()
     const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
     const [loading, setLoading] = useState(false)
-    const [value, setValue] = useState<number[]>([yearRangeStart, yearRangeEnd]);
+    const [startValue, setStartValue] = useState<number>(yearRangeStart);
+    const [endValue, setEndValue] = useState<number>(yearRangeEnd);
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [filterlList, setFilterList] = useState([
         {
@@ -84,7 +85,7 @@ function Filter() {
           }
     };
 
-    const handleArrowClick = (id: number,index:number) => {
+    const handleArrowClick = (id: number) => {
         const _updatedData = filterlList.map((item: any) => {
             if (id === item.id) {
                 item.isSelected = !item.isSelected
@@ -95,9 +96,12 @@ function Filter() {
     }
 
 
-    const handleChange = (newValue: number | number[]) => {
-        setValue(newValue as number[]);
-    };
+    const handleChange = (event: any, newValue: number | number[]) => {
+        if (Array.isArray(newValue)) {
+          setStartValue(newValue[0]);
+          setEndValue(newValue[1]);
+        }
+      };
     const months = [
         'January',
         'February',
@@ -194,8 +198,8 @@ function Filter() {
                 </Box>
                 <Box className='sliderYear'>
                     <Slider
-                        value={value}
-                        onChange={(e: any) => handleChange(e)}
+                        value={[startValue, endValue]}
+                        onChange={handleChange}
                         valueLabelDisplay="auto"
                         min={yearRangeStart}
                         max={yearRangeEnd}
@@ -238,9 +242,9 @@ function Filter() {
                 </Box>
                 <Box>
                     <div className='sidebarArrowsBox'>
-                        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                            {filterlList.map((item: any,index:number) => (
-                                <li key={item.id} onClick={() => handleArrowClick(item.id,index)}>
+                        <ul>
+                            {filterlList.map((item: any) => (
+                                <li key={item.id} onClick={() => handleArrowClick(item.id)}>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                         {item.isSelected ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
                                         <span>{item.name}</span>
