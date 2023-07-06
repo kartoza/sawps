@@ -300,32 +300,36 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                     variant='standard' disabled fullWidth helperText=" " />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <LocalizationProvider dateAdapter={AdapterMoment}>
-                                    <DatePicker label={'Month and Year of Count'} views={['month', 'year']}
-                                        slotProps={{ textField: { size: 'small', variant: 'standard', className: 'Calendar', required: true } }}
-                                        value={moment({'year': data.year, 'month': data.month - 1})}
-                                        onChange={(newValue: Moment) => updateMonthYearDetail(newValue.month() + 1, newValue.year())}
-                                    />
-                                    <FormHelperText>{' '}</FormHelperText>
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <FormControl>
-                                    <FormLabel id="present" required>Species Present on Property</FormLabel>
-                                    <RadioGroup
-                                        aria-labelledby="present"
-                                        name="present-radio-buttons"
-                                        row
-                                        aria-required
-                                        className='RadioGroup'
-                                        value={data.annual_population.present}
-                                        onChange={(e) => updateAnnualPopulation('present', e.target.value)}
-                                    >
-                                        <FormControlLabel value={true} control={<Radio size='small' />} label="Yes" />
-                                        <FormControlLabel value={false} control={<Radio size='small' />} label="No" />
-                                    </RadioGroup>
-                                    <FormHelperText>{' '}</FormHelperText>
-                                </FormControl>
+                                <Grid container flexDirection={'row'} spacing={2}>
+                                    <Grid item xs={6}>
+                                        <LocalizationProvider dateAdapter={AdapterMoment}>
+                                            <DatePicker label={'Month and Year of Count'} views={['month', 'year']}
+                                                slotProps={{ textField: { size: 'small', variant: 'standard', className: 'Calendar', required: true } }}
+                                                value={moment({'year': data.year, 'month': data.month - 1})}
+                                                onChange={(newValue: Moment) => updateMonthYearDetail(newValue.month() + 1, newValue.year())}
+                                            />
+                                            <FormHelperText>{' '}</FormHelperText>
+                                        </LocalizationProvider>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth>
+                                            <FormLabel id="present" required>Species Present on Property</FormLabel>
+                                            <RadioGroup
+                                                aria-labelledby="present"
+                                                name="present-radio-buttons"
+                                                row
+                                                aria-required
+                                                className='RadioGroup'
+                                                value={data.annual_population.present}
+                                                onChange={(e) => updateAnnualPopulation('present', e.target.value)}
+                                            >
+                                                <FormControlLabel value={true} control={<Radio size='small' />} label="Yes" />
+                                                <FormControlLabel value={false} control={<Radio size='small' />} label="No" />
+                                            </RadioGroup>
+                                            <FormHelperText>{' '}</FormHelperText>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.open_close_id}>
