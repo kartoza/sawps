@@ -99,6 +99,8 @@ const OTHER_NUMBER_FIELDS = [
 
 interface SpeciesDetailInterface {
     initialData: UploadSpeciesDetailInterface;
+    setIsDirty: (isDirty: boolean) => void;
+    handleNext: (data: UploadSpeciesDetailInterface) => void;
 }
 
 export default function SpeciesDetail(props: SpeciesDetailInterface) {
@@ -122,6 +124,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 intake_population: {...data.intake_population},
                 offtake_population: {...data.offtake_population}            
             })
+            props.setIsDirty(true)
         }
     }
 
@@ -134,6 +137,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             intake_population: {...data.intake_population},
             offtake_population: {...data.offtake_population}            
         })
+        props.setIsDirty(true)
     }
 
     const updateAnnualPopulation = (field: keyof AnnualPopulationInterface, value: any) => {
@@ -158,6 +162,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             intake_population: {...data.intake_population},
             offtake_population: {...data.offtake_population}            
         })
+        props.setIsDirty(true)
     }
 
     const updateAnnualPopulationSelectValue = (field: keyof AnnualPopulationInterface, value: number, sourceList: CommonUploadMetadata[]) => {
@@ -174,6 +179,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 intake_population: {...data.intake_population},
                 offtake_population: {...data.offtake_population}            
             })
+            props.setIsDirty(true)
         }
     }
 
@@ -526,7 +532,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 </Grid>
             </Grid>
             <Grid item container flexDirection={'row'} justifyContent={'flex-end'}>
-                <Button variant='contained' onClick={() => {}}>NEXT</Button>
+                <Button variant='contained' onClick={() => props.handleNext(data)}>NEXT</Button>
             </Grid>            
         </Grid>
     )
