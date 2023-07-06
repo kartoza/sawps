@@ -2,7 +2,7 @@ from django.contrib import admin
 from property.models import (
     PropertyType, Province, ParcelType,
     Property,
-    Parcel, OwnershipStatus
+    Parcel
 )
 
 
@@ -21,4 +21,3 @@ admin.site.register(Province)
 admin.site.register(ParcelType)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(Parcel, ParcelAdmin)
-admin.site.register(OwnershipStatus)
