@@ -11,7 +11,8 @@ import PropertyInterface from '../../../models/Property';
 import SpeciesDetail from './SpeciesDetail';
 import ActivityDetail from './ActivityDetail';
 import ReviewAndConfirm from './ReviewAndConfirm';
-import AlertDialog from '../../../components/AlertDialog';
+import ConfirmationAlertDialog from '../../../components/ConfirmationAlertDialog';
+import FeedbackAlertDialog, {AlertType} from '../../../components/FeedbackAlertDialog';
 
 interface FormWizardInterface {
     propertyItem: PropertyInterface;
@@ -20,7 +21,7 @@ interface FormWizardInterface {
 const steps = ['SPECIES DETAIL', 'ACTIVITY DETAIL', 'REVIEW & SUBMIT']
 
 function FormWizard(props: FormWizardInterface) {
-    const [loading, setLoading] = useState<boolean>(true)
+    const [loading, setLoading] = useState<boolean>(false)
     const [uploadSession, setUploadSession] = useState<string>('')
     const [isDirty, setIsDirty] = useState(false)
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(props.propertyItem.id))
@@ -30,6 +31,8 @@ function FormWizard(props: FormWizardInterface) {
     }>({})
     const [confirmationOpen, setConfirmationOpen] = useState(false)
     const [navigateTo, setNavigateTo] = useState<number>(-1)
+    const [feedbackAlertDialog, setFeedbackAlertDialog] = useState<AlertType>(AlertType.none)
+    const [feedbackAlertDesc, setFeedbackAlertDesc] = useState<string>('')
 
     const totalSteps = () => {
         return steps.length
@@ -123,12 +126,21 @@ function FormWizard(props: FormWizardInterface) {
     }
     /* End of Check Unsaved Changes */
 
+    const handleSubmit = () => {
+        setLoading(true)
+        setTimeout(() => {
+            setLoading(false)
+            setFeedbackAlertDialog(AlertType.success)
+            setFeedbackAlertDesc('Your species data has been successfully saved!')
+        }, 2000)
+    }
+
     return (
         <Grid container className='OnlineFormWizard' flexDirection={'column'}>
             <Box className='TabHeaders'>
                 <Stepper nonLinear activeStep={activeStep}>
                     {steps.map((label, index) => (
-                    <Step key={label} disabled={index > activeStep && !completed[index]} completed={completed[index]}>
+                    <Step key={label} disabled={loading || (index > activeStep && !completed[index])} completed={completed[index]}>
                         <StepButton color="inherit" onClick={() => handleStep(index)} className={activeStep === index && isDirty ? 'form-dirty' : ''}>
                             {label}
                         </StepButton>
@@ -147,18 +159,23 @@ function FormWizard(props: FormWizardInterface) {
                     </TabPanel>
                     <TabPanel key={2} value={activeStep} index={2} noPadding>
                         <ReviewAndConfirm initialData={data} handleStepChange={(newStep: number) => handleStep(newStep)}
-                            handleBack={(formData) => onFormBack(2, formData)} />
+                            handleBack={(formData) => onFormBack(2, formData)}
+                            handleSubmit={handleSubmit} loading={loading} />
                     </TabPanel>
                 </Box>
             </Box>
             <Grid item>
-                <AlertDialog open={confirmationOpen} alertClosed={handleUnsavedChangesConfirmationClose}
+                <ConfirmationAlertDialog open={confirmationOpen} alertClosed={handleUnsavedChangesConfirmationClose}
                     alertConfirmed={handleUnsavedChangesConfirmationOk}
                     alertDialogTitle={'Unsaved changes'}
                     alertDialogDescription={'You have unsaved changes. Are you sure to leave this page?'}
                     confirmButtonText='Leave'
                     confirmButtonProps={{color: 'error', autoFocus: true}}
                 />
+            </Grid>
+            <Grid item>
+                <FeedbackAlertDialog type={feedbackAlertDialog} alertDialogTitle='Upload Species Data'
+                    alertDialogDescription={feedbackAlertDesc} alertClosed={() => setFeedbackAlertDialog(AlertType.none)} />
             </Grid>
         </Grid>
     )

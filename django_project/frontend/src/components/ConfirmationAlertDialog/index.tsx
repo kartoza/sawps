@@ -7,7 +7,7 @@ import DialogActions from '@mui/material/DialogActions'
 import Button from '@mui/material/Button'
 import Loading from '../Loading';
 
-interface AlertDialogInterface {
+interface ConfirmationAlertDialogInterface {
     open: boolean,
     alertDialogTitle: string,
     alertDialogDescription: string,
@@ -19,7 +19,7 @@ interface AlertDialogInterface {
     confirmButtonProps?: {}
 }
 
-export default function AlertDialog(props: AlertDialogInterface) {
+export default function ConfirmationAlertDialog(props: ConfirmationAlertDialogInterface) {
     const [open, setOpen] = useState<boolean>(false);
 
     useEffect(() => {

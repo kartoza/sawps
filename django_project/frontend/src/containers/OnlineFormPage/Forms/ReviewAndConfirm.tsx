@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import moment from 'moment';
 import Grid from "@mui/material/Grid";
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -11,14 +12,16 @@ import FemaleIcon from '@mui/icons-material/Female';
 import Divider from '@mui/material/Divider';
 import {
     UploadSpeciesDetailInterface} from '../../../models/Upload';
-import moment from 'moment';
+import Loading from '../../../components/Loading';
 
 
 
 interface ReviewAndConfirmInterface {
+    loading: boolean;
     initialData: UploadSpeciesDetailInterface;
     handleBack: (data: UploadSpeciesDetailInterface) => void;
     handleStepChange: (newStep: number) => void;
+    handleSubmit: () => void;
 }
 
 interface ReviewItemInterface {
@@ -548,7 +551,7 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                 <Grid container flexDirection={'column'} rowSpacing={1}>
                     <Grid item container flexDirection={'row'} alignItems={'center'}>
                         <Typography variant='h6'>Species Detail</Typography>
-                        <IconButton aria-label='Edit Species Detail' title='Edit Species Detail' onClick={() => props.handleStepChange(0)}>
+                        <IconButton disabled={props.loading} aria-label='Edit Species Detail' title='Edit Species Detail' onClick={() => props.handleStepChange(0)}>
                             <EditNoteIcon />
                         </IconButton>
                     </Grid>
@@ -562,7 +565,7 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                 <Grid container flexDirection={'column'} rowSpacing={1}>
                     <Grid item container flexDirection={'row'} alignItems={'center'}>
                         <Typography variant='h6'>Activity Detail</Typography>
-                        <IconButton aria-label='Edit Activity Detail' title='Edit Activity Detail' onClick={() => props.handleStepChange(1)}>
+                        <IconButton disabled={props.loading} aria-label='Edit Activity Detail' title='Edit Activity Detail' onClick={() => props.handleStepChange(1)}>
                             <EditNoteIcon />
                         </IconButton>
                     </Grid>
@@ -574,10 +577,17 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
             </Grid>
             <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
                 <Grid item>
-                    <Button variant='outlined' onClick={() => props.handleBack(props.initialData)}>BACK</Button>
+                    <Button variant='outlined' disabled={props.loading} onClick={() => props.handleBack(props.initialData)}>BACK</Button>
                 </Grid>
                 <Grid item>
-                    <Button variant='contained' onClick={() => {}}>SUBMIT</Button>
+                    {!props.loading && (
+                        <Button variant='contained' onClick={props.handleSubmit}>SUBMIT</Button>
+                    )}
+                    {props.loading && (
+                        <Button variant='contained'>
+                            <Loading size={20} style={{'color': 'white'}} label='SUBMITTING...' />
+                        </Button>
+                    )}
                 </Grid>
             </Grid>
         </Grid>
