@@ -175,7 +175,10 @@ function FormWizard(props: FormWizardInterface) {
             </Grid>
             <Grid item>
                 <FeedbackAlertDialog type={feedbackAlertDialog} alertDialogTitle='Upload Species Data'
-                    alertDialogDescription={feedbackAlertDesc} alertClosed={() => setFeedbackAlertDialog(AlertType.none)} />
+                    alertDialogDescription={feedbackAlertDesc} alertClosed={() => {
+                        setFeedbackAlertDialog(AlertType.none)
+                        window.location.replace(window.location.origin + '/map/?tab=1')
+                    }} />
             </Grid>
         </Grid>
     )

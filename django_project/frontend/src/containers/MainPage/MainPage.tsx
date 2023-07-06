@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {useSearchParams} from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
@@ -36,11 +37,22 @@ enum RightSideBarMode {
 
 function MainPage() {
   const dispatch = useAppDispatch()
+  const [searchParams, setSearchParams] = useSearchParams()
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const [selectedTab, setSelectedTab] = useState(0)
   const [rightSideBarMode, setRightSideBarMode] = useState(RightSideBarMode.None) // 0: upload data, 1: property summary, 2: filtered properties summary
   const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
   const mapSelectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
+
+  useEffect(() => {
+    let tab = 0
+    if (searchParams.get('tab')) {
+      tab = parseInt(searchParams.get('tab'))
+    }
+    if (tab >= 0 && tab <= 3) {
+      setSelectedTab(tab)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (rightSideBarMode === RightSideBarMode.None) {
