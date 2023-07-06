@@ -55,6 +55,9 @@ class Property(models.Model):
                 name='check property size',
             ),
         ]
+    
+    def __str__(self) -> str:
+        return self.name
 
 
 class ParcelType(models.Model):
