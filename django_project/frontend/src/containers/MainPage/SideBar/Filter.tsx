@@ -76,13 +76,13 @@ function Filter() {
         }
     ])
 
-    const handleSpectialFilterOption = (each:string,event:any) => {
+    const handleSpectialFilterOption = (each: string, event: any) => {
         event.stopPropagation();
         if (selectedOptions.includes(each)) {
             setSelectedOptions(selectedOptions.filter((selected) => selected !== each));
-          } else {
+        } else {
             setSelectedOptions([...selectedOptions, each]);
-          }
+        }
     };
 
     const handleArrowClick = (id: number) => {
@@ -98,10 +98,10 @@ function Filter() {
 
     const handleChange = (event: any, newValue: number | number[]) => {
         if (Array.isArray(newValue)) {
-          setStartValue(newValue[0]);
-          setEndValue(newValue[1]);
+            setStartValue(newValue[0]);
+            setEndValue(newValue[1]);
         }
-      };
+    };
     const months = [
         'January',
         'February',
@@ -139,6 +139,9 @@ function Filter() {
                 })
                 dispatch(setSpeciesFilter(_species))
             }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
         })
     }
 
@@ -208,7 +211,7 @@ function Filter() {
                 </Box>
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/Calender-logo.png" alt='calender image' />
-                    <Typography color='#75B37A' fontSize='medium'>Year</Typography>
+                    <Typography color='#75B37A' fontSize='medium'>Month</Typography>
                 </Box>
                 <List className='ListItem' component="nav" aria-label="">
                     {loading ? <Loading /> :
@@ -269,7 +272,7 @@ function Filter() {
                                                                     tabIndex={-1}
                                                                     disableRipple
                                                                     inputProps={{ 'aria-labelledby': filterId }}
-                                                                    onClick={(event) => handleSpectialFilterOption(each,event)}
+                                                                    onClick={(event) => handleSpectialFilterOption(each, event)}
                                                                 />
                                                             </ListItemIcon>
                                                             <ListItemText id={filterId} primary={each} />
