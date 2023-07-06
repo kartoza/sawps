@@ -1,5 +1,5 @@
 import factory
-from property.models import PropertyType, Province, OwnershipStatus, Property, ParcelType, Parcel
+from property.models import PropertyType, Province, Property, ParcelType, Parcel
 
 
 class PropertyTypeFactory(factory.django.DjangoModelFactory):
@@ -20,15 +20,6 @@ class ProvinceFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'Province %d' % n)
 
 
-class OwnershipStatusFactory(factory.django.DjangoModelFactory):
-    """Factory for OwnershipStatus."""
-
-    class Meta:
-        model = OwnershipStatus
-
-    name = factory.Sequence(lambda n: 'OwnershipStatus_%d' % n)
-
-
 class PropertyFactory(factory.django.DjangoModelFactory):
     """Property factory."""
 
@@ -38,7 +29,6 @@ class PropertyFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'property_%d' % n)
     property_type = factory.SubFactory(PropertyTypeFactory)
     province = factory.SubFactory(ProvinceFactory)
-    ownership_status = factory.SubFactory(OwnershipStatusFactory)
     property_size_ha = 200
     organisation = factory.SubFactory('stakeholder.factories.organisationFactory')
     area_available = 150

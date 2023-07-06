@@ -1,5 +1,5 @@
 import factory
-from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies
+from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies, TaxonSurveyMethod
 from species.models import Taxon
 from django.contrib.auth.models import User
 
@@ -19,7 +19,6 @@ class ManagementStatusFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'management status_%d' % n)
 
 
-
 class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
     """Owned species factory."""
     class Meta:
@@ -29,3 +28,9 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
     nature_of_population = factory.SubFactory('population_data.factories.NatureOfPopulationFactory')
     count_method = factory.SubFactory('population_data.factories.CountMethodFactory')
     property = factory.SubFactory('property.factories.PropertyFactory')
+
+
+class TaxonSurveyMethodF(factory.django.DjangoModelFactory):
+    """Taxon Survey Method factory."""
+    class Meta:
+        model = TaxonSurveyMethod
