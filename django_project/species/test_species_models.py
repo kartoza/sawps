@@ -102,9 +102,13 @@ class TaxonTestCase(TestCase):
     def test_get_taxon_list(self):
         """Taxon list API test"""
 
-        user = User.objects.create_user(username='testuserd', password='testpasswordd')
+        user = User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd'
+        )
         auth_headers = {
-            'HTTP_AUTHORIZATION': 'Basic ' + base64.b64encode(b'testuserd:testpasswordd').decode("ascii"),
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
         }
         client = Client()
         response = client.get(self.url, **auth_headers)
