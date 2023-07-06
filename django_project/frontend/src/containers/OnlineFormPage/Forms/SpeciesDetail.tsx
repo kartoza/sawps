@@ -153,7 +153,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             if (isNaN(value)) {
                 value = 0
             }
-            _total = _total - (data.annual_population[field] as number) + (value as number)
+            let _currentValue = data.annual_population[field] as number
+            _total = _total - (isNaN(_currentValue) ? 0 : _currentValue) + (value as number)
         } else if (OTHER_NUMBER_FIELDS.includes(field)) {
             if (isNaN(value)) {
                 value = 0

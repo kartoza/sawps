@@ -67,6 +67,7 @@ function FormWizard(props: FormWizardInterface) {
             ...completed,
             [index]: true
         })
+        setData(formData)
         handleNext()
     }
 

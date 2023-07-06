@@ -100,13 +100,6 @@ const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
     return {
         present: true,
         total: 0,
-        adult_male: 0,
-        adult_female: 0,
-        sub_adult_male: 0,
-        sub_adult_female: 0,
-        juvenile_male: 0,
-        juvenile_female: 0,
-        group: 0,
         open_close_id: 0,
         area_available_to_species: 0,
         count_method_id: 0,
