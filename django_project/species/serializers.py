@@ -7,4 +7,4 @@ class TaxonSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = Taxon
-        fields = ['id', 'common_name_varbatim', "scientific_name"]
+        fields = ['id', 'common_name_varbatim', 'scientific_name']

@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Taxon
 from .serializers import TaxonSerializer
 # Create your views here.
-    
+
+
 class TaxonListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
