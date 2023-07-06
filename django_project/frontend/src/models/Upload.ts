@@ -115,10 +115,6 @@ const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActivityInte
     return {
         activity_type_id: 0,
         total: 0,
-        adult_male: 0,
-        adult_female: 0,
-        juvenile_male: 0,
-        juvenile_female: 0,
         founder_population: false,
         reintroduction_source: '',
     }
@@ -138,3 +134,14 @@ export const getDefaultUploadSpeciesDetail = (propertyId: number):UploadSpeciesD
         offtake_population: getDefaultAnnualPopulationPerActivity()
     }
 }
+
+export const FIELD_COUNTER = [
+    'adult_male', 'adult_female',
+    'sub_adult_male', 'sub_adult_female',
+    'juvenile_male', 'juvenile_female'
+]
+
+export const OTHER_NUMBER_FIELDS = [
+    'group', 'sampling_effort', 'area_available_to_species',
+    'area_covered'
+]

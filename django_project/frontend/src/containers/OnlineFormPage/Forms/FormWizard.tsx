@@ -111,7 +111,9 @@ function FormWizard(props: FormWizardInterface) {
             <Box className='TabPanels FlexContainerFill'>
                 <Box className='OnlineFormWizardContent'>
                     <TabPanel key={0} value={activeStep} index={0} noPadding>
-                        <SpeciesDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(0, formData)} />
+                        <ActivityDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(1, formData)}
+                            handleBack={(formData) => onFormBack(1, formData)} />
+                        {/* <SpeciesDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(0, formData)} /> */}
                     </TabPanel>
                     <TabPanel key={1} value={activeStep} index={1} noPadding>
                         <ActivityDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(1, formData)}

@@ -23,9 +23,10 @@ import {
     AnnualPopulationInterface,
     TaxonMetadata,
     CommonUploadMetadata,
-    UploadSpeciesDetailValidation
+    UploadSpeciesDetailValidation,
+    FIELD_COUNTER,
+    OTHER_NUMBER_FIELDS
 } from '../../../models/Upload';
-import { setConstantValue } from 'typescript';
 
 
 const DUMMY_TAXONS: TaxonMetadata[] = [
@@ -87,17 +88,6 @@ const SAMPLING_SIZE_UNITS: CommonUploadMetadata[] = [
         'id': 2,
         'name': 'Unit 2'
     }
-]
-
-const FIELD_COUNTER = [
-    'adult_male', 'adult_female',
-    'sub_adult_male', 'sub_adult_female',
-    'juvenile_male', 'juvenile_female'
-]
-
-const OTHER_NUMBER_FIELDS = [
-    'group', 'sampling_effort', 'area_available_to_species',
-    'area_covered'
 ]
 
 const REQUIRED_FIELD_ERROR_MESSAGE = 'This field is required'
@@ -314,7 +304,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                     </Grid>
                                     <Grid item xs={6}>
                                         <FormControl fullWidth>
-                                            <FormLabel id="present" required>Species Present on Property</FormLabel>
+                                            <FormLabel id="present" className='CustomRadioButtonLabel' required>Species Present on Property</FormLabel>
                                             <RadioGroup
                                                 aria-labelledby="present"
                                                 name="present-radio-buttons"
