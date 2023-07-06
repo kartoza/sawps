@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Stepper from '@mui/material/Stepper';
@@ -77,6 +77,22 @@ function FormWizard(props: FormWizardInterface) {
     useEffect(() => {
         setIsDirty(false)
     }, [activeStep])
+
+    /* Check Unsaved Changes */
+    useEffect(() => {
+        window.addEventListener("beforeunload", alertUserUnsavedChanges)
+        return () => {
+          window.removeEventListener("beforeunload", alertUserUnsavedChanges)
+        }
+    }, [isDirty])
+
+    const alertUserUnsavedChanges = useCallback((e:any) => {
+        if (isDirty) {
+            e.preventDefault()
+            e.returnValue = ""
+        }
+    }, [isDirty])
+    /* End of Check Unsaved Changes */
 
     return (
         <Grid container className='OnlineFormWizard' flexDirection={'column'}>

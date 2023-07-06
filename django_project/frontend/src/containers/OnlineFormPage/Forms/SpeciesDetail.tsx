@@ -11,6 +11,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -21,8 +22,10 @@ import {
     getDefaultUploadSpeciesDetail,
     AnnualPopulationInterface,
     TaxonMetadata,
-    CommonUploadMetadata
+    CommonUploadMetadata,
+    UploadSpeciesDetailValidation
 } from '../../../models/Upload';
+import { setConstantValue } from 'typescript';
 
 
 const DUMMY_TAXONS: TaxonMetadata[] = [
@@ -97,6 +100,8 @@ const OTHER_NUMBER_FIELDS = [
     'area_covered'
 ]
 
+const REQUIRED_FIELD_ERROR_MESSAGE = 'This field is required'
+
 interface SpeciesDetailInterface {
     initialData: UploadSpeciesDetailInterface;
     setIsDirty: (isDirty: boolean) => void;
@@ -105,6 +110,7 @@ interface SpeciesDetailInterface {
 
 export default function SpeciesDetail(props: SpeciesDetailInterface) {
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
+    const [validation, setValidation] = useState<UploadSpeciesDetailValidation>({})
     const [taxonMetadataList, setTaxonMetadataList] = useState<TaxonMetadata[]>(DUMMY_TAXONS)
     const [openCloseMetadataList, setOpenCloseMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_OPEN_CLOSE_SYSTEMS)
     const [countMethodMetadataList, setCountMethodMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_COUNT_METHODS)
@@ -125,6 +131,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 offtake_population: {...data.offtake_population}            
             })
             props.setIsDirty(true)
+            setValidation({...validation, taxon_id: false})
         }
     }
 
@@ -163,6 +170,13 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             offtake_population: {...data.offtake_population}            
         })
         props.setIsDirty(true)
+        setValidation({
+            ...validation,
+            annual_population: {
+                ...validation.annual_population,
+                [field]: false
+            }
+        })
     }
 
     const updateAnnualPopulationSelectValue = (field: keyof AnnualPopulationInterface, value: number, sourceList: CommonUploadMetadata[]) => {
@@ -180,7 +194,65 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 offtake_population: {...data.offtake_population}            
             })
             props.setIsDirty(true)
+            setValidation({
+                ...validation,
+                annual_population: {
+                    ...validation.annual_population,
+                    [field]: false
+                }
+            })
         }
+    }
+
+    const validateSpeciesDetail = () => {
+        let _error_validation:UploadSpeciesDetailValidation = {}
+        if (data.taxon_id === 0) {
+            _error_validation = {..._error_validation, taxon_id: true}
+        }
+        if (data.year === 0) {
+            _error_validation = {..._error_validation, year: true}
+        }
+        if (data.month === 0) {
+            _error_validation = {..._error_validation, month: true}
+        }
+        if (data.annual_population.open_close_id === 0) {
+            _error_validation = {
+                ..._error_validation,
+                annual_population: {
+                    ..._error_validation.annual_population,
+                    open_close_id: true
+                }
+            }
+        }
+        if (data.annual_population.count_method_id === 0) {
+            _error_validation = {
+                ..._error_validation,
+                annual_population: {
+                    ..._error_validation.annual_population,
+                    count_method_id: true
+                }
+            }
+        }
+        if (data.annual_population.survey_method_id === 0) {
+            _error_validation = {
+                ..._error_validation,
+                annual_population: {
+                    ..._error_validation.annual_population,
+                    survey_method_id: true
+                }
+            }
+        }
+        if (data.annual_population.sampling_size_unit_id === 0) {
+            _error_validation = {
+                ..._error_validation,
+                annual_population: {
+                    ..._error_validation.annual_population,
+                    sampling_size_unit_id: true
+                }
+            }
+        }
+        setValidation(_error_validation)
+        return Object.keys(_error_validation).length === 0
     }
 
     useEffect(() => {
@@ -190,6 +262,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             intake_population: {...props.initialData.intake_population},
             offtake_population: {...props.initialData.offtake_population}
         })
+        setValidation({})
     }, [props.initialData])
 
     return (
@@ -197,9 +270,10 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             <Grid item>
                 <Grid container flexDirection={'row'} spacing={4}>
                     <Grid item xs={12} md={6}>
-                        <Grid container flexDirection={'column'} rowSpacing={2}>
+                        <Grid container flexDirection={'column'} rowSpacing={1}>
                             <Grid item className='InputContainer'>
-                                <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                <FormControl variant="standard" required className='DropdownInput' fullWidth
+                                        error={validation.taxon_id}>
                                     <InputLabel id="scientific-name-label">Scientific Name</InputLabel>
                                     <Select
                                         labelId="scientific-name-label"
@@ -218,19 +292,21 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         })                                            
                                         }
                                     </Select>
+                                    <FormHelperText>{validation.taxon_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
                                 </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='common-name' label='Common Name' value={data.common_name}
-                                    variant='standard' disabled fullWidth />
+                                    variant='standard' disabled fullWidth helperText=" " />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <LocalizationProvider dateAdapter={AdapterMoment}>
                                     <DatePicker label={'Month and Year of Count'} views={['month', 'year']}
-                                        slotProps={{ textField: { size: 'small', variant: 'standard', className: 'Calendar' } }}
+                                        slotProps={{ textField: { size: 'small', variant: 'standard', className: 'Calendar', required: true } }}
                                         value={moment({'year': data.year, 'month': data.month - 1})}
                                         onChange={(newValue: Moment) => updateMonthYearDetail(newValue.month() + 1, newValue.year())}
                                     />
+                                    <FormHelperText>{' '}</FormHelperText>
                                 </LocalizationProvider>
                             </Grid>
                             <Grid item className='InputContainer'>
@@ -248,10 +324,11 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         <FormControlLabel value={true} control={<Radio size='small' />} label="Yes" />
                                         <FormControlLabel value={false} control={<Radio size='small' />} label="No" />
                                     </RadioGroup>
+                                    <FormHelperText>{' '}</FormHelperText>
                                 </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.open_close_id}>
                                     <InputLabel id="open-close-system-label">Open/Closed System</InputLabel>
                                     <Select
                                         labelId="open-close-system-label"
@@ -270,10 +347,11 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         })                                            
                                         }
                                     </Select>
+                                    <FormHelperText>{validation.annual_population?.open_close_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
                                 </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.survey_method_id}>
                                     <InputLabel id="survey-method-label">Survey Method</InputLabel>
                                     <Select
                                         labelId="survey-method-label"
@@ -292,22 +370,25 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         })                                            
                                         }
                                     </Select>
+                                    <FormHelperText>{validation.annual_population?.survey_method_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
                                 </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='area_covered' required label='Sampled Area' value={data.annual_population.area_covered}
                                     variant='standard' type='number'
-                                    onChange={(e) => updateAnnualPopulation('area_covered', parseFloat(e.target.value)) } fullWidth />
+                                    onChange={(e) => updateAnnualPopulation('area_covered', parseFloat(e.target.value)) } fullWidth
+                                    helperText=" " />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='sampling_note' label='Sampling Notes' value={data.annual_population.note}
                                     variant='standard'
-                                    onChange={(e) => updateAnnualPopulation('note', e.target.value) } fullWidth />
+                                    onChange={(e) => updateAnnualPopulation('note', e.target.value) } fullWidth
+                                    helperText=" " />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <Grid container flexDirection={'column'} rowSpacing={2}>
+                        <Grid container flexDirection={'column'} rowSpacing={1}>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
@@ -326,6 +407,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.adult_male}
                                             onChange={(e) => updateAnnualPopulation('adult_male', parseInt(e.target.value))}
+                                            helperText=" "
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -344,6 +426,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.adult_female}
                                             onChange={(e) => updateAnnualPopulation('adult_female', parseInt(e.target.value))}
+                                            helperText=" "
                                         />
                                     </Grid>
                                 </Grid>
@@ -366,6 +449,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.sub_adult_male}
                                             onChange={(e) => updateAnnualPopulation('sub_adult_male', parseInt(e.target.value))}
+                                            helperText=" "
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -384,6 +468,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.sub_adult_female}
                                             onChange={(e) => updateAnnualPopulation('sub_adult_female', parseInt(e.target.value))}
+                                            helperText=" "
                                         />
                                     </Grid>
                                 </Grid>
@@ -406,6 +491,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.juvenile_male}
                                             onChange={(e) => updateAnnualPopulation('juvenile_male', parseInt(e.target.value))}
+                                            helperText=" "
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -424,6 +510,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.juvenile_female}
                                             onChange={(e) => updateAnnualPopulation('juvenile_female', parseInt(e.target.value))}
+                                            helperText=" "
                                         />
                                     </Grid>
                                 </Grid>
@@ -439,6 +526,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             variant="standard"
                                             fullWidth
                                             value={data.annual_population.total}
+                                            helperText=" "
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -458,6 +546,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.area_available_to_species}
                                             onChange={(e) => updateAnnualPopulation('area_available_to_species', parseInt(e.target.value))}
+                                            helperText=" "
                                         />
                                     </Grid>
                                 </Grid>
@@ -465,10 +554,11 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                             <Grid item className='InputContainer'>
                                 <TextField id='group' label='Number of groups (prides, herds, etc.)' value={data.annual_population.group}
                                     variant='standard'
-                                    onChange={(e) => updateAnnualPopulation('group', parseInt(e.target.value)) } fullWidth />
+                                    onChange={(e) => updateAnnualPopulation('group', parseInt(e.target.value)) } fullWidth
+                                    helperText=" " />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.count_method_id}>
                                     <InputLabel id="count-method-label">Count Method</InputLabel>
                                     <Select
                                         labelId="count-method-label"
@@ -487,6 +577,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         })                                            
                                         }
                                     </Select>
+                                    <FormHelperText>{validation.annual_population?.count_method_id ? REQUIRED_FIELD_ERROR_MESSAGE: ' '}</FormHelperText>
                                 </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
@@ -501,10 +592,11 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.sampling_effort}
                                             onChange={(e) => updateAnnualPopulation('sampling_effort', parseFloat(e.target.value)) }
+                                            helperText=' '
                                         />
                                     </Grid>
                                     <Grid item xs={8}>
-                                        <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                        <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.sampling_size_unit_id}>
                                             <InputLabel id="sampling-unit-label">Sampling Unit</InputLabel>
                                             <Select
                                                 labelId="sampling-unit-label"
@@ -523,6 +615,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 })                                            
                                                 }
                                             </Select>
+                                            <FormHelperText>{validation.annual_population?.sampling_size_unit_id ? REQUIRED_FIELD_ERROR_MESSAGE: ' '}</FormHelperText>
                                         </FormControl>
                                     </Grid>
                                 </Grid>
@@ -532,8 +625,12 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 </Grid>
             </Grid>
             <Grid item container flexDirection={'row'} justifyContent={'flex-end'}>
-                <Button variant='contained' onClick={() => props.handleNext(data)}>NEXT</Button>
-            </Grid>            
+                <Button variant='contained' onClick={() => {
+                    if (validateSpeciesDetail()) {
+                        props.handleNext(data)
+                    }
+                }}>NEXT</Button>
+            </Grid>
         </Grid>
     )
 }

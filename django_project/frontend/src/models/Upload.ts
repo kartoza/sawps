@@ -59,7 +59,43 @@ export interface UploadSpeciesDetailInterface {
     offtake_population: AnnualPopulationPerActivityInterface;
 }
 
+export interface TaxonMetadata {
+    id: number;
+    common_name_varbatim: string;
+    scientific_name: string
+}
 
+export interface CommonUploadMetadata {
+    id: number;
+    name: string;
+}
+
+export interface AnnualPopulationValidation {
+    open_close_id?: boolean;
+    area_available_to_species?: boolean;
+    count_method_id?: boolean;
+    survey_method_id?: boolean;
+    sampling_effort?: boolean;
+    sampling_size_unit_id?: boolean;
+    area_covered?: boolean;
+}
+
+export interface AnnualPopulationPerActivityValidation {
+    activity_type_id?: boolean;
+    intake_permit?: boolean;
+    offtake_permit?: boolean;
+}
+
+export interface UploadSpeciesDetailValidation {
+    taxon_id?: boolean;
+    year?: boolean;
+    month?: boolean;
+    annual_population?: AnnualPopulationValidation;
+    intake_population?: AnnualPopulationPerActivityValidation;
+    offtake_population?: AnnualPopulationPerActivityValidation;
+}
+
+/* Create Default Data Functions */
 const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
     return {
         present: true,
@@ -100,7 +136,7 @@ export const getDefaultUploadSpeciesDetail = (propertyId: number):UploadSpeciesD
     return {
         taxon_id: 0,
         taxon_name: '',
-        common_name: '',
+        common_name: ' ',
         year: _currentDate.getFullYear(),
         month: _currentDate.getMonth() + 1,
         property_id: propertyId,
@@ -108,15 +144,4 @@ export const getDefaultUploadSpeciesDetail = (propertyId: number):UploadSpeciesD
         intake_population: getDefaultAnnualPopulationPerActivity(),
         offtake_population: getDefaultAnnualPopulationPerActivity()
     }
-}
-
-export interface TaxonMetadata {
-    id: number;
-    common_name_varbatim: string;
-    scientific_name: string
-}
-
-export interface CommonUploadMetadata {
-    id: number;
-    name: string;
 }
