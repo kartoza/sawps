@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Grid from "@mui/material/Grid";
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -8,13 +8,9 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
+import Divider from '@mui/material/Divider';
 import {
-    UploadSpeciesDetailInterface,
-    getDefaultUploadSpeciesDetail,
-    AnnualPopulationInterface,
-    TaxonMetadata,
-    CommonUploadMetadata
-} from '../../../models/Upload';
+    UploadSpeciesDetailInterface} from '../../../models/Upload';
 import moment from 'moment';
 
 
@@ -22,6 +18,7 @@ import moment from 'moment';
 interface ReviewAndConfirmInterface {
     initialData: UploadSpeciesDetailInterface;
     handleBack: (data: UploadSpeciesDetailInterface) => void;
+    handleStepChange: (newStep: number) => void;
 }
 
 interface ReviewItemInterface {
@@ -522,12 +519,12 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                 />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='offtake_permit' label='Permit Number' defaultValue={displayText(data.offtake_population.permit ? data.offtake_population.permit.toString() : '')}
+                                <TextField id='offtake_translocation_destination' label='Translocation Destination' required defaultValue={displayText(data.offtake_population.translocation_destination)}
                                     variant='standard' disabled fullWidth
                                     helperText=" " />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='offtake_translocation_destination' label='Translocation Destination' required defaultValue={displayText(data.offtake_population.translocation_destination)}
+                                <TextField id='offtake_permit' label='Permit Number' defaultValue={displayText(data.offtake_population.permit ? data.offtake_population.permit.toString() : '')}
                                     variant='standard' disabled fullWidth
                                     helperText=" " />
                             </Grid>
@@ -551,11 +548,12 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                 <Grid container flexDirection={'column'} rowSpacing={1}>
                     <Grid item container flexDirection={'row'} alignItems={'center'}>
                         <Typography variant='h6'>Species Detail</Typography>
-                        <IconButton aria-label='Edit Species Detail' title='Edit Species Detail'>
+                        <IconButton aria-label='Edit Species Detail' title='Edit Species Detail' onClick={() => props.handleStepChange(0)}>
                             <EditNoteIcon />
                         </IconButton>
                     </Grid>
-                    <Grid item>
+                    <Divider />
+                    <Grid item sx={{marginTop: '10px'}}>
                         <SpeciesDetailReview data={props.initialData} />
                     </Grid>
                 </Grid>
@@ -564,10 +562,11 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                 <Grid container flexDirection={'column'} rowSpacing={1}>
                     <Grid item container flexDirection={'row'} alignItems={'center'}>
                         <Typography variant='h6'>Activity Detail</Typography>
-                        <IconButton aria-label='Edit Activity Detail' title='Edit Activity Detail'>
+                        <IconButton aria-label='Edit Activity Detail' title='Edit Activity Detail' onClick={() => props.handleStepChange(1)}>
                             <EditNoteIcon />
                         </IconButton>
                     </Grid>
+                    <Divider />
                     <Grid item>
                         <ActivityDetailReview data={props.initialData} />
                     </Grid>

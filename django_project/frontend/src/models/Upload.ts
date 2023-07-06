@@ -117,6 +117,7 @@ const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActivityInte
         total: 0,
         founder_population: false,
         reintroduction_source: '',
+        translocation_destination: ''
     }
 }
 

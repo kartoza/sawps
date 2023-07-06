@@ -105,5 +105,8 @@
         input.Mui-disabled {
             -webkit-text-fill-color: unset;
         }
+        .MuiInputBase-root.Mui-disabled::before {
+            border-bottom-style: none;
+        }
     }
 }

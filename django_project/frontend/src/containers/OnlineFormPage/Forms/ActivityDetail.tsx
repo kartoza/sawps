@@ -547,19 +547,19 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                                 </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
+                                <TextField id='offtake_translocation_destination' label='Translocation Destination' required value={data.offtake_population.translocation_destination}
+                                    variant='standard'
+                                    onChange={(e) => updateOfftakePopulation('translocation_destination', e.target.value) } fullWidth
+                                    error={validation.offtake_population?.translocation_destination}
+                                    helperText={validation.offtake_population?.translocation_destination ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
+                            </Grid>
+                            <Grid item className='InputContainer'>
                                 <TextField id='offtake_permit' label='Permit Number' value={data.offtake_population.permit}
                                     variant='standard'
                                     inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                     onChange={(e) => updateOfftakePopulation('permit', parseInt(e.target.value)) } fullWidth
                                     error={validation.offtake_population?.permit}
                                     helperText={validation.offtake_population?.permit ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField id='offtake_translocation_destination' label='Translocation Destination' required value={data.offtake_population.translocation_destination}
-                                    variant='standard'
-                                    onChange={(e) => updateOfftakePopulation('translocation_destination', e.target.value) } fullWidth
-                                    error={validation.offtake_population?.translocation_destination}
-                                    helperText={validation.offtake_population?.translocation_destination ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='offtake_note' label='Notes' value={data.offtake_population.note}

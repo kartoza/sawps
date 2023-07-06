@@ -66,7 +66,7 @@ function FormWizard(props: FormWizardInterface) {
         }
     }
 
-    const handleStep = (step: number) => () => {
+    const handleStep = (step: number) => {
         if (isDirty) {
             setNavigateTo(step)
             setConfirmationOpen(true)
@@ -129,7 +129,7 @@ function FormWizard(props: FormWizardInterface) {
                 <Stepper nonLinear activeStep={activeStep}>
                     {steps.map((label, index) => (
                     <Step key={label} disabled={index > activeStep && !completed[index]} completed={completed[index]}>
-                        <StepButton color="inherit" onClick={handleStep(index)} className={activeStep === index && isDirty ? 'form-dirty' : ''}>
+                        <StepButton color="inherit" onClick={() => handleStep(index)} className={activeStep === index && isDirty ? 'form-dirty' : ''}>
                             {label}
                         </StepButton>
                     </Step>
@@ -146,7 +146,7 @@ function FormWizard(props: FormWizardInterface) {
                             handleBack={(formData) => onFormBack(1, formData)} />
                     </TabPanel>
                     <TabPanel key={2} value={activeStep} index={2} noPadding>
-                        <ReviewAndConfirm initialData={data} 
+                        <ReviewAndConfirm initialData={data} handleStepChange={(newStep: number) => handleStep(newStep)}
                             handleBack={(formData) => onFormBack(2, formData)} />
                     </TabPanel>
                 </Box>
