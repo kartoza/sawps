@@ -27,6 +27,7 @@ import {
     FIELD_COUNTER,
     OTHER_NUMBER_FIELDS
 } from '../../../models/Upload';
+import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
 
 
 const DUMMY_TAXONS: TaxonMetadata[] = [
@@ -89,8 +90,6 @@ const SAMPLING_SIZE_UNITS: CommonUploadMetadata[] = [
         'name': 'Unit 2'
     }
 ]
-
-const REQUIRED_FIELD_ERROR_MESSAGE = 'This field is required'
 
 interface SpeciesDetailInterface {
     initialData: UploadSpeciesDetailInterface;

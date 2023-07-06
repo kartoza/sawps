@@ -40,8 +40,7 @@ export interface AnnualPopulationPerActivityInterface {
     juvenile_female?: number;
     founder_population?: boolean;
     reintroduction_source?: string;
-    intake_permit?: number;
-    offtake_permit?: number;
+    permit?: number;
     translocation_destination?: string;
     note?: string;
 }
@@ -82,8 +81,9 @@ export interface AnnualPopulationValidation {
 
 export interface AnnualPopulationPerActivityValidation {
     activity_type_id?: boolean;
-    intake_permit?: boolean;
-    offtake_permit?: boolean;
+    permit?: boolean;
+    reintroduction_source?: boolean;
+    translocation_destination?: boolean;
 }
 
 export interface UploadSpeciesDetailValidation {
@@ -143,5 +143,5 @@ export const FIELD_COUNTER = [
 
 export const OTHER_NUMBER_FIELDS = [
     'group', 'sampling_effort', 'area_available_to_species',
-    'area_covered'
+    'area_covered', 'permit'
 ]
