@@ -540,7 +540,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                                                     {common.name}
                                                 </MenuItem>
                                             )
-                                        })                                            
+                                        })
                                         }
                                     </Select>
                                     <FormHelperText>{validation.offtake_population?.activity_type_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
