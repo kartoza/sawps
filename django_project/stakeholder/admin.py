@@ -11,7 +11,6 @@ admin.site.register(Organisation)
 class OrganisationUserAdmin(admin.ModelAdmin):
     list_display = ("user", "organisation")
 
-
 @admin.register(OrganisationRepresentative)
 class OrganisationRepresentativeAdmin(admin.ModelAdmin):
     list_display = ("user", "organisation")
