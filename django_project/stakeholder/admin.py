@@ -1,5 +1,5 @@
 from django.contrib import admin
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation, OrganisationUser, OrganisationRepresentative
+from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation, OrganisationUser, OrganisationRepresentative, OrganisationInvites
 
 admin.site.register(UserRoleType)
 admin.site.register(UserTitle)
@@ -15,3 +15,8 @@ class OrganisationUserAdmin(admin.ModelAdmin):
 @admin.register(OrganisationRepresentative)
 class OrganisationRepresentativeAdmin(admin.ModelAdmin):
     list_display = ("user", "organisation")
+
+@admin.register(OrganisationInvites)
+class OrganisationInvitesAdmin(admin.ModelAdmin):
+    list_display = ("user", "organisation")
+
