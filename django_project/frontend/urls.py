@@ -38,7 +38,7 @@ from frontend.api_views.property import (
     PropertyList,
     UpdatePropertyInformation,
     UpdatePropertyBoundaries,
-    PropertyDetail
+    PropertyDetail,
 )
 from frontend.api_views.upload import (
     BoundaryFileUpload,

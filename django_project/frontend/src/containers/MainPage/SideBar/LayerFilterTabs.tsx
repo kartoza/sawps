@@ -5,6 +5,7 @@ import Tab from "@mui/material/Tab";
 import TabPanel, { a11yProps } from '../../../components/TabPanel';
 import Layers from './Layers';
 import './index.scss';
+import Filter from './Filter';
 
 function LayerFilterTabs() {
     const [selectedTabSideBar, setSelectedTabSideBar] = useState(0)
@@ -17,8 +18,8 @@ function LayerFilterTabs() {
                         setSelectedTabSideBar(newValue)
                     }} aria-label="Left Side Bar Tabs"
                 >
-                        <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
-                        <Tab key={1} label={'FILTERS'} {...a11yProps(1)} />
+                    <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
+                    <Tab key={1} label={'FILTERS'} {...a11yProps(1)} />
                 </Tabs>
             </Box>
             <Box className='TabPanels FlexContainerFill'>
@@ -27,6 +28,9 @@ function LayerFilterTabs() {
                         <Layers />
                     </TabPanel>
                 </Box>
+                <TabPanel key={1} value={selectedTabSideBar} index={1} noPadding>
+                    <Filter />
+                </TabPanel>
             </Box>
         </Box>
     )

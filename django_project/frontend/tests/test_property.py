@@ -9,7 +9,6 @@ from property.models import (
     Parcel
 )
 from property.factories import (
-    OwnershipStatusFactory,
     ProvinceFactory,
     PropertyFactory
 )
@@ -45,8 +44,6 @@ class TestPropertyAPIViews(TestCase):
         self.factory = OrganisationAPIRequestFactory(self.organisation)
         self.user_1 = UserF.create(username='test_1')
         self.user_2 = UserF.create(username='test_2')
-        # insert province
-        self.ownership_status = OwnershipStatusFactory.create()
         # insert province
         self.province = ProvinceFactory.create()
         # insert geom 1 and 2
