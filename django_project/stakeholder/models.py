@@ -126,6 +126,20 @@ class Organisation(models.Model):
 
     def __str__(self):
         return self.name
+    
+class OrganisationInvites(models.Model):
+    """OrganisationInvites model."""
+
+    organisation = models.ForeignKey(Organisation, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        verbose_name = 'OrganisationInvites'
+        verbose_name_plural = 'OrganisationInvites'
+        db_table = "OrganisationInvites"
+
+    def __str__(self):
+        return str(self.user)
 
 
 class OrganisationPersonnel(models.Model):
