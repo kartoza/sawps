@@ -69,7 +69,11 @@ export default function Step2(props: Step2Interface) {
         ).catch(error => {
             setSavingProperty(false)
             console.log('error ', error)
-            alert('Error saving property...')
+            if (error.response) {
+                alert(`Error saving property: ${error.response.data}!`)
+            } else {
+                alert(`Error saving property!`)
+            }
         })    
     }
 
