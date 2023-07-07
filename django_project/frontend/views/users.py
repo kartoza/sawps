@@ -4,14 +4,13 @@ from .base_view import RegisteredOrganisationBaseView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
 
 from django.views.generic import TemplateView
 
 
 class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,TemplateView):
     """
-    AboutView displays the about page by rendering the 'about.html' template.
+    OrganisationUsersView displays the organisations users page by rendering the 'users.html' template.
     """
     template_name = 'users.html'
     model = OrganisationUser
