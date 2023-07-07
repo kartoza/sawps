@@ -13,9 +13,21 @@ import ActivityDetail from './ActivityDetail';
 import ReviewAndConfirm from './ReviewAndConfirm';
 import ConfirmationAlertDialog from '../../../components/ConfirmationAlertDialog';
 import FeedbackAlertDialog, {AlertType} from '../../../components/FeedbackAlertDialog';
+import { TaxonMetadata, CommonUploadMetadata } from '../../../models/Upload';
+
+export interface FormMetadata {
+    taxons: TaxonMetadata[];
+    open_close_systems: CommonUploadMetadata[];
+    survey_methods: CommonUploadMetadata[];
+    sampling_size_units: CommonUploadMetadata[];
+    count_methods: CommonUploadMetadata[];
+    intake_events: CommonUploadMetadata[];
+    offtake_events: CommonUploadMetadata[];
+}
 
 interface FormWizardInterface {
     propertyItem: PropertyInterface;
+    metadata: FormMetadata;
 }
 
 const steps = ['SPECIES DETAIL', 'ACTIVITY DETAIL', 'REVIEW & SUBMIT']
@@ -151,11 +163,15 @@ function FormWizard(props: FormWizardInterface) {
             <Box className='TabPanels FlexContainerFill'>
                 <Box className='OnlineFormWizardContent'>
                     <TabPanel key={0} value={activeStep} index={0} noPadding>
-                        <SpeciesDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(0, formData)} />
+                        <SpeciesDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(0, formData)}
+                            taxonMetadataList={props.metadata.taxons} countMethodMetadataList={props.metadata.count_methods}
+                            surveyMethodMetadataList={props.metadata.survey_methods} openCloseMetadataList={props.metadata.open_close_systems}
+                            samplingUnitMetadataList={props.metadata.sampling_size_units} />
                     </TabPanel>
                     <TabPanel key={1} value={activeStep} index={1} noPadding>
                         <ActivityDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(1, formData)}
-                            handleBack={(formData) => onFormBack(1, formData)} />
+                            handleBack={(formData) => onFormBack(1, formData)}
+                            intakeEventMetadataList={props.metadata.intake_events} offtakeEventMetadataList={props.metadata.offtake_events} />
                     </TabPanel>
                     <TabPanel key={2} value={activeStep} index={2} noPadding>
                         <ReviewAndConfirm initialData={data} handleStepChange={(newStep: number) => handleStep(newStep)}

@@ -4,11 +4,13 @@ from population_data.models import (
     Month, 
     NatureOfPopulation, 
     AnnualPopulation, 
-    AnnualPopulationPerActivity
+    AnnualPopulationPerActivity,
+    OpenCloseSystem
 )
 
 admin.site.register(CountMethod)
 admin.site.register(Month)
+admin.site.register(OpenCloseSystem)
 admin.site.register(NatureOfPopulation)
 admin.site.register(AnnualPopulation)
 admin.site.register(AnnualPopulationPerActivity)

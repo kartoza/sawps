@@ -28,53 +28,22 @@ import {
 import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
 
 
-
 interface ActivityDetailInterface {
     initialData: UploadSpeciesDetailInterface;
+    intakeEventMetadataList: CommonUploadMetadata[];
+    offtakeEventMetadataList: CommonUploadMetadata[];
     setIsDirty: (isDirty: boolean) => void;
     handleBack: (data: UploadSpeciesDetailInterface) => void;
     handleNext: (data: UploadSpeciesDetailInterface) => void;
 }
 
-const DUMMY_INTAKE_EVENTS: CommonUploadMetadata[] = [
-    {
-        'id': 1,
-        'name': 'Intake Event 1'
-    },
-    {
-        'id': 2,
-        'name': 'Intake Event 2'
-    }
-]
-
-const DUMMY_OFFTAKE_EVENTS: CommonUploadMetadata[] = [
-    {
-        'id': 1,
-        'name': 'Planned translocation'
-    },
-    {
-        'id': 2,
-        'name': 'Planned hunt/cull'
-    },
-    {
-        'id': 3,
-        'name': 'Unplanned/natural deaths'
-    },
-    {
-        'id': 4,
-        'name': 'Planned euthanasia'
-    },
-    {
-        'id': 5,
-        'name': 'Unplanned/illegal hunting'
-    }
-]
-
 export default function ActivityDetail(props: ActivityDetailInterface) {
+    const {
+        initialData, intakeEventMetadataList, offtakeEventMetadataList,
+        setIsDirty, handleBack, handleNext
+    } = props
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
     const [validation, setValidation] = useState<UploadSpeciesDetailValidation>({})
-    const [intakeEventMetadataList, setIntakeEventMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_INTAKE_EVENTS)
-    const [offtakeEventMetadataList, setOfftakeEventMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_OFFTAKE_EVENTS)
 
     const updateIntakePopulation = (field: keyof AnnualPopulationPerActivityInterface, value: any) => {
         let _total = data.intake_population.total
@@ -99,7 +68,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
             },
             offtake_population: {...data.offtake_population}            
         })
-        props.setIsDirty(true)
+        setIsDirty(true)
         setValidation({
             ...validation,
             intake_population: {
@@ -132,7 +101,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
             },
             intake_population: {...data.intake_population}            
         })
-        props.setIsDirty(true)
+        setIsDirty(true)
         setValidation({
             ...validation,
             offtake_population: {
@@ -146,7 +115,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
         let _name_field = field.replace('_id', '_name')
         let _selected = sourceList.find(element => element.id === value)
         if (_selected) {
-            props.setIsDirty(true)
+            setIsDirty(true)
             let _updated: UploadSpeciesDetailInterface;
             let _validation: UploadSpeciesDetailValidation;
             if (isIntake) {
@@ -237,12 +206,12 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
 
     useEffect(() => {
         setData({
-            ...props.initialData,
-            annual_population: {...props.initialData.annual_population},
-            intake_population: {...props.initialData.intake_population},
-            offtake_population: {...props.initialData.offtake_population}
+            ...initialData,
+            annual_population: {...initialData.annual_population},
+            intake_population: {...initialData.intake_population},
+            offtake_population: {...initialData.offtake_population}
         })
-    }, [props.initialData])
+    }, [initialData])
 
     return (
         <Grid container flexDirection={'column'} rowSpacing={2}>
@@ -573,12 +542,12 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
             </Grid>
             <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
                 <Grid item>
-                    <Button variant='outlined' onClick={() => props.handleBack(data)}>BACK</Button>
+                    <Button variant='outlined' onClick={() => handleBack(data)}>BACK</Button>
                 </Grid>
                 <Grid item>
                     <Button variant='contained' onClick={() => {
                         if (validateActivityDetail()) {
-                            props.handleNext(data)
+                            handleNext(data)
                         }
                     }}>NEXT</Button>
                 </Grid>

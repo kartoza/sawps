@@ -77,9 +77,8 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                     variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='area_covered' required label='Sampled Area' defaultValue={displayNumber(data.annual_population.area_covered)}
-                                    variant='standard' type='number'
-                                    disabled fullWidth />
+                                <TextField id='area_covered' required label='Sampled Area' defaultValue={`${displayNumber(data.annual_population.area_covered)} ha`}
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='sampling_note' label='Sampling Notes' defaultValue={displayText(data.annual_population.note)}
@@ -221,7 +220,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             label='Area available to species'
                                             required
                                             variant="standard"
-                                            defaultValue={displayText(data.annual_population.area_available_to_species ? `${data.annual_population.area_available_to_species} Ha` : '0 Ha')}
+                                            defaultValue={displayText(data.annual_population.area_available_to_species ? `${data.annual_population.area_available_to_species} ha` : '0 Ha')}
                                             disabled
                                         />
                                     </Grid>
@@ -237,7 +236,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={6}>
                                         <TextField
                                             id='sampling_effort'
                                             label='Sampling Effort'
@@ -249,7 +248,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={8}>
+                                    <Grid item xs={6}>
                                         <TextField id='sampling_unit' label='Sampling Unit' defaultValue={displayText(data.annual_population.sampling_size_unit_name)}
                                             variant='standard' disabled fullWidth />
                                     </Grid>
