@@ -58,23 +58,11 @@ const DUMMY_OFFTAKE_EVENTS: CommonUploadMetadata[] = [
     }
 ]
 
-const DUMMY_INTRO_SOURCE: CommonUploadMetadata[] = [
-    {
-        'id': 1,
-        'name': 'Source 1'
-    },
-    {
-        'id': 2,
-        'name': 'Source 2'
-    }
-]
-
 export default function ActivityDetail(props: ActivityDetailInterface) {
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
     const [validation, setValidation] = useState<UploadSpeciesDetailValidation>({})
     const [intakeEventMetadataList, setIntakeEventMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_INTAKE_EVENTS)
     const [offtakeEventMetadataList, setOfftakeEventMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_OFFTAKE_EVENTS)
-    const [introductionSourceMetadataList, setIntroductionSourceMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_INTRO_SOURCE)
 
     const updateIntakePopulation = (field: keyof AnnualPopulationPerActivityInterface, value: any) => {
         let _total = data.intake_population.total
