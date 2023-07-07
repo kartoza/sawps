@@ -24,7 +24,7 @@ export interface FILTEERSPECIES {
     id: number
 }
 const FETCH_AVAILABLE_SPECIES = '/species/'
-const yearRangeStart = 2010;
+const yearRangeStart = 1994;
 const yearRangeEnd = 2023;
 const marks = [
     {
