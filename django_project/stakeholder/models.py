@@ -128,7 +128,7 @@ class Organisation(models.Model):
         return self.name
     
 class OrganisationInvites(models.Model):
-    """OrganisationInvites model."""
+    """OrganisationInvites model to store all invites"""
 
     organisation = models.ForeignKey(Organisation, on_delete=models.DO_NOTHING)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
