@@ -130,8 +130,8 @@ class Organisation(models.Model):
 class OrganisationInvites(models.Model):
     """OrganisationInvites model to store all invites"""
 
-    organisation = models.ForeignKey(Organisation, on_delete=models.DO_NOTHING)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    organisation = models.ForeignKey(Organisation, on_delete=models.DO_NOTHING, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
         verbose_name = 'OrganisationInvites'
