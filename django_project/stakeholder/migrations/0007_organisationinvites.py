@@ -27,6 +27,8 @@ class Migration(migrations.Migration):
                     "organisation",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING,
+                        blank=True,
+                        null=True,
                         to="stakeholder.organisation",
                     ),
                 ),
@@ -34,6 +36,8 @@ class Migration(migrations.Migration):
                     "user",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING,
+                        blank=True,
+                        null=True,
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
