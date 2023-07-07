@@ -77,17 +77,26 @@ class RegisteredOrganisationBaseView(TemplateView):
     
     
 
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
     def get_organisation_users(self):
         organisation_user_list = OrganisationUser.objects.filter(organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         organisation_users = []
 
         for user in organisation_user_list:
             role = UserProfile.objects.all().filter(user=user.user.id).first()
-            object_to_save = {
-                "id": user.user.id,
-                "organisation_user": str(user.user),
-                "role": role.user_role_type_id.name,
-            }
+            if role:
+                object_to_save = {
+                    "id": user.user.id,
+                    "organisation_user": str(user.user),
+                    "role": role.user_role_type_id.name,
+                }
+            else:
+                object_to_save = {
+                    "id": user.user.id,
+                    "organisation_user": str(user.user),
+                    "role": None,
+                }
             if not user.user == self.request.user:
                 organisation_users.append(object_to_save)
 
@@ -113,11 +122,18 @@ class RegisteredOrganisationBaseView(TemplateView):
 
         for user in organisation_invites:
             role = UserProfile.objects.all().filter(user=user.user.id).first()
-            object_to_save = {
-                "id": user.user.id,
-                "organisation_user": str(user.user),
-                "role": role.user_role_type_id.name
-            }
+            if role:
+                object_to_save = {
+                    "id": user.user.id,
+                    "organisation_user": str(user.user),
+                    "role": role.user_role_type_id.name
+                }
+            else:
+                object_to_save = {
+                    "id": user.user.id,
+                    "organisation_user": str(user.user),
+                    "role": None,
+                }
             if not user.user == self.request.user:
                 paginated_organisation_invites.append(object_to_save)
 
@@ -136,6 +152,7 @@ class RegisteredOrganisationBaseView(TemplateView):
             invites = paginator.page(paginator.num_pages)
         
         return invites
+
 
 
     def calculate_rows_per_page(self, data):
