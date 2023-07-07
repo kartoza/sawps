@@ -34,3 +34,16 @@ class TaxonSurveyMethodF(factory.django.DjangoModelFactory):
     """Taxon Survey Method factory."""
     class Meta:
         model = TaxonSurveyMethod
+
+
+class TaxonF(factory.django.DjangoModelFactory):
+    """Taxon model factory."""
+    class Meta:
+        model = Taxon
+    
+    scientific_name = factory.Sequence(lambda n: 'scientific_%d' % n)
+    common_name_varbatim = factory.Sequence(lambda n: 'common_%d' % n)
+    colour_variant = False
+    taxon_rank = factory.SubFactory(
+        'species.factories.TaxonRankFactory'
+    )

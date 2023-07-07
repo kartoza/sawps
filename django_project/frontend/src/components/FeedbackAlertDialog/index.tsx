@@ -65,7 +65,8 @@ export default function FeedbackAlertDialog(props: FeedbackAlertDialogInterface)
                     { props.alertDialogTitle }
                 </DialogTitle>
                 <DialogContent>
-                    <Grid container flexDirection={'row'} spacing={2} justifyContent={'flex-start'} alignItems={'center'}>
+                    <Grid container flexDirection={'row'} spacing={2}
+                        justifyContent={'flex-start'} alignItems={'center'} flexWrap={'nowrap'}>
                         <Grid item className={props.type}>
                             {getIcon(props.type)}
                         </Grid>

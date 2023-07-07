@@ -14,6 +14,7 @@ import ReviewAndConfirm from './ReviewAndConfirm';
 import ConfirmationAlertDialog from '../../../components/ConfirmationAlertDialog';
 import FeedbackAlertDialog, {AlertType} from '../../../components/FeedbackAlertDialog';
 import { TaxonMetadata, CommonUploadMetadata } from '../../../models/Upload';
+import {postData} from "../../../utils/Requests";
 
 export interface FormMetadata {
     taxons: TaxonMetadata[];
@@ -31,6 +32,7 @@ interface FormWizardInterface {
 }
 
 const steps = ['SPECIES DETAIL', 'ACTIVITY DETAIL', 'REVIEW & SUBMIT']
+const SUBMIT_SPECIES_DATA = '/api/upload/population/'
 
 function FormWizard(props: FormWizardInterface) {
     const [loading, setLoading] = useState<boolean>(false)
@@ -140,11 +142,22 @@ function FormWizard(props: FormWizardInterface) {
 
     const handleSubmit = () => {
         setLoading(true)
-        setTimeout(() => {
+        postData(`${SUBMIT_SPECIES_DATA}${props.propertyItem.id}/`, data).then(
+            response => {
+                setLoading(false)
+                setFeedbackAlertDialog(AlertType.success)
+                setFeedbackAlertDesc('Your data has been successfully saved!')
+            }
+          ).catch(error => {
             setLoading(false)
-            setFeedbackAlertDialog(AlertType.success)
-            setFeedbackAlertDesc('Your data has been successfully saved!')
-        }, 2000)
+            console.log('error ', error)
+            setFeedbackAlertDialog(AlertType.error)
+            let _error = 'There is an error while saving the data!'
+            if (error.response && 'detail' in error.response.data) {
+                _error = error.response.data['detail']
+            }
+            setFeedbackAlertDesc(_error)
+          })
     }
 
     return (

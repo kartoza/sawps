@@ -1,8 +1,11 @@
 """API Views related to uploading population data."""
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from stakeholder.models import OrganisationUser
+from property.models import Property
 from species.models import Taxon
 from species.serializers import TaxonSerializer
 from activity.models import ActivityType
@@ -16,11 +19,17 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     CountMethod,
-    OpenCloseSystem
+    OpenCloseSystem,
+    NatureOfPopulation,
+    Month
 )
 from population_data.serializers import (
     CountMethodSerializer,
     OpenCloseSystemSerializer
+)
+from species.models import (
+    OwnedSpecies,
+    ManagementStatus
 )
 
 
@@ -76,5 +85,166 @@ class UploadPopulationAPIVIew(APIView):
     """Save new upload of population data."""
     permission_classes = [IsAuthenticated]
 
+    def can_add_data(self, property: Property):
+        # check if user belongs to organisation of property
+        if self.request.user.is_superuser:
+            return True
+        return OrganisationUser.objects.filter(
+            organisation=property.organisation,
+            user=self.request.user
+        ).exists()
+
+    def check_existing_data(self, property: Property, taxon: Taxon, year):
+        # check if no data exist for taxon+property+year
+        return AnnualPopulation.objects.filter(
+            year=year,
+            owned_species__property=property,
+            owned_species__taxon=taxon
+        ).exists()
+
     def post(self, request, *args, **kwargs):
+        taxon_id = request.data.get('taxon_id')
+        property_id = kwargs.get('property_id')
+        year = request.data.get('year')
+        property = get_object_or_404(
+            Property, id=property_id
+        )
+        taxon = get_object_or_404(
+            Taxon, id=taxon_id
+        )
+        # validate can add data
+        if not self.can_add_data(property):
+            return Response(status=403, data={
+                'detail': (
+                    'You cannot add data to property that '
+                    'does not belong to your organisations!'
+                )
+            })
+        if self.check_existing_data(property, taxon, year):
+            return Response(status=400, data={
+                'detail': (
+                    'There is already existing data '
+                    f'for {taxon.scientific_name} in year {year}!'
+                )
+            })
+        month_id = request.data.get('month')
+        month = get_object_or_404(
+            Month, sort_order=month_id
+        )
+        annual_population = request.data.get('annual_population')
+        intake_population = request.data.get('intake_population')
+        offtake_population = request.data.get('offtake_population')
+        # get survey_method
+        survey_method = get_object_or_404(
+            SurveyMethod, id=annual_population.get('survey_method_id', 0)
+        )
+        # get count_method
+        count_method = get_object_or_404(
+            CountMethod, id=annual_population.get('count_method_id', 0)
+        )
+        # get sampling_size_unit
+        sampling_size_unit = get_object_or_404(
+            SamplingSizeUnit,
+            id=annual_population.get('sampling_size_unit_id', 0)
+        )
+        # get open_close_system
+        open_close_system = get_object_or_404(
+            OpenCloseSystem,
+            id=annual_population.get('open_close_id')
+        )
+        # get intake activity
+        intake_activity = get_object_or_404(
+            ActivityType, id=intake_population.get('activity_type_id', 0)
+        )
+        # get offtake activity
+        offtake_activity = get_object_or_404(
+            ActivityType, id=offtake_population.get('activity_type_id', 0)
+        )
+        # TODO: check for NatureOfPopulation and ManagementStatus
+        management_status = ManagementStatus.objects.all().first()
+        nature_of_population = NatureOfPopulation.objects.all().first()
+        # area_available_to_species
+        area_available_to_species = annual_population.get(
+            'area_available_to_species', 0
+        )
+        # get or create owned species
+        owned_species, is_new = OwnedSpecies.objects.get_or_create(
+            taxon=taxon,
+            property=property,
+            defaults={
+                'management_status': management_status,
+                'nature_of_population': nature_of_population,
+                'user': self.request.user,
+                'area_available_to_species': area_available_to_species
+            }
+        )
+        if not is_new:
+            owned_species.area_available_to_species = (
+                area_available_to_species
+            )
+            owned_species.save()
+        # add annual population
+        AnnualPopulation.objects.create(
+            year=year,
+            owned_species=owned_species,
+            month=month,
+            total=annual_population.get('total'),
+            adult_male=annual_population.get('adult_male', 0),
+            adult_female=annual_population.get('adult_female', 0),
+            juvenile_male=annual_population.get('juvenile_male', 0),
+            juvenile_female=annual_population.get('juvenile_female', 0),
+            area_covered=annual_population.get('area_covered', 0),
+            sampling_effort=annual_population.get('sampling_effort', 0),
+            group=annual_population.get('group', 0),
+            note=annual_population.get('note', None),
+            survey_method=survey_method,
+            count_method=count_method,
+            sampling_size_unit=sampling_size_unit,
+            open_close_system=open_close_system,
+            sub_adult_male=annual_population.get('sub_adult_male', 0),
+            sub_adult_female=annual_population.get('sub_adult_female', 0),
+            sub_adult_total=(
+                annual_population.get('sub_adult_male', 0) +
+                annual_population.get('sub_adult_female', 0)
+            ),
+            juvenile_total=(
+                annual_population.get('juvenile_male', 0) +
+                annual_population.get('juvenile_female', 0)
+            )
+        )
+        # add annual population per activity - intake
+        AnnualPopulationPerActivity.objects.create(
+            year=year,
+            owned_species=owned_species,
+            activity_type=intake_activity,
+            month=month,
+            total=intake_population.get('total'),
+            adult_male=intake_population.get('adult_male', 0),
+            adult_female=intake_population.get('adult_female', 0),
+            juvenile_male=intake_population.get('juvenile_male', 0),
+            juvenile_female=intake_population.get('juvenile_female', 0),
+            founder_population=intake_population.get(
+                'founder_population',
+                None
+            ),
+            reintroduction_source=intake_population.get(
+                'reintroduction_source',
+                None
+            ),
+            permit_number=intake_population.get('permit_number', None)
+        )
+        # add annual population per activity - offtake
+        AnnualPopulationPerActivity.objects.create(
+            year=year,
+            owned_species=owned_species,
+            activity_type=offtake_activity,
+            month=month,
+            total=offtake_population.get('total'),
+            adult_male=offtake_population.get('adult_male', 0),
+            adult_female=offtake_population.get('adult_female', 0),
+            juvenile_male=offtake_population.get('juvenile_male', 0),
+            juvenile_female=offtake_population.get('juvenile_female', 0),
+            permit_number=offtake_population.get('permit_number', None)
+        )
+        # TODO: missing field translocation_destination
         return Response(status=204)
