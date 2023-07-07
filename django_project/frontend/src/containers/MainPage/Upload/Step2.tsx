@@ -86,7 +86,15 @@ export default function Step2(props: Step2Interface) {
                 <Grid container flexDirection={'column'} className='SelectedParcelContainerParent'>
                     <Grid item className='SelectedParcelContainer'>
                         <SelectedParcelTable parcels={selectedParcels}
-                            onRemoveParcel={(parcel: ParcelInterface) => dispatch(toggleParcelSelectedState(parcel))}
+                            onRemoveParcel={(parcel: ParcelInterface) => {
+                                dispatch(toggleParcelSelectedState(parcel))
+                                dispatch(triggerMapEvent({
+                                    'id': uuidv4(),
+                                    'name': 'HIGHLIGHT_SELECTED_PARCEL',
+                                    'date': Date.now(),
+                                    'payload': []
+                                }))                                
+                            }}
                             onParcelHovered={(parcel: ParcelInterface) => {
                                 if (parcel) {
                                     dispatch(triggerMapEvent({
