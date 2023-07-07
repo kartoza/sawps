@@ -153,7 +153,7 @@ function FormWizard(props: FormWizardInterface) {
             console.log('error ', error)
             setFeedbackAlertDialog(AlertType.error)
             let _error = 'There is an error while saving the data!'
-            if (error.response && 'detail' in error.response.data) {
+            if (error.response && error.response.status >= 400 && error.response.status < 500 && 'detail' in error.response.data) {
                 _error = error.response.data['detail']
             }
             setFeedbackAlertDesc(_error)
@@ -205,8 +205,11 @@ function FormWizard(props: FormWizardInterface) {
             <Grid item>
                 <FeedbackAlertDialog type={feedbackAlertDialog} alertDialogTitle='Upload Species Data'
                     alertDialogDescription={feedbackAlertDesc} alertClosed={() => {
-                        setFeedbackAlertDialog(AlertType.none)
-                        window.location.replace(window.location.origin + '/map/?tab=1')
+                        if (feedbackAlertDialog === AlertType.success) {
+                            window.location.replace(window.location.origin + '/map/?tab=1')
+                        } else {
+                            setFeedbackAlertDialog(AlertType.none)
+                        }
                     }} />
             </Grid>
         </Grid>

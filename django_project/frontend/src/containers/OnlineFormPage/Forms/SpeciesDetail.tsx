@@ -254,7 +254,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 aria-required
                                                 className='RadioGroup'
                                                 value={data.annual_population.present}
-                                                onChange={(e) => updateAnnualPopulation('present', e.target.value)}
+                                                onChange={(e) => updateAnnualPopulation('present', e.target.value === 'true')}
                                             >
                                                 <FormControlLabel value={true} control={<Radio size='small' />} label="Yes" />
                                                 <FormControlLabel value={false} control={<Radio size='small' />} label="No" />
@@ -500,7 +500,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                 </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='group' label='Number of groups (prides, herds, etc.)' value={data.annual_population.group}
+                                <TextField id='group' label='Number of groups (prides, herds, etc.)' value={data.annual_population.group ? data.annual_population.group : ''}
+                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                     variant='standard'
                                     onChange={(e) => updateAnnualPopulation('group', parseInt(e.target.value)) } fullWidth
                                     helperText=" " />

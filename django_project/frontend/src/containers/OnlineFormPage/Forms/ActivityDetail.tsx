@@ -330,7 +330,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                                                 aria-required
                                                 className='RadioGroup'
                                                 value={data.intake_population.founder_population}
-                                                onChange={(e) => updateIntakePopulation('founder_population', e.target.value)}
+                                                onChange={(e) => updateIntakePopulation('founder_population', e.target.value === 'true')}
                                             >
                                                 <FormControlLabel value={true} control={<Radio size='small' />} label="Yes" />
                                                 <FormControlLabel value={false} control={<Radio size='small' />} label="No" />
