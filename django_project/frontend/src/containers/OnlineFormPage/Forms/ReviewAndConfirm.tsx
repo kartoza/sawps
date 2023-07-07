@@ -50,40 +50,40 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                         <Grid container flexDirection={'column'} rowSpacing={1}>
                             <Grid item className='InputContainer'>
                                 <TextField id='scientific-name' label='Scientific Name' defaultValue={displayText(data.taxon_name)}
-                                    variant='standard' disabled fullWidth helperText=" " />
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='common-name' label='Common Name' defaultValue={displayText(data.common_name)}
-                                    variant='standard' disabled fullWidth helperText=" " />
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
                                         <TextField id='scientific-name' label='Month and Year of Count' defaultValue={`${moment({month: data.month - 1, year: data.year}).format('MMMM YYYY')}`}
-                                            variant='standard' disabled fullWidth helperText=" " />
+                                            variant='standard' disabled fullWidth />
                                     </Grid>
                                     <Grid item xs={6}>
                                         <TextField id='present' label='Species Present on Property' defaultValue={displayBoolean(data.annual_population.present)}
-                                            variant='standard' disabled fullWidth helperText=" " />
+                                            variant='standard' disabled fullWidth />
                                     </Grid>
                                 </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='open-close-system' label='Open/Closed System' defaultValue={displayText(data.annual_population.open_close_name)}
-                                    variant='standard' disabled fullWidth helperText=" " />
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='survey-method' label='Survey Method' defaultValue={displayText(data.annual_population.survey_method_name)}
-                                    variant='standard' disabled fullWidth helperText=" " />
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='area_covered' required label='Sampled Area' defaultValue={displayNumber(data.annual_population.area_covered)}
                                     variant='standard' type='number'
-                                    disabled fullWidth helperText=" " />
+                                    disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='sampling_note' label='Sampling Notes' defaultValue={displayText(data.annual_population.note)}
-                                    variant='standard' disabled fullWidth helperText=" " />
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -106,7 +106,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             fullWidth
                                             defaultValue={displayNumber(data.annual_population.adult_male)}
                                             disabled
-                                            helperText=" "
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -123,8 +122,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             variant="standard"
                                             fullWidth
                                             defaultValue={displayNumber(data.annual_population.adult_female)}
-                                            disabled
-                                            helperText=" "
+                                            disabled  
                                         />
                                     </Grid>
                                 </Grid>
@@ -146,7 +144,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             fullWidth
                                             defaultValue={displayNumber(data.annual_population.sub_adult_male)}
                                             disabled
-                                            helperText=" "
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -164,7 +161,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             fullWidth
                                             defaultValue={displayNumber(data.annual_population.sub_adult_female)}
                                             disabled
-                                            helperText=" "
                                         />
                                     </Grid>
                                 </Grid>
@@ -186,7 +182,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             fullWidth
                                             defaultValue={displayNumber(data.annual_population.juvenile_male)}
                                             disabled
-                                            helperText=" "
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -204,7 +199,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             fullWidth
                                             defaultValue={displayNumber(data.annual_population.juvenile_female)}
                                             disabled
-                                            helperText=" "
                                         />
                                     </Grid>
                                 </Grid>
@@ -218,8 +212,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             disabled
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={displayNumber(data.annual_population.total)}
-                                            helperText=" "
+                                            defaultValue={displayNumber(data.annual_population.total)}                                            
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -230,18 +223,17 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             variant="standard"
                                             defaultValue={displayText(data.annual_population.area_available_to_species ? `${data.annual_population.area_available_to_species} Ha` : '0 Ha')}
                                             disabled
-                                            helperText=" "
                                         />
                                     </Grid>
                                 </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='group' label='Number of groups (prides, herds, etc.)' defaultValue={displayNumber(data.annual_population.group)}
-                                    variant='standard' disabled fullWidth helperText=" " />
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='count_method' label='Count Method' defaultValue={displayText(data.annual_population.count_method_name)}
-                                    variant='standard' disabled fullWidth helperText=" " />
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
@@ -255,12 +247,11 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             fullWidth
                                             defaultValue={displayNumber(data.annual_population.sampling_effort)}
                                             disabled
-                                            helperText=' '
                                         />
                                     </Grid>
                                     <Grid item xs={8}>
                                         <TextField id='sampling_unit' label='Sampling Unit' defaultValue={displayText(data.annual_population.sampling_size_unit_name)}
-                                            variant='standard' disabled fullWidth helperText=" " />
+                                            variant='standard' disabled fullWidth />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -299,8 +290,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             variant="standard"
                                             fullWidth
                                             disabled
-                                            defaultValue={displayNumber(data.intake_population.adult_male)}
-                                            helperText=" "
+                                            defaultValue={displayNumber(data.intake_population.adult_male)}                                            
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -317,8 +307,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             variant="standard"
                                             fullWidth
                                             disabled
-                                            defaultValue={displayNumber(data.intake_population.adult_female)}
-                                            helperText=" "
+                                            defaultValue={displayNumber(data.intake_population.adult_female)}                                            
                                         />
                                     </Grid>
                                 </Grid>
@@ -339,8 +328,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             variant="standard"
                                             fullWidth
                                             disabled
-                                            defaultValue={displayNumber(data.intake_population.juvenile_male)}
-                                            helperText=" "
+                                            defaultValue={displayNumber(data.intake_population.juvenile_male)}                                            
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -357,8 +345,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             variant="standard"
                                             fullWidth
                                             disabled
-                                            defaultValue={displayNumber(data.intake_population.juvenile_female)}
-                                            helperText=" "
+                                            defaultValue={displayNumber(data.intake_population.juvenile_female)}                                            
                                         />
                                     </Grid>
                                 </Grid>
@@ -372,8 +359,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             disabled
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={displayNumber(data.intake_population.total)}
-                                            helperText=" "
+                                            defaultValue={displayNumber(data.intake_population.total)}                                            
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -384,8 +370,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             required
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={displayBoolean(data.intake_population.founder_population)}
-                                            helperText=" "
+                                            defaultValue={displayBoolean(data.intake_population.founder_population)}                                            
                                         />
                                     </Grid>
                                 </Grid>
@@ -398,21 +383,20 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                     required
                                     variant="standard"
                                     fullWidth
-                                    defaultValue={displayText(data.intake_population.activity_type_name)}
-                                    helperText=" "
+                                    defaultValue={displayText(data.intake_population.activity_type_name)}                                    
                                 />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='intake_source' label='Source' required defaultValue={displayText(data.intake_population.reintroduction_source)}
-                                    variant='standard' fullWidth disabled helperText=" " />
+                                    variant='standard' fullWidth disabled />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='intake_permit' label='Permit Number' defaultValue={displayText(data.intake_population.permit ? data.intake_population.permit.toString() : '')}
-                                    variant='standard' fullWidth disabled helperText=" " />
+                                    variant='standard' fullWidth disabled />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='intake_note' label='Notes' defaultValue={displayText(data.intake_population.note)}
-                                    variant='standard' fullWidth disabled helperText=" " />
+                                    variant='standard' fullWidth disabled />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -436,7 +420,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             }}
                                             variant="standard"
                                             fullWidth disabled
-                                            defaultValue={displayNumber(data.offtake_population.adult_male)} helperText=" "
+                                            defaultValue={displayNumber(data.offtake_population.adult_male)} 
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -452,7 +436,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             }}
                                             variant="standard"
                                             fullWidth disabled
-                                            defaultValue={displayNumber(data.offtake_population.adult_female)} helperText=" "
+                                            defaultValue={displayNumber(data.offtake_population.adult_female)} 
                                         />
                                     </Grid>
                                 </Grid>
@@ -472,7 +456,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             }}
                                             variant="standard"
                                             fullWidth disabled
-                                            defaultValue={displayNumber(data.offtake_population.juvenile_male)} helperText=" "
+                                            defaultValue={displayNumber(data.offtake_population.juvenile_male)} 
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -488,7 +472,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             }}
                                             variant="standard"
                                             fullWidth disabled
-                                            defaultValue={displayNumber(data.offtake_population.juvenile_female)} helperText=" "
+                                            defaultValue={displayNumber(data.offtake_population.juvenile_female)} 
                                         />
                                     </Grid>
                                 </Grid>
@@ -502,8 +486,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                             disabled
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={displayNumber(data.offtake_population.total)}
-                                            helperText=" "
+                                            defaultValue={displayNumber(data.offtake_population.total)}                                            
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -517,24 +500,23 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                     disabled
                                     variant="standard"
                                     fullWidth
-                                    defaultValue={displayText(data.offtake_population.activity_type_name)}
-                                    helperText=" "
+                                    defaultValue={displayText(data.offtake_population.activity_type_name)}                                    
                                 />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='offtake_translocation_destination' label='Translocation Destination' required defaultValue={displayText(data.offtake_population.translocation_destination)}
                                     variant='standard' disabled fullWidth
-                                    helperText=" " />
+                                    />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='offtake_permit' label='Permit Number' defaultValue={displayText(data.offtake_population.permit ? data.offtake_population.permit.toString() : '')}
                                     variant='standard' disabled fullWidth
-                                    helperText=" " />
+                                    />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='offtake_note' label='Notes' defaultValue={displayText(data.offtake_population.note)}
                                     variant='standard' disabled fullWidth
-                                    helperText=" " />
+                                    />
                             </Grid>
                         </Grid>
                     </Grid>

@@ -33,13 +33,18 @@ import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
 const DUMMY_TAXONS: TaxonMetadata[] = [
     {
         'id': 1,
-        'common_name_varbatim': 'Lion',
-        'scientific_name': 'Lion'
+        'common_name_varbatim': 'Cheetah',
+        'scientific_name': 'Acinonyx jubatus'
     },
     {
         'id': 2,
-        'common_name_varbatim': 'Cat',
-        'scientific_name': 'Cat'
+        'common_name_varbatim': 'Leopard',
+        'scientific_name': 'Panthera pardus'
+    },
+    {
+        'id': 3,
+        'common_name_varbatim': 'Elephant',
+        'scientific_name': 'Loxodonta africana'
     }
 ]
 
@@ -66,6 +71,14 @@ const DUMMY_COUNT_METHODS: CommonUploadMetadata[] = [
     {
         'id': 2,
         'name': 'Distance Sampling'
+    },
+    {
+        'id': 3,
+        'name': 'Line Sampling'
+    },
+    {
+        'id': 4,
+        'name': 'Mark Recapture'
     }
 ]
 
@@ -76,6 +89,18 @@ const DUMMY_SURVEY_METHODS: CommonUploadMetadata[] = [
     },
     {
         'id': 2,
+        'name': 'Transect survey - foot'
+    },
+    {
+        'id': 3,
+        'name': 'Transect survey - aerial'
+    },
+    {
+        'id': 4,
+        'name': 'Transect survey - drive'
+    },
+    {
+        'id': 99,
         'name': 'Unknown'
     }
 ]
@@ -83,11 +108,23 @@ const DUMMY_SURVEY_METHODS: CommonUploadMetadata[] = [
 const SAMPLING_SIZE_UNITS: CommonUploadMetadata[] = [
     {
         'id': 1,
-        'name': 'Unit 1'
+        'name': 'Minutes'
     },
     {
         'id': 2,
-        'name': 'Unit 2'
+        'name': 'Hours'
+    },
+    {
+        'id': 3,
+        'name': 'Days'
+    },
+    {
+        'id': 4,
+        'name': 'Weeks'
+    },
+    {
+        'id': 5,
+        'name': 'Months'
     }
 ]
 
@@ -368,10 +405,21 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                 </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='area_covered' required label='Sampled Area' value={data.annual_population.area_covered}
-                                    variant='standard' type='number'
-                                    onChange={(e) => updateAnnualPopulation('area_covered', parseFloat(e.target.value)) } fullWidth
-                                    helperText=" " />
+                                <Grid container flexDirection={'row'} spacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField id='area_covered' required label='Sampled Area' value={data.annual_population.area_covered}
+                                            variant='standard' type='number'
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        ha
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            onChange={(e) => updateAnnualPopulation('area_covered', parseFloat(e.target.value)) } fullWidth
+                                            helperText=" " />
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='sampling_note' label='Sampling Notes' value={data.annual_population.note}
@@ -531,15 +579,15 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             InputProps={{
                                                 endAdornment: (
                                                     <InputAdornment position="end">
-                                                        Ha
+                                                        ha
                                                     </InputAdornment>
                                                 ),
                                             }}
-                                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                            type='number'
                                             variant="standard"
                                             fullWidth
                                             value={data.annual_population.area_available_to_species}
-                                            onChange={(e) => updateAnnualPopulation('area_available_to_species', parseInt(e.target.value))}
+                                            onChange={(e) => updateAnnualPopulation('area_available_to_species', parseFloat(e.target.value))}
                                             helperText=" "
                                         />
                                     </Grid>

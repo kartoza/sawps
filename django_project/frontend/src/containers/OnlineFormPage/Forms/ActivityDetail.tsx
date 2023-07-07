@@ -50,11 +50,23 @@ const DUMMY_INTAKE_EVENTS: CommonUploadMetadata[] = [
 const DUMMY_OFFTAKE_EVENTS: CommonUploadMetadata[] = [
     {
         'id': 1,
-        'name': 'Offtake Event 1'
+        'name': 'Planned translocation'
     },
     {
         'id': 2,
-        'name': 'Offtake Event 2'
+        'name': 'Planned hunt/cull'
+    },
+    {
+        'id': 3,
+        'name': 'Unplanned/natural deaths'
+    },
+    {
+        'id': 4,
+        'name': 'Planned euthanasia'
+    },
+    {
+        'id': 5,
+        'name': 'Unplanned/illegal hunting'
     }
 ]
 

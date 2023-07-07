@@ -131,7 +131,7 @@ function FormWizard(props: FormWizardInterface) {
         setTimeout(() => {
             setLoading(false)
             setFeedbackAlertDialog(AlertType.success)
-            setFeedbackAlertDesc('Your species data has been successfully saved!')
+            setFeedbackAlertDesc('Your data has been successfully saved!')
         }, 2000)
     }
 
