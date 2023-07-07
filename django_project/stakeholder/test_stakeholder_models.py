@@ -1,7 +1,10 @@
 from django.test import TestCase
+from regulatory_permit.models import DataUsePermission
 from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation, OrganisationUser, OrganisationRepresentative, UserLogin
 from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userLoginFactory, userProfileFactory, organisationFactory, organisationUserFactory, organisationRepresentativeFactory
 from django.contrib.auth.models import User
+from django.test import TestCase
+from .models import OrganisationInvites
 
 
 class TestUserRoleType(TestCase):
@@ -220,3 +223,35 @@ class OrganizationRepresentativeTestCase(TestCase):
         """Test deleting organisation representative."""
         self.organizationRep.delete()
         self.assertEqual(OrganisationRepresentative.objects.count(), 0)
+
+
+
+class OrganisationInvitesModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.data_use_permission = DataUsePermission.objects.create(name="test")
+        self.organisation = Organisation.objects.create(name="test_organisation", data_use_permission = self.data_use_permission)
+        self.organisation_user = OrganisationUser.objects.create(organisation=self.organisation ,user=self.user)
+
+    def test_create_organisation_invite(self):
+        invite = OrganisationInvites.objects.create(organisation=self.organisation, user=self.user)
+        self.assertEqual(invite.organisation, self.organisation)
+        self.assertEqual(invite.user, self.user)
+
+    def test_read_organisation_invite(self):
+        invite = OrganisationInvites.objects.create(organisation=self.organisation, user=self.user)
+        saved_invite = OrganisationInvites.objects.get(pk=invite.pk)
+        self.assertEqual(saved_invite.organisation, self.organisation)
+        self.assertEqual(saved_invite.user, self.user)
+
+    def test_update_organisation_invite(self):
+        invite = OrganisationInvites.objects.create(organisation=self.organisation, user=self.user)
+        invite.organisation = self.organisation
+        invite.save()
+        updated_invite = OrganisationInvites.objects.get(pk=invite.pk)
+        self.assertEqual(updated_invite.organisation, self.organisation)
+
+    def test_delete_organisation_invite(self):
+        invite = OrganisationInvites.objects.create(organisation=self.organisation, user=self.user)
+        invite.delete()
+        self.assertFalse(OrganisationInvites.objects.filter(pk=invite.pk).exists())
