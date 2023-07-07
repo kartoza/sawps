@@ -3,7 +3,7 @@ html, body {
 }
 
 .fs-background {
-  height: calc(100% - 214px); 
+  height: calc(100% - 98px); 
 }
 
 .full-height {
@@ -74,7 +74,23 @@ body {
     color: #000000;
     background-color: #FAA755;
     border-color: #FAA755;
-}
+  }
+
+  .clickable {
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .clickable::after {
+    content: '\f0d7'; /* Unicode for the click icon, adjust as needed */
+    font-family: 'Font Awesome'; /* Assuming you have Font Awesome included */
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+
 
 .account-action {
   position: relative;
@@ -259,12 +275,6 @@ hr.default-separator{
   padding: 3px 20px !important;
 }
 
-.sawps-font-button-black{
-  color: #000000 !important;
-  text-transform: uppercase;
-  padding: 3px 20px !important;
-}
-
 .green-button{
   background-color: var(--green);
   border: 2px solid var(--green);
@@ -309,199 +319,3 @@ hr.default-separator{
   text-align: center;
 }
 
-/* Help page */
-
-.help-container{
-  display: flex;
-  width: 100vw;
-}
-
-.help-content-container{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  background-color: var(--black);
-}
-
-.help-banner-img{
-  position: relative;
-  background: url('/static/images/help/help_page_banner.png');
-  background-size: contain;
-}
-
-.help-btns-container{
-  display: flex;
-}
-
-.help-content-title{
-  color:var(--white)
-}
-
-.help-text{
-  color:var(--white)
-}
-
-.help-btns-container{
-  display: flex;
-  margin-top: 15px;
-}
-
-
-@media screen and (min-width:801px){
-  .help-content-container{
-      flex-direction: row;
-  }
-
-  .help-image-container{
-      width:100%;
-      flex-basis:50%;
-      height:100%;
-  }
-
-  .help-banner-img{
-      width: 100%;
-      height: 100%;
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-  }
-
-  .help-texts-container{
-      display: flex;
-      flex-basis: 50%;
-      flex-direction: column;
-      justify-content: center;
-
-  }
-
-  .help-content-title{
-      width:100%;
-      font-size: 35px;
-  }
-
-  .help-text-container{
-      width:100%;
-      display: flex;
-  }
-
-  .help-text{
-      width:80%;
-      text-align: justify;
-  }
-
-}
-
-
-@media screen and (min-width:500px) and (max-width: 800px) {
-  .help-content-container{
-      flex-direction: column;
-  }
-
-  .help-image-container{
-      width:100%;
-      flex-basis:75%;
-      height:500px;
-  }
-
-  .help-banner-img{
-      width: 100%;
-      height: 100%;
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-  }
-
-  .help-content-title{
-      width:100%;
-      font-size: 25px;
-  }
-
-  .help-text-container{
-      width:100%;
-      display: flex;
-  }
-
-  .help-text{
-      width:80%;
-      text-align: justify;
-  }
-
-}
-
-/* Footer */
-.footer{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  background-color: var(--black);
-}
-
-.footer-logo{
-  width: 229px;
-  height:76px;
-}
-
-.footer-nav{
-  margin-top:20px;
-}
-
-.footer-nav a{
-  margin-right:10px;
-  font-size:16px;
-  font-family: 'Inter', sans-serif;
-  text-decoration: none;
-  color:var(--white);
-}
-.footer-nav a:hover{
-  color:#444;
-  transition: 0.2s;
-}
-
-.vendors-logos-container{
-  margin-top:15px;
-}
-
-.ids-logo{
-  width:50px;
-  height:41px;
-  margin-right:15px;
-}
-
-.kartoza-white-logo{
-  width:117px;
-  height:38px;
-}
-
-
-@media screen and (min-width:500px) and (max-width:799px) {
-  .footer{
-      flex-direction: column;
-  }
-
-  .footer-nav{
-      display: grid;
-      grid-template-columns: repeat(1, 1fr);
-  }
-
-  .vendors-logos-container{
-      margin-top:15px;
-  }
-}
-
-
-@media screen and (min-width:300px) and (max-width:499px) {
-  .footer{
-      flex-direction: column;
-  }
-
-  .footer-nav{
-      display: grid;
-      grid-template-columns: repeat(1, 1fr);
-  }
-
-  .vendors-logos-container{
-      margin-top:10px;
-  }
-}
