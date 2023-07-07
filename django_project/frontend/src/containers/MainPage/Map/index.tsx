@@ -34,7 +34,11 @@ import {
   searchProperty,
   getSelectParcelLayerNames,
   MIN_SELECT_PARCEL_ZOOM_LEVEL,
-  MIN_SELECT_PROPERTY_ZOOM_LEVEL
+  MIN_SELECT_PROPERTY_ZOOM_LEVEL,
+  findAreaLayers,
+  isContextLayerSelected,
+  getMapPopupDescription,
+  addParcelInvisibleFillLayers
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -111,6 +115,7 @@ export default function Map() {
     map.current.getCanvas().style.cursor = '';
   }
 
+  /* Map Draw (Digitise) Mode  */
   const getBoundaryDigitiseStatus = (session: string) => {
     axios.get(`${UPLOAD_FILE_URL}${session}/status/`).then((response) => {
         if (response.data) {
@@ -242,11 +247,14 @@ export default function Map() {
       }]
     })
   }
+  /* End of Map Draw (Digitise) Mode  */
 
+  /* Listen to theme change event */
   useEffect(() => {
     dispatch(setInitialMapTheme(isDarkTheme ? MapTheme.Dark : MapTheme.Light))
   }, [isDarkTheme])
 
+  /* Listen to context layers change (isSelected) */
   useEffect(() => {
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
@@ -308,6 +316,7 @@ export default function Map() {
     }
   }, [selectionMode])
 
+  /* Called when mapTheme is changed */
   useEffect(() => {
     if (mapTheme === MapTheme.None) return;
     if (map.current) {
@@ -339,6 +348,7 @@ export default function Map() {
       })
       map.current.on('styledata', () => {
         dispatch(setMapReady(true))
+        addParcelInvisibleFillLayers(map.current)
       })
     }
   }, [mapTheme]);
@@ -360,19 +370,47 @@ export default function Map() {
         }
       })
     } else if (selectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
-      // perhaps skip search if not in the properties zoom?
-      if (_mapZoom < MIN_SELECT_PROPERTY_ZOOM_LEVEL) return;
-      // find parcel
-      searchProperty(e.lngLat, (property: PropertyInterface) => {
-        if (property) {
-          dispatch(setSelectedProperty(property))
+      // find layers for searching
+      const _layers = map.current.getStyle().layers
+      let _areaSourceLayers = findAreaLayers(contextLayers)
+      if (_mapZoom >= MIN_SELECT_PROPERTY_ZOOM_LEVEL && isContextLayerSelected(contextLayers, 'properties')) {
+        // skip search if not in the properties layer minZoom
+        _areaSourceLayers.push('properties')
+      }
+      const _parcelLayer = findParcelLayer(contextLayers)
+      let _fillParcelLayers:string[] = []
+      if (_mapZoom >= MIN_SELECT_PARCEL_ZOOM_LEVEL && _parcelLayer && _parcelLayer.isSelected) {
+        // need to use invisible parcel layers
+        _fillParcelLayers = _parcelLayer.layer_names.map((layer_name) => layer_name !== 'parent_farm' ? `${layer_name}-invisible-fill` : '').filter((layer_name) => layer_name.length > 0)
+      }
+      let _searchLayers = _layers.filter((layer:any) => _areaSourceLayers.includes(layer['source-layer']) || _fillParcelLayers.includes(layer['id']) ).map((layer:any) => layer.id)
+      let features = map.current.queryRenderedFeatures(e.point, { layers: _searchLayers })
+      if (features.length) {
+        const _resultLayers = features.map((e:any) => e.layer.id)
+        // display popup
+        let _description = getMapPopupDescription(features)
+        if (_description) {
+          new maplibregl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(_description)
+            .addTo(map.current)
+        }
+        if (_resultLayers.includes('properties')) {
+          searchProperty(e.lngLat, (property: PropertyInterface) => {
+            if (property) {
+              dispatch(setSelectedProperty(property))
+            } else {
+              dispatch(resetSelectedProperty())
+            }
+          })
         } else {
           dispatch(resetSelectedProperty())
         }
-      })
+      }
     }
   }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
+  /* OnClick event */
   useEffect(() => {
     if (!map.current) return;
     map.current.on('click', mapOnClick)
@@ -381,7 +419,7 @@ export default function Map() {
     }
   }, [contextLayers, selectionMode, uploadMode, selectedProperty])
 
-  // render selected+unselected parcel
+  /* render selected+unselected parcel */
   useEffect(() => {
     let _mapObj: maplibregl.Map = map.current
     let _has_removed = false
@@ -402,6 +440,7 @@ export default function Map() {
     }
   }, [selectedParcels])
 
+  /* Render/Respond to mapEvents */
   useEffect(() => {
     if (mapEvents.length === 0) return
     let _mapObj: maplibregl.Map = map.current
@@ -464,6 +503,7 @@ export default function Map() {
     dispatch(onMapEventProcessed([...mapEvents]))
   }, [mapEvents])
 
+  /* Check Digitise Boundary Processing status every 3s */
   useEffect(() => {
     if (savingBoundaryDigitise && boundaryDigitiseSession) {
         const interval = setInterval(() => {
