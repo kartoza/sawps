@@ -43,7 +43,6 @@ class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,Te
         else:
             return super().dispatch(request, *args, **kwargs)
         
-    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
     def get_organisation_users(self):
         organisation_user_list = OrganisationUser.objects.filter(organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
