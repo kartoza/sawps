@@ -1,4 +1,5 @@
 """API Views related to uploading population data."""
+from datetime import datetime
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
@@ -30,6 +31,9 @@ from population_data.serializers import (
 from species.models import (
     OwnedSpecies,
     ManagementStatus
+)
+from frontend.models.upload import (
+    DraftSpeciesUpload
 )
 
 
@@ -247,4 +251,87 @@ class UploadPopulationAPIVIew(APIView):
             permit_number=offtake_population.get('permit_number', None)
         )
         # TODO: missing field translocation_destination
+        # if draft exists, then delete it
+        draft_uuid = request.GET.get('uuid', None)
+        if draft_uuid:
+            DraftSpeciesUpload.objects.filter(
+                uuid=draft_uuid
+            ).delete()
         return Response(status=204)
+
+
+class FetchDraftPopulationUpload(APIView):
+    """API to fetch draft upload."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        draft_uuid = kwargs.get('draft_uuid')
+        draft_upload = get_object_or_404(
+            DraftSpeciesUpload,
+            uuid=draft_uuid
+        )
+        return Response(status=200, data={
+            'last_step': draft_upload.last_step,
+            'form_data': draft_upload.form_data
+        })
+
+    def delete(self, request, *args, **kwargs):
+        draft_uuid = kwargs.get('draft_uuid')
+        draft_upload = DraftSpeciesUpload.objects.filter(
+            uuid=draft_uuid
+        ).first()
+        if draft_upload:
+            draft_upload.delete()
+        return Response(status=204)
+
+
+class DraftPopulationUpload(APIView):
+    """API to fetch draft list and save as draft."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        property_id = kwargs.get('property_id')
+        property = get_object_or_404(
+            Property, id=property_id
+        )
+        drafts = DraftSpeciesUpload.objects.filter(
+            property=property
+        ).order_by('-upload_date').values_list('uuid', flat=True)
+        return Response(status=200, data=drafts)
+
+    def post(self, request, *args, **kwargs):
+        property_id = kwargs.get('property_id')
+        property = get_object_or_404(
+            Property, id=property_id
+        )
+        draft_uuid = request.GET.get('uuid', None)
+        draft_time = datetime.now()
+        draft_name = request.data.get('name', None)
+        if draft_name is None:
+            draft_name = (
+                f'{property.name}_{draft_time.strftime("%d_%m_%y")}'
+            )
+        draft: DraftSpeciesUpload
+        if draft_uuid:
+            draft = get_object_or_404(
+                DraftSpeciesUpload,
+                uuid=draft_uuid
+            )
+        else:
+            draft = DraftSpeciesUpload.objects.create(
+                property=property,
+                name=draft_name,
+                upload_by=request.user,
+                upload_date=draft_time
+            )
+        draft.last_step = request.data.get('last_step')
+        draft.form_data = request.data.get('form_data')
+        taxon_id = draft.form_data.get('taxon_id', None)
+        if taxon_id:
+            draft.taxon = get_object_or_404(Taxon, id=taxon_id)
+        draft.year = draft.form_data.get('year', None)
+        draft.upload_date = datetime.now()
+        draft.save()
+        return Response(status=201, data={
+            'uuid': str(draft.uuid)
+        })

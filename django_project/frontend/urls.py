@@ -49,7 +49,9 @@ from frontend.api_views.upload import (
 )
 from frontend.api_views.population import (
     PopulationMetadataList,
-    UploadPopulationAPIVIew
+    UploadPopulationAPIVIew,
+    FetchDraftPopulationUpload,
+    DraftPopulationUpload
 )
 
 urlpatterns = [
@@ -154,6 +156,16 @@ urlpatterns = [
         r'^api/upload/population/(?P<property_id>\d+)/?$',
         UploadPopulationAPIVIew.as_view(),
         name='population-upload'
+    ),
+    path(
+        'api/upload/population/draft/<uuid:draft_uuid>/',
+        FetchDraftPopulationUpload.as_view(),
+        name='fetch-draft-upload-species'
+    ),
+    path(
+        'api/upload/population/draft/<int:property_id>/',
+        DraftPopulationUpload.as_view(),
+        name='draft-upload-species'
     ),
     path(
         'switch-organisation/<int:organisation_id>/',

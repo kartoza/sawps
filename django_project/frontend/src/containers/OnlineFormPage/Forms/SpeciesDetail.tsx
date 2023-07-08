@@ -38,13 +38,14 @@ interface SpeciesDetailInterface {
     samplingUnitMetadataList: CommonUploadMetadata[];
     setIsDirty: (isDirty: boolean) => void;
     handleNext: (data: UploadSpeciesDetailInterface) => void;
+    handleSaveDraft: (data: UploadSpeciesDetailInterface) => void;
 }
 
 export default function SpeciesDetail(props: SpeciesDetailInterface) {
     const { 
         initialData, taxonMetadataList, openCloseMetadataList,
         countMethodMetadataList, surveyMethodMetadataList, samplingUnitMetadataList,
-        setIsDirty, handleNext
+        setIsDirty, handleNext, handleSaveDraft
     } = props
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
     const [validation, setValidation] = useState<UploadSpeciesDetailValidation>({})
@@ -573,12 +574,19 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item container flexDirection={'row'} justifyContent={'flex-end'}>
-                <Button variant='contained' onClick={() => {
-                    if (validateSpeciesDetail()) {
-                        handleNext(data)
-                    }
-                }}>NEXT</Button>
+            <Grid item container flexDirection={'row'} justifyContent={'space-between'}>
+                <Grid item>
+                    <Button variant='outlined' onClick={() => {
+                        handleSaveDraft(data)
+                    }}>SAVE DRAFT</Button>
+                </Grid>
+                <Grid item>
+                    <Button variant='contained' onClick={() => {
+                        if (validateSpeciesDetail()) {
+                            handleNext(data)
+                        }
+                    }}>NEXT</Button>
+                </Grid>
             </Grid>
         </Grid>
     )

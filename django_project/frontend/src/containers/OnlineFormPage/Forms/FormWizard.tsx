@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import axios from "axios";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Stepper from '@mui/material/Stepper';
@@ -13,6 +14,7 @@ import ActivityDetail from './ActivityDetail';
 import ReviewAndConfirm from './ReviewAndConfirm';
 import ConfirmationAlertDialog from '../../../components/ConfirmationAlertDialog';
 import FeedbackAlertDialog, {AlertType} from '../../../components/FeedbackAlertDialog';
+import AlertMessage from '../../../components/AlertMessage';
 import { TaxonMetadata, CommonUploadMetadata } from '../../../models/Upload';
 import {postData} from "../../../utils/Requests";
 
@@ -29,14 +31,15 @@ export interface FormMetadata {
 interface FormWizardInterface {
     propertyItem: PropertyInterface;
     metadata: FormMetadata;
+    draftUUID?: string;
 }
 
 const steps = ['SPECIES DETAIL', 'ACTIVITY DETAIL', 'REVIEW & SUBMIT']
 const SUBMIT_SPECIES_DATA = '/api/upload/population/'
+const SAVE_DRAFT_SPECIES_DATA = '/api/upload/population/draft/'
 
 function FormWizard(props: FormWizardInterface) {
     const [loading, setLoading] = useState<boolean>(false)
-    const [uploadSession, setUploadSession] = useState<string>('')
     const [isDirty, setIsDirty] = useState(false)
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(props.propertyItem.id))
     const [activeStep, setActiveStep] = React.useState(0);
@@ -47,6 +50,8 @@ function FormWizard(props: FormWizardInterface) {
     const [navigateTo, setNavigateTo] = useState<number>(-1)
     const [feedbackAlertDialog, setFeedbackAlertDialog] = useState<AlertType>(AlertType.none)
     const [feedbackAlertDesc, setFeedbackAlertDesc] = useState<string>('')
+    const [alertMessage, setAlertMessage] = useState<string>('')
+    const [draftUUID, setDraftUUID] = useState<string>('')
 
     const totalSteps = () => {
         return steps.length
@@ -75,12 +80,7 @@ function FormWizard(props: FormWizardInterface) {
     }
 
     const handleBack = () => {
-        if (isDirty) {
-            setNavigateTo(activeStep - 1)
-            setConfirmationOpen(true)
-        } else {
-            setActiveStep((prevActiveStep) => prevActiveStep - 1)
-        }
+        setActiveStep((prevActiveStep) => prevActiveStep - 1)
     }
 
     const handleStep = (step: number) => {
@@ -107,6 +107,12 @@ function FormWizard(props: FormWizardInterface) {
     }
 
     const onFormBack = (index: number, formData: UploadSpeciesDetailInterface) => {
+        setData({
+            ...formData,
+            annual_population: {...formData.annual_population},
+            intake_population: {...formData.intake_population},
+            offtake_population: {...formData.offtake_population}
+        })
         handleBack()
     }
 
@@ -140,9 +146,10 @@ function FormWizard(props: FormWizardInterface) {
     }
     /* End of Check Unsaved Changes */
 
+    /* handle draft and submission */
     const handleSubmit = () => {
         setLoading(true)
-        postData(`${SUBMIT_SPECIES_DATA}${props.propertyItem.id}/`, data).then(
+        postData(`${SUBMIT_SPECIES_DATA}${props.propertyItem.id}/?uuid=${draftUUID}`, data).then(
             response => {
                 setLoading(false)
                 setFeedbackAlertDialog(AlertType.success)
@@ -159,6 +166,68 @@ function FormWizard(props: FormWizardInterface) {
             setFeedbackAlertDesc(_error)
           })
     }
+
+    const handleSaveDraft = (formData: UploadSpeciesDetailInterface) => {
+        setLoading(true)
+        let _data = {
+            'form_data': formData,
+            'last_step': activeStep
+        }
+        postData(`${SAVE_DRAFT_SPECIES_DATA}${props.propertyItem.id}/?uuid=${draftUUID}`, _data).then(
+            response => {
+                setLoading(false)
+                setAlertMessage('The form has been successfully saved as draft!')
+                setDraftUUID(response.data['uuid'])
+            }
+          ).catch(error => {
+            setLoading(false)
+            console.log('error ', error)
+            let _error = 'There is an error while saving the data!'
+            if (error.response && error.response.status >= 400 && error.response.status < 500 && 'detail' in error.response.data) {
+                _error = error.response.data['detail']
+            }
+            setAlertMessage(_error)
+          })
+    }
+
+    useEffect(() => {
+        if (props.draftUUID) {
+            axios.get(`${SAVE_DRAFT_SPECIES_DATA}${props.draftUUID}/`).then((response) => {
+                if (response) {
+                    setDraftUUID(props.draftUUID)
+                    let _lastStep = response.data['last_step'] as number
+                    let _formData = response.data['form_data'] as UploadSpeciesDetailInterface
+                    setData({
+                        ..._formData,
+                        annual_population: {..._formData.annual_population},
+                        intake_population: {..._formData.intake_population},
+                        offtake_population: {..._formData.offtake_population}
+                    })
+                    if (_lastStep > 0) {
+                        setActiveStep(_lastStep)
+                        if (_lastStep === 2) {
+                            setCompleted({
+                                ...completed,
+                                0: true,
+                                1: true
+                            })
+                        } else {
+                            setCompleted({
+                                ...completed,
+                                0: true
+                            })
+                        }
+                    }
+                } else {
+                    setAlertMessage('There is an error while fetching draft upload!')
+                }
+            }).catch((error) => {
+                console.log(error)
+                setAlertMessage('There is an error while fetching draft upload!')
+            })
+        }
+    }, [props.draftUUID])
+    /* end of handle draft and submission */
 
     return (
         <Grid container className='OnlineFormWizard' flexDirection={'column'}>
@@ -179,17 +248,20 @@ function FormWizard(props: FormWizardInterface) {
                         <SpeciesDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(0, formData)}
                             taxonMetadataList={props.metadata.taxons} countMethodMetadataList={props.metadata.count_methods}
                             surveyMethodMetadataList={props.metadata.survey_methods} openCloseMetadataList={props.metadata.open_close_systems}
-                            samplingUnitMetadataList={props.metadata.sampling_size_units} />
+                            samplingUnitMetadataList={props.metadata.sampling_size_units}
+                            handleSaveDraft={handleSaveDraft} />
                     </TabPanel>
                     <TabPanel key={1} value={activeStep} index={1} noPadding>
                         <ActivityDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(1, formData)}
                             handleBack={(formData) => onFormBack(1, formData)}
-                            intakeEventMetadataList={props.metadata.intake_events} offtakeEventMetadataList={props.metadata.offtake_events} />
+                            intakeEventMetadataList={props.metadata.intake_events} offtakeEventMetadataList={props.metadata.offtake_events}
+                            handleSaveDraft={handleSaveDraft} />
                     </TabPanel>
                     <TabPanel key={2} value={activeStep} index={2} noPadding>
                         <ReviewAndConfirm initialData={data} handleStepChange={(newStep: number) => handleStep(newStep)}
                             handleBack={(formData) => onFormBack(2, formData)}
-                            handleSubmit={handleSubmit} loading={loading} />
+                            handleSubmit={handleSubmit} loading={loading}
+                            handleSaveDraft={() => handleSaveDraft(data)} />
                     </TabPanel>
                 </Box>
             </Box>
@@ -211,6 +283,9 @@ function FormWizard(props: FormWizardInterface) {
                             setFeedbackAlertDialog(AlertType.none)
                         }
                     }} />
+            </Grid>
+            <Grid item>
+                <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
             </Grid>
         </Grid>
     )

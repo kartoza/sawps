@@ -22,6 +22,7 @@ interface ReviewAndConfirmInterface {
     handleBack: (data: UploadSpeciesDetailInterface) => void;
     handleStepChange: (newStep: number) => void;
     handleSubmit: () => void;
+    handleSaveDraft: () => void;
 }
 
 interface ReviewItemInterface {
@@ -556,19 +557,26 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                     </Grid>
                 </Grid>                
             </Grid>
-            <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
+            <Grid item container flexDirection={'row'} justifyContent={'space-between'}>
                 <Grid item>
-                    <Button variant='outlined' disabled={props.loading} onClick={() => props.handleBack(props.initialData)}>BACK</Button>
+                    <Button variant='outlined' onClick={() => {
+                        props.handleSaveDraft()
+                    }}>SAVE DRAFT</Button>
                 </Grid>
-                <Grid item>
-                    {!props.loading && (
-                        <Button variant='contained' onClick={props.handleSubmit}>SUBMIT</Button>
-                    )}
-                    {props.loading && (
-                        <Button variant='contained'>
-                            <Loading size={20} style={{'color': 'white'}} label='SUBMITTING...' />
-                        </Button>
-                    )}
+                <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
+                    <Grid item>
+                        <Button variant='outlined' disabled={props.loading} onClick={() => props.handleBack(props.initialData)}>BACK</Button>
+                    </Grid>
+                    <Grid item>
+                        {!props.loading && (
+                            <Button variant='contained' onClick={props.handleSubmit}>SUBMIT</Button>
+                        )}
+                        {props.loading && (
+                            <Button variant='contained'>
+                                <Loading size={20} style={{'color': 'white'}} label='SUBMITTING...' />
+                            </Button>
+                        )}
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

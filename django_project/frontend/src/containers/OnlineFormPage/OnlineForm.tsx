@@ -8,16 +8,20 @@ import './index.scss';
 import PropertyInterface from '../../models/Property';
 import PropertySummaryTable from '../../components/PropertySummaryTable';
 import MapPreview from '../../components/MapPreview';
+import ConfirmationAlertDialog from '../../components/ConfirmationAlertDialog';
 
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 const FETCH_FORM_METADATA_LIST_URL = '/api/population/metadata/list/'
+const FETCH_FORM_DRAFT_LIST = '/api/upload/population/draft/'
 
 
 function OnlineForm() {
     const [loading, setLoading] = useState<boolean>(true)
-    const [uploadSession, setUploadSession] = useState<string>('')
     const [property, setProperty] = useState<PropertyInterface>(null)
     const [formMetadata, setFormMetadata] = useState<FormMetadata>(null)
+    const [draftUUID, setDraftUUID] = useState<string>('')
+    const [draftUUIDToConfirm, setDraftUUIDToConfirm] = useState<string>('')
+    const [confirmationOpen, setConfirmationOpen] = useState(false)
 
     useEffect(() => {
         let fetch_apis = []
@@ -29,16 +33,48 @@ function OnlineForm() {
         fetch_apis.push(
             axios.get(`${FETCH_FORM_METADATA_LIST_URL}`)
         )
+        fetch_apis.push(
+            axios.get(`${FETCH_FORM_DRAFT_LIST}${propertyId}/`)
+        )
         Promise.all(fetch_apis).then((responses) => {
             setLoading(false)
             setProperty(responses[0].data as PropertyInterface)
             setFormMetadata(responses[1].data as FormMetadata)
+            let _draftList = responses[2].data as string[]
+            if (_draftList && _draftList.length) {
+                setDraftUUIDToConfirm(_draftList[0])
+                setConfirmationOpen(true)
+            }
           }).catch(error => {
             setLoading(false)
             console.log(error)
             alert('Unexpected error while loading property data!')
           })
     }, [])
+
+    /* draft upload confirmation */
+    const handleDraftConfirmationOk = () => {
+        setConfirmationOpen(false)
+        setDraftUUID(draftUUIDToConfirm)
+        setDraftUUIDToConfirm('')
+    }
+
+    const handleDraftConfirmationClose = () => {
+        // delete draft
+        axios.delete(
+            `${FETCH_FORM_DRAFT_LIST}${draftUUIDToConfirm}/`, {}
+        ).then(
+            response => {
+                setConfirmationOpen(false)
+                setDraftUUIDToConfirm('')
+            }
+        ).catch(error => {
+            // ignore error
+            setConfirmationOpen(false)
+            setDraftUUIDToConfirm('')
+        })
+    }
+    /* end of draft upload confirmation */
 
     return (
         <div className="App">
@@ -60,9 +96,18 @@ function OnlineForm() {
                     <Grid item flex={1}>
                         <Grid container className="Content" flexDirection={'column'}>
                             <Grid item className='FlexContainerFillHeight'>
-                                {loading ? <Skeleton sx={{height: '100%'}} /> : <FormWizard propertyItem={property} metadata={formMetadata} /> }
+                                {loading ? <Skeleton sx={{height: '100%'}} /> : <FormWizard propertyItem={property} metadata={formMetadata} draftUUID={draftUUID} /> }
                             </Grid>
                         </Grid>
+                    </Grid>
+                    <Grid item>
+                        <ConfirmationAlertDialog open={confirmationOpen} alertClosed={handleDraftConfirmationClose}
+                            alertConfirmed={handleDraftConfirmationOk}
+                            alertDialogTitle={'Draft Upload'}
+                            alertDialogDescription={'You have a draft upload. Do you want to continue to edit the draft?'}
+                            confirmButtonText='OK'
+                            confirmButtonProps={{color: 'success', autoFocus: true}}
+                        />
                     </Grid>
                 </Grid>
             </div>

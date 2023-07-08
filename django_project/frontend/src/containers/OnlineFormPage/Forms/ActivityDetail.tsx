@@ -35,12 +35,13 @@ interface ActivityDetailInterface {
     setIsDirty: (isDirty: boolean) => void;
     handleBack: (data: UploadSpeciesDetailInterface) => void;
     handleNext: (data: UploadSpeciesDetailInterface) => void;
+    handleSaveDraft: (data: UploadSpeciesDetailInterface) => void;    
 }
 
 export default function ActivityDetail(props: ActivityDetailInterface) {
     const {
         initialData, intakeEventMetadataList, offtakeEventMetadataList,
-        setIsDirty, handleBack, handleNext
+        setIsDirty, handleBack, handleNext, handleSaveDraft
     } = props
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
     const [validation, setValidation] = useState<UploadSpeciesDetailValidation>({})
@@ -540,16 +541,23 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
+            <Grid item container flexDirection={'row'} justifyContent={'space-between'}>
                 <Grid item>
-                    <Button variant='outlined' onClick={() => handleBack(data)}>BACK</Button>
+                    <Button variant='outlined' onClick={() => {
+                        handleSaveDraft(data)
+                    }}>SAVE DRAFT</Button>
                 </Grid>
-                <Grid item>
-                    <Button variant='contained' onClick={() => {
-                        if (validateActivityDetail()) {
-                            handleNext(data)
-                        }
-                    }}>NEXT</Button>
+                <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
+                    <Grid item>
+                        <Button variant='outlined' onClick={() => handleBack(data)}>BACK</Button>
+                    </Grid>
+                    <Grid item>
+                        <Button variant='contained' onClick={() => {
+                            if (validateActivityDetail()) {
+                                handleNext(data)
+                            }
+                        }}>NEXT</Button>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
