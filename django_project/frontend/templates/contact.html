@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% block head_title %}Contact{% endblock%}
+{% block head_title %}Contact Us{% endblock%}
 
 {% block content %}
 <section class="contact-banner-img fs-background" style="background-color: #000000;">
@@ -15,30 +15,32 @@
                         <div class="custom-form-container">
                             <h4 class="account-form-title">{% trans "Contact Us" %}</h4>
                             <hr class="separator">
-                            <form class="contact">
+                            <form class="contact" action="{% url 'contact' %}" method="post" name="contact">
+                                {% csrf_token %}
                                 <div class='form-group'>
-                                    <label for="contact-name">Name</label>
-                                    <input id='contact-name' name="Name" type="text" class="form-control"/>
+                                    <label for="id_name">Name</label>
+                                    <input id='id_name' name="name" type="text" class="form-control"
+                                    value="{% if form.data.name %}{{form.data.name}}{% else %}{{form.initial.name}}{% endif %}"/>
                                 </div>
 
                                 <div class='form-group'>
-                                    <label for="contact-name">Email</label>
-                                    <input id='contact-email' name="Email" type="text" class="form-control"/>
+                                    <label for="id_email">Email</label>
+                                    <input id='id_email' name="email" type="text" class="form-control"/>
                                 </div>
 
                                 <div class='form-group'>
-                                    <label for="contact-name">Subject</label>
-                                    <input id='contact-subject' name="Subject" type="text" class="form-control"/>
+                                    <label for="id_subject">Subject</label>
+                                    {{form.subject}}
                                 </div>
 
                                 <div class='form-group'>
-                                    <label for="contact-name">Message</label>
-                                    <textarea id='contact-message' name="Message" type='textarea' class="form-control"/></textarea>
+                                    <label for="id_message">Message</label>
+                                    {{form.message}}
                                 </div>
                                 <div class="form-group float-left" style="width: 70%;">
                                     <div class="form-check">
-                                      <input class="form-check-input" type="checkbox" value="" id="sendMe">
-                                      <label class="form-check-label" for="sendMe">
+                                        {{form.copy}}
+                                      <label class="form-check-label" for="id_copy">
                                         Send me a copy
                                       </label>
                                     </div>

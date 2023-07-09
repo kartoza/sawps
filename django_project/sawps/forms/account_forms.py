@@ -34,7 +34,7 @@ class CustomSignupForm(SignupForm):
         token = email_verification_token.make_token(user)
         subject = 'Sucess! your SAWPS account has been created'
         message = render_to_string(
-            'email/email_verification.html',
+            'emails/email_verification.html',
             {
                 'name': user.first_name,
                 'domain': Site.objects.get_current().domain,
