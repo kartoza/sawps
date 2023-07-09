@@ -12,7 +12,7 @@
 
 .MuiTabs-root {
     .MuiTab-root {
-        color: #70B276;
+        color: var(--primary-color);
         font-weight: 500;
         
         &.Mui-selected {

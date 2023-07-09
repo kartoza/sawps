@@ -20,6 +20,7 @@ from .views.help import HelpView
 from .views.about import AboutView
 from .views.contact import ContactView
 from .views.switch_organisation import switch_organisation
+from .views.online_form import OnlineFormView
 
 
 from frontend.api_views.map import (
@@ -37,7 +38,7 @@ from frontend.api_views.property import (
     PropertyList,
     UpdatePropertyInformation,
     UpdatePropertyBoundaries,
-    PropertyDetail
+    PropertyDetail,
 )
 from frontend.api_views.upload import (
     BoundaryFileUpload,
@@ -146,6 +147,11 @@ urlpatterns = [
         name='switch-organisation'
     ),
     path('map/', MapView.as_view(), name='map'),
+    path(
+        'upload-data/<int:property_id>/',
+        OnlineFormView.as_view(),
+        name='online-form'
+    ),
     path('help/', HelpView.as_view(), name='help'),
     path('', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
