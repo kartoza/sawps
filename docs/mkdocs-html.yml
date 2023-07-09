@@ -2,6 +2,7 @@
 # Configuration
 theme:
   name: material
+  logo: img/SANBI-logo.jpg
   language: en
   direction: ltr
   include_search_page: false
@@ -22,19 +23,19 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-  palette:
-    - scheme: default
-      primary: blue
-      accent: grey
-      toggle:
-        icon: material/brightness-4
-        name: Switch to dark mode
-    - scheme: slate
-      primary: blue
-      accent: grey
-      toggle:
-        icon: material/brightness-6
-        name: Switch to light mode
+#  palette:
+#    - scheme: default
+#      primary: green
+#      accent: grey
+#      toggle:
+#        icon: material/brightness-4
+#        name: Switch to dark mode
+#    - scheme: slate
+#      primary: blue
+#      accent: grey
+#      toggle:
+#        icon: material/brightness-6
+#        name: Switch to light mode
   font:
     text: Roboto
     code: Roboto Mono
@@ -56,7 +57,8 @@ extra:
       link: https://kartoza.com
 
 extra_css:
-  - css/print.css
+  - css/extra.css
+  - stylesheets/extra.css
 
 extra_javascript:
   - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js

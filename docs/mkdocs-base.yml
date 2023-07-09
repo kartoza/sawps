@@ -1,4 +1,4 @@
-site_name: SANBI WPS
+site_name: SAWPS
 site_description: "SANBI WPS technical and user documentation."
 site_author: "Kartoza"
 docs_dir: ./src
