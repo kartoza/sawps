@@ -26,6 +26,7 @@ import {
     resetSelectedProperty,
     setMapSelectionMode
 } from '../../reducers/MapState';
+import DataList from './Data';
 
 
 enum RightSideBarMode {
@@ -84,7 +85,7 @@ function MainPage() {
           <Grid item>
             { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} />}
           </Grid>
-          <Grid item flex={1}>
+          <Grid item flex={1} className="grayBg">
             <Grid container className="Content" flexDirection={'column'}>
               <Grid item>
                 <Box className="TabHeaders">
@@ -111,6 +112,7 @@ function MainPage() {
                   <Map />
                 </TabPanel>
                 <TabPanel key={1} value={selectedTab} index={1} noPadding>
+                  <DataList/>
                 </TabPanel>
                 <TabPanel key={2} value={selectedTab} index={2} noPadding>
                 </TabPanel>
