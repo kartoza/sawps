@@ -18,7 +18,7 @@ from .views.home import HomeView
 from .views.map import MapView
 from .views.help import HelpView
 from .views.about import AboutView
-from .views.contact import ContactView
+from .views.contact import ContactUsView
 from .views.switch_organisation import switch_organisation
 from .views.online_form import OnlineFormView
 
@@ -155,5 +155,5 @@ urlpatterns = [
     path('help/', HelpView.as_view(), name='help'),
     path('', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
-    path('contact/', ContactView.as_view(), name='contact'),
+    path('contact/', ContactUsView.as_view(), name='contact'),
 ]
