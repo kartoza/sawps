@@ -237,3 +237,14 @@ class TestPopulationAPIViews(TestCase):
         view = DraftPopulationUpload.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
+        # delete draft
+        kwargs = {
+            'draft_uuid': draft_uuid
+        }
+        request = self.factory.delete(
+            reverse('fetch-draft-upload-species', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = FetchDraftPopulationUpload.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 204)

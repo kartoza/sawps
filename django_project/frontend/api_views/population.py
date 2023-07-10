@@ -277,11 +277,11 @@ class FetchDraftPopulationUpload(APIView):
 
     def delete(self, request, *args, **kwargs):
         draft_uuid = kwargs.get('draft_uuid')
-        draft_upload = DraftSpeciesUpload.objects.filter(
+        draft_upload = get_object_or_404(
+            DraftSpeciesUpload,
             uuid=draft_uuid
-        ).first()
-        if draft_upload:
-            draft_upload.delete()
+        )
+        draft_upload.delete()
         return Response(status=204)
 
 
@@ -330,7 +330,7 @@ class DraftPopulationUpload(APIView):
         if taxon_id:
             draft.taxon = get_object_or_404(Taxon, id=taxon_id)
         draft.year = draft.form_data.get('year', None)
-        draft.upload_date = datetime.now()
+        draft.upload_date = draft_time
         draft.save()
         return Response(status=201, data={
             'uuid': str(draft.uuid)
