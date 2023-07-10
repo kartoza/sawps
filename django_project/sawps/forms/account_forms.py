@@ -40,7 +40,7 @@ class CustomSignupForm(SignupForm):
                 'domain': Site.objects.get_current().domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': token,
-                'support_email': 'amy@kartoza.com'
+                'support_email': settings.SUPPORT_EMAIL
             },
         )
 

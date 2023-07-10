@@ -16,6 +16,7 @@ class ContactUsForm(forms.Form):
     )
 
     copy = forms.BooleanField(
+        required=False,
         widget=forms.CheckboxInput(attrs={'class': "form-check-input"})
     )
 

@@ -1,6 +1,7 @@
 # coding=utf-8
 """Settings for 3rd party."""
 from .base import *  # noqa
+import ast
 
 # Extra installed apps
 INSTALLED_APPS = INSTALLED_APPS + (
@@ -101,3 +102,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "sawps.password_validation.SymbolValidator",
     },
 ]
+
+CONTACT_US_RECIPIENTS = ast.literal_eval(os.environ.get('CONTACT_US_RECIPIENTS', "['amy@kartoza.com']"))
+SUPPORT_EMAIL = 'amy@kartoza.com'

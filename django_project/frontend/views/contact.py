@@ -31,7 +31,7 @@ class ContactUsView(FormView):
         subject = form_data['subject']
 
         # POST to the support email
-        recipients = ['amy@katoza.com']
+        recipients = settings.CONTACT_US_RECIPIENTS
 
         sender = form_data.get('email')
         cc = []
