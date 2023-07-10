@@ -1,16 +1,73 @@
-{% extends "base.html" %}
-{% block extra_head %}
-    {% load render_bundle from webpack_loader %}
-{% endblock %}
-
+{% extends 'base.html' %}
+{% load i18n %}
+{% block head_title %}About{% endblock%}
 
 {% block content %}
-
-
-<div id="app"></div>
-{% render_bundle 'About' 'css' %}
-{% render_bundle 'About' 'js' %}
-
+<section class="about-page fs-background" style="background-color: #000000;">
+    <div class="container-fluid full-height position-absolute">
+    <div class="row half-height">
+        <div class="col-5"></div>
+        <div class="col-7">
+            <div class='about-content-title'>
+                The Wildlife Population system
+            </div>
+            <div class='about-subsection-1'>
+                <div class='about-subsection-1-video-holder'>
+                <iframe src="https://www.youtube.com/embed/iM2fkxVmq9w" title="Kruger National Park: Sightings from Northern Kruger" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen data-testid='about-page-video-frame'></iframe> 
+                </div>
+                <div class='about-subsection-1-text'>
+                    <p class="about-text">a coordinated system wildlife trade monitoring with centralised/shared information about priority species such as rhino, lion, leopard, cheetah, elephant and more.
+                    </p>
+                </div>
+            </div>
+            <div class='about-subsection-2 about-section'>
+                <div class="subsection">
+                    <div class="section-img">
+                    <img src="/static/images/icons/data-store.png" alt="data"
+                    class="img-fluid ml-2" style="width: 80px;">
+                    </div>
+                    <div class="section-text">
+                    <h4>Secure species data storage</h4>
+                    </div>
+                </div>
+            </div>
+            <div class='about-subsection-3 about-section'>
+                <div class="subsection">
+                    <div class="section-img">
+                    <img src="/static/images/icons/visualisation.png" alt="data"
+                    class="img-fluid ml-2" style="width: 80px;">
+                    </div>
+                    <div class="section-text">    
+                    <h4>automated state report</h4>
+                    </div>
+                </div>
+            </div>
+            <div class='about-subsection-4 about-section'>
+                <div class="subsection">
+                    <div class="section-img">
+                    <img src="/static/images/icons/report.png" alt="data"
+                    class="img-fluid ml-2" style="width: 80px;">
+                    </div>
+                    <div class="section-text">
+                    <h4>Data analysis and visualisation</h4>
+                    </div>
+                </div>
+            </div>
+            <div class='about-subsection-5 about-section'>
+                <div class="subsection">
+                    <div class="section-img">
+                    <img src="/static/images/icons/organisation.png" alt="data"
+                    class="img-fluid ml-2" style="width: 80px;">
+                    </div>
+                    <div class="section-text">  
+                    <h4>Support National Decision making</h4>
+                    </div>
+                </div>
+            </div>  
+        </div>  
+    </div>
+    </div>
+</section>
 {% endblock %}
 
 </html>

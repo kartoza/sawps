@@ -166,7 +166,9 @@ export default function Map() {
     let _mapObj: MapLibreMap = map.current
     let _drawObj: CustomDrawControl = mapDraw.current
     _mapObj.removeControl(mapDrawLoading.current)
-    _drawObj.enableButtons()
+    if (_drawObj) {
+      _drawObj.enableButtons()
+    }
     mapDrawLoading.current = null
   }
 
