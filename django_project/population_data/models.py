@@ -160,4 +160,6 @@ class OpenCloseSystem(models.Model):
         verbose_name = 'Open Close System'
         verbose_name_plural = 'Open Close System'
         db_table = 'open_close_system'
-
+    
+    def __str__(self) -> str:
+        return self.name

@@ -29,119 +29,26 @@ import {
 } from '../../../models/Upload';
 import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
 
-
-const DUMMY_TAXONS: TaxonMetadata[] = [
-    {
-        'id': 1,
-        'common_name_varbatim': 'Cheetah',
-        'scientific_name': 'Acinonyx jubatus'
-    },
-    {
-        'id': 2,
-        'common_name_varbatim': 'Leopard',
-        'scientific_name': 'Panthera pardus'
-    },
-    {
-        'id': 3,
-        'common_name_varbatim': 'Elephant',
-        'scientific_name': 'Loxodonta africana'
-    }
-]
-
-const DUMMY_OPEN_CLOSE_SYSTEMS: CommonUploadMetadata[] = [
-    {
-        'id': 1,
-        'name': 'Open'
-    },
-    {
-        'id': 2,
-        'name': 'Close'
-    },
-    {
-        'id': 3,
-        'name': 'Open Partially'
-    }
-]
-
-const DUMMY_COUNT_METHODS: CommonUploadMetadata[] = [
-    {
-        'id': 1,
-        'name': 'Belt Sampling'
-    },
-    {
-        'id': 2,
-        'name': 'Distance Sampling'
-    },
-    {
-        'id': 3,
-        'name': 'Line Sampling'
-    },
-    {
-        'id': 4,
-        'name': 'Mark Recapture'
-    }
-]
-
-const DUMMY_SURVEY_METHODS: CommonUploadMetadata[] = [
-    {
-        'id': 1,
-        'name': 'Point Count'
-    },
-    {
-        'id': 2,
-        'name': 'Transect survey - foot'
-    },
-    {
-        'id': 3,
-        'name': 'Transect survey - aerial'
-    },
-    {
-        'id': 4,
-        'name': 'Transect survey - drive'
-    },
-    {
-        'id': 99,
-        'name': 'Unknown'
-    }
-]
-
-const SAMPLING_SIZE_UNITS: CommonUploadMetadata[] = [
-    {
-        'id': 1,
-        'name': 'Minutes'
-    },
-    {
-        'id': 2,
-        'name': 'Hours'
-    },
-    {
-        'id': 3,
-        'name': 'Days'
-    },
-    {
-        'id': 4,
-        'name': 'Weeks'
-    },
-    {
-        'id': 5,
-        'name': 'Months'
-    }
-]
-
 interface SpeciesDetailInterface {
     initialData: UploadSpeciesDetailInterface;
+    taxonMetadataList: TaxonMetadata[];
+    openCloseMetadataList: CommonUploadMetadata[];
+    countMethodMetadataList: CommonUploadMetadata[];
+    surveyMethodMetadataList: CommonUploadMetadata[];
+    samplingUnitMetadataList: CommonUploadMetadata[];
     setIsDirty: (isDirty: boolean) => void;
     handleNext: (data: UploadSpeciesDetailInterface) => void;
+    handleSaveDraft: (data: UploadSpeciesDetailInterface) => void;
 }
 
 export default function SpeciesDetail(props: SpeciesDetailInterface) {
+    const { 
+        initialData, taxonMetadataList, openCloseMetadataList,
+        countMethodMetadataList, surveyMethodMetadataList, samplingUnitMetadataList,
+        setIsDirty, handleNext, handleSaveDraft
+    } = props
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
     const [validation, setValidation] = useState<UploadSpeciesDetailValidation>({})
-    const [taxonMetadataList, setTaxonMetadataList] = useState<TaxonMetadata[]>(DUMMY_TAXONS)
-    const [openCloseMetadataList, setOpenCloseMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_OPEN_CLOSE_SYSTEMS)
-    const [countMethodMetadataList, setCountMethodMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_COUNT_METHODS)
-    const [surveyMethodMetadataList, setSurveyMethodMetadataList] = useState<CommonUploadMetadata[]>(DUMMY_SURVEY_METHODS)
-    const [samplingUnitMetadataList, setSamplingUnitMetadataList] = useState<CommonUploadMetadata[]>(SAMPLING_SIZE_UNITS)
 
     const updateSpecies = (value: number) => {
         // find taxon
@@ -156,7 +63,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 intake_population: {...data.intake_population},
                 offtake_population: {...data.offtake_population}            
             })
-            props.setIsDirty(true)
+            setIsDirty(true)
             setValidation({...validation, taxon_id: false})
         }
     }
@@ -170,7 +77,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             intake_population: {...data.intake_population},
             offtake_population: {...data.offtake_population}            
         })
-        props.setIsDirty(true)
+        setIsDirty(true)
     }
 
     const updateAnnualPopulation = (field: keyof AnnualPopulationInterface, value: any) => {
@@ -196,7 +103,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             intake_population: {...data.intake_population},
             offtake_population: {...data.offtake_population}            
         })
-        props.setIsDirty(true)
+        setIsDirty(true)
         setValidation({
             ...validation,
             annual_population: {
@@ -220,7 +127,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 intake_population: {...data.intake_population},
                 offtake_population: {...data.offtake_population}            
             })
-            props.setIsDirty(true)
+            setIsDirty(true)
             setValidation({
                 ...validation,
                 annual_population: {
@@ -284,13 +191,13 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
 
     useEffect(() => {
         setData({
-            ...props.initialData,
-            annual_population: {...props.initialData.annual_population},
-            intake_population: {...props.initialData.intake_population},
-            offtake_population: {...props.initialData.offtake_population}
+            ...initialData,
+            annual_population: {...initialData.annual_population},
+            intake_population: {...initialData.intake_population},
+            offtake_population: {...initialData.offtake_population}
         })
         setValidation({})
-    }, [props.initialData])
+    }, [initialData])
 
     return (
         <Grid container flexDirection={'column'} rowSpacing={2}>
@@ -348,7 +255,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 aria-required
                                                 className='RadioGroup'
                                                 value={data.annual_population.present}
-                                                onChange={(e) => updateAnnualPopulation('present', e.target.value)}
+                                                onChange={(e) => updateAnnualPopulation('present', e.target.value === 'true')}
                                             >
                                                 <FormControlLabel value={true} control={<Radio size='small' />} label="Yes" />
                                                 <FormControlLabel value={false} control={<Radio size='small' />} label="No" />
@@ -594,7 +501,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                 </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='group' label='Number of groups (prides, herds, etc.)' value={data.annual_population.group}
+                                <TextField id='group' label='Number of groups (prides, herds, etc.)' value={data.annual_population.group ? data.annual_population.group : ''}
+                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                     variant='standard'
                                     onChange={(e) => updateAnnualPopulation('group', parseInt(e.target.value)) } fullWidth
                                     helperText=" " />
@@ -666,12 +574,19 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item container flexDirection={'row'} justifyContent={'flex-end'}>
-                <Button variant='contained' onClick={() => {
-                    if (validateSpeciesDetail()) {
-                        props.handleNext(data)
-                    }
-                }}>NEXT</Button>
+            <Grid item container flexDirection={'row'} justifyContent={'space-between'}>
+                <Grid item>
+                    <Button variant='outlined' onClick={() => {
+                        handleSaveDraft(data)
+                    }}>SAVE DRAFT</Button>
+                </Grid>
+                <Grid item>
+                    <Button variant='contained' onClick={() => {
+                        if (validateSpeciesDetail()) {
+                            handleNext(data)
+                        }
+                    }}>NEXT</Button>
+                </Grid>
             </Grid>
         </Grid>
     )

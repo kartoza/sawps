@@ -22,6 +22,7 @@ interface ReviewAndConfirmInterface {
     handleBack: (data: UploadSpeciesDetailInterface) => void;
     handleStepChange: (newStep: number) => void;
     handleSubmit: () => void;
+    handleSaveDraft: () => void;
 }
 
 interface ReviewItemInterface {
@@ -77,9 +78,8 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                     variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='area_covered' required label='Sampled Area' defaultValue={displayNumber(data.annual_population.area_covered)}
-                                    variant='standard' type='number'
-                                    disabled fullWidth />
+                                <TextField id='area_covered' required label='Sampled Area' defaultValue={`${displayNumber(data.annual_population.area_covered)} ha`}
+                                    variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='sampling_note' label='Sampling Notes' defaultValue={displayText(data.annual_population.note)}
@@ -221,7 +221,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             label='Area available to species'
                                             required
                                             variant="standard"
-                                            defaultValue={displayText(data.annual_population.area_available_to_species ? `${data.annual_population.area_available_to_species} Ha` : '0 Ha')}
+                                            defaultValue={displayText(data.annual_population.area_available_to_species ? `${data.annual_population.area_available_to_species} ha` : '0 Ha')}
                                             disabled
                                         />
                                     </Grid>
@@ -237,7 +237,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={6}>
                                         <TextField
                                             id='sampling_effort'
                                             label='Sampling Effort'
@@ -249,7 +249,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={8}>
+                                    <Grid item xs={6}>
                                         <TextField id='sampling_unit' label='Sampling Unit' defaultValue={displayText(data.annual_population.sampling_size_unit_name)}
                                             variant='standard' disabled fullWidth />
                                     </Grid>
@@ -557,19 +557,26 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                     </Grid>
                 </Grid>                
             </Grid>
-            <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
+            <Grid item container flexDirection={'row'} justifyContent={'space-between'}>
                 <Grid item>
-                    <Button variant='outlined' disabled={props.loading} onClick={() => props.handleBack(props.initialData)}>BACK</Button>
+                    <Button variant='outlined' onClick={() => {
+                        props.handleSaveDraft()
+                    }}>SAVE DRAFT</Button>
                 </Grid>
-                <Grid item>
-                    {!props.loading && (
-                        <Button variant='contained' onClick={props.handleSubmit}>SUBMIT</Button>
-                    )}
-                    {props.loading && (
-                        <Button variant='contained'>
-                            <Loading size={20} style={{'color': 'white'}} label='SUBMITTING...' />
-                        </Button>
-                    )}
+                <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
+                    <Grid item>
+                        <Button variant='outlined' disabled={props.loading} onClick={() => props.handleBack(props.initialData)}>BACK</Button>
+                    </Grid>
+                    <Grid item>
+                        {!props.loading && (
+                            <Button variant='contained' onClick={props.handleSubmit}>SUBMIT</Button>
+                        )}
+                        {props.loading && (
+                            <Button variant='contained'>
+                                <Loading size={20} style={{'color': 'white'}} label='SUBMITTING...' />
+                            </Button>
+                        )}
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

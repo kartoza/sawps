@@ -47,6 +47,12 @@ from frontend.api_views.upload import (
     BoundaryFileSearch,
     BoundaryFileSearchStatus
 )
+from frontend.api_views.population import (
+    PopulationMetadataList,
+    UploadPopulationAPIVIew,
+    FetchDraftPopulationUpload,
+    DraftPopulationUpload
+)
 
 urlpatterns = [
     re_path(
@@ -140,6 +146,26 @@ urlpatterns = [
         r'^api/upload/boundary-file/?$',
         BoundaryFileUpload.as_view(),
         name='boundary-file-upload'
+    ),
+    re_path(
+        r'^api/population/metadata/list/?$',
+        PopulationMetadataList.as_view(),
+        name='population-metadata'
+    ),
+    re_path(
+        r'^api/upload/population/(?P<property_id>\d+)/?$',
+        UploadPopulationAPIVIew.as_view(),
+        name='population-upload'
+    ),
+    path(
+        'api/upload/population/draft/<uuid:draft_uuid>/',
+        FetchDraftPopulationUpload.as_view(),
+        name='fetch-draft-upload-species'
+    ),
+    path(
+        'api/upload/population/draft/<int:property_id>/',
+        DraftPopulationUpload.as_view(),
+        name='draft-upload-species'
     ),
     path(
         'switch-organisation/<int:organisation_id>/',
