@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block extra_head %}
+    {% load render_bundle from webpack_loader %}
+{% endblock %}
+
+
+{% block content %}
+<script>
+    window.maptiler_api_key = "{{ maptiler_api_key }}";
+    window.property_id = "{{ property_id }}";
+</script>
+
+<div id="app"></div>
+{% render_bundle 'Home' 'css' %}
+{% render_bundle 'OnlineForm' 'js' %}
+
+{% endblock %}
+{% block footer %}
+{% endblock %}
+
+</html>

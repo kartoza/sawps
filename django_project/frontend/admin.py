@@ -13,7 +13,8 @@ from frontend.models import (
     ContextLayerTilingTask,
     BoundaryFile,
     BoundarySearchRequest,
-    ContextLayerLegend
+    ContextLayerLegend,
+    DraftSpeciesUpload
 )
 from frontend.tasks import (
     generate_vector_tiles_task,
@@ -181,8 +182,13 @@ class ContextLayerLegendAdmin(admin.ModelAdmin):
     display_color.allow_tags = True
 
 
+class DraftSpeciesUploadAdmin(admin.ModelAdmin):
+    list_display = ('name', 'property', 'upload_by', 'taxon', 'year')
+
+
 admin.site.register(ContextLayer, ContextLayerAdmin)
 admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
 admin.site.register(BoundaryFile, BoundaryFileAdmin)
 admin.site.register(BoundarySearchRequest, BoundarySearchRequestAdmin)
+admin.site.register(DraftSpeciesUpload, DraftSpeciesUploadAdmin)

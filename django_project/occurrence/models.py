@@ -20,7 +20,7 @@ class SurveyMethod(models.Model):
 class SamplingSizeUnit(models.Model):
     """Sampling size unit model."""
 
-    unit = models.CharField(max_length=4, unique=True)
+    unit = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
         return self.unit

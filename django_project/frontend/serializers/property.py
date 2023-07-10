@@ -113,6 +113,7 @@ class PropertyDetailSerializer(PropertySerializer):
     """Property with more details."""
     parcels = serializers.SerializerMethodField()
     bbox = serializers.SerializerMethodField()
+    centroid = serializers.SerializerMethodField()
 
     def get_parcels(self, obj: Property):
         parcels = obj.parcel_set.all()
@@ -123,6 +124,11 @@ class PropertyDetailSerializer(PropertySerializer):
             return []
         return list(obj.geometry.extent)
 
+    def get_centroid(self, obj: Property):
+        if obj.geometry is None:
+            return []
+        return list(obj.geometry.centroid)
+
     class Meta:
         model = Property
         fields = [
@@ -130,5 +136,5 @@ class PropertyDetailSerializer(PropertySerializer):
             'property_type', 'property_type_id',
             'province', 'province_id',
             'size', 'organisation', 'organisation_id',
-            'parcels', 'bbox'
+            'parcels', 'bbox', 'centroid'
         ]
