@@ -58,7 +58,10 @@ class UserProfile(models.Model):
     """Extend User model with one-to-one mapping."""
 
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, unique=True, related_name='user_profile')
+        User, on_delete=models.CASCADE,
+        unique=True,
+        related_name='user_profile'
+    )
     title_id = models.ForeignKey(
         UserTitle,
         on_delete=models.DO_NOTHING,
