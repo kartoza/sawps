@@ -1,4 +1,4 @@
-site_name: SANBI WPS
+site_name: SAWPS
 site_description: "SANBI WPS technical and user documentation."
 site_author: "Kartoza"
 docs_dir: ./src
@@ -49,3 +49,7 @@ nav:
                   - DevOps: devops/index.md
         - About:
                   - About: about/index.md
+                  - License: about/license.md
+                  - Contributors: about/contributors.md
+                  - Funders: about/funders.md
+                  - Logos: about/logos.md
