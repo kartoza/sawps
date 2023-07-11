@@ -159,7 +159,6 @@ class OrganisationInvites(models.Model):
     assigned_as = models.CharField(
         max_length=50, choices=ASSIGNED_CHOICES, default=MEMBER
     )
-    # user =  models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
         verbose_name = 'OrganisationInvites'
@@ -172,7 +171,8 @@ class OrganisationInvites(models.Model):
 
 @receiver(post_save, sender=OrganisationInvites)
 def send_invitation(sender, instance, created, **kwargs):
-    """This signals ensures whenever a record is created in the organisation invitations model
+    """This signals ensures whenever a record is created
+    in the organisation invitations model
     an email invitation will be sent """
     if created:
         request = get_request()
