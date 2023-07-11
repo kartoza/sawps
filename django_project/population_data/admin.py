@@ -1,10 +1,11 @@
 from django.contrib import admin
 from population_data.models import (
-    CountMethod, 
-    Month, 
-    NatureOfPopulation, 
-    AnnualPopulation, 
+    CountMethod,
+    Month,
+    NatureOfPopulation,
+    AnnualPopulation,
     AnnualPopulationPerActivity,
+    Certainty,
     OpenCloseSystem
 )
 
@@ -14,5 +15,4 @@ admin.site.register(OpenCloseSystem)
 admin.site.register(NatureOfPopulation)
 admin.site.register(AnnualPopulation)
 admin.site.register(AnnualPopulationPerActivity)
-
-
+admin.site.register(Certainty)

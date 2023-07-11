@@ -1,19 +1,36 @@
 from rest_framework import serializers
-from occurrence.models import SurveyMethod, SamplingSizeUnit
+
+from .models import (
+    SurveyMethod,
+    SamplingSizeUnit
+)
 
 
 class SurveyMethodSerializer(serializers.ModelSerializer):
-    """SurveyMethod serializer"""
+    """Survey Method Serializer"""
 
-    class Meta():
+    def __init__(self, *args, **kwargs):
+        remove_fields = kwargs.pop('remove_fields', None)
+        super(SurveyMethodSerializer, self).__init__(*args, **kwargs)
+        if remove_fields:
+            for field_name in remove_fields:
+                self.fields.pop(field_name)
+
+    class Meta:
         model = SurveyMethod
-        fields = ['id', 'name']
+        fields = '__all__'
 
 
 class SamplingSizeUnitSerializer(serializers.ModelSerializer):
-    """SamplingSizeUnit serializer"""
-    name = serializers.CharField(source='unit')
+    """SamplingSizeUnit Serializer"""
 
-    class Meta():
+    def __init__(self, *args, **kwargs):
+        remove_fields = kwargs.pop('remove_fields', None)
+        super(SamplingSizeUnitSerializer, self).__init__(*args, **kwargs)
+        if remove_fields:
+            for field_name in remove_fields:
+                self.fields.pop(field_name)
+
+    class Meta:
         model = SamplingSizeUnit
-        fields = ['id', 'name']
+        fields = '__all__'
