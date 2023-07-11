@@ -40,7 +40,9 @@ nav:
                   - Home: index.md
                   - License: license.md
         - User:
-                  - User: user/index.md
+                  - Quickstart: user/quickstart.md
+                  - Instructions: user/instructions.md
+                  - User Roles: user/permissions.md
         - Admin:
                   - Admin: admin/index.md
         - Developer:
