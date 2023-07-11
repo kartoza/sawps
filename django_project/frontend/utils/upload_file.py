@@ -183,6 +183,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 if isinstance(geom, Polygon):
                     geom = MultiPolygon([geom], srid=4326)
                 search_geom = geom.transform(3857, clone=True)
+                search_geom = search_geom.buffer(2)
                 # find from Erf table
                 parcels, keys = find_parcel_base(
                     Erf,

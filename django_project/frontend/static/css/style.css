@@ -226,7 +226,7 @@ a:hover{
   font-size: small;
 }
 
-.signup .form-group label{
+.signup .form-group label, .contact .form-group label{
   justify-content: center;
   display: flex;
 }
@@ -415,7 +415,6 @@ hr.default-separator{
 .about-section{
   height: 70px;
   border-radius: 4px;
-  
 }
 
 .subsection{
@@ -804,4 +803,13 @@ hr.default-separator{
         width:85%;
         margin-top:5px;
     }
+}
+
+
+/* Contact */
+
+.contact-banner-img{
+  position: relative;
+  background: url('/static/images/contact/contact.png') no-repeat;
+  background-size: contain;
 }
