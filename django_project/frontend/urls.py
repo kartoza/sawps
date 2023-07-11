@@ -185,10 +185,6 @@ urlpatterns = [
     path('help/', HelpView.as_view(), name='help'),
     path('', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
-<<<<<<< HEAD
     path('users/', OrganisationUsersView.as_view(), name='Users'),
-    path('contact/', ContactView.as_view(), name='contact'),
-=======
     path('contact/', ContactUsView.as_view(), name='contact'),
->>>>>>> 47c19e1de1829f35e38c3ff9f0087d917107bfc7
 ]
