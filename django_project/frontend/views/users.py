@@ -1,6 +1,11 @@
 import json
 from stakeholder.request_context import set_request
-from stakeholder.models import OrganisationInvites, OrganisationUser, UserProfile, UserRoleType
+from stakeholder.models import (
+    OrganisationInvites, 
+    OrganisationUser,
+    UserProfile,
+    UserRoleType
+)
 from django.contrib.auth.models import User
 from .base_view import RegisteredOrganisationBaseView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,13 +16,18 @@ from django.views.generic import TemplateView
 from frontend.utils.organisation import (
     CURRENT_ORGANISATION_ID_KEY,
 )
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import (
+    Paginator,
+    EmptyPage,
+    PageNotAnInteger
+)
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import models
 
 
 
-class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, TemplateView):
+class OrganisationUsersView(
+    LoginRequiredMixin, RegisteredOrganisationBaseView, TemplateView):
     """
     OrganisationUsersView displays the organisations
     users page by rendering the 'users.html' template.
@@ -62,7 +72,8 @@ class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, 
 
     def is_new_invitation(self, email, organisation):
         """
-        Check if an entry with the given email and organisation already exists.
+        Check if an entry with the given email and 
+        organisation already exists.
         Returns True if exists, False otherwise.
         """
         exists = OrganisationInvites.objects.filter(
@@ -77,11 +88,9 @@ class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, 
         else:
             return False
 
-
     def calculate_rows_per_page(self, data):
         total_rows = len(data)
 
-        # Define the desired number of rows per page based on your logic
         desired_rows_per_page = 5
 
         # Calculate the dynamic number of rows per page
@@ -103,16 +112,19 @@ class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, 
         for user in matching_users:
             try:
                 org_user = OrganisationUser.objects.get(user=user)
+                role = UserProfile.objects.get(user=user).user_role_type_id
+                role = str(role)
             except OrganisationUser.DoesNotExist:
-                # Handle the case when OrganisationUser does not exist
                 continue
+            except UserProfile.DoesNotExist:
+                role = None
             if org_user:
                 if not org_user.user == self.request.user:
                     data.append({
                         'organisation': str(org_user.organisation),
                         'user': str(org_user.user),
                         'id': org_user.user.id,
-                        'role': str(UserProfile.objects.get(user=user).user_role_type_id)
+                        'role': role
                         # Add more columns as needed
                     })
 
@@ -148,16 +160,22 @@ class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, 
             # add invitation to model
             is_new_invitation = self.is_new_invitation(
                 email, self.request.session[CURRENT_ORGANISATION_ID_KEY])
+            org_id = self.request.session[CURRENT_ORGANISATION_ID_KEY]
             if not is_new_invitation:
                 if role == 'manager':
                     create_invite = OrganisationInvites(
-                        email=email, 
-                        organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY],
-                        user_role=user_role, assigned_as=OrganisationInvites.MANAGER)
+                        email=email,
+                        organisation_id=org_id,
+                        user_role=user_role,
+                        assigned_as=OrganisationInvites.MANAGER
+                    )
                 else:
                     create_invite = OrganisationInvites(
-                        email=email, organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY],
-                        user_role=user_role, assigned_as=OrganisationInvites.MEMBER)
+                        email=email,
+                        organisation_id=org_id,
+                        user_role=user_role,
+                        assigned_as=OrganisationInvites.MEMBER
+                    )
 
 
                 set_request(request)  # Set the request object
@@ -166,10 +184,15 @@ class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, 
                 if create_invite:
                     invites = self.get_organisation_invites()
                     serialized_invites = json.dumps(list(invites))
-                    return JsonResponse({'status': 'success', 'updated_invites': serialized_invites})
+                    return JsonResponse(
+                        {
+                            'status': 'success',
+                            'updated_invites': serialized_invites
+                        }
+                    )
             else:
                 return JsonResponse({'status': 'invitation already sent'})
-        except:
+        except Exception:
             return JsonResponse({'status': 'invitation already sent'})
 
 
