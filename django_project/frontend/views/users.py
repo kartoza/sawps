@@ -14,18 +14,11 @@ from frontend.utils.organisation import (
 )
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.exceptions import ObjectDoesNotExist
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
-from django.contrib.sites.models import Site
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.conf import settings
 from django.contrib.auth import models
 
 
 
-class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,TemplateView):
+class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, TemplateView):
     """
     OrganisationUsersView displays the organisations users page by rendering the 'users.html' template.
     """
@@ -34,68 +27,70 @@ class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,Te
     context_object_name = 'organisation_users'
 
 
-    def extract_substring(self,string):
+    def extract_substring(self, string):
         '''extract search string from search box on frontend'''
         if '=' in string:
             substring = string.split('=')[1]
             return substring
         else:
             return string
-        
-    def search_users(self,username):
+
+    def search_users(self, username):
         users = User.objects.filter(username__icontains=username)
         return users
-    
-    def get_user_email(self,user):
+
+    def get_user_email(self, user):
         try:
             user = User.objects.get(username=user)
             return user.email
         except User.DoesNotExist:
             return None
-        
-    def get_user_role(self,role):
+
+    def get_user_role(self, role):
         try:
             role = UserRoleType.objects.get(name=role)
             return role
         except UserRoleType.DoesNotExist:
             return None
-        
-    def get_user_role_by_user(self,user):
+
+    def get_user_role_by_user(self, user):
         try:
             role = UserProfile.objects.get(user=user)
             return str(role.user_role_type_id)
         except UserProfile.DoesNotExist:
             return None
-        
-    def is_new_invitation(self,email, organisation):
+
+    def is_new_invitation(self, email, organisation):
         """
         Check if an entry with the given email and organisation already exists.
         Returns True if exists, False otherwise.
         """
-        exists = OrganisationInvites.objects.filter(email=email, organisation_id=organisation).exists()
+        exists = OrganisationInvites.objects.filter(
+            email=email, organisation_id=organisation).exists()
         if exists:
             try:
-                invitation = OrganisationInvites.objects.get(email=email, organisation_id=organisation)
+                invitation = OrganisationInvites.objects.get(
+                    email=email, organisation_id=organisation)
                 return invitation.joined
             except OrganisationInvites.DoesNotExist:
                 return None
         else:
             return False
-        
-    
+
+
     def calculate_rows_per_page(self, data):
         total_rows = len(data)
-        
+
         # Define the desired number of rows per page based on your logic
         desired_rows_per_page = 5
-        
+
         # Calculate the dynamic number of rows per page
         rows_per_page = min(desired_rows_per_page, total_rows)
-        
+
         return rows_per_page
 
-    
-    def search_table(self,request):
+
+    def search_table(self, request):
         query = request.POST.get('query')
         extracted_string = self.extract_substring(query)
         # print(extracted_string)
@@ -122,20 +117,20 @@ class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,Te
                     })
 
         return JsonResponse({'data': json.dumps(data, cls=DjangoJSONEncoder)})
-    
+
     def post(self, request):
         # Default post method logic
         return JsonResponse({'status': 'success'})
-    
-    def invite_post(self,request):
-        
+
+    def invite_post(self, request):
+
         # retrieve data from front end/html template
         email = request.POST.get('email')
         role = request.POST.get('inviteAs')
         permissions = request.POST.get('memberRole')
 
         # assign role from the roles defined in the db
-        if  role == 'manager':
+        if role == 'manager':
             if permissions == 'write':
                 role = 'Admin'
             else:
@@ -145,41 +140,45 @@ class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,Te
                 role = 'Admin'
             else:
                 role = 'Base user'
-        
+
         # get role by name
         user_role = self.get_user_role(role)
 
         try:
             # add invitation to model
-            is_new_invitation = self.is_new_invitation(email,self.request.session[CURRENT_ORGANISATION_ID_KEY])
+            is_new_invitation = self.is_new_invitation(
+                email, self.request.session[CURRENT_ORGANISATION_ID_KEY])
             if not is_new_invitation:
                 if role == 'manager':
-                    create_invite = OrganisationInvites(email=email,organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY],user_role=user_role,assigned_as=OrganisationInvites.MANAGER)
+                    create_invite = OrganisationInvites(
+                        email=email, organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY], user_role=user_role, assigned_as=OrganisationInvites.MANAGER)
                 else:
-                    create_invite = OrganisationInvites(email=email,organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY],user_role=user_role,assigned_as=OrganisationInvites.MEMBER)
+                    create_invite = OrganisationInvites(
+                        email=email, organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY], user_role=user_role, assigned_as=OrganisationInvites.MEMBER)
 
-                
-                set_request(request) # Set the request object
+
+                set_request(request)  # Set the request object
                 create_invite.save()
 
                 if create_invite:
-                    invites = self.get_organisation_invites() 
+                    invites = self.get_organisation_invites()
                     serialized_invites = json.dumps(list(invites))
-                    return JsonResponse({'status': 'success','updated_invites':serialized_invites})               
+                    return JsonResponse({'status': 'success', 'updated_invites': serialized_invites})
             else:
                 return JsonResponse({'status': 'invitation already sent'})
         except:
             return JsonResponse({'status': 'invitation already sent'})
-    
-        
 
-    
-    def delete_post(self,request):
+
+
+
+    def delete_post(self, request):
         object_id = request.POST.get('object_id')
         try:
             user = models.User.objects.get(pk=object_id)
             organisation = OrganisationUser.objects.get(user=object_id)
-            org_invite = OrganisationInvites.objects.get(email=user.email,organisation=organisation.organisation)
+            org_invite = OrganisationInvites.objects.get(
+                email=user.email, organisation=organisation.organisation)
             org_invite.joined = False
             org_invite.save()
             OrganisationUser.objects.filter(user=object_id).delete()
@@ -192,10 +191,11 @@ class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,Te
         # delete row in invitations or set it to false
 
         return JsonResponse({'status': 'success'})
-        
+
 
     def get_organisation_users(self):
-        organisation_user_list = OrganisationUser.objects.filter(organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
+        organisation_user_list = OrganisationUser.objects.filter(
+            organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         organisation_users = []
 
         for user in organisation_user_list:
@@ -216,23 +216,24 @@ class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,Te
                 organisation_users.append(object_to_save)
 
         users_page = self.request.GET.get('users_page', 1)
-        
+
         # Get the rows per page value from the query parameters
         rows_per_page = self.request.GET.get('users_per_page', 3)
-        
+
         paginator = Paginator(organisation_users, rows_per_page)
-        
+
         try:
             users = paginator.page(users_page)
         except PageNotAnInteger:
             users = paginator.page(1)
         except EmptyPage:
             users = paginator.page(paginator.num_pages)
-        
+
         return users
 
     def get_organisation_invites(self):
-        organisation_invites = OrganisationInvites.objects.filter(organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
+        organisation_invites = OrganisationInvites.objects.filter(
+            organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         paginated_organisation_invites = []
 
         for invite in organisation_invites:
@@ -245,21 +246,21 @@ class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,Te
             paginated_organisation_invites.append(object_to_save)
 
         invites_page = self.request.GET.get('invites_page', 1)
-        
+
         # Get the rows per page value from the query parameters
         rows_per_page = self.request.GET.get('invites_per_page', 5)
-        
+
         paginator = Paginator(paginated_organisation_invites, rows_per_page)
-        
+
         try:
             invites = paginator.page(invites_page)
         except PageNotAnInteger:
             invites = paginator.page(1)
         except EmptyPage:
             invites = paginator.page(paginator.num_pages)
-        
+
         return invites
-    
+
     def dispatch(self, request, *args, **kwargs):
         if request.POST.get('action') == 'invite':
             return self.invite_post(request)
@@ -279,4 +280,3 @@ class OrganisationUsersView(LoginRequiredMixin,RegisteredOrganisationBaseView,Te
         ctx['invites'] = self.get_organisation_invites()
         ctx['role'] = self.get_user_role_by_user(self.request.user)
         return ctx
-

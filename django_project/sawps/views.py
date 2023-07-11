@@ -40,18 +40,20 @@ class ActivateAccount(View):
             )
             return redirect('home')
 
+
 class AddUserToOrganisation(View):
-    def adduser(self,user,organisation,*args,**kwargs):
+    def adduser(self, user, organisation, *args, **kwargs):
         '''when the user has been invited to join an organisation 
         this view will Add the User to the OrganisationUser and update the linked models
         OrganisationInvites, UserProfile'''
 
         print(user.pk)
-        # update organisation invties 
+        # update organisation invties
         try:
-            
+
             org = Organisation.objects.get(name=str(organisation))
-            org_invites = OrganisationInvites.objects.filter(email=user.email, organisation=org)
+            org_invites = OrganisationInvites.objects.filter(
+                email=user.email, organisation=org)
             for invite in org_invites:
                 if not invite.joined:
                     # Update the joined field to True
@@ -59,30 +61,32 @@ class AddUserToOrganisation(View):
                     invite.save()
                     user_role = invite.user_role
                     # add user to organisation users
-                    org_user = OrganisationUser.objects.create(user=user,organisation=org)
+                    org_user = OrganisationUser.objects.create(
+                        user=user, organisation=org)
                     org_user.save()
                     # add user profile with the role
-                    user_profile = UserProfile.objects.create(user=user,user_role_type_id=user_role)
-                    user_profile.save()         
+                    user_profile = UserProfile.objects.create(
+                        user=user, user_role_type_id=user_role)
+                    user_profile.save()
         except OrganisationInvites.DoesNotExist:
             org_invites = None
         except Organisation.DoesNotExist:
             org = None
 
-    def is_user_already_joined(self,email,organisation):
+    def is_user_already_joined(self, email, organisation):
         """
         Check if user already joined the organisation
         """
 
         try:
             org = Organisation.objects.get(name=str(organisation))
-            joined = OrganisationInvites.objects.get(email=email, organisation_id=org)
+            joined = OrganisationInvites.objects.get(
+                email=email, organisation_id=org)
             if joined:
                 return True
-            else : return False
+            else:
+                return False
         except OrganisationInvites.DoesNotExist:
             return None
         except Organisation.DoesNotExist:
             return None
-        
-        

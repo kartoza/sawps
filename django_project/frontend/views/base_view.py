@@ -12,6 +12,7 @@ class RegisteredOrganisationBaseView(TemplateView):
     """
     Base view to provide organisation context for logged-in users.
     """
+
     def set_current_organisation(self, organisation: Organisation):
         if organisation:
             self.request.session[
@@ -23,7 +24,7 @@ class RegisteredOrganisationBaseView(TemplateView):
                 CURRENT_ORGANISATION_ID_KEY] = 0
             self.request.session[
                 CURRENT_ORGANISATION_KEY] = ''
-    
+
 
     def get_or_set_current_organisation(self):
         if (
@@ -71,8 +72,8 @@ class RegisteredOrganisationBaseView(TemplateView):
             organisations = organisations.exclude(
                 id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         return OrganisationSerializer(organisations, many=True).data
-    
-    
+
+
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

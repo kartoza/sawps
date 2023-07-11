@@ -10,6 +10,7 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from stakeholder.request_context import get_request
 
+
 class UserRoleType(models.Model):
     """User role type (Base users, admins ..etc.) model."""
 
@@ -56,9 +57,10 @@ class UserTitle(models.Model):
 class UserProfile(models.Model):
     """Extend User model with one-to-one mapping."""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name='user_profile')
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, unique=True, related_name='user_profile')
     title_id = models.ForeignKey(
-        UserTitle, 
+        UserTitle,
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
@@ -71,7 +73,7 @@ class UserProfile(models.Model):
         blank=True
     )
     user_role_type_id = models.ForeignKey(
-        UserRoleType, 
+        UserRoleType,
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
@@ -87,13 +89,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
     def picture_url(self):
         if self.picture.url:
             return '{media}/{url}'.format(
                     media=settings.MEDIA_ROOT,
                     url=self.picture,
-                )
+            )
 
     class Meta:
         verbose_name = 'User'
@@ -117,7 +119,7 @@ class UserLogin(models.Model):
         verbose_name_plural = 'User logins'
         db_table = "user_login"
 
-        
+
 class Organisation(models.Model):
     """Organisation model."""
 
@@ -133,7 +135,8 @@ class Organisation(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class OrganisationInvites(models.Model):
     """OrganisationInvites model to store all invites"""
     MEMBER = 'Member'
@@ -142,11 +145,12 @@ class OrganisationInvites(models.Model):
         (MEMBER, 'Member'),
         (MANAGER, 'Manager'),
     ]
-    email = models.CharField(max_length=200,null=True,blank=True)
-    organisation = models.ForeignKey(Organisation, on_delete=models.DO_NOTHING,null=True, blank=True)
-    joined = models.BooleanField(default=False,null=True,blank=True)
+    email = models.CharField(max_length=200, null=True, blank=True)
+    organisation = models.ForeignKey(
+        Organisation, on_delete=models.DO_NOTHING, null=True, blank=True)
+    joined = models.BooleanField(default=False, null=True, blank=True)
     user_role = models.ForeignKey(
-        UserRoleType, 
+        UserRoleType,
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
@@ -155,7 +159,7 @@ class OrganisationInvites(models.Model):
     assigned_as = models.CharField(
         max_length=50, choices=ASSIGNED_CHOICES, default=MEMBER
     )
-    # user =  models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True) 
+    # user =  models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
         verbose_name = 'OrganisationInvites'
@@ -164,6 +168,7 @@ class OrganisationInvites(models.Model):
 
     def __str__(self):
         return str(self.email)
+
 
 @receiver(post_save, sender=OrganisationInvites)
 def send_invitation(sender, instance, created, **kwargs):
@@ -188,15 +193,15 @@ def send_invitation(sender, instance, created, **kwargs):
             # Send email
             try:
                 send_mail(
-                    subject, 
-                    None, 
+                    subject,
+                    None,
                     settings.SERVER_EMAIL,
                     [str(instance.email)],
                     html_message=message
                 )
             except Exception as e:
                 print('Failed to send email:', str(e))
-        
+
 
 
 class OrganisationPersonnel(models.Model):

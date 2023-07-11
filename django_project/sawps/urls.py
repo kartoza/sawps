@@ -1,15 +1,10 @@
 from django.urls import path
-from sawps.views import ActivateAccount,AddUserToOrganisation
+from sawps.views import ActivateAccount
 
 urlpatterns = [
     path(
         'activate/<uidb64>/<token>/',
         ActivateAccount.as_view(),
         name='activate',
-    ),
-    path(
-        'adduser/<uidb64>/<organisation>/',
-        AddUserToOrganisation.as_view(),
-        name='adduser',
     ),
 ]

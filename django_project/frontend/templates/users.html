@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% load static %}
 
@@ -8,29 +7,30 @@
 <section>
   <div class="container py-5">
 
-      <div class="container">
-        <div class="row">
-          <h3 class="page-title sawps-text-menu mb-3">{{ current_organisation }}</h3>
-          <div class="col-auto ml-auto">
-            {% if role == 'Admin' or role == 'super user' %}
-              <button class="btn btn-success" type="button" data-toggle="modal" data-target="#myModal">
-                <i class="fas fa-plus"></i> Add People
-              </button>
-            {% endif %}
-          </div>
+    <div class="container">
+      <div class="row">
+        <h3 class="page-title sawps-text-menu mb-3">{{ current_organisation }}</h3>
+        <div class="col-auto ml-auto">
+          {% if role == 'Admin' or role == 'super user' %}
+          <button class="btn btn-success" type="button" data-toggle="modal" data-target="#myModal">
+            <i class="fas fa-plus"></i> Add People
+          </button>
+          {% endif %}
         </div>
       </div>
-        <hr class="default-separator">
-        
-      <div class="container">
-       <div class="row">
+    </div>
+    <hr class="default-separator">
+
+    <div class="container">
+      <div class="row">
         <h4 class="page-title sawps-text-menu mb-3">Members</h4>
-        <div class="col-md-12"> 
-          
+        <div class="col-md-12">
+
 
 
           <!-- Send Invitation Modal -->
-          <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -38,7 +38,8 @@
                 </div>
                 <div class="modal-body">
                   <div class="form-group">
-                    <input type="email" class="form-control email-input" name="email" aria-describedby="emailHelp" placeholder="@Email address" required>
+                    <input type="email" class="form-control email-input" name="email" aria-describedby="emailHelp"
+                      placeholder="@Email address" required>
                     <div class="invalid-feedback">
                       Please enter a valid email address.
                     </div>
@@ -59,14 +60,16 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-success mx-auto" id="inviteBtn" style="background-color: green;" onclick="invitePeople()">Invite</button>
+                  <button type="button" class="btn btn-success mx-auto" id="inviteBtn" style="background-color: green;"
+                    onclick="invitePeople()">Invite</button>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Delete Message Modal -->
-          <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -85,7 +88,8 @@
 
 
           <!-- Error Message Modal -->
-          <div class="modal fade" id="errorMessageModal" tabindex="-1" role="dialog" aria-labelledby="errorMessageModalLabel" aria-hidden="true">
+          <div class="modal fade" id="errorMessageModal" tabindex="-1" role="dialog"
+            aria-labelledby="errorMessageModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -106,231 +110,238 @@
             </div>
           </div>
 
-            <!-- Success Message Modal -->
-            <div class="modal fade" id="successMessageModal" tabindex="-1" role="dialog" aria-labelledby="successMessageModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title text-center" id="successMessageModalLabel">
-                      <i class="fas fa-check-circle mr-2"></i>Success
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true" class="text-center">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <p class="text-center">Email invitation sent successfully.</p>
-                  </div>
-                  <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  </div>
+          <!-- Success Message Modal -->
+          <div class="modal fade" id="successMessageModal" tabindex="-1" role="dialog"
+            aria-labelledby="successMessageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title text-center" id="successMessageModalLabel">
+                    <i class="fas fa-check-circle mr-2"></i>Success
+                  </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="text-center">&times;</span>
+                  </button>
                 </div>
-              </div>
-            </div>
-
-
-          
-
-        <!-- search button -->
-        <div class="row">
-          <div class="row justify-content-between">
-            <div class="col">
-              <div class="input-group">
-                <div class="input-group-append">
-                  <form id="searchForm" action="{% url 'Users' %}" method="GET" class="input-group">
-                    <input type="text" name="query" placeholder="Search..." class="form-control" id="searchInput">
-                    <div class="input-group-append">
-                      <button class="btn btn-success" type="submit" id="searchButton">
-                        <i class="fas fa-search"></i>
-                      </button>
-                    </div>
-                  </form>
+                <div class="modal-body">
+                  <p class="text-center">Email invitation sent successfully.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>
           </div>
-        </div>        
-        
-        
-        <br>
-        
-        <!-- members table -->
-        <div class="row">
-          <table id="organisation_users" class="table table-striped table-bordered" width="100%">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Role</th>
-                {% if role == 'Admin' or role == 'super user' %}
-                <th></th>
-                {% endif %}
-              </tr>
-            </thead>
-            <tbody>
-              {% for user in users %}
-              <tr>
-                <td>{{ user.organisation_user }}</td>
-                {% if user.role == 'Base user' %}
-                <td>{{ 'Organisation Member' }}</td>
-                {% else %}
-                <td>{{ 'Organisation Manager' }}</td>
-                {% endif %}
-                {% if role == 'Admin' or role == 'super user' %}
-                <td>
-                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ user.id }}"></i>
-                </td>
-                {% endif %}
-              </tr>
-              {% endfor %}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="3">
-                  <div class="row justify-content-end">
-                    <div class="col-auto">
-                      <div class="row align-items-center">
-                        <div class="col-auto">
-                          Rows per page:
-                        </div>
-                        <div class="col-auto">
-                          <select id="usersRowsPerPage" class="form-control mr-2 small-select" onchange="updateRowsPerPage('users', this)">
-                            <option value="5" {% if users.paginator.per_page == 5 %}selected{% endif %}>5</option>
-                            <option value="10" {% if users.paginator.per_page == 10 %}selected{% endif %}>10</option>
-                            <option value="20" {% if users.paginator.per_page == 20 %}selected{% endif %}>20</option>
-                          </select>
-                        </div>
-                        <div class="col-auto">
-                          <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-end">
-                              {% if users.has_previous %}
-                              <li class="page-item">
-                                <a class="page-link" href="?users_page={{ users.previous_page_number }}" aria-label="Previous">
-                                  <span aria-hidden="true">&laquo;</span>
-                                  <span class="sr-only">Previous</span>
-                                </a>
-                              </li>
-                              {% endif %}
-                              <li class="page-item disabled">
-                                <a class="page-link" href="#">{{ users.number }}</a>
-                              </li>
-                              {% if users.has_next %}
-                              <li class="page-item">
-                                <a class="page-link" href="?users_page={{ users.next_page_number }}" aria-label="Next">
-                                  <span aria-hidden="true">&raquo;</span>
-                                  <span class="sr-only">Next</span>
-                                </a>
-                              </li>
-                              {% endif %}
-                            </ul>
-                          </nav>
-                        </div>
+
+
+
+
+          <!-- search button -->
+          <div class="row">
+            <div class="row justify-content-between">
+              <div class="col">
+                <div class="input-group">
+                  <div class="input-group-append">
+                    <form id="searchForm" action="{% url 'Users' %}" method="GET" class="input-group">
+                      <input type="text" name="query" placeholder="Search..." class="form-control" id="searchInput">
+                      <div class="input-group-append">
+                        <button class="btn btn-success" type="submit" id="searchButton">
+                          <i class="fas fa-search"></i>
+                        </button>
                       </div>
-                    </div>
+                    </form>
                   </div>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-        
-        <!-- invitations table -->
-        <div class="row">
-          <h4 class="page-title sawps-text-menu mb-3">Invitations</h4>
-        
-          <table id="invites" class="table table-striped table-bordered" width="100%">
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for invited in invites %}
-              <tr>
-                <td>{{ invited.email }}</td>
-                {% if invited.user_role == 'Base user' %}
-                <td>Organisation Member</td>
-                {% else %}
-                <td>Organisation Manager</td>
-                {% endif %}
-                <td class="text-center">
-                  {% if invited.joined %}
-                    <span class="badge badge-success">Joined</span>
-                  {% else %}
-                    <span class="badge badge-secondary">Pending</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <br>
+
+          <!-- members table -->
+          <div class="row">
+            <table id="organisation_users" class="table table-striped table-bordered" width="100%">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Role</th>
+                  {% if role == 'Admin' or role == 'super user' %}
+                  <th></th>
                   {% endif %}
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="3">
-                  <div class="row justify-content-end align-items-center">
-                    <div class="col-auto">
-                      <div class="row align-items-center">
-                        <div class="col-auto">
-                          Rows per page:
-                        </div>
-                        <div class="col-auto">
-                          <select id="invitesRowsPerPage" class="form-control mr-2 small-select" onchange="updateRowsPerPage('invites', this)">
-                            <option value="5" {% if invites.paginator.per_page == 5 %}selected{% endif %}>5</option>
-                            <option value="10" {% if invites.paginator.per_page == 10 %}selected{% endif %}>10</option>
-                            <option value="20" {% if invites.paginator.per_page == 20 %}selected{% endif %}>20</option>
-                          </select>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>{{ user.organisation_user }}</td>
+                  {% if user.role == 'Base user' %}
+                  <td>{{ 'Organisation Member' }}</td>
+                  {% else %}
+                  <td>{{ 'Organisation Manager' }}</td>
+                  {% endif %}
+                  {% if role == 'Admin' or role == 'super user' %}
+                  <td>
+                    <i class="fas fa-trash-alt trash-icon" data-object-id="{{ user.id }}"></i>
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3">
+                    <div class="row justify-content-end">
+                      <div class="col-auto">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            Rows per page:
+                          </div>
+                          <div class="col-auto">
+                            <select id="usersRowsPerPage" class="form-control mr-2 small-select"
+                              onchange="updateRowsPerPage('users', this)">
+                              <option value="5" {% if users.paginator.per_page==5 %}selected{% endif %}>5</option>
+                              <option value="10" {% if users.paginator.per_page==10 %}selected{% endif %}>10</option>
+                              <option value="20" {% if users.paginator.per_page==20 %}selected{% endif %}>20</option>
+                            </select>
+                          </div>
+                          <div class="col-auto">
+                            <nav aria-label="Page navigation">
+                              <ul class="pagination justify-content-end">
+                                {% if users.has_previous %}
+                                <li class="page-item">
+                                  <a class="page-link" href="?users_page={{ users.previous_page_number }}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                  </a>
+                                </li>
+                                {% endif %}
+                                <li class="page-item disabled">
+                                  <a class="page-link" href="#">{{ users.number }}</a>
+                                </li>
+                                {% if users.has_next %}
+                                <li class="page-item">
+                                  <a class="page-link" href="?users_page={{ users.next_page_number }}"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                  </a>
+                                </li>
+                                {% endif %}
+                              </ul>
+                            </nav>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col-auto">
-                      <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                          {% if invites.has_previous %}
-                          <li class="page-item">
-                            <a class="page-link" href="?invites_page={{ invites.previous_page_number }}" aria-label="Previous">
-                              <span aria-hidden="true">&laquo;</span>
-                              <span class="sr-only">Previous</span>
-                            </a>
-                          </li>
-                          {% endif %}
-                          <li class="page-item disabled">
-                            <a class="page-link" href="#">{{ invites.number }}</a>
-                          </li>
-                          {% if invites.has_next %}
-                          <li class="page-item">
-                            <a class="page-link" href="?invites_page={{ invites.next_page_number }}" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                              <span class="sr-only">Next</span>
-                            </a>
-                          </li>
-                          {% endif %}
-                        </ul>
-                      </nav>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- invitations table -->
+          <div class="row">
+            <h4 class="page-title sawps-text-menu mb-3">Invitations</h4>
+
+            <table id="invites" class="table table-striped table-bordered" width="100%">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for invited in invites %}
+                <tr>
+                  <td>{{ invited.email }}</td>
+                  {% if invited.user_role == 'Base user' %}
+                  <td>Organisation Member</td>
+                  {% else %}
+                  <td>Organisation Manager</td>
+                  {% endif %}
+                  <td class="text-center">
+                    {% if invited.joined %}
+                    <span class="badge badge-success">Joined</span>
+                    {% else %}
+                    <span class="badge badge-secondary">Pending</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3">
+                    <div class="row justify-content-end align-items-center">
+                      <div class="col-auto">
+                        <div class="row align-items-center">
+                          <div class="col-auto">
+                            Rows per page:
+                          </div>
+                          <div class="col-auto">
+                            <select id="invitesRowsPerPage" class="form-control mr-2 small-select"
+                              onchange="updateRowsPerPage('invites', this)">
+                              <option value="5" {% if invites.paginator.per_page==5 %}selected{% endif %}>5</option>
+                              <option value="10" {% if invites.paginator.per_page==10 %}selected{% endif %}>10</option>
+                              <option value="20" {% if invites.paginator.per_page==20 %}selected{% endif %}>20</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-auto">
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination">
+                            {% if invites.has_previous %}
+                            <li class="page-item">
+                              <a class="page-link" href="?invites_page={{ invites.previous_page_number }}"
+                                aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                            <li class="page-item disabled">
+                              <a class="page-link" href="#">{{ invites.number }}</a>
+                            </li>
+                            {% if invites.has_next %}
+                            <li class="page-item">
+                              <a class="page-link" href="?invites_page={{ invites.next_page_number }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                          </ul>
+                        </nav>
+                      </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+
+
+
+
+
+
         </div>
-        
-        
-        
-        
-       
-        
-         
-       </div> 
-       </div> 
-      </div> 
-      
+      </div>
+    </div>
+
   </div>
 
   <script>
     // delete icon
-    $(document).ready(function() {
+    $(document).ready(function () {
       // Event delegation for trash icon click
-      $(document).on('click', '.trash-icon', function() {
+      $(document).on('click', '.trash-icon', function () {
         var objectId = $(this).data('object-id');
         // console.log('triggered', objectId);
 
@@ -342,7 +353,7 @@
       });
 
       // Event listener for delete button click in the modal
-      $('#deleteBtn').click(function() {
+      $('#deleteBtn').click(function () {
         var objectId = $(this).data('object-id');
 
         // Send an AJAX request to delete the row
@@ -354,7 +365,7 @@
             'object_id': objectId,
             'csrfmiddlewaretoken': '{{ csrf_token }}',
           },
-          success: function() {
+          success: function () {
             // Close the modal
             $('#deleteModal').modal('hide');
 
@@ -368,11 +379,11 @@
 
     // updating rows per page for the respective tables
     function updateRowsPerPage(table, selectElement) {
-        var selectedValue = selectElement.value;
-        var url = new URL(window.location.href);
-        url.searchParams.set(table + '_page', 1);
-        url.searchParams.set(table + '_per_page', selectedValue);
-        window.location.href = url.href;
+      var selectedValue = selectElement.value;
+      var url = new URL(window.location.href);
+      url.searchParams.set(table + '_page', 1);
+      url.searchParams.set(table + '_per_page', selectedValue);
+      window.location.href = url.href;
     }
 
     // invite member
@@ -413,7 +424,7 @@
           'current_organisation': '{{ current_organisation }}', // retrieve this Django variable in JavaScript
           'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
-        success: function(response) {
+        success: function (response) {
           // Handle the success response
           console.log(response.status);
 
@@ -422,7 +433,7 @@
             $('#errorMessageModal').modal('show');
           } else {
             var data = [];
-            try{
+            try {
               data = JSON.parse(response.updated_invites);
 
               var tableBody = $('#invites tbody');
@@ -444,156 +455,155 @@
 
               // Show pop-up modal with success message: email invitation sent
               $('#successMessageModal').modal('show');
-            }catch(exception){
+            } catch (exception) {
               console.log(exception.message)
             }
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           // Handle the error response
           console.error(error);
         }
       });
-}
+    }
 
 
     // search organisation users table
-    $(document).ready(function() {
-      $('#searchInput').on('input', function() {
+    $(document).ready(function () {
+      $('#searchInput').on('input', function () {
         var formData = $(this).val();
-            makeSearchQuery(formData)
+        makeSearchQuery(formData)
       });
     });
 
     $(document).ready(function () {
-        $('#searchForm').submit(function (event) {
-            event.preventDefault();
-            var formData = $(this).serialize();
-            console.log('submitting ',formData)
+      $('#searchForm').submit(function (event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+        console.log('submitting ', formData)
 
-            makeSearchQuery(formData)
-        });
+        makeSearchQuery(formData)
+      });
     });
 
-    function makeSearchQuery(formData){
+    function makeSearchQuery(formData) {
       $.ajax({
-                type: 'POST',
-                url: $(this).attr('action'),
-                data: {
-                  'action': 'search_table', 
-                  'query': formData,
-                  'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                // dataType: 'json',
-                success: function (response) {
-                    var data = response.data;
-                    data = JSON.parse(data);
-                    // console.log(data)
-                    var tableBody = $('#organisation_users tbody');
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: {
+          'action': 'search_table',
+          'query': formData,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        // dataType: 'json',
+        success: function (response) {
+          var data = response.data;
+          data = JSON.parse(data);
+          // console.log(data)
+          var tableBody = $('#organisation_users tbody');
 
-                    tableBody.empty();
+          tableBody.empty();
 
-                    var current_user_role = '{{ role }}'
+          var current_user_role = '{{ role }}'
 
-                    if (data.length > 0) {
-                        for (var i = 0; i < data.length; i++) {
-                            var row = '<tr>';
-                            row += '<td>' + data[i].user + '</td>';
-                            row += '<td>' + data[i].role + '</td>';
-                            
-                            if(current_user_role === "Admin" || current_user_role === "Super user")
-                              row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].id + '></i></td>';
-                            // Add more table cells as needed
-                            row += '</tr>';
+          if (data.length > 0) {
+            for (var i = 0; i < data.length; i++) {
+              var row = '<tr>';
+              row += '<td>' + data[i].user + '</td>';
+              row += '<td>' + data[i].role + '</td>';
 
-                            tableBody.append(row);
-                            // Update the rows per page value to the maximum
-                            $('#usersRowsPerPage').val('{{ users.paginator.num_pages }}');
-                            $('#usersRowsPerPage').val(20);
-                            $('#usersRowsPerPage option').prop('disabled', false);
-                            $('tfoot').show(); // Hide the table footer
-                        }
-                    } else {
-                      tableBody.append('<tr class="no-results"><td colspan="2">No results found</td></tr>');
-                      $('tfoot').hide(); // Hide the table footer
-                    }
-                }
-            });
+              if (current_user_role === "Admin" || current_user_role === "Super user")
+                row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id=' + data[i].id + '></i></td>';
+              // Add more table cells as needed
+              row += '</tr>';
+
+              tableBody.append(row);
+              // Update the rows per page value to the maximum
+              $('#usersRowsPerPage').val('{{ users.paginator.num_pages }}');
+              $('#usersRowsPerPage').val(20);
+              $('#usersRowsPerPage option').prop('disabled', false);
+              $('tfoot').show(); // Hide the table footer
+            }
+          } else {
+            tableBody.append('<tr class="no-results"><td colspan="2">No results found</td></tr>');
+            $('tfoot').hide(); // Hide the table footer
+          }
+        }
+      });
 
     }
 
   </script>
-  
+
 </section>
 
 <style>
+  .pagination a.page-link {
+    color: green;
+  }
 
-.pagination a.page-link {
-  color: green;
-}
+  table#organisation_users tbody tr td:last-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-table#organisation_users tbody tr td:last-child {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  table#organisation_users tbody tr td:last-child .trash-icon {
+    border: none;
+  }
 
-table#organisation_users tbody tr td:last-child .trash-icon {
-  border: none;
-}
-
-table#organisation_users tbody tr td:last-child {
-  border-bottom: none;
-}
-
-
-
-tfoot select.form-control {
-  color: black;
-  background-color: #f8f9fa;
-  border-color: gray;
-  border-radius: 0;
-  height: auto;
-  padding: 0.375rem 1.75rem 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333333"><path d="M7 10l5 5 5-5z" /></svg>');
-  background-repeat: no-repeat;
-  background-position: right 0.375rem center;
-  background-size: 12px 12px;
-  padding-right: 1rem;
-}
-
-tfoot select.form-control:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-  border-color: green;
-}
+  table#organisation_users tbody tr td:last-child {
+    border-bottom: none;
+  }
 
 
 
-.form-control:focus {
-  border-color: green;
-  box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-}
+  tfoot select.form-control {
+    color: black;
+    background-color: #f8f9fa;
+    border-color: gray;
+    border-radius: 0;
+    height: auto;
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333333"><path d="M7 10l5 5 5-5z" /></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.375rem center;
+    background-size: 12px 12px;
+    padding-right: 1rem;
+  }
+
+  tfoot select.form-control:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    border-color: green;
+  }
 
 
-#invitesRowsPerPage {
-  margin-top: -0.9rem;
-}
 
-#usersRowsPerPage {
-  margin-top: -0.9rem;
-}
+  .form-control:focus {
+    border-color: green;
+    box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+  }
+
+
+  #invitesRowsPerPage {
+    margin-top: -0.9rem;
+  }
+
+  #usersRowsPerPage {
+    margin-top: -0.9rem;
+  }
 
   /* Reduce the size of select boxes with the small-select class */
   .small-select {
-      width: 50px; 
-      font-size: 14px;
-      padding: 4px;
-      height: 38px;
+    width: 50px;
+    font-size: 14px;
+    padding: 4px;
+    height: 38px;
   }
 
   .email-input:focus {
@@ -602,7 +612,8 @@ tfoot select.form-control:focus {
   }
 
   .custom-select {
-    color: black; /* Set the default text color to black */
+    color: black;
+    /* Set the default text color to black */
     background-color: #f8f9fa;
     border-color: green;
   }
@@ -621,5 +632,3 @@ tfoot select.form-control:focus {
 
 
 {% endblock %}
-
-
