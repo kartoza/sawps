@@ -10,6 +10,54 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
+            """CREATE table if not exists layer.critical_biodiversity_areas_2019_small_scale (
+                id int8 NULL,
+                geom public.geometry NULL,
+                sensfeat varchar(100) NULL
+            );""",
+            reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
+            """CREATE table if not exists layer.critical_biodiversity_areas_2019_midscale (
+                id int8 NULL,
+                geom public.geometry NULL,
+                sensfeat varchar(100) NULL
+            );""",
+            reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
+            """CREATE table if not exists layer.ecosystems_small_scale (
+                id int8 NULL,
+                geom public.geometry NULL,
+                biome_18 varchar(80) NULL
+            );""",
+            reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
+            """CREATE table if not exists layer.ecosystems_midscale (
+                id int8 NULL,
+                geom public.geometry NULL,
+                biome_18 varchar(80) NULL
+            );""",
+            reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
+            """CREATE table if not exists layer.protected_areas_2022_small_scale (
+                id int8 NULL,
+                geom public.geometry NULL,
+                site_type varchar(254) NULL
+            );""",
+            reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
+            """CREATE table if not exists layer.protected_areas_2022_midscale (
+                id int8 NULL,
+                geom public.geometry NULL,
+                site_type varchar(254) NULL
+            );""",
+            reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
             """UPDATE layer.critical_biodiversity_areas_2019_small_scale 
             SET geom = st_simplify("geom", 100);""",
             reverse_sql=migrations.RunSQL.noop
