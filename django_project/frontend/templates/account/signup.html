@@ -12,83 +12,108 @@
             <div class="account-form content" style="width: 700px">
                     {% csrf_token %}
                     <div class="container">
-
                         <div class="custom-form-container">
-                            {% if messages %}
-                                <ul class="errorlist">
-                                    {% for message in messages %}
-                                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-
-                            <h4 class="account-form-title">{% trans "Registration" %}</h4>
-                            <hr class="separator">
-                            <form class="signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">{% csrf_token %}
-
+                            <!-- Form content -->
+                            <form class="signup" id="signup_form" method="POST" action="{% url 'account_signup' %}">
+                                {% csrf_token %}
+                    
                                 <input type="hidden" name="recaptcha_token" id="recaptcha-token-input" value="">
                                 {% if form.non_field_errors %}
-                                    <div class="alert alert-warning">
-                                        {% for error in form.non_field_errors %}
-                                            <p>{{ error }}</p>
-                                        {% endfor %}
+                                <div class="alert alert-warning">
+                                    {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                    
+                                <div class="form-row">
+                                    {% for field in form %}
+                                    {% if field.name == 'email' %}
                                     </div>
-                                {% endif %}
-                                <div class="form-row">
-                                {% for field in form %}
-                                {% if field.name == 'email' %}
-                                </div>
-                                <div class="form-group">
-                                    <label for="{{field.label}}">{{field.label}}</label>
-                                    {{ field }}
-                                    {% if field.errors %}
+                                    <div class="form-group">
+                                        <label for="{{ field.label }}">{{ field.label }}</label>
+                                        <input type="email" class="form-control" id="emailInput" name="{{ field.html_name }}"
+                                            {% if email %} value="{{ email }}" {% endif %} {% if email %} readonly {% endif %}
+                                            placeholder="Enter email">
+                                        {% if field.errors %}
                                         <ul class="errorlist">
-                                            {% for error in field.errors%}
-                                            <li>{{error}}</li>
+                                            {% for error in field.errors %}
+                                            <li>{{ error }}</li>
                                             {% endfor %}
                                         </ul>
-                                    {% endif %}   
-                                </div>
-                                <div class="form-row">
-                                {% else %}
-                                <div class="form-group col-md-6">
-                                    <label for="{{field.label}}">{{field.label}}</label>
-                                    {{ field }}
-                                    {% if field.errors %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-row">
+                                    {% elif field.name == 'organisation' %}
+                                    <div class="form-group" style="display: none;">
+                                        <label for="{{ field.label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                    </div>
+                                    <input type="hidden" id="organisationInput" name="{{ field.html_name }}">
+                                    {% else %}
+                                    <div class="form-group col-md-6">
+                                        <label for="{{ field.label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.errors %}
                                         <ul class="errorlist">
-                                            {% for error in field.errors%}
-                                            <li>{{error}}</li>
+                                            {% for error in field.errors %}
+                                            <li>{{ error }}</li>
                                             {% endfor %}
                                         </ul>
+                                        {% endif %}
+                                    </div>
                                     {% endif %}
+                                    {% endfor %}
                                 </div>
-                                {% endif %}
-                                {% endfor%}
-                                </div>
-                                
+                    
                                 {% if redirect_field_value %}
-                                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                                 {% endif %}
+                    
                                 <div class="password-help-text mt-0">
-                                    <span>Your password should consist of a minimum of twelve characters, including at least one lowercase letter, 
-                                    one uppercase letter, one numeric character, and one special character. We highly recommend utilizing a 
-                                    password manager tool that can assist you in generating a strong password.</span>                                    
-
-                                </ul>
-                                </div> 
-
+                                    <span>Your password should consist of a minimum of twelve characters, including at least one lowercase letter,
+                                        one uppercase letter, one numeric character, and one special character. We highly recommend utilizing a
+                                        password manager tool that can assist you in generating a strong password.</span>
+                                </div>
+                    
                                 <button id="submit-button" class="sawps-from-submit account-button" type="submit">{% trans "Register" %}</button>
                             </form>
-
                         </div>
                         <div class="form-space"></div>
                     </div> <!-- /container -->
+                    
+                    
+                    
                     </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        
+        // Get the URL of the current page
+        var url = new URL(window.location.href);
+
+        // Get the value of the 'email' parameter from the URL
+        var email = url.searchParams.get('email');
+
+        var organisationValue = url.searchParams.get('organisation');
+
+        var organisationField = document.getElementById("organisationInput");
+
+        if (organisationValue !== null)
+            organisationField.value = organisationValue;
+
+        // Prepopulate the email field with the URL value
+        var emailInput = document.getElementById('emailInput');
+        if (email) {
+            emailInput.value = email;
+            emailInput.readOnly = true;
+        }
+    
+    </script>
 </section>
 {% endblock %}
 

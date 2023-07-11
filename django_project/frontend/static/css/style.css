@@ -74,7 +74,23 @@ body {
     color: #000000;
     background-color: #FAA755;
     border-color: #FAA755;
-}
+  }
+
+  .clickable {
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .clickable::after {
+    content: '\f0d7'; /* Unicode for the click icon, adjust as needed */
+    font-family: 'Font Awesome'; /* Assuming you have Font Awesome included */
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+
 
 .account-action {
   position: relative;

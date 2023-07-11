@@ -27,7 +27,7 @@
                     <a class="dropdown-item" href="/">DASHBOARD</a>
                     <hr class="divider" />
                     <span class="dropdown-header">CURRENT ORGANISATION:</span>
-                    <span class="dropdown-item-text font-weight-bolder">{{ current_organisation }}</span>
+                    <span class="dropdown-item-text font-weight-bolder clickable" onclick="redirectToDesiredPage()">{{ current_organisation }}</span>
                     <hr class="divider" />
                     {% if organisations %}
                     <span class="dropdown-header">ACCESSIBLE ORGANISATIONS:</span>
@@ -69,3 +69,28 @@
 
     </div>
 </nav>
+
+<script>
+    function redirectToDesiredPage() {
+        // Retrieve the current window location
+        var currentLocation = window.location.href;
+
+        var UsersUrl = extractBaseUrl(currentLocation) + "/users/";
+
+        if (currentLocation !== UsersUrl) {
+            // Perform the redirection
+            window.location.href = UsersUrl;
+        }
+    }
+    function extractBaseUrl(url) {
+        // Find the index of the first forward slash after the initial //
+        const slashIndex = url.indexOf('/', url.indexOf('//') + 2);
+        
+        // Extract the base URL
+        const baseUrl = url.substring(0, slashIndex);
+
+        return baseUrl;
+    }
+
+</script>
+
