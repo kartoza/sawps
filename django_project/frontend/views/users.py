@@ -1,5 +1,4 @@
 import json
-from django.core import serializers
 from stakeholder.request_context import set_request
 from stakeholder.models import OrganisationInvites, OrganisationUser, UserProfile, UserRoleType
 from django.contrib.auth.models import User
@@ -20,7 +19,8 @@ from django.contrib.auth import models
 
 class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, TemplateView):
     """
-    OrganisationUsersView displays the organisations users page by rendering the 'users.html' template.
+    OrganisationUsersView displays the organisations
+    users page by rendering the 'users.html' template.
     """
     template_name = 'users.html'
     model = OrganisationUser
@@ -99,7 +99,7 @@ class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, 
 
         data = []
 
-        # nsearch user within the orginisation
+        # search user within the orginisation
         for user in matching_users:
             try:
                 org_user = OrganisationUser.objects.get(user=user)
@@ -151,10 +151,13 @@ class OrganisationUsersView(LoginRequiredMixin, RegisteredOrganisationBaseView, 
             if not is_new_invitation:
                 if role == 'manager':
                     create_invite = OrganisationInvites(
-                        email=email, organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY], user_role=user_role, assigned_as=OrganisationInvites.MANAGER)
+                        email=email, 
+                        organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY],
+                        user_role=user_role, assigned_as=OrganisationInvites.MANAGER)
                 else:
                     create_invite = OrganisationInvites(
-                        email=email, organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY], user_role=user_role, assigned_as=OrganisationInvites.MEMBER)
+                        email=email, organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY],
+                        user_role=user_role, assigned_as=OrganisationInvites.MEMBER)
 
 
                 set_request(request)  # Set the request object
