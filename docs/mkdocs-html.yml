@@ -23,16 +23,17 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-#  palette:
+  palette:
+    primary: custom
 #    - scheme: default
-#      primary: green
-#      accent: grey
+#      primary: custom
+#      accent: custom
 #      toggle:
 #        icon: material/brightness-4
 #        name: Switch to dark mode
 #    - scheme: slate
-#      primary: blue
-#      accent: grey
+#      primary: custom
+#      accent: custom
 #      toggle:
 #        icon: material/brightness-6
 #        name: Switch to light mode
