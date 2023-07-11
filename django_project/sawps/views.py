@@ -1,5 +1,4 @@
-import logging
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.contrib.auth import models
 from django.contrib.auth import login
 from django.contrib import messages
@@ -47,7 +46,6 @@ class AddUserToOrganisation(View):
         this view will Add the User to the OrganisationUser and update the linked models
         OrganisationInvites, UserProfile'''
 
-        print(user.pk)
         # update organisation invties
         try:
 

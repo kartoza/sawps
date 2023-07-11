@@ -2,9 +2,7 @@ import logging
 from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
-from stakeholder.models import UserProfile, UserRoleType, UserTitle, OrganisationUser
-
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from stakeholder.models import UserProfile, UserRoleType, UserTitle
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +38,8 @@ class ProfileView(DetailView):
                 'profile-picture', None
             )
         if self.request.POST.get('title', ''):
-            profile.user.title_id=UserTitle.objects.get(id=self.request.POST.get('title', '')),
+            profile.user.title_id = UserTitle.objects.get(
+                id=self.request.POST.get('title', '')),
 
         profile.user_profile.save()
         profile.save()
@@ -53,32 +52,3 @@ class ProfileView(DetailView):
         context['roles'] = UserRoleType.objects.all()
 
         return context
-    
-
-"""
-class OrganisationUsersView(DetailView):
-    template_name = 'users.html'
-    model = get_user_model()
-    slug_field = 'username'
-
-    def get_organisation_users(self, request, *args, **kwargs):
-        organisation_user_list = OrganisationUser.objects.filter(user=self.request.user)
-        page = request.GET.get('page', 1)
-    
-        paginator = Paginator(organisation_user_list, 3)
-        try:
-            users = paginator.page(page)
-        except PageNotAnInteger:
-            users = paginator.page(1)
-        except EmptyPage:
-            users = paginator.page(paginator.num_pages)
-    
-        return users
-
-    def get_context_data(self, **kwargs):
-        context = super(OrganisationUsersView, self).get_context_data(**kwargs)
-        context['users'] = self.get_organisation_users(self,self.request)
-
-        return context
-"""
-
