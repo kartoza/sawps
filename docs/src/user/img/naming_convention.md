@@ -1,7 +1,7 @@
 # Image naming convention
 
-Images should be named according to reference doc and order in document.
+Images should be named according to reference doc, sub-section and order in document.
 e.g.
 
-- 1st image in instructions will be instructions_1, 2nd image will be instructions_2, etc.
-- 1st image in quickstart will be quickstart_1, etc.
+- The 1st image in instructions regarding zooming will be something like instr_zooming__1, the 2nd image will be instr_zooming__2, etc.
+- The 1st image in quickstart regarding logging in will be qs_login_1, etc
