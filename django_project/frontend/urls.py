@@ -18,9 +18,11 @@ from .views.home import HomeView
 from .views.map import MapView
 from .views.help import HelpView
 from .views.about import AboutView
-from .views.contact import ContactView
+
 from .views.users import OrganisationUsersView
+from .views.contact import ContactUsView
 from .views.switch_organisation import switch_organisation
+from .views.online_form import OnlineFormView
 
 
 from frontend.api_views.map import (
@@ -38,7 +40,7 @@ from frontend.api_views.property import (
     PropertyList,
     UpdatePropertyInformation,
     UpdatePropertyBoundaries,
-    PropertyDetail
+    PropertyDetail,
 )
 from frontend.api_views.upload import (
     BoundaryFileUpload,
@@ -46,6 +48,12 @@ from frontend.api_views.upload import (
     BoundaryFileList,
     BoundaryFileSearch,
     BoundaryFileSearchStatus
+)
+from frontend.api_views.population import (
+    PopulationMetadataList,
+    UploadPopulationAPIVIew,
+    FetchDraftPopulationUpload,
+    DraftPopulationUpload
 )
 
 
@@ -143,15 +151,44 @@ urlpatterns = [
         BoundaryFileUpload.as_view(),
         name='boundary-file-upload'
     ),
+    re_path(
+        r'^api/population/metadata/list/?$',
+        PopulationMetadataList.as_view(),
+        name='population-metadata'
+    ),
+    re_path(
+        r'^api/upload/population/(?P<property_id>\d+)/?$',
+        UploadPopulationAPIVIew.as_view(),
+        name='population-upload'
+    ),
+    path(
+        'api/upload/population/draft/<uuid:draft_uuid>/',
+        FetchDraftPopulationUpload.as_view(),
+        name='fetch-draft-upload-species'
+    ),
+    path(
+        'api/upload/population/draft/<int:property_id>/',
+        DraftPopulationUpload.as_view(),
+        name='draft-upload-species'
+    ),
     path(
         'switch-organisation/<int:organisation_id>/',
         switch_organisation,
         name='switch-organisation'
     ),
     path('map/', MapView.as_view(), name='map'),
+    path(
+        'upload-data/<int:property_id>/',
+        OnlineFormView.as_view(),
+        name='online-form'
+    ),
     path('help/', HelpView.as_view(), name='help'),
     path('', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
+<<<<<<< HEAD
     path('users/', OrganisationUsersView.as_view(), name='Users'),
     path('contact/', ContactView.as_view(), name='contact'),
+=======
+    path('contact/', ContactUsView.as_view(), name='contact'),
+>>>>>>> 47c19e1de1829f35e38c3ff9f0087d917107bfc7
 ]

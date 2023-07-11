@@ -5,7 +5,7 @@
     "maputnik:license": "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
     "maputnik:renderer": "mbgljs",
     "openmaptiles:version": "3.x",
-    "sanbi:version": "10",
+    "sanbi:version": "11",
     "sanbi:theme": "dark"
   },
   "center": [25.86, -28.52],
@@ -14,7 +14,7 @@
     "sanbi": {
       "type": "vector",
       "tiles": ["http://localhost:9090/maps/sanbi/{z}/{x}/{y}.pbf"],
-      "minzoom": 5,
+      "minZoom": 5,
       "maxzoom": 24
     },
     "NGI Aerial Imagery": {
@@ -149,7 +149,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Succulent Karoo"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(140, 130, 119, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(187, 177, 167, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_9",
@@ -160,7 +164,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Savanna"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(152, 143, 133, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(206, 195, 187, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_8",
@@ -171,7 +179,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Nama-Karoo"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(163, 155, 146, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(230, 217, 206, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_7",
@@ -182,7 +194,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Indian Ocean Coastal Belt"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(175, 168, 160, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(220, 196, 165, 1)",
+        "fill-antialias": false,
+        "fill-opacity": 0.2
+      }
     },
     {
       "id": "ecosystems_6",
@@ -193,7 +209,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Grassland"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(186, 180, 173, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(229, 206, 179, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_5",
@@ -204,7 +224,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Fynbos"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(198, 193, 187, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(225, 219, 187, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_4",
@@ -215,7 +239,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Forests"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(209, 205, 201, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(193, 199, 172, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_3",
@@ -226,7 +254,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Desert"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(221, 218, 214, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(212, 221, 193, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_2",
@@ -237,7 +269,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Azonal Vegetation"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(232, 230, 228, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(189, 220, 155, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_1",
@@ -248,7 +284,11 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "biome_18", "Albany Thicket"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(244, 243, 241, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(223, 246, 204, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_10",
@@ -259,7 +299,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Succulent Karoo"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(140, 130, 119, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(187, 177, 167, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_9",
@@ -270,7 +314,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Savanna"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(152, 143, 133, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(206, 195, 187, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_8",
@@ -281,7 +329,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Nama-Karoo"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(163, 155, 146, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(230, 217, 206, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_7",
@@ -292,7 +344,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Indian Ocean Coastal Belt"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(175, 168, 160, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(220, 196, 165, 1)",
+        "fill-antialias": false,
+        "fill-opacity": 0.2
+      }
     },
     {
       "id": "ecosystems_midscale_6",
@@ -303,7 +359,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Grassland"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(186, 180, 173, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(229, 206, 179, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_5",
@@ -314,7 +374,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Fynbos"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(198, 193, 187, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(225, 219, 187, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_4",
@@ -325,7 +389,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Forests"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(209, 205, 201, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(193, 199, 172, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_3",
@@ -336,7 +404,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Desert"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(221, 218, 214, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(212, 221, 193, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_2",
@@ -347,7 +419,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Azonal Vegetation"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(232, 230, 228, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(189, 220, 155, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_midscale_1",
@@ -358,7 +434,11 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "biome_18", "Albany Thicket"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(244, 243, 241, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(223, 246, 204, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_10",
@@ -369,7 +449,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Succulent Karoo"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(140, 130, 119, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(187, 177, 167, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_9",
@@ -380,7 +464,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Savanna"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(152, 143, 133, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(206, 195, 187, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_8",
@@ -391,7 +479,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Nama-Karoo"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(163, 155, 146, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(230, 217, 206, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_7",
@@ -402,7 +494,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Indian Ocean Coastal Belt"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(175, 168, 160, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(220, 196, 165, 1)",
+        "fill-antialias": false,
+        "fill-opacity": 0.2
+      }
     },
     {
       "id": "ecosystems_small_scale_6",
@@ -413,7 +509,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Grassland"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(186, 180, 173, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(229, 206, 179, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_5",
@@ -424,7 +524,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Fynbos"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(198, 193, 187, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(225, 219, 187, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_4",
@@ -435,7 +539,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Forests"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(209, 205, 201, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(193, 199, 172, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_3",
@@ -446,7 +554,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Desert"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(221, 218, 214, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(212, 221, 193, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_2",
@@ -457,7 +569,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Azonal Vegetation"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(232, 230, 228, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(189, 220, 155, 1)",
+        "fill-opacity": 0.25,
+        "fill-antialias": false
+      }
     },
     {
       "id": "ecosystems_small_scale_1",
@@ -468,7 +584,11 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "biome_18", "Albany Thicket"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(244, 243, 241, 1)", "fill-opacity": 0.1}
+      "paint": {
+        "fill-color": "rgba(223, 246, 204, 1)",
+        "fill-opacity": 0.2,
+        "fill-antialias": false
+      }
     },
     {
       "id": "pa_2022_9",
@@ -479,7 +599,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "World Heritage Site"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(224, 229, 228, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(77, 125, 114, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_8",
@@ -490,7 +610,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "Special Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(208, 217, 215, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(77, 152, 138, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_7",
@@ -501,7 +621,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "Protected Environment"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(193, 204, 201, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(77, 166, 173, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_6",
@@ -512,7 +632,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(177, 191, 188, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(114, 177, 210, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_5",
@@ -523,7 +643,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "National Park"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(161, 178, 175, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(148, 194, 221, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_4",
@@ -534,7 +654,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "Mountain Catchment Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(146, 165, 161, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(192, 208, 229, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_3",
@@ -545,7 +665,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "Marine Protected Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(130, 153, 148, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(222, 222, 237, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_2",
@@ -556,7 +676,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "Forest Wilderness Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(115, 140, 134, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(241, 234, 244, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_1",
@@ -567,7 +687,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "site_type", "Forest Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(99, 127, 121, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(237, 232, 234, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_midscale_9",
@@ -578,7 +698,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "site_type", "World Heritage Site"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(224, 229, 228, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(77, 125, 114, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_midscale_8",
@@ -589,7 +709,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "site_type", "Special Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(208, 217, 215, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(77, 152, 138, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_midscale_7",
@@ -611,7 +731,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "site_type", "Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(177, 191, 188, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(114, 177, 210, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_midscale_5",
@@ -622,7 +742,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "site_type", "National Park"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(161, 178, 175, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(148, 194, 221, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_midscale_4",
@@ -633,7 +753,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "site_type", "Mountain Catchment Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(146, 165, 161, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(192, 208, 229, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_midscale_3",
@@ -644,7 +764,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "site_type", "Marine Protected Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(130, 153, 148, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(222, 222, 237, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_midscale_2",
@@ -655,7 +775,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "site_type", "Forest Wilderness Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(115, 140, 134, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(241, 234, 244, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_midscale_1",
@@ -666,7 +786,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "site_type", "Forest Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(99, 127, 121, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(237, 232, 234, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_9",
@@ -677,7 +797,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "World Heritage Site"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(224, 229, 228, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(77, 125, 114, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_8",
@@ -688,7 +808,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "Special Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(208, 217, 215, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(77, 152, 138, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_7",
@@ -699,7 +819,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "Protected Environment"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(193, 204, 201, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(77, 166, 173, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_6",
@@ -710,7 +830,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(177, 191, 188, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(114, 177, 210, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_5",
@@ -721,7 +841,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "National Park"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(161, 178, 175, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(148, 194, 221, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_4",
@@ -732,7 +852,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "Mountain Catchment Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(146, 165, 161, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(192, 208, 229, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_3",
@@ -743,7 +863,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "Marine Protected Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(130, 153, 148, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(222, 222, 237, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_2",
@@ -754,7 +874,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "Forest Wilderness Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(115, 140, 134, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(241, 234, 244, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "pa_2022_small_scale_1",
@@ -765,7 +885,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "site_type", "Forest Nature Reserve"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(99, 127, 121, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(237, 232, 234, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_6",
@@ -776,7 +896,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(170, 170, 170, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(255, 249, 240, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_5",
@@ -787,7 +907,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(162, 157, 157, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(254, 238, 216, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_4",
@@ -798,7 +918,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(154, 143, 143, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(254, 228, 206, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_3",
@@ -809,7 +929,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(145, 130, 130, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(254, 209, 189, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_2",
@@ -820,7 +940,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(137, 116, 116, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(244, 183, 173, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_1",
@@ -831,7 +951,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(129, 103, 103, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(225, 153, 153, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_midscale_6",
@@ -842,7 +962,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-opacity": 0.15, "fill-color": "rgba(170, 170, 170, 1)"}
+      "paint": {"fill-color": "rgba(255, 249, 240, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_midscale_5",
@@ -853,7 +973,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-opacity": 0.15, "fill-color": "rgba(162, 157, 157, 1)"}
+      "paint": {"fill-color": "rgba(254, 238, 216, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_midscale_4",
@@ -864,7 +984,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-opacity": 0.15, "fill-color": "rgba(154, 143, 143, 1)"}
+      "paint": {"fill-color": "rgba(254, 228, 206, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_midscale_3",
@@ -875,7 +995,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-opacity": 0.15, "fill-color": "rgba(145, 130, 130, 1)"}
+      "paint": {"fill-color": "rgba(254, 209, 189, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_midscale_2",
@@ -886,7 +1006,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-opacity": 0.15, "fill-color": "rgba(137, 116, 116, 1)"}
+      "paint": {"fill-color": "rgba(244, 183, 173, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_midscale_1",
@@ -897,7 +1017,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-opacity": 0.15, "fill-color": "rgba(129, 103, 103, 1)"}
+      "paint": {"fill-color": "rgba(225, 153, 153, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_small_scale_6",
@@ -908,7 +1028,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(170, 170, 170, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(255, 249, 240, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_small_scale_5",
@@ -919,7 +1039,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(162, 157, 157, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(254, 238, 216, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_small_scale_4",
@@ -930,18 +1050,18 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(154, 143, 143, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(254, 228, 206, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_small_scale_3",
       "type": "fill",
       "source": "sanbi",
-      "source-layer": "cba_2019_small_scale",
+      "source-layer": "critical_biodiversity_areas_2019_small_scale",
       "minzoom": 8,
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(145, 130, 130, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(254, 209, 189, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_small_scale_2",
@@ -952,7 +1072,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(137, 116, 116, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(244, 183, 173, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "cba_2019_small_scale_1",
@@ -963,7 +1083,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Critical Biodiversity Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(129, 103, 103, 1)", "fill-opacity": 0.15}
+      "paint": {"fill-color": "rgba(225, 153, 153, 1)", "fill-opacity": 0.2}
     },
     {
       "id": "public_places",

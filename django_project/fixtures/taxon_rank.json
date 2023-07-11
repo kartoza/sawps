@@ -1,0 +1,51 @@
+[
+{
+    "model": "species.taxonrank",
+    "pk": 1,
+    "fields": {
+        "name": "Species"
+    }
+},
+{
+    "model": "species.taxonrank",
+    "pk": 2,
+    "fields": {
+        "name": "Genus"
+    }
+},
+{
+    "model": "species.taxonrank",
+    "pk": 3,
+    "fields": {
+        "name": "Family"
+    }
+},
+{
+    "model": "species.taxonrank",
+    "pk": 4,
+    "fields": {
+        "name": "Order"
+    }
+},
+{
+    "model": "species.taxonrank",
+    "pk": 5,
+    "fields": {
+        "name": "Class"
+    }
+},
+{
+    "model": "species.taxonrank",
+    "pk": 6,
+    "fields": {
+        "name": "Phylum"
+    }
+},
+{
+    "model": "species.taxonrank",
+    "pk": 7,
+    "fields": {
+        "name": "Kingdom"
+    }
+}
+]

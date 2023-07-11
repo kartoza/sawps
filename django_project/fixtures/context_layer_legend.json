@@ -1,0 +1,227 @@
+[
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 1,
+    "fields": {
+        "layer": 5,
+        "name": "Ecological Support Area",
+        "colour": "#fee4ce"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 2,
+    "fields": {
+        "layer": 5,
+        "name": "Critical Biodiversity Area",
+        "colour": "#e19999"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 3,
+    "fields": {
+        "layer": 5,
+        "name": "Critical Biodiversity Area 1",
+        "colour": "#f4b7ad"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 4,
+    "fields": {
+        "layer": 5,
+        "name": "Critical Biodiversity Area 2",
+        "colour": "#fed1bd"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 5,
+    "fields": {
+        "layer": 5,
+        "name": "Ecological Support Area 1",
+        "colour": "#feeed8"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 6,
+    "fields": {
+        "layer": 5,
+        "name": "Ecological Support Area 2",
+        "colour": "#fff9f0"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 7,
+    "fields": {
+        "layer": 4,
+        "name": "Albany Thicket",
+        "colour": "#dff6cc"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 8,
+    "fields": {
+        "layer": 4,
+        "name": "Azonal Vegetation",
+        "colour": "#bddc9b"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 9,
+    "fields": {
+        "layer": 4,
+        "name": "Desert",
+        "colour": "#d4ddc1"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 10,
+    "fields": {
+        "layer": 4,
+        "name": "Forests",
+        "colour": "#c1c7ac"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 11,
+    "fields": {
+        "layer": 4,
+        "name": "Fynbos",
+        "colour": "#e1dbbb"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 12,
+    "fields": {
+        "layer": 4,
+        "name": "Grassland",
+        "colour": "#e5ceb3"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 13,
+    "fields": {
+        "layer": 4,
+        "name": "Indian Ocean Coastal Belt",
+        "colour": "#dcc4a5"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 14,
+    "fields": {
+        "layer": 4,
+        "name": "Nama-Karoo",
+        "colour": "#e6d9ce"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 15,
+    "fields": {
+        "layer": 4,
+        "name": "Savanna",
+        "colour": "#cec3bb"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 16,
+    "fields": {
+        "layer": 4,
+        "name": "Succulent Karoo",
+        "colour": "#bbb1a7"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 17,
+    "fields": {
+        "layer": 6,
+        "name": "Forest Nature Reserve",
+        "colour": "#ede8ea"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 18,
+    "fields": {
+        "layer": 6,
+        "name": "Forest Wilderness Area",
+        "colour": "#f1eaf4"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 19,
+    "fields": {
+        "layer": 6,
+        "name": "Marine Protected Area",
+        "colour": "#dedeed"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 20,
+    "fields": {
+        "layer": 6,
+        "name": "Mountain Catchment Area",
+        "colour": "#c0d0e5"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 21,
+    "fields": {
+        "layer": 6,
+        "name": "National Park",
+        "colour": "#94c2dd"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 22,
+    "fields": {
+        "layer": 6,
+        "name": "Nature Reserve",
+        "colour": "#72b1d2"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 23,
+    "fields": {
+        "layer": 6,
+        "name": "Protected Environment",
+        "colour": "#4da6ad"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 24,
+    "fields": {
+        "layer": 6,
+        "name": "Special Nature Reserve",
+        "colour": "#4d988a"
+    }
+},
+{
+    "model": "frontend.contextlayerlegend",
+    "pk": 25,
+    "fields": {
+        "layer": 6,
+        "name": "World Heritage Site",
+        "colour": "#4d7d72"
+    }
+}
+]

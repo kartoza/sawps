@@ -25,19 +25,6 @@ class Province(models.Model):
         db_table = 'province'
 
 
-class OwnershipStatus(models.Model):
-    """Ownership status model."""
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "ownership status"
-        verbose_name_plural = "ownership status"
-        db_table = "ownership_status"
-
-
 class Property(models.Model):
     """Property model."""
     name = models.CharField(max_length=300, unique=True)
@@ -46,9 +33,6 @@ class Property(models.Model):
     area_available = models.FloatField()
     geometry = models.MultiPolygonField(srid=4326, null=True, blank=True)
     province = models.ForeignKey(Province, on_delete=models.DO_NOTHING)
-    ownership_status = models.ForeignKey(
-        OwnershipStatus, on_delete=models.DO_NOTHING
-    )
     property_type = models.ForeignKey(
         PropertyType, on_delete=models.DO_NOTHING
     )
@@ -71,6 +55,9 @@ class Property(models.Model):
                 name='check property size',
             ),
         ]
+    
+    def __str__(self) -> str:
+        return self.name
 
 
 class ParcelType(models.Model):
@@ -92,6 +79,18 @@ class Parcel(models.Model):
     year = models.DateField()
     property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
     parcel_type = models.ForeignKey(ParcelType, on_delete=models.CASCADE)
+    farm_number = models.IntegerField(
+        null=False,
+        default=0
+    )
+    farm_name = models.TextField(
+        null=False,
+        default=''
+    )
+    sub_division_number = models.IntegerField(
+        null=False,
+        default=0
+    )
 
     def __str__(self):
         return self.sg_number

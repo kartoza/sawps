@@ -2,14 +2,18 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import Box from "@mui/material/Box";
 import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
-import ContextLayerInterface from '../../../models/ContextLayer';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ContextLayerInterface, { ContextLayerLegendInterface } from '../../../models/ContextLayer';
 import {RootState} from '../../../app/store';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import { setContextLayers, toggleLayer } from '../../../reducers/LayerFilter';
+import { setContextLayers, toggleLayer, toggleExpandedLayer } from '../../../reducers/LayerFilter';
 import Loading from '../../../components/Loading';
 import './index.scss';
 
@@ -53,22 +57,40 @@ function Layers() {
                 contextLayers.map((layer: ContextLayerInterface) => {
                     const labelId = `checkbox-list-label-${layer.id}`;
                     return (
-                        <ListItemButton
-                            key={layer.id}
-                            disabled={loading || !isMapReady}
-                            onClick={(event) => dispatch(toggleLayer(layer.id))}
-                        >
-                            <ListItemIcon>
-                                <Checkbox
-                                edge="start"
-                                checked={layer.isSelected}
-                                tabIndex={-1}
-                                disableRipple
-                                inputProps={{ 'aria-labelledby': labelId }}
-                                />
-                            </ListItemIcon>
-                            <ListItemText id={labelId} primary={layer.name} />
-                        </ListItemButton>
+                        <div key={layer.id}>
+                            <ListItem
+                                key={layer.id}
+                            >
+                                <ListItemIcon>
+                                    <Checkbox
+                                        edge="start"
+                                        disabled={loading || !isMapReady}
+                                        checked={layer.isSelected}
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{ 'aria-labelledby': labelId }}
+                                        onClick={(event) => dispatch(toggleLayer(layer.id)) }
+                                    />
+                                </ListItemIcon>
+                                <ListItemText id={labelId} primary={layer.name} />
+                                { layer.legends.length && layer.isExpanded ?  <IconButton onClick={(event) => dispatch(toggleExpandedLayer(layer.id))}><ExpandLess /></IconButton> : null }
+                                { layer.legends.length && !layer.isExpanded ? <IconButton onClick={(event) => dispatch(toggleExpandedLayer(layer.id))}><ExpandMore /></IconButton> : null }
+                            </ListItem>
+                            <Collapse in={layer.isExpanded} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    {layer.legends.map((legend: ContextLayerLegendInterface) => {
+                                        return (
+                                            <ListItem key={legend.name}>
+                                                <ListItemIcon>
+                                                    <Box className='LegendIcon' sx={{ backgroundColor: legend.colour}} />
+                                                </ListItemIcon>
+                                                <ListItemText primary={legend.name} />
+                                            </ListItem>
+                                        )
+                                    })}
+                                </List>
+                            </Collapse>
+                        </div>
                     )
                 })
             }

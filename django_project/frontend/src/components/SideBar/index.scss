@@ -2,3 +2,23 @@
     width: 400px;
     background-color: var(--primary-color);
 }
+.progress-bar-container {
+    position: relative;
+  }
+  
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: black;
+    position: absolute;
+    top: -4px;
+  }
+  
+  .dot-start {
+    left: 0;
+  }
+  
+  .dot-end {
+    right: 0;
+  }
