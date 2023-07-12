@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.contrib.auth import models
 from django.contrib.auth import login
@@ -5,8 +6,17 @@ from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.views.generic import View
-from stakeholder.models import Organisation, OrganisationInvites, OrganisationUser, UserProfile
+from stakeholder.models import (
+    Organisation,
+    OrganisationInvites,
+    OrganisationUser,
+    UserProfile
+)
 from sawps.email_verification_token import email_verification_token
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.contrib.sites.models import Site
+from django.conf import settings
 
 
 class ActivateAccount(View):
@@ -34,7 +44,8 @@ class ActivateAccount(View):
             messages.warning(
                 request,
                 (
-                    'The confirmation link was invalid, possibly because it has already been used.'
+                    'The confirmation link was invalid,'+
+                    'possibly because it has already been used.'
                 ),
             )
             return redirect('home')
@@ -43,7 +54,8 @@ class ActivateAccount(View):
 class AddUserToOrganisation(View):
     def adduser(self, user, organisation, *args, **kwargs):
         '''when the user has been invited to join an organisation 
-        this view will Add the User to the OrganisationUser and update the linked models
+        this view will Add the User to the OrganisationUser 
+        and update the linked models
         OrganisationInvites, UserProfile'''
 
         # update organisation invties
@@ -88,3 +100,35 @@ class AddUserToOrganisation(View):
             return None
         except Organisation.DoesNotExist:
             return None
+
+
+class SendRequestEmail(View):
+    def send_email(self, request):
+        """this feature is still being implemented"""
+        subject = 'ORGANISATION REQUEST'
+        # Send email
+        try:
+            message = render_to_string(
+                'emails/invitation_email.html',
+                {
+                    'domain': Site.objects.get_current().domain,
+                    'email': request.user.email,
+                },
+            )
+            send_mail(
+                subject,
+                None,
+                settings.SERVER_EMAIL,
+                ['to@gmail.com'],
+                html_message=message
+            )
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+                print('Failed to send email:', str(e))
+        
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.POST.get('action') == 'sendrequest':
+            return self.send_email(request)
+        else:
+            return super().dispatch(request, *args, **kwargs)
