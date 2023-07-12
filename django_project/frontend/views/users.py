@@ -181,9 +181,7 @@ class OrganisationUsersView(
                 set_request(request)  # Set the request object
                 create_invite.save()
                 
-             
                 invites = self.get_organisation_invites()
-                print(invites)
                 serialized_invites = json.dumps(list(invites))
                 return JsonResponse(
                     {
