@@ -1,14 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
-from django.contrib.sites.models import Site
-from django.conf import settings
-from stakeholder.request_context import get_request
 
 
 class UserRoleType(models.Model):
@@ -170,40 +161,6 @@ class OrganisationInvites(models.Model):
 
     def __str__(self):
         return str(self.email)
-
-
-@receiver(post_save, sender=OrganisationInvites)
-def send_invitation(sender, instance, created, **kwargs):
-    """This signals ensures whenever a record is created
-    in the organisation invitations model
-    an email invitation will be sent """
-    if created:
-        request = get_request()
-        if request:
-            support_email = request.user.email
-            subject = 'ORGANISATION INVITATION'
-            # Send email
-            try:
-                message = render_to_string(
-                    'emails/invitation_email.html',
-                    {
-                        'domain': Site.objects.get_current().domain,
-                        'role': instance.assigned_as,
-                        'organisation': instance.organisation,
-                        'support_email': support_email,
-                        'email': instance.email
-                    }
-                )
-                send_mail(
-                    subject,
-                    None,
-                    settings.SERVER_EMAIL,
-                    [str(instance.email)],
-                    html_message=message
-                )
-            except Exception as e:
-                print('Failed to send email:', str(e))
-
 
 
 class OrganisationPersonnel(models.Model):

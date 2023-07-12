@@ -1,6 +1,6 @@
 import json
-from stakeholder.request_context import set_request
 from stakeholder.models import (
+    Organisation,
     OrganisationInvites, 
     OrganisationUser,
     UserProfile,
@@ -23,6 +23,10 @@ from django.core.paginator import (
 )
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import models
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.contrib.sites.models import Site
+from django.conf import settings
 
 
 
@@ -98,16 +102,18 @@ class OrganisationUsersView(
         return rows_per_page
 
 
-    def search_table(self, request):
+    def search_user_table(self, request):
         query = request.POST.get('query')
+        organisation = request.POST.get('current_organisation')
         extracted_string = self.extract_substring(query)
         matching_users = self.search_users(extracted_string)
 
         data = []
+        
         # search user within the orginisation
         for user in matching_users:
             try:
-                org_user = OrganisationUser.objects.get(user=user)
+                org_user = OrganisationUser.objects.get(user=user,organisation=organisation)
                 role = UserProfile.objects.get(user=user).user_role_type_id
                 role = str(role)
             except OrganisationUser.DoesNotExist:
@@ -149,7 +155,9 @@ class OrganisationUsersView(
         try:
             # add invitation to model
             is_new_invitation = self.is_new_invitation(
-                email, self.request.session[CURRENT_ORGANISATION_ID_KEY])
+                email,
+                self.request.session[CURRENT_ORGANISATION_ID_KEY]
+            )
             org_id = self.request.session[CURRENT_ORGANISATION_ID_KEY]
             if not is_new_invitation:
                 if role == 'manager':
@@ -167,10 +175,29 @@ class OrganisationUsersView(
                         assigned_as=OrganisationInvites.MEMBER
                     )
 
-
-                set_request(request)  # Set the request object
                 create_invite.save()
-                
+                # send invitation email from here
+                support_email = request.user.email
+                subject = 'ORGANISATION INVITATION'
+                organisation = Organisation.objects.get(organisation_id=org_id)
+                # Send email
+                message = render_to_string(
+                    'emails/invitation_email.html',
+                    {
+                        'domain': Site.objects.get_current().domain,
+                        'role': role,
+                        'organisation': organisation,
+                        'support_email': support_email,
+                        'email': email
+                    }
+                )
+                send_mail(
+                    subject,
+                    None,
+                    settings.SERVER_EMAIL,
+                    [str(email)],
+                    html_message=message
+                )
                 invites = self.get_organisation_invites()
                 serialized_invites = json.dumps(list(invites))
                 return JsonResponse(
@@ -178,11 +205,12 @@ class OrganisationUsersView(
                         'status': 'success',
                         'updated_invites': serialized_invites
                     }
-                )
+                )                
             else:
                 return JsonResponse({'status': 'invitation already sent'})
-        except Exception as e:
-            print(f"Error creating invite: {str(e)}")
+        except Organisation.DoesNotExist:
+            return JsonResponse({'status': 'failed to send email'})
+        except Exception:
             return JsonResponse({'status': 'invitation already sent'})
 
 
@@ -190,14 +218,20 @@ class OrganisationUsersView(
 
     def delete_post(self, request):
         object_id = request.POST.get('object_id')
+        organisation = request.POST.get('current_organisation')
         try:
             user = models.User.objects.get(pk=object_id)
-            organisation = OrganisationUser.objects.get(user=object_id)
+            organisation = OrganisationUser.objects.get(
+                user=object_id,
+                organisation=organisation
+            )
             org_invite = OrganisationInvites.objects.get(
-                email=user.email, organisation=organisation.organisation)
+                email=user.email,
+                organisation=organisation.organisation
+            )
             org_invite.joined = False
             org_invite.save()
-            OrganisationUser.objects.filter(user=object_id).delete()
+            OrganisationUser.objects.filter(user=object_id,organisation=organisation).delete()
             return JsonResponse({'status': 'success'})
         except models.User.DoesNotExist:
             return JsonResponse({'status': 'failed'})
@@ -205,9 +239,6 @@ class OrganisationUsersView(
             return JsonResponse({'status': 'failed'})
         except OrganisationInvites.DoesNotExist:
             return JsonResponse({'status': 'failed'})
-
-        
-        
 
 
     def get_organisation_users(self):
@@ -283,8 +314,8 @@ class OrganisationUsersView(
             return self.invite_post(request)
         elif request.POST.get('action') == 'delete':
             return self.delete_post(request)
-        elif request.POST.get('action') == 'search_table':
-            return self.search_table(request)
+        elif request.POST.get('action') == 'search_user_table':
+            return self.search_user_table(request)
         else:
             return super().dispatch(request, *args, **kwargs)
 

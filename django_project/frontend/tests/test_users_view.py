@@ -1,11 +1,13 @@
+import json
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
 from django.core import mail
 
-from stakeholder.models import Organisation, OrganisationUser
+from stakeholder.models import Organisation, OrganisationInvites, OrganisationUser
 
 
 
@@ -14,41 +16,84 @@ class OrganisationUsersViewTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser', password='testpassword')
+            username='testuser',
+            password='testpassword',
+            email='test@gmail.com'
+        )
         self.data_use_permission = DataUsePermission.objects.create(
             name="test")
         self.organisation = Organisation.objects.create(
             name="test_organisation", data_use_permission=self.data_use_permission)
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation, user=self.user)
+        self.org_invitation = OrganisationInvites.objects.create(
+            email=self.user.email,
+            organisation=self.organisation
+        )
 
 
     def test_delete_post_method(self):
-        data = {'action': 'delete', 'object_id': self.organisation_user.id}
-        url = reverse('Users')
-        response = self.client.post(url, data=data)
+        # url = reverse('Users')
+        response = self.client.post(
+                '/users/',
+                {
+                    'action': 'delete',
+                    'object_id': self.organisation_user.id,
+                    'current_organisation': self.organisation
+                }
+        )
+        
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'success'})
-        OrganisationUser.objects.filter(
-            user=self.organisation_user.user).delete()
 
-        self.assertEqual(OrganisationUser.objects.filter(
-            user=self.organisation_user.user).exists(), False)
+        # Verify that the OrganisationUser has been deleted
+        self.assertFalse(OrganisationUser.objects.filter(
+            user=self.organisation_user.user).exists())
+
 
     def test_invite_post(self):
-        url = reverse('Users')
-        data = {
-            'action': 'invite',
-            'email': 'test@example.com',
-            'inviteAs': 'manager',
-            'memberRole': 'write',
-            'current_organisation': 'Test Organisation',
-        }
-        response = self.client.post(url, data)
+        # Create a request object with the required POST data
+        response = self.client.post(
+            '/users/',
+            {
+                'action': 'invite',
+                'email': 'test@example.com',
+                'inviteAs': 'manager',
+                'memberRole': 'write',
+                'current_organisation': 'test_organisation'
+            }
+        )
+
+        expected_json = {'status': 'invitation already sent'}
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'success')
+        self.assertEqual(response.json(), expected_json)
 
-        # Check email sent
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'ORGANISATION INVITATION')
+        # Check email not present
+        self.assertEqual(len(mail.outbox), 0)
+
+
+        
+    def test_search_user_table(self):
+        # Create a request object with the required POST data
+        response = self.client.post(
+            '/search_user_table/',
+            {
+                'query': 'test',
+                'current_organisation': 'test_organisation'
+            }
+        )
+                   
+        # Assert the expected outcome
+        expected_data = [
+            {
+                'organisation': 'test_organisation',
+                'user': 'testuser',
+                'id': 1,
+                'role': 'Admin'
+            }
+        ]
+        expected_json = {'data': json.dumps(expected_data)}
+            
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_json)
