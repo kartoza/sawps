@@ -352,6 +352,7 @@
           data: {
             'action': 'delete',
             'object_id': objectId,
+            'current_organisation': '{{ current_organisation }}',
             'csrfmiddlewaretoken': '{{ csrf_token }}',
           },
           success: function() {
