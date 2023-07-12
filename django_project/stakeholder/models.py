@@ -182,19 +182,18 @@ def send_invitation(sender, instance, created, **kwargs):
         if request:
             support_email = request.user.email
             subject = 'ORGANISATION INVITATION'
-            message = render_to_string(
-                'email/invitation_email.html',
-                {
-                    'domain': Site.objects.get_current().domain,
-                    'role': instance.assigned_as,
-                    'organisation': instance.organisation,
-                    'support_email': support_email,
-                    'email': instance.email
-                },
-            )
-
             # Send email
             try:
+                message = render_to_string(
+                    'emails/invitation_email.html',
+                    {
+                        'domain': Site.objects.get_current().domain,
+                        'role': instance.assigned_as,
+                        'organisation': instance.organisation,
+                        'support_email': support_email,
+                        'email': instance.email
+                    }
+                )
                 send_mail(
                     subject,
                     None,

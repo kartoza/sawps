@@ -180,19 +180,21 @@ class OrganisationUsersView(
 
                 set_request(request)  # Set the request object
                 create_invite.save()
-
-                if create_invite:
-                    invites = self.get_organisation_invites()
-                    serialized_invites = json.dumps(list(invites))
-                    return JsonResponse(
-                        {
-                            'status': 'success',
-                            'updated_invites': serialized_invites
-                        }
-                    )
+                
+             
+                invites = self.get_organisation_invites()
+                print(invites)
+                serialized_invites = json.dumps(list(invites))
+                return JsonResponse(
+                    {
+                        'status': 'success',
+                        'updated_invites': serialized_invites
+                    }
+                )
             else:
                 return JsonResponse({'status': 'invitation already sent'})
-        except Exception:
+        except Exception as e:
+            print(f"Error creating invite: {str(e)}")
             return JsonResponse({'status': 'invitation already sent'})
 
 
