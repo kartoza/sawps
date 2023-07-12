@@ -39,11 +39,12 @@ class OrganisationUsersView(
 
     def extract_substring(self, string):
         '''extract search string from search box on frontend'''
-        if '=' in string:
-            substring = string.split('=')[1]
-            return substring
-        else:
-            return string
+        if len(string) >= 2:
+            if '=' in string:
+                substring = string.split('=')[1]
+                return substring
+            else:
+                return string
 
     def search_users(self, username):
         users = User.objects.filter(username__icontains=username)
