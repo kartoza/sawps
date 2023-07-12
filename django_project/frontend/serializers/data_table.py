@@ -35,7 +35,6 @@ class OwnedSpeciesSerializer(serializers.ModelSerializer):
         serializer = PropertySerializer(
             obj,
             remove_fields = [
-                'id',
                 'organisation_id',
                 'organisation',
                 'property_type_id',

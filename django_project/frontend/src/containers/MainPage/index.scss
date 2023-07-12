@@ -42,3 +42,10 @@ body {
         margin-bottom: 6px;
     }
 }
+.customWidth {
+    width: calc(100vw - 440px);
+    .dataTable {
+        width: calc(100vw - 425px);
+        overflow: auto;
+    }
+}

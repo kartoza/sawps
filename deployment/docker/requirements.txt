@@ -49,3 +49,6 @@ Pillow==9.5.0
 
 # For reading shapefile
 fiona==1.8.21
+
+# For filtering
+django-filter==23.2

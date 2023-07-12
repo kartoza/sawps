@@ -17,7 +17,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Loading from '../../../components/Loading';
 import SpeciesLayer from '../../../models/SpeciesLayer';
-import { setSpeciesFilter, toggleSpecies } from '../../../reducers/SpeciesFilter';
+import { setEndYear, setMonths, setSpeciesFilter, setStartYear, toggleSpecies } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 
 export interface FILTEERSPECIES {
@@ -26,24 +26,26 @@ export interface FILTEERSPECIES {
 const FETCH_AVAILABLE_SPECIES = '/species/'
 const yearRangeStart = 1994;
 const yearRangeEnd = 2023;
-const marks = [
-    {
-        value: yearRangeStart,
-        label: `${yearRangeStart}`,
-    },
-    {
-        value: yearRangeEnd,
-        label: `${yearRangeEnd}`,
-    },
-];
+
 
 function Filter() {
     const dispatch = useAppDispatch()
     const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
+    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
+    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
-    const [startValue, setStartValue] = useState<number>(yearRangeStart);
-    const [endValue, setEndValue] = useState<number>(yearRangeEnd);
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+    const marks = [
+        {
+            value: startYear,
+            label: `${startYear}`,
+        },
+        {
+            value: endYear,
+            label: `${endYear}`,
+        },
+    ];
+
     const [filterlList, setFilterList] = useState([
         {
             "id": 1,
@@ -95,11 +97,10 @@ function Filter() {
         setFilterList(_updatedData)
     }
 
-
     const handleChange = (event: any, newValue: number | number[]) => {
         if (Array.isArray(newValue)) {
-            setStartValue(newValue[0]);
-            setEndValue(newValue[1]);
+            dispatch(setStartYear(newValue[0]));
+            dispatch(setEndYear(newValue[1]));
         }
     };
     const months = [
@@ -122,9 +123,9 @@ function Filter() {
         const updatedIsMonth = [...monthList];
         updatedIsMonth[index] = !updatedIsMonth[index];
         setMonthList(updatedIsMonth);
-        if (updatedIsMonth[index]) {
-            const selectedMonth = months[index];
-        }
+
+        const selectedMonths = months.filter((month, idx) => updatedIsMonth[idx]);
+        dispatch(setMonths(selectedMonths));
     };
 
     const fetchSpeciesList = () => {
@@ -134,7 +135,6 @@ function Filter() {
             if (response.data) {
                 let _species = response.data as SpeciesLayer[]
                 _species = _species.map((species) => {
-                    species.isSelected = false
                     return species
                 })
                 dispatch(setSpeciesFilter(_species))
@@ -183,7 +183,7 @@ function Filter() {
                                     <ListItemIcon>
                                         <Checkbox
                                             edge="start"
-                                            checked={species?.isSelected}
+                                            checked={species?.is_selected}
                                             tabIndex={-1}
                                             disableRipple
                                             inputProps={{ 'aria-labelledby': speciesId }}
@@ -201,7 +201,7 @@ function Filter() {
                 </Box>
                 <Box className='sliderYear'>
                     <Slider
-                        value={[startValue, endValue]}
+                        value={[startYear, endYear]}
                         onChange={handleChange}
                         valueLabelDisplay="auto"
                         min={yearRangeStart}

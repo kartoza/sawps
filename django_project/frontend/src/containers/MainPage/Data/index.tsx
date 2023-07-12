@@ -1,20 +1,17 @@
-import React, { useState } from "react";
-import { Box, Button, Checkbox, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Button, Checkbox, ListItemText } from "@mui/material";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import Loading from '../../../components/Loading';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
+import axios from "axios";
 import './index.scss';
-
-interface RowData {
-    id: number;
-    firstName: string | null;
-    lastName: string | null;
-    age: number | null;
-}
+import { useAppSelector } from "../../../app/hooks";
+import { RootState } from "../../../app/store";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -27,59 +24,147 @@ const MenuProps = {
     },
 };
 
+const FETCH_AVAILABLE_DATA = '/data-table/'
 
 const DataList = () => {
+    const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
+    const months = useAppSelector((state: RootState) => state.SpeciesFilter.months)
+    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
+    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [selectedColumns, setSelectedColumns] = useState([]);
+    const [loading, setLoading] = useState(false)
+    const [data, setData] = useState([])
+    const selectedSpecies = SpeciesFilterList
+        .filter(obj => obj.is_selected)
+        .map(obj => obj.common_name_varbatim);
+    const speciesParam = selectedSpecies.join(',');
+    const selectedMonths = months.map(each => each).join(',');
+
+
+
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 90 },
-        {
-            field: 'firstName',
-            headerName: 'First name',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'lastName',
-            headerName: 'Last name',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'age',
-            headerName: 'Age',
-            type: 'number',
-            width: 110,
-            editable: true,
-        },
-        {
-            field: 'fullName',
-            headerName: 'Full name',
-            description: 'This column has a value getter and is not sortable.',
-            sortable: false,
-            width: 160,
-            valueGetter: (params: GridValueGetterParams) =>
-                `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-        },
+        { field: 'property_name', headerName: 'Property Name', width: 150 },
+        { field: 'property_id', headerName: 'Property ID', width: 150 },
+        { field: 'owner', headerName: 'Owner', width: 150 },
+        { field: 'owner_email', headerName: 'Owner Email', width: 150 },
+        { field: 'property_type', headerName: 'Property Type', width: 150 },
+        { field: 'province', headerName: 'Province', width: 150 },
+        { field: 'size', headerName: 'Size (ha)', width: 150 },
+        { field: 'scientific_name', headerName: 'Scientific Name', width: 150 },
+        { field: 'common_name', headerName: 'Common Name', width: 150 },
+        { field: 'count_total', headerName: 'Count Total', width: 150 },
+        { field: 'count_adult_males', headerName: 'Count Adult Males', width: 150 },
+        { field: 'count_adult_females', headerName: 'Count Adult Females', width: 150 },
+        { field: 'count_subadult_total', headerName: 'Count Subadult Total', width: 150 },
+        { field: 'count_subadult_male', headerName: 'Count Subadult Male', width: 150 },
+        { field: 'count_subadult_female', headerName: 'Count Subadult Female', width: 150 },
+        { field: 'count_juvenile_total', headerName: 'Count Juvenile Total', width: 150 },
+        { field: 'count_juvenile_male', headerName: 'Count Juvenile Male', width: 150 },
+        { field: 'count_juvenile_female', headerName: 'Count Juvenile Female', width: 150 },
+        { field: 'groups', headerName: 'Groups', width: 150 },
+        { field: 'open_closed_system', headerName: 'Open/Closed System', width: 150 },
+        { field: 'area_available_ha', headerName: 'Area Available (ha)', width: 150 },
+        { field: 'ar_name', headerName: 'Ar Name', width: 150 },
+        { field: 'count_method', headerName: 'Count Method', width: 150 },
+        { field: 'survey_method', headerName: 'Survey Method', width: 150 },
+        { field: 'sampling_effort_coverage', headerName: 'Sampling Effort Coverage', width: 150 },
+        { field: 'sampling_notes', headerName: 'Sampling Notes', width: 150 },
+        { field: 'count_year', headerName: 'Count Year', width: 150 },
+        { field: 'presence_only', headerName: 'Presence Only', width: 150 },
+        { field: 'reintroduction_total', headerName: '(Re)Introduction Total', width: 150 },
+        { field: 'reintroduction_adult_males', headerName: '(Re)Introduction Adult Males', width: 150 },
+        { field: 'reintroduction_adult_females', headerName: '(Re)Introduction Adult Females', width: 150 },
+        { field: 'reintroduction_male_juveniles', headerName: '(Re)Introduction Male Juveniles', width: 150 },
+        { field: 'reintroduction_female_juveniles', headerName: '(Re)Introduction Female Juveniles', width: 150 },
+        { field: 'founder_population', headerName: 'Founder Population', width: 150 },
+        { field: 'reintroduction_source', headerName: '(Re)Introduction Source', width: 150 },
+        { field: 'intake_permit_number', headerName: 'Intake Permit Number', width: 150 },
+        { field: 'offtake_total', headerName: 'Offtake Total', width: 150 },
+        { field: 'offtake_adult_males', headerName: 'Offtake Adult Males', width: 150 },
+        { field: 'offtake_adult_females', headerName: 'Offtake Adult Females', width: 150 },
+        { field: 'offtake_male_juveniles', headerName: 'Offtake Male Juveniles', width: 150 },
+        { field: 'offtake_female_juveniles', headerName: 'Offtake Female Juveniles', width: 150 },
+        { field: 'offtake_event', headerName: 'Offtake Event', width: 150 },
+        { field: 'additional_detail', headerName: 'Additional Detail', width: 150 },
+        { field: 'translocation_destination', headerName: 'Translocation Destination', width: 150 },
+        { field: 'offtake_permit_number', headerName: 'Offtake Permit Number', width: 150 },
+        { field: 'notes', headerName: 'Notes', width: 150 },
     ];
 
-    const rows: RowData[] = [
-        { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-        { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-        { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-        { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-        { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-        { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-        { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-        { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-        { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-    ];
+    const rows = data.map((data, index) => {
+        const { taxon, property, annualpopulation, annualpopulation_per_activity } = data;
+        return {
+            id: index + 1,
+            property_name: property?.name,
+            property_id: property?.id,
+            owner: property?.owner,
+            owner_email: property?.owner_email,
+            property_type: property?.property_type,
+            province: property?.province,
+            size: property?.size,
+            scientific_name: taxon?.scientific_name,
+            common_name: taxon?.common_name_varbatim,
+            count_total: annualpopulation?.total,
+            count_adult_males: annualpopulation?.adult_male,
+            count_adult_females: annualpopulation?.adult_female,
+            count_subadult_total: annualpopulation?.sub_adult_total,
+            count_subadult_male: annualpopulation?.sub_adult_male,
+            count_subadult_female: annualpopulation?.sub_adult_female,
+            count_juvenile_total: annualpopulation?.juvenile_total,
+            count_juvenile_male: annualpopulation?.juvenile_male,
+            count_juvenile_female: annualpopulation?.juvenile_female,
+            groups: annualpopulation?.group,
+            open_closed_system: annualpopulation?.open_close_system_name,
+            area_available_ha: property?.area_available,
+            ar_name: '',
+            count_method: annualpopulation?.count_method?.name,
+            survey_method: annualpopulation?.survey_method?.name,
+            sampling_effort_coverage: annualpopulation?.sampling_effort,
+            sampling_notes: annualpopulation?.note,
+            count_year: annualpopulation?.year,
+            presence_only: '',
+            reintroduction_total: '',
+            reintroduction_adult_males: '',
+            reintroduction_adult_females: '',
+            reintroduction_male_juveniles: '',
+            reintroduction_female_juveniles: '',
+            founder_population: annualpopulation_per_activity?.founder_population,
+            reintroduction_source: annualpopulation_per_activity?.reintroduction_source,
+            intake_permit_number: '',
+            offtake_total: '',
+            offtake_adult_males: '',
+            offtake_adult_females: '',
+            offtake_male_juveniles: '',
+            offtake_female_juveniles: '',
+            offtake_event: '',
+            additional_detail: '',
+            translocation_destination: '',
+            offtake_permit_number: '',
+            notes: '',
+        };
+    });
 
+    const fetchDataList = () => {
+        setLoading(true)
+        axios.get(`${FETCH_AVAILABLE_DATA}?month=${selectedMonths}&start_year=${startYear}&end_year=${endYear}&species=${speciesParam}`).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setData(response.data)
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
+    useEffect(() => {
+        fetchDataList();
+    }, [selectedMonths, startYear, endYear, speciesParam])
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
             target: { value },
         } = event;
         setSelectedColumns(
-            // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
     };
@@ -118,7 +203,6 @@ const DataList = () => {
                             multiple
                             value={selectedColumns}
                             onChange={handleChange}
-                            // input={<OutlinedInput label="Tag" />}
                             renderValue={(selected: any) => selected.join(', ')}
                             MenuProps={MenuProps}
                         >
@@ -132,17 +216,18 @@ const DataList = () => {
                     </FormControl>
                 </Box>
             </Box>
-            <Box className="dataTable">
-                <DataGrid
-                    rows={rows}
-                    columns={filteredColumns.length>0 ? filteredColumns : columns}
-                    checkboxSelection={true}
-                    disableRowSelectionOnClick
-                    components={{
-                        Pagination: null,
-                    }}
-                />
-            </Box>
+            {loading ? <Loading /> :
+                <Box className="dataTable">
+                    <DataGrid
+                        rows={rows}
+                        columns={filteredColumns.length > 0 ? filteredColumns : columns}
+                        checkboxSelection={true}
+                        disableRowSelectionOnClick
+                        components={{
+                            Pagination: null,
+                        }}
+                    />
+                </Box>}
 
             <Box className="downlodBtn">
                 <Button onClick={handleExportExcel} variant="contained" color="primary">

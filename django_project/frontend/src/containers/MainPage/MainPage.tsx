@@ -85,7 +85,7 @@ function MainPage() {
           <Grid item>
             { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} />}
           </Grid>
-          <Grid item flex={1} className="grayBg">
+          <Grid item flex={1} className="grayBg customWidth">
             <Grid container className="Content" flexDirection={'column'}>
               <Grid item>
                 <Box className="TabHeaders">

@@ -44,7 +44,7 @@ class OpenCloseSystemSerializer(serializers.ModelSerializer):
 
 
 class AnnualPopulationSerializer(serializers.ModelSerializer):
-    """Population Count Serializer"""
+    """AnnualPopulation Serializer"""
 
     def __init__(self, *args, **kwargs):
         remove_fields = kwargs.pop('remove_fields', None)
@@ -56,6 +56,7 @@ class AnnualPopulationSerializer(serializers.ModelSerializer):
     month = serializers.StringRelatedField()
     count_method = serializers.SerializerMethodField()
     survey_method = serializers.SerializerMethodField()
+    survey_method_sort_id = serializers.SerializerMethodField()
     open_close_system = serializers.SerializerMethodField()
     sampling_size_unit = serializers.SerializerMethodField()
 
@@ -65,40 +66,23 @@ class AnnualPopulationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_count_method(self, obj):
-        obj = obj.count_method
-        serializer = CountMethodSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.count_method.name if obj.count_method else None
 
     def get_open_close_system(self, obj):
-        obj = obj.open_close_system
-        serializer = OpenCloseSystemSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.open_close_system.name if obj.open_close_system else None
 
     def get_survey_method(self, obj):
-        obj = obj.survey_method
-        serializer = SurveyMethodSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.survey_method.name if obj.survey_method else None
+
+    def get_survey_method_sort_id(self, obj):
+        return obj.survey_method.sort_id if obj.survey_method else None
 
     def get_sampling_size_unit(self, obj):
-        obj = obj.sampling_size_unit
-        serializer = SamplingSizeUnitSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.sampling_size_unit.unit if obj.sampling_size_unit else None
 
 
 class AnnualPopulationPerActivitySerializer(serializers.ModelSerializer):
-    """AnnualPopulation Per Activity Serializer"""
+    """AnnualPopulationPerActivity Serializer"""
     def __init__(self, *args, **kwargs):
         remove_fields = kwargs.pop('remove_fields', None)
         super(
@@ -112,50 +96,33 @@ class AnnualPopulationPerActivitySerializer(serializers.ModelSerializer):
     month = serializers.StringRelatedField()
     count_method = serializers.SerializerMethodField()
     survey_method = serializers.SerializerMethodField()
+    survey_method_sort_id = serializers.SerializerMethodField()
     open_close_system = serializers.SerializerMethodField()
     sampling_size_unit = serializers.SerializerMethodField()
     activity_type = serializers.SerializerMethodField()
+    activity_type_recruitment = serializers.SerializerMethodField()
 
     class Meta:
         model = AnnualPopulationPerActivity
         fields = '__all__'
 
     def get_count_method(self, obj):
-        obj = obj.count_method
-        serializer = CountMethodSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.count_method.name if obj.count_method else None
 
     def get_open_close_system(self, obj):
-        obj = obj.open_close_system
-        serializer = OpenCloseSystemSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.open_close_system.name if obj.open_close_system else None
 
     def get_survey_method(self, obj):
-        obj = obj.survey_method
-        serializer = SurveyMethodSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.survey_method.name if obj.survey_method else None
+
+    def get_survey_method_sort_id(self, obj):
+        return obj.survey_method.sort_id if obj.survey_method else None
 
     def get_sampling_size_unit(self, obj):
-        obj = obj.sampling_size_unit
-        serializer = SamplingSizeUnitSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.sampling_size_unit.unit if obj.sampling_size_unit else None
 
     def get_activity_type(self, obj):
-        obj = obj.activity_type
-        serializer = ActivityTypeSerializer(
-            obj,
-            remove_fields=['id'],
-        )
-        return serializer.data
+        return obj.activity_type.name if obj.activity_type else None
+
+    def get_activity_type_recruitment(self, obj):
+        return obj.activity_type.recruitment if obj.activity_type else None
