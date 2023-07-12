@@ -208,15 +208,16 @@ class OrganisationUsersView(
             org_invite.joined = False
             org_invite.save()
             OrganisationUser.objects.filter(user=object_id).delete()
+            return JsonResponse({'status': 'success'})
         except models.User.DoesNotExist:
-            user = None
+            return JsonResponse({'status': 'failed'})
         except OrganisationUser.DoesNotExist:
-            organisation = None
+            return JsonResponse({'status': 'failed'})
         except OrganisationInvites.DoesNotExist:
-            org_invite = None
-        # delete row in invitations or set it to false
+            return JsonResponse({'status': 'failed'})
 
-        return JsonResponse({'status': 'success'})
+        
+        
 
 
     def get_organisation_users(self):
