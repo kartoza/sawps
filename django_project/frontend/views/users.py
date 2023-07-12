@@ -104,7 +104,6 @@ class OrganisationUsersView(
         matching_users = self.search_users(extracted_string)
 
         data = []
-
         # search user within the orginisation
         for user in matching_users:
             try:
@@ -139,16 +138,10 @@ class OrganisationUsersView(
         permissions = request.POST.get('memberRole')
 
         # assign role from the roles defined in the db
-        if role == 'manager':
-            if permissions == 'write':
-                role = 'Admin'
-            else:
-                role = 'Base user'
+        if permissions == 'write':
+            role = 'Admin'
         else:
-            if permissions == 'write':
-                role = 'Admin'
-            else:
-                role = 'Base user'
+            role = 'Base user'
 
         # get role by name
         user_role = self.get_user_role(role)
