@@ -77,17 +77,18 @@ class OrganisationUsersView(
         organisation already exists.
         Returns True if exists, False otherwise.
         """
-        exists = OrganisationInvites.objects.filter(
-            email=email, organisation_id=organisation).exists()
-        if exists:
-            try:
-                invitation = OrganisationInvites.objects.get(
-                    email=email, organisation_id=organisation)
+    
+        try:
+            invitation = OrganisationInvites.objects.filter(
+                email=email,
+                organisation_id=organisation
+            ).first()                
+            if invitation:
                 return invitation.joined
-            except OrganisationInvites.DoesNotExist:
-                return None
-        else:
-            return False
+            else: return False
+        except OrganisationInvites.DoesNotExist:
+            return None
+
 
     def calculate_rows_per_page(self, data):
         total_rows = len(data)
