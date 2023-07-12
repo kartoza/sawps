@@ -301,8 +301,6 @@ class OrganisationUsersView(
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        if not self.request.user.is_authenticated:
-            return ctx
         ctx['users'] = self.get_organisation_users()
         ctx['invites'] = self.get_organisation_invites()
         ctx['role'] = self.get_user_role_by_user(self.request.user)
