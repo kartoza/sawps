@@ -1,5 +1,5 @@
 from django.urls import path
-from sawps.views import ActivateAccount,SendRequestEmail
+from sawps.views import ActivateAccount, SendRequestEmail
 
 urlpatterns = [
     path(

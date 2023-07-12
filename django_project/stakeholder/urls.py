@@ -19,4 +19,4 @@ urlpatterns = [  # '',
         ),
         name='profile-settings',
     ),
-    ]
+]
