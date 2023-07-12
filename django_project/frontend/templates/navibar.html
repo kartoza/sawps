@@ -91,7 +91,7 @@
                 <a class="dropdown-item" href="/about">ACCOUNT</a>
                 <a class="dropdown-item" href="/">DASHBOARD</a>
                 <hr class="divider" />
-                <span class="dropdown-header">CURRENT ORGANISATION: {{ organisations|length }}{{ current_organisation }}</span>
+                <span class="dropdown-header">CURRENT ORGANISATION:</span>
                 {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
                 <button class="btn btn-success btn-sm badge-btn center-button" type="button" data-toggle="modal" data-target="#organisationModal">REQUEST ORGANISATION</button>
                 {% else %}

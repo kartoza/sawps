@@ -47,8 +47,7 @@ class OrganisationUsersView(
             if '=' in string:
                 substring = string.split('=')[1]
                 return substring
-            else:
-                return string
+        return string
 
     def search_users(self, username):
         users = User.objects.filter(username__icontains=username)
@@ -87,8 +86,8 @@ class OrganisationUsersView(
             organisation_id=organisation
         ).first()                
         if invitation:
-            return invitation.joined
-        else: return False
+            return True
+        return False
 
 
     def calculate_rows_per_page(self, data):
@@ -109,13 +108,16 @@ class OrganisationUsersView(
         matching_users = self.search_users(extracted_string)
 
         data = []
-        
+
         # search user within the orginisation
         for user in matching_users:
             try:
-                org_user = OrganisationUser.objects.get(user=user,organisation=organisation)
+                org = Organisation.objects.get(name=str(organisation))
+                org_user = OrganisationUser.objects.get(user=user,organisation=org)
                 role = UserProfile.objects.get(user=user).user_role_type_id
                 role = str(role)
+            except Organisation.DoesNotExist:
+                org = None
             except OrganisationUser.DoesNotExist:
                 continue
             except UserProfile.DoesNotExist:
@@ -175,18 +177,17 @@ class OrganisationUsersView(
                         assigned_as=OrganisationInvites.MEMBER
                     )
 
-                create_invite.save()
+                organisation = Organisation.objects.get(id=org_id)
                 # send invitation email from here
                 support_email = request.user.email
                 subject = 'ORGANISATION INVITATION'
-                organisation = Organisation.objects.get(organisation_id=org_id)
                 # Send email
                 message = render_to_string(
                     'emails/invitation_email.html',
                     {
                         'domain': Site.objects.get_current().domain,
                         'role': role,
-                        'organisation': organisation,
+                        'organisation': organisation.name,
                         'support_email': support_email,
                         'email': email
                     }
@@ -198,6 +199,7 @@ class OrganisationUsersView(
                     [str(email)],
                     html_message=message
                 )
+                create_invite.save()
                 invites = self.get_organisation_invites()
                 serialized_invites = json.dumps(list(invites))
                 return JsonResponse(
@@ -210,7 +212,7 @@ class OrganisationUsersView(
                 return JsonResponse({'status': 'invitation already sent'})
         except Organisation.DoesNotExist:
             return JsonResponse({'status': 'failed to send email'})
-        except Exception:
+        except Exception as e:
             return JsonResponse({'status': 'invitation already sent'})
 
 
@@ -218,27 +220,28 @@ class OrganisationUsersView(
 
     def delete_post(self, request):
         object_id = request.POST.get('object_id')
-        organisation = request.POST.get('current_organisation')
+        current_organisation = request.POST.get('current_organisation')
         try:
+            current_organisation = Organisation.objects.get(name=str(current_organisation))
             user = models.User.objects.get(pk=object_id)
-            organisation = OrganisationUser.objects.get(
-                user=object_id,
-                organisation=organisation
-            )
-            org_invite = OrganisationInvites.objects.get(
+            OrganisationInvites.objects.filter(
                 email=user.email,
-                organisation=organisation.organisation
-            )
-            org_invite.joined = False
-            org_invite.save()
-            OrganisationUser.objects.filter(user=object_id,organisation=organisation).delete()
+                organisation=current_organisation
+            ).delete()
+            OrganisationUser.objects.filter(
+                user=object_id,
+                organisation=current_organisation
+            ).delete()
             return JsonResponse({'status': 'success'})
+        except Organisation.DoesNotExist:
+            return JsonResponse({'status': 'failed'})
         except models.User.DoesNotExist:
             return JsonResponse({'status': 'failed'})
-        except OrganisationUser.DoesNotExist:
+        except Exception:
+            # when deletion fails
             return JsonResponse({'status': 'failed'})
-        except OrganisationInvites.DoesNotExist:
-            return JsonResponse({'status': 'failed'})
+
+
 
 
     def get_organisation_users(self):
