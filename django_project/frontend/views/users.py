@@ -102,9 +102,7 @@ class OrganisationUsersView(
     def search_table(self, request):
         query = request.POST.get('query')
         extracted_string = self.extract_substring(query)
-        # print(extracted_string)
         matching_users = self.search_users(extracted_string)
-        # print(matching_users)
 
         data = []
 
