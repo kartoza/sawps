@@ -38,8 +38,9 @@ class ProfileView(DetailView):
                 'profile-picture', None
             )
         if self.request.POST.get('title', ''):
-            profile.user.title_id = UserTitle.objects.get(
-                id=self.request.POST.get('title', '')),
+            title = UserTitle.objects.get(
+                id=self.request.POST.get('title', ''))
+            profile.user_profile.title_id = title
 
         profile.user_profile.save()
         profile.save()
