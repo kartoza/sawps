@@ -11,7 +11,7 @@ export interface SpeciesFilterInterface {
 const initialState: SpeciesFilterInterface = {
     SpeciesFilterList: [],
     months: [],
-    startYear: 1994,
+    startYear: 1960,
     endYear: 2023,
 }
 
