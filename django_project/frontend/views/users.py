@@ -123,7 +123,6 @@ class OrganisationUsersView(
                     email=user.email,
                     organisation_id=org.id
                 ).first()
-                role = str(invite.user_role)
             except Organisation.DoesNotExist:
                 org = None
             except OrganisationUser.DoesNotExist:
@@ -134,7 +133,7 @@ class OrganisationUsersView(
                         'organisation': str(org_user.organisation),
                         'user': str(org_user.user),
                         'id': org_user.user.id,
-                        'role': role,
+                        'role': 'Organisation '+invite.assigned_as,
                         'joined':invite.joined
                     })
 

@@ -7,8 +7,12 @@ from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
 from django.core import mail
 
-from stakeholder.models import Organisation, OrganisationInvites, OrganisationUser
-
+from stakeholder.models import (
+    Organisation,
+    OrganisationInvites,
+    OrganisationUser
+)
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 class OrganisationUsersViewTest(TestCase):
@@ -38,7 +42,7 @@ class OrganisationUsersViewTest(TestCase):
                 '/users/',
                 {
                     'action': 'delete',
-                    'object_id': self.organisation_user.id,
+                    'object_id': self.user.pk,
                     'current_organisation': self.organisation.name
                 }
         )
@@ -59,18 +63,19 @@ class OrganisationUsersViewTest(TestCase):
                 'action': 'invite',
                 'email': 'test@example.com',
                 'inviteAs': 'manager',
-                'memberRole': 'write',
-                'current_organisation': 'test_organisation'
+                'memberRole': 'write'
             }
         )
 
-        expected_json = {'status': 'invitation already sent'}
+        expected_data = OrganisationInvites.objects.filter(organisation=self.organisation)
+
+        expected_json = {'status': "'success" , 'updated_invites': expected_data}
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_json)
 
-        # Check email not present
-        self.assertEqual(len(mail.outbox), 0)
+        # Check email 
+        self.assertEqual(len(mail.outbox), 1)
 
 
         
@@ -81,20 +86,21 @@ class OrganisationUsersViewTest(TestCase):
             {
                 'action': 'search_user_table',
                 'query': 'test',
-                'current_organisation': 'test_organisation'
+                'current_organisation': self.organisation.name
             }
         )
                    
         # Assert the expected outcome
         expected_data = [
             {
-                'organisation': self.organisation,
-                'user': self.user,
+                'organisation': str(self.organisation),
+                'user': str(self.user),
                 'id': self.user.pk,
-                'role': None
+                'role': 'Organisation '+self.org_invitation.assigned_as,
+                'joined': self.org_invitation.joined
             }
         ]
-        expected_json = {'data': json.dumps(expected_data)}
+        expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
             
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_json)
