@@ -95,7 +95,7 @@
                 {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
                 <button class="btn btn-success btn-sm badge-btn center-button" type="button" data-toggle="modal" data-target="#organisationModal">REQUEST ORGANISATION</button>
                 {% else %}
-                <span class="dropdown-item-text font-weight-bolder clickable" onclick="redirectToDesiredPage()">{{ current_organisation }}</span>
+                <span class="dropdown-item font-weight-bolder" onclick="redirectToDesiredPage()">{{ current_organisation }}</span>
                 {% endif %}
                 <hr class="divider" />
                 

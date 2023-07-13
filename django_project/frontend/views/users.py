@@ -1,4 +1,5 @@
 import json
+from sawps.views import AddUserToOrganisation
 from stakeholder.models import (
     Organisation,
     OrganisationInvites, 
@@ -23,10 +24,8 @@ from django.core.paginator import (
 )
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import models
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
 from django.contrib.sites.models import Site
-from django.conf import settings
+from urllib.parse import quote
 
 
 
@@ -88,6 +87,12 @@ class OrganisationUsersView(
         if invitation:
             return True
         return False
+    
+    def is_user_registerd(self,email):
+        user = User.objects.filter(email=email).first()
+        if user:
+            return True
+        else: return False
 
 
     def calculate_rows_per_page(self, data):
@@ -114,22 +119,23 @@ class OrganisationUsersView(
             try:
                 org = Organisation.objects.get(name=str(organisation))
                 org_user = OrganisationUser.objects.get(user=user,organisation=org)
-                role = UserProfile.objects.get(user=user).user_role_type_id
-                role = str(role)
+                invite = OrganisationInvites.objects.filter(
+                    email=user.email,
+                    organisation_id=org.id
+                ).first()
+                role = str(invite.user_role)
             except Organisation.DoesNotExist:
                 org = None
             except OrganisationUser.DoesNotExist:
                 continue
-            except UserProfile.DoesNotExist:
-                role = None
             if org_user:
                 if not org_user.user == self.request.user:
                     data.append({
                         'organisation': str(org_user.organisation),
                         'user': str(org_user.user),
                         'id': org_user.user.id,
-                        'role': role
-                        # Add more columns as needed
+                        'role': role,
+                        'joined':invite.joined
                     })
 
         return JsonResponse({'data': json.dumps(data, cls=DjangoJSONEncoder)})
@@ -178,42 +184,46 @@ class OrganisationUsersView(
                     )
 
                 organisation = Organisation.objects.get(id=org_id)
-                # send invitation email from here
-                support_email = request.user.email
-                subject = 'ORGANISATION INVITATION'
-                # Send email
-                message = render_to_string(
-                    'emails/invitation_email.html',
-                    {
-                        'domain': Site.objects.get_current().domain,
-                        'role': role,
-                        'organisation': organisation.name,
-                        'support_email': support_email,
-                        'email': email
-                    }
-                )
-                send_mail(
-                    subject,
-                    None,
-                    settings.SERVER_EMAIL,
-                    [str(email)],
-                    html_message=message
-                )
-                create_invite.save()
-                invites = self.get_organisation_invites()
-                serialized_invites = json.dumps(list(invites))
-                return JsonResponse(
-                    {
-                        'status': 'success',
-                        'updated_invites': serialized_invites
-                    }
-                )                
+
+                # assert if user is registered on platform
+                registered = self.is_user_registerd(email)
+                if registered:
+                    encoded_email = quote(email, safe='')
+                    return_url = Site.objects.get_current().domain + f'/adduser/{encoded_email}/{organisation.name}/'
+                else:
+                    return_url = Site.objects.get_current().domain + '/accounts/signup/?email=' + quote(email) + '&organisation=' + quote(organisation.name)
+
+                # object to pass to view function
+                email_details = {
+                    'return_url': return_url,
+                    'user': {
+                        'role': request.POST.get('inviteAs'),
+                        'organisation': organisation.name
+                    },
+                    'support_email': request.user.email,
+                    'recipient_email': email 
+                }
+
+
+                # instantiate the view
+                add_user_view = AddUserToOrganisation()
+                if add_user_view.send_invitation_email(email_details):
+                    create_invite.save()
+                    invites = self.get_organisation_invites()
+                    serialized_invites = json.dumps(list(invites))
+                    return JsonResponse(
+                        {
+                            'status': 'success',
+                            'updated_invites': serialized_invites
+                        }
+                    )
+                return JsonResponse({'status': 'failed to send email'})              
             else:
                 return JsonResponse({'status': 'invitation already sent'})
         except Organisation.DoesNotExist:
             return JsonResponse({'status': 'failed to send email'})
         except Exception as e:
-            return JsonResponse({'status': 'invitation already sent'})
+            return JsonResponse({'status': str(e)})
 
 
 
@@ -250,12 +260,17 @@ class OrganisationUsersView(
         organisation_users = []
 
         for user in organisation_user_list:
-            role = UserProfile.objects.all().filter(user=user.user.id).first()
+            # get role from organisation invites
+            role = OrganisationInvites.objects.filter(
+                email=user.user.email,
+                organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY]
+            ).first()
             if role:
                 object_to_save = {
                     "id": user.user.id,
                     "organisation_user": str(user.user),
-                    "role": role.user_role_type_id.name,
+                    "role": role.user_role,
+                    "joined": role.joined
                 }
             else:
                 object_to_save = {
@@ -291,7 +306,7 @@ class OrganisationUsersView(
             object_to_save = {
                 "pk": invite.pk,
                 "email": str(invite.email),
-                "user_role": str(invite.user_role),
+                "user_role": str(invite.assigned_as),
                 "joined": invite.joined
             }
             paginated_organisation_invites.append(object_to_save)

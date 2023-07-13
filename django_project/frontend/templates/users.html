@@ -168,6 +168,7 @@
             </thead>
             <tbody>
               {% for org_user in users %}
+              {% if org_user.joined %}
               <tr>
                 <td>{{ org_user.organisation_user }}</td>
                 {% if org_user.role == 'Base user' %}
@@ -181,6 +182,7 @@
                 </td>
                 {% endif %}
               </tr>
+              {% endif %}
               {% endfor %}
             </tbody>
             <tfoot>

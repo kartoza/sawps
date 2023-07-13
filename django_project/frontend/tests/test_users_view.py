@@ -39,7 +39,7 @@ class OrganisationUsersViewTest(TestCase):
                 {
                     'action': 'delete',
                     'object_id': self.organisation_user.id,
-                    'current_organisation': self.organisation
+                    'current_organisation': self.organisation.name
                 }
         )
         
@@ -77,8 +77,9 @@ class OrganisationUsersViewTest(TestCase):
     def test_search_user_table(self):
         # Create a request object with the required POST data
         response = self.client.post(
-            '/search_user_table/',
+            '/users/',
             {
+                'action': 'search_user_table',
                 'query': 'test',
                 'current_organisation': 'test_organisation'
             }
@@ -87,10 +88,10 @@ class OrganisationUsersViewTest(TestCase):
         # Assert the expected outcome
         expected_data = [
             {
-                'organisation': 'test_organisation',
-                'user': 'testuser',
-                'id': 1,
-                'role': 'Admin'
+                'organisation': self.organisation,
+                'user': self.user,
+                'id': self.user.pk,
+                'role': None
             }
         ]
         expected_json = {'data': json.dumps(expected_data)}

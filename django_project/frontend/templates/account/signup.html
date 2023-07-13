@@ -99,7 +99,12 @@
         // Get the value of the 'email' parameter from the URL
         var email = url.searchParams.get('email');
 
-        var organisationValue = url.searchParams.get('organisation');
+        // var organisationValue = url.searchParams.get('organisation');
+        const decodedUrl = decodeURIComponent(url.toString().replace(/&amp;/g, '&'));
+        const searchParams = new URLSearchParams(decodedUrl);
+        var organisationValue = searchParams.get('organisation');
+
+        console.log(organisationValue);  // Output: t2
 
         var organisationField = document.getElementById("organisationInput");
 

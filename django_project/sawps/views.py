@@ -17,6 +17,7 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.sites.models import Site
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 class ActivateAccount(View):
@@ -52,36 +53,47 @@ class ActivateAccount(View):
 
 
 class AddUserToOrganisation(View):
-    def adduser(self, user, organisation, *args, **kwargs):
+    def get(self, request, user_email, organisation, *args, **kwargs):
+            self.adduser(user_email, organisation, *args, **kwargs)
+            return redirect('home')
+    
+    def adduser(self, user_email, organisation, *args, **kwargs):
         '''when the user has been invited to join an organisation 
         this view will Add the User to the OrganisationUser 
         and update the linked models
         OrganisationInvites, UserProfile'''
+        print('adding')
 
-        # update organisation invties
         try:
-
             org = Organisation.objects.get(name=str(organisation))
-            org_invites = OrganisationInvites.objects.filter(
-                email=user.email, organisation=org)
-            for invite in org_invites:
-                if not invite.joined:
-                    # Update the joined field to True
-                    invite.joined = True
-                    invite.save()
-                    user_role = invite.user_role
-                    # add user to organisation users
-                    org_user = OrganisationUser.objects.create(
-                        user=user, organisation=org)
-                    org_user.save()
-                    # add user profile with the role
-                    user_profile = UserProfile.objects.create(
-                        user=user, user_role_type_id=user_role)
-                    user_profile.save()
-        except OrganisationInvites.DoesNotExist:
-            org_invites = None
+            user = User.objects.filter(email=user_email).first()
+            if user:
+                print('yes user')
+                org_invites = OrganisationInvites.objects.filter(
+                    email=user.email, organisation=org)
+                if org_invites:
+                    print('yes user')
+                    for invite in org_invites:
+                        # Update the joined field to True
+                        invite.joined = True
+                        invite.save()
+                        # check if not already added to prevent duplicates
+                        org_user = OrganisationUser.objects.filter(
+                            user=user,
+                            organisation=org
+                        ).first()
+                        if not org_user:
+                            # add user to organisation users
+                            user = OrganisationUser.objects.create(
+                                user=user,
+                                organisation=org
+                            )
+                            org_user.save()
         except Organisation.DoesNotExist:
             org = None
+        except Exception:
+            return None
+
 
     def is_user_already_joined(self, email, organisation):
         """
@@ -97,9 +109,36 @@ class AddUserToOrganisation(View):
             else:
                 return False
         except OrganisationInvites.DoesNotExist:
-            return None
+            return False
         except Organisation.DoesNotExist:
             return None
+        
+    def send_invitation_email(self, email_details):
+        print(email_details['return_url'])
+        subject = 'ORGANISATION INVITATION'
+        try:
+            # Send email
+            message = render_to_string(
+                'emails/invitation_email.html',
+                {
+                    'domain': email_details['return_url'],
+                    'role': email_details['user']['role'],
+                    'organisation': email_details['user']['organisation'],
+                    'support_email': email_details['support_email'],
+                    'email': email_details['recipient_email']
+                }
+            )
+            send_mail(
+                subject,
+                None,
+                settings.SERVER_EMAIL,
+                [email_details['recipient_email']],
+                html_message=message
+            )
+            return True
+        except Exception as e:
+            print(str(e))
+            return False
 
 
 class SendRequestEmail(View):

@@ -43,7 +43,8 @@ class CustomSignupForm(SignupForm):
         if self.cleaned_data.get('organisation'):
             add_user_view = AddUserToOrganisation()
             if add_user_view.is_user_already_joined(self.cleaned_data['email'], self.cleaned_data['organisation']):
-                add_user_view.adduser(user, self.cleaned_data['organisation'])
+                print('adding user')
+                add_user_view.adduser(user.email, self.cleaned_data['organisation'])
             else:
                 return redirect('/accounts/login')
 

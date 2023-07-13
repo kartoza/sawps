@@ -82,18 +82,6 @@ body {
 
 .clickable {
   cursor: pointer;
-  position: relative;
-}
-
-.clickable::after {
-  content: '\f0d7';
-  /* Unicode for the click icon, adjust as needed */
-  font-family: 'Font Awesome';
-  /* Assuming you have Font Awesome included */
-  position: absolute;
-  right: -10px;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 .modal-dialog-centered.modal-sm {
