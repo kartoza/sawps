@@ -12,8 +12,8 @@ class DataTableAPIView(APIView):
 
     def get_queryset(self):
         organisation_id = self.request.session.get('current_organisation_id')
-        queryset = OwnedSpecies.objects.select_related('user').filter(
-            user__organisationuser__organisation_id=organisation_id
+        queryset = OwnedSpecies.objects.select_related('property').filter(
+            property__organisation_id=organisation_id
         )
         filtered_queryset = OwnedSpeciesFilter(
             self.request.GET, queryset=queryset
