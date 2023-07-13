@@ -27,6 +27,9 @@ function LayerFilterTabs() {
                     <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
                         <Layers />
                     </TabPanel>
+                    <TabPanel key={1} value={selectedTabSideBar} index={1} noPadding>
+                        <Filter />
+                    </TabPanel>
                 </Box>
                 <TabPanel key={1} value={selectedTabSideBar} index={1} noPadding>
                     <Filter />

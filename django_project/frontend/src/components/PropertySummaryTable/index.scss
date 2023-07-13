@@ -1,0 +1,17 @@
+.PropertySiteDetailTable {
+    &.MuiTable-root {
+        table-layout: fixed;
+        
+        .MuiTableCell-root {
+            padding: 16px 8px;
+        }
+
+        .MuiIconButton-root {
+            padding: 0;
+        }
+    }
+    
+    label {
+        color: unset;
+    }
+}

@@ -13,7 +13,7 @@ import {
 import {
     setUploadState
 } from '../../../reducers/UploadState';
-import PropertySummaryTable from './PropertySummaryTable';
+import PropertySummaryTable from '../../../components/PropertySummaryTable';
 import { UploadMode } from '../../../models/Upload';
 import PropertyInterface from '../../../models/Property';
 
