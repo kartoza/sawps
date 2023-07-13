@@ -62,17 +62,14 @@ class AddUserToOrganisation(View):
         this view will Add the User to the OrganisationUser 
         and update the linked models
         OrganisationInvites, UserProfile'''
-        print('adding')
 
         try:
             org = Organisation.objects.get(name=str(organisation))
             user = User.objects.filter(email=user_email).first()
             if user:
-                print('yes user')
                 org_invites = OrganisationInvites.objects.filter(
                     email=user.email, organisation=org)
                 if org_invites:
-                    print('yes user')
                     for invite in org_invites:
                         # Update the joined field to True
                         invite.joined = True
