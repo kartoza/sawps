@@ -11,7 +11,7 @@ between different pages, etc and screenshots where necessary-->
 
 To switch to dark mode, simply go to your map and click on the little sun icon which is located next to the layers panel. 
 
-![instr_dark_mode_1](img\instr_dark_mode_1.png)
+![instr_dark_mode_1](img/instr_dark_mode_1.png)
 
 This will switch your map from light mode to dark mode.
 ![instr_dark_mode_2](img/instr_dark_mode_2.png)
