@@ -11,7 +11,8 @@ class ContactUsForm(forms.Form):
     )
 
     message = forms.CharField(
-        widget=forms.Textarea(attrs={'class': "form-control",'style':"height:80px"}),
+        widget=forms.Textarea(
+            attrs={'class': "form-control", 'style': "height:80px"}),
         required=True
     )
 
