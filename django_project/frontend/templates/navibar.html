@@ -169,16 +169,10 @@
         // Retrieve values from the modal fields
         var organisationName = document.getElementById('organisationName').value;
         var message = document.getElementById('message').value;
-        
-        // Create an object with the data
-        var requestData = {
-            organisationName: organisationName,
-            message: message
-        };
 
         var url = extractBaseUrl(window.location.href) + "/sendrequest/"
         
-        // Make an AJAX request to update the database
+        // Make request to send the request
         $.ajax({
           type: 'POST',
           url: url,
@@ -186,7 +180,7 @@
             'action': 'sendrequest',
             'organisationName': organisationName,
             'message': message,
-            'csrfmiddlewaretoken': '{{ csrf_token }}',
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
           },
           success: function() {
             $('#successModal').modal('show');

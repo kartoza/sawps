@@ -61,17 +61,20 @@ class OrganisationUsersView(
 
     def get_user_role(self, role):
         try:
-            role = UserRoleType.objects.get(name=role)
+            role = UserRoleType.objects.filter(name__icontains=role).first()
             return role
         except UserRoleType.DoesNotExist:
             return None
 
-    def get_user_role_by_user(self, user):
-        try:
-            role = UserProfile.objects.get(user=user)
-            return str(role.user_role_type_id)
-        except UserProfile.DoesNotExist:
-            return None
+
+    def get_role(self, user,organisation):
+        current_user = OrganisationInvites.objects.filter(
+            email=user.email,
+            organisation_id=organisation
+        ).first()                
+        if current_user:
+            return current_user.user_role
+        return None
 
     def is_new_invitation(self, email, organisation):
         """
@@ -200,7 +203,8 @@ class OrganisationUsersView(
                         'organisation': organisation.name
                     },
                     'support_email': request.user.email,
-                    'recipient_email': email 
+                    'recipient_email': email,
+                    'domain': Site.objects.get_current().domain
                 }
 
 
@@ -276,6 +280,7 @@ class OrganisationUsersView(
                     "id": user.user.id,
                     "organisation_user": str(user.user),
                     "role": None,
+                    "joined": False
                 }
             if not user.user == self.request.user:
                 organisation_users.append(object_to_save)
@@ -341,5 +346,7 @@ class OrganisationUsersView(
         ctx = super().get_context_data(**kwargs)
         ctx['users'] = self.get_organisation_users()
         ctx['invites'] = self.get_organisation_invites()
-        ctx['role'] = self.get_user_role_by_user(self.request.user)
+        ctx['role'] = self.get_role(
+            self.request.user,
+            self.request.session[CURRENT_ORGANISATION_ID_KEY])
         return ctx

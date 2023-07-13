@@ -61,7 +61,7 @@ class AddUserToOrganisation(View):
         '''when the user has been invited to join an organisation 
         this view will Add the User to the OrganisationUser 
         and update the linked models
-        OrganisationInvites, UserProfile'''
+        OrganisationInvites'''
 
         try:
             org = Organisation.objects.get(name=str(organisation))
@@ -111,8 +111,7 @@ class AddUserToOrganisation(View):
             return None
         
     def send_invitation_email(self, email_details):
-        print(email_details['return_url'])
-        subject = 'ORGANISATION INVITATION'
+        subject = 'SAWPS Organisation Invitation'
         try:
             # Send email
             message = render_to_string(
@@ -122,7 +121,8 @@ class AddUserToOrganisation(View):
                     'role': email_details['user']['role'],
                     'organisation': email_details['user']['organisation'],
                     'support_email': email_details['support_email'],
-                    'email': email_details['recipient_email']
+                    'email': email_details['recipient_email'],
+                    'domain': email_details['doamin']
                 }
             )
             send_mail(
@@ -141,23 +141,25 @@ class AddUserToOrganisation(View):
 class SendRequestEmail(View):
     def send_email(self, request):
         """this feature is still being implemented"""
+        organisation = request.POST.get('organisationName')
+        request_message = request.POST.get('message')
         subject = 'ORGANISATION REQUEST'
         # Send email
         try:
-            message = render_to_string(
-                'emails/invitation_email.html',
-                {
-                    'domain': Site.objects.get_current().domain,
-                    'email': request.user.email,
-                },
-            )
-            send_mail(
-                subject,
-                None,
-                settings.SERVER_EMAIL,
-                ['to@gmail.com'],
-                html_message=message
-            )
+            # message = render_to_string(
+            #     'emails/invitation_email.html',
+            #     {
+            #         'domain': Site.objects.get_current().domain,
+            #         'email': request.user.email,
+            #     },
+            # )
+            # send_mail(
+            #     subject,
+            #     None,
+            #     settings.SERVER_EMAIL,
+            #     ['to@gmail.com'],
+            #     html_message=message
+            # )
             return JsonResponse({'status': 'success'})
         except Exception as e:
                 print('Failed to send email:', str(e))
