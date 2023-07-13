@@ -6,13 +6,12 @@
 
 {% block content %}
 <section>
-  <div class="container py-5">
-
+  <div class="container py-5 content">
       <div class="container">
         <div class="row">
           <h3 class="page-title sawps-text-menu mb-3">{{ current_organisation }}</h3>
           <div class="col-auto ml-auto">
-            {% if role == 'Admin' or role == 'Super user' or user.is_superuser %}
+            {% if role == 'Admin' or role == 'Super User' or user.is_superuser %}
               <button class="btn btn-success" type="button" data-toggle="modal" data-target="#myModal">
                 <i class="fas fa-plus"></i> Add People
               </button>
@@ -20,7 +19,7 @@
           </div>
         </div>
       </div>
-        <hr class="default-separator">
+      <hr class="default-separator">
         
       <div class="container">
        <div class="row">
@@ -161,7 +160,7 @@
               <tr>
                 <th>User</th>
                 <th>Role</th>
-                {% if role == 'Admin' or role == 'Super user' or user.is_superuser %}
+                {% if role == 'Admin' or role == 'Super User' or user.is_superuser %}
                 <th></th>
                 {% endif %}
               </tr>
@@ -176,7 +175,7 @@
                 {% else %}
                 <td>{{ 'Organisation Manager' }}</td>
                 {% endif %}
-                {% if role == 'Admin' or role == 'Super user' or user.is_superuser %}
+                {% if role == 'Admin' or role == 'Super User' or user.is_superuser %}
                 <td>
                   <i class="fas fa-trash-alt trash-icon" data-object-id="{{ user.id }}"></i>
                 </td>
@@ -251,7 +250,7 @@
               {% for invited in invites %}
               <tr>
                 <td>{{ invited.email }}</td>
-                {% if invited.user_role == 'Base user' %}
+                {% if invited.user_role == 'Base User' %}
                 <td>Organisation Member</td>
                 {% else %}
                 <td>Organisation Manager</td>
@@ -318,7 +317,6 @@
        </div> 
        </div> 
       </div> 
-      
   </div>
 
   <script>
@@ -450,7 +448,7 @@
           console.error(error);
         }
       });
-}
+    }
 
 
     // search organisation users table
@@ -516,14 +514,24 @@
                     }
                 }
             });
-
     }
-
   </script>
-  
+
 </section>
 
 <style>
+
+
+.content {
+  flex: 1;
+  min-height: 76.1vh;
+}
+
+.custom-py {
+  padding-top: 3rem; /* Adjust the value to your desired padding */
+  padding-bottom: 6.4rem; /* Adjust the value to your desired padding */
+}
+
 
 .pagination a.page-link {
   color: green;

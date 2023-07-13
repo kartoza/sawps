@@ -140,29 +140,37 @@ class AddUserToOrganisation(View):
 
 class SendRequestEmail(View):
     def send_email(self, request):
-        """this feature is still being implemented"""
         organisation = request.POST.get('organisationName')
         request_message = request.POST.get('message')
-        subject = 'ORGANISATION REQUEST'
+        subject = 'Oganisation Request'
+        if request.user.first_name:
+            if request.user.last_name:
+                name = request.user.first_name + ' ' + request.user.last_name
+            else: name = request.user.first_name
+        else: name = request.user.email
         # Send email
         try:
-            # message = render_to_string(
-            #     'emails/invitation_email.html',
-            #     {
-            #         'domain': Site.objects.get_current().domain,
-            #         'email': request.user.email,
-            #     },
-            # )
-            # send_mail(
-            #     subject,
-            #     None,
-            #     settings.SERVER_EMAIL,
-            #     ['to@gmail.com'],
-            #     html_message=message
-            # )
+            message = render_to_string(
+                'emails/request_organisation_email.html',
+                {
+                    'domain': Site.objects.get_current().domain,
+                    'email_address': request.user.email,
+                    'organisation_name': organisation,
+                    'name': name,
+                    'request_message': request_message
+                },
+            )
+            send_mail(
+                subject,
+                None,
+                settings.SERVER_EMAIL,
+                ['amy@kartoza.com'],
+                html_message=message
+            )
             return JsonResponse({'status': 'success'})
         except Exception as e:
                 print('Failed to send email:', str(e))
+                return JsonResponse({'status': 'failed'})
         
     
     def dispatch(self, request, *args, **kwargs):

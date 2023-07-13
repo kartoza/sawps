@@ -166,13 +166,12 @@
     }
 
     function sendRequest() {
-        // Retrieve values from the modal fields
         var organisationName = document.getElementById('organisationName').value;
         var message = document.getElementById('message').value;
 
         var url = extractBaseUrl(window.location.href) + "/sendrequest/"
         
-        // Make request to send the request
+        // call view function to send email
         $.ajax({
           type: 'POST',
           url: url,
