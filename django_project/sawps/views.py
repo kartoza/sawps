@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.views.generic import View
+from core.settings.contrib import SUPPORT_EMAIL
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
@@ -164,7 +165,7 @@ class SendRequestEmail(View):
                 subject,
                 None,
                 settings.SERVER_EMAIL,
-                ['amy@kartoza.com'],
+                [SUPPORT_EMAIL],
                 html_message=message
             )
             return JsonResponse({'status': 'success'})
