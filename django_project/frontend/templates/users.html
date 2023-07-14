@@ -155,7 +155,7 @@
         
         <!-- members table -->
         <div class="row">
-          <table id="organisation_users" class="table table-striped table-bordered" width="100%">
+          <table id="organisation_users" class="table table-striped table-bordereless" cellspacing="0" width="100%">
             <thead>
               <tr>
                 <th>User</th>
@@ -175,9 +175,9 @@
                 {% else %}
                 <td>{{ 'Organisation Manager' }}</td>
                 {% endif %}
-                {% if role == 'Admin' or role == 'Super User' or user.is_superuser %}
+                {% if org_user.role == 'Admin' or org_user.role == 'Super User' or user.is_superuser %}
                 <td>
-                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ user.id }}"></i>
+                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ org_user.id }}"></i>
                 </td>
                 {% endif %}
               </tr>
@@ -238,7 +238,7 @@
         <div class="row">
           <h4 class="page-title sawps-text-menu mb-3">Invitations</h4>
         
-          <table id="invites" class="table table-striped table-bordered" width="100%">
+          <table id="invites" class="table table-striped table-bordereless" width="100%">
             <thead>
               <tr>
                 <th>Email</th>
