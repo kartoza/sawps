@@ -117,7 +117,7 @@ class AddUserToOrganisation(View):
             message = render_to_string(
                 'emails/invitation_email.html',
                 {
-                    'domain': email_details['return_url'],
+                    'return_url': email_details['return_url'],
                     'role': email_details['user']['role'],
                     'organisation': email_details['user']['organisation'],
                     'support_email': email_details['support_email'],
