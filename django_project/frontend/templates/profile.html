@@ -25,9 +25,14 @@
                 <label for="title">Title</label>
                 <select class="form-control" name="title" id="title">
                   {% for title in titles %}
-                    <option value="{{ title.id }}"> {{ title.name }} </option>
+                    {% if title.name == object.user_profile.title_id.name %}
+                      <option value="{{ title.id }}" selected>{{ title.name }}</option>
+                    {% else %}
+                      <option value="{{ title.id }}">{{ title.name }}</option>
+                    {% endif %}
                   {% endfor %}
                 </select>
+                
               </div>
               <div class="form-group">
                 <label for="email">Email address</label>

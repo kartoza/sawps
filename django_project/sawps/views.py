@@ -6,11 +6,11 @@ from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.views.generic import View
+from core.settings.contrib import SUPPORT_EMAIL
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
-    OrganisationUser,
-    UserProfile
+    OrganisationUser
 )
 from sawps.email_verification_token import email_verification_token
 from django.template.loader import render_to_string
@@ -61,7 +61,7 @@ class AddUserToOrganisation(View):
         '''when the user has been invited to join an organisation 
         this view will Add the User to the OrganisationUser 
         and update the linked models
-        OrganisationInvites, UserProfile'''
+        OrganisationInvites'''
 
         try:
             org = Organisation.objects.get(name=str(organisation))
@@ -111,18 +111,18 @@ class AddUserToOrganisation(View):
             return None
         
     def send_invitation_email(self, email_details):
-        print(email_details['return_url'])
-        subject = 'ORGANISATION INVITATION'
+        subject = 'SAWPS Organisation Invitation'
         try:
             # Send email
             message = render_to_string(
                 'emails/invitation_email.html',
                 {
-                    'domain': email_details['return_url'],
+                    'return_url': email_details['return_url'],
                     'role': email_details['user']['role'],
                     'organisation': email_details['user']['organisation'],
                     'support_email': email_details['support_email'],
-                    'email': email_details['recipient_email']
+                    'email': email_details['recipient_email'],
+                    'domain': email_details['domain']
                 }
             )
             send_mail(
@@ -140,27 +140,37 @@ class AddUserToOrganisation(View):
 
 class SendRequestEmail(View):
     def send_email(self, request):
-        """this feature is still being implemented"""
-        subject = 'ORGANISATION REQUEST'
+        organisation = request.POST.get('organisationName')
+        request_message = request.POST.get('message')
+        subject = 'Oganisation Request'
+        if request.user.first_name:
+            if request.user.last_name:
+                name = request.user.first_name + ' ' + request.user.last_name
+            else: name = request.user.first_name
+        else: name = request.user.email
         # Send email
         try:
             message = render_to_string(
-                'emails/invitation_email.html',
+                'emails/request_organisation_email.html',
                 {
                     'domain': Site.objects.get_current().domain,
-                    'email': request.user.email,
+                    'email_address': request.user.email,
+                    'organisation_name': organisation,
+                    'name': name,
+                    'request_message': request_message
                 },
             )
             send_mail(
                 subject,
                 None,
                 settings.SERVER_EMAIL,
-                ['to@gmail.com'],
+                [SUPPORT_EMAIL],
                 html_message=message
             )
             return JsonResponse({'status': 'success'})
         except Exception as e:
                 print('Failed to send email:', str(e))
+                return JsonResponse({'status': 'failed'})
         
     
     def dispatch(self, request, *args, **kwargs):

@@ -6,13 +6,12 @@
 
 {% block content %}
 <section>
-  <div class="container py-5">
-
+  <div class="container py-5 content">
       <div class="container">
         <div class="row">
           <h3 class="page-title sawps-text-menu mb-3">{{ current_organisation }}</h3>
           <div class="col-auto ml-auto">
-            {% if role == 'Admin' or role == 'Super user' or user.is_superuser %}
+            {% if role == 'Admin' or role == 'Super User' or user.is_superuser %}
               <button class="btn btn-success" type="button" data-toggle="modal" data-target="#myModal">
                 <i class="fas fa-plus"></i> Add People
               </button>
@@ -20,7 +19,7 @@
           </div>
         </div>
       </div>
-        <hr class="default-separator">
+      <hr class="default-separator">
         
       <div class="container">
        <div class="row">
@@ -156,12 +155,12 @@
         
         <!-- members table -->
         <div class="row">
-          <table id="organisation_users" class="table table-striped table-bordered" width="100%">
+          <table id="organisation_users" class="table table-striped table-bordereless" cellspacing="0" width="100%">
             <thead>
               <tr>
                 <th>User</th>
                 <th>Role</th>
-                {% if role == 'Admin' or role == 'Super user' or user.is_superuser %}
+                {% if role == 'Admin' or role == 'Super User' or user.is_superuser %}
                 <th></th>
                 {% endif %}
               </tr>
@@ -176,9 +175,9 @@
                 {% else %}
                 <td>{{ 'Organisation Manager' }}</td>
                 {% endif %}
-                {% if role == 'Admin' or role == 'Super user' or user.is_superuser %}
+                {% if org_user.role == 'Admin' or org_user.role == 'Super User' or user.is_superuser %}
                 <td>
-                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ user.id }}"></i>
+                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ org_user.id }}"></i>
                 </td>
                 {% endif %}
               </tr>
@@ -239,7 +238,7 @@
         <div class="row">
           <h4 class="page-title sawps-text-menu mb-3">Invitations</h4>
         
-          <table id="invites" class="table table-striped table-bordered" width="100%">
+          <table id="invites" class="table table-striped table-bordereless" width="100%">
             <thead>
               <tr>
                 <th>Email</th>
@@ -251,7 +250,7 @@
               {% for invited in invites %}
               <tr>
                 <td>{{ invited.email }}</td>
-                {% if invited.user_role == 'Base user' %}
+                {% if invited.user_role == 'Base User' %}
                 <td>Organisation Member</td>
                 {% else %}
                 <td>Organisation Manager</td>
@@ -314,18 +313,10 @@
               </tr>
             </tfoot>
           </table>
-        </div>
-        
-        
-        
-        
-       
-        
-         
+        </div>  
        </div> 
        </div> 
       </div> 
-      
   </div>
 
   <script>
@@ -457,7 +448,7 @@
           console.error(error);
         }
       });
-}
+    }
 
 
     // search organisation users table
@@ -523,14 +514,24 @@
                     }
                 }
             });
-
     }
-
   </script>
-  
+
 </section>
 
 <style>
+
+
+.content {
+  flex: 1;
+  min-height: 76.1vh;
+}
+
+.custom-py {
+  padding-top: 3rem; /* Adjust the value to your desired padding */
+  padding-bottom: 6.4rem; /* Adjust the value to your desired padding */
+}
+
 
 .pagination a.page-link {
   color: green;
