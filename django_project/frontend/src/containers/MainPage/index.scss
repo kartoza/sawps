@@ -29,3 +29,23 @@ body {
         height: 100%;
     }
 }
+
+.grayBg{
+    background: #f5f3f3;
+    padding-left: 5px;
+    .Content{
+        background-color: #fff;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .TabHeaders {
+        margin-bottom: 6px;
+    }
+}
+.customWidth {
+    width: calc(100vw - 440px);
+    .dataTable {
+        width: calc(100vw - 425px);
+        overflow: auto;
+    }
+}

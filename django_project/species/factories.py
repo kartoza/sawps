@@ -1,7 +1,17 @@
 import factory
-from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies, TaxonSurveyMethod
-from species.models import Taxon
+from species.models import (
+    TaxonRank,
+    Taxon,
+    ManagementStatus,
+    OwnedSpecies,
+    TaxonSurveyMethod
+)
 from django.contrib.auth.models import User
+from population_data.factories import (
+    AnnualPopulationF,
+    MonthFactory,
+)
+
 
 class TaxonRankFactory(factory.django.DjangoModelFactory):
     """taxon rank factory"""
@@ -9,6 +19,33 @@ class TaxonRankFactory(factory.django.DjangoModelFactory):
         model = TaxonRank
 
     name = factory.Sequence(lambda n: 'taxon_rank_%d' % n)
+
+
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = User
+
+    username = factory.Sequence(lambda n: f"user{n}")
+    email = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
+    password = factory.PostGenerationMethodCall('set_password', 'password')
+    first_name = factory.Faker('first_name')
+    last_name = factory.Faker('last_name')
+
+
+class TaxonFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Taxon
+
+    scientific_name = factory.Sequence(lambda n: f"Scientific Name {n}")
+    common_name_varbatim = factory.Sequence(lambda n: f"Common Name {n}")
+    colour_variant = factory.Faker('boolean')
+    infraspecific_epithet = factory.Sequence(
+        lambda n: f"Infraspecific Epithet {n}"
+    )
+    taxon_rank = factory.SubFactory('species.factories.TaxonRankFactory')
+    parent = None
+    show_on_front_page = factory.Faker('boolean')
+    is_selected = factory.Faker('boolean')
 
 
 class ManagementStatusFactory(factory.django.DjangoModelFactory):
@@ -23,11 +60,35 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
     """Owned species factory."""
     class Meta:
         model = OwnedSpecies
-    
+
     management_status = factory.SubFactory(ManagementStatusFactory)
-    nature_of_population = factory.SubFactory('population_data.factories.NatureOfPopulationFactory')
-    count_method = factory.SubFactory('population_data.factories.CountMethodFactory')
+    nature_of_population = factory.SubFactory(
+        'population_data.factories.NatureOfPopulationFactory'
+    )
+    taxon = factory.SubFactory(TaxonFactory)
+    user = factory.SubFactory(UserFactory)
     property = factory.SubFactory('property.factories.PropertyFactory')
+
+    @factory.post_generation
+    def create_annual_population(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        AnnualPopulationF.create(
+            year=factory.Faker('year'),
+            owned_species=self,
+            total=100,
+            adult_male=50,
+            adult_female=50,
+            month=factory.SubFactory(MonthFactory),
+            juvenile_male=30,
+            juvenile_female=30,
+            sub_adult_total=20,
+            sub_adult_male=10,
+            sub_adult_female=10,
+            juvenile_total=40,
+            pride=5
+        )
 
 
 class TaxonSurveyMethodF(factory.django.DjangoModelFactory):

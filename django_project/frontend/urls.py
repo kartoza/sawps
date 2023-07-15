@@ -55,6 +55,7 @@ from frontend.api_views.population import (
     FetchDraftPopulationUpload,
     DraftPopulationUpload
 )
+from frontend.api_views.data_table import DataTableAPIView
 
 
 
@@ -187,4 +188,5 @@ urlpatterns = [
     path('about/', AboutView.as_view(), name='about'),
     path('users/', OrganisationUsersView.as_view(), name='Users'),
     path('contact/', ContactUsView.as_view(), name='contact'),
+    path('data-table/', DataTableAPIView.as_view(), name='data-table'),
 ]

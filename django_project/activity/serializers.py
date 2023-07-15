@@ -1,12 +1,18 @@
 from rest_framework import serializers
-from activity.models import (
-    ActivityType
-)
+
+from .models import ActivityType
 
 
 class ActivityTypeSerializer(serializers.ModelSerializer):
-    """ActivityType serializer"""
+    """Survey Method Serializer"""
 
-    class Meta():
+    def __init__(self, *args, **kwargs):
+        remove_fields = kwargs.pop('remove_fields', None)
+        super(ActivityTypeSerializer, self).__init__(*args, **kwargs)
+        if remove_fields:
+            for field_name in remove_fields:
+                self.fields.pop(field_name)
+
+    class Meta:
         model = ActivityType
-        fields = ['id', 'name']
+        fields = '__all__'
