@@ -58,7 +58,6 @@ jobs:
         working-directory: deployment
         run: |
           echo "Override docker-compose for testing purposes"
-          cp docker-compose.override.template.yml docker-compose.override.yml
           cd ../
           make dev
           make wait-db
