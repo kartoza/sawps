@@ -95,6 +95,9 @@ services:
     image: kartoza/sanbi_dev
     <<: *default-common-django
     entrypoint: []
+    links:
+      - db
+      - worker
 
   tegola:
     image: *tegola-image
