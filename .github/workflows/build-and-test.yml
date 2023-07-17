@@ -71,6 +71,7 @@ jobs:
           python manage.py collectstatic --noinput --verbosity 0
           export DJANGO_SETTINGS_MODULE=core.settings.dev && coverage run manage.py test && coverage xml
           EOF
+          docker cp sawps_dev:/home/web/django_project/coverage.xml ../coverage.xml
       - name: Show Coverage
         if: ${{ github.event_name == 'pull_request' }}
         uses: orgoro/coverage@v3
@@ -83,4 +84,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          
+
