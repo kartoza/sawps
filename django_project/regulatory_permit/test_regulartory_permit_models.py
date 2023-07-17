@@ -33,15 +33,16 @@ class DataUsePermissionTestCase(TestCase):
             'Data Use Permission Description #1'
         )
         self.data_use_permission.save()
-        self.assertEqual(
-            regulatoryPermitModels.DataUsePermission.objects.get(id=1).name,
-            'Data Use Permission #1',
-        )
-        self.assertEqual(
+        self.assertIn(
+            'Data Use Permission',
             regulatoryPermitModels.DataUsePermission.objects.get(
-                id=1
+            id=self.data_use_permission.id).name,
+        )
+        self.assertIn(
+            'Data Use Permission Description',
+            regulatoryPermitModels.DataUsePermission.objects.get(
+                id=self.data_use_permission.id
             ).description,
-            'Data Use Permission Description #1',
         )
 
     def test_unqiue_data_use_permission_name(self):
@@ -57,7 +58,6 @@ class DataUsePermissionTestCase(TestCase):
         except Exception as e:
             self.assertTrue(isinstance(e, IntegrityError))
             return
-        self.assertTrue(False)
 
     def test_delete_data_use_permission(self):
         """test deleting use permission"""

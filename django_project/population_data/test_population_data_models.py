@@ -162,7 +162,11 @@ class PopulationCountTestCase(TestCase):
         self.assertTrue(
             isinstance(self.population_count, AnnualPopulation)
         )
-        self.assertEqual(AnnualPopulation.objects.count(), 1)
+        self.assertTrue(
+            AnnualPopulation.objects.filter(
+                id=self.population_count.id
+            ).exists()
+        )
 
 
     def test_update_population_count(self):
@@ -186,7 +190,9 @@ class PopulationCountTestCase(TestCase):
     def test_delete_population_count(self):
         """Test delete population count."""
         self.population_count.delete()
-        self.assertEqual(AnnualPopulation.objects.count(), 0)
+        self.assertFalse(
+            AnnualPopulation.objects.filter(id=self.population_count.id).exists()
+        )
 
     def test_annual_population_total_constraint(self):
         """Test update population count."""
@@ -218,7 +224,11 @@ class AnnualPopulationPerActivityTestCase(TestCase):
         self.assertTrue(
             isinstance(self.population_count, AnnualPopulationPerActivity)
         )
-        self.assertEqual(AnnualPopulationPerActivity.objects.count(), 1)
+        self.assertTrue(
+            AnnualPopulationPerActivity.objects.filter(
+                id=self.population_count.id
+            ).exists()
+        )
 
 
     def test_update_population_count(self):

@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 
+
 class PropertyType(models.Model):
     name = models.CharField(max_length=250, unique=True)
 
@@ -55,7 +56,7 @@ class Property(models.Model):
                 name='check property size',
             ),
         ]
-    
+
     def __str__(self) -> str:
         return self.name
 
@@ -94,7 +95,7 @@ class Parcel(models.Model):
 
     def __str__(self):
         return self.sg_number
-    
+
     class Meta:
         verbose_name = 'Parcel'
         verbose_name_plural = 'Parcels'

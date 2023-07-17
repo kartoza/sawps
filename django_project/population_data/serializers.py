@@ -6,11 +6,6 @@ from .models import (
     CountMethod,
     OpenCloseSystem,
 )
-from occurrence.serializers import (
-    SurveyMethodSerializer,
-    SamplingSizeUnitSerializer,
-)
-from activity.serializers import ActivityTypeSerializer
 
 
 class CountMethodSerializer(serializers.ModelSerializer):

@@ -1,6 +1,5 @@
 from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
-from django.contrib.auth.models import Group
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -42,8 +41,10 @@ class CustomSignupForm(SignupForm):
         # add user to organisation
         if self.cleaned_data.get('organisation'):
             add_user_view = AddUserToOrganisation()
-            if add_user_view.is_user_already_joined(self.cleaned_data['email'], self.cleaned_data['organisation']):
-                add_user_view.adduser(user.email, self.cleaned_data['organisation'])
+            if add_user_view.is_user_already_joined(
+                self.cleaned_data['email'], self.cleaned_data['organisation']):
+                add_user_view.adduser(
+                    user.email, self.cleaned_data['organisation'])
             else:
                 return redirect('/accounts/login')
 

@@ -41,7 +41,7 @@ class OwnedSpeciesFilter(django_filters.FilterSet):
         for range_values in ranges:
             query |= Q(
                 annualpopulation__total__range=(
-                range_values[0], range_values[1]
+                    range_values[0], range_values[1]
                 )
             )
         return queryset.filter(query)

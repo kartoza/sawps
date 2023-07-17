@@ -45,7 +45,7 @@ class ActivateAccount(View):
             messages.warning(
                 request,
                 (
-                    'The confirmation link was invalid,'+
+                    'The confirmation link was invalid,' +
                     'possibly because it has already been used.'
                 ),
             )
@@ -54,12 +54,12 @@ class ActivateAccount(View):
 
 class AddUserToOrganisation(View):
     def get(self, request, user_email, organisation, *args, **kwargs):
-            self.adduser(user_email, organisation, *args, **kwargs)
-            return redirect('home')
-    
+        self.adduser(user_email, organisation, *args, **kwargs)
+        return redirect('home')
+
     def adduser(self, user_email, organisation, *args, **kwargs):
-        '''when the user has been invited to join an organisation 
-        this view will Add the User to the OrganisationUser 
+        '''when the user has been invited to join an organisation
+        this view will Add the User to the OrganisationUser
         and update the linked models
         OrganisationInvites'''
 
@@ -109,7 +109,7 @@ class AddUserToOrganisation(View):
             return False
         except Organisation.DoesNotExist:
             return None
-        
+
     def send_invitation_email(self, email_details):
         subject = 'SAWPS Organisation Invitation'
         try:
@@ -133,8 +133,7 @@ class AddUserToOrganisation(View):
                 html_message=message
             )
             return True
-        except Exception as e:
-            print(str(e))
+        except Exception as e:  # noqa
             return False
 
 
@@ -146,8 +145,10 @@ class SendRequestEmail(View):
         if request.user.first_name:
             if request.user.last_name:
                 name = request.user.first_name + ' ' + request.user.last_name
-            else: name = request.user.first_name
-        else: name = request.user.email
+            else:
+                name = request.user.first_name
+        else:
+            name = request.user.email
         # Send email
         try:
             message = render_to_string(
@@ -168,11 +169,10 @@ class SendRequestEmail(View):
                 html_message=message
             )
             return JsonResponse({'status': 'success'})
-        except Exception as e:
-                print('Failed to send email:', str(e))
-                return JsonResponse({'status': 'failed'})
-        
-    
+        except Exception as e:  # noqa
+            return JsonResponse({'status': 'failed'})
+
+
     def dispatch(self, request, *args, **kwargs):
         if request.POST.get('action') == 'sendrequest':
             return self.send_email(request)
