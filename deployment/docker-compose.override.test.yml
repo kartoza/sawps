@@ -5,7 +5,7 @@ services:
       - "${DATABASE_PORT:-6432}:5432"
 
   dev:
-    image: kartoza/sanbi_dev:dev
+    image: kartoza/sanbi:dev
   
   worker:
-    image: kartoza/sanbi_dev:dev
+    image: kartoza/sanbi:dev
