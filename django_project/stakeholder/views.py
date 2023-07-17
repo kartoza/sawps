@@ -42,10 +42,14 @@ class ProfileView(DetailView):
             title = UserTitle.objects.get(
                 id=self.request.POST.get('title', ''))
             profile.user_profile.title_id = title
+        if self.request.POST.get('role', ''):
+            role = UserRoleType.objects.get(
+                id=self.request.POST.get('role', '')
+            )
+            profile.user_profile.user_role_type_id = role
 
         profile.user_profile.save()
         profile.save()
-
         messages.success(request, 'Your changes have been saved.')
 
         return HttpResponseRedirect(request.path_info)
@@ -56,4 +60,3 @@ class ProfileView(DetailView):
         context['roles'] = UserRoleType.objects.all()
 
         return context
-    
