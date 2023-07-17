@@ -19,7 +19,7 @@ from population_data.factories import (
 )
 from species.models import Taxon, OwnedSpecies
 from django.contrib.auth.models import User
-from species.factories import OwnedSpeciesFactory, TaxonRankFactory
+from species.factories import OwnedSpeciesFactory, TaxonRankFactory, TaxonFactory
 from django.db.utils import IntegrityError
 
 
@@ -142,7 +142,7 @@ class PopulationCountTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         """SetUpTestData for population count test case."""
-        taxon = Taxon.objects.create(
+        taxon = TaxonFactory.create(
             scientific_name='taxon_0',
             common_name_varbatim='taxon_0',
             colour_variant=False,
