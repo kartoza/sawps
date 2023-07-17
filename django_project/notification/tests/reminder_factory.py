@@ -1,5 +1,4 @@
 import factory
-from django.conf import settings
 from notification.models import Reminder
 
 

@@ -1,14 +1,15 @@
 import factory
 from population_data.models import (
-    CountMethod, 
-    Month, 
-    NatureOfPopulation, 
-    AnnualPopulationAbstract, 
-    AnnualPopulation, 
+    CountMethod,
+    Month,
+    NatureOfPopulation,
+    AnnualPopulationAbstract,
+    AnnualPopulation,
     AnnualPopulationPerActivity,
     Certainty,
     OpenCloseSystem
 )
+
 
 class CountMethodFactory(factory.django.DjangoModelFactory):
     """Count method factory."""
@@ -73,10 +74,12 @@ class AnnualPopulationPerActivityFactory(AnnualPopulationAbstractFactory):
     """Population count per activity factory."""
     class Meta:
         model = AnnualPopulationPerActivity
-    
-    activity_type = factory.SubFactory('activity.factories.ActivityTypeFactory')
+
+    activity_type = factory.SubFactory(
+        'activity.factories.ActivityTypeFactory')
     founder_population = True
-    reintroduction_source = factory.Sequence(lambda n: 'reintroduction source-{0}'.format(n))
+    reintroduction_source = factory.Sequence(
+        lambda n: 'reintroduction source-{0}'.format(n))
     permit_number = factory.Faker('random_int')
 
 

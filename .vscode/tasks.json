@@ -42,5 +42,15 @@
         },
         "problemMatcher": []
       },
+      {
+        "label": "Django: Test",
+        "type": "shell",
+        "command": "python manage.py test --keepdb",
+        "group": "build",
+        "options": {
+          "cwd": "${workspaceFolder}/django_project"
+        },
+        "problemMatcher": []
+      },
     ]
 }

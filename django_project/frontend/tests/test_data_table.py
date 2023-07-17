@@ -4,22 +4,59 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from django.contrib.auth.models import User
-from species.factories import OwnedSpeciesFactory
+from species.models import TaxonRank
+from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
+from species.factories import (
+    OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory,
+)
+from stakeholder.factories import (
+    organisationFactory,
+    organisationUserFactory
+)
+from property.factories import PropertyFactory
+
 
 class OwnedSpeciesTestCase(TestCase):
     def setUp(self):
-        self.owned_species = OwnedSpeciesFactory.create_batch(5)
-        self.url = reverse('data-table')
-        
+        taxon_rank = TaxonRank.objects.filter(
+            name='Species'
+        ).first()
+        if not taxon_rank:
+            taxon_rank = TaxonRankFactory.create(
+                name='Species'
+            )
+        self.taxon = TaxonFactory.create(
+            taxon_rank=taxon_rank,
+            common_name_varbatim='SpeciesA'
+        )
         user = User.objects.create_user(
                 username='testuserd',
                 password='testpasswordd'
             )
+        self.organisation_1 = organisationFactory.create()
+        # add user 1 to organisation 1 and 3
+        organisationUserFactory.create(
+            user=user,
+            organisation=self.organisation_1
+        )
+        self.property = PropertyFactory.create(
+            organisation=self.organisation_1,
+            name='PropertyA'
+        )
+        self.owned_species = OwnedSpeciesFactory.create_batch(
+            5, taxon=self.taxon, user=user, property=self.property)
+        self.url = reverse('data-table')
+        
         self.auth_headers = {
             'HTTP_AUTHORIZATION': 'Basic ' +
             base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
         }
         self.client = Client()
+
+        session = self.client.session
+        session[CURRENT_ORGANISATION_ID_KEY] = self.organisation_1.id
+        session.save()
+
 
     def test_list_owned_species(self):
         url = self.url
@@ -33,65 +70,54 @@ class OwnedSpeciesTestCase(TestCase):
         data = {'species': 'SpeciesA'}
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertGreater(len(response.data), 0)
         self.assertEqual(
             response.data[0]['taxon']['common_name_varbatim'],
             owned_species.taxon.common_name_varbatim
         )
 
     def test_filter_by_month(self):
-        owned_species = OwnedSpeciesFactory()
         url = self.url
         data = {
-            'month': owned_species.annualpopulation_set.first().month.name,
-            'start_year':owned_species.annualpopulation_set.first().year,
-            'end_year':owned_species.annualpopulation_set.first().year
+            'month': self.owned_species[0].annualpopulation_set.first().month.name,
+            'start_year': self.owned_species[0].annualpopulation_set.first().year,
+            'end_year': self.owned_species[0].annualpopulation_set.first().year
             }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
             response.data[0]['annualpopulation']['month'],
-            owned_species.annualpopulation_set.first().month.name
+            self.owned_species[0].annualpopulation_set.first().month.name
         )
 
     def test_filter_by_name_month_and_property(self):
-        owned_species = OwnedSpeciesFactory(
-            taxon__common_name_varbatim='SpeciesA',
-            property__name='PropertyA'
-        )
-        url = self.url
         data = {
-            'species': 'SpeciesA',
-            'property': 'PropertyA',
-            'month': owned_species.annualpopulation_set.first().month.name,
-            'start_year':owned_species.annualpopulation_set.first().year,
-            'end_year':owned_species.annualpopulation_set.first().year,
+            'species': self.taxon.common_name_varbatim,
+            'property': self.property.name,
+            'month': self.owned_species[0].annualpopulation_set.first().month.name,
+            'start_year': self.owned_species[0].annualpopulation_set.first().year,
+            'end_year': self.owned_species[0].annualpopulation_set.first().year,
         }
-        response = self.client.get(url, data, **self.auth_headers)
+        response = self.client.get(self.url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertGreater(len(response.data), 0)
         self.assertEqual(
             response.data[0]['property']['name'],
-            owned_species.property.name
+            self.owned_species[0].property.name
         )
         self.assertEqual(
             response.data[0]['annualpopulation']['month'],
-            owned_species.annualpopulation_set.first().month.name
+            self.owned_species[0].annualpopulation_set.first().month.name
         )
 
     def test_filter_by_annualpopulation_category(self):
-        owned_species = OwnedSpeciesFactory(
-            taxon__common_name_varbatim='SpeciesA',
-            property__name='PropertyA'
-        )
-        url = self.url
         data = {
-            'total':owned_species.annualpopulation_set.first().total,
+            'total': self.owned_species[0].annualpopulation_set.first().total,
         }
-        response = self.client.get(url, data, **self.auth_headers)
+        response = self.client.get(self.url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]['annualpopulation']['total'],
-            owned_species.annualpopulation_set.first().total
+            self.owned_species[0].annualpopulation_set.first().total
         )

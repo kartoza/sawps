@@ -21,8 +21,7 @@ from stakeholder.factories import (
     organisationRepresentativeFactory
 )
 from django.contrib.auth.models import User
-from django.test import TestCase
-from .models import OrganisationInvites
+from stakeholder.models import OrganisationInvites
 
 
 class TestUserRoleType(TestCase):
@@ -179,9 +178,10 @@ class OrganizationTestCase(TestCase):
         """Test creating organization."""
         self.assertEqual(Organisation.objects.count(), 1)
         self.assertTrue(isinstance(self.organization, Organisation))
-        self.assertTrue(self.organization.name,
+        self.assertTrue(
+            self.organization.name,
             Organisation.objects.get(
-            id=self.organization.id).name
+                id=self.organization.id).name
         )
 
     def test_update_organization(self):
@@ -210,7 +210,7 @@ class OrganizationUserTestCase(TestCase):
         self.assertTrue(isinstance(self.organizationUser, OrganisationUser))
         self.assertTrue(
             self.organizationUser.user.username,
-            OrganisationUser.objects.get(id=1).user.username
+            OrganisationUser.objects.get(id=self.organizationUser.id).user.username
         )
 
     def test_update_organisation_user(self):
@@ -218,7 +218,7 @@ class OrganizationUserTestCase(TestCase):
         self.organizationUser.user.username = 'test'
         self.organizationUser.user.save()
         self.assertEqual(OrganisationUser.objects.get(
-            id=1).user.username, 'test')
+            id=self.organizationUser.id).user.username, 'test')
 
     def test_delete_organisation_user(self):
         """Test deleting organisation user."""
@@ -240,7 +240,7 @@ class OrganizationRepresentativeTestCase(TestCase):
                         OrganisationRepresentative))
         self.assertTrue(
             self.organizationRep.user.username,
-            OrganisationRepresentative.objects.get(id=1).user.username
+            OrganisationRepresentative.objects.get(id=self.organizationRep.id).user.username
         )
 
     def test_update_organisation_user(self):
@@ -248,7 +248,7 @@ class OrganizationRepresentativeTestCase(TestCase):
         self.organizationRep.user.username = 'test'
         self.organizationRep.user.save()
         self.assertEqual(OrganisationRepresentative.objects.get(
-            id=1).user.username, 'test')
+            id=self.organizationRep.id).user.username, 'test')
 
     def test_delete_organisation_user(self):
         """Test deleting organisation representative."""
@@ -264,7 +264,8 @@ class OrganisationInvitesModelTest(TestCase):
         self.data_use_permission = DataUsePermission.objects.create(
             name="test")
         self.organisation = Organisation.objects.create(
-            name="test_organisation", data_use_permission = self.data_use_permission)
+            name="test_organisation",
+            data_use_permission = self.data_use_permission)
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation, user=self.user)
 

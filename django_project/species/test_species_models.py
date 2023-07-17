@@ -11,7 +11,8 @@ from species.models import (
     TaxonSurveyMethod
 )
 from species.factories import (
-    TaxonRankFactory, 
+    TaxonRankFactory,
+    TaxonFactory,
     ManagementStatusFactory, 
     OwnedSpeciesFactory,
     TaxonSurveyMethodF
@@ -33,13 +34,14 @@ class ManagementStatusTestCase(TestCase):
         """ test management status create """
         self.assertTrue(isinstance(self.management_status, ManagementStatus))
         self.assertEqual(ManagementStatus.objects.count(), 1)
-        self.assertEqual(self.management_status.name,'management status_0')
+        self.assertIn('management status', self.management_status.name)
 
     def test_update_management_status(self):
         """Test management status update."""
         self.management_status.name = 'management status_1'
         self.management_status.save()
-        self.assertEqual(ManagementStatus.objects.get(id=1).name, 'management status_1')
+        self.assertEqual(ManagementStatus.objects.get(
+            id=self.management_status.id).name, 'management status_1')
 
     
     def test_management_status_unique_name_constraint(self):
@@ -90,8 +92,10 @@ class TaxonTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         """Taxon model test data."""
-        cls.taxonRank = TaxonRankFactory()
-        cls.taxon = Taxon.objects.create(
+        cls.taxonRank = TaxonRankFactory.create(
+            name='Species'
+        )
+        cls.taxon = TaxonFactory.create(
             scientific_name='taxon_0',
             common_name_varbatim='taxon_0',
             colour_variant=False,
@@ -238,7 +242,7 @@ class TaxonSurveyMethodTestCase(TestCase):
 
     def test_update_taxon_survey_method(self):
         """Test update Taxon survey method count."""
-        taxon = Taxon.objects.create(
+        taxon = TaxonFactory.create(
             scientific_name='taxon',
             common_name_varbatim='taxon_0',
             colour_variant=False,

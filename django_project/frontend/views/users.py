@@ -2,7 +2,7 @@ import json
 from sawps.views import AddUserToOrganisation
 from stakeholder.models import (
     Organisation,
-    OrganisationInvites, 
+    OrganisationInvites,
     OrganisationUser,
     UserProfile,
     UserRoleType
@@ -67,11 +67,11 @@ class OrganisationUsersView(
             return None
 
 
-    def get_role(self, user,organisation):
+    def get_role(self, user, organisation):
         current_user = OrganisationInvites.objects.filter(
             email=user.email,
             organisation_id=organisation
-        ).first()                
+        ).first()
         if current_user:
             return current_user.user_role
         else:
@@ -81,24 +81,26 @@ class OrganisationUsersView(
 
     def is_new_invitation(self, email, organisation):
         """
-        Check if an entry with the given email and 
+        Check if an entry with the given email and
         organisation already exists.
         Returns True if exists, False otherwise.
         """
-    
+
         invitation = OrganisationInvites.objects.filter(
             email=email,
             organisation_id=organisation
-        ).first()                
+        ).first()
+
         if invitation:
             return True
         return False
-    
-    def is_user_registerd(self,email):
+
+    def is_user_registerd(self, email):
         user = User.objects.filter(email=email).first()
         if user:
             return True
-        else: return False
+        else:
+            return False
 
 
     def calculate_rows_per_page(self, data):
@@ -124,7 +126,9 @@ class OrganisationUsersView(
         for user in matching_users:
             try:
                 org = Organisation.objects.get(name=str(organisation))
-                org_user = OrganisationUser.objects.get(user=user,organisation=org)
+                org_user = OrganisationUser.objects.get(
+                    user=user,
+                    organisation=org)
                 invite = OrganisationInvites.objects.filter(
                     email=user.email,
                     organisation_id=org.id
@@ -139,8 +143,8 @@ class OrganisationUsersView(
                         'organisation': str(org_user.organisation),
                         'user': str(org_user.user),
                         'id': org_user.user.id,
-                        'role': 'Organisation '+invite.assigned_as,
-                        'joined':invite.joined
+                        'role': 'Organisation ' + invite.assigned_as,
+                        'joined': invite.joined
                     })
 
         return JsonResponse({'data': json.dumps(data, cls=DjangoJSONEncoder)})
@@ -194,9 +198,16 @@ class OrganisationUsersView(
                 registered = self.is_user_registerd(email)
                 if registered:
                     encoded_email = quote(email, safe='')
-                    return_url = Site.objects.get_current().domain + f'/adduser/{encoded_email}/{organisation.name}/'
+                    return_url = (
+                        Site.objects.get_current().domain +
+                        f'/adduser/{encoded_email}/{organisation.name}/'
+                    )
                 else:
-                    return_url = Site.objects.get_current().domain + '/accounts/signup/?email=' + quote(email) + '&organisation=' + quote(organisation.name)
+                    return_url = (
+                        Site.objects.get_current().domain +
+                        '/accounts/signup/?email=' + quote(email) +
+                        '&organisation=' + quote(organisation.name)
+                    )
 
                 # object to pass to view function
                 email_details = {
@@ -223,7 +234,7 @@ class OrganisationUsersView(
                             'updated_invites': serialized_invites
                         }
                     )
-                return JsonResponse({'status': 'failed to send email'})              
+                return JsonResponse({'status': 'failed to send email'})
             else:
                 return JsonResponse({'status': 'invitation already sent'})
         except Organisation.DoesNotExist:
@@ -238,7 +249,8 @@ class OrganisationUsersView(
         object_id = request.POST.get('object_id')
         current_organisation = request.POST.get('current_organisation')
         try:
-            current_organisation = Organisation.objects.get(name=str(current_organisation))
+            current_organisation = Organisation.objects.get(
+                name=str(current_organisation))
             user = models.User.objects.get(pk=object_id)
             OrganisationInvites.objects.filter(
                 email=user.email,
@@ -269,7 +281,8 @@ class OrganisationUsersView(
             # get role from organisation invites
             role = OrganisationInvites.objects.filter(
                 email=user.user.email,
-                organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY]
+                organisation_id=self.request.session[
+                    CURRENT_ORGANISATION_ID_KEY]
             ).first()
             if role:
                 object_to_save = {

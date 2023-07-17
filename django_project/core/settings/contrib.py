@@ -105,3 +105,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 CONTACT_US_RECIPIENTS = ast.literal_eval(os.environ.get('CONTACT_US_RECIPIENTS', "['amy@kartoza.com']"))
 SUPPORT_EMAIL = 'amy@kartoza.com'
+
+
+DISABLE_2FA = ast.literal_eval(os.environ.get('DISABLE_2FA', 'False'))
+if DISABLE_2FA:
+    MIDDLEWARE = [m for m in MIDDLEWARE if m != 'sawps.middleware.RequireSuperuser2FAMiddleware']
