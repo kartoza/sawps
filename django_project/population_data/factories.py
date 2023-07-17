@@ -48,7 +48,7 @@ class AnnualPopulationAbstractFactory(factory.django.DjangoModelFactory):
         model = AnnualPopulationAbstract
         abstract = True
 
-    year = factory.Faker('year')
+    year = factory.Sequence(lambda n: '{0}'.format(n))
     owned_species = factory.SubFactory('species.factories.OwnedSpeciesFactory')
     total = factory.Faker('random_int')
     adult_male = factory.Faker('random_int')
