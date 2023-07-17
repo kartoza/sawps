@@ -3,8 +3,15 @@
 
 {% block head_title %}Your Profile{% endblock %}
 
+
 {% block content %}
 <section>
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} position-fixed top-0 end-0" role="alert">
+        {{ message }}
+    </div>
+  {% endfor %}
+
   <div class="container py-5">
   <div class="row">
     {% include "profile_config_base.html" %}
@@ -64,25 +71,31 @@
   </div>
 
   <script>
-    function showSuccessAlert() {
-      // Show the alert
-      document.getElementById('successAlert').style.display = 'block';
 
-      // Hide the alert after 3 seconds
-      setTimeout(function() {
-        document.getElementById('successAlert').style.display = 'none';
-      }, 3000);
-    }
-
-    var updated = '{{ updated }}'
-
-    if(updated === 'True')
-      showSuccessAlert();
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 3000); // Adjust the duration (in milliseconds) as needed
+    });
 
   
   </script>
 
-  
+  <style>
+    /* Position the alert at the top right corner */
+    .position-fixed {
+        position: fixed;
+        z-index: 100; /* Adjust the z-index value as needed */
+    }
+
+    .top-0 {
+        top: 0;
+    }
+
+    .end-0 {
+        right: 0;
+    }
+  </style>
 
 </section>
 
