@@ -3,6 +3,7 @@ from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
 from stakeholder.models import UserProfile, UserRoleType, UserTitle
+from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +45,8 @@ class ProfileView(DetailView):
 
         profile.user_profile.save()
         profile.save()
-        # Set the 'updated' variable in the session
-        request.session['updated'] = True
+
+        messages.success(request, 'Your changes have been saved.')
 
         return HttpResponseRedirect(request.path_info)
 
@@ -53,7 +54,6 @@ class ProfileView(DetailView):
         context = super(ProfileView, self).get_context_data(**kwargs)
         context['titles'] = UserTitle.objects.all()
         context['roles'] = UserRoleType.objects.all()
-        updated = self.request.session.pop('updated', False)
-        context['updated'] = updated
 
         return context
+    
