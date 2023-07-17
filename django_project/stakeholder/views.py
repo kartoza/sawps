@@ -41,14 +41,11 @@ class ProfileView(DetailView):
             title = UserTitle.objects.get(
                 id=self.request.POST.get('title', ''))
             profile.user_profile.title_id = title
-        if self.request.POST.get('role', ''):
-            role = UserRoleType.objects.get(
-                id=self.request.POST.get('role', '')
-            )
-            profile.user_profile.user_role_type_id = role
 
         profile.user_profile.save()
         profile.save()
+        # Set the 'updated' variable in the session
+        request.session['updated'] = True
 
         return HttpResponseRedirect(request.path_info)
 
@@ -56,5 +53,7 @@ class ProfileView(DetailView):
         context = super(ProfileView, self).get_context_data(**kwargs)
         context['titles'] = UserTitle.objects.all()
         context['roles'] = UserRoleType.objects.all()
+        updated = self.request.session.pop('updated', False)
+        context['updated'] = updated
 
         return context
