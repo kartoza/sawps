@@ -50,7 +50,10 @@ class ProfileView(DetailView):
 
         profile.user_profile.save()
         profile.save()
-        messages.success(request, 'Your changes have been saved.', extra_tags='notification')
+        messages.success(
+            request, 'Your changes have been saved.', 
+            extra_tags='notification'
+        )
 
         return HttpResponseRedirect(request.path_info)
 
