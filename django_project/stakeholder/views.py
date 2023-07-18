@@ -2,8 +2,19 @@ import logging
 from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
-from stakeholder.models import UserProfile, UserRoleType, UserTitle
+from stakeholder.models import (
+    Organisation,
+    UserProfile,
+    UserRoleType,
+    UserTitle,
+    Reminders
+)
 from django.contrib import messages
+from stakeholder.tasks import send_reminder_email
+from django.utils import timezone
+from frontend.utils.organisation import (
+    CURRENT_ORGANISATION_ID_KEY,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +61,9 @@ class ProfileView(DetailView):
 
         profile.user_profile.save()
         profile.save()
+
         messages.success(
-            request, 'Your changes have been saved.', 
+            request, 'Your changes have been saved.',
             extra_tags='notification'
         )
 
