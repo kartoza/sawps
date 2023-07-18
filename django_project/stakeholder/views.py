@@ -2,7 +2,12 @@ import logging
 from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
-from stakeholder.models import UserProfile, UserRoleType, UserTitle
+from stakeholder.models import (
+    UserProfile,
+    UserRoleType,
+    UserTitle,
+)
+from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +54,11 @@ class ProfileView(DetailView):
 
         profile.user_profile.save()
         profile.save()
+
+        messages.success(
+            request, 'Your changes have been saved.',
+            extra_tags='notification'
+        )
 
         return HttpResponseRedirect(request.path_info)
 
