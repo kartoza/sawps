@@ -3,18 +3,11 @@ from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
 from stakeholder.models import (
-    Organisation,
     UserProfile,
     UserRoleType,
     UserTitle,
-    Reminders
 )
 from django.contrib import messages
-from stakeholder.tasks import send_reminder_email
-from django.utils import timezone
-from frontend.utils.organisation import (
-    CURRENT_ORGANISATION_ID_KEY,
-)
 
 logger = logging.getLogger(__name__)
 
