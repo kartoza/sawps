@@ -57,6 +57,9 @@ class Taxon(models.Model):
     colour = models.CharField(
         max_length=20, null=True, blank=True
     )
+    icon = models.ImageField(
+        upload_to='taxon_icons', null=True, blank=True
+    )
 
     def __str__(self):
         return self.scientific_name

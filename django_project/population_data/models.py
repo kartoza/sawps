@@ -56,10 +56,23 @@ class AnnualPopulationAbstract(models.Model):
     month = models.ForeignKey(Month, on_delete=models.CASCADE)
     juvenile_male = models.IntegerField(null=True, blank=True)
     juvenile_female = models.IntegerField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
+    
+
+
+    class Meta:
+        abstract = True
+
+
+class AnnualPopulation(AnnualPopulationAbstract):
+    """Population count model."""
+    sub_adult_total = models.IntegerField(null=True, blank=True)
+    sub_adult_male = models.IntegerField(null=True, blank=True)
+    sub_adult_female = models.IntegerField(null=True, blank=True)
+    juvenile_total = models.IntegerField(null=True, blank=True)
+    pride = models.IntegerField(null=True, blank=True)
     area_covered = models.FloatField(null=False, default=0.0)
     sampling_effort = models.FloatField(null=False, default=0.0)
-    group = models.IntegerField(null=True, blank=True)
-    note = models.TextField(null=True, blank=True)
     survey_method = models.ForeignKey(
         'occurrence.SurveyMethod',
         on_delete=models.CASCADE,
@@ -85,19 +98,10 @@ class AnnualPopulationAbstract(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
+    group = models.IntegerField(null=True, blank=True)
+    presence = models.BooleanField(null=False, default=False)
 
 
-    class Meta:
-        abstract = True
-
-
-class AnnualPopulation(AnnualPopulationAbstract):
-    """Population count model."""
-    sub_adult_total = models.IntegerField(null=True, blank=True)
-    sub_adult_male = models.IntegerField(null=True, blank=True)
-    sub_adult_female = models.IntegerField(null=True, blank=True)
-    juvenile_total = models.IntegerField(null=True, blank=True)
-    pride = models.IntegerField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Annual Population'
@@ -127,7 +131,9 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     reintroduction_source = models.CharField(
         max_length=250, null=True, blank=True
     )
-    permit_number = models.IntegerField(null=True, blank=True)
+    intake_permit = models.IntegerField(null=True, blank=True)
+    translocation_destination = models.TextField(null=True, blank=True)
+    offtake_permit = models.IntegerField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Population count per activity'
