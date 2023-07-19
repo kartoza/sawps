@@ -217,7 +217,7 @@ const FEATURE_NAME_MAPPING:{ [id: string] : string; } = {
 const GROUP_NAME_MAPPING:{ [id: string] : string; } = {
     'ecosystems': 'Ecosystem Type',
     'biodiversity': 'Critical Biodiversity Area',
-    'protected': 'Site Type',
+    'protected': 'Protected Area',
     'erf': 'Erf Cname',
     'farm_portion': 'Farm Portion Cname',
     'holding': 'Holding Cname'
