@@ -35,6 +35,9 @@ ADD deployment/plumber/plumber.R /home/web/init_plumber.R
 # add entrypoint.sh
 ADD django_project/plumber_entrypoint.sh /home/web/plumber_entrypoint.sh
 
+# install R packages
+RUN install2.r --error ggplot2
+
 WORKDIR /home/web/django_project
 ENTRYPOINT [ "/home/web/plumber_entrypoint.sh" ]
 

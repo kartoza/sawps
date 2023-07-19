@@ -34,7 +34,7 @@ class StatisticalModel(models.Model):
     )
 
     def __str__(self) -> str:
-        return f'{self.taxon} - {self.name}' 
+        return f'{self.taxon} - {self.name}'
 
 
 class StatisticalTaskRequest(BaseTaskRequest):
@@ -43,6 +43,10 @@ class StatisticalTaskRequest(BaseTaskRequest):
     request_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+    )
+
+    organisation = models.ForeignKey(
+        'stakeholder.Organisation', on_delete=models.CASCADE
     )
 
     image = models.ImageField(
@@ -87,7 +91,7 @@ class StatisticalTaskRequest(BaseTaskRequest):
 
     def __str__(self) -> str:
         return str(self.uuid)
-    
+
     def reset(self):
         if self.image:
             self.image.delete()

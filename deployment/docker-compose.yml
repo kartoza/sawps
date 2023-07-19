@@ -151,6 +151,7 @@ services:
       - SENTRY_DSN=${SENTRY_DSN}
     volumes:
       - plumber-data:/home/web/plumber_data
+      - media-data:/home/web/media
     links:
       - db
       - redis
