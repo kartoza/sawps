@@ -121,7 +121,7 @@ export const findParcelLayer = (contextLayers: ContextLayerInterface[]): Context
  * @returns 
  */
 export const findAreaLayers = (contextLayers: ContextLayerInterface[]): string[] => {
-    const areaLayers = ['ecosystem type', 'biodiversity areas', 'protected areas']
+    const areaLayers = ['ecosystem type', 'critical biodiversity areas', 'protected areas']
     let _layers = contextLayers.reduce((acc, element) => {
         if (element.isSelected && areaLayers.includes(element.name.toLowerCase())) {
             acc.push(...element.layer_names)
