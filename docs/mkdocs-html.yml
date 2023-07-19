@@ -67,3 +67,8 @@ extra_javascript:
 
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ ../django_project]
+

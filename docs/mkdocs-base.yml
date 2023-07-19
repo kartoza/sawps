@@ -47,6 +47,17 @@ nav:
                   - Admin: admin/index.md
         - Developer:
                   - Developer: developer/index.md
+                  - Narrative: developer/narrative.md
+                  - Code Auto docs: developer/code_auto_docs.md
+                  - Contribution Guidelines: developer/contribution_guidelines.md
+                  - How to make docs: developer/make_docs.md
+                  - Design: developer/design.md
+                  - How to run instances: developer/run_instances.md
+                  - How to test local instance: developer/test_local.md
+                  - License: license.md
+
+
+
         - DevOps:
                   - DevOps: devops/index.md
         - About:
