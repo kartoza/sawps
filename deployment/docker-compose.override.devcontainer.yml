@@ -54,6 +54,7 @@ services:
       dockerfile: deployment/plumber/Dockerfile
       target: vscode
     volumes:
+      - ../django_project:/home/web/django_project
       - ./volumes/plumber_data:/home/web/plumber_data
     links:
       - db

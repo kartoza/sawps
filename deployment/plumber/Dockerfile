@@ -33,7 +33,7 @@ RUN mkdir -p /home/web/plumber_data/
 ADD deployment/plumber/plumber.R /home/web/init_plumber.R
 
 # add entrypoint.sh
-ADD deployment/plumber/plumber_entrypoint.sh /home/web/plumber_entrypoint.sh
+ADD django_project/plumber_entrypoint.sh /home/web/plumber_entrypoint.sh
 
 WORKDIR /home/web/django_project
 ENTRYPOINT [ "/home/web/plumber_entrypoint.sh" ]

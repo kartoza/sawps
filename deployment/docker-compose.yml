@@ -89,7 +89,6 @@ services:
     command: 'celery -A core worker -l info'
     volumes:
       - layer-tiles:/opt/layer_tiles
-      - plumber-data:/home/web/plumber_data
     links:
       - db
       - redis

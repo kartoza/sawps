@@ -14,11 +14,14 @@ from frontend.models import (
     BoundaryFile,
     BoundarySearchRequest,
     ContextLayerLegend,
-    DraftSpeciesUpload
+    DraftSpeciesUpload,
+    StatisticalModel,
+    StatisticalTaskRequest
 )
 from frontend.tasks import (
     generate_vector_tiles_task,
-    clear_older_vector_tiles
+    clear_older_vector_tiles,
+    run_statistical_model
 )
 
 
@@ -186,9 +189,37 @@ class DraftSpeciesUploadAdmin(admin.ModelAdmin):
     list_display = ('name', 'property', 'upload_by', 'taxon', 'year')
 
 
+class StatisticalModelAdmin(admin.ModelAdmin):
+    list_display = ('taxon', 'name', 'is_valid')
+    search_fields = ['taxon', 'name']
+
+
+@admin.action(description='Run Statistical Model Task')
+def run_statistical_task_request(modeladmin, request, queryset):
+    for task_request in queryset:
+        run_statistical_model.apply_async(
+            (task_request.id,),
+            queue='plumber'
+        )
+    modeladmin.message_user(
+        request,
+        'Statistical model will be run in background!',
+        messages.SUCCESS
+    )
+
+
+class StatisticalTaskRequestAdmin(admin.ModelAdmin):
+    list_display = ('statistical_model', 'uuid',
+                    'is_success', 'request_by', 'status')
+    search_fields = ('taxon', 'statistical_model', 'uuid')
+    actions = [run_statistical_task_request]
+
+
 admin.site.register(ContextLayer, ContextLayerAdmin)
 admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
 admin.site.register(BoundaryFile, BoundaryFileAdmin)
 admin.site.register(BoundarySearchRequest, BoundarySearchRequestAdmin)
 admin.site.register(DraftSpeciesUpload, DraftSpeciesUploadAdmin)
+admin.site.register(StatisticalModel, StatisticalModelAdmin)
+admin.site.register(StatisticalTaskRequest, StatisticalTaskRequestAdmin)
