@@ -2,14 +2,14 @@ import csv
 import codecs
 from django.contrib.auth.models import User
 from scripts.csv_headers import CSV_FILE_HEADERS
-from swaps.models import UploadSession
+from sawps.models import UploadSession
 from datetime import datetime
 from django.http import JsonResponse
 from species.serializers import FileUploadSerializer
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from tasks.upload_species import upload_species_data
+from species.tasks.upload_species import upload_species_data
 
 
 

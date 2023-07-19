@@ -1,6 +1,6 @@
 from django.test import TestCase
-from swaps.tests.model_factories import UploadSessionF
-from swaps.models import UploadSession
+from sawps.tests.model_factories import UploadSessionF
+from sawps.models import UploadSession
 
 
 class TestUploadSession(TestCase):

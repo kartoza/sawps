@@ -1,5 +1,5 @@
 import factory
-from swaps.models import UploadSession
+from sawps.models import UploadSession
 from stakeholder.factories import userFactory
 
 

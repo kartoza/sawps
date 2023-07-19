@@ -3,12 +3,24 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from tasks.upload_species import upload_species_data
+from .tasks.upload_species import upload_species_data
 from scripts.csv_headers import CSV_FILE_HEADERS
-from swaps.models import UploadSession
+from sawps.models import UploadSession
 from datetime import datetime
 from django.http import JsonResponse
+from .models import Taxon
+from .serializers import TaxonSerializer
 
+
+class TaxonListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        taxon = Taxon.objects.filter(taxon_rank__name="Species")
+        return Response(
+            status=200,
+            data=TaxonSerializer(taxon, many=True).data
+        )
 
 
 class SpeciesUploader(LoginRequiredMixin, View):
@@ -16,9 +28,7 @@ class SpeciesUploader(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         finished = False
 
-from .models import Taxon
-from .serializers import TaxonSerializer
-# Create your views here.
+        # Create your views here.
         species_file = request.FILES.get('species-file')
 
         if not species_file:
@@ -27,7 +37,7 @@ from .serializers import TaxonSerializer
                 'message': 'CSV file not valide',
             })
 
-        upload_session  = UploadSession()
+        upload_session = UploadSession()
         reader = csv.DictReader(codecs.iterdecode(species_file, 'utf-8'))
         headers = reader.fieldnames
         # check headers
@@ -67,14 +77,3 @@ from .serializers import TaxonSerializer
                 'message': 'Processing',
                 'task': upload_session.token
             })
-
-
-class TaxonListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        taxon = Taxon.objects.filter(taxon_rank__name="Species")
-        return Response(
-            status=200,
-            data=TaxonSerializer(taxon, many=True).data
-        )

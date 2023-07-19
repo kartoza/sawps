@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from species.models import Taxon
-from swaps.models import UploadSession
 
 
 class TaxonSerializer(serializers.ModelSerializer):

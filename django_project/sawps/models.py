@@ -7,6 +7,7 @@ import uuid
 from django.conf import settings
 from datetime import datetime
 from django.db import models
+
 FILE_STORAGE = 'species'
 
 
@@ -22,7 +23,6 @@ class UploadSession(models.Model):
         null=True,
     )
 
-   
     token = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
@@ -84,10 +84,9 @@ class UploadSession(models.Model):
         blank=True
     )
 
-    # noinspection PyClassicStyleClass
     class Meta:
-        """Meta class for project."""
-        app_label = 'swaps'
+        """Metaclass for project."""
+        app_label = 'sawps'
         verbose_name_plural = 'Upload Sessions'
         verbose_name = 'Upload Session'
 

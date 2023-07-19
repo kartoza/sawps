@@ -1,8 +1,8 @@
 from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework import status
 from django.test import TestCase
-from swaps.tests.model_factories import UploadSessionF
-from swaps.tests.models.account_factory import UserF
+from sawps.tests.model_factories import UploadSessionF
+from sawps.tests.models.account_factory import UserF
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 
