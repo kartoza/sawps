@@ -6,7 +6,7 @@
     "../deployment/docker-compose.override.devcontainer.yml"
   ],
   "service": "dev",
-  "runServices": ["dev", "db", "worker", "redis", "tegola"],
+  "runServices": ["dev", "db", "worker", "redis", "tegola", "plumber"],
   "workspaceFolder": "/home/web/project",
   "settings": {
     "terminal.integrated.shell.linux": "/bin/bash",

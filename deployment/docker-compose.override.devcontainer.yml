@@ -22,6 +22,7 @@ services:
       - ../django_project:/home/web/django_project
       - ./volumes/media:/home/web/media
       - ./volumes/layer_tiles:/opt/layer_tiles
+      - ./volumes/plumber_data:/home/web/plumber_data
 
   dev:
     image: kartoza/sanbi_dev
@@ -46,3 +47,14 @@ services:
       - "${TEGOLA_DEV_PORT:-9191}:9090"
     links:
       - db
+  
+  plumber:
+    build:
+      context: ../
+      dockerfile: deployment/plumber/Dockerfile
+      target: vscode
+    volumes:
+      - ./volumes/plumber_data:/home/web/plumber_data
+    links:
+      - db
+      - redis
