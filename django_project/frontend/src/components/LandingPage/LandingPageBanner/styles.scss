@@ -1,0 +1,36 @@
+$banner-text-color:var(--white); 
+$banner-background-color:var(--black);
+
+@media screen and (min-width: 950px){
+.landing-page-banner{
+    height:75vh;
+    color:$banner-text-color;
+    background-color: $banner-background-color;
+    display: flex;   
+}
+}
+
+@media screen and (min-width: 500px) and (max-width:949px) {
+    .landing-page-banner{
+        height:100vh;
+        color:$banner-text-color;
+        background-color: $banner-background-color;
+        display: flex;   
+        flex-direction: column;
+    }    
+}
+
+
+@media screen and (min-width: 300px) and (max-width:499px) {
+    .landing-page-banner{
+        height:100vh;
+        color:$banner-text-color;
+        background-color: $banner-background-color;
+        display: flex;   
+        flex-direction: column;
+
+        div{
+            margin-bottom: 10px;
+        } 
+    }    
+}

@@ -41,8 +41,7 @@ dev:
 	@echo "------------------------------------------------------------------"
 	@echo "Running in dev mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose ${ARGS} up -d dev worker
-	@docker-compose ${ARGS} up --no-recreate --no-deps -d
+	@docker-compose ${ARGS} up -d dev worker 
 
 serve:
 	@echo

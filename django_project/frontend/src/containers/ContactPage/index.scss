@@ -1,0 +1,235 @@
+.contact-container{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.contact-content-container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background-color: var(--black);
+    padding-top: 1.5em;
+}
+
+.contact-banner-img{
+    background-image: url('/static/images/contact/contact.png');
+}
+
+label{
+    color:var(--white);
+    font-size: large;
+}
+
+.contact-btns-container{
+    display: flex;
+}
+
+.contact-content-title{
+    color:var(--white)
+}
+
+.contact-texts-inner-container{
+    background-color: #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: center;
+}
+
+.contact-text{
+    color:var(--white)
+}
+
+
+.contact-btns-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.contact-checkbox-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .contact-send-email {
+        margin: 0;
+        padding-left: 10px;
+        padding-top: 0.2em;
+    }
+}
+
+.contact-anchor{
+    display: block;
+    width: 135px;
+    height: 45px;
+    background: #FAA755;
+    padding: 10px;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-left:15px;
+    text-decoration: none;
+    color:var(--black);
+    line-height: 20px;
+}
+
+.contact-form-container > input[type=text], textarea {
+    width: 100%;
+    padding: 12px;
+    color:var(--white);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    resize: vertical;
+  }
+
+.contact-form{
+    width:100%;
+}
+
+.contact-form > form{
+    width: 100%;
+    label {
+        margin-top: 1em;
+    }
+    input {
+        padding-left: 1em;
+    }
+    textarea {
+        color: var(--black);
+        width: 88%;
+    }
+}
+
+
+form > div > input{
+    width: 88%;
+    padding: 10px 0px;
+    margin: 8px 0;
+    border-radius: 5px;
+}
+
+#contact-message{
+    height: 75px;
+}
+
+/* styling the checkbox */      
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid var(--white);
+    border-radius: 0.15em;
+    transform: translateY(0.12em);
+    display: grid;
+    place-content: center;
+  }
+
+  input[type="checkbox"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    transform: scale(0);
+    transform-origin: bottom left;
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--white);
+    background-color: var(--white);
+  }
+  
+  input[type="checkbox"]:checked::before {
+    transform: scale(1);
+  }
+
+
+
+@media screen and (min-width:801px){
+    .contact-content-container{
+        flex-direction: row;
+    }
+
+    .contact-image-container{
+        width:100%;
+        height:100%;
+    }
+
+    .contact-banner-img{
+        width: 100%;
+        height:100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .contact-texts-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+    }
+
+    .contact-content-title{
+        width:100%;
+        text-align: center;
+        font-size: 35px;
+    }
+
+    .contact-form-container{
+        width:100%;
+        display: flex;
+        justify-content: center;
+    } 
+
+    .contact-text{
+        width:60%;
+        text-align: justify;
+    }
+
+}
+
+@media screen and (min-width:500px) and (max-width: 800px) {
+    .contact-content-container{
+        flex-direction: column;
+    }
+
+    .contact-image-container{
+        width:100%;
+        flex-basis:50%;
+    }
+
+    .contact-banner-img{
+        width: 100%;
+        height:100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .contact-content-title{
+        width:100%;
+        text-align: center;
+        font-size: 35px;
+        margin:35px 0px 15px 0px;
+    }
+
+    .contact-texts-container{
+        display: flex;
+        justify-content: center;
+    }
+
+    .contact-form-container{
+        width:100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    form > div{
+        display: block;
+    }
+}

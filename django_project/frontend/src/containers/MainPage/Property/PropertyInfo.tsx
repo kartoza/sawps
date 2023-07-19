@@ -18,7 +18,7 @@ import './index.scss';
 interface PropertyInfoInterface {
     property: PropertyInterface,
     enableForm: boolean,
-    onUpdated: (data: PropertyInterface, validation: PropertyValidation) => void,
+    onUpdated?: (data: PropertyInterface, validation: PropertyValidation) => void,
     validationError?: PropertyValidation
 }
 
@@ -26,7 +26,7 @@ const PROPERTY_METADATA_URL = '/api/property/metadata/list/'
 
 
 /**
- * Display property information table
+ * Display property information table with input
  * @param props PropertyInfoInterface
  * @returns 
  */
@@ -55,7 +55,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                 if (response.data['user_email']) {
                     _initial_data['owner_email'] = response.data['user_email']
                 }
-                if (_initial_data) {
+                if (_initial_data && props.onUpdated) {
                     props.onUpdated({ ...props.property, ..._initial_data }, {})
                 }
             }
@@ -94,7 +94,11 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 id="input_propertyname"
                                 hiddenLabel={true}
                                 type={"text"}
-                                onChange={val => props.onUpdated({ ...props.property, name: val.target.value }, {name:false})}
+                                onChange={val => {
+                                    if (props.onUpdated) {
+                                        props.onUpdated({ ...props.property, name: val.target.value }, {name:false})
+                                    }
+                                }}
                                 value={props.property.name}
                                 sx={{ width: '100%' }}
                             />
@@ -122,11 +126,15 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                         <TableCell>
                             <TextField
                                 error={props.validationError?.email}
-                                disabled={loading || !props.enableForm}
+                                disabled={true}
                                 id="input_owneremail"
                                 hiddenLabel={true}
                                 type={"text"}
-                                onChange={val => props.onUpdated({ ...props.property, owner_email: val.target.value }, {email:false})}
+                                onChange={val => {
+                                    if (props.onUpdated) {
+                                        props.onUpdated({ ...props.property, owner_email: val.target.value }, {email:false})
+                                    }
+                                }}
                                 value={props.property.owner_email}
                                 sx={{ width: '100%' }}
                             />
@@ -141,13 +149,15 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 <Select
                                     id="property-type-select"
                                     error={props.validationError?.property_type}
-                                    value={props.property.property_type_id.toString()}
+                                    value={ props.property.property_type_id ? props.property.property_type_id.toString() : ''}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
                                     onChange={(event: SelectChangeEvent) => {
-                                        let _selected = propertyTypeList.find(e => e.id === parseInt(event.target.value))
-                                        props.onUpdated({ ...props.property, property_type_id: _selected.id,  property_type: _selected.name }, {property_type:false})}
-                                    }
+                                        if (props.onUpdated) {
+                                            let _selected = propertyTypeList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, property_type_id: _selected.id,  property_type: _selected.name }, {property_type:false})
+                                        }
+                                    }}
                                 >
                                     { propertyTypeList.map((property_type: PropertyTypeInterface) => {
                                         return (
@@ -167,13 +177,15 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 <Select
                                     id="province-select"
                                     error={props.validationError?.province}
-                                    value={props.property.province_id.toString()}
+                                    value={props.property.province_id ? props.property.province_id.toString() : ''}
                                     displayEmpty
                                     disabled={loading || !props.enableForm}
                                     onChange={(event: SelectChangeEvent) => {
-                                        let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
-                                        props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})}
-                                    }
+                                        if (props.onUpdated) {
+                                            let _selected = provinceList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, province: _selected.name, province_id: _selected.id }, {province:false})
+                                        }
+                                    }}
                                 >
                                     { provinceList.map((province: ProvinceInterface) => {
                                         return (
@@ -184,45 +196,22 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                             </FormControl>
                         </TableCell>
                     </TableRow>
-                    <TableRow key='size'>
-                        <TableCell component="th" scope="row">
-                            Property Size (in ha)
-                        </TableCell>
-                        <TableCell>
-                            <TextField
-                                disabled={true}
-                                id="input_size"
-                                hiddenLabel={true}
-                                type={"text"}
-                                value={props.property.size}
-                                sx={{ width: '100%' }}
-                            />                            
-                        </TableCell>
-                    </TableRow>
+                    { props.property.id !== 0 &&
+                        <TableRow key='size'>
+                            <TableCell component="th" scope="row">
+                                Property Size
+                            </TableCell>
+                            <TableCell className='TableCellText'>
+                                <span>{props.property.size ? props.property.size : '0'} ha</span>                                
+                            </TableCell>
+                        </TableRow>
+                    }
                     <TableRow key='organisation'>
                         <TableCell component="th" scope="row">
                             Organisation
                         </TableCell>
-                        <TableCell>
-                            <FormControl fullWidth size="small">
-                                <Select
-                                    id="organisation-select"
-                                    error={props.validationError?.organisation}
-                                    value={props.property.organisation_id.toString()}
-                                    displayEmpty
-                                    disabled={loading || !props.enableForm}
-                                    onChange={(event: SelectChangeEvent) => {
-                                        let _selected = organisationList.find(e => e.id === parseInt(event.target.value))
-                                        props.onUpdated({ ...props.property, organisation: _selected.name, organisation_id: _selected.id }, {organisation:false})}
-                                    }
-                                >
-                                    { organisationList.map((organisation: OrganisationInterface) => {
-                                        return (
-                                            <MenuItem key={organisation.id} value={organisation.id}>{organisation.name}</MenuItem>
-                                        )
-                                    })}
-                                </Select>
-                            </FormControl>
+                        <TableCell className='TableCellText'>
+                            <span>{props.property.organisation ? props.property.organisation : '-'}</span>
                         </TableCell>
                     </TableRow>
                 </TableBody>

@@ -16,18 +16,48 @@ Including another URLconf
 from django.urls import path, re_path
 from .views.home import HomeView
 from .views.map import MapView
+from .views.help import HelpView
+from .views.about import AboutView
+
+from .views.users import OrganisationUsersView
+from .views.contact import ContactUsView
+from .views.switch_organisation import switch_organisation
+from .views.online_form import OnlineFormView
+
+
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
     AerialTile,
     PropertiesLayerMVTTiles,
     FindParcelByCoord,
-    FindPropertyByCoord
+    FindPropertyByCoord,
+    MapAuthenticate
 )
 from frontend.api_views.property import (
     CreateNewProperty,
-    PropertyMetadataList
+    PropertyMetadataList,
+    PropertyList,
+    UpdatePropertyInformation,
+    UpdatePropertyBoundaries,
+    PropertyDetail,
 )
+from frontend.api_views.upload import (
+    BoundaryFileUpload,
+    BoundaryFileRemove,
+    BoundaryFileList,
+    BoundaryFileSearch,
+    BoundaryFileSearchStatus
+)
+from frontend.api_views.population import (
+    PopulationMetadataList,
+    UploadPopulationAPIVIew,
+    FetchDraftPopulationUpload,
+    DraftPopulationUpload
+)
+from frontend.api_views.data_table import DataTableAPIView
+
+
 
 urlpatterns = [
     re_path(
@@ -51,6 +81,11 @@ urlpatterns = [
         name='map-style'
     ),
     re_path(
+        r'^api/map/authenticate/?$',
+        MapAuthenticate.as_view(),
+        name='map-authenticate'
+    ),
+    re_path(
         r'^api/map/layer/aerial/'
         r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
         AerialTile.as_view(),
@@ -68,10 +103,90 @@ urlpatterns = [
         name='property-create'
     ),
     re_path(
+        r'^api/property/list/?$',
+        PropertyList.as_view(),
+        name='property-list'
+    ),
+    re_path(
+        r'^api/property/detail/(?P<id>\d+)/?$',
+        PropertyDetail.as_view(),
+        name='property-detail'
+    ),
+    re_path(
+        r'^api/property/detail/update/?$',
+        UpdatePropertyInformation.as_view(),
+        name='property-update-detail'
+    ),
+    re_path(
+        r'^api/property/boundaries/update/?$',
+        UpdatePropertyBoundaries.as_view(),
+        name='property-update-boundaries'
+    ),
+    re_path(
         r'^api/property/metadata/list/?$',
         PropertyMetadataList.as_view(),
         name='property-metadata'
     ),
+    re_path(
+        r'^api/upload/boundary-file/remove/?$',
+        BoundaryFileRemove.as_view(),
+        name='boundary-file-remove'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/list/?$',
+        BoundaryFileList.as_view(),
+        name='boundary-file-list'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/search/?$',
+        BoundaryFileSearch.as_view(),
+        name='boundary-file-search'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/status/?$',
+        BoundaryFileSearchStatus.as_view(),
+        name='boundary-file-status'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/?$',
+        BoundaryFileUpload.as_view(),
+        name='boundary-file-upload'
+    ),
+    re_path(
+        r'^api/population/metadata/list/?$',
+        PopulationMetadataList.as_view(),
+        name='population-metadata'
+    ),
+    re_path(
+        r'^api/upload/population/(?P<property_id>\d+)/?$',
+        UploadPopulationAPIVIew.as_view(),
+        name='population-upload'
+    ),
+    path(
+        'api/upload/population/draft/<uuid:draft_uuid>/',
+        FetchDraftPopulationUpload.as_view(),
+        name='fetch-draft-upload-species'
+    ),
+    path(
+        'api/upload/population/draft/<int:property_id>/',
+        DraftPopulationUpload.as_view(),
+        name='draft-upload-species'
+    ),
+    path(
+        'switch-organisation/<int:organisation_id>/',
+        switch_organisation,
+        name='switch-organisation'
+    ),
     path('map/', MapView.as_view(), name='map'),
+    path(
+        'upload-data/<int:property_id>/',
+        OnlineFormView.as_view(),
+        name='online-form'
+    ),
+    path('help/', HelpView.as_view(), name='help'),
     path('', HomeView.as_view(), name='home'),
+    path('about/', AboutView.as_view(), name='about'),
+    path('users/', OrganisationUsersView.as_view(), name='Users'),
+    path('contact/', ContactUsView.as_view(), name='contact'),
+    path('data-table/', DataTableAPIView.as_view(), name='data-table'),
 ]

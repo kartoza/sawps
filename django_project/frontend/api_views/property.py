@@ -1,5 +1,6 @@
 """API Views related to property."""
 from datetime import datetime
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from django.contrib.gis.geos import (
     GEOSGeometry, Polygon, MultiPolygon
@@ -13,12 +14,12 @@ from property.models import (
     PropertyType,
     Province,
     Property,
-    OwnershipStatus,
     ParcelType,
     Parcel
 )
 from stakeholder.models import (
-    Organisation
+    Organisation,
+    OrganisationUser
 )
 from frontend.models.parcels import (
     Erf,
@@ -28,10 +29,15 @@ from frontend.models.parcels import (
 )
 from frontend.serializers.property import (
     PropertyTypeSerializer,
-    ProvinceSerializer
+    ProvinceSerializer,
+    PropertySerializer,
+    PropertyDetailSerializer
 )
 from frontend.serializers.stakeholder import (
     OrganisationSerializer
+)
+from frontend.utils.organisation import (
+    CURRENT_ORGANISATION_ID_KEY
 )
 
 
@@ -120,7 +126,21 @@ class CreateNewProperty(APIView):
         # union of parcels
         parcels = request.data.get('parcels')
         geom = self.get_geometry(parcels)
-        ownership_status = OwnershipStatus.objects.all().first()
+        organisation_id = self.request.session.get(
+            CURRENT_ORGANISATION_ID_KEY, 0)
+        if not organisation_id:
+            return Response(status=400, data='Invalid Organisation!')
+        # validate if user belongs to the organisation
+        if not self.request.user.is_superuser:
+            organisation_user = OrganisationUser.objects.filter(
+                organisation_id=organisation_id,
+                user=self.request.user
+            )
+            if not organisation_user.exists():
+                return Response(
+                    status=403,
+                    data='User does not belong to this organisation!'
+                )
         data = {
             'name': request.data.get('name'),
             'owner_email': request.data.get('owner_email'),
@@ -130,14 +150,12 @@ class CreateNewProperty(APIView):
             'geometry': geom,
             'area_available': 0,
             'property_size_ha': self.get_geom_size_in_ha(geom) if geom else 0,
-            'ownership_status_id': ownership_status.id,
             'created_by_id': self.request.user.id,
             'created_at': datetime.now()
         }
         property = Property.objects.create(**data)
-        return Response(status=201, data={
-            'id': property.id
-        })
+        self.add_parcels(property, parcels)
+        return Response(status=201, data=PropertySerializer(property).data)
 
 
 class PropertyMetadataList(APIView):
@@ -147,10 +165,9 @@ class PropertyMetadataList(APIView):
     def get(self, *args, **kwargs):
         provinces = Province.objects.all().order_by('name')
         types = PropertyType.objects.all().order_by('name')
-        organisations = Organisation.objects.all().order_by('name')
-        if not self.request.user.is_superuser:
-            # filter by organisation that the user belongs to
-            pass
+        organisations = Organisation.objects.filter(
+            id=self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0)
+        ).order_by('name')
         return Response(status=200, data={
             'provinces': (
                 ProvinceSerializer(provinces, many=True).data
@@ -168,3 +185,76 @@ class PropertyMetadataList(APIView):
                 self.request.user.first_name else self.request.user.username
             )
         })
+
+
+class PropertyList(APIView):
+    """Get properties that current user owns."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        organisation_id = self.request.session.get(
+            CURRENT_ORGANISATION_ID_KEY, 0)
+        properties = Property.objects.filter(
+            organisation_id=organisation_id
+        ).order_by('name')
+        return Response(
+            status=200,
+            data=PropertySerializer(properties, many=True).data
+        )
+
+
+class UpdatePropertyInformation(APIView):
+    """Update property information."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        property = get_object_or_404(
+            Property,
+            id=request.data.get('id')
+        )
+        property.name = request.data.get('name')
+        property.property_type = (
+            PropertyType.objects.get(id=request.data.get('property_type_id'))
+        )
+        property.organisation = (
+            Organisation.objects.get(id=request.data.get('organisation_id'))
+        )
+        property.save()
+        return Response(status=204)
+
+
+class UpdatePropertyBoundaries(CreateNewProperty):
+    """Update property parcels."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        property = get_object_or_404(
+            Property,
+            id=request.data.get('id')
+        )
+        parcels = request.data.get('parcels')
+        geom = self.get_geometry(parcels)
+        property.geometry = geom
+        property.property_size_ha = (
+            self.get_geom_size_in_ha(geom) if geom else 0
+        )
+        property.save()
+        # delete existing parcel
+        Parcel.objects.filter(property=property).delete()
+        self.add_parcels(property, parcels)
+        return Response(status=201, data=PropertySerializer(property).data)
+
+
+class PropertyDetail(APIView):
+    """Fetch property detail."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        property = get_object_or_404(
+            Property,
+            id=kwargs.get('id')
+        )
+        return Response(
+            status=200,
+            data=PropertyDetailSerializer(property).data
+        )

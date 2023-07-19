@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
-from swaps.tests.models.account_factory import UserF
+from django.test import TestCase, override_settings
+from django.urls import reverse
+from sawps.tests.models.account_factory import UserF
 from stakeholder.factories import userProfileFactory, userTitleFactory, userRoleTypeFactory
 
 
@@ -50,11 +51,12 @@ class TestProfile(TestCase):
 
         self.assertTrue(profile.pk is None)
 
+    @override_settings(DISABLE_2FA=True)
     def test_profile_update_request(self):
         """
         Test update profile from the form page
         """
-        user = get_user_model().objects.create(
+        user = UserF.create(
             is_staff=False,
             is_active=True,
             is_superuser=False,
@@ -62,11 +64,9 @@ class TestProfile(TestCase):
             email='test@test.com',
         )
         title = userTitleFactory.create(
-            id=1,
             name = 'test',
         )
         role = userRoleTypeFactory.create(
-            id=1,
             name = 'test',
         )
         user.set_password('passwd')
@@ -78,12 +78,12 @@ class TestProfile(TestCase):
             'first-name': 'Fan',
             'last-name': 'Andri',
             'organization': 'Kartoza',
-            'title': '1',
-            'role': '1'
+            'title': title.id,
+            'role': role.id
         }
 
         response = self.client.post(
-            '/profile/{}/'.format(user.username), post_dict
+            reverse('profile', kwargs={'slug': user.username}), post_dict
         )
         self.assertEqual(response.status_code, 302)
         updated_user = get_user_model().objects.get(id=user.id)

@@ -1,5 +1,14 @@
 import factory
-from population_data.models import CountMethod, Month, NatureOfPopulation, PopulationCountAbstract, PopulationCount, PopulationCountPerActivity
+from population_data.models import (
+    CountMethod,
+    Month,
+    NatureOfPopulation,
+    AnnualPopulationAbstract,
+    AnnualPopulation,
+    AnnualPopulationPerActivity,
+    Certainty,
+    OpenCloseSystem
+)
 
 
 class CountMethodFactory(factory.django.DjangoModelFactory):
@@ -33,13 +42,13 @@ class NatureOfPopulationFactory(factory.django.DjangoModelFactory):
     extensive = True
 
 
-class PopulationCountAbstractFactory(factory.django.DjangoModelFactory):
+class AnnualPopulationAbstractFactory(factory.django.DjangoModelFactory):
     """Population count abstract factory."""
     class Meta:
-        model = PopulationCountAbstract
+        model = AnnualPopulationAbstract
         abstract = True
 
-    year = factory.Faker('date')
+    year = factory.Sequence(lambda n: '{0}'.format(n))
     owned_species = factory.SubFactory('species.factories.OwnedSpeciesFactory')
     total = factory.Faker('random_int')
     adult_male = factory.Faker('random_int')
@@ -49,10 +58,10 @@ class PopulationCountAbstractFactory(factory.django.DjangoModelFactory):
     juvenile_female = factory.Faker('random_int')
 
 
-class PopulationCountFactory(PopulationCountAbstractFactory):
+class AnnualPopulationF(AnnualPopulationAbstractFactory):
     """Population count factory."""
     class Meta:
-        model = PopulationCount
+        model = AnnualPopulation
 
     sub_adult_total = factory.Faker('random_int')
     sub_adult_male = factory.Faker('random_int')
@@ -61,12 +70,32 @@ class PopulationCountFactory(PopulationCountAbstractFactory):
     pride = factory.Faker('random_int')
 
 
-class PopulationCountPerActivityFactory(PopulationCountAbstractFactory):
+class AnnualPopulationPerActivityFactory(AnnualPopulationAbstractFactory):
     """Population count per activity factory."""
     class Meta:
-        model = PopulationCountPerActivity
-    
-    activity_type = factory.SubFactory('activity.factories.ActivityTypeFactory')
+        model = AnnualPopulationPerActivity
+
+    activity_type = factory.SubFactory(
+        'activity.factories.ActivityTypeFactory')
     founder_population = True
-    reintroduction_source = factory.Sequence(lambda n: 'reintroduction source-{0}'.format(n))
+    reintroduction_source = factory.Sequence(
+        lambda n: 'reintroduction source-{0}'.format(n))
     permit_number = factory.Faker('random_int')
+
+
+class CertaintyF(factory.django.DjangoModelFactory):
+    """Certainty factory."""
+
+    class Meta:
+        """meta"""
+
+        model = Certainty
+
+
+class OpenCloseSystemF(factory.django.DjangoModelFactory):
+    """Open Close System factory."""
+
+    class Meta:
+        """meta"""
+
+        model = OpenCloseSystem

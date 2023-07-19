@@ -49,8 +49,18 @@ class UserTitle(models.Model):
 class UserProfile(models.Model):
     """Extend User model with one-to-one mapping."""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name='user_profile')
-    title_id = models.ForeignKey(UserTitle, on_delete=models.DO_NOTHING)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE,
+        unique=True,
+        related_name='user_profile'
+    )
+    title_id = models.ForeignKey(
+        UserTitle,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        default=None
+    )
     cell_number = models.CharField(
         max_length=15,
         default='',
@@ -58,7 +68,11 @@ class UserProfile(models.Model):
         blank=True
     )
     user_role_type_id = models.ForeignKey(
-        UserRoleType, on_delete=models.DO_NOTHING
+        UserRoleType,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        default=None
     )
     picture = models.ImageField(
         upload_to='profile_pictures', null=True, blank=True
@@ -70,13 +84,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
     def picture_url(self):
         if self.picture.url:
             return '{media}/{url}'.format(
                     media=settings.MEDIA_ROOT,
                     url=self.picture,
-                )
+            )
 
     class Meta:
         verbose_name = 'User'
@@ -100,7 +114,7 @@ class UserLogin(models.Model):
         verbose_name_plural = 'User logins'
         db_table = "user_login"
 
-        
+
 class Organisation(models.Model):
     """Organisation model."""
 
@@ -113,6 +127,41 @@ class Organisation(models.Model):
         verbose_name = 'Organisation'
         verbose_name_plural = 'Organisations'
         db_table = "organisation"
+
+    def __str__(self):
+        return self.name
+
+
+class OrganisationInvites(models.Model):
+    """OrganisationInvites model to store all invites"""
+    MEMBER = 'Member'
+    MANAGER = 'Manager'
+    ASSIGNED_CHOICES = [
+        (MEMBER, 'Member'),
+        (MANAGER, 'Manager'),
+    ]
+    email = models.CharField(max_length=200, null=True, blank=True)
+    organisation = models.ForeignKey(
+        Organisation, on_delete=models.DO_NOTHING, null=True, blank=True)
+    joined = models.BooleanField(default=False, null=True, blank=True)
+    user_role = models.ForeignKey(
+        UserRoleType,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        default=None
+    )
+    assigned_as = models.CharField(
+        max_length=50, choices=ASSIGNED_CHOICES, default=MEMBER
+    )
+
+    class Meta:
+        verbose_name = 'OrganisationInvites'
+        verbose_name_plural = 'OrganisationInvites'
+        db_table = "OrganisationInvites"
+
+    def __str__(self):
+        return str(self.email)
 
 
 class OrganisationPersonnel(models.Model):

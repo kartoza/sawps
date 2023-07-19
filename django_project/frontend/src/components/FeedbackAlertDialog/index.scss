@@ -1,0 +1,17 @@
+.FeedbackAlertDialog {
+    .MuiButton-root {
+        min-width: 150px;
+    }
+
+    .success {
+        color: #4caf50;
+    }
+
+    .warning {
+        color: #ff9800;
+    }
+
+    .error {
+        color: #ef5350;
+    }
+}

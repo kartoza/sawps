@@ -1,13 +1,14 @@
 """Helper function for map."""
 import os
 import json
+import time
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.urls import reverse
 from core.settings.utils import absolute_path
 
 
-def get_map_template_style(request, theme_choice: int = 0):
+def get_map_template_style(request, theme_choice: int = 0, token: str = None):
     """
     Fetch map template style from file.
 
@@ -34,9 +35,12 @@ def get_map_template_style(request, theme_choice: int = 0):
     elif 'localhost' in domain:
         schema = 'http://'
     if 'sources' in styles and 'sanbi' in styles['sources']:
-        styles['sources']['sanbi']['tiles'] = [
-            f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}.pbf'
-        ]
+        tile_url = f'{schema}{domain}/maps/sanbi/{{z}}/{{x}}/{{y}}'
+        if settings.DEBUG:
+            tile_url = tile_url + '.pbf'
+        if not settings.DEBUG and token:
+            tile_url = tile_url + f'?token={token}'
+        styles['sources']['sanbi']['tiles'] = [tile_url]
     if 'sources' in styles and 'NGI Aerial Imagery' in styles['sources']:
         url = (
             reverse('aerial-map-layer', kwargs={
@@ -49,7 +53,7 @@ def get_map_template_style(request, theme_choice: int = 0):
         url = url.replace('/0/0/0', '/{z}/{x}/{y}')
         if not settings.DEBUG:
             # if not dev env, then replace with https
-            url = url.replace('http://', 'https://')
+            url = url.replace('http://', schema)
         styles['sources']['NGI Aerial Imagery']['tiles'] = [url]
     # add properties layer
     if 'sources' in styles:
@@ -64,7 +68,9 @@ def get_map_template_style(request, theme_choice: int = 0):
         url = url.replace('/0/0/0', '/{z}/{x}/{y}')
         if not settings.DEBUG:
             # if not dev env, then replace with https
-            url = url.replace('http://', 'https://')
+            url = url.replace('http://', schema)
+        # add epoch datetime
+        url = url + f'?t={int(time.time())}'
         styles['sources']['properties'] = {
             "type": "vector",
             "tiles": [url],
@@ -85,6 +91,10 @@ def get_map_template_style(request, theme_choice: int = 0):
                 "fill-opacity": 0.8
             }
         })
+        styles['layers'].append(get_highlighted_layer('erf'))
+        styles['layers'].append(get_highlighted_layer('holding'))
+        styles['layers'].append(get_highlighted_layer('farm_portion'))
+        styles['layers'].append(get_highlighted_layer('parent_farm'))
     # update maptiler api key
     styles = replace_maptiler_api_key(styles)
     return styles
@@ -99,3 +109,29 @@ def replace_maptiler_api_key(styles):
             map_tiler_key
         )
     return styles
+
+
+def get_highlighted_layer(layer_name):
+    # green
+    return {
+        "id": f"{layer_name}-highlighted",
+        "type": "line",
+        "source": "sanbi",
+        "source-layer": f"{layer_name}",
+        "minzoom": 12,
+        "layout": {"visibility": "visible", "line-join": "bevel"},
+        "paint": {
+            "line-color": "#008000",
+            "line-width": [
+                "case",
+                [
+                    "boolean",
+                    ["feature-state", "parcel-selected-highlighted"],
+                    False
+                ],
+                4,
+                0
+            ],
+            "line-opacity": 1
+        }
+    }

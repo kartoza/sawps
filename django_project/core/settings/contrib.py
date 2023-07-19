@@ -1,6 +1,7 @@
 # coding=utf-8
 """Settings for 3rd party."""
 from .base import *  # noqa
+import ast
 
 # Extra installed apps
 INSTALLED_APPS = INSTALLED_APPS + (
@@ -66,7 +67,9 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_FORMS = {
-    'signup': 'swaps.forms.CustomSignupForm',
+    'signup': 'sawps.forms.CustomSignupForm',
+    'login': 'sawps.forms.CustomLoginForm',
+    'change_password': 'sawps.forms.CustomChangePasswordForm',
 }
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
@@ -80,7 +83,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {
-            "min_length": 8,
+            "min_length": 12,
         },
     },
     {
@@ -90,12 +93,20 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
     {
-        "NAME": "swaps.password_validation.NumberValidator",
+        "NAME": "sawps.password_validation.NumberValidator",
     },
     {
-        "NAME": "swaps.password_validation.UppercaseValidator",
+        "NAME": "sawps.password_validation.UppercaseValidator",
     },
     {
-        "NAME": "swaps.password_validation.SymbolValidator",
+        "NAME": "sawps.password_validation.SymbolValidator",
     },
 ]
+
+CONTACT_US_RECIPIENTS = ast.literal_eval(os.environ.get('CONTACT_US_RECIPIENTS', "['amy@kartoza.com']"))
+SUPPORT_EMAIL = 'amy@kartoza.com'
+
+
+DISABLE_2FA = ast.literal_eval(os.environ.get('DISABLE_2FA', 'False'))
+if DISABLE_2FA:
+    MIDDLEWARE = [m for m in MIDDLEWARE if m != 'sawps.middleware.RequireSuperuser2FAMiddleware']

@@ -1,8 +1,9 @@
-from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from .base_view import RegisteredOrganisationBaseView
 
 
-class MapView(TemplateView):
+class MapView(LoginRequiredMixin, RegisteredOrganisationBaseView):
     """
     MapView displays the map page by rendering the 'map.html' template.
     """
@@ -12,5 +13,4 @@ class MapView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['maptiler_api_key'] = settings.MAPTILER_API_KEY
-        ctx['skip_nav_bar'] = True
         return ctx

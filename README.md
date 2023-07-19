@@ -1,7 +1,27 @@
+![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--33d2c54-blue.svg)
+![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Build%20Status:-FAILURE-red.svg)
+[![codecov](https://codecov.io/gh/kartoza/sawps/branch/main/graph/badge.svg)](https://codecov.io/gh/kartoza/sawps/)
+
+
 # 🦏 SANBI WPS
 
 The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
 
+![image](https://github.com/kartoza/sawps/assets/178003/09311bc9-6862-4fc1-a526-1ec998d994b4)
+
+The work is funded by the [South African National Biodiversity Institute](https://www.sanbi.org/)
+
+
+This project is implemented by [Kartoza](https://kartoza.com/) under contract to [IDS](https://ids-cc.co.za/).
+
+## 📒 License
+
+> This program is free software; you can redistribute it and/or modify
+> it under the terms of the GNU Affero General Public License as published by
+> the Free Software Foundation; either version 3 of the License, or
+> (at your option) any later version.
+
+Read the [full license](LICENSE).
 
 ## 🧑🏽‍💻 Development
 
@@ -60,7 +80,25 @@ Open your web browser and go to localhost:8000 to view the running application.
 
 ![django-superuser2](https://github.com/timlinux/sawps/assets/178003/35f9f06e-79c3-405d-b7ce-b82a35ff28ac)
 
+### 💽 Restoring layer schema for map
 
+The full dump file for layer schema is ~5.3GB, meanwhile compact dump file is only 24MB.
+
+[Download Full Dump File for Layer.](https://drive.google.com/file/d/1-6y5tuMNc2sQ1G3qjyntL4PDV6ubCnbc/view?usp=sharing)
+
+[Download Compact Dump File for Layer.](https://drive.google.com/file/d/1Q0WhUP74MCoC_JcD4qMK1Egs575xrhqQ/view?usp=sharing)
+
+Preview for compact dump file:
+![sanbi_maps_compact](https://github.com/danangmassandy/sawps/assets/5819076/7bac8cef-142a-4512-a7d2-93c189abc0f1)
+
+Copy the dump file to db container. Then run pg_restore from inside db container to restore the dump file.
+
+```
+docker cp sanbi_layer_db_compact.dump deployment-db-1:/home/sanbi_layer_db_compact.dump
+docker exec -it deployment-db-1 /bin/bash
+cd /home
+pg_restore -h 127.0.0.1 -U docker -d django -n layer sanbi_layer_db_compact.dump
+```
 
 
 ## 💻 Resources
@@ -68,3 +106,4 @@ Open your web browser and go to localhost:8000 to view the running application.
 [Database ERD](https://drive.google.com/file/d/1O92w2zwbKm_SARXnXIljHbX-rQPmFiXM/view?usp=sharing)
 
 [Figma Board](https://www.figma.com/file/T6JEAAXTWzA9OIfAQe3iW7/SANBI?node-id=6-2&t=4T7COmsnfif2Nwwn-0)
+

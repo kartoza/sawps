@@ -1,19 +1,17 @@
 """API Views related to map."""
 from typing import Tuple, List
 import requests
-from django.db.models import Q
+from django.core.cache import cache
 from django.db import connection
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseForbidden
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.gis.geos import Point
 from property.models import (
-    Property
-)
-from stakeholder.models import (
-    OrganisationUser
+    Property,
+    Parcel
 )
 from frontend.models.context_layer import ContextLayer
 from frontend.serializers.context_layer import ContextLayerSerializer
@@ -32,6 +30,9 @@ from frontend.serializers.parcel import (
 )
 from frontend.serializers.property import (
     PropertySerializer
+)
+from frontend.utils.organisation import (
+    CURRENT_ORGANISATION_ID_KEY
 )
 
 User = get_user_model()
@@ -54,12 +55,22 @@ class MapStyles(APIView):
     """Fetch map styles."""
     permission_classes = [IsAuthenticated]
 
+    def get_token_for_map(self):
+        token = self.request.session.session_key
+        expiry_in_seconds = self.request.session.get_expiry_age()
+        cache_key = f'map-auth-{token}'
+        cache.set(cache_key, True, expiry_in_seconds)
+        return token
+
     def get(self, *args, **kwargs):
         """Retrieve map styles."""
         theme = self.request.GET.get('theme', 'light')
         styles = get_map_template_style(
             self.request,
-            0 if theme == 'light' else 1
+            theme_choice=(
+                0 if theme == 'light' else 1
+            ),
+            token=self.get_token_for_map()
         )
         return Response(
             status=200,
@@ -91,7 +102,7 @@ class PropertiesLayerMVTTiles(APIView):
 
     def generate_query_for_map(
             self,
-            user: User,
+            organisation_id: int,
             z: int,
             x: int,
             y: int,) -> Tuple[str, List[str]]:
@@ -103,29 +114,22 @@ class PropertiesLayerMVTTiles(APIView):
             'from property p '
             'where p.geometry && TileBBox(%s, %s, %s, 4326) '
         )
+        # add filter by selected organisation
+        sql = (
+            sql +
+            'AND p.organisation_id=%s '
+        )
         query_values = [
             z, x, y,
             z, x, y,
+            organisation_id
         ]
-        if not user.is_superuser:
-            sql = (
-                sql +
-                'AND (p.created_by_id=%s OR '
-                '     p.organisation_id in (SELECT ou.organisation_id '
-                '     FROM organisation_user ou WHERE ou.user_id=%s)) '
-            )
-            query_values = [
-                z, x, y,
-                z, x, y,
-                user.id,
-                user.id,
-            ]
         return sql, query_values
 
     def get(self, *args, **kwargs):
         sql, query_values = (
             self.generate_query_for_map(
-                self.request.user,
+                self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0),
                 kwargs.get('z'),
                 kwargs.get('x'),
                 kwargs.get('y')
@@ -199,26 +203,41 @@ class FindParcelByCoord(APIView):
             ).data
         return None
 
+    def check_used_parcel(self, cname: str, existing_property_id: int):
+        parcels = Parcel.objects.filter(sg_number=cname)
+        if existing_property_id:
+            parcels = parcels.exclude(property_id=existing_property_id)
+        return parcels.exists()
+
     def get(self, *args, **kwargs):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
+        property_id = self.request.GET.get('property_id', 0)
         point = Point(float(lng), float(lat), srid=4326)
         point.transform(3857)
         # find erf
         parcel = self.find_erf(point)
         if parcel:
+            if self.check_used_parcel(parcel['cname'], property_id):
+                return Response(status=404)
             return Response(status=200, data=parcel)
         # find holding
         parcel = self.find_holding(point)
         if parcel:
+            if self.check_used_parcel(parcel['cname'], property_id):
+                return Response(status=404)
             return Response(status=200, data=parcel)
         # find farm_portion
         parcel = self.find_farm_portion(point)
         if parcel:
+            if self.check_used_parcel(parcel['cname'], property_id):
+                return Response(status=404)
             return Response(status=200, data=parcel)
         # find parent_farm
         parcel = self.find_parent_farm(point)
         if parcel:
+            if self.check_used_parcel(parcel['cname'], property_id):
+                return Response(status=404)
             return Response(status=200, data=parcel)
         return Response(status=404)
 
@@ -231,16 +250,31 @@ class FindPropertyByCoord(APIView):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
         point = Point(float(lng), float(lat), srid=4326)
-        properties = Property.objects.filter(geometry__contains=point)
-        if not self.request.user.is_superuser:
-            user_organisations = OrganisationUser.objects.filter(
-                user=self.request.user
-            ).values_list('organisation_id', flat=True)
-            properties = properties.filter(
-                Q(created_by_id=self.request.user.id) |
-                Q(organisation_id__in=user_organisations)
+        properties = Property.objects.filter(
+            geometry__contains=point
+        ).filter(
+            organisation_id=(
+                self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0)
             )
+        )
         property = properties.order_by('id').first()
         if not property:
             return Response(status=404)
         return Response(status=200, data=PropertySerializer(property).data)
+
+
+class MapAuthenticate(APIView):
+    """Check against the token of user."""
+    permission_classes = [AllowAny]
+
+    def get(self, *args, **kwargs):
+        """Return success 200, so nginx can cache the auth result."""
+        token = self.request.query_params.get("token", None)
+        if token is None:
+            return HttpResponseForbidden()
+        cache_key = f'map-auth-{token}'
+        allowed = cache.get(cache_key)
+        if allowed is not None:
+            if allowed:
+                return HttpResponse('OK')
+        return HttpResponseForbidden()

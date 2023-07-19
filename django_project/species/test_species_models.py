@@ -1,9 +1,26 @@
-
+from rest_framework import status
+from django.urls import reverse
+import base64
+from django.test import Client
 from django.test import TestCase
-from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies
-from species.factories import TaxonRankFactory, ManagementStatusFactory, OwnedSpeciesFactory
+from species.models import (
+    TaxonRank, 
+    Taxon, 
+    ManagementStatus, 
+    OwnedSpecies, 
+    TaxonSurveyMethod
+)
+from species.factories import (
+    TaxonRankFactory,
+    TaxonFactory,
+    ManagementStatusFactory, 
+    OwnedSpeciesFactory,
+    TaxonSurveyMethodF
+)
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
+from occurrence.models import SurveyMethod
+from species.serializers import TaxonSerializer
 
 
 class ManagementStatusTestCase(TestCase):
@@ -17,13 +34,14 @@ class ManagementStatusTestCase(TestCase):
         """ test management status create """
         self.assertTrue(isinstance(self.management_status, ManagementStatus))
         self.assertEqual(ManagementStatus.objects.count(), 1)
-        self.assertEqual(self.management_status.name,'management status_0')
+        self.assertIn('management status', self.management_status.name)
 
     def test_update_management_status(self):
         """Test management status update."""
         self.management_status.name = 'management status_1'
         self.management_status.save()
-        self.assertEqual(ManagementStatus.objects.get(id=1).name, 'management status_1')
+        self.assertEqual(ManagementStatus.objects.get(
+            id=self.management_status.id).name, 'management status_1')
 
     
     def test_management_status_unique_name_constraint(self):
@@ -74,13 +92,33 @@ class TaxonTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         """Taxon model test data."""
-        cls.taxonRank = TaxonRankFactory()
-        cls.taxon = Taxon.objects.create(
+        cls.taxonRank = TaxonRankFactory.create(
+            name='Species'
+        )
+        cls.taxon = TaxonFactory.create(
             scientific_name='taxon_0',
             common_name_varbatim='taxon_0',
             colour_variant=False,
             taxon_rank=cls.taxonRank,
         )
+        cls.url = reverse('species')
+        
+    def test_get_taxon_list(self):
+        """Taxon list API test"""
+
+        user = User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd'
+        )
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        client = Client()
+        response = client.get(self.url, **auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = TaxonSerializer([self.taxon], many=True).data
+        self.assertEqual(expected_data, response.data)
 
     def test_create_taxon(self):
         """Test create taxon."""
@@ -169,3 +207,55 @@ class OwnedSpeciesTestCase(TestCase):
         """Test delete owned species."""
         self.ownedSpecies.delete()
         self.assertEqual(OwnedSpecies.objects.count(), 0)
+
+
+class TaxonSurveyMethodTestCase(TestCase):
+    """Taxon survey method count test case."""
+    @classmethod
+    def setUpTestData(cls):
+        """SetUpTestData for Taxon survey method count test case."""
+        cls.taxon = Taxon.objects.create(
+            scientific_name='taxon_0',
+            common_name_varbatim='taxon_0',
+            colour_variant=False,
+            taxon_rank=TaxonRankFactory(),
+        )
+        cls.survey_method = SurveyMethod.objects.create(name='Unknown', sort_id='1')        
+        cls.taxon_survey_method = TaxonSurveyMethodF(taxon=cls.taxon, survey_method=cls.survey_method)
+    
+    def test_create_taxon_survey_method(self):
+        """Test create Taxon survey method count."""
+        self.assertTrue(
+            isinstance(self.taxon_survey_method, TaxonSurveyMethod)
+        )
+        self.assertEqual(TaxonSurveyMethod.objects.count(), 1)
+        self.assertEqual(
+            TaxonSurveyMethod.objects.filter(
+            taxon__scientific_name=self.taxon.scientific_name
+            ).count(), 1
+        )
+        self.assertEqual(
+            TaxonSurveyMethod.objects.filter(
+            survey_method__name=self.survey_method.name
+            ).count(), 1
+        )
+
+    def test_update_taxon_survey_method(self):
+        """Test update Taxon survey method count."""
+        taxon = TaxonFactory.create(
+            scientific_name='taxon',
+            common_name_varbatim='taxon_0',
+            colour_variant=False,
+            taxon_rank=TaxonRankFactory(),
+        )
+        self.taxon_survey_method.taxon = taxon
+        self.taxon_survey_method.save()
+        self.assertEqual(
+            TaxonSurveyMethod.objects.filter(taxon__scientific_name='taxon').count(), 1
+        )
+
+
+    def test_delete_taxon_survey_method(self):
+        """Test delete Taxon survey method count."""
+        self.taxon.delete()
+        self.assertEqual(TaxonSurveyMethod.objects.count(), 0)

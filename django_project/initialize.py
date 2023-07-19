@@ -87,9 +87,21 @@ if _load_initial_fixtures:
     call_command('load_fixtures')
 
 #########################################################
-# 4. Collecting static files
+# 5. Collecting static files
 #########################################################
 
 print('-----------------------------------------------------')
-print('4. Collecting static files')
+print('5. Collecting static files')
 call_command('collectstatic', '--noinput', verbosity=0)
+
+#########################################################
+# 6. Check and resume ongoing vector tile generation
+#########################################################
+from frontend.tasks.generate_vector_tile import (  # noqa
+    resume_ongoing_vector_tile_task
+)
+print('-----------------------------------------------------')
+print('6. Checking ongoing vector tile generation')
+tiling_task_id = resume_ongoing_vector_tile_task()
+if tiling_task_id:
+    print(f'Task {tiling_task_id} has been resumed!')

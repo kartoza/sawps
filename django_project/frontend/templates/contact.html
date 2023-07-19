@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block head_title %}Contact Us{% endblock%}
+
+{% block content %}
+<section class="contact-banner-img fs-background" style="background-color: #000000;">
+    <div class="container-fluid full-height position-absolute">
+    <div class="row half-height">
+        <div class="col-7"></div>
+        <div class="col-4 sawps-text-primary">
+            <div class="account-form content" style="width: 85%; margin-top: 7vh; background-color: #111111;">
+                    {% csrf_token %}
+                    <div class="container">
+
+                        <div class="custom-form-container">
+                            <h4 class="account-form-title">{% trans "Contact Us" %}</h4>
+                            <hr class="separator">
+                            <form class="contact" action="{% url 'contact' %}" method="post" name="contact">
+                                {% csrf_token %}
+                                <div class='form-group'>
+                                    <label for="id_name">Name</label>
+                                    <input id='id_name' name="name" type="text" class="form-control"
+                                    value="{% if form.data.name %}{{form.data.name}}{% else %}{{form.initial.name}}{% endif %}"/>
+                                </div>
+
+                                <div class='form-group'>
+                                    <label for="id_email">Email</label>
+                                    <input id='id_email' name="email" type="text" class="form-control"/>
+                                </div>
+
+                                <div class='form-group'>
+                                    <label for="id_subject">Subject</label>
+                                    {{form.subject}}
+                                </div>
+
+                                <div class='form-group'>
+                                    <label for="id_message">Message</label>
+                                    {{form.message}}
+                                </div>
+                                <div class="form-group float-left" style="width: 70%;">
+                                    <div class="form-check">
+                                        {{form.copy}}
+                                      <label class="form-check-label" for="id_copy">
+                                        Send me a copy
+                                      </label>
+                                    </div>
+                                  </div>
+                                <button id="submit-button" class="sawps-from-submit account-button" type="submit">{% trans "Send" %}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+</section>
+{% endblock %}
+
+</html>

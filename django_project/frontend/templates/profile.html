@@ -3,15 +3,23 @@
 
 {% block head_title %}Your Profile{% endblock %}
 
+
 {% block content %}
 <section>
+  {% for message in messages %}
+    {% if 'notification' in message.tags %}
+      <div class="alert alert-success position-fixed top-0 end-0" role="alert">
+        {{ message }}
+      </div>
+    {% endif %}
+  {% endfor %}
+
   <div class="container py-5">
   <div class="row">
     {% include "profile_config_base.html" %}
 
       <div class="col-lg-8">
-        <div class="card mb-4">
-          <div class="card-body">
+          <div class="profile-form">
               <form method="post" action="{% url 'profile' object.username %}">
               {% csrf_token %}
               <div class="form-group">
@@ -26,32 +34,74 @@
                 <label for="title">Title</label>
                 <select class="form-control" name="title" id="title">
                   {% for title in titles %}
-                    <option value="{{ title.id }}"> {{ title.name }} </option>
+                    {% if title.name == object.user_profile.title_id.name %}
+                      <option value="{{ title.id }}" selected>{{ title.name }}</option>
+                    {% else %}
+                      <option value="{{ title.id }}">{{ title.name }}</option>
+                    {% endif %}
                   {% endfor %}
                 </select>
+                
               </div>
               <div class="form-group">
-                <label for="organization">Organisation</label>
-                <input type="text" class="form-control" name="organization" placeholder="Organisation">
-              </div>
-              <div class="form-group">
-                <label for="role">Role</label>
-                <select class="form-control" name="role"id="role">
-                  {% for role in roles %}
-                    <option value="{{ role.id }}"> {{ role.name }} </option>
-                  {% endfor %}
-                </select>
-              </div>
-               <div class="form-group">
                 <label for="email">Email address</label>
                 <input type="email" class="form-control" name="email" aria-describedby="emailHelp" value={{object.email}}>
+              </div>
+              <div class="form-group mt-3">
+                <small id="data-privacy" class="form-text text-muted">How would you like your data to be used see the SANBI data sharing agreement. 
+                  Switching the toggle will be taken as full agreement to the terms of the option chosen</small>
+              </div>
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="onlySANBI">
+                <label class="custom-control-label text-muted small" for="onlySANBI">Use of data by SANBI only</label>
+              </div>
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="hostingDataSANBI">
+                <label class="custom-control-label text-muted small" for="hostingDataSANBI">Hosting / serving the data through SANBI platforms and portals</label>
+              </div>
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther">
+                <label class="custom-control-label text-muted small" for="hostingDataSANBIOther">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the datas</label>
+              </div>
+              <div class="form-group">
+                <small id="data-privacy" class="form-text text-muted">Select user lists  you need to receive communications from</small>
               </div>
               <button type="submit" class="account-button">Update</button>
             </form>
           </div>
         </div>
-      </div>
   </div>
+
+  <script>
+
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 3000); // Adjust the duration (in milliseconds) as needed
+    });
+
+  
+  </script>
+
+  <style>
+    /* Position the alert at the top right corner */
+    .position-fixed {
+        position: fixed;
+        z-index: 100; /* Adjust the z-index value as needed */
+    }
+
+    .top-0 {
+        top: 0;
+    }
+
+    .end-0 {
+        right: 0;
+    }
+  </style>
+
 </section>
 
 {% endblock %}
+{% block footer %}
+{% endblock %}
+

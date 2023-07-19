@@ -12,7 +12,7 @@ RUN apt-get install -y --no-install-recommends \
     spatialite-bin libsqlite3-mod-spatialite \
     python3-dev python3-gdal python3-psycopg2 python3-ldap \
     python3-pip python3-pil python3-lxml python3-pylibmc \
-    uwsgi uwsgi-plugin-python3
+    uwsgi uwsgi-plugin-python3 libgdal-dev
 
 # Install pip packages
 ADD deployment/docker/requirements.txt /requirements.txt
@@ -25,11 +25,19 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt-get install nodejs -y
 
+# Tegola
+RUN wget https://github.com/go-spatial/tegola/releases/download/v0.16.0/tegola_linux_amd64.zip -P /home/web/
+RUN unzip /home/web/tegola_linux_amd64.zip -d /opt/
+
 ADD django_project /home/web/django_project
 
 EXPOSE 8080
 
 ADD deployment/docker/uwsgi.conf /uwsgi.conf
+
+# Build front end
+WORKDIR /home/web/django_project/frontend
+RUN npm install --legacy-peer-deps && npm run build
 
 WORKDIR /home/web/django_project
 ENTRYPOINT ["/home/web/django_project/entrypoint.sh"]
