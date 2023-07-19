@@ -252,4 +252,6 @@ def execute_statistical_model(request: StatisticalTaskRequest):
     request.statistical_model.is_valid = request.is_success
     if not request.is_success:
         request.statistical_model.last_error = request.error
+    else:
+        request.statistical_model.last_error = None
     request.statistical_model.save()
