@@ -1,4 +1,8 @@
-from django.test import TestCase, RequestFactory
+from django.test import (
+    TestCase,
+    RequestFactory,
+    Client
+)
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.auth.models import AnonymousUser
@@ -7,6 +11,11 @@ from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory
 )
+from stakeholder.models import (
+    Reminders,
+    UserProfile
+)
+from django.contrib.messages import get_messages
 
 
 class RegisteredBaseViewTestBase(TestCase):
@@ -33,6 +42,18 @@ class RegisteredBaseViewTestBase(TestCase):
         organisationUserFactory.create(
             user=self.user_1,
             organisation=self.organisation_3
+        )
+        self.reminder = Reminders.objects.create(
+            user=self.user_1,
+            organisation=self.organisation_1,
+            status=Reminders.PASSED,
+            email_sent=True,
+            title='Test Reminder 1',
+            reminder='Test Reminder'
+        )
+        self.user_profile = UserProfile.objects.create(
+            user=self.user_1,
+            received_notif=False
         )
 
     def process_session(self, request):
@@ -86,3 +107,15 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertEqual(len(context['organisations']), 0)
         self.assertIn('current_organisation_id', context)
         self.assertEqual(context['current_organisation_id'], 0)
+
+    def test_send_user_notifications(self):
+        response = self.factory.get(reverse(self.view_name))
+        response.user = self.user_1
+        self.process_session(response)
+
+        messages = list(get_messages(response))
+        self.assertTrue(len(messages) == 0)
+
+        # Check if the user profile 'received_notif' flag is False
+        user_profile = UserProfile.objects.get(user=self.user_1)
+        self.assertFalse(user_profile.received_notif)

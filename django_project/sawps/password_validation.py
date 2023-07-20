@@ -36,4 +36,3 @@ class SymbolValidator(object):
 
     def get_help_text(self):
         return "Special character (@#%;)"
-        

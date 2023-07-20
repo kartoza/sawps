@@ -1,8 +1,15 @@
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation, OrganisationUser, OrganisationRepresentative
+from stakeholder.models import (
+    UserRoleType,
+    UserTitle,
+    LoginStatus,
+    UserProfile,
+    Organisation,
+    OrganisationUser,
+    OrganisationRepresentative,
+    UserLogin
+)
 import factory
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, UserLogin, Organisation
 from django.contrib.auth.models import User
-
 
 
 class userRoleTypeFactory(factory.django.DjangoModelFactory):
@@ -66,16 +73,17 @@ class userProfileFactory(factory.django.DjangoModelFactory):
 
 class userLoginFactory(factory.django.DjangoModelFactory):
     """User login facfory class."""
-    
+
     class Meta:
         model = UserLogin
 
     user = factory.SubFactory('stakeholder.factories.userFactory')
-    login_status = factory.SubFactory('stakeholder.factories.loginStatusFactory')
+    login_status = factory.SubFactory(
+        'stakeholder.factories.loginStatusFactory')
     date_time = factory.Faker('date_time')
     ip_address = factory.Faker('ipv4')
 
-    
+
 class organisationFactory(factory.django.DjangoModelFactory):
     """Factory class for organisation model."""
 
@@ -83,7 +91,8 @@ class organisationFactory(factory.django.DjangoModelFactory):
         model = Organisation
 
     name = factory.Faker('company')
-    data_use_permission = factory.SubFactory('regulatory_permit.factories.DataUsePermissionFactory')
+    data_use_permission = factory.SubFactory(
+        'regulatory_permit.factories.DataUsePermissionFactory')
 
 
 class organisationUserFactory(factory.django.DjangoModelFactory):
@@ -92,7 +101,8 @@ class organisationUserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = OrganisationUser
 
-    organisation = factory.SubFactory('stakeholder.factories.organisationFactory')
+    organisation = factory.SubFactory(
+        'stakeholder.factories.organisationFactory')
     user = factory.SubFactory('stakeholder.factories.userFactory')
 
 
@@ -102,5 +112,6 @@ class organisationRepresentativeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = OrganisationRepresentative
 
-    organisation = factory.SubFactory('stakeholder.factories.organisationFactory')
+    organisation = factory.SubFactory(
+        'stakeholder.factories.organisationFactory')
     user = factory.SubFactory('stakeholder.factories.userFactory')

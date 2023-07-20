@@ -1,10 +1,30 @@
 from django.test import TestCase
 from regulatory_permit.models import DataUsePermission
-from stakeholder.models import UserRoleType, UserTitle, LoginStatus, UserProfile, Organisation, OrganisationUser, OrganisationRepresentative, UserLogin
-from stakeholder.factories import userRoleTypeFactory, userTitleFactory, loginStatusFactory, userLoginFactory, userProfileFactory, organisationFactory, organisationUserFactory, organisationRepresentativeFactory
+from stakeholder.models import (
+    UserRoleType,
+    UserTitle,
+    LoginStatus,
+    UserProfile,
+    Organisation,
+    OrganisationUser,
+    OrganisationRepresentative,
+    UserLogin,
+    OrganisationInvites,
+    Reminders
+)
+from stakeholder.factories import (
+    userRoleTypeFactory,
+    userTitleFactory,
+    loginStatusFactory,
+    userLoginFactory,
+    userProfileFactory,
+    organisationFactory,
+    organisationUserFactory,
+    organisationRepresentativeFactory
+)
 from django.contrib.auth.models import User
 from django.test import TestCase
-from .models import OrganisationInvites
+from django.db.models import Q
 
 
 class TestUserRoleType(TestCase):
@@ -150,33 +170,41 @@ class TestUserLogin(TestCase):
         self.assertEqual(UserLogin.objects.count(), 0)
         self.assertEqual(User.objects.count(), 2)
 
-        
+
 class OrganizationTestCase(TestCase):
     """Organization test case."""
     @classmethod
     def setUpTestData(cls):
         cls.organization = organisationFactory()
-    
+
     def test_create_organization(self):
         """Test creating organization."""
         self.assertEqual(Organisation.objects.count(), 1)
         self.assertTrue(isinstance(self.organization, Organisation))
-        self.assertTrue(self.organization.name, Organisation.objects.get(id=self.organization.id).name)
-        
+        self.assertTrue(self.organization.name, Organisation.objects.get(
+            id=self.organization.id).name)
+
     def test_update_organization(self):
         """Test updating organization."""
         self.organization.name = 'test'
         self.organization.save()
-        self.assertEqual(Organisation.objects.get(id=self.organization.id).name, 'test')
-    
+        self.assertEqual(Organisation.objects.get(
+            id=self.organization.id).name, 'test')
+
     def test_delete_organization(self):
         """Test deleting organization."""
         self.organization.delete()
         self.assertEqual(Organisation.objects.count(), 0)
-        
+
 
 class OrganizationUserTestCase(TestCase):
     """Test case for organization user."""
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpassword'
+        )
+
     @classmethod
     def setUpTestData(cls):
         """Setup test data for organisation user model."""
@@ -186,13 +214,18 @@ class OrganizationUserTestCase(TestCase):
         """Test creating organisation user."""
         self.assertEqual(OrganisationUser.objects.count(), 1)
         self.assertTrue(isinstance(self.organizationUser, OrganisationUser))
-        self.assertTrue(self.organizationUser.user.username, OrganisationUser.objects.get(id=1).user.username)
-    
+        self.assertTrue(
+            self.organizationUser.user.username,
+            OrganisationUser.objects.get(id=self.user.id).user.username)
+
     def test_update_organisation_user(self):
         """ Test updating organisation user."""
         self.organizationUser.user.username = 'test'
         self.organizationUser.user.save()
-        self.assertEqual(OrganisationUser.objects.get(id=1).user.username, 'test')
+        self.assertEqual(
+            OrganisationUser.objects.get(
+            id=self.user.id).user.username, 'test'
+        )
 
     def test_delete_organisation_user(self):
         """Test deleting organisation user."""
@@ -202,6 +235,11 @@ class OrganizationUserTestCase(TestCase):
 
 class OrganizationRepresentativeTestCase(TestCase):
     """Test case for organization representative."""
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpassword'
+        )
     @classmethod
     def setUpTestData(cls):
         """Setup test data for organisation representative model."""
@@ -210,14 +248,25 @@ class OrganizationRepresentativeTestCase(TestCase):
     def test_create_organisation_user(self):
         """Test creating organisation representative."""
         self.assertEqual(OrganisationRepresentative.objects.count(), 1)
-        self.assertTrue(isinstance(self.organizationRep, OrganisationRepresentative))
-        self.assertTrue(self.organizationRep.user.username, OrganisationRepresentative.objects.get(id=1).user.username)
-    
+        self.assertTrue(isinstance(self.organizationRep,
+                        OrganisationRepresentative))
+        self.assertTrue(
+            self.organizationRep.user.username,
+            OrganisationRepresentative.objects.get(
+                id=self.user.id
+            ).user.username
+        )
+
     def test_update_organisation_user(self):
         """ Test updating organisation representative."""
         self.organizationRep.user.username = 'test'
         self.organizationRep.user.save()
-        self.assertEqual(OrganisationRepresentative.objects.get(id=1).user.username, 'test')
+        self.assertEqual(
+            OrganisationRepresentative.objects.get(
+            id=self.user.id
+        ).user.username,
+        'test'
+    )
 
     def test_delete_organisation_user(self):
         """Test deleting organisation representative."""
@@ -228,30 +277,115 @@ class OrganizationRepresentativeTestCase(TestCase):
 
 class OrganisationInvitesModelTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.data_use_permission = DataUsePermission.objects.create(name="test")
-        self.organisation = Organisation.objects.create(name="test_organisation", data_use_permission = self.data_use_permission)
-        self.organisation_user = OrganisationUser.objects.create(organisation=self.organisation ,user=self.user)
+        self.user = User.objects.create_user(
+            username='testuser', password='testpassword')
+        self.data_use_permission = DataUsePermission.objects.create(
+            name="test")
+        self.organisation = Organisation.objects.create(
+            name="test_organisation",
+            data_use_permission = self.data_use_permission
+        )
+        self.organisation_user = OrganisationUser.objects.create(
+            organisation=self.organisation,
+            user=self.user
+        )
 
     def test_create_organisation_invite(self):
-        invite = OrganisationInvites.objects.create(organisation=self.organisation, email='test@kartoza.com')
+        invite = OrganisationInvites.objects.create(
+            organisation=self.organisation, email='test@kartoza.com')
         self.assertEqual(invite.organisation, self.organisation)
         self.assertEqual(invite.email, 'test@kartoza.com')
 
     def test_read_organisation_invite(self):
-        invite = OrganisationInvites.objects.create(organisation=self.organisation, email='test@kartoza.com')
+        invite = OrganisationInvites.objects.create(
+            organisation=self.organisation, email='test@kartoza.com')
         saved_invite = OrganisationInvites.objects.get(pk=invite.pk)
         self.assertEqual(saved_invite.organisation, self.organisation)
         self.assertEqual(saved_invite.email, 'test@kartoza.com')
 
     def test_update_organisation_invite(self):
-        invite = OrganisationInvites.objects.create(organisation=self.organisation, email='test@kartoza.com')
+        invite = OrganisationInvites.objects.create(
+            organisation=self.organisation, email='test@kartoza.com')
         invite.organisation = self.organisation
         invite.save()
         updated_invite = OrganisationInvites.objects.get(pk=invite.pk)
         self.assertEqual(updated_invite.organisation, self.organisation)
 
     def test_delete_organisation_invite(self):
-        invite = OrganisationInvites.objects.create(organisation=self.organisation, email='test@kartoza.com')
+        invite = OrganisationInvites.objects.create(
+            organisation=self.organisation, email='test@kartoza.com')
         invite.delete()
-        self.assertFalse(OrganisationInvites.objects.filter(pk=invite.pk).exists())
+        self.assertFalse(
+            OrganisationInvites.objects.filter(pk=invite.pk).exists())
+
+
+class RemindersModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpassword'
+        )
+        self.data_use_permission = DataUsePermission.objects.create(
+            name="test"
+        )
+        self.organisation = Organisation.objects.create(
+            name="test_organisation",
+            data_use_permission = self.data_use_permission
+        )
+        self.organisation_user = OrganisationUser.objects.create(
+            organisation=self.organisation,
+            user=self.user
+        )
+        self.reminder = Reminders.objects.create(
+            title='test',
+            user=self.user,
+            organisation=self.organisation,
+            reminder='reminder'
+        )
+
+    def test_create_reminder(self):
+        reminder = Reminders.objects.create(
+            organisation=self.organisation,
+            user=self.user
+        )
+        self.assertEqual(reminder.organisation, self.organisation)
+        self.assertEqual(reminder.user, self.user)
+
+    def test_get_reminder(self):
+        reminder = Reminders.objects.get(
+            organisation=self.organisation,
+            user=self.user
+        )
+        self.assertEqual(reminder.organisation, self.organisation)
+        self.assertEqual(reminder.title, self.reminder.title)
+
+    def test_update_reminder(self):
+        reminder = Reminders.objects.get(
+            organisation=self.organisation,
+            user=self.user
+        )
+        reminder.title = 'new'
+        reminder.save()
+        self.assertEqual(reminder.title, 'new')
+
+    def test_delete_reminder_or_notif(self):
+        reminder = Reminders.objects.get(
+            organisation=self.organisation, 
+            user=self.user
+        )
+        reminder.delete()
+        self.assertEqual(
+            Reminders.objects.filter(
+                user=self.user,
+                organisation=self.organisation
+            ).exists(), False)
+
+    def test_search_remider_or_notification(self):
+        reminders = Reminders.objects.filter(
+            Q(user=self.user),
+            Q(organisation=self.organisation),
+            Q(title__icontains='t') | Q(
+                reminder__icontains='t')
+        )
+
+        self.assertEqual(len(reminders),1)

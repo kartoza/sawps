@@ -149,7 +149,7 @@ class ParcelTestCase(TestCase):
         """Test update parcel."""
         self.parcel.sg_number = 'SG_1'
         self.parcel.save()
-        self.assertEqual(Parcel.objects.get(id=1).sg_number, 'SG_1')
+        self.assertEqual(Parcel.objects.get(id=self.parcel.id).sg_number, 'SG_1')
 
     def test_unique_parcel_sg_number_constraint(self):
         """Test unique parcel sg number constraint."""

@@ -1,5 +1,9 @@
 from django.urls import path
-from sawps.views import ActivateAccount,AddUserToOrganisation
+from sawps.views import (
+    ActivateAccount,
+    SendRequestEmail,
+    AddUserToOrganisation
+)
 
 urlpatterns = [
     path(
@@ -8,8 +12,13 @@ urlpatterns = [
         name='activate',
     ),
     path(
-        'adduser/<uidb64>/<organisation>/',
+        'adduser/<user_email>/<organisation>/',
         AddUserToOrganisation.as_view(),
-        name='adduser',
+        name='adduser'
     ),
+    path(
+        'sendrequest/',
+        SendRequestEmail.as_view(),
+        name='sendrequest',
+    )
 ]

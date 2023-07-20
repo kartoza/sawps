@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %}Your Profile{% endblock %}
+
+{% block content %}
+<section>
+  <div class="container py-5 footer_position">
+  <div class="row">
+    {% include "profile_config_base.html" %}
+
+    <div class="container">
+        
+
+        <!-- view notification modal -->
+        <div id="notificationModal" class="notif_modal">
+          <span class="close-icon" onclick="hideModal()">&#x2716;</span>
+          <h2 id="notificationTitle"></h2>
+          <p id="notificationContent"></p>
+          <p id="notificationDate"></p>
+        </div>   
+          
+
+      
+      
+      <div class="my-row green-background row" style="height: 50px; border-radius: 5px;">
+        <div class="col-md-5" style="padding-top: 6px; padding-left: 1%;" >
+          <div class="form-group" style="width: 60%;">
+            <select class="form-control" id="selectAction" >
+              <option value="">Select Action</option>
+              <option value="delete">Delete</option>
+              <option value="view">View</option>
+              <!-- Add more options as needed -->
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4" style="padding-top: 6px;">
+          <div class="form-inline">
+            <div class="input-group" style="margin-left: 29%;">
+              <input type="text" class="form-control search-input" id="searchInput" placeholder="Search">
+              <div class="input-group-append">
+                <span class="input-group-text search-icon"><i class="fas fa-search"></i></span>
+              </div>
+            </div>
+        </div>
+      
+      </div>
+      <div class="col-md-3" style="padding-top: 6px; padding-left: 1px; padding-right: 1%;">
+        <div class="form-group">
+          <select id="filterSelect" class="form-control">
+            <option value="">Filter</option>
+            <option value="title">Title</option>
+            <option value="reminder">Notification</option>
+          </select>          
+        </div>
+      </div>
+      </div>
+
+      
+      
+
+
+      <!-- notifications table -->
+      <div class="my-row" style="margin-top: 1%; margin-left: -1%;">
+      <table id="notifications" class="table table-bordereless" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>
+              <input type="checkbox" id="selectAll">
+            </th>
+            <th>Title</th>
+            <th>Date</th>
+            <th>notification</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for notification in notifications %}
+            <tr>
+              <td><input type="checkbox" value="{{ notification.id }}"></td>
+              <td>{{ notification.title }}</td>
+              <td>{{ notification.date }}</td>
+              <td>{{ notification.reminder }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>        
+          
+        <tfoot>
+            <tr>
+              <td colspan="5">
+                <div class="row justify-content-end">
+                  <div class="col-auto">
+                    <div class="row align-items-center">
+                      <div class="col-auto custom">
+                        Rows per page:
+                      </div>
+                      <div class="col-auto custom">
+                        <select id="notificationsRowsPerPage" class="form-control form-control-sm mr-2 small-select border-0" style="border-bottom: 1px solid #5c5858; width: 80px;" onchange="updateRowsPerPage('notifications', this)">
+                          <option value="5" {% if notifications.paginator.per_page == 5 %}selected{% endif %}>5</option>
+                          <option value="10" {% if notifications.paginator.per_page == 10 %}selected{% endif %}>10</option>
+                          <option value="20" {% if notifications.paginator.per_page == 20 %}selected{% endif %}>20</option>
+                        </select>
+                      </div>
+                      
+                      
+                      
+                      <div class="col-auto">
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination justify-content-end">
+                            
+                            {% if notifications.has_previous %}
+                            <li class="page-item">
+                              <a class="page-link" href="?notifications_page={{ notifications.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="page-item disabled">
+                              <a class="page-link" href="#">{{ notifications.number }}</a>
+                            </li>
+                            
+                            {% if notifications.has_next %}
+                            <li class="page-item">
+                              <a class="page-link" href="?notifications_page={{ notifications.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                          </ul>
+                        </nav>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+      </table>
+
+    </div> 
+  </div>
+  
+
+  <script>
+
+    function hideModal() {
+      var modal = document.getElementById("notificationModal");
+      modal.style.display = "none";
+    }
+
+    // for checkboxes
+    $(document).ready(function() {
+      // Get the "selectAll" checkbox element
+      var selectAllCheckbox = document.getElementById('selectAll');
+  
+      // Get all the checkboxes in the table
+      var checkboxes = document.querySelectorAll('#notifications tbody input[type="checkbox"]');
+  
+      // Add event listener to "selectAll" checkbox
+      selectAllCheckbox.addEventListener('change', function() {
+        var isChecked = this.checked;
+  
+        // Set the state of all checkboxes in the table
+        checkboxes.forEach(function(checkbox) {
+          checkbox.checked = isChecked;
+        });
+      });
+  
+      // Add event listener to individual checkboxes
+      checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+          // Check if all checkboxes are selected
+          var allChecked = document.querySelectorAll('#notifications tbody input[type="checkbox"]:checked').length === checkboxes.length;
+  
+          // Update the state of "selectAll" checkbox
+          selectAllCheckbox.checked = allChecked;
+        });
+      });
+    });
+
+    // updating rows per page for the respective tables
+    function updateRowsPerPage(table, selectElement) {
+        var selectedValue = selectElement.value;
+        var url = new URL(window.location.href);
+        url.searchParams.set(table + '_page', 1);
+        url.searchParams.set(table + '_per_page', selectedValue);
+        window.location.href = url.href;
+    }
+
+    // searching
+    $(document).ready(function() {
+      $('#searchInput').on('input', function() {
+        var formData = $(this).val();
+            makeSearchQuery(formData)
+      });
+    });
+    function constructRemindersTable(data){
+      var tableBody = $('#notifications tbody');
+      tableBody.empty();
+
+      if (data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          var row = '<tr>';
+          row += '<td><input type="checkbox" value="' + data[i].id + '"></td>';
+          row += '<td>' + data[i].title + '</td>';
+          row += '<td>' + data[i].date + '</td>';
+          row += '<td>' + data[i].reminder + '</td>';
+          row += '</tr>';
+
+          tableBody.append(row);
+      }
+    }
+  }
+
+    function makeSearchQuery(formData){
+      // check if a filter is currently selected
+      var selectBox = document.getElementById('filterSelect');
+      var selectedValue = selectBox.value;
+
+      var filter = ''
+      if (selectedValue !== undefined && selectedValue !== '') 
+        filter = selectedValue
+
+      $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: {
+          'action': 'search_notifications', 
+          'query': formData,
+          'filter': filter,
+          'notifications_page': true,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+          constructRemindersTable(response.data)   
+          $('#notificationsRowsPerPage').val('{{ notifications.paginator.num_pages }}');
+          $('#notificationsRowsPerPage').val(20);
+          $('#notificationsRowsPerPage option').prop('disabled', false);         
+        },
+                
+      });
+    }
+
+
+        // select actions
+        $(document).ready(function() {
+        // Event handler for the select action dropdown
+        $('#selectAction').on('change', function() {
+            var selectedOption = $(this).val();
+            // Call the function to get the IDs of the selected checkboxes
+            var selectedIds = getSelectedIds();
+
+            if (selectedIds.length !== 0){
+              // Check the selected option
+              if (selectedOption === 'delete') {
+                $('#deleteConfirmationModal').modal('show');
+                document.getElementById('deleteConfirmationBtn').addEventListener('click', function() {
+                  $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: {
+                      'action': 'delete_notification', 
+                      'ids': JSON.stringify(selectedIds),
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                      constructRemindersTable(response.data)   
+                      $('#notificationsRowsPerPage').val('{{ notifications.paginator.num_pages }}');
+                      $('#notificationsRowsPerPage').val(20);
+                    },
+                    error: function(xhr, status, error) {
+                      // Handle the error response
+                    }
+                  });
+                  $('#deleteConfirmationModal').modal('hide');
+                });
+              }else if(selectedOption === 'view' && selectedIds.length <= 2) {
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: {
+                        'action': 'get_notification', 
+                        'ids': JSON.stringify(selectedIds),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        reminder = response.data
+                        // Get the modal element and individual content elements
+                        var modal = document.getElementById("notificationModal");
+                        var titleElement = document.getElementById("notificationTitle");
+                        var contentElement = document.getElementById("notificationContent");
+                        var dateElement = document.getElementById("notificationDate");
+
+                        titleElement.textContent = response.data[0].title;
+                        contentElement.textContent = response.data[0].reminder;
+                        dateElement.textContent = "Date: " + response.data[0].date;
+
+                        // Show the modal
+                        modal.style.display = "block";
+
+                        // Add event listener to close the modal when clicked outside
+                        window.addEventListener("click", function(event) {
+                            if (event.target === modal) {
+                              hideModal();
+                            }
+                        });
+                    },
+                    error: function(error) {
+                        // Handle the error response
+                        console.log(error);
+                    }
+                });
+
+                
+              }
+
+            }
+            
+        });
+
+        // Function to get the IDs of the selected checkboxes
+        function getSelectedIds() {
+            var selectedIds = [];
+            $('input[type="checkbox"]:checked').each(function() {
+            selectedIds.push($(this).val());
+            });
+            return selectedIds;
+        }
+        });
+
+
+  </script>
+
+<style>
+    .badge-purple {
+    background-color: purple;
+    color: white;
+    }
+
+    .badge-warning {
+    background-color: orange;
+    color: white;
+    }
+
+    select.form-control:focus {
+      outline-color: green;
+      border-color: green;
+      box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+    .form-control.search-input:focus {
+    outline-color: green;
+    border-color: green;
+    box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+  }
+
+  .green-background {
+    background-color: rgba(0, 128, 0, 0.5); /* Adjust the alpha value as needed */
+    }
+
+    .my-row {
+        width: 100%; /* Set the width as a percentage of the parent container */
+    }
+
+    .custom {
+        padding-bottom: 1rem;
+    }
+
+    .pagination a.page-link {
+        color: green;
+    }
+
+    tfoot select.form-control {
+        color: black;
+        background-color: #f8f9fa;
+        border-color: gray;
+        border-radius: 1px;
+        height: auto;
+        padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333333"><path d="M7 10l5 5 5-5z" /></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.375rem center;
+        background-size: 12px 12px;
+        padding-right: 1rem;
+    }
+
+    tfoot select.form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+        border-color: green;
+    }
+
+    .form-control:focus {
+        border-color: green;
+        box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+    /* Position the alert at the top right corner */
+    .position-fixed {
+        position: fixed;
+        z-index: 100; /* Adjust the z-index value as needed */
+    }
+
+    .top-0 {
+        top: 0;
+    }
+
+    .end-0 {
+        right: 0;
+    }
+
+    .footer_position {
+      flex: 1;
+      min-height: 80.5vh;
+    }
+
+    /* Styles for the pop-up modal */
+    .notif_modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .notif_modal h2 {
+      margin-top: 0;
+    }
+    
+    .notif_modal p {
+      margin-bottom: 0;
+    }
+
+    .close-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+  </style>
+  
+
+</section>
+
+
+{% endblock %}
+{% block footer %}
+<div class='footer' data-testid='footer'>
+    <div class='sanbi-footer-logo-container'>
+        <img class='footer-logo' data-testid='sanbi-footer-logo'
+        src='/static/images/footer/sanbi-footer-logo.png'/>
+    </div>
+    <div class='footer-nav' data-testid='footer-navigation'>
+        <a href='/' target='_blank'>HOME</a>
+        <a href='/map' target='_blank'>MAP</a>
+        <a href='/' target='_blank'>DOCUMENTATION</a>
+        <a href='/contact' target='_blank'>CONTACT</a>
+  </div>
+  <div class='vendors-logos-container' data-testid='vendors-logos-container'>
+    <img class='ids-logo' src='/static/images/footer/ids-logo.png' data-testid='ids-logo'/>
+    <img class='kartoza-white-logo' src='/static/images/footer/kartoza-white-logo.png' data-testid='kartoza-logo'/>
+  </div>
+</div>
+{% endblock %}

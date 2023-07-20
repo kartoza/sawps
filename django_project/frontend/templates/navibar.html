@@ -2,7 +2,62 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="/"><img src='/static/images/SANBI-logo.jpg' alt="Logo" width="260px"/></a>
+        <!-- Send request Modal -->
+        <div class="modal fade" id="organisationModal" tabindex="-1" role="dialog" aria-labelledby="organisationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        
+                        <p class="modal-header-text">If you require the addition of your organisation to the SAWPS platform, please fill in the form.</p>
+                        <form id="organisationForm">
+                            <div class="form-group">
+                                <label for="organisationName" class="form-label text-black">Organization Name:</label>
+                                <input type="text" class="form-control" id="organisationName" placeholder="KNP, SANParks" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message" class="form-label text-black">Message to administrator (description of organisation and other information):</label>
+                                <textarea class="form-control" id="message" placeholder="Enter message" required></textarea>
+                            </div>
+                            
+                        </form>
+                        <button type="button" class="btn btn-secondary" id="inviteBtn" style="background-color: green;" onclick="sendRequest()">SEND</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Request sent Modal -->
+        <div id="successModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <div class="success-animation">
+                    <svg class="success-circle" viewBox="0 0 70 70">
+                      <circle class="success-circle-bg" cx="35" cy="35" r="24"></circle>
+                      <path class="success-tick" d="M25 35l10 10l20-20"></path>
+                    </svg>
+                  </div>
+                  <p class="success-message text-black">Request sent</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        
+        
+        
+        
+        
+          
+          <a class="navbar-brand" href="/">
+            <img src='/static/images/SANBI-logo.jpg' alt="Logo" style="width: 130px; height: auto;">
+          </a>
+          
+
+        
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         </button>
@@ -24,15 +79,15 @@
         </li>
         {% if user.is_authenticated %}
         <li class="nav-item dropdown">
-                <a class="dropdown-toggle nav-link user-name" id="dropdownMenu" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false" href="#"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {{ user.first_name|upper }} 
+            <a class="dropdown-toggle nav-link user-name" id="dropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ user.first_name|upper }} 
                     {% if user.user_profile.picture %}
-                    <img src="{% get_media_prefix %}{{ user.user_profile.picture }}" alt="avatar"
-                    class="img-fluid ml-2" style="width: 30px;">
+                    <img src="{% get_media_prefix %}{{ user.user_profile.picture }}" alt="avatar" class="img-fluid ml-2 rounded-circle" style="width: 30px;">
                     {% else %}
-                    <svg class="img-fluid ml-2" width="30px;"  style="background-color:var(--white);fill:#6c757dd9;width:30px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"/></svg>
+                        <svg class="img-fluid ml-2 rounded-circle" width="30px;" style="background-color:var(--white);fill:#6c757dd9;width:30px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                        <path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z" />
+                        </svg>
                     {% endif %}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
@@ -55,18 +110,19 @@
                           {% for organisation in organisations|slice:"3:" %}
                           <li>
                             <a class="dropdown-item" href="{% url 'switch-organisation' organisation.id %}?next={{ request.get_full_path|urlencode }}" key="{{ organisation.id }}">{{ organisation.name }}</a>
-                          </li>
-                          {% endfor %}
-                        </ul>
-                    </span>
-                    {% endif %}
-                    <hr class="divider" />
-                    {% endif %}
-                    {% if user.is_superuser %}
-                    <a class="dropdown-item" href="/admin/">DJANGO ADMIN</a>
-                    {% endif %}
-                </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </span>
+                {% endif %}
+                <hr class="divider" />
+                {% endif %}
+                {% if user.is_superuser %}
+                <a class="dropdown-item" href="/admin/">DJANGO ADMIN</a>
+                {% endif %}
+            </div>
         </li>
+        
         <li class="nav-item">
             <a class="nav-link account-button" href="/accounts/logout">LOGOUT</a>
         </li>
@@ -106,6 +162,29 @@
 
         return baseUrl;
     }
+
+    function sendRequest() {
+        var organisationName = document.getElementById('organisationName').value;
+        var message = document.getElementById('message').value;
+
+        var url = extractBaseUrl(window.location.href) + "/sendrequest/"
+        
+        // call view function to send email
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: {
+            'action': 'sendrequest',
+            'organisationName': organisationName,
+            'message': message,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function() {
+            $('#successModal').modal('show');
+          }
+        });
+    }
+
 
 </script>
 

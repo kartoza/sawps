@@ -1,4 +1,3 @@
-from .base_view import RegisteredOrganisationBaseView
 from django.views.generic.edit import FormView
 from frontend.forms import ContactUsForm
 from django.template.loader import render_to_string
@@ -7,8 +6,8 @@ from django.conf import settings
 
 
 class ContactUsView(FormView):
-    """ 
-    ContactView 
+    """
+    ContactView
     """
     template_name = 'contact.html'
     form_class = ContactUsForm

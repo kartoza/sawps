@@ -1,0 +1,632 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %}Your Profile{% endblock %}
+
+{% block content %}
+<section>
+  <div class="container py-5 footer_position">
+  <div class="row">
+    {% include "profile_config_base.html" %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-auto ml-auto mb-3">
+              <button class="btn btn-success" type="button" data-toggle="modal" data-target="#myModal">
+                <i class="fas fa-plus"></i> ADD REMINDER
+              </button>
+            </div>
+          </div>
+
+          
+          <!-- save/edit reminder modal -->
+          <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myModalLabel">Reminder Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="reminderForm">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">Date and Time</label>
+                                <input type="datetime-local" class="form-control" id="date" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reminder">Reminder</label>
+                                <textarea class="form-control" id="reminder" name="reminder" required></textarea>
+                            </div>
+                            {% if user.is_superuser or user.user_profile.user_role_type_id == 'Admin' %}
+                            <div class="form-group">
+                                <label for="reminderType">Reminder Type</label>
+                                <select class="form-control" id="reminderType" name="reminderType">
+                                    <option value="personal" selected>Personal</option>
+                                    <option value="all">Everyone</option>
+                                </select>
+                            </div>
+                            {% endif %}
+                            <div class="form-group" id="status_field" style="display: none;">
+                              <label for="reminderType">Reminder Status</label>
+                              <select class="form-control" id="status" name="status">
+                                  <option value="active" selected>Active</option>
+                                  <option value="draft">Draft</option>
+                                  <option value="passed">Passed</option>
+                              </select>
+                          </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="editReminderBtn" style="display: none;">Save</button>
+                        <button type="button" class="btn btn-primary" id="addReminderBtn">Add</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+      
+      <div class="my-row green-background row" style="height: 50px; border-radius: 5px;">
+        <div class="col-md-5" style="padding-top: 6px; padding-left: 1%;" >
+          <div class="form-group" style="width: 60%;">
+            <select class="form-control" id="selectAction" >
+              <option value="">Select Action</option>
+              <option value="delete">Delete</option>
+              <option value="edit">Edit</option>
+              <!-- Add more options as needed -->
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4" style="padding-top: 6px;">
+          <div class="form-inline">
+            <div class="input-group" style="margin-left: 29%;">
+              <input type="text" class="form-control search-input" id="searchInput" placeholder="Search">
+              <div class="input-group-append">
+                <span class="input-group-text search-icon"><i class="fas fa-search"></i></span>
+              </div>
+            </div>
+        </div>
+      
+      </div>
+      <div class="col-md-3" style="padding-top: 6px; padding-left: 1px; padding-right: 1%;">
+        <div class="form-group">
+          <select id="filterSelect" class="form-control">
+            <option value="">Filter</option>
+            <option value="title">Title</option>
+            <option value="reminder">Reminder</option>
+          </select>          
+        </div>
+      </div>
+      </div>
+
+      
+      
+
+
+      <!-- reminders table -->
+      <div class="my-row" style="margin-top: 1%; margin-left: -1%;">
+      <table id="reminders" class="table table-bordereless" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>
+              <input type="checkbox" id="selectAll">
+            </th>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Reminder</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reminder in reminders %}
+            <tr>
+              <td><input type="checkbox" value="{{ reminder.id }}"></td>
+              <td>{{ reminder.title }}</td>
+              <td>{{ reminder.date }}</td>
+              <td>{{ reminder.reminder }}</td>
+              <td>
+                {% if reminder.status == 'Active' %}
+                  <span class="badge badge-success">Active</span>
+                {% elif reminder.status == 'Draft' %}
+                  <span class="badge badge-warning">Draft</span>
+                {% elif reminder.status == 'Passed' %}
+                  <span class="badge badge-purple">Passed</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>        
+          
+        <tfoot>
+            <tr>
+              <td colspan="5">
+                <div class="row justify-content-end">
+                  <div class="col-auto">
+                    <div class="row align-items-center">
+                      <div class="col-auto custom">
+                        Rows per page:
+                      </div>
+                      <div class="col-auto custom">
+                        <select id="remindersRowsPerPage" class="form-control form-control-sm mr-2 small-select border-0" style="border-bottom: 1px solid #5c5858; width: 80px;" onchange="updateRowsPerPage('reminders', this)">
+                          <option value="5" {% if reminders.paginator.per_page == 5 %}selected{% endif %}>5</option>
+                          <option value="10" {% if reminders.paginator.per_page == 10 %}selected{% endif %}>10</option>
+                          <option value="20" {% if reminders.paginator.per_page == 20 %}selected{% endif %}>20</option>
+                        </select>
+                      </div>
+                      
+                      
+                      
+                      <div class="col-auto">
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination justify-content-end">
+                            
+                            {% if reminders.has_previous %}
+                            <li class="page-item">
+                              <a class="page-link" href="?reminders_page={{ reminders.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="page-item disabled">
+                              <a class="page-link" href="#">{{ reminders.number }}</a>
+                            </li>
+                            
+                            {% if reminders.has_next %}
+                            <li class="page-item">
+                              <a class="page-link" href="?reminders_page={{ reminders.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                          </ul>
+                        </nav>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+      </table>
+
+    </div> 
+  </div>
+  
+
+  <script>
+
+    // for checkboxes
+    $(document).ready(function() {
+      // Get the "selectAll" checkbox element
+      var selectAllCheckbox = document.getElementById('selectAll');
+  
+      // Get all the checkboxes in the table
+      var checkboxes = document.querySelectorAll('#reminders tbody input[type="checkbox"]');
+  
+      // Add event listener to "selectAll" checkbox
+      selectAllCheckbox.addEventListener('change', function() {
+        var isChecked = this.checked;
+  
+        // Set the state of all checkboxes in the table
+        checkboxes.forEach(function(checkbox) {
+          checkbox.checked = isChecked;
+        });
+      });
+  
+      // Add event listener to individual checkboxes
+      checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+          // Check if all checkboxes are selected
+          var allChecked = document.querySelectorAll('#reminders tbody input[type="checkbox"]:checked').length === checkboxes.length;
+  
+          // Update the state of "selectAll" checkbox
+          selectAllCheckbox.checked = allChecked;
+        });
+      });
+    });
+
+    // updating rows per page for the respective tables
+    function updateRowsPerPage(table, selectElement) {
+        var selectedValue = selectElement.value;
+        var url = new URL(window.location.href);
+        url.searchParams.set(table + '_page', 1);
+        url.searchParams.set(table + '_per_page', selectedValue);
+        window.location.href = url.href;
+    }
+
+    // add reminder
+    $(document).ready(function() {
+        // Event handler for the "Add" button in the modal
+        $('#addReminderBtn').on('click', function() {
+
+          var addBtn = document.getElementById("addReminderBtn");
+          addBtn.style.display = "block";
+
+            // Get the input values from the modal
+            var title = $('#title').val();
+            var date = $('#date').val();
+            var reminder = $('#reminder').val();
+            var reminder_type = $('#reminderType').val();
+
+            // query to add record
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: {
+                    'action': 'add_reminder', 
+                    'title': title,
+                    'date': date,
+                    'reminder': reminder,
+                    'reminder_type': reminder_type,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    //  add new contents to the table from the json response
+                    var data = [];
+                    try{
+                      data = JSON.parse(response.updated_reminders);
+
+                      constructRemindersTable(data)
+
+                      $('#remindersRowsPerPage').val('{{ reminders.paginator.num_pages }}');
+                      $('#remindersRowsPerPage').val(20);
+                      
+                      $('#myModal').modal('hide');
+                    }catch(exception){
+                      console.log(exception.message)
+                    }
+                    
+                },
+                error: function(xhr, status, error) {
+                    // Handle the error response
+                    console.error('Error adding reminder:', error);
+                    $('#myModal').modal('hide');
+                    // Display an error message to the user
+                    alert('Error adding reminder. Please try again.');
+                }
+            });
+        });
+      });
+
+    // searching
+    $(document).ready(function() {
+      $('#searchInput').on('input', function() {
+        var formData = $(this).val();
+            makeSearchQuery(formData)
+      });
+    });
+    function constructRemindersTable(data){
+      var tableBody = $('#reminders tbody');
+      tableBody.empty();
+
+      if (data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          var row = '<tr>';
+          row += '<td><input type="checkbox" value="' + data[i].id + '"></td>';
+          row += '<td>' + data[i].title + '</td>';
+          row += '<td>' + data[i].date + '</td>';
+          row += '<td>' + data[i].reminder + '</td>';
+                          
+          // Condition for the status column
+          if (data[i].status === 'Active') {
+            row += '<td><span class="badge badge-success">Active</span></td>';
+          } else if (data[i].status === 'Draft') {
+            row += '<td><span class="badge badge-warning">Draft</span></td>';
+          } else if (data[i].status === 'Passed') {
+            row += '<td><span class="badge badge-purple">Passed</span></td>';
+          } else {
+            row += '<td></td>';
+          }
+                          
+          row += '</tr>';
+
+          tableBody.append(row);
+      }
+    }
+  }
+
+    function makeSearchQuery(formData){
+      // check if a filter is currently selected
+      var selectBox = document.getElementById('filterSelect');
+      var selectedValue = selectBox.value;
+
+      var filter = ''
+      if (selectedValue !== undefined && selectedValue !== '') 
+        filter = selectedValue
+
+      $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: {
+          'action': 'search_reminders', 
+          'query': formData,
+          'filter': filter,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+          constructRemindersTable(response.data)   
+          $('#remindersRowsPerPage').val('{{ reminders.paginator.num_pages }}');
+          $('#remindersRowsPerPage').val(20);
+          $('#remindersRowsPerPage option').prop('disabled', false);         
+        },
+                
+      });
+    }
+
+
+        // select actions
+        $(document).ready(function() {
+        // Event handler for the select action dropdown
+        $('#selectAction').on('change', function() {
+            var selectedOption = $(this).val();
+            // Call the function to get the IDs of the selected checkboxes
+            var selectedIds = getSelectedIds();
+            console.log(selectedIds)
+
+            if (selectedIds.length !== 0){
+              // Check the selected option
+              if (selectedOption === 'delete') {
+                $('#deleteConfirmationModal').modal('show');
+                document.getElementById('deleteConfirmationBtn').addEventListener('click', function() {
+                  $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: {
+                      'action': 'delete_reminder', 
+                      'ids': JSON.stringify(selectedIds),
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                      constructRemindersTable(response.data)   
+                      $('#remindersRowsPerPage').val('{{ reminders.paginator.num_pages }}');
+                      $('#remindersRowsPerPage').val(20);
+                    },
+                    error: function(xhr, status, error) {
+                      // Handle the error response
+                    }
+                  });
+                  $('#deleteConfirmationModal').modal('hide');
+                });
+              }else if(selectedOption === 'edit' && selectedIds.length <= 2) {
+                console.log('edit selected')
+                // AJAX query to retrieve reminder data
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: {
+                        'action': 'get_reminder', 
+                        'ids': JSON.stringify(selectedIds),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        // Handle the success response
+                        console.log(response);
+                        reminder = response.data[0]
+
+                        // Populate the modal with the retrieved data
+                        $('#myModal #title').val(reminder.title);
+                        const date = new Date(reminder.date);
+                        const formattedDate = date.toISOString().slice(0, 16);
+                        $('#myModal #date').val(formattedDate);
+                        if (reminder.type == 'Everyone')
+                          $('#myModal #reminderType').val('all');
+                        else $('#myModal #reminderType').val('personal');
+                        $('#myModal #reminder').val(reminder.reminder);
+                        if(reminder.status === 'Active')
+                          $('#myModal #status').val('active');
+                        else if(reminder.status === 'Draft')
+                          $('#myModal #status').val('draft');
+                        else $('#myModal #status').val('passed');
+
+                        var statusField = document.getElementById("status_field");
+                        statusField.style.display = "block";
+                        var saveBtn = document.getElementById("editReminderBtn");
+                        saveBtn.style.display = "block";
+                        var addBtn = document.getElementById("addReminderBtn");
+                        addBtn.style.display = "none";
+
+                        // Show the modal
+                        $('#myModal').modal('show');
+                    },
+                    error: function(error) {
+                        // Handle the error response
+                        console.log(error);
+                    }
+                });
+
+                // Modal buttons click event
+                $('#myModal #editReminderBtn').click(function() {
+                    // Get the values from the modal
+                    var title = $('#myModal #title').val();
+                    var date = $('#myModal #date').val();
+                    var time = $('#myModal #time').val();
+                    var type = $('#myModal #reminderType').val();
+                    var reminder = $('#myModal #reminder').val();
+                    var status = $('#myModal #status').val();
+
+                    // Perform the save operation
+                    $.ajax({
+                      type: 'POST',
+                      url: $(this).attr('action'),
+                      data: {
+                          'action': 'edit_reminder', 
+                          'title': title,
+                          'date': date,
+                          'reminder': reminder,
+                          'reminder_type': type,
+                          'status': status,
+                          'ids': JSON.stringify(selectedIds),
+                          'csrfmiddlewaretoken': '{{ csrf_token }}'
+                      },
+                      success: function(response) {
+                          //  add new contents to the table from the json response
+
+                          var data = [];
+                          try{
+                            console.log(response)
+                            data = JSON.parse(response.data);
+
+                            constructRemindersTable(data)
+                            
+                            $('#myModal').modal('hide');
+                          }catch(exception){
+                            console.log(exception.message)
+                          }
+                          
+                      },
+                      error: function(xhr, status, error) {
+                          console.error('Error editing reminder:', error);
+                          $('#myModal').modal('hide');
+                          alert('Error editing reminder. Please try again.');
+                      }
+                    });
+
+                    // Hide the modal
+                    $('#myModal').modal('hide');
+                });
+
+                $('#myModal #cancelBtn').click(function() {
+                    // Hide the modal without performing any operation
+                    $('#myModal').modal('hide');
+                });
+              }
+
+            }
+            
+        });
+
+        // Function to get the IDs of the selected checkboxes
+        function getSelectedIds() {
+            var selectedIds = [];
+            $('input[type="checkbox"]:checked').each(function() {
+            selectedIds.push($(this).val());
+            });
+            return selectedIds;
+        }
+        });
+
+
+  </script>
+
+<style>
+    .badge-purple {
+    background-color: purple;
+    color: white;
+    }
+
+    .badge-warning {
+    background-color: orange;
+    color: white;
+    }
+
+    select.form-control:focus {
+      outline-color: green;
+      border-color: green;
+      box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+    .form-control.search-input:focus {
+    outline-color: green;
+    border-color: green;
+    box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+  }
+
+  .green-background {
+    background-color: rgba(0, 128, 0, 0.5); /* Adjust the alpha value as needed */
+    }
+
+    .my-row {
+        width: 100%; /* Set the width as a percentage of the parent container */
+    }
+
+    .custom {
+        padding-bottom: 1rem;
+    }
+
+    .pagination a.page-link {
+        color: green;
+    }
+
+    tfoot select.form-control {
+        color: black;
+        background-color: #f8f9fa;
+        border-color: gray;
+        border-radius: 1px;
+        height: auto;
+        padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333333"><path d="M7 10l5 5 5-5z" /></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.375rem center;
+        background-size: 12px 12px;
+        padding-right: 1rem;
+    }
+
+    tfoot select.form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+        border-color: green;
+    }
+
+    .form-control:focus {
+        border-color: green;
+        box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+    /* Position the alert at the top right corner */
+    .position-fixed {
+        position: fixed;
+        z-index: 100; /* Adjust the z-index value as needed */
+    }
+
+    .top-0 {
+        top: 0;
+    }
+
+    .end-0 {
+        right: 0;
+    }
+
+    .footer_position {
+      flex: 1;
+      min-height: 80.5vh;
+    }
+
+  </style>
+  
+
+</section>
+
+
+{% endblock %}
+{% block footer %}
+<div class='footer' data-testid='footer'>
+    <div class='sanbi-footer-logo-container'>
+        <img class='footer-logo' data-testid='sanbi-footer-logo'
+        src='/static/images/footer/sanbi-footer-logo.png'/>
+    </div>
+    <div class='footer-nav' data-testid='footer-navigation'>
+        <a href='/' target='_blank'>HOME</a>
+        <a href='/map' target='_blank'>MAP</a>
+        <a href='/' target='_blank'>DOCUMENTATION</a>
+        <a href='/contact' target='_blank'>CONTACT</a>
+  </div>
+  <div class='vendors-logos-container' data-testid='vendors-logos-container'>
+    <img class='ids-logo' src='/static/images/footer/ids-logo.png' data-testid='ids-logo'/>
+    <img class='kartoza-white-logo' src='/static/images/footer/kartoza-white-logo.png' data-testid='kartoza-logo'/>
+  </div>
+</div>
+{% endblock %}

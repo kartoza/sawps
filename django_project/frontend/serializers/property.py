@@ -29,12 +29,21 @@ class ProvinceSerializer(NameObjectBaseSerializer):
 
 class PropertySerializer(serializers.ModelSerializer):
     """Property Serializer."""
+    def __init__(self, *args, **kwargs):
+        remove_fields = kwargs.pop('remove_fields', None)
+        super(PropertySerializer, self).__init__(*args, **kwargs)
+
+        if remove_fields:
+            for field_name in remove_fields:
+                self.fields.pop(field_name)
+
     owner = serializers.SerializerMethodField()
     owner_email = serializers.SerializerMethodField()
     property_type = serializers.SerializerMethodField()
     province = serializers.SerializerMethodField()
     organisation = serializers.SerializerMethodField()
     size = serializers.SerializerMethodField()
+    area_available = serializers.SerializerMethodField()
 
     def get_owner(self, obj: Property):
         name = (
@@ -57,13 +66,18 @@ class PropertySerializer(serializers.ModelSerializer):
     def get_size(self, obj: Property):
         return obj.property_size_ha
 
+    def get_area_available(self, obj: Property):
+        return obj.area_available
+
+
     class Meta:
         model = Property
         fields = [
             'id', 'name', 'owner', 'owner_email',
             'property_type', 'property_type_id',
             'province', 'province_id',
-            'size', 'organisation', 'organisation_id'
+            'size', 'organisation', 'organisation_id',
+            'area_available'
         ]
 
 

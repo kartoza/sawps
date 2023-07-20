@@ -6,5 +6,5 @@ export default interface SpeciesLayer {
     infraspecific_epithet: string | null,
     taxon_rank: number,
     parent: string | null, 
-    isSelected:boolean,
+    is_selected:boolean,
 }

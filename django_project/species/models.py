@@ -33,11 +33,15 @@ class TaxonRank(models.Model):
 class Taxon(models.Model):
     """Taxon model."""
     scientific_name = models.CharField(max_length=250, unique=True)
-    common_name_varbatim = models.CharField(max_length=250, null=True, blank=True)
+    common_name_varbatim = models.CharField(
+        max_length=250, null=True, blank=True)
     colour_variant = models.BooleanField()
-    infraspecific_epithet = models.CharField(max_length=250, unique=True, null=True, blank=True)
-    taxon_rank = models.ForeignKey('species.TaxonRank', on_delete=models.CASCADE)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    infraspecific_epithet = models.CharField(
+        max_length=250, unique=True, null=True, blank=True)
+    taxon_rank = models.ForeignKey(
+        'species.TaxonRank', on_delete=models.CASCADE)
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True)
     show_on_front_page = models.BooleanField(
         default=False
     )
@@ -65,8 +69,10 @@ class Taxon(models.Model):
 
 class OwnedSpecies(models.Model):
     """Owned species mdoel."""
-    management_status = models.ForeignKey('species.ManagementStatus', on_delete=models.CASCADE)
-    nature_of_population = models.ForeignKey('population_data.NatureOfPopulation', on_delete=models.CASCADE)
+    management_status = models.ForeignKey(
+        'species.ManagementStatus', on_delete=models.CASCADE)
+    nature_of_population = models.ForeignKey(
+        'population_data.NatureOfPopulation', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     taxon = models.ForeignKey('species.Taxon', on_delete=models.CASCADE)
     property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
@@ -93,4 +99,3 @@ class TaxonSurveyMethod(models.Model):
         'occurrence.SurveyMethod',
         on_delete=models.CASCADE
     )
-

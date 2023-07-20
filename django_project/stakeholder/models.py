@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.conf import settings
+from django.utils import timezone
 
 
 from django.template.loader import render_to_string
@@ -56,9 +56,13 @@ class UserTitle(models.Model):
 class UserProfile(models.Model):
     """Extend User model with one-to-one mapping."""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name='user_profile')
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE,
+        unique=True,
+        related_name='user_profile'
+    )
     title_id = models.ForeignKey(
-        UserTitle, 
+        UserTitle,
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
@@ -71,15 +75,18 @@ class UserProfile(models.Model):
         blank=True
     )
     user_role_type_id = models.ForeignKey(
-        UserRoleType, 
+        UserRoleType,
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
         default=None
     )
     picture = models.ImageField(
-        upload_to='profile_pictures', null=True, blank=True
+        upload_to='profile_pictures',
+        null=True,
+        blank=True
     )
+    received_notif = models.BooleanField(default=False)
 
     def delete(self, *args, **kwargs):
         self.user.delete()
@@ -87,13 +94,13 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
     def picture_url(self):
         if self.picture.url:
             return '{media}/{url}'.format(
                     media=settings.MEDIA_ROOT,
                     url=self.picture,
-                )
+            )
 
     class Meta:
         verbose_name = 'User'
@@ -105,7 +112,10 @@ class UserLogin(models.Model):
     """User login model."""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    login_status = models.ForeignKey(LoginStatus, on_delete=models.DO_NOTHING)
+    login_status = models.ForeignKey(
+        LoginStatus,
+        on_delete=models.DO_NOTHING
+    )
     ip_address = models.CharField(max_length=20)
     date_time = models.DateTimeField(auto_now_add=True)
 
@@ -117,13 +127,14 @@ class UserLogin(models.Model):
         verbose_name_plural = 'User logins'
         db_table = "user_login"
 
-        
+
 class Organisation(models.Model):
     """Organisation model."""
 
     name = models.CharField(unique=True, max_length=250)
     data_use_permission = models.ForeignKey(
-        'regulatory_permit.dataUsePermission', on_delete=models.DO_NOTHING
+        'regulatory_permit.dataUsePermission',
+        on_delete=models.DO_NOTHING
     )
 
     class Meta:
@@ -199,9 +210,108 @@ def send_invitation(sender, instance, created, **kwargs):
         
 
 
+class OrganisationInvites(models.Model):
+    """OrganisationInvites model to store all invites"""
+    MEMBER = 'Member'
+    MANAGER = 'Manager'
+    ASSIGNED_CHOICES = [
+        (MEMBER, 'Member'),
+        (MANAGER, 'Manager'),
+    ]
+    email = models.CharField(max_length=200, null=True, blank=True)
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.DO_NOTHING,
+        null=True, blank=True
+    )
+    joined = models.BooleanField(
+        default=False,
+        null=True, blank=True
+    )
+    user_role = models.ForeignKey(
+        UserRoleType,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        default=None
+    )
+    assigned_as = models.CharField(
+        max_length=50,
+        choices=ASSIGNED_CHOICES,
+        default=MEMBER
+    )
+
+    class Meta:
+        verbose_name = 'OrganisationInvites'
+        verbose_name_plural = 'OrganisationInvites'
+        db_table = "OrganisationInvites"
+
+    def __str__(self):
+        return str(self.email)
+
+
+class Reminders(models.Model):
+    """Reminders model to store all reminders"""
+    ACTIVE = 'Active'
+    DRAFT = 'Draft'
+    PASSED = 'Passed'
+    ASSIGNED_CHOICES = [
+        (ACTIVE, 'Active'),
+        (DRAFT, 'Draft'),
+        (PASSED, 'Passed')
+    ]
+    PERSONAL = 'Personal'
+    EVERYONE = 'Everyone'
+    TYPES = [
+        (PERSONAL, 'Personal'),
+        (EVERYONE, 'Everyone')
+    ]
+    title = models.CharField(
+        max_length=200,
+        null=True, blank=True
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True
+    )
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True
+    )
+    date = models.DateTimeField(default=timezone.now)
+    type = models.CharField(
+        max_length=50,
+        choices=TYPES,
+        default=PERSONAL
+    )
+    reminder = models.TextField(null=True, blank=True)
+    status = models.CharField(
+        max_length=50,
+        choices=ASSIGNED_CHOICES,
+        default=ACTIVE
+    )
+    email_sent = models.BooleanField(default=False)
+    task_id = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Reminder'
+        verbose_name_plural = 'Reminders'
+        db_table = "Reminders"
+
+    def __str__(self):
+        return str(self.title)
+
+
 class OrganisationPersonnel(models.Model):
     """Organisation personnel abstract model."""
-    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:

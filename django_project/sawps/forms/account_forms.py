@@ -1,6 +1,5 @@
 from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
-from django.contrib.auth.models import Group
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -21,11 +20,11 @@ class CustomSignupForm(SignupForm):
     )
     organisation = forms.CharField(
         label='organisation',
-        max_length=150, 
+        max_length=150,
         widget=forms.HiddenInput(),
         required=False
     )
-   
+
     field_order = [
         'first_name',
         'last_name',
@@ -42,11 +41,12 @@ class CustomSignupForm(SignupForm):
         # add user to organisation
         if self.cleaned_data.get('organisation'):
             add_user_view = AddUserToOrganisation()
-            if add_user_view.is_user_already_joined(self.cleaned_data['email'],self.cleaned_data['organisation']):
-                print('adding user')
-                add_user_view.adduser(user,self.cleaned_data['organisation'])
+            if add_user_view.is_user_already_joined(
+                self.cleaned_data['email'], self.cleaned_data['organisation']):
+                add_user_view.adduser(
+                    user.email, self.cleaned_data['organisation'])
             else:
-                return redirect('/accounts/login') 
+                return redirect('/accounts/login')
 
 
         token = email_verification_token.make_token(user)
@@ -63,14 +63,14 @@ class CustomSignupForm(SignupForm):
         )
 
         send_mail(
-            subject, 
-            None, 
+            subject,
+            None,
             settings.SERVER_EMAIL,
             [user.email],
             html_message=message
-        
+
         )
-    
+
 
         return user
 
@@ -102,5 +102,3 @@ class CustomChangePasswordForm(ChangePasswordForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = ''
-    
-    

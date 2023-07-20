@@ -97,7 +97,7 @@ call_command('collectstatic', '--noinput', verbosity=0)
 #########################################################
 # 6. Check and resume ongoing vector tile generation
 #########################################################
-from frontend.tasks.generate_vector_tile import (
+from frontend.tasks.generate_vector_tile import (  # noqa
     resume_ongoing_vector_tile_task
 )
 print('-----------------------------------------------------')
