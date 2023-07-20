@@ -106,7 +106,10 @@ class UserLogin(models.Model):
     """User login model."""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    login_status = models.ForeignKey(LoginStatus, on_delete=models.DO_NOTHING)
+    login_status = models.ForeignKey(
+        LoginStatus,
+        on_delete=models.DO_NOTHING
+    )
     ip_address = models.CharField(max_length=20)
     date_time = models.DateTimeField(auto_now_add=True)
 
@@ -124,7 +127,8 @@ class Organisation(models.Model):
 
     name = models.CharField(unique=True, max_length=250)
     data_use_permission = models.ForeignKey(
-        'regulatory_permit.dataUsePermission', on_delete=models.DO_NOTHING
+        'regulatory_permit.dataUsePermission',
+        on_delete=models.DO_NOTHING
     )
 
     class Meta:
@@ -146,8 +150,14 @@ class OrganisationInvites(models.Model):
     ]
     email = models.CharField(max_length=200, null=True, blank=True)
     organisation = models.ForeignKey(
-        Organisation, on_delete=models.DO_NOTHING, null=True, blank=True)
-    joined = models.BooleanField(default=False, null=True, blank=True)
+        Organisation,
+        on_delete=models.DO_NOTHING,
+        null=True, blank=True
+    )
+    joined = models.BooleanField(
+        default=False,
+        null=True, blank=True
+    )
     user_role = models.ForeignKey(
         UserRoleType,
         on_delete=models.DO_NOTHING,
@@ -156,7 +166,9 @@ class OrganisationInvites(models.Model):
         default=None
     )
     assigned_as = models.CharField(
-        max_length=50, choices=ASSIGNED_CHOICES, default=MEMBER
+        max_length=50,
+        choices=ASSIGNED_CHOICES,
+        default=MEMBER
     )
 
     class Meta:
@@ -166,7 +178,7 @@ class OrganisationInvites(models.Model):
 
     def __str__(self):
         return str(self.email)
-    
+
 
 class Reminders(models.Model):
     """Reminders model to store all reminders"""
@@ -179,7 +191,7 @@ class Reminders(models.Model):
         (PASSED, 'Passed')
     ]
     PERSONAL = 'Personal'
-    EVERYONE = 'Everyone' 
+    EVERYONE = 'Everyone'
     TYPES = [
         (PERSONAL, 'Personal'),
         (EVERYONE, 'Everyone')
@@ -189,31 +201,31 @@ class Reminders(models.Model):
         null=True, blank=True
     )
     user = models.ForeignKey(
-        User, 
-        on_delete=models.DO_NOTHING, 
-        null=True, 
+        User,
+        on_delete=models.DO_NOTHING,
+        null=True,
         blank=True
     )
     organisation = models.ForeignKey(
-        Organisation, 
-        on_delete=models.DO_NOTHING, 
-        null=True, 
+        Organisation,
+        on_delete=models.DO_NOTHING,
+        null=True,
         blank=True
     )
     date = models.DateTimeField(default=timezone.now)
     type = models.CharField(
-        max_length=50, 
-        choices=TYPES, 
+        max_length=50,
+        choices=TYPES,
         default=PERSONAL
     )
-    reminder = models.TextField(null=True,blank=True)
+    reminder = models.TextField(null=True, blank=True)
     status = models.CharField(
-        max_length=50, 
-        choices=ASSIGNED_CHOICES, 
+        max_length=50,
+        choices=ASSIGNED_CHOICES,
         default=ACTIVE
     )
     email_sent = models.BooleanField(default=False)
-    task_id = models.CharField(max_length=255,null=True, blank=True)
+    task_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Reminder'
@@ -224,10 +236,12 @@ class Reminders(models.Model):
         return str(self.title)
 
 
-
 class OrganisationPersonnel(models.Model):
     """Organisation personnel abstract model."""
-    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
