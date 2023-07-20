@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  db:
+    ports:
+      - "${DATABASE_PORT:-6432}:5432"
+
+  dev:
+    container_name: sawps_dev
+    image: kartoza/sanbi:dev
+  
+  worker:
+    image: kartoza/sanbi:dev

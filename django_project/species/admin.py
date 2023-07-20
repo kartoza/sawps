@@ -11,4 +11,3 @@ admin.site.register(TaxonRank)
 admin.site.register(Taxon, TaxonAdmin)
 admin.site.register(ManagementStatus)
 admin.site.register(OwnedSpecies)
-

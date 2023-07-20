@@ -2,7 +2,12 @@ import logging
 from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
-from stakeholder.models import UserProfile, UserRoleType, UserTitle
+from stakeholder.models import (
+    UserProfile,
+    UserRoleType,
+    UserTitle,
+)
+from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +43,22 @@ class ProfileView(DetailView):
                 'profile-picture', None
             )
         if self.request.POST.get('title', ''):
-            profile.user.title_id=UserTitle.objects.get(id=self.request.POST.get('title', '')),
+            title = UserTitle.objects.get(
+                id=self.request.POST.get('title', ''))
+            profile.user_profile.title_id = title
+        if self.request.POST.get('role', ''):
+            role = UserRoleType.objects.get(
+                id=self.request.POST.get('role', '')
+            )
+            profile.user_profile.user_role_type_id = role
 
         profile.user_profile.save()
         profile.save()
+
+        messages.success(
+            request, 'Your changes have been saved.',
+            extra_tags='notification'
+        )
 
         return HttpResponseRedirect(request.path_info)
 

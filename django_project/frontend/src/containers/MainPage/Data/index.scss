@@ -1,0 +1,72 @@
+.bgGreen {
+    background-color: #86BC8B;
+    width: 100%;
+    display: flex;
+    padding: 6px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    min-width: 120px;
+
+    .selectBox {
+        margin-left: auto;
+        width: 300px;
+        background-color: #fff;
+        border-radius: 6px;
+        text-align: left;
+
+        .MuiInputBase-formControl {
+            height: 44px;
+        }
+
+        label.MuiFormLabel-root {
+            margin-bottom: 0;
+            top: -6px;
+        }
+
+        .MuiFormLabel-filled[data-shrink="false"] {
+            display: none;
+        }
+
+        fieldset {
+            border: none;
+        }
+
+        #demo-simple-select {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    }
+}
+
+.downlodBtn {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.dataTable {
+    width: 100%;
+
+    input[type=checkbox] {
+        width: 100%;
+        height: 100%;
+    }
+
+    .MuiDataGrid-columnHeaderTitleContainerContent *,
+    .MuiDataGrid-cellCheckbox * {
+        color: #000;
+    }
+
+    .MuiDataGrid-footerContainer {
+        display: none;
+    }
+}
+
+.MuiMenu-list {
+    .MuiCheckbox-root {
+        color: #000;
+    }
+}

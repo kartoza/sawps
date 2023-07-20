@@ -11,7 +11,7 @@ class TaxonListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        taxon = Taxon.objects.all()
+        taxon = Taxon.objects.filter(taxon_rank__name="Species")
         return Response(
             status=200,
             data=TaxonSerializer(taxon, many=True).data
