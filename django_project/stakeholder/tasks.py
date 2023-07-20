@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from django.contrib.sites.models import Site
 from django.conf import settings
 
+
 @shared_task
 def send_reminder_email(*args):
     reminder = None
@@ -38,7 +39,7 @@ def send_reminder_email(*args):
             'organisation': reminder_details.organisation
         },
     )
-    subject = "Reminder: " + reminder
+    subject = "Reminder: " + reminder_details.title
     send_mail(
         subject,
         None,
@@ -47,7 +48,7 @@ def send_reminder_email(*args):
         html_message=message
     )
 
-    
+
 
 
 @shared_task
@@ -67,7 +68,7 @@ def send_reminder_emails():
                 organisation=reminder.organisation
             )
             for org_user in org_users_list:
-                send_reminder_email.delay(reminder.id,org_user.user.email)
+                send_reminder_email.delay(reminder.id, org_user.user.email)
                 try:
                     user_profile = UserProfile.objects.get(user=org_user.user)
                     user_profile.received_notif = False
@@ -77,4 +78,3 @@ def send_reminder_emails():
         reminder.status = Reminders.PASSED
         reminder.email_sent = True
         reminder.save()
-        
