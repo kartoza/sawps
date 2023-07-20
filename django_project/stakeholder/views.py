@@ -104,7 +104,8 @@ def create_return_results(reminders):
                 'status': reminder.status,
                 'date': datetime.strptime(
                     str(
-                        reminder.date + timedelta(hours=2)),
+                        reminder.date
+                    ),
                     "%Y-%m-%d %H:%M:%S%z"
                 ).strftime("%Y-%m-%d %I:%M %p"),
                 'type': reminder.type,
@@ -165,8 +166,7 @@ def delete_reminder_and_notification(request):
         )
         return reminders
     except Exception as e:
-        print(str(e))
-        return []
+        return str(e)
 
 
 def get_reminder_or_notification(request):
@@ -183,8 +183,7 @@ def get_reminder_or_notification(request):
 
         return reminder
     except Exception as e:
-        print(str(e))
-        return []
+        return str(e)
 
 
 def paginate(*args):
@@ -284,11 +283,10 @@ class RemindersView(DetailView):
                     }
                 )
             except Exception as e:
-                print(str(e))
                 return JsonResponse(
                     {
                         'status': 'error',
-                        'message': 'Failed to add reminder'
+                        'message': str(e)
                     }
                 )
 
@@ -296,6 +294,14 @@ class RemindersView(DetailView):
     def search_reminders(self, request):
 
         reminders = search_reminders_or_notifications(request)
+
+        if isinstance(reminders, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': reminders
+                }
+            )
 
         search_results = create_return_results(reminders)
 
@@ -306,6 +312,14 @@ class RemindersView(DetailView):
 
         new_reminders = delete_reminder_and_notification(request)
 
+        if isinstance(new_reminders, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': new_reminders
+                }
+            )
+
         results = create_return_results(new_reminders)
 
         return JsonResponse({'data': results})
@@ -314,6 +328,14 @@ class RemindersView(DetailView):
     def get_reminder(self, request):
 
         reminder = get_reminder_or_notification(request)
+
+        if isinstance(reminder, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': reminder
+                }
+            )
 
         result = create_return_results(reminder)
 
@@ -381,8 +403,12 @@ class RemindersView(DetailView):
             serialized_reminders = json.dumps(list(results))
             return JsonResponse({'data': serialized_reminders})
         except Exception as e:
-            print(str(e))
-            return JsonResponse({'status': 'failed to retrieve reminder'})
+            return JsonResponse(
+                {
+                    'status': 'errors',
+                    'message': str(e)
+                }
+            )
 
 
     def dispatch(self, request, *args, **kwargs):
@@ -439,6 +465,14 @@ class NotificationsView(DetailView):
 
         notification = get_reminder_or_notification(request)
 
+        if isinstance(notification, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': notification
+                }
+            )
+
         result = create_return_results(notification)
 
         return JsonResponse({'data': result})
@@ -448,6 +482,14 @@ class NotificationsView(DetailView):
 
         notifications = search_reminders_or_notifications(request)
 
+        if isinstance(notifications, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': notifications
+                }
+            )
+
         search_results = create_return_results(notifications)
 
         return JsonResponse({'data': search_results})
@@ -456,6 +498,14 @@ class NotificationsView(DetailView):
     def delete_notification(self, request):
 
         new_notifications = delete_reminder_and_notification(request)
+
+        if isinstance(new_notifications, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': new_notifications
+                }
+            )
 
         results = create_return_results(new_notifications)
 
