@@ -34,3 +34,12 @@ class SamplingSizeUnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = SamplingSizeUnit
         fields = '__all__'
+
+
+class SamplingSizeUnitMetadataSerializer(serializers.ModelSerializer):
+    """SamplingSizeUnit Serializer with id and name."""
+    name = serializers.CharField(source='unit')
+
+    class Meta:
+        model = SamplingSizeUnit
+        fields = ['id', 'name']

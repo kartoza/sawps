@@ -13,7 +13,7 @@ from activity.models import ActivityType
 from activity.serializers import ActivityTypeSerializer
 from occurrence.models import SamplingSizeUnit, SurveyMethod
 from occurrence.serializers import (
-    SamplingSizeUnitSerializer,
+    SamplingSizeUnitMetadataSerializer,
     SurveyMethodSerializer
 )
 from population_data.models import (
@@ -69,7 +69,7 @@ class PopulationMetadataList(APIView):
                     SurveyMethodSerializer(survey_methods, many=True).data
                 ),
                 'sampling_size_units': (
-                    SamplingSizeUnitSerializer(
+                    SamplingSizeUnitMetadataSerializer(
                         sampling_size_units,
                         many=True
                     ).data
