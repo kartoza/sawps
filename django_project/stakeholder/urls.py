@@ -1,7 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.urls import re_path, reverse_lazy, path
 from django.views.generic import RedirectView
-from stakeholder.views import ProfileView
+from stakeholder.views import (
+    ProfileView, 
+    RemindersView,
+    NotificationsView
+)
 
 
 # views urls
@@ -19,4 +23,6 @@ urlpatterns = [  # '',
         ),
         name='profile-settings',
     ),
+    path('reminders/<str:slug>/', RemindersView.as_view(), name='reminders'),
+    path('notifications/<str:slug>/', NotificationsView.as_view(), name='notifications')
 ]
