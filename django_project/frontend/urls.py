@@ -55,6 +55,9 @@ from frontend.api_views.population import (
     FetchDraftPopulationUpload,
     DraftPopulationUpload
 )
+from frontend.api_views.data_table import DataTableAPIView
+
+
 
 urlpatterns = [
     re_path(
