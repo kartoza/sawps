@@ -78,7 +78,7 @@ const DataList = () => {
         { field: 'reintroduction_female_juveniles', headerName: '(Re)Introduction Female Juveniles', width: 150 },
         { field: 'founder_population', headerName: 'Founder Population', width: 150 },
         { field: 'reintroduction_source', headerName: '(Re)Introduction Source', width: 150 },
-        { field: 'intake_intake_permit', headerName: 'Intake Permit Number', width: 150 },
+        { field: 'intake_permit_number', headerName: 'Intake Permit Number', width: 150 },
         { field: 'offtake_total', headerName: 'Offtake Total', width: 150 },
         { field: 'offtake_adult_males', headerName: 'Offtake Adult Males', width: 150 },
         { field: 'offtake_adult_females', headerName: 'Offtake Adult Females', width: 150 },
@@ -87,7 +87,7 @@ const DataList = () => {
         { field: 'offtake_event', headerName: 'Offtake Event', width: 150 },
         { field: 'additional_detail', headerName: 'Additional Detail', width: 150 },
         { field: 'translocation_destination', headerName: 'Translocation Destination', width: 150 },
-        { field: 'offtake_intake_permit', headerName: 'Offtake Permit Number', width: 150 },
+        { field: 'offtake_permit_number', headerName: 'Offtake Permit Number', width: 150 },
         { field: 'notes', headerName: 'Notes', width: 150 },
     ];
 
@@ -130,7 +130,7 @@ const DataList = () => {
             reintroduction_female_juveniles: '',
             founder_population: annualpopulation_per_activity?.founder_population,
             reintroduction_source: annualpopulation_per_activity?.reintroduction_source,
-            intake_intake_permit: '',
+            intake_permit_number: '',
             offtake_total: '',
             offtake_adult_males: '',
             offtake_adult_females: '',
@@ -139,7 +139,7 @@ const DataList = () => {
             offtake_event: '',
             additional_detail: '',
             translocation_destination: '',
-            offtake_intake_permit: '',
+            offtake_permit_number: '',
             notes: '',
         };
     });

@@ -213,7 +213,7 @@ class UploadPopulationAPIVIew(APIView):
                 "founder_population", None),
             reintroduction_source=intake_population.get(
                 "reintroduction_source", None),
-            intake_permit=intake_population.get("intake_permit", None),
+            intake_permit=intake_population.get("permit_number", None),
         )
         # add annual population per activity - offtake
         AnnualPopulationPerActivity.objects.create(
@@ -226,7 +226,7 @@ class UploadPopulationAPIVIew(APIView):
             adult_female=offtake_population.get("adult_female", 0),
             juvenile_male=offtake_population.get("juvenile_male", 0),
             juvenile_female=offtake_population.get("juvenile_female", 0),
-            intake_permit=offtake_population.get("intake_permit", None),
+            intake_permit=offtake_population.get("permit_number", None),
         )
         # TODO: missing field translocation_destination
         # if draft exists, then delete it
