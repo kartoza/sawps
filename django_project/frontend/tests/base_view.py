@@ -7,6 +7,11 @@ from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory
 )
+from stakeholder.models import (
+    Reminders,
+    UserProfile
+)
+from django.contrib.messages import get_messages
 
 
 class RegisteredBaseViewTestBase(TestCase):
@@ -33,6 +38,18 @@ class RegisteredBaseViewTestBase(TestCase):
         organisationUserFactory.create(
             user=self.user_1,
             organisation=self.organisation_3
+        )
+        self.reminder = Reminders.objects.create(
+            user=self.user_1,
+            organisation=self.organisation_1,
+            status=Reminders.PASSED,
+            email_sent=True,
+            title='Test Reminder 1',
+            reminder='Test Reminder'
+        )
+        self.user_profile = UserProfile.objects.create(
+            user=self.user_1,
+            received_notif=False
         )
 
     def process_session(self, request):
@@ -86,3 +103,19 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertEqual(len(context['organisations']), 0)
         self.assertIn('current_organisation_id', context)
         self.assertEqual(context['current_organisation_id'], 0)
+
+    def test_send_user_notifications(self):
+        response = self.client.get(reverse('home'))
+
+        # Check if the user received a notification message
+        self.assertEqual(response.status_code, 200)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(len(messages) > 0)
+
+        # Check if the notification message is as expected
+        expected_notification = f'Test Reminder 1'
+        self.assertEqual(messages[0].message, expected_notification)
+
+        # Check if the user profile 'received_notif' flag is set to True
+        updated_user_profile = UserProfile.objects.get(user=self.user_1)
+        self.assertTrue(updated_user_profile.received_notif)
