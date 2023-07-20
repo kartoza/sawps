@@ -105,7 +105,7 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertEqual(context['current_organisation_id'], 0)
 
     def test_send_user_notifications(self):
-        response = self.client.get(reverse('home'))
+        response = self.client.get(reverse('Users'))
 
         # Check if the user received a notification message
         self.assertEqual(response.status_code, 200)
