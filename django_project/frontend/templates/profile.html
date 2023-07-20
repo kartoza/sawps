@@ -6,14 +6,6 @@
 
 {% block content %}
 <section>
-  {% for message in messages %}
-    {% if 'notification' in message.tags %}
-      <div class="alert alert-success position-fixed top-0 end-0" role="alert">
-        {{ message }}
-      </div>
-    {% endif %}
-  {% endfor %}
-
   <div class="container py-5">
   <div class="row">
     {% include "profile_config_base.html" %}
@@ -71,34 +63,6 @@
           </div>
         </div>
   </div>
-
-  <script>
-
-    $(document).ready(function() {
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 3000); // Adjust the duration (in milliseconds) as needed
-    });
-
-  
-  </script>
-
-  <style>
-    /* Position the alert at the top right corner */
-    .position-fixed {
-        position: fixed;
-        z-index: 100; /* Adjust the z-index value as needed */
-    }
-
-    .top-0 {
-        top: 0;
-    }
-
-    .end-0 {
-        right: 0;
-    }
-  </style>
-
 </section>
 
 {% endblock %}
