@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.utils import timezone
 
 
 class UserRoleType(models.Model):
@@ -75,8 +76,11 @@ class UserProfile(models.Model):
         default=None
     )
     picture = models.ImageField(
-        upload_to='profile_pictures', null=True, blank=True
+        upload_to='profile_pictures',
+        null=True,
+        blank=True
     )
+    received_notif = models.BooleanField(default=False)
 
     def delete(self, *args, **kwargs):
         self.user.delete()
@@ -162,6 +166,63 @@ class OrganisationInvites(models.Model):
 
     def __str__(self):
         return str(self.email)
+    
+
+class Reminders(models.Model):
+    """Reminders model to store all reminders"""
+    ACTIVE = 'Active'
+    DRAFT = 'Draft'
+    PASSED = 'Passed'
+    ASSIGNED_CHOICES = [
+        (ACTIVE, 'Active'),
+        (DRAFT, 'Draft'),
+        (PASSED, 'Passed')
+    ]
+    PERSONAL = 'Personal'
+    EVERYONE = 'Everyone' 
+    TYPES = [
+        (PERSONAL, 'Personal'),
+        (EVERYONE, 'Everyone')
+    ]
+    title = models.CharField(
+        max_length=200,
+        null=True, blank=True
+    )
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.DO_NOTHING, 
+        null=True, 
+        blank=True
+    )
+    organisation = models.ForeignKey(
+        Organisation, 
+        on_delete=models.DO_NOTHING, 
+        null=True, 
+        blank=True
+    )
+    date = models.DateTimeField(default=timezone.now)
+    type = models.CharField(
+        max_length=50, 
+        choices=TYPES, 
+        default=PERSONAL
+    )
+    reminder = models.TextField(null=True,blank=True)
+    status = models.CharField(
+        max_length=50, 
+        choices=ASSIGNED_CHOICES, 
+        default=ACTIVE
+    )
+    email_sent = models.BooleanField(default=False)
+    task_id = models.CharField(max_length=255,null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Reminder'
+        verbose_name_plural = 'Reminders'
+        db_table = "Reminders"
+
+    def __str__(self):
+        return str(self.title)
+
 
 
 class OrganisationPersonnel(models.Model):
