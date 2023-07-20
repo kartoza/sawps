@@ -13,7 +13,7 @@ from activity.models import ActivityType
 from activity.serializers import ActivityTypeSerializer
 from occurrence.models import SamplingSizeUnit, SurveyMethod
 from occurrence.serializers import (
-    SamplingSizeUnitSerializer,
+    SamplingSizeUnitMetadataSerializer,
     SurveyMethodSerializer
 )
 from population_data.models import (
@@ -42,7 +42,9 @@ class PopulationMetadataList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        taxons = Taxon.objects.all().order_by('scientific_name')
+        taxons = Taxon.objects.filter(
+            taxon_rank__name__iexact="species"
+        ).order_by('scientific_name')
         open_close_systems = OpenCloseSystem.objects.all().order_by('name')
         survey_methods = SurveyMethod.objects.all().order_by('name')
         sampling_size_units = SamplingSizeUnit.objects.all().order_by('unit')
@@ -67,7 +69,7 @@ class PopulationMetadataList(APIView):
                     SurveyMethodSerializer(survey_methods, many=True).data
                 ),
                 'sampling_size_units': (
-                    SamplingSizeUnitSerializer(
+                    SamplingSizeUnitMetadataSerializer(
                         sampling_size_units,
                         many=True
                     ).data
