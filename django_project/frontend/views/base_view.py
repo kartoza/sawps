@@ -5,7 +5,9 @@ from stakeholder.models import (
     Organisation,
     Reminders
 )
-from frontend.serializers.stakeholder import OrganisationSerializer
+from frontend.serializers.stakeholder import (
+    OrganisationSerializer
+)
 from frontend.utils.organisation import (
     CURRENT_ORGANISATION_ID_KEY,
     CURRENT_ORGANISATION_KEY
@@ -78,7 +80,6 @@ class RegisteredOrganisationBaseView(TemplateView):
             organisations = organisations.exclude(
                 id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         return OrganisationSerializer(organisations, many=True).data
-    
 
     def send_user_notifications(self):
         reminders = Reminders.objects.filter(
@@ -92,7 +93,8 @@ class RegisteredOrganisationBaseView(TemplateView):
             if not user_profile.received_notif:
                 for reminder in reminders:
                     messages.success(
-                        self.request, 'You have a notification: ' + reminder.title,
+                        self.request,
+                        'You have a notification: ' + reminder.title,
                         extra_tags='notification'
                     )
             user_profile.received_notif = True
@@ -100,8 +102,6 @@ class RegisteredOrganisationBaseView(TemplateView):
         except Exception:
             # incase the user doesnt have a profile
             return
-
-
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
