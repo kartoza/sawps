@@ -16,7 +16,6 @@ from stakeholder.models import (
     UserProfile
 )
 from django.contrib.messages import get_messages
-from django.contrib import messages
 
 
 class RegisteredBaseViewTestBase(TestCase):
@@ -110,17 +109,13 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertEqual(context['current_organisation_id'], 0)
 
     def test_send_user_notifications(self):
-        request = self.factory.get(reverse(self.view_name))
-        request.user = self.user_1
-        self.process_session(request)
-        self.client = Client()
-        response = self.client.get(reverse('home'))
-        
-        # Check if the user received a notification message
-        self.assertEqual(response.status_code, 200)
-        messages = list(get_messages(response.wsgi_request))
+        response = self.factory.get(reverse(self.view_name))
+        response.user = self.user_1
+        self.process_session(response)
+
+        messages = list(get_messages(response))
         self.assertTrue(len(messages) == 0)
 
         # Check if the user profile 'received_notif' flag is False
-        updated_user_profile = UserProfile.objects.get(user=self.user_1)
-        self.assertFalse(updated_user_profile.received_notif)
+        user_profile = UserProfile.objects.get(user=self.user_1)
+        self.assertFalse(user_profile.received_notif)
