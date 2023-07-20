@@ -36,4 +36,3 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute='*/5'),  # Run every 5 minute
     },
 }
-
