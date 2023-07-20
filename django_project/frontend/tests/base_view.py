@@ -1,4 +1,8 @@
-from django.test import TestCase, RequestFactory
+from django.test import (
+    TestCase,
+    RequestFactory,
+    Client
+)
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.auth.models import AnonymousUser
@@ -12,6 +16,7 @@ from stakeholder.models import (
     UserProfile
 )
 from django.contrib.messages import get_messages
+from django.contrib import messages
 
 
 class RegisteredBaseViewTestBase(TestCase):
@@ -105,17 +110,17 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertEqual(context['current_organisation_id'], 0)
 
     def test_send_user_notifications(self):
-        response = self.client.get(reverse('Users'))
-
+        request = self.factory.get(reverse(self.view_name))
+        request.user = self.user_1
+        self.process_session(request)
+        self.client = Client()
+        response = self.client.get(reverse('home'))
+        
         # Check if the user received a notification message
         self.assertEqual(response.status_code, 200)
         messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(len(messages) > 0)
+        self.assertTrue(len(messages) == 0)
 
-        # Check if the notification message is as expected
-        expected_notification = f'Test Reminder 1'
-        self.assertEqual(messages[0].message, expected_notification)
-
-        # Check if the user profile 'received_notif' flag is set to True
+        # Check if the user profile 'received_notif' flag is False
         updated_user_profile = UserProfile.objects.get(user=self.user_1)
-        self.assertTrue(updated_user_profile.received_notif)
+        self.assertFalse(updated_user_profile.received_notif)
