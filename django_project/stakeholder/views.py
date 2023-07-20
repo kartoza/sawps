@@ -25,7 +25,6 @@ from django.core.paginator import (
 import json
 from django.db.models import Q
 from core.celery import app
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -231,7 +230,11 @@ class RemindersView(DetailView):
         rows_per_page = self.request.GET.get('reminders_per_page', 5)
 
         # paginate results
-        paginated_rows = paginate(new_reminders, rows_per_page, reminders_page)
+        paginated_rows = paginate(
+            new_reminders,
+            rows_per_page,
+            reminders_page
+        )
 
         return paginated_rows
 
@@ -354,11 +357,12 @@ class RemindersView(DetailView):
 
 
         try:
+            org = self.request.session[CURRENT_ORGANISATION_ID_KEY],
             for element in data:
                 if isinstance(element, str) and element.isdigit():
                     reminder = Reminders.objects.get(
                         user=request.user,
-                        organisation=self.request.session[CURRENT_ORGANISATION_ID_KEY],
+                        organisation=org,
                         id=int(element)
                     )
                     if cancel_task:
