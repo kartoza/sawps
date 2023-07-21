@@ -50,3 +50,4 @@ class RemindersAdmin(admin.ModelAdmin):
         "email_sent",
         "organisation"
     )
+
