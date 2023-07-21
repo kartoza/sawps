@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import os
 from celery import Celery
+from celery.schedules import crontab
 
 # set the default Django settings module for the 'celery' program.
 # this is also used in manage.py
@@ -26,5 +27,12 @@ app.autodiscover_tasks()
 
 app.conf.broker_url = BASE_REDIS_URL
 
-# this allows you to schedule items in the Django admin.
+# for scheduling task.
 app.conf.beat_scheduler = 'django_celery_beat.schedulers.DatabaseScheduler'
+
+app.conf.beat_schedule = {
+    'send-reminder-emails': {
+        'task': 'stakeholder.tasks.send_reminder_emails',
+        'schedule': crontab(minute='*/5'),  # Run every 5 minute
+    },
+}
