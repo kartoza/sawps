@@ -18,6 +18,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Include the CSS file for Select2 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    
 
     {% block extra_head %}
     {% endblock %}
@@ -28,11 +29,47 @@
   window.isLoggedIn = {% if user.is_authenticated %}true{% else %}false{% endif %};
 </script>
 <body>
-{% block header %}
-    <!-- Navigation bar -->
+  {% block header %}
     {% include 'navibar.html' %}
-{% endblock %}
+    {% for message in messages %}
+    {% if 'notification' in message.tags %}
+      <div class="alert alert-success position-fixed top-0 end-0 padding" role="alert">
+        {{ message }}
+      </div>
+    {% endif %}
+  {% endfor %}
+  {% endblock %}
 
+  <style>
+    /* Position the alert at the top right corner */
+    .position-fixed {
+        position: fixed;
+        z-index: 100; /* Adjust the z-index value as needed */
+    }
+
+    .padding {
+      margin-top: 6%;
+      margin-right: 1%;
+    }
+  
+    .top-0 {
+        top: 0;
+    }
+  
+    .end-0 {
+        right: 0;
+    }
+  </style>
+    <script>
+
+      $(document).ready(function() {
+          setTimeout(function() {
+              $('.alert').fadeOut('slow');
+          }, 3000); // Adjust the duration (in milliseconds) as needed
+      });
+  
+    
+    </script>
 {% block content %}
 {% endblock %}
 {% block footer %}
