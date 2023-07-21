@@ -26,7 +26,7 @@ from django.core.paginator import (
 import json
 from django.db.models import Q
 from core.celery import app
-
+from frontend.views.base_view import RegisteredOrganisationBaseView
 logger = logging.getLogger(__name__)
 
 
@@ -241,7 +241,7 @@ def convert_date_to_local_time(date):
     return formatted_datetime
 
 
-class RemindersView(DetailView):
+class RemindersView(RegisteredOrganisationBaseView):
     template_name = 'reminders.html'
     model = get_user_model()
     slug_field = 'username'
@@ -450,7 +450,7 @@ class RemindersView(DetailView):
         return context
 
 
-class NotificationsView(DetailView):
+class NotificationsView(RegisteredOrganisationBaseView):
     template_name = 'notifications.html'
     model = get_user_model()
     slug_field = 'username'
