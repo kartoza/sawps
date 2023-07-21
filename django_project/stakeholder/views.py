@@ -448,3 +448,98 @@ class RemindersView(DetailView):
         context['reminders'] = self.get_reminders(self.request)
 
         return context
+
+
+class NotificationsView(DetailView):
+    template_name = 'notifications.html'
+    model = get_user_model()
+    slug_field = 'username'
+
+    def get_notifications(self, request):
+        notifications = Reminders.objects.filter(
+            user=request.user,
+            organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY],
+            status=Reminders.PASSED,
+            email_sent=True
+        )
+        new_notifications = create_return_results(notifications)
+
+        notifications_page = self.request.GET.get('notification_page', 1)
+
+        # Get the rows per page value from the query parameters
+        rows_per_page = self.request.GET.get('notifications_per_page', 5)
+
+        # paginate results
+        paginated_rows = paginate(
+            new_notifications, rows_per_page, notifications_page)
+
+        return paginated_rows
+
+
+    def get_notification(self, request):
+
+        notification = get_reminder_or_notification(request)
+
+        if isinstance(notification, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': notification
+                }
+            )
+
+        result = create_return_results(notification)
+
+        return JsonResponse({'data': result})
+
+
+    def search_notifications(self, request):
+
+        notifications = search_reminders_or_notifications(request)
+
+        if isinstance(notifications, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': notifications
+                }
+            )
+
+        search_results = create_return_results(notifications)
+
+        return JsonResponse({'data': search_results})
+
+
+    def delete_notification(self, request):
+
+        new_notifications = delete_reminder_and_notification(request)
+
+        if isinstance(new_notifications, str):
+            return JsonResponse(
+                {
+                    'status': 'error',
+                    'message': new_notifications
+                }
+            )
+
+        results = create_return_results(new_notifications)
+
+        return JsonResponse({'data': results})
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.POST.get('action') == 'get_notification':
+            return self.get_notification(request)
+        elif request.POST.get('action') == 'search_notifications':
+            return self.search_notifications(request)
+        elif request.POST.get('action') == 'delete_notification':
+            return self.delete_notification(request)
+        else:
+            return super().dispatch(request, *args, **kwargs)
+
+
+    def get_context_data(self, **kwargs):
+        context = super(NotificationsView, self).get_context_data(**kwargs)
+        context['notifications'] = self.get_notifications(self.request)
+
+        return context
