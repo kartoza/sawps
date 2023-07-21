@@ -239,6 +239,8 @@ class RemindersView(DetailView):
 
 
     # add the reminder aswell as schedule the task
+
+
     def add_reminder(self, request):
         if request.method == 'POST':
             title = request.POST.get('title')
@@ -347,7 +349,7 @@ class RemindersView(DetailView):
         datetime_obj = timezone.make_aware(
             datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M'))
 
-        return datetime_obj # - timedelta(hours=2)
+        return datetime_obj
 
 
     def edit_reminder(self, request):
@@ -431,4 +433,3 @@ class RemindersView(DetailView):
         context['reminders'] = self.get_reminders(self.request)
 
         return context
-
