@@ -34,7 +34,6 @@ const SpeciesLineChart = () => {
     const [loading, setLoading] = useState(false)
     const [selectedPropertyId, setSelectedPropertyId] = useState<number>(1)
     const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
-    const [selectedProperty, setSelectedProperty] = useState<PropertyInterface>(propertyList?.[0])
     const [speciesData, setSpeciesData] = useState<Species[]>([])
     const speciesPopulation = {
         labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
@@ -124,9 +123,9 @@ const SpeciesLineChart = () => {
 
     useEffect(() => {
         fetchPropertyPopulation()
-        const selectedObject = propertyList.find(item => item.id === selectedPropertyId);
-        setSelectedProperty(selectedObject);
     }, [selectedPropertyId, propertyList, selectedMonths, startYear, endYear, selectedSpecies])
+
+    const selectedProperty = propertyList.find((item) => item.id === selectedPropertyId) || propertyList[0];
 
     return (
         <Box>
