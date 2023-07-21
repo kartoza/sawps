@@ -1,7 +1,6 @@
 from django.test import (
     TestCase,
-    RequestFactory,
-    Client
+    RequestFactory
 )
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware

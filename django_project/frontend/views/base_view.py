@@ -32,7 +32,7 @@ class RegisteredOrganisationBaseView(TemplateView):
                 CURRENT_ORGANISATION_ID_KEY] = 0
             self.request.session[
                 CURRENT_ORGANISATION_KEY] = ''
-    
+
 
 
     def get_or_set_current_organisation(self):
@@ -95,7 +95,7 @@ class RegisteredOrganisationBaseView(TemplateView):
                 for reminder in reminders:
                     messages.success(
                         self.request,
-                        'You have a notification: ' + reminder.title,
+                        reminder.title,
                         extra_tags='notification'
                     )
             user_profile.received_notif = True

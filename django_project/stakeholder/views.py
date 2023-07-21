@@ -2,6 +2,7 @@ import logging
 from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
+import pytz
 from stakeholder.models import (
     Organisation,
     UserProfile,
@@ -12,7 +13,7 @@ from stakeholder.models import (
 from django.contrib import messages
 from stakeholder.tasks import send_reminder_email
 from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime
 from frontend.utils.organisation import (
     CURRENT_ORGANISATION_ID_KEY,
 )
@@ -25,7 +26,7 @@ from django.core.paginator import (
 import json
 from django.db.models import Q
 from core.celery import app
-
+from frontend.views.base_view import RegisteredOrganisationBaseView
 logger = logging.getLogger(__name__)
 
 
@@ -94,6 +95,7 @@ def create_return_results(reminders):
     on both notifications and reminders"""
     search_results = []
     for reminder in reminders:
+        local_date = convert_date_to_local_time(reminder.date)
         search_results.append(
             {
                 'id': reminder.id,
@@ -102,12 +104,7 @@ def create_return_results(reminders):
                 'user': str(reminder.user),
                 'organisation': str(reminder.organisation),
                 'status': reminder.status,
-                'date': datetime.strptime(
-                    str(
-                        reminder.date
-                    ),
-                    "%Y-%m-%d %H:%M:%S%z"
-                ).strftime("%Y-%m-%d %I:%M %p"),
+                'date': local_date,
                 'type': reminder.type,
                 'email_sent': reminder.email_sent
             }
@@ -180,6 +177,7 @@ def get_reminder_or_notification(request):
                     organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
                     id=int(element)
                 )
+                reminder[0].date = convert_date_to_local_time(reminder[0].date)
 
         return reminder
     except Exception as e:
@@ -212,7 +210,38 @@ def get_organisation_reminders(request):
     return reminders
 
 
-class RemindersView(DetailView):
+def adjust_date_to_server_time(request):
+
+    datetime_str = request.POST.get('date')
+
+    # Parse the date string into a datetime object
+    datetime_format = '%Y-%m-%dT%H:%M'
+    parsed_datetime = datetime.strptime(datetime_str, datetime_format)
+
+    # Convert parsed datetime to local timezone (Africa/Johannesburg)
+    local_timezone = pytz.timezone('Africa/Johannesburg')
+    local_datetime = local_timezone.localize(parsed_datetime)
+
+    # Convert local datetime object to the server's timezone (UTC)
+    server_timezone = timezone.get_current_timezone()
+    server_datetime = local_datetime.astimezone(server_timezone)
+
+    return server_datetime
+
+
+def convert_date_to_local_time(date):
+    # Convert the server time to the local timezone
+    local_timezone = pytz.timezone('Africa/Johannesburg')
+    local_datetime = date.astimezone(local_timezone)
+
+    # Convert the local datetime tothe desired format
+    datetime_format = "%Y-%m-%d %I:%M %p"
+    formatted_datetime = local_datetime.strftime(datetime_format)
+
+    return formatted_datetime
+
+
+class RemindersView(RegisteredOrganisationBaseView):
     template_name = 'reminders.html'
     model = get_user_model()
     slug_field = 'username'
@@ -238,14 +267,11 @@ class RemindersView(DetailView):
         return paginated_rows
 
 
-    # add the reminder aswell as schedule the task
-
-
-    def add_reminder(self, request):
+    def add_reminder_and_schedule_task(self, request):
         if request.method == 'POST':
             title = request.POST.get('title')
             reminder_note = request.POST.get('reminder')
-            adjusted_datetime = self.adjust_timezone(request)
+            adjusted_datetime = adjust_date_to_server_time(request)
 
             if request.POST.get('reminder_type') == 'personal':
                 reminder_type = Reminders.PERSONAL
@@ -341,22 +367,11 @@ class RemindersView(DetailView):
 
         return JsonResponse({'data': result})
 
-
-    def adjust_timezone(self, request):
-
-        datetime_str = request.POST.get('date')
-
-        datetime_obj = timezone.make_aware(
-            datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M'))
-
-        return datetime_obj - timedelta(hours=2)
-
-
     def edit_reminder(self, request):
         data = json.loads(request.POST.get('ids'))
         title = request.POST.get('title')
         status = request.POST.get('status')
-        adjusted_datetime = self.adjust_timezone(request)
+        adjusted_datetime = adjust_date_to_server_time(request)
         type = request.POST.get('reminder_type')
         reminder_val = request.POST.get('reminder')
         email_sent = False
@@ -415,7 +430,7 @@ class RemindersView(DetailView):
         if request.POST.get('action') == 'get_reminders':
             return self.get_reminders(request)
         elif request.POST.get('action') == 'add_reminder':
-            return self.add_reminder(request)
+            return self.add_reminder_and_schedule_task(request)
         elif request.POST.get('action') == 'search_reminders':
             return self.search_reminders(request)
         elif request.POST.get('action') == 'delete_reminder':
@@ -435,7 +450,7 @@ class RemindersView(DetailView):
         return context
 
 
-class NotificationsView(DetailView):
+class NotificationsView(RegisteredOrganisationBaseView):
     template_name = 'notifications.html'
     model = get_user_model()
     slug_field = 'username'

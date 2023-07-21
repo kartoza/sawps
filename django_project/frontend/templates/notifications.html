@@ -23,38 +23,40 @@
 
       
       
-      <div class="my-row green-background row" style="height: 50px; border-radius: 5px;">
-        <div class="col-md-5" style="padding-top: 6px; padding-left: 1%;" >
-          <div class="form-group" style="width: 60%;">
-            <select class="form-control" id="selectAction" >
-              <option value="">Select Action</option>
-              <option value="delete">Delete</option>
-              <option value="view">View</option>
-              <!-- Add more options as needed -->
-            </select>
+        <div class="my-row green-background row" style="height: 50px; border-radius: 5px; margin-left:0.1%;">
+          <div class="col-md-6" style="padding-top: 6px; padding-left: 1%;" >
+            <div class="form-group" style="width: 60%;">
+              <select class="form-control" id="selectAction" >
+                <option value="">Select Action</option>
+                <option value="delete">Delete</option>
+                <option value="view">View</option>
+                <!-- Add more options as needed -->
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="col-md-4" style="padding-top: 6px;">
-          <div class="form-inline">
-            <div class="input-group" style="margin-left: 29%;">
-              <input type="text" class="form-control search-input" id="searchInput" placeholder="Search">
-              <div class="input-group-append">
-                <span class="input-group-text search-icon"><i class="fas fa-search"></i></span>
+          <div class="col-md-3" style="padding-top: 6px;">
+            <div class="input-groups" style="display:flex; border-radius:5px; border:1px white solid">
+             
+                <input style="border-radius:0px 0px; border:none;" type="search" id="searchInput" class="form-control" />
+               
+               
+              <div style="background-color:white; border:none; border-radius:0px 0px" class="btn btn-primary">
+                <i class="fas fa-search"></i>
               </div>
             </div>
+            
+        
         </div>
-      
-      </div>
-      <div class="col-md-3" style="padding-top: 6px; padding-left: 1px; padding-right: 1%;">
-        <div class="form-group">
-          <select id="filterSelect" class="form-control">
-            <option value="">Filter</option>
-            <option value="title">Title</option>
-            <option value="reminder">Notification</option>
-          </select>          
+        <div class="col-md-3" style="padding-top: 6px; padding-left: 1px; padding-right: 1%;">
+          <div class="form-group">
+            <select id="filterSelect" class="form-control">
+              <option value="">Filter</option>
+              <option value="title">Title</option>
+              <option value="reminder">Notification</option>
+            </select>          
+          </div>
         </div>
-      </div>
-      </div>
+        </div>
 
       
       

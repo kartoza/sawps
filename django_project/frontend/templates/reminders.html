@@ -73,8 +73,8 @@
 
       
       
-      <div class="my-row green-background row" style="height: 50px; border-radius: 5px;">
-        <div class="col-md-5" style="padding-top: 6px; padding-left: 1%;" >
+      <div class="my-row green-background row" style="height: 50px; border-radius: 5px; margin-left:0.1%;">
+        <div class="col-md-6" style="padding-top: 6px; padding-left: 1%;" >
           <div class="form-group" style="width: 60%;">
             <select class="form-control" id="selectAction" >
               <option value="">Select Action</option>
@@ -84,15 +84,17 @@
             </select>
           </div>
         </div>
-        <div class="col-md-4" style="padding-top: 6px;">
-          <div class="form-inline">
-            <div class="input-group" style="margin-left: 29%;">
-              <input type="text" class="form-control search-input" id="searchInput" placeholder="Search">
-              <div class="input-group-append">
-                <span class="input-group-text search-icon"><i class="fas fa-search"></i></span>
-              </div>
+        <div class="col-md-3" style="padding-top: 6px;">
+          <div class="input-groups" style="display:flex; border-radius:5px; border:1px white solid">
+           
+              <input style="border-radius:0px 0px; border:none;" type="search" id="searchInput" class="form-control" />
+             
+             
+            <div style="background-color:white; border:none; border-radius:0px 0px" class="btn btn-primary">
+              <i class="fas fa-search"></i>
             </div>
-        </div>
+          </div>
+          
       
       </div>
       <div class="col-md-3" style="padding-top: 6px; padding-left: 1px; padding-right: 1%;">
@@ -111,7 +113,7 @@
 
 
       <!-- reminders table -->
-      <div class="my-row" style="margin-top: 1%; margin-left: -1%;">
+      <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
       <table id="reminders" class="table table-bordereless" cellspacing="0" width="100%">
         <thead>
           <tr>
@@ -410,14 +412,13 @@
                     },
                     success: function(response) {
                         // Handle the success response
-                        console.log(response);
+                        // console.log(response);
                         reminder = response.data[0]
+                        const localDatetimeStr = convertToLocalDateTime(reminder.date);
 
                         // Populate the modal with the retrieved data
                         $('#myModal #title').val(reminder.title);
-                        const date = new Date(reminder.date);
-                        const formattedDate = date.toISOString().slice(0, 16);
-                        $('#myModal #date').val(formattedDate);
+                        $('#myModal #date').val(localDatetimeStr);
                         if (reminder.type == 'Everyone')
                           $('#myModal #reminderType').val('all');
                         else $('#myModal #reminderType').val('personal');
@@ -504,6 +505,21 @@
             }
             
         });
+
+        function convertToLocalDateTime(datetimeStr) {
+        // Create a new Date object from the datetime string
+        const datetime = new Date(datetimeStr);
+
+        // Get the individual date and time components
+        const year = datetime.getFullYear();
+        const month = String(datetime.getMonth() + 1).padStart(2, '0');
+        const day = String(datetime.getDate()).padStart(2, '0');
+        const hours = String(datetime.getHours()).padStart(2, '0');
+        const minutes = String(datetime.getMinutes()).padStart(2, '0');
+
+        // Combine the components into the desired format
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
 
         // Function to get the IDs of the selected checkboxes
         function getSelectedIds() {

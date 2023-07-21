@@ -11,6 +11,7 @@ from stakeholder.models import (
     Reminders
 )
 
+
 admin.site.register(UserRoleType)
 admin.site.register(UserTitle)
 admin.site.register(LoginStatus)
@@ -21,6 +22,7 @@ admin.site.register(Organisation)
 @admin.register(OrganisationUser)
 class OrganisationUserAdmin(admin.ModelAdmin):
     list_display = ("user", "organisation")
+
 
 @admin.register(OrganisationRepresentative)
 class OrganisationRepresentativeAdmin(admin.ModelAdmin):
