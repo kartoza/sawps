@@ -27,6 +27,7 @@ import {
     setMapSelectionMode
 } from '../../reducers/MapState';
 import DataList from './Data';
+import Metrics from './Metrics';
 
 
 enum RightSideBarMode {
@@ -115,6 +116,7 @@ function MainPage() {
                   <DataList/>
                 </TabPanel>
                 <TabPanel key={2} value={selectedTab} index={2} noPadding>
+                  <Metrics/>
                 </TabPanel>
               </Grid>
             </Grid>
