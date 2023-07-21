@@ -25,7 +25,6 @@ from django.core.paginator import (
 import json
 from django.db.models import Q
 from core.celery import app
-import pytz
 
 logger = logging.getLogger(__name__)
 
