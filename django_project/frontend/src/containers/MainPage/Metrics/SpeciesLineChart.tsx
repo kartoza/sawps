@@ -16,15 +16,19 @@ const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const FETCH_PROPERTY_POPULATION_SPECIES = '/species-population-count/'
 
 interface PopulationCount {
-    month: number;
+    month__name: string;
     month_total: number;
 }
 
 interface Species {
-    specie_name: string;
-    specie_colour: string;
+    species_name: string;
+    species_colour: string;
     annualpopulation_count: PopulationCount[];
 }
+
+interface MonthToIndex {
+    [key: string]: number;
+  }
 
 const SpeciesLineChart = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -35,13 +39,31 @@ const SpeciesLineChart = () => {
     const [selectedPropertyId, setSelectedPropertyId] = useState<number>(1)
     const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [speciesData, setSpeciesData] = useState<Species[]>([])
+    const monthToIndex: MonthToIndex = {
+        "January": 0,
+        "February": 1,
+        "March": 2,
+        "April": 3,
+        "May": 4,
+        "June": 5,
+        "July": 6,
+        "August": 7,
+        "September": 8,
+        "October": 9,
+        "November": 10,
+        "December": 11
+    };
+
     const speciesPopulation = {
-        labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
+        labels: Array.from({ length: 12 }, (_, i) => i.toString()),
         datasets: speciesData.map((species) => ({
-            label: species.specie_name,
-            data: species.annualpopulation_count.map((count: PopulationCount) => count.month_total),
+            label: species.species_name,
+            data: Array.from({ length: 12 }, (_, i) => {
+                const month = species.annualpopulation_count.find((count) => monthToIndex[count.month__name] === i);
+                return month ? month.month_total : 0;
+            }),
             fill: false,
-            borderColor: species.specie_colour,
+            borderColor: species.species_colour,
             borderWidth: 1,
         })),
     };
