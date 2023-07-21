@@ -30,7 +30,10 @@ from urllib.parse import quote
 
 
 class OrganisationUsersView(
-    LoginRequiredMixin, RegisteredOrganisationBaseView, TemplateView):
+    LoginRequiredMixin,
+    RegisteredOrganisationBaseView,
+    TemplateView
+):
     """
     OrganisationUsersView displays the organisations
     users page by rendering the 'users.html' template.
@@ -61,7 +64,9 @@ class OrganisationUsersView(
 
     def get_user_role(self, role):
         try:
-            role = UserRoleType.objects.filter(name__icontains=role).first()
+            role = UserRoleType.objects.filter(
+                name__icontains=role
+            ).first()
             return role
         except UserRoleType.DoesNotExist:
             return None
@@ -138,7 +143,7 @@ class OrganisationUsersView(
             except OrganisationUser.DoesNotExist:
                 continue
             if org_user:
-                if not org_user.user == self.request.user:
+                if not org_user.user == self.request.user and invite:
                     data.append({
                         'organisation': str(org_user.organisation),
                         'user': str(org_user.user),
@@ -147,7 +152,11 @@ class OrganisationUsersView(
                         'joined': invite.joined
                     })
 
-        return JsonResponse({'data': json.dumps(data, cls=DjangoJSONEncoder)})
+        return JsonResponse(
+            {
+                'data': json.dumps(data, cls=DjangoJSONEncoder)
+            }
+        )
 
     def post(self, request):
         # Default post method logic
