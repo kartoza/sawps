@@ -25,6 +25,7 @@ from django.core.paginator import (
 import json
 from django.db.models import Q
 from core.celery import app
+import pytz
 
 logger = logging.getLogger(__name__)
 
@@ -238,10 +239,7 @@ class RemindersView(DetailView):
         return paginated_rows
 
 
-    # add the reminder aswell as schedule the task
-
-
-    def add_reminder(self, request):
+    def add_reminder_and_schedule_task(self, request):
         if request.method == 'POST':
             title = request.POST.get('title')
             reminder_note = request.POST.get('reminder')
@@ -351,7 +349,6 @@ class RemindersView(DetailView):
 
         return datetime_obj
 
-
     def edit_reminder(self, request):
         data = json.loads(request.POST.get('ids'))
         title = request.POST.get('title')
@@ -415,7 +412,7 @@ class RemindersView(DetailView):
         if request.POST.get('action') == 'get_reminders':
             return self.get_reminders(request)
         elif request.POST.get('action') == 'add_reminder':
-            return self.add_reminder(request)
+            return self.add_reminder_and_schedule_task(request)
         elif request.POST.get('action') == 'search_reminders':
             return self.search_reminders(request)
         elif request.POST.get('action') == 'delete_reminder':
