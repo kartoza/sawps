@@ -27,6 +27,7 @@ import json
 from django.db.models import Q
 from core.celery import app
 from frontend.views.base_view import RegisteredOrganisationBaseView
+from frontend.serializers.stakeholder import ReminderSerializer
 logger = logging.getLogger(__name__)
 
 
@@ -89,27 +90,13 @@ class ProfileView(DetailView):
         return context
 
 
-def create_return_results(reminders):
-    """this methods constructs the object to return
-    to the front end for search tables and crud operations
-    on both notifications and reminders"""
-    search_results = []
+def convert_reminder_dates(reminders):
+    results = []
     for reminder in reminders:
-        local_date = convert_date_to_local_time(reminder.date)
-        search_results.append(
-            {
-                'id': reminder.id,
-                'title': reminder.title,
-                'reminder': reminder.reminder,
-                'user': str(reminder.user),
-                'organisation': str(reminder.organisation),
-                'status': reminder.status,
-                'date': local_date,
-                'type': reminder.type,
-                'email_sent': reminder.email_sent
-            }
-        )
-    return search_results
+        reminder.date = convert_date_to_local_time(reminder.date)
+        results.append(reminder)
+
+    return results
 
 
 def search_reminders_or_notifications(request):
@@ -148,19 +135,33 @@ def search_reminders_or_notifications(request):
 
 def delete_reminder_and_notification(request):
     data = json.loads(request.POST.get('ids'))
+    notifications_page = request.POST.get('notifications_page')
+    organisation = request.session[CURRENT_ORGANISATION_ID_KEY]
     try:
         for element in data:
             if isinstance(element, str) and element.isdigit():
-                Reminders.objects.filter(
+                reminder = Reminders.objects.get(
                     user=request.user,
-                    organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
+                    organisation=organisation,
                     id=int(element)
-                ).delete()
+                )
+                if reminder.user == request.user:
+                    Reminders.objects.filter(
+                        user=request.user,
+                        organisation=organisation,
+                        id=int(element)
+                    ).delete()
 
         reminders = Reminders.objects.filter(
             user=request.user,
-            organisation=request.session[CURRENT_ORGANISATION_ID_KEY]
+            organisation=organisation
         )
+        if notifications_page is not None:
+            notifications = []
+            for reminder in reminders:
+                if reminder.status == Reminders.PASSED and reminder.email_sent:
+                    notifications.append(reminder)
+            return notifications
         return reminders
     except Exception as e:
         return str(e)
@@ -250,7 +251,9 @@ class RemindersView(RegisteredOrganisationBaseView):
 
         reminders = get_organisation_reminders(request)
 
-        new_reminders = create_return_results(reminders)
+        reminders = convert_reminder_dates(reminders)
+
+        new_reminders = ReminderSerializer(reminders, many=True)
 
         reminders_page = self.request.GET.get('reminders_page', 1)
 
@@ -259,7 +262,7 @@ class RemindersView(RegisteredOrganisationBaseView):
 
         # paginate results
         paginated_rows = paginate(
-            new_reminders,
+            new_reminders.data,
             rows_per_page,
             reminders_page
         )
@@ -300,12 +303,14 @@ class RemindersView(RegisteredOrganisationBaseView):
                 reminder.save()
 
                 reminders = get_organisation_reminders(request)
-                results = create_return_results(reminders)
-                serialized_reminders = json.dumps(list(results))
+                reminders = convert_reminder_dates(reminders)
+                serialized_reminders = ReminderSerializer(
+                    reminders, many=True)
+
                 return JsonResponse(
                     {
                         'status': 'success',
-                        'updated_reminders': serialized_reminders
+                        'updated_reminders': serialized_reminders.data
                     }
                 )
             except Exception as e:
@@ -329,9 +334,11 @@ class RemindersView(RegisteredOrganisationBaseView):
                 }
             )
 
-        search_results = create_return_results(reminders)
+        reminders = convert_reminder_dates(reminders)
 
-        return JsonResponse({'data': search_results})
+        search_results = ReminderSerializer(reminders, many=True)
+
+        return JsonResponse({'data': search_results.data})
 
 
     def delete_reminder(self, request):
@@ -346,9 +353,12 @@ class RemindersView(RegisteredOrganisationBaseView):
                 }
             )
 
-        results = create_return_results(new_reminders)
+        new_reminders = convert_reminder_dates(new_reminders)
 
-        return JsonResponse({'data': results})
+        serialized_reminders = ReminderSerializer(
+            new_reminders, many=True)
+
+        return JsonResponse({'data': serialized_reminders.data})
 
 
     def get_reminder(self, request):
@@ -363,9 +373,11 @@ class RemindersView(RegisteredOrganisationBaseView):
                 }
             )
 
-        result = create_return_results(reminder)
+        reminder = convert_reminder_dates(reminder)
 
-        return JsonResponse({'data': result})
+        result = ReminderSerializer(reminder, many=True)
+
+        return JsonResponse({'data': result.data})
 
     def edit_reminder(self, request):
         data = json.loads(request.POST.get('ids'))
@@ -413,10 +425,11 @@ class RemindersView(RegisteredOrganisationBaseView):
             reminder.reminder = reminder_val
             reminder.email_sent = email_sent
             reminder.save()
+
             reminders = get_organisation_reminders(request)
-            results = create_return_results(reminders)
-            serialized_reminders = json.dumps(list(results))
-            return JsonResponse({'data': serialized_reminders})
+            serialized_reminders = ReminderSerializer(reminders, many=True)
+
+            return JsonResponse({'data': serialized_reminders.data})
         except Exception as e:
             return JsonResponse(
                 {
@@ -462,7 +475,9 @@ class NotificationsView(RegisteredOrganisationBaseView):
             status=Reminders.PASSED,
             email_sent=True
         )
-        new_notifications = create_return_results(notifications)
+        new_notifications = convert_reminder_dates(notifications)
+        serialized_notifications = ReminderSerializer(
+            new_notifications, many=True)
 
         notifications_page = self.request.GET.get('notification_page', 1)
 
@@ -471,7 +486,9 @@ class NotificationsView(RegisteredOrganisationBaseView):
 
         # paginate results
         paginated_rows = paginate(
-            new_notifications, rows_per_page, notifications_page)
+            serialized_notifications.data,
+            rows_per_page, notifications_page
+        )
 
         return paginated_rows
 
@@ -488,9 +505,11 @@ class NotificationsView(RegisteredOrganisationBaseView):
                 }
             )
 
-        result = create_return_results(notification)
+        result = convert_reminder_dates(notification)
 
-        return JsonResponse({'data': result})
+        serialized_notification = ReminderSerializer(result, many=True)
+
+        return JsonResponse({'data': serialized_notification.data})
 
 
     def search_notifications(self, request):
@@ -505,26 +524,33 @@ class NotificationsView(RegisteredOrganisationBaseView):
                 }
             )
 
-        search_results = create_return_results(notifications)
+        search_results = convert_reminder_dates(notifications)
 
-        return JsonResponse({'data': search_results})
+        serialized_notifications = ReminderSerializer(
+            search_results, many=True)
+
+        return JsonResponse({'data': serialized_notifications.data})
 
 
     def delete_notification(self, request):
 
-        new_notifications = delete_reminder_and_notification(request)
+        notifications = delete_reminder_and_notification(request)
 
-        if isinstance(new_notifications, str):
+        if isinstance(notifications, str):
             return JsonResponse(
                 {
                     'status': 'error',
-                    'message': new_notifications
+                    'message': notifications
                 }
             )
 
-        results = create_return_results(new_notifications)
 
-        return JsonResponse({'data': results})
+
+        results = convert_reminder_dates(notifications)
+
+        serialized_notifications = ReminderSerializer(results, many=True)
+
+        return JsonResponse({'data': serialized_notifications.data})
 
 
     def dispatch(self, request, *args, **kwargs):
