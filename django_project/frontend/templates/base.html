@@ -61,17 +61,20 @@
     }
   </style>
     <script>
-
       $(document).ready(function() {
-          setTimeout(function() {
-              $('.alert').fadeOut('slow');
-          }, 3000); // Adjust the duration (in milliseconds) as needed
+          // Check if the password-reset-page class exists on the body
+          if ( ! $('section').hasClass('password-reset-page')) {
+              setTimeout(function() {
+                  $('.alert').fadeOut('slow');
+              }, 3000); // Adjust the duration (in milliseconds) as needed
+          }
       });
-  
-    
-    </script>
+  </script>
+
+<div style="min-height:81vh">
 {% block content %}
 {% endblock %}
+</div>
 {% block footer %}
 <div class='footer' data-testid='footer'>
     <div class='sanbi-footer-logo-container'>
