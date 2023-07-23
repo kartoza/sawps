@@ -136,24 +136,25 @@ def search_reminders_or_notifications(request):
 def delete_reminder_and_notification(request):
     data = json.loads(request.POST.get('ids'))
     notifications_page = request.POST.get('notifications_page')
+    organisation = request.session[CURRENT_ORGANISATION_ID_KEY]
     try:
         for element in data:
             if isinstance(element, str) and element.isdigit():
                 reminder = Reminders.objects.get(
                     user=request.user,
-                    organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
+                    organisation=organisation,
                     id=int(element)
                 )
                 if reminder.user == request.user:
                     Reminders.objects.filter(
                         user=request.user,
-                        organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
+                        organisation=organisation,
                         id=int(element)
                     ).delete()
 
         reminders = Reminders.objects.filter(
             user=request.user,
-            organisation=request.session[CURRENT_ORGANISATION_ID_KEY]
+            organisation=organisation
         )
         if notifications_page is not None:
             notifications = []
@@ -303,7 +304,8 @@ class RemindersView(RegisteredOrganisationBaseView):
 
                 reminders = get_organisation_reminders(request)
                 reminders = convert_reminder_dates(reminders)
-                serialized_reminders = ReminderSerializer(reminders, many=True)
+                serialized_reminders = ReminderSerializer(
+                    reminders, many=True)
 
                 return JsonResponse(
                     {
@@ -354,7 +356,7 @@ class RemindersView(RegisteredOrganisationBaseView):
         new_reminders = convert_reminder_dates(new_reminders)
 
         serialized_reminders = ReminderSerializer(
-            serialized_reminders, many=True)
+            new_reminders, many=True)
 
         return JsonResponse({'data': serialized_reminders.data})
 
