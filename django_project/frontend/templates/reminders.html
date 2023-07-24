@@ -260,6 +260,8 @@
             var reminder = $('#reminder').val();
             var reminder_type = $('#reminderType').val();
 
+            var userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
             // query to add record
             $.ajax({
                 type: 'POST',
@@ -269,6 +271,7 @@
                     'title': title,
                     'date': date,
                     'reminder': reminder,
+                    'timezone': userTimezone,
                     'reminder_type': reminder_type,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
@@ -399,7 +402,6 @@
                   $('#deleteConfirmationModal').modal('hide');
                 });
               }else if(selectedOption === 'edit' && selectedIds.length <= 2) {
-                console.log('edit selected')
                 // AJAX query to retrieve reminder data
                 $.ajax({
                     type: 'POST',
@@ -454,6 +456,9 @@
                     var reminder = $('#myModal #reminder').val();
                     var status = $('#myModal #status').val();
 
+                    // get the user timezone
+                    var userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
                     // Perform the save operation
                     $.ajax({
                       type: 'POST',
@@ -465,6 +470,7 @@
                           'reminder': reminder,
                           'reminder_type': type,
                           'status': status,
+                          'timezone': userTimezone,
                           'ids': JSON.stringify(selectedIds),
                           'csrfmiddlewaretoken': '{{ csrf_token }}'
                       },
