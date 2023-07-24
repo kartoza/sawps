@@ -5,11 +5,13 @@ from django.test import (
 )
 from datetime import datetime
 from django.utils import timezone
+from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
 from stakeholder.views import (
     adjust_date_to_server_time,
     convert_date_to_local_time,
     convert_reminder_dates,
-    paginate
+    paginate,
+    search_reminders_or_notifications
 )
 from stakeholder.models import (
     Reminders,
@@ -18,11 +20,10 @@ from stakeholder.models import (
 )
 from django.urls import reverse
 from django.contrib.auth.models import User
-import json
 from datetime import datetime, timedelta
 from stakeholder.views import RemindersView
 from regulatory_permit.models import DataUsePermission
-from core.celery import app
+
 
 class TestDateTimeConversion(TestCase):
     def setUp(self):
@@ -58,7 +59,8 @@ class TestDateTimeConversion(TestCase):
         server_datetime = timezone.now()
 
         # Call the function and get the result
-        local_datetime_str = convert_date_to_local_time(server_datetime,'Africa/Johannesburg')
+        local_datetime_str = convert_date_to_local_time(
+            server_datetime, 'Africa/Johannesburg')
 
         # Check if the result is a string
         self.assertIsInstance(local_datetime_str, str)
@@ -139,6 +141,7 @@ class TestDeleteReminderAndNotification(TestCase):
         # Check if the reminder exists since 405
         self.assertTrue(Reminders.objects.filter(id=reminder.id).exists())
 
+
 class TestPaginateFunction(TestCase):
     def setUp(self):
         # Create sample data for pagination
@@ -184,7 +187,8 @@ class TestPaginateFunction(TestCase):
         # Check the paginated_rows object
         self.assertTrue(paginated_rows.has_next())
         self.assertFalse(paginated_rows.has_previous())
-        self.assertEqual(paginated_rows.number, 1)  # The page defaults to 1 for invalid input
+        # The page defaults to 1 for invalid input
+        self.assertEqual(paginated_rows.number, 1)
         self.assertEqual(len(paginated_rows), rows_per_page)
         self.assertEqual(paginated_rows[0], "Item 1")
         self.assertEqual(paginated_rows[-1], "Item 10")
@@ -219,7 +223,8 @@ class TestAddReminderAndScheduleTask(TestCase):
     def test_add_reminder_and_schedule_task_success(self):
         # Test the success case for adding a reminder and scheduling a task
         url = reverse('reminders', kwargs={'slug': self.user.username})
-        date_str = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')
+        date_str = (timezone.now() + timedelta(days=1)
+                    ).strftime('%Y-%m-%dT%H:%M')
 
         response = self.client.post(
             url,
@@ -237,7 +242,8 @@ class TestAddReminderAndScheduleTask(TestCase):
         # Check the response status code and content
         self.assertEqual(response.status_code, 200)
         self.assertIn('status', response.json())
-        self.assertEqual(response.json()['status'], 'error') # requires a session object
+        # requires a session object
+        self.assertEqual(response.json()['status'], 'error')
 
         # Check that the reminder was added to the database and task was scheduled
         reminders = Reminders.objects.filter(user=self.user)
@@ -284,10 +290,11 @@ class TestRemindersView(TestCase):
         )
 
         self.assertEqual(len(reminders), 1)
-        
+
     def test_dispatch_add_reminder(self):
         url = reverse('reminders', kwargs={'slug': self.user.username})
-        date_str = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M')
+        date_str = (timezone.now() + timedelta(days=1)
+                    ).strftime('%Y-%m-%dT%H:%M')
 
         response = self.client.post(
             url,
@@ -318,9 +325,9 @@ class TestRemindersView(TestCase):
         # self.assertEqual(response.status_code, 200)
 
         view = RemindersView()
-        view.setup(request=response.wsgi_request) 
+        view.setup(request=response.wsgi_request)
 
-        reminders = [] 
+        reminders = []
         view.get_reminders = lambda request: reminders
 
         context = view.get_context_data()
@@ -349,7 +356,7 @@ class TestRemindersView(TestCase):
         response = self.client.post(
             url,
             {
-                'action': 'edit_reminder', 
+                'action': 'edit_reminder',
                 'ids': [reminder.id],
                 'title': 'Updated Reminder',
                 'status': 'draft',
@@ -364,10 +371,112 @@ class TestRemindersView(TestCase):
         # Check the response status code
         self.assertEqual(response.status_code, 200)
         serialized_reminders = response.json()
-        self.assertEqual(len(serialized_reminders), 2) # 2 reminders have been created so far
+        # 2 reminders have been created so far
+        self.assertEqual(len(serialized_reminders), 2)
 
         # Check if the task is canceled when status is 'draft' or 'passed'
         self.assertTrue(reminder.status in [Reminders.ACTIVE])
 
 
+class SearchRemindersOrNotificationsTest(TestCase):
+    def setUp(self):
+        # Create a test user
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpassword123454$',
+            email='email@gamil.com'
+        )
+        self.data_use_permission = DataUsePermission.objects.create(
+            name="test"
+        )
+        self.organisation = Organisation.objects.create(
+            name="test_organisation",
+            data_use_permission = self.data_use_permission
+        )
+        self.client = Client()
+        self.reminder_1 = Reminders.objects.create(
+            user=self.user,
+            organisation=self.organisation,
+            title='Reminder 1',
+            reminder='First reminder',
+            status=Reminders.PASSED,
+            email_sent=True,
+        )
+        self.reminder_2 = Reminders.objects.create(
+            user=self.user,
+            organisation=self.organisation,
+            title='Reminder 2',
+            reminder='Second reminder',
+            status=Reminders.ACTIVE,
+            email_sent=False,
+        )
+        self.factory = RequestFactory()
 
+    def test_search_by_title(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'search_reminders',
+            'query': 'Reminder 1',
+            'filter': 'title',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        results = search_reminders_or_notifications(request)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].title, 'Reminder 1')
+
+    def test_search_by_reminder(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'search_reminders',
+            'query': 'Re',
+            'filter': 'reminder',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        results = search_reminders_or_notifications(request)
+
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].title, 'Reminder 1')
+
+    def test_search_without_filter(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'search_reminders',
+            'query': 'Remi',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        results = search_reminders_or_notifications(request)
+
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].title, 'Reminder 1')
+        self.assertEqual(results[1].title, 'Reminder 2')
+
+    def test_notifications_page(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'search_reminders',
+            'query': 'Reminder 1',
+            'filter': 'reminder',
+            'notifications_page': True,
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        results = search_reminders_or_notifications(request)
+
+        # notifications is empty
+        self.assertEqual(len(results), 0)
