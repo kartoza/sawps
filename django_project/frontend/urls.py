@@ -61,8 +61,6 @@ from frontend.api_views.metrics import (
 )
 
 
-app_name = 'frontend'
-
 urlpatterns = [
     re_path(
         r'^api/map/search/parcel/?$',

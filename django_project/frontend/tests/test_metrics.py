@@ -37,7 +37,7 @@ class SpeciesPopuationCountTestCase(TestCase):
         )
 
         self.url = reverse(
-            "frontend:species_population_count",
+            "species_population_count",
             kwargs={"property_id": self.property.id},
         )
 
