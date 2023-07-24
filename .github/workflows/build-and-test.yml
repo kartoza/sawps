@@ -79,7 +79,6 @@ jobs:
           coverageFile: coverage.xml
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload coverage to codecov
-        if: ${{ github.event_name == 'push' }}
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
