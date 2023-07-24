@@ -226,6 +226,10 @@ class Reminders(models.Model):
     )
     email_sent = models.BooleanField(default=False)
     task_id = models.CharField(max_length=255, null=True, blank=True)
+    timezone = models.CharField(
+        max_length=120,
+        default='Africa/Johannesburg'
+    )
 
     class Meta:
         verbose_name = 'Reminder'
