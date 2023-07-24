@@ -11,7 +11,8 @@ from stakeholder.views import (
     convert_date_to_local_time,
     convert_reminder_dates,
     paginate,
-    search_reminders_or_notifications
+    search_reminders_or_notifications,
+    delete_reminder_and_notification
 )
 from stakeholder.models import (
     Reminders,
@@ -23,6 +24,8 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from stakeholder.views import RemindersView
 from regulatory_permit.models import DataUsePermission
+import json
+from django.db.models import QuerySet
 
 
 class TestDateTimeConversion(TestCase):
@@ -100,46 +103,142 @@ class TestConvertReminderDates(TestCase):
         self.assertEqual(len(converted_reminders), len(reminders))
 
 
-
-
-
-class TestDeleteReminderAndNotification(TestCase):
+class DeleteReminderAndNotificationTest(TestCase):
     def setUp(self):
+        # Create a test user
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpassword'
+            password='testpassword123454$',
+            email='email@gamil.com'
         )
         self.data_use_permission = DataUsePermission.objects.create(
             name="test"
         )
         self.organisation = Organisation.objects.create(
             name="test_organisation",
-            data_use_permission = self.data_use_permission
+            data_use_permission=self.data_use_permission
         )
-        self.organisation_user = OrganisationUser.objects.create(
-            organisation=self.organisation,
-            user=self.user
-        )
-        self.reminder = Reminders.objects.create(
-            title='test',
+        self.client = Client()
+        self.reminder_1 = Reminders.objects.create(
             user=self.user,
             organisation=self.organisation,
-            reminder='reminder'
-        )
-
-    def test_delete_reminder_and_notification(self):
-        # Create a sample reminder and notification for the test user
-        organisation_id = self.organisation.pk
-        reminder = Reminders.objects.create(
-            user=self.user,
-            organisation_id=organisation_id,
-            title='Test Reminder',
+            title='Reminder 1',
+            reminder='First reminder',
             status=Reminders.PASSED,
-            email_sent=True
+            email_sent=True,
         )
+        self.reminder_2 = Reminders.objects.create(
+            user=self.user,
+            organisation=self.organisation,
+            title='Reminder 2',
+            reminder='Second reminder',
+            status=Reminders.ACTIVE,
+            email_sent=False,
+        )
+        self.factory = RequestFactory()
 
-        # Check if the reminder exists since 405
-        self.assertTrue(Reminders.objects.filter(id=reminder.id).exists())
+    def test_delete_single_reminder(self):
+        reminders_before_delete = Reminders.objects.filter(
+            user=self.user, organisation=self.organisation)
+        self.assertEqual(reminders_before_delete.count(), 2)
+
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_reminder',
+            'ids': json.dumps([self.reminder_1.pk]),
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        results = delete_reminder_and_notification(request)
+
+        reminders_after_delete = Reminders.objects.filter(
+            user=self.user,
+            organisation=self.organisation)
+        self.assertEqual(reminders_after_delete.count(), 2)
+
+        self.assertEqual(len(results), 2)
+        # Return the remaining Reminder
+        self.assertEqual(results[0].title, 'Reminder 1')
+
+    def test_delete_multiple_reminders(self):
+        reminders_before_delete = Reminders.objects.filter(
+            user=self.user, organisation=self.organisation)
+        self.assertEqual(reminders_before_delete.count(), 2)
+
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_reminder',
+            'ids': json.dumps([self.reminder_1.id, self.reminder_2.id]),
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        results = delete_reminder_and_notification(request)
+
+        reminders_after_delete = Reminders.objects.filter(
+            user=self.user, organisation=self.organisation)
+        self.assertEqual(reminders_after_delete.count(), 2)
+
+    def test_delete_invalid_reminder(self):
+        reminders_before_delete = Reminders.objects.filter(
+            user=self.user, organisation=self.organisation)
+        self.assertEqual(reminders_before_delete.count(), 2)
+
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_reminder',
+            'ids': json.dumps([999]),
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        results = delete_reminder_and_notification(request)
+
+        reminders_after_delete = Reminders.objects.filter(
+            user=self.user, organisation=self.organisation)
+        self.assertEqual(reminders_after_delete.count(), 2)
+
+        self.assertEqual(len(results), 2)
+
+    def test_delete_notification(self):
+        reminders_before_delete = Reminders.objects.filter(
+            user=self.user, organisation=self.organisation
+        )
+        self.assertEqual(reminders_before_delete.count(), 2)
+
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_notification',
+            'notifications_page': True,
+            'ids': json.dumps([self.reminder_1.pk]),
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        results = delete_reminder_and_notification(request)
+
+        reminders_after_delete = Reminders.objects.filter(
+            user=self.user, organisation=self.organisation
+        )
+        self.assertEqual(reminders_after_delete.count(), 2)
+
+        # Convert the queryset to a list
+        if isinstance(results, QuerySet):
+            results = list(results)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].title, 'Reminder 1')
+
 
 
 class TestPaginateFunction(TestCase):
