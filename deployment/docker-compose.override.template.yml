@@ -53,6 +53,19 @@ services:
       - ./tegola:/opt/tegola_config
       - ./volumes/layer_tiles:/opt/layer_tiles
 
+  plumber:
+    build:
+      context: ../
+      dockerfile: deployment/plumber/Dockerfile
+      target: prod
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/plumber_data:/home/web/plumber_data
+      - ./volumes/media:/home/web/media
+    links:
+      - db
+      - redis
+
   nginx:
     volumes:
       - ./nginx/sites-enabled:/etc/nginx/conf.d:ro
