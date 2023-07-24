@@ -11,7 +11,6 @@ The SANBI Wildlife Protection System is a platform to track the population level
 
 The work is funded by the [South African National Biodiversity Institute](https://www.sanbi.org/)
 
-
 This project is implemented by [Kartoza](https://kartoza.com/) under contract to [IDS](https://ids-cc.co.za/).
 
 ## 📒 License
