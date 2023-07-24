@@ -3,6 +3,7 @@ from django.db import models
 
 class CountMethod(models.Model):
     """Count method model."""
+
     name = models.CharField(max_length=200, unique=True)
 
     def __str__(self) -> str:
@@ -16,6 +17,7 @@ class CountMethod(models.Model):
 
 class Month(models.Model):
     """Month model."""
+
     name = models.CharField(max_length=100, unique=True)
     sort_order = models.IntegerField(unique=True)
 
@@ -30,6 +32,7 @@ class Month(models.Model):
 
 class NatureOfPopulation(models.Model):
     """Nature of the population model."""
+
     name = models.CharField(max_length=255, unique=True)
     extensive = models.BooleanField()
 
@@ -43,7 +46,8 @@ class NatureOfPopulation(models.Model):
 
 
 class AnnualPopulationAbstract(models.Model):
-    """Annual Population model."""
+    """ "Annual Population model."""
+
     year = models.PositiveIntegerField()
     owned_species = models.ForeignKey("species.OwnedSpecies",
                                       on_delete=models.CASCADE)
@@ -54,11 +58,6 @@ class AnnualPopulationAbstract(models.Model):
     juvenile_male = models.IntegerField(null=True, blank=True)
     juvenile_female = models.IntegerField(null=True, blank=True)
     note = models.TextField(null=True, blank=True)
-    survey_method = models.ForeignKey('occurrence.SurveyMethod', on_delete=models.CASCADE, null=True)
-    count_method = models.ForeignKey('population_data.CountMethod', on_delete=models.CASCADE, null=True)
-    sampling_size_unit = models.ForeignKey('occurrence.SamplingSizeUnit', on_delete=models.CASCADE, null=True)
-    certainty = models.ForeignKey('population_data.Certainty', on_delete=models.CASCADE, null=True)
-    open_close_system = models.ForeignKey('population_data.OpenCloseSystem', on_delete=models.CASCADE, null=True)
 
     class Meta:
         abstract = True
@@ -97,11 +96,18 @@ class AnnualPopulation(AnnualPopulationAbstract):
         verbose_name_plural = "Annual Populations"
         db_table = "annual_population"
         constraints = [
-            models.UniqueConstraint(fields=['year', 'owned_species', 'month'], name='unique_population_count'),
+            models.UniqueConstraint(
+                fields=["year", "owned_species", "month"],
+                name="unique_population_count"
+            ),
             models.CheckConstraint(
-                name='Adult male and adult female must not be greater than total',
-                check=models.Q(total__gte=models.F('adult_male') + models.F('adult_female'))
-            )
+                name="Adult male and adult female"
+                     " must not be greater than total",
+                check=models.Q(
+                    total__gte=
+                    models.F("adult_male") + models.F("adult_female")
+                ),
+            ),
         ]
 
 
@@ -112,22 +118,32 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
         "activity.ActivityType",
         on_delete=models.CASCADE)
     founder_population = models.BooleanField(null=True, blank=True)
-    reintroduction_source = models.CharField(max_length=250, null=True, blank=True)
-    permit_number = models.IntegerField(null=True, blank=True)
+    reintroduction_source = models.CharField(max_length=250, null=True,
+                                             blank=True)
+    intake_permit = models.IntegerField(null=True, blank=True)
+    translocation_destination = models.TextField(null=True, blank=True)
+    offtake_permit = models.IntegerField(null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Population count per activity'
-        verbose_name_plural = 'Population count per activities'
-        db_table = 'annual_population_per_activity'
+        verbose_name = "Population count per activity"
+        verbose_name_plural = "Population count per activities"
+        db_table = "annual_population_per_activity"
         constraints = [
-            models.UniqueConstraint(fields=['year', 'owned_species', 'activity_type'], name='unique_population_count_per_activity')
+            models.UniqueConstraint(
+                fields=["year", "owned_species", "activity_type"],
+                name="unique_population_count_per_activity",
+            )
         ]
 
 
 class Certainty(models.Model):
     """Certainty model"""
-    name = models.CharField(max_length=250, null=False, blank=False, default='', unique=True)
-    description = models.TextField(null=True, blank=True, help_text='Description')
+
+    name = models.CharField(
+        max_length=250, null=False, blank=False, default="", unique=True
+    )
+    description = models.TextField(null=True, blank=True,
+                                   help_text="Description")
 
     class Meta:
         verbose_name = "Certainty"
@@ -137,12 +153,15 @@ class Certainty(models.Model):
 
 class OpenCloseSystem(models.Model):
     """OpenCloseSystem model"""
-    name = models.CharField(max_length=250, null=False, blank=False, default='', unique=True)
+
+    name = models.CharField(
+        max_length=250, null=False, blank=False, default="", unique=True
+    )
 
     class Meta:
-        verbose_name = 'Open Close System'
-        verbose_name_plural = 'Open Close System'
-        db_table = 'open_close_system'
+        verbose_name = "Open Close System"
+        verbose_name_plural = "Open Close System"
+        db_table = "open_close_system"
 
     def __str__(self) -> str:
         return self.name
