@@ -29,8 +29,8 @@ class TestCustomSignupForm(TestCase):
             'first_name': 'Fan',
             'last_name': 'Andria',
             'email': 'faneva@kartoza.com',
-            'password1': 'Test02',
-            'password2': 'Test02',
+            'password1': 'A!D$!$367Qcc',
+            'password2': 'A!D$!$367Qcc',
         }
 
         user = UserF.create()
