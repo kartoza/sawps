@@ -40,11 +40,36 @@ nav:
                   - Home: index.md
                   - License: license.md
         - User:
-                  - User: user/index.md
+                  - Quickstart: user/quickstart.md
+                  - Instructions: user/instructions.md
+                  - User Roles: user/permissions.md
         - Admin:
                   - Admin: admin/index.md
         - Developer:
                   - Developer: developer/index.md
+                  - Narrative: developer/narrative.md
+                  - Code Auto docs:
+                                    - Activity: developer/code_auto_docs.md
+                                    - Core: developer/core.md
+                                    - Fixtures: developer/fixtures.md
+                                    - frontend: developer/frontend.md
+                                    - notification: developer/notification.md
+                                    - Occurrence: developer/occurrence.md
+                                    - Population Data: developer/population_data.md
+                                    - Property: developer/property.md
+                                    - Regulatory Permit: developer/regulator_permit.md
+                                    - SAWPS: developer/sawps.md
+                                    - Species: developer/species.md
+                                    - Stakeholder: developer/stakeholder.md
+                  - Contribution Guidelines: developer/contribution_guidelines.md
+                  - How to make docs: developer/make_docs.md
+                  - Design: developer/design.md
+                  - How to run instances: developer/run_instances.md
+                  - How to test local instance: developer/test_local.md
+                  - License: license.md
+
+
+
         - DevOps:
                   - DevOps: devops/index.md
         - About:

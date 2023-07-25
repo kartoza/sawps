@@ -24,19 +24,18 @@ theme:
     - search.suggest
     - toc.follow
   palette:
-    primary: custom
-#    - scheme: default
-#      primary: custom
-#      accent: custom
-#      toggle:
-#        icon: material/brightness-4
-#        name: Switch to dark mode
-#    - scheme: slate
-#      primary: custom
-#      accent: custom
-#      toggle:
-#        icon: material/brightness-6
-#        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-6
+        name: Switch to light mode
   font:
     text: Roboto
     code: Roboto Mono
@@ -67,3 +66,17 @@ extra_javascript:
 
 plugins:
   - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [..]
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://mkdocstrings.github.io/autorefs/objects.inv
+          options:
+            docstring_style: sphinx
+            separate_signature: true
+            merge_init_into_class: true
+            docstring_options:
+              ignore_init_summary: true
+
