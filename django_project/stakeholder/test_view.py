@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.test import (
     TestCase,
     Client,
@@ -12,7 +13,9 @@ from stakeholder.views import (
     convert_reminder_dates,
     paginate,
     search_reminders_or_notifications,
-    delete_reminder_and_notification
+    delete_reminder_and_notification,
+    get_reminder_or_notification,
+    get_organisation_reminders
 )
 from stakeholder.models import (
     Reminders,
@@ -26,6 +29,9 @@ from stakeholder.views import RemindersView
 from regulatory_permit.models import DataUsePermission
 import json
 from django.db.models import QuerySet
+from django.contrib.auth import get_user_model
+from unittest.mock import patch
+from stakeholder.models import Reminders
 
 
 class TestDateTimeConversion(TestCase):
@@ -291,6 +297,17 @@ class TestPaginateFunction(TestCase):
         self.assertEqual(len(paginated_rows), rows_per_page)
         self.assertEqual(paginated_rows[0], "Item 1")
         self.assertEqual(paginated_rows[-1], "Item 10")
+
+    def test_paginate_empty_page(self):
+        # Test pagination for an empty page (page=11) with 10 rows per page
+        rows_per_page = 60
+        page = 2
+
+        paginated_rows = paginate(self.rows, rows_per_page, page)
+
+        # Check the paginated_rows object
+        self.assertFalse(paginated_rows.has_next())
+        self.assertTrue(paginated_rows.has_previous())
 
 
 
@@ -579,3 +596,215 @@ class SearchRemindersOrNotificationsTest(TestCase):
 
         # notifications is empty
         self.assertEqual(len(results), 0)
+
+
+
+class GetReminderOrNotificationTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpassword',
+            email='testuser@example.com',
+        )
+        self.data_use_permission = DataUsePermission.objects.create(
+            name="test"
+        )
+        self.organisation = Organisation.objects.create(
+            name="test_organisation",
+            data_use_permission = self.data_use_permission
+        )
+        self.client = Client()
+        self.reminder_1 = Reminders.objects.create(
+            user=self.user,
+            organisation=self.organisation,
+            title='Reminder 1',
+            reminder='First reminder',
+            status=Reminders.PASSED,
+            email_sent=True,
+        )
+
+    def test_get_reminder_or_notification_valid_ids(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'get_reminder',
+            'ids': [self.reminder_1.id],
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        result = get_reminder_or_notification(request)
+
+        self.assertTrue(len(result) > 0)
+
+    def test_get_reminder_or_notification_invalid_ids(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'get_reminder',
+            'ids': [999],
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        result = get_reminder_or_notification(request)
+
+        self.assertEqual(result, "'int' object is not iterable")
+
+
+class GetOrganisationRemindersTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpassword',
+            email='testuser@example.com',
+        )
+        self.data_use_permission = DataUsePermission.objects.create(
+            name="test"
+        )
+        self.organisation = Organisation.objects.create(
+            name="test_organisation",
+            data_use_permission = self.data_use_permission
+        )
+        self.client = Client()
+        self.reminder_1 = Reminders.objects.create(
+            user=self.user,
+            organisation=self.organisation,
+            title='Reminder 1',
+            reminder='First reminder',
+            status=Reminders.PASSED,
+            email_sent=True,
+        )
+        self.reminder_2 = Reminders.objects.create(
+            user=self.user,
+            organisation=self.organisation,
+            title='Reminder 2',
+            reminder='First reminders',
+            status=Reminders.PASSED,
+            email_sent=True,
+        )
+
+    def test_get_organisation_reminders(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'get_reminders',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.get(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        result = get_organisation_reminders(request)
+
+        # Check that the result contains both reminders for the given organization
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0].title, 'Reminder 1')
+        self.assertEqual(result[1].title, 'Reminder 2')
+        # Add more assertions as needed for other fields
+
+    def test_get_organisation_reminders_empty(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'get_reminders',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.get(url, data)
+        request.user = self.user
+        request.session = {
+            CURRENT_ORGANISATION_ID_KEY: self.organisation.id + 1}
+
+        result = get_organisation_reminders(request)
+
+        # Check that the result is empty for an organization with no reminders
+        self.assertEqual(len(result), 0)
+
+
+
+class RemindersViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            password='testpassword',
+            email='testuser@example.com',
+        )
+        self.data_use_permission = DataUsePermission.objects.create(
+            name="test"
+        )
+        self.organisation = Organisation.objects.create(
+            name="test_organisation",
+            data_use_permission = self.data_use_permission
+        )
+        self.reminder1 = Reminders.objects.create(
+            user=self.user,
+            organisation_id=self.organisation.id,
+            title='Reminder 1',
+        )
+        self.reminder2 = Reminders.objects.create(
+            user=self.user,
+            organisation_id=self.organisation.id,
+            title='Reminder 2',
+        )
+
+    @patch('stakeholder.views.search_reminders_or_notifications')
+    @patch('stakeholder.views.convert_reminder_dates')
+    @patch('frontend.serializers.stakeholder.ReminderSerializer')
+    def test_search_reminders(
+        self,
+        mock_serializer,
+        mock_convert_dates,
+        mock_search_reminders):
+        # Configure the mock search_reminders_or_notifications
+        mock_search_reminders.return_value = [self.reminder1, self.reminder2]
+
+        # Configure the mock ReminderSerializer
+        expected_serialized_data = [
+            {'id': self.reminder1.id, 'title': self.reminder1.title},
+            {'id': self.reminder2.id, 'title': self.reminder2.title},
+        ]
+        mock_serializer.return_value.data = expected_serialized_data
+
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'get_reminders',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.get(url, data)
+        request.user = self.user
+
+        # Instantiate the RemindersView and call the search_reminders method
+        view = RemindersView()
+        response = view.search_reminders(request)
+
+        # Check that the function returns a JsonResponse
+        self.assertIsInstance(response, JsonResponse)
+
+        # Check that the mock functions were called with the correct arguments
+        mock_convert_dates.assert_called_once_with(
+            [self.reminder1, self.reminder2])
+
+    @patch('stakeholder.views.search_reminders_or_notifications')
+    def test_search_reminders_error(self, mock_search_reminders):
+        # return error
+        error_message = 'Invalid search query'
+        mock_search_reminders.return_value = error_message
+
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'search_reminders',
+            'query': 5,
+            'filter': 'filter',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.get(url, data)
+        request.user = self.user
+
+        # Instantiate the RemindersView
+        view = RemindersView()
+        response = view.search_reminders(request)
+
+        self.assertIsInstance(response, JsonResponse)
