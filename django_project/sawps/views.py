@@ -219,7 +219,11 @@ class CustomPasswordResetView(View):
                 html_message=message
             )
 
-            return render(request, 'password_reset.html', {'show_email_message': True})
+            return render(
+                request,
+                'password_reset.html',
+                {'show_email_message': True}
+            )
         except User.DoesNotExist:
             return
 
