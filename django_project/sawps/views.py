@@ -139,7 +139,7 @@ class AddUserToOrganisation(View):
                 html_message=message
             )
             return True
-        except Exception as e:  # noqa
+        except Exception:
             return False
 
 
