@@ -176,7 +176,7 @@ class SendRequestEmail(View):
             )
             return JsonResponse({'status': 'success'})
         except Exception as e:
-            return JsonResponse({'status': 'failed'})
+            return JsonResponse({'status': str(e)})
 
 
     def dispatch(self, request, *args, **kwargs):
