@@ -876,3 +876,14 @@ class RemindersViewTest(TestCase):
         response = view.get_reminder(request)
 
         self.assertIsInstance(response, JsonResponse)
+
+    def test_get_reminders(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_reminder',
+            'ids': [self.reminder1.id],
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        response = self.factory.post(url, data)
+
+        self.assertIsNotNone(response)
