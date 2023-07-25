@@ -876,6 +876,19 @@ class RemindersViewTest(TestCase):
         response = view.get_reminder(request)
 
         self.assertIsInstance(response, JsonResponse)
+        
+    @patch('stakeholder.views.convert_reminder_dates')
+    @patch('frontend.serializers.stakeholder.ReminderSerializer')
+    def test_get_reminders(self, mock_convert_dates, mock_delete_reminder):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_reminder',
+            'ids': [self.reminder1.id],
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        response = self.factory.post(url, data)
+
+        self.assertIsNotNone(response)
 
 
 class NotificationsViewTest(TestCase):
