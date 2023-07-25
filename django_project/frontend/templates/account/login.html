@@ -6,7 +6,7 @@
 
 
 {% block content %}
-<section class="login-page fs-background" style="background-color: #000000;">
+<section class="login-page fs-background" style="background-color: #000000; min-height:81vh">
     <div class="container-fluid full-height">
         <div class="row half-height">
             <div class="col-7"></div>
@@ -35,7 +35,11 @@
                         <button class="sawps-from-submit account-button" type="submit">{% trans "LOGIN" %}</button>
                     </form>
                     <div class="login-help text-center">
-                    Don’t have an account? Register <a href="{% url 'account_signup' %}">Here</a>                            </div>
+                    Don’t have an account? Register <a href="{% url 'account_signup' %}">Here</a>
+                    </div>
+                    <div class="login-help text-center">
+                    <a href="{% url 'password_reset' %}">{% trans "Forgot Password" %}</a>
+                    </div>
 
                 </div>
             </div>
