@@ -880,12 +880,17 @@ class RemindersViewTest(TestCase):
     @patch('stakeholder.views.convert_reminder_dates')
     @patch('frontend.serializers.stakeholder.ReminderSerializer')
     def test_get_reminders(self, mock_convert_dates, mock_delete_reminder):
-        url = reverse('reminders', kwargs={'slug': self.user.username})
+        url = reverse('notifications', kwargs={'slug': self.user.username})
         data = {
-            'action': 'delete_reminder',
-            'ids': [self.reminder1.id],
-            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+            'reminders_page': 1,
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
         }
-        response = self.factory.post(url, data)
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+
+        # Create an instance of the NotificationsView and call the dispatch method
+        view = RemindersView()
+        response = view.get_reminders(request)
 
         self.assertIsNotNone(response)
