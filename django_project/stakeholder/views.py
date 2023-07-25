@@ -262,10 +262,10 @@ class RemindersView(RegisteredOrganisationBaseView):
 
         new_reminders = ReminderSerializer(reminders, many=True)
 
-        reminders_page = self.request.GET.get('reminders_page', 1)
+        reminders_page = request.GET.get('reminders_page', 1)
 
         # Get the rows per page value from the query parameters
-        rows_per_page = self.request.GET.get('reminders_per_page', 5)
+        rows_per_page = request.GET.get('reminders_per_page', 5)
 
         # paginate results
         paginated_rows = paginate(
@@ -482,7 +482,7 @@ class NotificationsView(RegisteredOrganisationBaseView):
     def get_notifications(self, request):
         notifications = Reminders.objects.filter(
             user=request.user,
-            organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY],
+            organisation_id=request.session[CURRENT_ORGANISATION_ID_KEY],
             status=Reminders.PASSED,
             email_sent=True
         )
@@ -490,10 +490,10 @@ class NotificationsView(RegisteredOrganisationBaseView):
         serialized_notifications = ReminderSerializer(
             new_notifications, many=True)
 
-        notifications_page = self.request.GET.get('notification_page', 1)
+        notifications_page = request.GET.get('notification_page', 1)
 
         # Get the rows per page value from the query parameters
-        rows_per_page = self.request.GET.get('notifications_per_page', 5)
+        rows_per_page = request.GET.get('notifications_per_page', 5)
 
         # paginate results
         paginated_rows = paginate(
