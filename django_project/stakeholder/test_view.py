@@ -245,6 +245,22 @@ class DeleteReminderAndNotificationTest(TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].title, 'Reminder 1')
 
+    def test_delete_reminder_and_notification_invalid_ids(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_notification',
+            'notifications_page': True,
+            'ids': json.dumps(['999']),
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        result = delete_reminder_and_notification(request)
+
+        self.assertEqual(result, 'Reminders matching query does not exist.')
+
 
 
 class TestPaginateFunction(TestCase):
@@ -806,5 +822,57 @@ class RemindersViewTest(TestCase):
         # Instantiate the RemindersView
         view = RemindersView()
         response = view.search_reminders(request)
+
+        self.assertIsInstance(response, JsonResponse)
+
+    @patch('stakeholder.views.delete_reminder_and_notification')
+    @patch('stakeholder.views.convert_reminder_dates')
+    @patch('frontend.serializers.stakeholder.ReminderSerializer')
+    def test_delete_reminder(self, mock_serializer, mock_convert_dates, mock_delete_reminder):
+        mock_delete_reminder.return_value = [self.reminder1, self.reminder2]
+
+        expected_serialized_data = [
+            {'id': self.reminder1.id, 'title': self.reminder1.title},
+            {'id': self.reminder2.id, 'title': self.reminder2.title},
+        ]
+        mock_serializer.return_value.data = expected_serialized_data
+
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_reminder',
+            'ids': [self.reminder1.id],
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.get(url, data)
+        request.user = self.user
+
+        view = RemindersView()
+        response = view.delete_reminder(request)
+
+        self.assertIsInstance(response, JsonResponse)
+
+        mock_convert_dates.assert_called_once_with(
+            [self.reminder1, self.reminder2])
+
+    @patch('stakeholder.views.get_reminder_or_notification')
+    @patch('stakeholder.views.convert_reminder_dates')
+    def test_get_reminder_success(self, mock_serializer, mock_convert_dates):
+
+        expected_serialized_data = [
+            {'id': self.reminder1.id, 'title': self.reminder1.title},
+        ]
+        mock_serializer.return_value.data = expected_serialized_data
+
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'delete_reminder',
+            'ids': [self.reminder1.id],
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        request = self.factory.get(url, data)
+        request.user = self.user
+
+        view = RemindersView()
+        response = view.get_reminder(request)
 
         self.assertIsInstance(response, JsonResponse)
