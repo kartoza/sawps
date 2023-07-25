@@ -93,7 +93,10 @@ class ProfileView(DetailView):
 def convert_reminder_dates(reminders):
     results = []
     for reminder in reminders:
-        reminder.date = convert_date_to_local_time(reminder.date)
+        reminder.date = convert_date_to_local_time(
+            reminder.date,
+            reminder.timezone
+        )
         results.append(reminder)
 
     return results
@@ -178,7 +181,10 @@ def get_reminder_or_notification(request):
                     organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
                     id=int(element)
                 )
-                reminder[0].date = convert_date_to_local_time(reminder[0].date)
+                reminder[0].date = convert_date_to_local_time(
+                    reminder[0].date,
+                    reminder[0].timezone
+                )
 
         return reminder
     except Exception as e:
@@ -214,13 +220,14 @@ def get_organisation_reminders(request):
 def adjust_date_to_server_time(request):
 
     datetime_str = request.POST.get('date')
+    timezone_value = request.POST.get('timezone')
 
     # Parse the date string into a datetime object
     datetime_format = '%Y-%m-%dT%H:%M'
     parsed_datetime = datetime.strptime(datetime_str, datetime_format)
 
-    # Convert parsed datetime to local timezone (Africa/Johannesburg)
-    local_timezone = pytz.timezone('Africa/Johannesburg')
+    # timezone will be determined on the frontend
+    local_timezone = pytz.timezone(timezone_value)
     local_datetime = local_timezone.localize(parsed_datetime)
 
     # Convert local datetime object to the server's timezone (UTC)
@@ -230,9 +237,9 @@ def adjust_date_to_server_time(request):
     return server_datetime
 
 
-def convert_date_to_local_time(date):
+def convert_date_to_local_time(date, timezone):
     # Convert the server time to the local timezone
-    local_timezone = pytz.timezone('Africa/Johannesburg')
+    local_timezone = pytz.timezone(timezone)
     local_datetime = date.astimezone(local_timezone)
 
     # Convert the local datetime tothe desired format
@@ -275,6 +282,7 @@ class RemindersView(RegisteredOrganisationBaseView):
             title = request.POST.get('title')
             reminder_note = request.POST.get('reminder')
             adjusted_datetime = adjust_date_to_server_time(request)
+            timezone_value = request.POST.get('timezone')
 
             if request.POST.get('reminder_type') == 'personal':
                 reminder_type = Reminders.PERSONAL
@@ -291,7 +299,8 @@ class RemindersView(RegisteredOrganisationBaseView):
                     title=title,
                     date=adjusted_datetime,
                     type = reminder_type,
-                    organisation=organisation
+                    organisation=organisation,
+                    timezone=timezone_value
                 )
                 # Schedule the Celery task to send the reminder email
                 task = send_reminder_email.apply_async(
@@ -384,6 +393,7 @@ class RemindersView(RegisteredOrganisationBaseView):
         title = request.POST.get('title')
         status = request.POST.get('status')
         adjusted_datetime = adjust_date_to_server_time(request)
+        timezone_value = request.POST.get('timezone')
         type = request.POST.get('reminder_type')
         reminder_val = request.POST.get('reminder')
         email_sent = False
@@ -424,6 +434,7 @@ class RemindersView(RegisteredOrganisationBaseView):
             reminder.status = status
             reminder.reminder = reminder_val
             reminder.email_sent = email_sent
+            reminder.timezone = timezone_value
             reminder.save()
 
             reminders = get_organisation_reminders(request)

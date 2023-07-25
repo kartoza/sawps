@@ -56,6 +56,10 @@ class Migration(migrations.Migration):
                 ("email_sent", models.BooleanField(default=False)),
                 ("task_id", models.CharField(blank=True, max_length=255, null=True)),
                 (
+                    "timezone",
+                    models.CharField(default="Africa/Johannesburg", max_length=120),
+                ),
+                (
                     "organisation",
                     models.ForeignKey(
                         blank=True,

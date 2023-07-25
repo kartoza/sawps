@@ -1,7 +1,17 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import Client, TestCase
+from django.urls import reverse
+from stakeholder.models import (
+    UserProfile
+)
+from stakeholder.views import ProfileView
 from sawps.tests.models.account_factory import UserF
-from stakeholder.factories import userProfileFactory, userTitleFactory, userRoleTypeFactory
+from stakeholder.factories import (
+    userProfileFactory,
+    userTitleFactory,
+    userRoleTypeFactory
+)
+from django.views.generic import DetailView
 
 
 class TestProfile(TestCase):
@@ -70,7 +80,13 @@ class TestProfile(TestCase):
             name = 'test',
         )
         user.set_password('passwd')
+        user.first_name = 'Fan'
         user.save()
+        UserProfile.objects.create(
+            user=user,
+            title_id=title,
+            user_role_type_id=role
+        )
         resp = self.client.login(username='test', password='passwd')
         self.assertTrue(resp)
 
@@ -91,3 +107,21 @@ class TestProfile(TestCase):
         self.assertIsNotNone(updated_user.user_profile.picture)
         self.assertEqual(user.user_profile.title_id.name, title.name)
         self.assertEqual(user.user_profile.user_role_type_id.name, role.name)
+
+    def test_context_data(self):
+        # Simulate a request with the authenticated user
+        user = UserF.create()
+        url = reverse('profile', kwargs={'slug': user.username})
+        client = Client()
+        request = client.get(url)
+        request.user = user
+
+        client.force_login(user)
+        response = client.get(url, follow=True)
+
+        # Check if the response is successful (status code 200)
+        self.assertEqual(response.status_code, 200)
+        context = response.context
+
+        self.assertNotIn('titles', context)
+        self.assertNotIn('roles', context)
