@@ -1,34 +1,15 @@
-![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--28e9412--sta-blue.svg)
-![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Build%20Status:-SUCCESS-green.svg)
-[![codecov](https://codecov.io/gh/kartoza/sawps/branch/main/graph/badge.svg)](https://codecov.io/gh/kartoza/sawps/)
-
-
-# 🦏 SANBI WPS
-
-The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
-
-![image](https://github.com/kartoza/sawps/assets/178003/09311bc9-6862-4fc1-a526-1ec998d994b4)
-
-The work is funded by the [South African National Biodiversity Institute](https://www.sanbi.org/)
-
-
-This project is implemented by [Kartoza](https://kartoza.com/) under contract to [IDS](https://ids-cc.co.za/).
-
-## 📒 License
-
-> This program is free software; you can redistribute it and/or modify
-> it under the terms of the GNU Affero General Public License as published by
-> the Free Software Foundation; either version 3 of the License, or
-> (at your option) any later version.
-
-Read the [full license](LICENSE).
-
-## 🧑🏽‍💻 Development
+## Setting up a dev env
 
 Please follow the Kartoza [coding standards](https://kartoza.github.io/TheKartozaHandbook/development/conventions/coding_standards/#compliance).
 
+### 👩‍💻 Getting source code
 
-## 🏃‍♂️ How To Run Project with Visual Studio Code
+```
+git clone https://github.com/kartoza/sawps.git
+```
+
+
+### 🏃‍♂️ How To Run Project with Visual Studio Code
 
 Copy and customize environnment file: Create a copy of the ```deployment/.template.env``` file and name it ```deployment/.env```. Update the ```deployment/.env``` file with your project-specific settings.
 ![image](https://user-images.githubusercontent.com/178003/231014472-c77f7a00-1a1d-43d0-8c06-ef9634f2ccc7.png)
@@ -59,7 +40,7 @@ Run the migrations inside the container: Press ```Cmd+Shift+P``` (macOS) or ```C
 
 ![django-migrate](https://github.com/timlinux/sawps/assets/178003/7ae66c26-2323-4664-9ead-b6c27dd5ad31)
 
-### 👩‍💻 Open the developer site
+#### 👩‍💻 Open the developer site
 
 Run the project inside the container: Press ```Cmd+Shift+D``` (macOS) or ```Ctrl+Shift+D``` (Windows/Linux), choose ```Django+React``` in the RUN AND DEBUG dropdown.
 
@@ -73,14 +54,14 @@ Review the list of forwarded ports from the container to your local host:
 
 Open your web browser and go to localhost:8000 to view the running application.
 
-### 👩‍🏭 Create a super user
+#### 👩‍🏭 Create a super user
 
 ![django-superuser1](https://github.com/timlinux/sawps/assets/178003/a7cfc797-5738-4de8-bdaa-deffce905c53)
 
 
 ![django-superuser2](https://github.com/timlinux/sawps/assets/178003/35f9f06e-79c3-405d-b7ce-b82a35ff28ac)
 
-### 💽 Restoring layer schema for map
+#### 💽 Restoring layer schema for map
 
 The full dump file for layer schema is ~5.3GB, meanwhile compact dump file is only 24MB.
 
@@ -100,10 +81,11 @@ cd /home
 pg_restore -h 127.0.0.1 -U docker -d django -n layer sanbi_layer_db_compact.dump
 ```
 
+## Architecture
 
-## 💻 Resources
+### High-level System Architecture
 
-[Database ERD](https://drive.google.com/file/d/1O92w2zwbKm_SARXnXIljHbX-rQPmFiXM/view?usp=sharing)
+### Date Model
 
-[Figma Board](https://www.figma.com/file/T6JEAAXTWzA9OIfAQe3iW7/SANBI?node-id=6-2&t=4T7COmsnfif2Nwwn-0)
 
+## Workflow
