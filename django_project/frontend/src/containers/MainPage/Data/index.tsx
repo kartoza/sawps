@@ -27,21 +27,13 @@ const MenuProps = {
 const FETCH_AVAILABLE_DATA = '/data-table/'
 
 const DataList = () => {
-    const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
-    const months = useAppSelector((state: RootState) => state.SpeciesFilter.months)
+    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const selectedMonths = useAppSelector((state: RootState) => state.SpeciesFilter.selectedMonths)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [selectedColumns, setSelectedColumns] = useState([]);
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
-    const selectedSpecies = SpeciesFilterList
-        .filter(obj => obj.is_selected)
-        .map(obj => obj.common_name_varbatim);
-    const speciesParam = selectedSpecies.join(',');
-    const selectedMonths = months.map(each => each).join(',');
-
-
-
     const columns: GridColDef[] = [
         { field: 'property_name', headerName: 'Property Name', width: 150 },
         { field: 'property_id', headerName: 'Property ID', width: 150 },
@@ -146,7 +138,7 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?month=${selectedMonths}&start_year=${startYear}&end_year=${endYear}&species=${speciesParam}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?month=${selectedMonths}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -159,7 +151,7 @@ const DataList = () => {
 
     useEffect(() => {
         fetchDataList();
-    }, [selectedMonths, startYear, endYear, speciesParam])
+    }, [selectedMonths, startYear, endYear, selectedSpecies])
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
             target: { value },
