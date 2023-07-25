@@ -238,6 +238,6 @@ class CustomPasswordResetView(View):
 def custom_password_reset_complete_view(request):
     return render(
         request,
-        'password_update.html',
+        'forgot_password_reset.html',
         {'show_password_message': True}
     )
