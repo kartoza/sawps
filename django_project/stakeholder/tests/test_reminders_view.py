@@ -877,7 +877,9 @@ class RemindersViewTest(TestCase):
 
         self.assertIsInstance(response, JsonResponse)
 
-    def test_get_reminders(self):
+    @patch('stakeholder.views.convert_reminder_dates')
+    @patch('frontend.serializers.stakeholder.ReminderSerializer')
+    def test_get_reminders(self, mock_convert_dates, mock_delete_reminder):
         url = reverse('reminders', kwargs={'slug': self.user.username})
         data = {
             'action': 'delete_reminder',
