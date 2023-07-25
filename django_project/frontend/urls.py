@@ -56,7 +56,9 @@ from frontend.api_views.population import (
     DraftPopulationUpload
 )
 from frontend.api_views.data_table import DataTableAPIView
-
+from frontend.api_views.metrics import (
+    SpeciesPopulationCountAPIView,
+)
 
 
 urlpatterns = [
@@ -189,4 +191,9 @@ urlpatterns = [
     path('users/', OrganisationUsersView.as_view(), name='Users'),
     path('contact/', ContactUsView.as_view(), name='contact'),
     path('data-table/', DataTableAPIView.as_view(), name='data-table'),
+    path(
+        'species-population-count/<int:property_id>/',
+        SpeciesPopulationCountAPIView.as_view(),
+        name='species_population_count'
+    ),
 ]
