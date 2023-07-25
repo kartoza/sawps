@@ -1,9 +1,12 @@
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib.auth import models
 from django.contrib.auth import login
 from django.contrib import messages
-from django.utils.http import urlsafe_base64_decode
+from django.utils.http import (
+    urlsafe_base64_decode,
+    urlsafe_base64_encode
+)
 from django.utils.encoding import force_str
 from django.views.generic import View
 from core.settings.contrib import SUPPORT_EMAIL
@@ -18,6 +21,9 @@ from django.core.mail import send_mail
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.urls import reverse
 
 
 class ActivateAccount(View):
@@ -133,7 +139,7 @@ class AddUserToOrganisation(View):
                 html_message=message
             )
             return True
-        except Exception as e:  # noqa
+        except Exception:
             return False
 
 
@@ -169,8 +175,8 @@ class SendRequestEmail(View):
                 html_message=message
             )
             return JsonResponse({'status': 'success'})
-        except Exception as e:  # noqa
-            return JsonResponse({'status': 'failed'})
+        except Exception as e:
+            return JsonResponse({'status': str(e)})
 
 
     def dispatch(self, request, *args, **kwargs):
@@ -178,3 +184,64 @@ class SendRequestEmail(View):
             return self.send_email(request)
         else:
             return super().dispatch(request, *args, **kwargs)
+
+
+class CustomPasswordResetView(View):
+    template_name = 'password_reset.html'
+
+    def send_reset_email(self, request):
+        user_email = request.POST.get('email')
+
+        try:
+            user = User.objects.get(email=user_email)
+            # Generate the reset token and UID
+            token = default_token_generator.make_token(user)
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            # Compose the reset link URL
+            reset_link_url = request.build_absolute_uri(
+                reverse('password_reset_confirm', kwargs={
+                        'uidb64': uidb64, 'token': token})
+            )
+            subject = 'Password Reset Request'
+            message = render_to_string(
+                'emails/password_reset.html',
+                {
+                    'domain': Site.objects.get_current().domain,
+                    'name': user.email,
+                    'reset_password_link': reset_link_url,
+                },
+            )
+            send_mail(
+                subject,
+                None,
+                settings.SERVER_EMAIL,
+                [user_email],
+                html_message=message
+            )
+
+            return render(
+                request,
+                'password_reset.html',
+                {'show_email_message': True}
+            )
+        except User.DoesNotExist:
+            return
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.POST.get('action') == 'sendemail':
+            return self.send_reset_email(request)
+        elif request.method == 'GET':
+            return render(
+                request,
+                'password_reset.html'
+            )
+        else:
+            return super().dispatch(request, *args, **kwargs)
+
+
+def custom_password_reset_complete_view(request):
+    return render(
+        request,
+        'forgot_password_reset.html',
+        {'show_password_message': True}
+    )
