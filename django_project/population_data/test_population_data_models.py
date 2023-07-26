@@ -251,12 +251,16 @@ class AnnualPopulationPerActivityTestCase(TestCase):
 
     def test_delete_population_count(self):
         """Test delete population count."""
+        initial_count = AnnualPopulationPerActivity.objects.count()
         self.population_count.delete()
+        with self.assertRaises(AnnualPopulationPerActivity.DoesNotExist):
+            AnnualPopulationPerActivity.objects.get(pk=self.population_count.pk)
         self.assertEqual(
-            AnnualPopulationPerActivity.objects.get(
-            pk=self.population_count.pk).count(),
-            0
+            AnnualPopulationPerActivity.objects.count(),
+            initial_count - 1,
+            msg="The count of AnnualPopulationPerActivity instances did not decrease by 1 after deletion."
         )
+
 
 
 class TestCertainty(TestCase):
