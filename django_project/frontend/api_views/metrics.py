@@ -1,5 +1,9 @@
-from frontend.filters.metrics import SpeciesPopulationCountFilter
+from frontend.filters.metrics import (
+    ActivityPercentageFilter,
+    SpeciesPopulationCountFilter,
+)
 from frontend.serializers.metrics import (
+    ActivityMatrixSerializer,
     SpeciesPopulationCountSerializer,
 )
 from rest_framework.permissions import IsAuthenticated
@@ -27,5 +31,28 @@ class SpeciesPopulationCountAPIView(APIView):
         queryset = self.get_queryset(property_id=property_id)
         serializer = self.serializer_class(
             queryset, many=True, context={'request': request}
+        )
+        return Response(serializer.data)
+
+
+class ActivityPercentageAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ActivityMatrixSerializer
+
+    def get_queryset(self):
+        organisation_id = self.request.session.get('current_organisation_id')
+        queryset = Taxon.objects.filter(
+            ownedspecies__property__organisation_id=organisation_id,
+            taxon_rank__name='Species'
+        ).distinct()
+        filtered_queryset = ActivityPercentageFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = ActivityMatrixSerializer(
+            queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
