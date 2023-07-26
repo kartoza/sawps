@@ -98,11 +98,12 @@ class ActivityPercentageTestCase(BaseTestCase):
         total = owned_species.annualpopulationperactivity_set.first().total
         activity_type = population[0]["activity_type__name"]
         percentage = (total / population[0]['total_count']) * 100
+        data = {activity_type:percentage}
         self.assertEqual(
             list(response.data[0]['activities'][0].keys())[0],
             activity_type,
         )
         self.assertEqual(
-            response.data[0]['activities'][0]['Activity #0'],
-            percentage,
+            response.data[0]['activities'][0],
+            data,
         )
