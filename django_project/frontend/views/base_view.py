@@ -1,11 +1,19 @@
 """Provide classes for base view."""
 from django.views.generic import TemplateView
-from stakeholder.models import OrganisationUser, Organisation
-from frontend.serializers.stakeholder import OrganisationSerializer
+from stakeholder.models import (
+    OrganisationUser,
+    Organisation,
+    Reminders
+)
+from frontend.serializers.stakeholder import (
+    OrganisationSerializer
+)
 from frontend.utils.organisation import (
     CURRENT_ORGANISATION_ID_KEY,
     CURRENT_ORGANISATION_KEY
 )
+from django.contrib import messages
+from stakeholder.models import UserProfile
 
 
 class RegisteredOrganisationBaseView(TemplateView):
@@ -24,6 +32,7 @@ class RegisteredOrganisationBaseView(TemplateView):
                 CURRENT_ORGANISATION_ID_KEY] = 0
             self.request.session[
                 CURRENT_ORGANISATION_KEY] = ''
+
 
 
     def get_or_set_current_organisation(self):
@@ -73,7 +82,27 @@ class RegisteredOrganisationBaseView(TemplateView):
                 id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         return OrganisationSerializer(organisations, many=True).data
 
-
+    def send_user_notifications(self):
+        reminders = Reminders.objects.filter(
+            user=self.request.user,
+            organisation=self.request.session[CURRENT_ORGANISATION_ID_KEY],
+            status=Reminders.PASSED,
+            email_sent=True
+        )
+        try:
+            user_profile = UserProfile.objects.get(user=self.request.user)
+            if not user_profile.received_notif:
+                for reminder in reminders:
+                    messages.success(
+                        self.request,
+                        reminder.title,
+                        extra_tags='notification'
+                    )
+            user_profile.received_notif = True
+            user_profile.save()
+        except Exception:
+            # incase the user doesnt have a profile
+            return
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -88,4 +117,5 @@ class RegisteredOrganisationBaseView(TemplateView):
         )
         ctx['current_organisation_id'] = current_organisation_id
         ctx['organisations'] = self.get_organisation_list()
+        self.send_user_notifications()
         return ctx
