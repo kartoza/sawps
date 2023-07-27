@@ -23,20 +23,19 @@ RUN pip3 install --upgrade pip && pip install --upgrade pip
 ARG CPUCOUNT=1
 RUN pip3 install -r /requirements.txt
 
+# install R packages
+RUN install2.r --error tidyverse tidygam mgcv ggpubr
+
 # add django project
 ADD django_project /home/web/django_project
 
 # create directories
 RUN mkdir -p /home/web/plumber_data/
 
-# add plumber.R as initial file
-ADD deployment/plumber/plumber.R /home/web/init_plumber.R
-
 # add entrypoint.sh
 ADD django_project/plumber_entrypoint.sh /home/web/plumber_entrypoint.sh
 
-# install R packages
-RUN install2.r --error ggplot2
+EXPOSE 8181
 
 WORKDIR /home/web/django_project
 ENTRYPOINT [ "/home/web/plumber_entrypoint.sh" ]

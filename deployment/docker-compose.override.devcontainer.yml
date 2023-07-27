@@ -35,9 +35,11 @@ services:
       - ../:/home/web/project
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
+      - ./volumes/plumber_data:/home/web/plumber_data
     links:
       - db
       - worker
+      - plumber
   
   tegola:
     volumes:
@@ -57,6 +59,8 @@ services:
       - ../django_project:/home/web/django_project
       - ./volumes/plumber_data:/home/web/plumber_data
       - ./volumes/media:/home/web/media
+    ports:
+      - "${PLUMBER_PORT:-8181}:8181"
     links:
       - db
       - redis

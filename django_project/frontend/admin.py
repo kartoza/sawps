@@ -194,57 +194,6 @@ class StatisticalModelAdmin(admin.ModelAdmin):
     search_fields = ['taxon', 'name']
 
 
-@admin.action(description='Run Statistical Model Task')
-def run_statistical_task_request(modeladmin, request, queryset):
-    for task_request in queryset:
-        if task_request.task_id:
-            res = AsyncResult(task_request.task_id)
-            if not res.ready():
-                app.control.revoke(
-                    task_request.task_id,
-                    terminate=True,
-                    signal='SIGKILL'
-                )
-                task_request.task_id = None
-                task_request.save(update_fields=['task_id'])
-        task = run_statistical_model.apply_async(
-            (task_request.id,),
-            queue='plumber'
-        )
-        task_request.task_id = task.id
-        task_request.save(update_fields=['task_id'])
-    modeladmin.message_user(
-        request,
-        'Statistical model will be run in background!',
-        messages.SUCCESS
-    )
-
-
-@admin.action(description='Cancel Statistical Model Task')
-def cancel_statistical_task_request(modeladmin, request, queryset):
-    for task_request in queryset:
-        if task_request.task_id:
-            app.control.revoke(
-                task_request.task_id,
-                terminate=True,
-                signal='SIGKILL'
-            )
-            task_request.task_id = None
-            task_request.save(update_fields=['task_id'])
-    modeladmin.message_user(
-        request,
-        'Statistical model tasks have been cancelled!',
-        messages.SUCCESS
-    )
-
-
-class StatisticalTaskRequestAdmin(admin.ModelAdmin):
-    list_display = ('statistical_model', 'uuid',
-                    'is_success', 'request_by', 'status')
-    search_fields = ('taxon', 'statistical_model', 'uuid')
-    actions = [run_statistical_task_request, cancel_statistical_task_request]
-
-
 admin.site.register(ContextLayer, ContextLayerAdmin)
 admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
@@ -252,4 +201,3 @@ admin.site.register(BoundaryFile, BoundaryFileAdmin)
 admin.site.register(BoundarySearchRequest, BoundarySearchRequestAdmin)
 admin.site.register(DraftSpeciesUpload, DraftSpeciesUploadAdmin)
 admin.site.register(StatisticalModel, StatisticalModelAdmin)
-admin.site.register(StatisticalTaskRequest, StatisticalTaskRequestAdmin)

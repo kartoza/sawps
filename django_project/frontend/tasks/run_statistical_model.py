@@ -2,6 +2,7 @@ from celery import shared_task
 import logging
 import traceback
 import os
+from signal import SIGKILL
 import time
 import csv
 import subprocess
@@ -20,8 +21,7 @@ from population_data.models import (
 
 
 logger = logging.getLogger(__name__)
-# when running with more than 1 worker, this needs to be a list
-PLUMBER_PORT = 8000
+PLUMBER_PORT = os.getenv('PLUMBER_PORT', 8181)
 # when the code contains one of plot functions, output to png
 R_PLOT_FUNCTIONS = [
     'plot',
@@ -34,8 +34,7 @@ R_PLOT_FUNCTIONS = [
     'coplot'
 ]
 
-
-@shared_task(name="run_statistical_model")
+# disable this task
 def run_statistical_model(request_id):
     request_task = StatisticalTaskRequest.objects.get(id=request_id)
     # reset result fields
@@ -255,3 +254,88 @@ def execute_statistical_model(request: StatisticalTaskRequest):
     else:
         request.statistical_model.last_error = None
     request.statistical_model.save()
+
+
+def spawn_initial_r_plumber():
+    """Run Plumber API server."""
+    command_list = (
+        [
+            'R',
+            '-e',
+            (
+                "pr <- plumber::plumb("
+                f"'/home/web/plumber_data/plumber.R'); "
+                f"args <- list(host = '0.0.0.0', port = {PLUMBER_PORT}); "
+                "do.call(pr$run, args)"
+            )
+        ]
+    )
+    logger.info('Starting plumber API')
+    process = None
+    try:
+        # redirect stdout and stderr
+        with open('/proc/1/fd/1', 'w') as fd:
+            process = subprocess.Popen(
+                command_list,
+                stdout=fd,
+                stderr=fd
+            )
+        # sleep for 2 seconds to wait the API is up
+        time.sleep(2)
+        # we can also use polling to echo endpoint for health check
+        plumber_health_check()
+        # write process pid to /tmp/
+        with open('/tmp/plumber.pid', 'w', encoding='utf-8') as f:
+            f.write(str(process.pid))
+    except Exception as ex:  # noqa
+        logger.error(ex)
+        logger.error(traceback.format_exc())
+        if process:
+            process.terminate()
+            process = None
+    return process
+
+
+def read_pid_from_pidfile(pidfile_path):
+    """ Read the PID recorded in the named PID file.
+
+        Read and return the numeric PID recorded as text in the named
+        PID file. If the PID file cannot be read, or if the content is
+        not a valid PID, return ``None``.
+
+        """
+    pid = None
+    try:
+        pidfile = open(pidfile_path, 'r')
+    except IOError:
+        pass
+    else:
+        # According to the FHS 2.3 section on PID files in /var/run:
+        #
+        #   The file must consist of the process identifier in
+        #   ASCII-encoded decimal, followed by a newline character.
+        #
+        #   Programs that read PID files should be somewhat flexible
+        #   in what they accept; i.e., they should ignore extra
+        #   whitespace, leading zeroes, absence of the trailing
+        #   newline, or additional lines in the PID file.
+
+        line = pidfile.readline().strip()
+        try:
+            pid = int(line)
+        except ValueError:
+            pass
+        pidfile.close()
+
+    return pid
+
+
+def kill_r_plumber_process():
+    pid_path = os.path.join(
+        'tmp',
+        'plumber.pid'
+    )
+    plumber_pid = read_pid_from_pidfile(pid_path)
+    if plumber_pid:
+        # kill a process via pid
+        os.kill(plumber_pid, SIGKILL)

@@ -82,6 +82,7 @@ services:
     links:
       - db
       - worker
+      - plumber
 
   worker:
     <<: *default-common-django
@@ -100,6 +101,7 @@ services:
     links:
       - db
       - worker
+      - plumber
 
   tegola:
     image: *tegola-image
@@ -149,6 +151,7 @@ services:
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-core.settings.prod}
       - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
       - SENTRY_DSN=${SENTRY_DSN}
+      - PLUMBER_PORT=${PLUMBER_PORT:-8181}
     volumes:
       - plumber-data:/home/web/plumber_data
       - media-data:/home/web/media
