@@ -75,7 +75,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
 
     def get_activities(self, obj):
         property = self.context['request'].GET.get('property')
-        property_list = property.split(',') if property else None
+        property_list = property.split(',') if property else []
         owned_species = OwnedSpecies.objects.values(
             "taxon__common_name_varbatim"
         ).filter(taxon=obj)
