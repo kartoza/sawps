@@ -27,6 +27,7 @@
           <div class="col-md-6" style="padding-top: 6px; padding-left: 1%;" >
           </div>
           <div class="col-md-3" style="margin:auto; padding-bottom:0.25% ">
+
             <div class="" style="display:flex; border-radius:5px; border:1px white solid">
                 <input style="border-radius:0px 0px; border:none;" type="search" id="searchInput" class="form-control" />
               <div style="background-color:white; border:none; border-radius:0px 0px" class="btn btn-primary">
@@ -50,7 +51,7 @@
 
 
       <!-- notifications table -->
-      <div class="my-row" style="margin-top: 1%; margin-left: -1%;">
+      <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
       <table id="notifications" class="table table-bordereless" cellspacing="0" width="100%">
         <thead>
           <tr>
@@ -286,7 +287,7 @@
 <style>
 
     .green-background {
-      background-color: #70B276; /* Adjust the alpha value as needed */
+      background-color: var(--green);
     }
 
     .my-row {
@@ -298,7 +299,7 @@
     }
 
     .pagination a.page-link {
-        color: #70B276;
+        color: var(--green);
     }
 
     tfoot select.form-control {
@@ -322,11 +323,11 @@
     tfoot select.form-control:focus {
         outline: none;
         box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-        border-color: #70B276;
+        border-color: var(--green);
     }
 
     .form-control:focus {
-        border-color: #70B276;
+        border-color: var(--green);
         box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
     }
 
