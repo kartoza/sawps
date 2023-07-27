@@ -9,7 +9,7 @@
   <div class="container py-5 content">
       <div class="container">
         <div class="row">
-          <h3 class="page-title sawps-text-menu mb-3" style="color: #70B276;">{{ current_organisation }}</h3>
+          <h3 class="page-title sawps-text-menu mb-3" style="color: var(--green)">{{ current_organisation }}</h3>
           <div class="col-auto ml-auto">
             {% if role == 'Admin' or role == 'Super User' or user.is_superuser %}
               <button class="btn btn-custom" type="button" data-toggle="modal" data-target="#myModal">
@@ -23,7 +23,7 @@
         
       <div class="container">
        <div class="row">
-        <h4 class="page-title sawps-text-menu mb-3" style="color: #70B276;">Members</h4>
+        <h4 class="page-title sawps-text-menu mb-3" style="color: var(--green)">Members</h4>
         <div class="col-md-12"> 
           
 
@@ -33,7 +33,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="myModalLabel" style="color: #70B276;">Invite people to {{ current_organisation }}</h5>
+                  <h5 class="modal-title" id="myModalLabel" style="color: var(--green)">Invite people to {{ current_organisation }}</h5>
                 </div>
                 <div class="modal-body">
                   <div class="form-group">
@@ -58,7 +58,7 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-success mx-auto" id="inviteBtn" style="background-color: #70B276;;" onclick="invitePeople()">Invite</button>
+                  <button type="button" class="btn btn-success mx-auto" id="inviteBtn" style="background-color: var(--green);" onclick="invitePeople()">Invite</button>
                 </div>
               </div>
             </div>
@@ -236,7 +236,7 @@
         
         <!-- invitations table -->
         <div class="row">
-          <h4 class="page-title sawps-text-menu mb-3" style="color: #70B276;">Invitations</h4>
+          <h4 class="page-title sawps-text-menu mb-3" style="color: var(--green)">Invitations</h4>
         
           <table id="invites" class="table table-striped table-bordereless" width="100%">
             <thead>
@@ -522,25 +522,25 @@
 <style>
 
 .btn-custom_red {
-        background-color: #FF5252;
-        border-color: #FF5252; 
+        background-color: var(--red);
+        border-color: var(--red); 
         color: #FFFFFF;
       }
 
 .btn-custom {
-        background-color: #70B276;
-        border-color: #70B276; 
+        background-color: var(--green);
+        border-color: var(--green); 
         color: #FFFFFF;
     }
 
     .btn-custom:hover {
-        background-color: #70B276; 
-        border-color: #70B276;
+        background-color: var(--green); 
+        border-color: var(--green);
         color: #FFFFFF; 
     }
 
     .badge-success {
-    background-color: #70B276;
+    background-color: var(--green);
     color: white;
     }
 
@@ -552,7 +552,7 @@
 
 
 .pagination a.page-link {
-  color: #70B276;
+  color: var(--green);
 }
 
 table#organisation_users tbody tr td:last-child {
@@ -592,13 +592,13 @@ tfoot select.form-control {
 tfoot select.form-control:focus {
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-  border-color: #70B276;
+  border-color: var(--green);
 }
 
 
 
 .form-control:focus {
-  border-color: #70B276;
+  border-color: var(--green);
   box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
 }
 
@@ -620,20 +620,20 @@ tfoot select.form-control:focus {
   }
 
   .email-input:focus {
-    border-color: #70B276;
+    border-color: var(--green);
     box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
   }
 
   .custom-select {
     color: black; /* Set the default text color to black */
     background-color: #f8f9fa;
-    border-color: #70B276;
+    border-color: var(--green);
   }
 
   .custom-select:focus {
     outline: none;
     box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-    border-color: #70B276;
+    border-color: var(--green);
   }
 
   .form-group label {
