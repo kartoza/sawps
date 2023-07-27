@@ -61,6 +61,7 @@
     }
   </style>
     <script>
+      // MESSAGES FADE OUT
       $(document).ready(function() {
           // Check if the password-reset-page class exists on the body
           if ( ! $('section').hasClass('password-reset-page')) {
@@ -69,6 +70,123 @@
               }, 3000); // Adjust the duration (in milliseconds) as needed
           }
       });
+
+      // GET MESSAGES IF ANY
+      function getMessageLength() {
+        // Try to get the number of messages from localStorage
+        let messageLength = parseInt(localStorage.getItem('message_length'));
+
+        return isNaN(messageLength) ? 0 : messageLength;
+      }
+
+      // STORE MESSAGES LENGTH
+      function storeMessageLength(messageLength) {
+        localStorage.setItem('message_length', messageLength);
+      }
+
+      // SHOW BELL ICON IF ON PROFILE/REMINDERS PAGE
+      function updateBellIcon() {
+        const messageLength = getMessageLength();
+        var notificationBell = ''
+        var notificationBadge = ''
+        try{
+          notificationBell = document.getElementById('notificationBell');
+          notificationBadge = document.querySelector('.notification-badge');
+        }catch(exception){
+          console.log(exception.message)
+        }
+        
+        if (messageLength > 0) {
+          // Display the bell icon with the badge
+          notificationBell.style.display = 'block';
+          // Set the badge number
+           notificationBadge.innerText = messageLength;
+        }else if (window.location.href.includes("notifications")) {
+          try{
+            // reset 
+              localStorage.setItem('message_length',0)
+            // Hide the bell icon when there are no messages
+            notificationBell.style.display = 'none';
+          }catch(exception){
+            console.log(exception)
+          }
+        }
+      }
+
+
+      // UPDATE USER IF ANY NEW MESSAGES
+      function checkIdleAndReload() {
+        let idleTimer;
+        let hasUserActivity = false;
+
+        function reloadPage() {
+          location.reload();
+        }
+
+        function resetIdleTimer() {
+          clearTimeout(idleTimer);
+          idleTimer = setTimeout(reloadPage, 7000); // if theres no user activity for 7 seconds so as to not interupt some user activity
+        }
+
+        document.addEventListener('mousemove', function() {
+          hasUserActivity = true;
+          resetIdleTimer();
+        });
+
+        document.addEventListener('keydown', function() {
+          hasUserActivity = true;
+          resetIdleTimer();
+        });
+
+        setInterval(function() {
+          if (!hasUserActivity) {
+            const message_length = '{{ messages|length }}'
+            if(parseInt(message_length)){
+              localStorage.setItem('message_length',message_length)
+              reloadPage();
+            }
+          } else {
+            hasUserActivity = false;
+          }
+        }, 150000); //every 2.5 minutes attempt to get new messages
+
+      }
+
+      
+      var message_length = '{{ messages|length }}'
+      console.log('messages: ',message_length)
+      console.log(window.location.href)
+
+      if(localStorage.getItem('message_length') === null || parseInt(localStorage.getItem('message_length')) === 0){
+        if(message_length > 0){
+          storeMessageLength(message_length); //store message length
+          if(window.location.href.includes("profile") || window.location.href.includes("reminders")){
+            setTimeout(function() {
+              updateBellIcon();
+            }, 300);
+          }
+        }else
+          checkIdleAndReload();
+          
+      }else if (window.location.href.includes("profile") || window.location.href.includes("reminders")) {
+
+          setTimeout(function() {
+            updateBellIcon();
+          }, 300);
+
+      }else if(window.location.href.includes("notifications"))
+        localStorage.setItem('message_length',0)
+      else if(!window.location.href.includes("map") || window.location.href.includes("signup") || window.location.href.includes("login"))
+        // continue checking for new messages
+        checkIdleAndReload();
+      
+        
+      
+        
+      
+
+          
+
   </script>
 
 <div style="min-height:81vh">
