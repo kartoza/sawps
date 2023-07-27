@@ -877,6 +877,7 @@ class RemindersViewTest(TestCase):
 
         self.assertIsInstance(response, JsonResponse)
 
+
 class NotificationsViewTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
