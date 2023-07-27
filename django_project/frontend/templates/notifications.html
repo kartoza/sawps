@@ -22,34 +22,22 @@
           
 
       
-      
-        <div class="my-row green-background row" style="height: 50px; border-radius: 5px; margin-left:0.1%;">
+        <!-- search and filter -->
+        <div class="my-row green-background row" style="  border-radius: 5px; margin-left:0.1%; padding-top:0.5%; padding-bottom: 0.25%;">
           <div class="col-md-6" style="padding-top: 6px; padding-left: 1%;" >
-            <div class="form-group" style="width: 60%;">
-              <select class="form-control" id="selectAction" >
-                <option value="">Select Action</option>
-                <option value="delete">Delete</option>
-                <option value="view">View</option>
-                <!-- Add more options as needed -->
-              </select>
-            </div>
           </div>
-          <div class="col-md-3" style="padding-top: 6px;">
-            <div class="input-groups" style="display:flex; border-radius:5px; border:1px white solid">
-             
+          <div class="col-md-3" style="margin:auto; padding-bottom:0.25% ">
+
+            <div class="" style="display:flex; border-radius:5px; border:1px white solid">
                 <input style="border-radius:0px 0px; border:none;" type="search" id="searchInput" class="form-control" />
-               
-               
               <div style="background-color:white; border:none; border-radius:0px 0px" class="btn btn-primary">
                 <i class="fas fa-search"></i>
               </div>
             </div>
-            
-        
         </div>
-        <div class="col-md-3" style="padding-top: 6px; padding-left: 1px; padding-right: 1%;">
-          <div class="form-group">
-            <select id="filterSelect" class="form-control">
+        <div class="col-md-3" style="margin:auto; padding-bottom: 0.25%;">
+          <div class="" style="border:1px white solid; border-radius:5px ">
+            <select id="filterSelect" class="form-control" style="width:100%; border: none;">
               <option value="">Filter</option>
               <option value="title">Title</option>
               <option value="reminder">Notification</option>
@@ -63,29 +51,28 @@
 
 
       <!-- notifications table -->
-      <div class="my-row" style="margin-top: 1%; margin-left: -1%;">
+      <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
       <table id="notifications" class="table table-bordereless" cellspacing="0" width="100%">
         <thead>
           <tr>
-            <th>
-              <input type="checkbox" id="selectAll">
-            </th>
             <th>Title</th>
             <th>Date</th>
             <th>notification</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {% for notification in notifications %}
             <tr>
-              <td><input type="checkbox" value="{{ notification.id }}"></td>
-              <td>{{ notification.title }}</td>
-              <td>{{ notification.date }}</td>
-              <td>{{ notification.reminder }}</td>
+              <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.title }}</td>
+              <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.date }}</td>
+              <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.reminder }}</td>
+              <td><i class="fas fa-trash-alt trash-icon" data-object-id="{{ notification.id }}"></i></td>
             </tr>
           {% endfor %}
         </tbody>        
-          
+        
+        <!-- table footer with pagination -->
         <tfoot>
             <tr>
               <td colspan="5">
@@ -152,37 +139,7 @@
       modal.style.display = "none";
     }
 
-    // for checkboxes
-    $(document).ready(function() {
-      // Get the "selectAll" checkbox element
-      var selectAllCheckbox = document.getElementById('selectAll');
-  
-      // Get all the checkboxes in the table
-      var checkboxes = document.querySelectorAll('#notifications tbody input[type="checkbox"]');
-  
-      // Add event listener to "selectAll" checkbox
-      selectAllCheckbox.addEventListener('change', function() {
-        var isChecked = this.checked;
-  
-        // Set the state of all checkboxes in the table
-        checkboxes.forEach(function(checkbox) {
-          checkbox.checked = isChecked;
-        });
-      });
-  
-      // Add event listener to individual checkboxes
-      checkboxes.forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-          // Check if all checkboxes are selected
-          var allChecked = document.querySelectorAll('#notifications tbody input[type="checkbox"]:checked').length === checkboxes.length;
-  
-          // Update the state of "selectAll" checkbox
-          selectAllCheckbox.checked = allChecked;
-        });
-      });
-    });
-
-    // updating rows per page for the respective tables
+    // updating rows per page
     function updateRowsPerPage(table, selectElement) {
         var selectedValue = selectElement.value;
         var url = new URL(window.location.href);
@@ -198,6 +155,8 @@
             makeSearchQuery(formData)
       });
     });
+
+    // refresh table 
     function constructRemindersTable(data){
       var tableBody = $('#notifications tbody');
       tableBody.empty();
@@ -205,16 +164,16 @@
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
           var row = '<tr>';
-          row += '<td><input type="checkbox" value="' + data[i].id + '"></td>';
-          row += '<td>' + data[i].title + '</td>';
-          row += '<td>' + data[i].date + '</td>';
-          row += '<td>' + data[i].reminder + '</td>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].title + '</td>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].date + '</td>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].reminder + '</td>';
+          row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].id + '></i></td>';
           row += '</tr>';
 
           tableBody.append(row);
+        }
       }
     }
-  }
 
     function makeSearchQuery(formData){
       // check if a filter is currently selected
@@ -245,123 +204,90 @@
       });
     }
 
+    // GET NOTIFICATION
+    var tableBody = document.getElementById('notifications');
+      tableBody.addEventListener('click', function(event) {
+        var target = event.target;
+        if (target.classList.contains('clickable-row')) {
+          var reminderId = target.getAttribute('data-href');
+          var id = []
+          id.push(reminderId)
+          $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: {
+              'action': 'get_notification', 
+              'ids': JSON.stringify(id),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+              reminder = response.data
+              // Get the modal element and individual content elements
+              var modal = document.getElementById("notificationModal");
+              var titleElement = document.getElementById("notificationTitle");
+              var contentElement = document.getElementById("notificationContent");
+              var dateElement = document.getElementById("notificationDate");
 
-        // select actions
-        $(document).ready(function() {
-        // Event handler for the select action dropdown
-        $('#selectAction').on('change', function() {
-            var selectedOption = $(this).val();
-            // Call the function to get the IDs of the selected checkboxes
-            var selectedIds = getSelectedIds();
+              titleElement.textContent = response.data[0].title;
+              contentElement.textContent = response.data[0].reminder;
+              dateElement.textContent = "Date: " + response.data[0].date;
 
-            if (selectedIds.length !== 0){
-              // Check the selected option
-              if (selectedOption === 'delete') {
-                $('#deleteConfirmationModal').modal('show');
-                document.getElementById('deleteConfirmationBtn').addEventListener('click', function() {
-                  $.ajax({
-                    type: 'POST',
-                    url: $(this).attr('action'),
-                    data: {
-                      'action': 'delete_notification', 
-                      'notifications_page': true,
-                      'ids': JSON.stringify(selectedIds),
-                      'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                      console.log(response)
-                      constructRemindersTable(response.data)   
-                      $('#notificationsRowsPerPage').val('{{ notifications.paginator.num_pages }}');
-                      $('#notificationsRowsPerPage').val(20);
-                    },
-                    error: function(xhr, status, error) {
-                      // Handle the error response
-                    }
-                  });
-                  $('#deleteConfirmationModal').modal('hide');
-                });
-              }else if(selectedOption === 'view' && selectedIds.length <= 2) {
-                $.ajax({
-                    type: 'POST',
-                    url: $(this).attr('action'),
-                    data: {
-                        'action': 'get_notification', 
-                        'ids': JSON.stringify(selectedIds),
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        reminder = response.data
-                        // Get the modal element and individual content elements
-                        var modal = document.getElementById("notificationModal");
-                        var titleElement = document.getElementById("notificationTitle");
-                        var contentElement = document.getElementById("notificationContent");
-                        var dateElement = document.getElementById("notificationDate");
+              // Show the modal
+              modal.style.display = "block";
 
-                        titleElement.textContent = response.data[0].title;
-                        contentElement.textContent = response.data[0].reminder;
-                        dateElement.textContent = "Date: " + response.data[0].date;
-
-                        // Show the modal
-                        modal.style.display = "block";
-
-                        // Add event listener to close the modal when clicked outside
-                        window.addEventListener("click", function(event) {
-                            if (event.target === modal) {
-                              hideModal();
-                            }
-                        });
-                    },
-                    error: function(error) {
-                        // Handle the error response
-                        console.log(error);
-                    }
-                });
-
-                
-              }
-
+              // Add event listener to close the modal when clicked outside
+              window.addEventListener("click", function(event) {
+                if(event.target === modal) {
+                  hideModal();
+                }
+              });
+            },
+            error: function(error) {
+              // Handle the error response
+              alert(error);
             }
-            
-        });
-
-        // Function to get the IDs of the selected checkboxes
-        function getSelectedIds() {
-            var selectedIds = [];
-            $('input[type="checkbox"]:checked').each(function() {
-            selectedIds.push($(this).val());
-            });
-            return selectedIds;
+          });
         }
-        });
+      });
 
+      // DELETE ICON
+      $(document).ready(function() {
+        // Event delegation for trash icon click
+        $(document).on('click', '.trash-icon', function() {
+          var objectId = []
+          objectId.push( $(this).data('object-id').toString());
+          $('#deleteConfirmationModal').modal('show');
+            document.getElementById('deleteConfirmationBtn').addEventListener('click', function() {
+            // post request and object
+            $.ajax({
+              type: 'POST',
+              url: $(this).attr('action'),
+              data: {
+                'action': 'delete_notification',
+                'notifications_page': true,
+                'ids': JSON.stringify(objectId),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              success: function(response) {
+                constructRemindersTable(response.data)   
+                  $('#notificationsRowsPerPage').val('{{ notifications.paginator.num_pages }}');
+                  $('#notificationsRowsPerPage').val(20);
+              },
+              error: function(xhr, status, error) {
+              // Handle the error response
+              }
+            });
+            $('#deleteConfirmationModal').modal('hide');
+          });
+        });
+      });
 
   </script>
 
 <style>
-    .badge-purple {
-    background-color: purple;
-    color: white;
-    }
 
-    .badge-warning {
-    background-color: orange;
-    color: white;
-    }
-
-    select.form-control:focus {
-      outline-color: green;
-      border-color: green;
-      box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-    }
-
-    .form-control.search-input:focus {
-    outline-color: green;
-    border-color: green;
-    box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-  }
-
-  .green-background {
-    background-color: rgba(0, 128, 0, 0.5); /* Adjust the alpha value as needed */
+    .green-background {
+      background-color: var(--green);
     }
 
     .my-row {
@@ -373,7 +299,7 @@
     }
 
     .pagination a.page-link {
-        color: green;
+        color: var(--green);
     }
 
     tfoot select.form-control {
@@ -397,26 +323,12 @@
     tfoot select.form-control:focus {
         outline: none;
         box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-        border-color: green;
+        border-color: var(--green);
     }
 
     .form-control:focus {
-        border-color: green;
+        border-color: var(--green);
         box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-    }
-
-    /* Position the alert at the top right corner */
-    .position-fixed {
-        position: fixed;
-        z-index: 100; /* Adjust the z-index value as needed */
-    }
-
-    .top-0 {
-        top: 0;
-    }
-
-    .end-0 {
-        right: 0;
     }
 
    

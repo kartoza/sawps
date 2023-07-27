@@ -135,5 +135,5 @@ class CustomPasswordResetCompleteViewTest(TestCase):
         # Check that the response is a rendered template
         self.assertEqual(response.status_code, 200)
         self.assertIn('Password Reset', response.content.decode('utf-8'))
-        self.assertIn('Your Password has been reset successfully .Please proceed to log in',
+        self.assertIn('Your password has been reset successfully. Kindly proceed to log in.',
                       response.content.decode('utf-8'))
