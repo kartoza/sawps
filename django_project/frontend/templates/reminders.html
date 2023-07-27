@@ -104,9 +104,6 @@
       <table id="reminders" class="table table-bordereless" cellspacing="0" width="100%">
         <thead>
           <tr>
-            <!-- <th>
-              <input type="checkbox" id="selectAll">
-            </th> -->
             <th>Title</th>
             <th>Date</th>
             <th>Reminder</th>
@@ -117,7 +114,6 @@
         <tbody>
           {% for reminder in reminders %}
           <tr>
-              <!-- <td><input type="checkbox" value="{{ reminder.id }}"></td> -->
               <td class="clickable-row clickable" data-href="{{ reminder.id }}">{{ reminder.title }}</td>
               <td class="clickable-row clickable" data-href="{{ reminder.id }}">{{ reminder.date }}</td>
               <td class="clickable-row clickable" data-href="{{ reminder.id }}">{{ reminder.reminder }}</td>
@@ -517,41 +513,46 @@
 
 <style>
     .btn-custom {
-        background-color: #70B276;
-        border-color: #70B276; 
+        background-color: var(--green);
+        border-color: var(--green); 
         color: #FFFFFF;
     }
 
     .btn-custom:hover {
-        background-color: #70B276; 
-        border-color: #70B276;
+        background-color: var(--green); 
+        border-color: var(--green);
         color: #FFFFFF; 
     }
 
     .badge-purple {
-    background-color: #9D85BE;
+    background-color: var(--purple);
+    color: white;
+    }
+
+    .badge-success {
+    background-color: var(--green);
     color: white;
     }
 
     .badge-warning {
-    background-color: #FAA755;
+    background-color: var(--orange);
     color: white;
     }
 
     select.form-control:focus {
-      outline-color: #70B276;
-      border-color: #70B276;
+      outline-color: var(--green);
+      border-color: var(--main-green);
       box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
     }
 
     .form-control.search-input:focus {
-      outline-color: #70B276;
-      border-color: #70B276;
+      outline-color: var(--green);
+      border-color: var(--green);
       box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
     }
 
     .green-background {
-      background-color: #70B276; /* Adjust the alpha value as needed */
+      background-color: var(--green);
     }
 
     .my-row {
@@ -563,7 +564,7 @@
     }
 
     .pagination a.page-link {
-        color: #70B276;
+      color: var(--green);
     }
 
     tfoot select.form-control {
@@ -587,11 +588,11 @@
     tfoot select.form-control:focus {
         outline: none;
         box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
-        border-color: #70B276;
+        border-color: var(--green);
     }
 
     .form-control:focus {
-        border-color: #70B276;
+        border-color: var(--green);;
         box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
     }
 
