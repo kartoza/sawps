@@ -6,6 +6,7 @@ from frontend.serializers.metrics import (
     ActivityMatrixSerializer,
     SpeciesPopulationCountSerializer,
 )
+from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -55,4 +56,8 @@ class ActivityPercentageAPIView(APIView):
         serializer = ActivityMatrixSerializer(
             queryset, many=True, context={"request": request}
         )
-        return Response(serializer.data)
+        serializer_data = {
+            "data": serializer.data,
+            "activity_colours": ACTIVITY_COLORS_DICT
+        }
+        return Response(serializer_data)

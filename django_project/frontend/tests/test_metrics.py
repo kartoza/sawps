@@ -100,10 +100,10 @@ class ActivityPercentageTestCase(BaseTestCase):
         percentage = (total / population[0]['total_count']) * 100
         data = {activity_type:percentage}
         self.assertEqual(
-            list(response.data[0]['activities'][0].keys())[0],
+            list(response.data['data'][0]['activities'][0].keys())[0],
             activity_type,
         )
         self.assertEqual(
-            response.data[0]['activities'][0],
+            response.data['data'][0]['activities'][0],
             data,
         )

@@ -17,13 +17,7 @@ const FETCH_ACTIVITY_PERCENTAGE_URL = '/activity-percentage/'
 const ActivityDonutChart = () => {
     const [loading, setLoading] = useState(false)
     const [activityData, setActivityData] = useState([])
-    const activityType = {
-        "Unplanned/illegal hunting": "#FF5252",
-        "Planned euthanasia": "rgb(83 83 84)",
-        "Unplanned/natural deaths": "#75B37A",
-        "Planned hunt/cull": "#282829",
-        "Planned translocation": "#F9A95D"
-    };
+    const [activityType,setActivityType] = useState({})
 
 
     const fetchActivityPercentageData = () => {
@@ -31,7 +25,8 @@ const ActivityDonutChart = () => {
         axios.get(FETCH_ACTIVITY_PERCENTAGE_URL).then((response) => {
             setLoading(false)
             if (response.data) {
-                setActivityData(response.data)
+                setActivityData(response.data.data)
+                setActivityType(response.data.activity_colours)
             }
         }).catch((error) => {
             setLoading(false)
@@ -109,7 +104,7 @@ const ActivityDonutChart = () => {
                             datasets: [
                                 {
                                     data: labels.map((label) => {
-                                        const activity = item?.activities.find((activity: any) => activity[label]);
+                                        const activity = item?.activities?.find((activity: any) => activity[label]);
                                         return activity ? activity[label] : 0;
                                     }),
                                     backgroundColor: Object.values(activityType),
