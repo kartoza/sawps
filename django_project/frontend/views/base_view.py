@@ -14,6 +14,7 @@ from frontend.utils.organisation import (
 )
 from django.contrib import messages
 from stakeholder.models import UserProfile
+from datetime import datetime
 
 
 class RegisteredOrganisationBaseView(TemplateView):
@@ -83,11 +84,13 @@ class RegisteredOrganisationBaseView(TemplateView):
         return OrganisationSerializer(organisations, many=True).data
 
     def send_user_notifications(self):
+        current_date = datetime.now().date()
         reminders = Reminders.objects.filter(
             user=self.request.user,
             organisation=self.request.session[CURRENT_ORGANISATION_ID_KEY],
             status=Reminders.PASSED,
-            email_sent=True
+            email_sent=True,
+            date__date=current_date
         )
         try:
             user_profile = UserProfile.objects.get(user=self.request.user)
