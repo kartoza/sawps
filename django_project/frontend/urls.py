@@ -14,52 +14,50 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
-from .views.home import HomeView
-from .views.map import MapView
-from .views.help import HelpView
-from .views.about import AboutView
-
-from .views.users import OrganisationUsersView
-from .views.contact import ContactUsView
-from .views.switch_organisation import switch_organisation
-from .views.online_form import OnlineFormView
-
-
+from frontend.api_views.data_table import DataTableAPIView
 from frontend.api_views.map import (
-    ContextLayerList,
-    MapStyles,
     AerialTile,
-    PropertiesLayerMVTTiles,
+    ContextLayerList,
     FindParcelByCoord,
     FindPropertyByCoord,
-    MapAuthenticate
+    MapAuthenticate,
+    MapStyles,
+    PropertiesLayerMVTTiles,
+)
+from frontend.api_views.metrics import (
+    ActivityPercentageAPIView,
+    SpeciesPopulationCountAPIView,
+)
+from frontend.api_views.population import (
+    DraftPopulationUpload,
+    FetchDraftPopulationUpload,
+    PopulationMetadataList,
+    UploadPopulationAPIVIew,
 )
 from frontend.api_views.property import (
     CreateNewProperty,
-    PropertyMetadataList,
-    PropertyList,
-    UpdatePropertyInformation,
-    UpdatePropertyBoundaries,
     PropertyDetail,
+    PropertyList,
+    PropertyMetadataList,
+    UpdatePropertyBoundaries,
+    UpdatePropertyInformation,
 )
 from frontend.api_views.upload import (
-    BoundaryFileUpload,
-    BoundaryFileRemove,
     BoundaryFileList,
+    BoundaryFileRemove,
     BoundaryFileSearch,
-    BoundaryFileSearchStatus
-)
-from frontend.api_views.population import (
-    PopulationMetadataList,
-    UploadPopulationAPIVIew,
-    FetchDraftPopulationUpload,
-    DraftPopulationUpload
-)
-from frontend.api_views.data_table import DataTableAPIView
-from frontend.api_views.metrics import (
-    SpeciesPopulationCountAPIView,
+    BoundaryFileSearchStatus,
+    BoundaryFileUpload,
 )
 
+from .views.about import AboutView
+from .views.contact import ContactUsView
+from .views.help import HelpView
+from .views.home import HomeView
+from .views.map import MapView
+from .views.online_form import OnlineFormView
+from .views.switch_organisation import switch_organisation
+from .views.users import OrganisationUsersView
 
 urlpatterns = [
     re_path(
@@ -195,5 +193,10 @@ urlpatterns = [
         'species-population-count/<int:property_id>/',
         SpeciesPopulationCountAPIView.as_view(),
         name='species_population_count'
+    ),
+    path(
+        'activity-percentage/',
+        ActivityPercentageAPIView.as_view(),
+        name='activity_percentage'
     ),
 ]

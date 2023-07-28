@@ -1,15 +1,16 @@
 import factory
-from species.models import (
-    TaxonRank,
-    Taxon,
-    ManagementStatus,
-    OwnedSpecies,
-    TaxonSurveyMethod
-)
 from django.contrib.auth.models import User
 from population_data.factories import (
     AnnualPopulationF,
+    AnnualPopulationPerActivityFactory,
     MonthFactory,
+)
+from species.models import (
+    ManagementStatus,
+    OwnedSpecies,
+    Taxon,
+    TaxonRank,
+    TaxonSurveyMethod,
 )
 
 
@@ -46,6 +47,7 @@ class TaxonFactory(factory.django.DjangoModelFactory):
     parent = None
     show_on_front_page = factory.Faker('boolean')
     is_selected = factory.Faker('boolean')
+    icon = factory.django.ImageField(filename='icon.jpg', color='blue')
 
 
 class ManagementStatusFactory(factory.django.DjangoModelFactory):
@@ -88,6 +90,22 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
             sub_adult_female=10,
             juvenile_total=40,
             pride=5
+        )
+
+    @factory.post_generation
+    def create_annual_population_per_activity(self, create, *args):
+        if not create:
+            return
+
+        AnnualPopulationPerActivityFactory.create(
+            year=factory.Faker('year'),
+            owned_species=self,
+            total=100,
+            adult_male=50,
+            adult_female=50,
+            month=factory.SubFactory(MonthFactory),
+            juvenile_male=30,
+            juvenile_female=30,
         )
 
 
