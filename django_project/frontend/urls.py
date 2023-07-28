@@ -14,50 +14,55 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
-from frontend.api_views.data_table import DataTableAPIView
+from .views.home import HomeView
+from .views.map import MapView
+from .views.help import HelpView
+from .views.about import AboutView
+
+from .views.users import OrganisationUsersView
+from .views.contact import ContactUsView
+from .views.switch_organisation import switch_organisation
+from .views.online_form import OnlineFormView
+from .views.totp_device import (
+    add_totp_device,
+    delete_totp_device,
+    view_totp_devices,
+)
+
+
 from frontend.api_views.map import (
-    AerialTile,
     ContextLayerList,
+    MapStyles,
+    AerialTile,
+    PropertiesLayerMVTTiles,
     FindParcelByCoord,
     FindPropertyByCoord,
-    MapAuthenticate,
-    MapStyles,
-    PropertiesLayerMVTTiles,
-)
-from frontend.api_views.metrics import (
-    ActivityPercentageAPIView,
-    SpeciesPopulationCountAPIView,
-)
-from frontend.api_views.population import (
-    DraftPopulationUpload,
-    FetchDraftPopulationUpload,
-    PopulationMetadataList,
-    UploadPopulationAPIVIew,
+    MapAuthenticate
 )
 from frontend.api_views.property import (
     CreateNewProperty,
-    PropertyDetail,
-    PropertyList,
     PropertyMetadataList,
-    UpdatePropertyBoundaries,
+    PropertyList,
     UpdatePropertyInformation,
+    UpdatePropertyBoundaries,
+    PropertyDetail,
 )
 from frontend.api_views.upload import (
-    BoundaryFileList,
-    BoundaryFileRemove,
-    BoundaryFileSearch,
-    BoundaryFileSearchStatus,
     BoundaryFileUpload,
+    BoundaryFileRemove,
+    BoundaryFileList,
+    BoundaryFileSearch,
+    BoundaryFileSearchStatus
 )
+from frontend.api_views.population import (
+    PopulationMetadataList,
+    UploadPopulationAPIVIew,
+    FetchDraftPopulationUpload,
+    DraftPopulationUpload
+)
+from frontend.api_views.data_table import DataTableAPIView
 
-from .views.about import AboutView
-from .views.contact import ContactUsView
-from .views.help import HelpView
-from .views.home import HomeView
-from .views.map import MapView
-from .views.online_form import OnlineFormView
-from .views.switch_organisation import switch_organisation
-from .views.users import OrganisationUsersView
+
 
 urlpatterns = [
     re_path(
@@ -190,13 +195,18 @@ urlpatterns = [
     path('contact/', ContactUsView.as_view(), name='contact'),
     path('data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
-        'species-population-count/<int:property_id>/',
-        SpeciesPopulationCountAPIView.as_view(),
-        name='species_population_count'
+        'view_totp_devices/',
+        view_totp_devices,
+        name='view_totp_devices'
     ),
     path(
-        'activity-percentage/',
-        ActivityPercentageAPIView.as_view(),
-        name='activity_percentage'
+        'add_totp_devices/',
+        add_totp_device,
+        name='add_totp_devices'
+    ),
+    path(
+        'delete_totp_device/<int:device_id>/',
+        delete_totp_device,
+        name='delete_totp_device'
     ),
 ]
