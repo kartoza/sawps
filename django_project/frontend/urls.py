@@ -27,6 +27,7 @@ from frontend.api_views.map import (
 from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
     SpeciesPopulationCountAPIView,
+    TotalCountPerActivityAPIView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -198,5 +199,10 @@ urlpatterns = [
         'activity-percentage/',
         ActivityPercentageAPIView.as_view(),
         name='activity_percentage'
+    ),
+    path(
+        'total-count-per-activity/',
+        TotalCountPerActivityAPIView.as_view(),
+        name='total_count_per_activity'
     ),
 ]
