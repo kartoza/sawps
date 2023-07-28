@@ -14,55 +14,55 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
-from .views.home import HomeView
-from .views.map import MapView
-from .views.help import HelpView
-from .views.about import AboutView
-
-from .views.users import OrganisationUsersView
-from .views.contact import ContactUsView
-from .views.switch_organisation import switch_organisation
-from .views.online_form import OnlineFormView
+from frontend.api_views.data_table import DataTableAPIView
+from frontend.api_views.map import (
+    AerialTile,
+    ContextLayerList,
+    FindParcelByCoord,
+    FindPropertyByCoord,
+    MapAuthenticate,
+    MapStyles,
+    PropertiesLayerMVTTiles,
+)
+from frontend.api_views.metrics import (
+    ActivityPercentageAPIView,
+    SpeciesPopulationCountAPIView,
+)
+from frontend.api_views.population import (
+    DraftPopulationUpload,
+    FetchDraftPopulationUpload,
+    PopulationMetadataList,
+    UploadPopulationAPIVIew,
+)
+from frontend.api_views.property import (
+    CreateNewProperty,
+    PropertyDetail,
+    PropertyList,
+    PropertyMetadataList,
+    UpdatePropertyBoundaries,
+    UpdatePropertyInformation,
+)
+from frontend.api_views.upload import (
+    BoundaryFileList,
+    BoundaryFileRemove,
+    BoundaryFileSearch,
+    BoundaryFileSearchStatus,
+    BoundaryFileUpload,
+)
 from .views.totp_device import (
     add_totp_device,
     delete_totp_device,
     view_totp_devices,
 )
 
-
-from frontend.api_views.map import (
-    ContextLayerList,
-    MapStyles,
-    AerialTile,
-    PropertiesLayerMVTTiles,
-    FindParcelByCoord,
-    FindPropertyByCoord,
-    MapAuthenticate
-)
-from frontend.api_views.property import (
-    CreateNewProperty,
-    PropertyMetadataList,
-    PropertyList,
-    UpdatePropertyInformation,
-    UpdatePropertyBoundaries,
-    PropertyDetail,
-)
-from frontend.api_views.upload import (
-    BoundaryFileUpload,
-    BoundaryFileRemove,
-    BoundaryFileList,
-    BoundaryFileSearch,
-    BoundaryFileSearchStatus
-)
-from frontend.api_views.population import (
-    PopulationMetadataList,
-    UploadPopulationAPIVIew,
-    FetchDraftPopulationUpload,
-    DraftPopulationUpload
-)
-from frontend.api_views.data_table import DataTableAPIView
-
-
+from .views.about import AboutView
+from .views.contact import ContactUsView
+from .views.help import HelpView
+from .views.home import HomeView
+from .views.map import MapView
+from .views.online_form import OnlineFormView
+from .views.switch_organisation import switch_organisation
+from .views.users import OrganisationUsersView
 
 urlpatterns = [
     re_path(
@@ -195,14 +195,24 @@ urlpatterns = [
     path('contact/', ContactUsView.as_view(), name='contact'),
     path('data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
-        'view_totp_devices/',
-        view_totp_devices,
-        name='view_totp_devices'
+        'species-population-count/<int:property_id>/',
+        SpeciesPopulationCountAPIView.as_view(),
+        name='species_population_count'
+    ),
+    path(
+        'activity-percentage/',
+        ActivityPercentageAPIView.as_view(),
+        name='activity_percentage'
     ),
     path(
         'add_totp_devices/',
         add_totp_device,
         name='add_totp_devices'
+    ),
+    path(
+        'view_totp_devices/',
+        view_totp_devices,
+        name='view_totp_devices'
     ),
     path(
         'delete_totp_device/<int:device_id>/',
