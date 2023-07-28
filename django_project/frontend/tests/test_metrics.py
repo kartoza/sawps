@@ -5,7 +5,7 @@ from django.db.models import Sum
 from django.test import Client, TestCase
 from django.urls import reverse
 from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
-from population_data.models import AnnualPopulation
+from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
 from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
@@ -13,7 +13,7 @@ from species.models import TaxonRank
 from stakeholder.factories import organisationFactory, organisationUserFactory
 
 
-class SpeciesPopuationCountTestCase(TestCase):
+class BaseTestCase(TestCase):
     def setUp(self):
         taxon_rank = TaxonRank.objects.filter(name="Species").first()
         if not taxon_rank:
@@ -23,22 +23,23 @@ class SpeciesPopuationCountTestCase(TestCase):
             taxon_rank=taxon_rank, common_name_varbatim="Lion"
         )
 
-        user = User.objects.create_user(username="testuserd", password="testpasswordd")
+        self.user = User.objects.create_user(
+            username="testuserd",
+            password="testpasswordd"
+        )
 
         self.organisation_1 = organisationFactory.create()
-        organisationUserFactory.create(user=user, organisation=self.organisation_1)
+        organisationUserFactory.create(
+            user=self.user,
+            organisation=self.organisation_1
+        )
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1, name="PropertyA"
         )
 
         self.owned_species = OwnedSpeciesFactory.create_batch(
-            5, taxon=self.taxon, user=user, property=self.property
-        )
-
-        self.url = reverse(
-            "species_population_count",
-            kwargs={"property_id": self.property.id},
+            5, taxon=self.taxon, user=self.user, property=self.property
         )
 
         self.auth_headers = {
@@ -51,8 +52,19 @@ class SpeciesPopuationCountTestCase(TestCase):
         session[CURRENT_ORGANISATION_ID_KEY] = self.organisation_1.id
         session.save()
 
+
+class SpeciesPopuationCountTestCase(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse(
+            "species_population_count",
+            kwargs={"property_id": self.property.id},
+        )
+
     def test_species_population_count(self):
-        owned_species = OwnedSpeciesFactory(taxon__common_name_varbatim="Lion")
+        owned_species = OwnedSpeciesFactory(
+            taxon__common_name_varbatim="Lion"
+        )
         url = self.url
         data = {"species": "Lion"}
         response = self.client.get(url, data, **self.auth_headers)
@@ -65,4 +77,33 @@ class SpeciesPopuationCountTestCase(TestCase):
         self.assertEqual(
             response.data[0]["annualpopulation_count"][0].get("month_total"),
             annual_populations[0].get("month_total"),
+        )
+
+
+class ActivityPercentageTestCase(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("activity_percentage")
+
+    def test_activity_percentage(self):
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        owned_species = self.owned_species[0]
+        population = AnnualPopulationPerActivity.objects.filter(
+            owned_species=owned_species
+        ).annotate(total_count=Sum("total")).values(
+            "activity_type__name", "total_count"
+        )
+        total = owned_species.annualpopulationperactivity_set.first().total
+        activity_type = population[0]["activity_type__name"]
+        percentage = (total / population[0]['total_count']) * 100
+        data = {activity_type:percentage}
+        self.assertEqual(
+            list(response.data['data'][0]['activities'][0].keys())[0],
+            activity_type,
+        )
+        self.assertEqual(
+            response.data['data'][0]['activities'][0],
+            data,
         )
