@@ -125,7 +125,7 @@
 
         function resetIdleTimer() {
           clearTimeout(idleTimer);
-          idleTimer = setTimeout(reloadPage, 7000); // if theres no user activity for 7 seconds so as to not interupt some user activity
+          idleTimer = setTimeout(reloadPage, 100000);
         }
 
         document.addEventListener('mousemove', function() {
