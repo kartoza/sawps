@@ -158,20 +158,21 @@ function Filter() {
     const handleDeleteSpecies = (valueToDelete: string) => {
         const updatedSelectedSpecies = selectedSpecies.filter((item) => item !== valueToDelete);
         setSelectedSpecies(updatedSelectedSpecies);
-        dispatch(toggleSpecies(updatedSelectedSpecies.length > 0 ? updatedSelectedSpecies.join(',') : ''));
     }
     const handleSelectedSpecies = (value: string) => () => {
         const updatedSelectedSpecies = selectedSpecies.includes(value)
             ? selectedSpecies.filter((item) => item !== value)
             : [...selectedSpecies, value];
         setSelectedSpecies(updatedSelectedSpecies);
-        dispatch(toggleSpecies(updatedSelectedSpecies.length > 0 ? updatedSelectedSpecies.join(',') : ''));
     };
+
+    useEffect(() => {
+        dispatch(toggleSpecies(selectedSpecies.length > 0 ? selectedSpecies.join(',') : ''));
+    }, [selectedSpecies])
 
     const handleDeleteProperty = (idToDelete: number) => () => {
         const updatedSelectedProperty = selectedProperty.filter((id) => id !== idToDelete);
         setSelectedProperty(updatedSelectedProperty);
-        dispatch(toggleSpecies(updatedSelectedProperty.length > 0 ? updatedSelectedProperty.join(',') : ''));
     };
 
     const handleSelectedProperty = (id: number) => () => {
@@ -179,13 +180,16 @@ function Filter() {
         if (propertyExists) {
             const updatedSelectedProperty = selectedProperty.filter((item) => item !== id);
             setSelectedProperty(updatedSelectedProperty);
-            dispatch(selectedPropertyId(updatedSelectedProperty.length > 0 ? updatedSelectedProperty.join(',') : ''));
         } else {
             const updatedSelectedProperty = [...selectedProperty, id];
             setSelectedProperty(updatedSelectedProperty);
-            dispatch(selectedPropertyId(updatedSelectedProperty.length > 0 ? updatedSelectedProperty.join(',') : ''));
         }
     };
+
+    useEffect(() => {
+        dispatch(selectedPropertyId(selectedProperty.length > 0 ? selectedProperty.join(',') : ''));
+    }, [selectedProperty])
+
     return (
         <Box>
             <Box className='searchBar'>
