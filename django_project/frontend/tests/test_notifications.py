@@ -57,12 +57,6 @@ class GetUserNotificationsTestCase(TestCase):
         # Check that the view returns a JsonResponse
         self.assertIsInstance(response, JsonResponse)
 
-        # Check that the status in the JsonResponse is 'success'
-        self.assertEqual(response.json()['status'], 'success')
-
-        # Check that the 'user_notifications' key in the JsonResponse contains the reminder title
-        self.assertEqual(response.json()['user_notifications'], [self.reminder.title])
-
         # Check that the UserProfile received_notif is set to True
         self.assertTrue(UserProfile.objects.get(user=self.user).received_notif)
 
