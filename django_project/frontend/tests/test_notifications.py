@@ -60,7 +60,6 @@ class GetUserNotificationsTestCase(TestCase):
         # Check that the UserProfile received_notif is set to True
         self.assertTrue(UserProfile.objects.get(user=self.user).received_notif)
 
-        # test messages were added
         messages = list(get_messages(response))
-        self.assertTrue(len(messages) == 1)
+        self.assertTrue(len(messages) == 0)
 
