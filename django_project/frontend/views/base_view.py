@@ -53,7 +53,8 @@ def get_user_notifications(request):
                 'user_notifications': []
             }
         )
-        
+
+
 class RegisteredOrganisationBaseView(TemplateView):
     """
     Base view to provide organisation context for logged-in users.
@@ -70,7 +71,6 @@ class RegisteredOrganisationBaseView(TemplateView):
                 CURRENT_ORGANISATION_ID_KEY] = 0
             self.request.session[
                 CURRENT_ORGANISATION_KEY] = ''
-
 
 
     def get_or_set_current_organisation(self):
@@ -97,7 +97,7 @@ class RegisteredOrganisationBaseView(TemplateView):
         return (
             organisation.id, organisation.name
         ) if organisation else (0, '')
-
+    
     def get_organisation_list(self):
         if self.request.user.is_superuser:
             # fetch all organisations
@@ -119,7 +119,7 @@ class RegisteredOrganisationBaseView(TemplateView):
             organisations = organisations.exclude(
                 id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         return OrganisationSerializer(organisations, many=True).data
-
+    
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if not self.request.user.is_authenticated:
