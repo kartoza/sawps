@@ -1,4 +1,3 @@
-"""Provide classes for base view."""
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from stakeholder.models import (
@@ -98,7 +97,6 @@ class RegisteredOrganisationBaseView(TemplateView):
             organisation.id, organisation.name
         ) if organisation else (0, '')
 
-    
     def get_organisation_list(self):
         if self.request.user.is_superuser:
             # fetch all organisations
@@ -121,7 +119,6 @@ class RegisteredOrganisationBaseView(TemplateView):
                 id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         return OrganisationSerializer(organisations, many=True).data
 
-    
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if not self.request.user.is_authenticated:
