@@ -97,6 +97,7 @@ class RegisteredOrganisationBaseView(TemplateView):
         return (
             organisation.id, organisation.name
         ) if organisation else (0, '')
+
     
     def get_organisation_list(self):
         if self.request.user.is_superuser:
@@ -119,6 +120,7 @@ class RegisteredOrganisationBaseView(TemplateView):
             organisations = organisations.exclude(
                 id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         return OrganisationSerializer(organisations, many=True).data
+
     
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
