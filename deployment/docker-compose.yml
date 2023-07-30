@@ -91,6 +91,16 @@ services:
     links:
       - redis
 
+  celery_beat:
+    <<: *default-common-django
+    entrypoint: []
+    command: celery -A core beat --l info
+    volumes:
+      - layer-tiles:/opt/layer_tiles
+    links:
+      - redis
+
+
   dev:
     image: kartoza/sanbi_dev
     <<: *default-common-django
