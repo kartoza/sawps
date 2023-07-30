@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
@@ -13,17 +12,13 @@
     <link href="{% static 'css/navbar.css' %}" rel="stylesheet">
     <link href="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-...">
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Include the CSS file for Select2 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-    
-
     {% block extra_head %}
     {% endblock %}
 </head>
-
 <script>
   window.csrfToken = "{{ csrf_token }}";
   window.isLoggedIn = {% if user.is_authenticated %}true{% else %}false{% endif %};
@@ -39,23 +34,19 @@
     {% endif %}
   {% endfor %}
   {% endblock %}
-
   <style>
     /* Position the alert at the top right corner */
     .position-fixed {
         position: fixed;
         z-index: 100; /* Adjust the z-index value as needed */
     }
-
     .padding {
       margin-top: 6%;
       margin-right: 1%;
     }
-  
     .top-0 {
         top: 0;
     }
-  
     .end-0 {
         right: 0;
     }
@@ -254,8 +245,7 @@
       }, 10000); //check notificatiions every 10 seconds
 
   </script>
-
-<div style="min-height:81vh">
+<div style="min-height:92vh">
 {% block content %}
 {% endblock %}
 </div>
