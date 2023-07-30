@@ -5,6 +5,8 @@ from django.test import (
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.auth.models import AnonymousUser
+from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
+from frontend.views.base_view import get_user_notifications
 from frontend.tests.model_factories import UserF
 from stakeholder.factories import (
     organisationFactory,
@@ -15,6 +17,11 @@ from stakeholder.models import (
     UserProfile
 )
 from django.contrib.messages import get_messages
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from datetime import datetime
+from django.contrib.messages.storage.fallback import FallbackStorage
+
 
 
 class RegisteredBaseViewTestBase(TestCase):
@@ -107,14 +114,55 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertIn('current_organisation_id', context)
         self.assertEqual(context['current_organisation_id'], 0)
 
-    def test_send_user_notifications(self):
-        response = self.factory.get(reverse(self.view_name))
-        response.user = self.user_1
-        self.process_session(response)
 
+class GetUserNotificationsTestCase(TestCase):
+    def setUp(self):
+        # Create a test user
+        self.user = User.objects.create_user(
+            username='testuser', 
+            password='testpassword'
+        )
+        # Create a test user profile
+        self.user_profile = UserProfile.objects.create(
+            user=self.user,
+            received_notif=False
+        )
+        # create organisation
+        self.organisation = organisationFactory.create()
+        # Create a test reminder
+        self.reminder = Reminders.objects.create(
+            user=self.user,
+            organisation=self.organisation,
+            status=Reminders.PASSED,
+            email_sent=True,
+            date=datetime.now()
+        )
+
+    def test_get_user_notifications(self):
+        # Simulate a request to the view
+        request = RequestFactory().get('get_user_notifications')
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.pk} 
+
+        # Add a message storage to the request
+        setattr(request, '_messages', FallbackStorage(request))
+
+        # Call the view function
+        response = get_user_notifications(request)
+
+        # Check that the view returns a JsonResponse
+        self.assertIsInstance(response, JsonResponse)
+
+        # Check that the status in the JsonResponse is 'success'
+        self.assertEqual(response.json()['status'], 'success')
+
+        # Check that the 'user_notifications' key in the JsonResponse contains the reminder title
+        self.assertEqual(response.json()['user_notifications'], [self.reminder.title])
+
+        # Check that the UserProfile received_notif is set to True
+        self.assertTrue(UserProfile.objects.get(user=self.user).received_notif)
+
+        # test messages were added
         messages = list(get_messages(response))
-        self.assertTrue(len(messages) == 0)
+        self.assertTrue(len(messages) == 1)
 
-        # Check if the user profile 'received_notif' flag is False
-        user_profile = UserProfile.objects.get(user=self.user_1)
-        self.assertFalse(user_profile.received_notif)
