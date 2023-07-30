@@ -97,7 +97,7 @@ class AnnualPopulation(AnnualPopulationAbstract):
         db_table = "annual_population"
         constraints = [
             models.UniqueConstraint(
-                fields=["year", "owned_species"],
+                fields=["year", "owned_species", "month"],
                 name="unique_population_count"
             ),
             models.CheckConstraint(

@@ -1,0 +1,602 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %}Your Profile{% endblock %}
+
+{% block content %}
+<section>
+  <div class="container py-5">
+  <div class="row">
+    {% include "profile_config_base.html" %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-auto ml-auto mb-3">
+              <button class="btn btn-custom" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn">
+                <i class="fas fa-plus"></i> ADD REMINDER
+              </button>
+            </div>
+          </div>
+
+          
+          <!-- save/edit reminder modal -->
+          <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="myModalLabel">Reminder Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="reminderForm">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">Date and Time</label>
+                                <input type="datetime-local" class="form-control" id="date" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reminder">Reminder</label>
+                                <textarea class="form-control" id="reminder" name="reminder" required></textarea>
+                            </div>
+                            {% if user.is_superuser or user.user_profile.user_role_type_id == 'Admin' %}
+                            <div class="form-group">
+                                <label for="reminderType">Reminder Type</label>
+                                <select class="form-control" id="reminderType" name="reminderType">
+                                    <option value="personal" selected>Personal</option>
+                                    <option value="all">Everyone</option>
+                                </select>
+                            </div>
+                            {% endif %}
+                            <div class="form-group" id="status_field" style="display: none;">
+                              <label for="reminderType">Reminder Status</label>
+                              <select class="form-control" id="status" name="status">
+                                  <option value="active" selected>Active</option>
+                                  <option value="draft">Draft</option>
+                                  <option value="passed">Passed</option>
+                              </select>
+                          </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="account-button" id="editReminderBtn" style="display: none;">Save</button>
+                        <button type="button" class="account-button" id="addReminderBtn">Add</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+      <!-- search and filter row -->
+      <div class="my-row green-background row" style="  border-radius: 5px; margin-left:0.1%; padding-top:0.5%; padding-bottom: 0.25%;">
+        <div class="col-md-6" style="padding-top: 6px; padding-left: 1%;" >
+        </div>
+        <div class="col-md-3" style="margin:auto; padding-bottom:0.25% ">
+          <div class="" style="display:flex; border-radius:5px; border:1px white solid">
+              <input style="border-radius:0px 0px; border:none;" type="search" id="searchInput" class="form-control" />
+            <div style="background-color:white; border:none; border-radius:0px 0px" class="btn btn-primary">
+              <i class="fas fa-search"></i>
+            </div>
+          </div>
+      </div>
+      <div class="col-md-3" style="margin:auto; padding-bottom: 0.25%;">
+        <div class="" style="border:1px white solid; border-radius:5px ">
+          <select id="filterSelect" class="form-control" style="width:100%; border: none;">
+            <option value="">Filter</option>
+            <option value="title">Title</option>
+            <option value="reminder">Reminder</option>
+          </select>          
+        </div>
+      </div>
+      </div>
+
+      
+      
+
+
+      <!-- reminders table -->
+      <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
+      <table id="reminders" class="table table-bordereless" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Reminder</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reminder in reminders %}
+          <tr>
+              <td class="clickable-row clickable" data-href="{{ reminder.id }}">{{ reminder.title }}</td>
+              <td class="clickable-row clickable" data-href="{{ reminder.id }}">{{ reminder.date }}</td>
+              <td class="clickable-row clickable" data-href="{{ reminder.id }}">{{ reminder.reminder }}</td>
+              <td class="clickable-row clickable" data-href="{{ reminder.id }}">
+                {% if reminder.status == 'Active' %}
+                  <span class="badge badge-success">Active</span>
+                {% elif reminder.status == 'Draft' %}
+                  <span class="badge badge-warning">Draft</span>
+                {% elif reminder.status == 'Passed' %}
+                  <span class="badge badge-purple">Passed</span>
+                {% endif %}
+              </td>
+              <td>
+                <i class="fas fa-trash-alt trash-icon" data-object-id="{{ reminder.id }}"></i>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>        
+          
+        <!-- table footer with pagination -->
+        <tfoot>
+            <tr>
+              <td colspan="5">
+                <div class="row justify-content-end">
+                  <div class="col-auto">
+                    <div class="row align-items-center">
+                      <div class="col-auto custom">
+                        Rows per page:
+                      </div>
+                      <div class="col-auto custom">
+                        <select id="remindersRowsPerPage" class="form-control form-control-sm mr-2 small-select border-0" style="border-bottom: 1px solid #5c5858; width: 80px;" onchange="updateRowsPerPage('reminders', this)">
+                          <option value="5" {% if reminders.paginator.per_page == 5 %}selected{% endif %}>5</option>
+                          <option value="10" {% if reminders.paginator.per_page == 10 %}selected{% endif %}>10</option>
+                          <option value="20" {% if reminders.paginator.per_page == 20 %}selected{% endif %}>20</option>
+                        </select>
+                      </div>
+
+                      <div class="col-auto">
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination justify-content-end">
+                            {% if reminders.has_previous %}
+                            <li class="page-item">
+                              <a class="page-link" href="?reminders_page={{ reminders.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="page-item disabled">
+                              <a class="page-link" href="#">{{ reminders.number }}</a>
+                            </li>
+                            
+                            {% if reminders.has_next %}
+                            <li class="page-item">
+                              <a class="page-link" href="?reminders_page={{ reminders.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                          </ul>
+                        </nav>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+      </table>
+
+    </div> 
+  </div>
+  
+
+  <script>
+
+      function convertToLocalDateTime(datetimeStr) {
+        // create a date formate to add to datetime local input field
+        const datetime = new Date(datetimeStr);
+
+        const year = datetime.getFullYear();
+        const month = String(datetime.getMonth() + 1).padStart(2, '0');
+        const day = String(datetime.getDate()).padStart(2, '0');
+        const hours = String(datetime.getHours()).padStart(2, '0');
+        const minutes = String(datetime.getMinutes()).padStart(2, '0');
+
+        // Combine the components into the desired format
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+
+      // UPDATING ROWS PER PAGE
+      function updateRowsPerPage(table, selectElement) {
+        var selectedValue = selectElement.value;
+        var url = new URL(window.location.href);
+        url.searchParams.set(table + '_page', 1);
+        url.searchParams.set(table + '_per_page', selectedValue);
+        window.location.href = url.href;
+      }
+
+      // DELETE ICON
+      $(document).ready(function() {
+        // Event delegation for trash icon click
+        $(document).on('click', '.trash-icon', function() {
+          var objectId = []
+          objectId.push($(this).data('object-id').toString());
+          console.log(objectId)
+          $('#deleteConfirmationModal').modal('show');
+            document.getElementById('deleteConfirmationBtn').addEventListener('click', function() {
+            // post request and object
+            $.ajax({
+              type: 'POST',
+              url: $(this).attr('action'),
+              data: {
+                'action': 'delete_reminder', 
+                'ids': JSON.stringify(objectId),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              success: function(response) {
+                constructRemindersTable(response.data)   
+                  $('#remindersRowsPerPage').val('{{ reminders.paginator.num_pages }}');
+                  $('#remindersRowsPerPage').val(20);
+              },
+              error: function(xhr, status, error) {
+              // Handle the error response
+              }
+            });
+            $('#deleteConfirmationModal').modal('hide');
+          });
+        });
+      });
+
+      // EDIT ON CLICK GET REMINDER
+      var tableBody = document.getElementById('reminders');
+      tableBody.addEventListener('click', function(event) {
+        var target = event.target;
+        if (target.classList.contains('clickable-row')) {
+            var reminderId = target.getAttribute('data-href');
+            var id = []
+            id.push(reminderId)
+
+            $.ajax({
+              type: 'POST',
+              url: $(this).attr('action'),
+              data: {
+                'action': 'get_reminder', 
+                'ids': JSON.stringify(id),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              success: function(response) {
+              // Handle the success response
+              // console.log(response);
+              reminder = response.data[0]
+              const localDatetimeStr = convertToLocalDateTime(reminder.date);
+
+              // Populate the modal with the retrieved data
+              $('#myModal #title').val(reminder.title);
+              $('#myModal #date').val(localDatetimeStr);
+
+              if (reminder.type == 'Everyone')
+                $('#myModal #reminderType').val('all');
+              else $('#myModal #reminderType').val('personal');
+                $('#myModal #reminder').val(reminder.reminder);
+
+              if(reminder.status === 'Active')
+                $('#myModal #status').val('active');
+              else if(reminder.status === 'Draft')
+                $('#myModal #status').val('draft');
+              else $('#myModal #status').val('passed');
+
+              var statusField = document.getElementById("status_field");
+              statusField.style.display = "block";
+              var saveBtn = document.getElementById("editReminderBtn");
+              saveBtn.style.display = "block";
+              var addBtn = document.getElementById("addReminderBtn");
+              addBtn.style.display = "none";
+
+              // Show the modal
+              $('#myModal').modal('show');
+
+              // MODAL BUTTONS ON CLICK SAVE REMINDER
+              $('#myModal #editReminderBtn').click(function() {
+                // Get the values from the modal
+                var title = $('#myModal #title').val();
+                var date = $('#myModal #date').val();
+                var time = $('#myModal #time').val();
+                var type = $('#myModal #reminderType').val();
+                var reminder = $('#myModal #reminder').val();
+                var status = $('#myModal #status').val();
+
+                // get the user timezone
+                var userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                // Perform the save operation
+                $.ajax({
+                  type: 'POST',
+                  url: $(this).attr('action'),
+                  data: {
+                    'action': 'edit_reminder', 
+                    'title': title,
+                    'date': date,
+                    'reminder': reminder,
+                    'reminder_type': type,
+                    'status': status,
+                    'timezone': userTimezone,
+                    'ids': JSON.stringify(id),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                  },
+                  success: function(response) {
+                    // refresh the table with json response rows
+                    var data = [];
+                    try{
+                      data = response.data;
+
+                      constructRemindersTable(data)
+
+                      $('#myModal').modal('hide');
+                    }catch(exception){
+                      console.log(exception.message)
+                    }                  
+                  },
+                  error: function(xhr, status, error) {
+                    console.error('Error editing reminder:', error);
+                    $('#myModal').modal('hide');
+                    alert('Error editing reminder. Please try again.');
+                  }
+                });
+
+                // Hide the modal
+                $('#myModal').modal('hide');
+              });
+
+              $('#myModal #cancelBtn').click(function() {
+                // Hide the modal without performing any operation
+                $('#myModal').modal('hide');
+              });
+            },
+            error: function(error) {
+              // Handle the error response
+              alert(error);
+            }
+          });
+        }
+      });
+
+    
+      // ADD REMINDER
+      $(document).ready(function() {
+          // Event handler for the "Add" button in the modal
+          $('#addReminderBtn').on('click', function() {
+
+            var addBtn = document.getElementById("addReminderBtn");
+            addBtn.style.display = "block";
+
+              // Get the input values from the modal
+              var title = $('#title').val();
+              var date = $('#date').val();
+              var reminder = $('#reminder').val();
+              var reminder_type = $('#reminderType').val();
+
+              var userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+              // query to add record
+              $.ajax({
+                  type: 'POST',
+                  url: $(this).attr('action'),
+                  data: {
+                      'action': 'add_reminder', 
+                      'title': title,
+                      'date': date,
+                      'reminder': reminder,
+                      'timezone': userTimezone,
+                      'reminder_type': reminder_type,
+                      'csrfmiddlewaretoken': '{{ csrf_token }}'
+                  },
+                  success: function(response) {
+                      var data = [];
+                      try{
+                        data = response.updated_reminders;
+
+                        constructRemindersTable(data)
+
+                        $('#remindersRowsPerPage').val('{{ reminders.paginator.num_pages }}');
+                        $('#remindersRowsPerPage').val(20);
+                        
+                        $('#myModal').modal('hide');
+                      }catch(exception){
+                        console.log(exception.message)
+                      }
+                      
+                  },
+                  error: function(xhr, status, error) {
+                      // Handle the error response
+                      console.error('Error adding reminder:', error);
+                      $('#myModal').modal('hide');
+                      // Display an error message to the user
+                      alert('Error adding reminder. Please try again.');
+                  }
+              });
+          });
+        });
+
+    // REFRESH TABLE
+    function constructRemindersTable(data){
+      var tableBody = $('#reminders tbody');
+      tableBody.empty();
+
+      if (data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          var row = '<tr>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].title + '</td>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].date + '</td>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].reminder + '</td>';
+                          
+          // Condition for the status column
+          if (data[i].status === 'Active') {
+            row += '<td class="clickable-row clickable" data-href="' + data[i].pk + '"><span class="badge badge-success">Active</span></td>';
+          } else if (data[i].status === 'Draft') {
+            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-warning">Draft</span></td>';
+          } else if (data[i].status === 'Passed') {
+            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-purple">Passed</span></td>';
+          } else {
+            row += '<td></td>';
+          }
+
+          row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].id + '></i></td>';
+                          
+          row += '</tr>';
+
+          tableBody.append(row);
+        }
+      }
+    }
+
+    // SEARCH BOX LISTENER
+    $(document).ready(function() {
+      $('#searchInput').on('input', function() {
+        var formData = $(this).val();
+        makeSearchQuery(formData)
+      });
+    });
+
+    // SEARCH DB
+    function makeSearchQuery(formData){
+      // check if a filter is currently selected
+      var selectBox = document.getElementById('filterSelect');
+      var selectedValue = selectBox.value;
+
+      var filter = ''
+      if (selectedValue !== undefined && selectedValue !== '') 
+        filter = selectedValue
+
+      $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: {
+          'action': 'search_reminders', 
+          'query': formData,
+          'filter': filter,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+          constructRemindersTable(response.data)   
+          $('#remindersRowsPerPage').val('{{ reminders.paginator.num_pages }}');
+          $('#remindersRowsPerPage').val(20);
+          $('#remindersRowsPerPage option').prop('disabled', false);         
+        },            
+      });
+    }
+
+    // Function to clear the form fields when the "Add" button is clicked
+    function clearFormFields() {
+        document.getElementById('title').value = '';
+        document.getElementById('date').value = '';
+        document.getElementById('reminder').value = '';
+        document.getElementById('reminderType').value = 'personal';
+        document.getElementById('status').value = 'active';
+    }
+
+    // Function to reset the display of the Save button to "none"
+    function resetSaveButtonDisplay() {
+        document.getElementById('editReminderBtn').style.display = 'none';
+        document.getElementById('addReminderBtn').style.display = 'block';
+    }
+
+    // Event listener for the "Add" button click
+    document.getElementById('saddReminderBtn').addEventListener('click', function() {
+        // Clear the form fields
+        clearFormFields();
+
+        // Reset the display of the Save button to "none"
+        resetSaveButtonDisplay();
+    });
+
+</script>
+
+<style>
+    .btn-custom {
+        background-color: var(--green);
+        border-color: var(--green); 
+        color: #FFFFFF;
+    }
+
+    .btn-custom:hover {
+        background-color: var(--green); 
+        border-color: var(--green);
+        color: #FFFFFF; 
+    }
+
+    .badge-purple {
+    background-color: var(--purple);
+    color: white;
+    }
+
+    .badge-success {
+    background-color: var(--green);
+    color: white;
+    }
+
+    .badge-warning {
+    background-color: var(--orange);
+    color: white;
+    }
+
+    select.form-control:focus {
+      outline-color: var(--green);
+      border-color: var(--main-green);
+      box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+    .form-control.search-input:focus {
+      outline-color: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+    .green-background {
+      background-color: var(--green);
+    }
+
+    .my-row {
+        width: 100%; /* Set the width as a percentage of the parent container */
+    }
+
+    .custom {
+        padding-bottom: 1rem;
+    }
+
+    .pagination a.page-link {
+      color: var(--green);
+    }
+
+    tfoot select.form-control {
+        color: black;
+        background-color: #f8f9fa;
+        border-color: gray;
+        border-radius: 1px;
+        height: auto;
+        padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333333"><path d="M7 10l5 5 5-5z" /></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.375rem center;
+        background-size: 12px 12px;
+        padding-right: 1rem;
+    }
+
+    tfoot select.form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+        border-color: var(--green);
+    }
+
+    .form-control:focus {
+        border-color: var(--green);;
+        box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+  </style>
+  
+</section>
+{% endblock %}

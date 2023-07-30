@@ -27,21 +27,13 @@ const MenuProps = {
 const FETCH_AVAILABLE_DATA = '/data-table/'
 
 const DataList = () => {
-    const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
-    const months = useAppSelector((state: RootState) => state.SpeciesFilter.months)
+    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const selectedMonths = useAppSelector((state: RootState) => state.SpeciesFilter.selectedMonths)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [selectedColumns, setSelectedColumns] = useState([]);
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
-    const selectedSpecies = SpeciesFilterList
-        .filter(obj => obj.is_selected)
-        .map(obj => obj.common_name_varbatim);
-    const speciesParam = selectedSpecies.join(',');
-    const selectedMonths = months.map(each => each).join(',');
-
-
-
     const columns: GridColDef[] = [
         { field: 'property_name', headerName: 'Property Name', width: 150 },
         { field: 'property_id', headerName: 'Property ID', width: 150 },
@@ -114,15 +106,15 @@ const DataList = () => {
             count_juvenile_male: annualpopulation?.juvenile_male,
             count_juvenile_female: annualpopulation?.juvenile_female,
             groups: annualpopulation?.group,
-            open_closed_system: annualpopulation?.open_close_system_name,
+            open_closed_system: annualpopulation?.open_close_system,
             area_available_ha: property?.area_available,
             ar_name: '',
-            count_method: annualpopulation?.count_method?.name,
-            survey_method: annualpopulation?.survey_method?.name,
+            count_method: annualpopulation?.count_method,
+            survey_method: annualpopulation?.survey_method,
             sampling_effort_coverage: annualpopulation?.sampling_effort,
             sampling_notes: annualpopulation?.note,
             count_year: annualpopulation?.year,
-            presence_only: '',
+            presence_only: annualpopulation?.presence,
             reintroduction_total: '',
             reintroduction_adult_males: '',
             reintroduction_adult_females: '',
@@ -146,7 +138,7 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?month=${selectedMonths}&start_year=${startYear}&end_year=${endYear}&species=${speciesParam}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?month=${selectedMonths}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -159,7 +151,7 @@ const DataList = () => {
 
     useEffect(() => {
         fetchDataList();
-    }, [selectedMonths, startYear, endYear, speciesParam])
+    }, [selectedMonths, startYear, endYear, selectedSpecies])
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
             target: { value },
