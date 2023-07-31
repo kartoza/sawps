@@ -95,3 +95,7 @@ The year filter works slightly differently from the rest. Simply drag the dots o
 
 ![Alt text](img/instr_filters_4.png)
 
+
+# Sample data
+
+# Sample Project
