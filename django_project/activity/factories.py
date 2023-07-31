@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+"""Test factories for activity package.
+"""
 import factory
 from activity.models import ActivityType
 

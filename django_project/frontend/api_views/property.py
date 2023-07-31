@@ -1,4 +1,7 @@
-"""API Views related to property."""
+# -*- coding: utf-8 -*-
+
+"""API Views related to property.
+"""
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError

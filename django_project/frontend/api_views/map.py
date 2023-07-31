@@ -1,4 +1,8 @@
-"""API Views related to map."""
+# -*- coding: utf-8 -*-
+
+
+"""API Views related to map.
+"""
 from typing import Tuple, List
 import requests
 from django.core.cache import cache

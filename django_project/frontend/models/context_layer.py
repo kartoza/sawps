@@ -1,4 +1,7 @@
-"""Context Layers with mapping table to tegola layers."""
+# -*- coding: utf-8 -*-
+
+"""Context Layers with mapping table to tegola layers.
+"""
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 

@@ -1,4 +1,8 @@
-"""Classes for searching parcels."""
+# -*- coding: utf-8 -*-
+
+
+"""Classes for searching parcels.
+"""
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.conf import settings

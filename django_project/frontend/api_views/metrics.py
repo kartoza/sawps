@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+"""API Views related to metrics.
+"""
 from frontend.filters.metrics import (
     ActivityPercentageFilter,
     SpeciesPopulationCountFilter,

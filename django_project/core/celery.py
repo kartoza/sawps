@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""A celery config for the project.
+
+"""
 from __future__ import absolute_import, unicode_literals
 
 import os
