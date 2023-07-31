@@ -68,8 +68,8 @@ nav:
                                     - Activity: developer/code_auto_docs.md
                                     - Core: developer/core.md
                                     - Fixtures: developer/fixtures.md
-                                    - frontend: developer/frontend.md
-                                    - notification: developer/notification.md
+                                    - Frontend: developer/frontend.md
+                                    - Notification: developer/notification.md
                                     - Occurrence: developer/occurrence.md
                                     - Population Data: developer/population_data.md
                                     - Property: developer/property.md
