@@ -142,3 +142,30 @@ class TotalCountPerActivityTestCase(BaseTestCase):
             response.data[0]['activities'][0],
             activity_total,
         )
+
+
+class SpeciesPopulationTotalAndDensityTestCase(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("species_population_total_density")
+
+    def test_species_population_total_and_density(self):
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        owned_species = self.owned_species[0]
+        population = AnnualPopulation.objects.filter(
+            owned_species=owned_species
+        ).annotate(
+            total_count=Sum("total"),
+            property_size_ha=Sum("owned_species__property__property_size_ha")
+        ).values("property_size_ha", "total_count").first()
+        total = population["total_count"]
+        property_size_ha = population["property_size_ha"]
+        density = total / property_size_ha
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]['density'].get('density'), density
+        )
+        self.assertEqual(
+            response.data[0]['density'].get('total'), total
+        )
