@@ -240,9 +240,18 @@
         }
       });
 
-      setInterval(function() {
-        checkNotificationsFromToApi()
-      }, 10000); //check notificatiions every 10 seconds
+      if(
+        !window.location.href.includes("login") ||
+        !window.location.href.includes("password_reset") ||
+        !window.location.href.includes("two-factor-authenticate")
+      ){
+        var userIsAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+        if(userIsAuthenticated){
+          setInterval(function() {
+            checkNotificationsFromToApi()
+          }, 10000); //check notificatiions every 10 seconds
+        }
+      }
 
   </script>
 <div style="min-height:92vh">
