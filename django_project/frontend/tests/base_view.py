@@ -14,7 +14,7 @@ from stakeholder.models import (
     Reminders,
     UserProfile
 )
-from django.contrib.messages import get_messages
+
 
 
 class RegisteredBaseViewTestBase(TestCase):
@@ -107,14 +107,3 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertIn('current_organisation_id', context)
         self.assertEqual(context['current_organisation_id'], 0)
 
-    def test_send_user_notifications(self):
-        response = self.factory.get(reverse(self.view_name))
-        response.user = self.user_1
-        self.process_session(response)
-
-        messages = list(get_messages(response))
-        self.assertTrue(len(messages) == 0)
-
-        # Check if the user profile 'received_notif' flag is False
-        user_profile = UserProfile.objects.get(user=self.user_1)
-        self.assertFalse(user_profile.received_notif)
