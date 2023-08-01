@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 
-class ProfileView(DetailView):
+class ProfileView(RegisteredOrganisationBaseView):
     template_name = 'profile.html'
     model = get_user_model()
     slug_field = 'username'
