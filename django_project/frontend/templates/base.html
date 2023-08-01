@@ -77,6 +77,14 @@
         }
       }
 
+      // GET MESSAGES LENGTH
+      function getMessageLength() {
+        // Try to get the number of messages from localStorage
+        let messageLength = parseInt(localStorage.getItem('message_length'));
+
+        return isNaN(messageLength) ? 0 : messageLength;
+      }
+
       // SHOW PROFILE BELL ICON IF ON PROFILE PAGES
       function updateProfileBellIcon(show_bell) {
         const messageLength = getMessageLength();
@@ -117,14 +125,6 @@
         } 
       }
 
-      // GET MESSAGES LENGTH
-      function getMessageLength() {
-        // Try to get the number of messages from localStorage
-        let messageLength = parseInt(localStorage.getItem('message_length'));
-
-        return isNaN(messageLength) ? 0 : messageLength;
-      }
-
       function updateLocalStorage(results){
         if(results.length > 0){
           localStorage.setItem('message_length', results.length)
@@ -135,18 +135,15 @@
           localStorage.setItem('messages', JSON.stringify(messages))
 
           return true 
-        }else {
-          localStorage.setItem('message_length' ,0)
-          localStorage.setItem('messages' ,'')
-
-          return false
         }
+
+        return false
       }
 
       function getMessages(){
         messgaes = JSON.parse(localStorage.getItem('messages'))
         var return_obj = []
-        for(var count =0; count <messages.length; count++){
+        for(var count =0; count < messages.length; count++){
           var save_obj = {
             url: "/notifications/" + '{{ user }}' + '/', text: messages[count]
           }
@@ -207,15 +204,11 @@
             results = response.user_notifications
 
             try{
-              if(updateLocalStorage(results)){
+              if(results.length >= 1 && updateLocalStorage(results)){
                 updateHeaderNotifications()
                 if (isProfilePages())
                   updateProfileBellIcon(true)
                 else updateProfileBellIcon(false)
-              }else {
-                updateProfileBellIcon(false)
-                updateHeaderBellIcon(false)
-                hideNotifications(true)
               }
 
             }catch(exception){
@@ -241,17 +234,25 @@
       });
 
       if(
-        !window.location.href.includes("login") ||
-        !window.location.href.includes("password_reset") ||
         !window.location.href.includes("two-factor-authenticate")
       ){
         var userIsAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
         if(userIsAuthenticated){
-          setInterval(function() {
-            checkNotificationsFromToApi()
-          }, 10000); //check notificatiions every 10 seconds
+          if(window.location.href.includes("notifications")) {
+            updateProfileBellIcon(false)
+            updateHeaderBellIcon(false)
+            hideNotifications(true)
+            localStorage.setItem('message_length' ,0)
+            localStorage.setItem('messages' ,'')
+          }else
+            setInterval(function() {
+              checkNotificationsFromToApi()
+            }, 10000); //check notificatiions every 10 seconds
         }
       }
+
+
+      
 
   </script>
 <div style="min-height:92vh">
