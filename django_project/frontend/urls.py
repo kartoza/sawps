@@ -50,6 +50,11 @@ from frontend.api_views.upload import (
     BoundaryFileSearchStatus,
     BoundaryFileUpload,
 )
+from .views.totp_device import (
+    add_totp_device,
+    delete_totp_device,
+    view_totp_devices,
+)
 
 from .views.about import AboutView
 from .views.contact import ContactUsView
@@ -201,6 +206,20 @@ urlpatterns = [
         name='activity_percentage'
     ),
     path(
+        'add_totp_devices/',
+        add_totp_device,
+        name='add_totp_devices'
+    ),
+    path(
+        'view_totp_devices/',
+        view_totp_devices,
+        name='view_totp_devices'
+    ),
+    path(
+        'delete_totp_device/<int:device_id>/',
+        delete_totp_device,
+        name='delete_totp_device'
+    ),
         'get_user_notifications/',
         get_user_notifications,
         name='get_user_notifications'
