@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+"""Test case for activity models.
+"""
 from django.test import TestCase
 from activity.models import ActivityType
 from activity.factories import ActivityTypeFactory

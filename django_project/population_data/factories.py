@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+"""Test factories for population data package.
+"""
 import factory
 from population_data.models import (
     AnnualPopulation,

@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+"""Filters in metrics.
+
+"""
 import django_filters
 from species.models import Taxon
 

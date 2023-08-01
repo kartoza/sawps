@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+"""Models for population data package.
+"""
 from django.db import models
 
 

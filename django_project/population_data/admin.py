@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+"""Admin for population data package.
+"""
 from django.contrib import admin
 from population_data.models import (
     CountMethod,

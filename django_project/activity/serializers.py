@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+"""Serializers for activity package.
+"""
 from rest_framework import serializers
 
 from .models import ActivityType

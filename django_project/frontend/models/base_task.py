@@ -1,4 +1,5 @@
-"""Base model for task."""
+"""Base model for task.
+"""
 from django.db import models
 from datetime import datetime
 

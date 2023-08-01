@@ -40,20 +40,36 @@ nav:
                   - Home: index.md
                   - License: license.md
         - User:
-                  - Quickstart: user/quickstart.md
-                  - Instructions: user/instructions.md
-                  - User Roles: user/permissions.md
+                  - Quickstart:
+                          - Installation/Getting started instructions: user/quickstart.md
+                          - Link to releases: user/releases.md
+                  - User Guide:
+                          - Tutorials: user/instructions.md
+                  - User Reference Manual :
+                          - Conceptual Model: user/conceptual_model.md
+                          - Page View/ View Manual: user/view_manual.md
+                          - Permissions: user/permissions.md
+                  - API:
+                      - API Manual: user/api_manual.md
+                      - Tutorials : user/api_tutorials.md
+
         - Admin:
-                  - Admin: admin/index.md
+                  - Admin Guide:
+                      - Tutorials: admin/tutorials.md
+                  - Admin Reference Manual:
+                      - Conceptual Model: admin/conceptual_model.md
+                      - Page View/ View Manual: admin/view_manual.md
+                      - Screen by screen explanation of: admin/screen.md
+                      - Permissions: admin/permissions.md
         - Developer:
-                  - Developer: developer/index.md
-                  - Narrative: developer/narrative.md
-                  - Code Auto docs:
+                  - Tutorial (Narrative): developer/narrative.md
+                  - Docs:
+                      - Code Auto docs:
                                     - Activity: developer/code_auto_docs.md
                                     - Core: developer/core.md
                                     - Fixtures: developer/fixtures.md
-                                    - frontend: developer/frontend.md
-                                    - notification: developer/notification.md
+                                    - Frontend: developer/frontend.md
+                                    - Notification: developer/notification.md
                                     - Occurrence: developer/occurrence.md
                                     - Population Data: developer/population_data.md
                                     - Property: developer/property.md
@@ -61,9 +77,18 @@ nav:
                                     - SAWPS: developer/sawps.md
                                     - Species: developer/species.md
                                     - Stakeholder: developer/stakeholder.md
-                  - Contribution Guidelines: developer/contribution_guidelines.md
-                  - How to make docs: developer/make_docs.md
-                  - Design: developer/design.md
+                      - How to make docs: developer/make_docs.md
+                  - Developer Reference Manual:
+                      - mkdocs generated content: developer/code_auto_docs.md
+                      - Setting up a dev env: developer/narrative.md
+                      - Coding conventions: developer/code_conventions.md
+                      - Contribution Guidelines: developer/contribution_guidelines.md
+                      - Project SCRUM board: developer/project_scrum.md
+                      - How to test local instance: developer/test_local_instance.md
+                      - License: about/license.md
+                  - Design:
+                      - Design Sheet: developer/design.md
+                      - Wire-frame Model: developer/design.md
                   - How to run instances: developer/run_instances.md
                   - How to test local instance: developer/test_local.md
                   - License: license.md
