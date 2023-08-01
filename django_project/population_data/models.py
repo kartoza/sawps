@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+"""Models for population data package.
+"""
 from django.db import models
 
 
@@ -97,7 +102,7 @@ class AnnualPopulation(AnnualPopulationAbstract):
         db_table = "annual_population"
         constraints = [
             models.UniqueConstraint(
-                fields=["year", "owned_species"],
+                fields=["year", "owned_species", "month"],
                 name="unique_population_count"
             ),
             models.CheckConstraint(

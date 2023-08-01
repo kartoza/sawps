@@ -1,5 +1,6 @@
-"""
-WSGI config for core project.
+# -*- coding: utf-8 -*-
+
+"""WSGI config for core project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

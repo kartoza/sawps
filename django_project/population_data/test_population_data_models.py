@@ -1,26 +1,31 @@
+# -*- coding: utf-8 -*-
+
+
+"""Test case for population data models.
+"""
+from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 from django.test import TestCase
-from population_data.models import (
-    CountMethod, 
-    Month, 
-    NatureOfPopulation, 
-    AnnualPopulation, 
-    AnnualPopulationPerActivity,
-    Certainty,
-    OpenCloseSystem
-)
 from population_data.factories import (
-    CountMethodFactory, 
-    MonthFactory, 
-    NatureOfPopulationFactory, 
-    AnnualPopulationF, 
+    AnnualPopulationF,
     AnnualPopulationPerActivityFactory,
     CertaintyF,
-    OpenCloseSystemF
+    CountMethodFactory,
+    MonthFactory,
+    NatureOfPopulationFactory,
+    OpenCloseSystemF,
 )
-from species.models import Taxon, OwnedSpecies
-from django.contrib.auth.models import User
-from species.factories import OwnedSpeciesFactory, TaxonRankFactory, TaxonFactory
-from django.db.utils import IntegrityError
+from population_data.models import (
+    AnnualPopulation,
+    AnnualPopulationPerActivity,
+    Certainty,
+    CountMethod,
+    Month,
+    NatureOfPopulation,
+    OpenCloseSystem,
+)
+from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
+from species.models import OwnedSpecies, Taxon
 
 
 class CountMethodTestCase(TestCase):
@@ -148,7 +153,7 @@ class PopulationCountTestCase(TestCase):
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
-        user = User.objects.create_user(username='testuser', password='12345')        
+        user = User.objects.create_user(username='testuser', password='12345')
         owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
         cls.population_count = AnnualPopulationF(
             owned_species=owned_species,
@@ -156,7 +161,7 @@ class PopulationCountTestCase(TestCase):
             adult_male=19,
             adult_female=100
         )
-    
+
     def test_create_population_count(self):
         """Test create population count."""
         self.assertTrue(
@@ -185,7 +190,7 @@ class PopulationCountTestCase(TestCase):
                 year=self.population_count.year,
             )
             self.assertEqual(IntegrityError, type(raised.exception))
-    
+
 
     def test_delete_population_count(self):
         """Test delete population count."""
@@ -200,7 +205,7 @@ class PopulationCountTestCase(TestCase):
         with self.assertRaises(Exception) as raised:
             self.population_count.save()
             self.assertEqual(raised.exception, IntegrityError)
-        
+
 
 
 
@@ -215,10 +220,10 @@ class AnnualPopulationPerActivityTestCase(TestCase):
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
-        user = User.objects.create_user(username='testuser', password='12345')        
+        user = User.objects.create_user(username='testuser', password='12345')
         owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
         cls.population_count = AnnualPopulationPerActivityFactory(owned_species=owned_species)
-    
+
     def test_create_population_count(self):
         """Test create population count."""
         self.assertTrue(
@@ -251,8 +256,16 @@ class AnnualPopulationPerActivityTestCase(TestCase):
 
     def test_delete_population_count(self):
         """Test delete population count."""
+        initial_count = AnnualPopulationPerActivity.objects.count()
         self.population_count.delete()
-        self.assertEqual(AnnualPopulationPerActivity.objects.count(), 0)
+        with self.assertRaises(AnnualPopulationPerActivity.DoesNotExist):
+            AnnualPopulationPerActivity.objects.get(pk=self.population_count.pk)
+        self.assertEqual(
+            AnnualPopulationPerActivity.objects.count(),
+            initial_count - 1,
+            msg="The count of AnnualPopulationPerActivity instances did not decrease by 1 after deletion."
+        )
+
 
 
 class TestCertainty(TestCase):

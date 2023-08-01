@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+"""API Views related to data table.
+"""
 from frontend.filters.data_table import OwnedSpeciesFilter
 from frontend.serializers.data_table import OwnedSpeciesSerializer
 from rest_framework.permissions import IsAuthenticated

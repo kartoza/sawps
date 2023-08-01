@@ -1,8 +1,17 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, override_settings
+from django.test import Client, TestCase
 from django.urls import reverse
+from stakeholder.models import (
+    UserProfile
+)
+from stakeholder.views import ProfileView
 from sawps.tests.models.account_factory import UserF
-from stakeholder.factories import userProfileFactory, userTitleFactory, userRoleTypeFactory
+from stakeholder.factories import (
+    userProfileFactory,
+    userTitleFactory,
+    userRoleTypeFactory
+)
+from django.views.generic import DetailView
 
 
 class TestProfile(TestCase):
@@ -51,12 +60,11 @@ class TestProfile(TestCase):
 
         self.assertTrue(profile.pk is None)
 
-    @override_settings(DISABLE_2FA=True)
     def test_profile_update_request(self):
         """
         Test update profile from the form page
         """
-        user = UserF.create(
+        user = get_user_model().objects.create(
             is_staff=False,
             is_active=True,
             is_superuser=False,
@@ -64,13 +72,21 @@ class TestProfile(TestCase):
             email='test@test.com',
         )
         title = userTitleFactory.create(
+            id=1,
             name = 'test',
         )
         role = userRoleTypeFactory.create(
+            id=1,
             name = 'test',
         )
         user.set_password('passwd')
+        user.first_name = 'Fan'
         user.save()
+        UserProfile.objects.create(
+            user=user,
+            title_id=title,
+            user_role_type_id=role
+        )
         resp = self.client.login(username='test', password='passwd')
         self.assertTrue(resp)
 
@@ -78,12 +94,12 @@ class TestProfile(TestCase):
             'first-name': 'Fan',
             'last-name': 'Andri',
             'organization': 'Kartoza',
-            'title': title.id,
-            'role': role.id
+            'title': '1',
+            'role': '1'
         }
 
         response = self.client.post(
-            reverse('profile', kwargs={'slug': user.username}), post_dict
+            '/profile/{}/'.format(user.username), post_dict
         )
         self.assertEqual(response.status_code, 302)
         updated_user = get_user_model().objects.get(id=user.id)
@@ -91,3 +107,21 @@ class TestProfile(TestCase):
         self.assertIsNotNone(updated_user.user_profile.picture)
         self.assertEqual(user.user_profile.title_id.name, title.name)
         self.assertEqual(user.user_profile.user_role_type_id.name, role.name)
+
+    def test_context_data(self):
+        # Simulate a request with the authenticated user
+        user = UserF.create()
+        url = reverse('profile', kwargs={'slug': user.username})
+        client = Client()
+        request = client.get(url)
+        request.user = user
+
+        client.force_login(user)
+        response = client.get(url, follow=True)
+
+        # Check if the response is successful (status code 200)
+        self.assertEqual(response.status_code, 200)
+        context = response.context
+
+        self.assertNotIn('titles', context)
+        self.assertNotIn('roles', context)

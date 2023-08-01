@@ -1,5 +1,5 @@
+from frontend.tests.base_view import RegisteredBaseViewTestBase
 from frontend.views.map import MapView
-from django_project.frontend.tests.base_view import RegisteredBaseViewTestBase
 
 
 class TestHomeView(RegisteredBaseViewTestBase):

@@ -31,6 +31,7 @@ body {
   --green: #70B276;
   --orange: #FAA755;
   --purple: #9D85BE;
+  --red: #FF5252;
   --space-unit: 1em;
   --space-xxs: calc(0.25 * var(--space-unit));
   --space-xs: calc(0.5 * var(--space-unit));

@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+"""Filters in Data table.
+
+"""
 import django_filters
 from django.db.models import Q
 

@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %}Your Profile{% endblock %}
+
+{% block content %}
+<section>
+  <div class="container py-5">
+  <div class="row">
+    {% include "profile_config_base.html" %}
+
+    <div class="container">
+        
+
+        <!-- view notification modal -->
+        <div id="notificationModal" class="notif_modal">
+          <span class="close-icon" onclick="hideModal()">&#x2716;</span>
+          <h2 id="notificationTitle"></h2>
+          <p id="notificationContent"></p>
+          <p id="notificationDate"></p>
+        </div>   
+          
+
+      
+        <!-- search and filter -->
+        <div class="my-row green-background row" style="  border-radius: 5px; margin-left:0.1%; padding-top:0.5%; padding-bottom: 0.25%;">
+          <div class="col-md-6" style="padding-top: 6px; padding-left: 1%;" >
+          </div>
+          <div class="col-md-3" style="margin:auto; padding-bottom:0.25% ">
+
+            <div class="" style="display:flex; border-radius:5px; border:1px white solid">
+                <input style="border-radius:0px 0px; border:none;" type="search" id="searchInput" class="form-control" />
+              <div style="background-color:white; border:none; border-radius:0px 0px" class="btn btn-primary">
+                <i class="fas fa-search"></i>
+              </div>
+            </div>
+        </div>
+        <div class="col-md-3" style="margin:auto; padding-bottom: 0.25%;">
+          <div class="" style="border:1px white solid; border-radius:5px ">
+            <select id="filterSelect" class="form-control" style="width:100%; border: none;">
+              <option value="">Filter</option>
+              <option value="title">Title</option>
+              <option value="reminder">Notification</option>
+            </select>          
+          </div>
+        </div>
+        </div>
+
+      
+      
+
+
+      <!-- notifications table -->
+      <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
+      <table id="notifications" class="table table-bordereless" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>notification</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for notification in notifications %}
+            <tr>
+              <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.title }}</td>
+              <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.date }}</td>
+              <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.reminder }}</td>
+              <td><i class="fas fa-trash-alt trash-icon" data-object-id="{{ notification.id }}"></i></td>
+            </tr>
+          {% endfor %}
+        </tbody>        
+        
+        <!-- table footer with pagination -->
+        <tfoot>
+            <tr>
+              <td colspan="5">
+                <div class="row justify-content-end">
+                  <div class="col-auto">
+                    <div class="row align-items-center">
+                      <div class="col-auto custom">
+                        Rows per page:
+                      </div>
+                      <div class="col-auto custom">
+                        <select id="notificationsRowsPerPage" class="form-control form-control-sm mr-2 small-select border-0" style="border-bottom: 1px solid #5c5858; width: 80px;" onchange="updateRowsPerPage('notifications', this)">
+                          <option value="5" {% if notifications.paginator.per_page == 5 %}selected{% endif %}>5</option>
+                          <option value="10" {% if notifications.paginator.per_page == 10 %}selected{% endif %}>10</option>
+                          <option value="20" {% if notifications.paginator.per_page == 20 %}selected{% endif %}>20</option>
+                        </select>
+                      </div>
+                      
+                      
+                      
+                      <div class="col-auto">
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination justify-content-end">
+                            
+                            {% if notifications.has_previous %}
+                            <li class="page-item">
+                              <a class="page-link" href="?notifications_page={{ notifications.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="page-item disabled">
+                              <a class="page-link" href="#">{{ notifications.number }}</a>
+                            </li>
+                            
+                            {% if notifications.has_next %}
+                            <li class="page-item">
+                              <a class="page-link" href="?notifications_page={{ notifications.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                            {% endif %}
+                          </ul>
+                        </nav>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+      </table>
+
+    </div> 
+  </div>
+  
+
+  <script>
+
+    function hideModal() {
+      var modal = document.getElementById("notificationModal");
+      modal.style.display = "none";
+    }
+
+    // updating rows per page
+    function updateRowsPerPage(table, selectElement) {
+        var selectedValue = selectElement.value;
+        var url = new URL(window.location.href);
+        url.searchParams.set(table + '_page', 1);
+        url.searchParams.set(table + '_per_page', selectedValue);
+        window.location.href = url.href;
+    }
+
+    // searching
+    $(document).ready(function() {
+      $('#searchInput').on('input', function() {
+        var formData = $(this).val();
+            makeSearchQuery(formData)
+      });
+    });
+
+    // refresh table 
+    function constructRemindersTable(data){
+      var tableBody = $('#notifications tbody');
+      tableBody.empty();
+
+      if (data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          var row = '<tr>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].title + '</td>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].date + '</td>';
+          row += '<td class="clickable-row clickable" data-href="' + data[i].id + '">' + data[i].reminder + '</td>';
+          row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].id + '></i></td>';
+          row += '</tr>';
+
+          tableBody.append(row);
+        }
+      }
+    }
+
+    function makeSearchQuery(formData){
+      // check if a filter is currently selected
+      var selectBox = document.getElementById('filterSelect');
+      var selectedValue = selectBox.value;
+
+      var filter = ''
+      if (selectedValue !== undefined && selectedValue !== '') 
+        filter = selectedValue
+
+      $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: {
+          'action': 'search_notifications', 
+          'query': formData,
+          'filter': filter,
+          'notifications_page': true,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+          constructRemindersTable(response.data)   
+          $('#notificationsRowsPerPage').val('{{ notifications.paginator.num_pages }}');
+          $('#notificationsRowsPerPage').val(20);
+          $('#notificationsRowsPerPage option').prop('disabled', false);         
+        },
+                
+      });
+    }
+
+    // GET NOTIFICATION
+    var tableBody = document.getElementById('notifications');
+      tableBody.addEventListener('click', function(event) {
+        var target = event.target;
+        if (target.classList.contains('clickable-row')) {
+          var reminderId = target.getAttribute('data-href');
+          var id = []
+          id.push(reminderId)
+          $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: {
+              'action': 'get_notification', 
+              'ids': JSON.stringify(id),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+              reminder = response.data
+              // Get the modal element and individual content elements
+              var modal = document.getElementById("notificationModal");
+              var titleElement = document.getElementById("notificationTitle");
+              var contentElement = document.getElementById("notificationContent");
+              var dateElement = document.getElementById("notificationDate");
+
+              titleElement.textContent = response.data[0].title;
+              contentElement.textContent = response.data[0].reminder;
+              dateElement.textContent = "Date: " + response.data[0].date;
+
+              // Show the modal
+              modal.style.display = "block";
+
+              // Add event listener to close the modal when clicked outside
+              window.addEventListener("click", function(event) {
+                if(event.target === modal) {
+                  hideModal();
+                }
+              });
+            },
+            error: function(error) {
+              // Handle the error response
+              alert(error);
+            }
+          });
+        }
+      });
+
+      // DELETE ICON
+      $(document).ready(function() {
+        // Event delegation for trash icon click
+        $(document).on('click', '.trash-icon', function() {
+          var objectId = []
+          objectId.push( $(this).data('object-id').toString());
+          $('#deleteConfirmationModal').modal('show');
+            document.getElementById('deleteConfirmationBtn').addEventListener('click', function() {
+            // post request and object
+            $.ajax({
+              type: 'POST',
+              url: $(this).attr('action'),
+              data: {
+                'action': 'delete_notification',
+                'notifications_page': true,
+                'ids': JSON.stringify(objectId),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              success: function(response) {
+                constructRemindersTable(response.data)   
+                  $('#notificationsRowsPerPage').val('{{ notifications.paginator.num_pages }}');
+                  $('#notificationsRowsPerPage').val(20);
+              },
+              error: function(xhr, status, error) {
+              // Handle the error response
+              }
+            });
+            $('#deleteConfirmationModal').modal('hide');
+          });
+        });
+      });
+
+  </script>
+
+<style>
+
+    .green-background {
+      background-color: var(--green);
+    }
+
+    .my-row {
+        width: 100%; /* Set the width as a percentage of the parent container */
+    }
+
+    .custom {
+        padding-bottom: 1rem;
+    }
+
+    .pagination a.page-link {
+        color: var(--green);
+    }
+
+    tfoot select.form-control {
+        color: black;
+        background-color: #f8f9fa;
+        border-color: gray;
+        border-radius: 1px;
+        height: auto;
+        padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333333"><path d="M7 10l5 5 5-5z" /></svg>');
+        background-repeat: no-repeat;
+        background-position: right 0.375rem center;
+        background-size: 12px 12px;
+        padding-right: 1rem;
+    }
+
+    tfoot select.form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+        border-color: var(--green);
+    }
+
+    .form-control:focus {
+        border-color: var(--green);
+        box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+   
+
+    /* Styles for the pop-up modal */
+    .notif_modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .notif_modal h2 {
+      margin-top: 0;
+    }
+    
+    .notif_modal p {
+      margin-bottom: 0;
+    }
+
+    .close-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+  </style>
+  
+
+</section>
+
+
+{% endblock %}
+

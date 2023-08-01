@@ -1,4 +1,7 @@
-"""API Views related to uploading population data."""
+# -*- coding: utf-8 -*-
+
+"""API Views related to uploading population data.
+"""
 from datetime import datetime
 
 from activity.models import ActivityType
