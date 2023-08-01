@@ -1,5 +1,4 @@
 import logging
-from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
 import pytz
