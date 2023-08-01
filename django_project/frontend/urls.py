@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
+from frontend.views.base_view import get_user_notifications
 from frontend.api_views.data_table import DataTableAPIView
 from frontend.api_views.map import (
     AerialTile,
@@ -49,6 +50,11 @@ from frontend.api_views.upload import (
     BoundaryFileSearch,
     BoundaryFileSearchStatus,
     BoundaryFileUpload,
+)
+from .views.totp_device import (
+    add_totp_device,
+    delete_totp_device,
+    view_totp_devices,
 )
 
 from .views.about import AboutView
@@ -205,4 +211,24 @@ urlpatterns = [
         TotalCountPerActivityAPIView.as_view(),
         name='total_count_per_activity'
     ),
+    path(
+        'add_totp_devices/',
+        add_totp_device,
+        name='add_totp_devices'
+    ),
+    path(
+        'view_totp_devices/',
+        view_totp_devices,
+        name='view_totp_devices'
+    ),
+    path(
+        'delete_totp_device/<int:device_id>/',
+        delete_totp_device,
+        name='delete_totp_device'
+    ),
+    path(
+        'get_user_notifications/',
+        get_user_notifications,
+        name='get_user_notifications'
+    )
 ]

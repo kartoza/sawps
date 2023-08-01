@@ -51,15 +51,199 @@
         right: 0;
     }
   </style>
-    <script>
-      $(document).ready(function() {
-          // Check if the password-reset-page class exists on the body
-          if ( ! $('section').hasClass('password-reset-page')) {
-              setTimeout(function() {
-                  $('.alert').fadeOut('slow');
-              }, 3000); // Adjust the duration (in milliseconds) as needed
+  <script>
+
+      function extractBaseUrl(url) {
+        // Find the index of the first forward slash after the initial //
+        const slashIndex = url.indexOf('/', url.indexOf('//') + 2);
+          
+        // Extract the base URL
+        const baseUrl = url.substring(0, slashIndex);
+
+        return baseUrl;
+      }
+
+      var get_devices_url = extractBaseUrl(window.location.href) + "/get_user_notifications/";
+
+      function hideNotifications(hide){
+        try{
+          var notifications = document.getElementById("notifications");
+          if(!hide)
+            notifications.style = "block"
+          else
+            notifications.style = "none"
+        }catch(exception){
+          //ignore exception
+        }
+      }
+
+      // SHOW PROFILE BELL ICON IF ON PROFILE PAGES
+      function updateProfileBellIcon(show_bell) {
+        const messageLength = getMessageLength();
+        var notificationBell = ''
+        var notificationBadge = ''
+        try{
+          notificationBell = document.getElementById('notificationBell');
+          notificationBadge = document.querySelector('.notification-badge');
+
+          if (messageLength > 0 && show_bell) {
+            // Display the bell icon with the badge
+            notificationBell.style.display = 'block';
+            // Set the badge number
+            notificationBadge.innerText = messageLength;
+          }else {
+            // reset 
+            localStorage.setItem('message_length',0)
+            // Hide the bell icon when there are no messages
+            notificationBell.style.display = 'none';
           }
+        }catch(exception){
+          return false
+        }
+
+        return true
+      }
+
+      // SHOW HEADER BELL ICON
+      function updateHeaderBellIcon(show_bell){
+        try{
+          var notificationIcon = document.getElementById("notificationIcon");
+          if(show_bell)
+            notificationIcon.style = "block"
+          else 
+            notificationIcon.style = "none"
+        }catch(exception){
+          //ignore exception
+        } 
+      }
+
+      // GET MESSAGES LENGTH
+      function getMessageLength() {
+        // Try to get the number of messages from localStorage
+        let messageLength = parseInt(localStorage.getItem('message_length'));
+
+        return isNaN(messageLength) ? 0 : messageLength;
+      }
+
+      function updateLocalStorage(results){
+        if(results.length > 0){
+          localStorage.setItem('message_length', results.length)
+          messages = []
+          for(var count = 0; count < results.length; count ++){
+            messages.push(results[count])
+          }
+          localStorage.setItem('messages', JSON.stringify(messages))
+
+          return true 
+        }else {
+          localStorage.setItem('message_length' ,0)
+          localStorage.setItem('messages' ,'')
+
+          return false
+        }
+      }
+
+      function getMessages(){
+        messgaes = JSON.parse(localStorage.getItem('messages'))
+        var return_obj = []
+        for(var count =0; count <messages.length; count++){
+          var save_obj = {
+            url: "/notifications/" + '{{ user }}' + '/', text: messages[count]
+          }
+          return_obj.push(save_obj)
+        }
+        // return [
+        //   { url: "/notifications/" + '{{ user }}' + '/', text: "Notification 1" },
+        //   { url: "/notifications/" + '{{ user }}' + '/', text: "Notification 2" },
+        // ];
+        return return_obj
+      }
+
+      function populateDropdown() {
+        var dropdownItems = getMessages()
+
+        var dropdownList = document.getElementById("notifications_dropdown");
+
+        // Clear any existing items in the dropdown
+        dropdownList.innerHTML = "";
+
+        // Iterate through the dropdownItems array and add items as list items
+        dropdownItems.forEach(function(item) {
+          var listItem = document.createElement("li");
+          var link = document.createElement("a");
+          link.href = item.url;
+          link.textContent = item.text;
+          listItem.appendChild(link);
+          dropdownList.appendChild(listItem);
+        });
+
+        hideNotifications(false)
+        
+      }
+
+      function updateHeaderNotifications(){
+        populateDropdown()
+        updateHeaderBellIcon(true)
+      }
+
+      function isProfilePages(){
+        if(
+          window.location.href.includes("profile") || 
+          window.location.href.includes("reminders") || 
+          window.location.href.includes("backup_tokens"))
+            return true
+        else return false
+      }
+
+      function checkNotificationsFromToApi(){
+        $.ajax({
+          type: 'POST',
+          url: get_devices_url,
+          data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function(response) {
+
+            results = response.user_notifications
+
+            try{
+              if(updateLocalStorage(results)){
+                updateHeaderNotifications()
+                if (isProfilePages())
+                  updateProfileBellIcon(true)
+                else updateProfileBellIcon(false)
+              }else {
+                updateProfileBellIcon(false)
+                updateHeaderBellIcon(false)
+                hideNotifications(true)
+              }
+
+            }catch(exception){
+              // ignore exception
+              // console.log(exception.message)
+            }
+          },
+          error: function(xhr, status, error) {
+            // return []
+          }
+        });
+      }
+
+
+    // MESSAGES FADE OUT
+    $(document).ready(function() {
+      // Check if the password-reset-page class exists on the body
+      if ( ! $('section').hasClass('password-reset-page')) {
+        setTimeout(function() {
+        $('.alert').fadeOut('slow');
+        }, 3000); // Adjust the duration (in milliseconds) as needed
+        }
       });
+
+      setInterval(function() {
+        checkNotificationsFromToApi()
+      }, 10000); //check notificatiions every 10 seconds
+
   </script>
 <div style="min-height:92vh">
 {% block content %}
