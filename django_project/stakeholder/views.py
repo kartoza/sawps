@@ -1,4 +1,5 @@
 import logging
+from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
 import pytz
@@ -31,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 
-class ProfileView(RegisteredOrganisationBaseView):
+class ProfileView(DetailView):
     template_name = 'profile.html'
     model = get_user_model()
     slug_field = 'username'
