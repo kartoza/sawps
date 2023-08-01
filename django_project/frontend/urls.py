@@ -236,5 +236,5 @@ urlpatterns = [
         'get_user_notifications/',
         get_user_notifications,
         name='get_user_notifications'
-    ),   
+    ),
 ]
