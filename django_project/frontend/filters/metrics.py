@@ -37,11 +37,10 @@ class SpeciesPopulationCountFilter(django_filters.FilterSet):
         )
 
 
-class ActivityPercentageFilter(django_filters.FilterSet):
-    species = django_filters.CharFilter(method ='filter_species')
-    start_year = django_filters.CharFilter(method ='filter_start_year')
-    property = django_filters.CharFilter(method = 'filter_property')
-
+class BaseMetricsFilter(django_filters.FilterSet):
+    species = django_filters.CharFilter(method='filter_species')
+    start_year = django_filters.CharFilter(method='filter_start_year')
+    property = django_filters.CharFilter(method='filter_property')
 
     class Meta:
         model = Taxon

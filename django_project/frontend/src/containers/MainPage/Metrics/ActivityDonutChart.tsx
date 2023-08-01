@@ -1,44 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Doughnut } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import "./index.scss";
-import axios from "axios";
 import Loading from "../../../components/Loading";
 
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
-const FETCH_ACTIVITY_PERCENTAGE_URL = '/activity-percentage/'
+interface ActivityDataItem {
+    total: number;
+    species_name: string;
+    icon: string;
+    activities?: Array<{ [key: string]: number }>;
+}
 
-const ActivityDonutChart = () => {
-    const [loading, setLoading] = useState(false)
-    const [activityData, setActivityData] = useState([])
-    const [activityType,setActivityType] = useState({})
+interface ActivityDonutChartProps {
+    activityData: ActivityDataItem[];
+    activityType: {};
+    loading: boolean;
+    chartHeading: string;
+    showPercentage: boolean;
+}
 
-
-    const fetchActivityPercentageData = () => {
-        setLoading(true)
-        axios.get(FETCH_ACTIVITY_PERCENTAGE_URL).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                setActivityData(response.data.data)
-                setActivityType(response.data.activity_colours)
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-
-    useEffect(() => {
-        fetchActivityPercentageData()
-    }, [])
-
+const ActivityDonutChart = (props: ActivityDonutChartProps) => {
+    const { activityData, activityType, loading, chartHeading,showPercentage } = props
     const labels = Object.keys(activityType);
+
 
     const donutOptions = {
         cutout: 50,
@@ -78,10 +69,14 @@ const ActivityDonutChart = () => {
                 color: '#fff',
                 formatter: (value: any, context: any) => {
                     if (value > 0) {
-                        const dataset = context.chart.data.datasets[0];
-                        const sum = dataset.data.reduce((acc: any, cur: any) => acc + cur, 0);
-                        const percentage = ((value * 100) / sum).toFixed(1) + '%';
-                        return percentage;
+                        if (showPercentage) {
+                            const dataset = context.dataset;
+                            const sum = dataset.data.reduce((acc:any, cur:any) => acc + cur, 0);
+                            const percentage = ((value * 100) / sum).toFixed(1) + '%';
+                            return percentage;
+                        } else {
+                            return value;
+                        }
                     }
                     return ''
                 },
@@ -95,7 +90,7 @@ const ActivityDonutChart = () => {
 
     return (
         <Box className="white-chart chartFullWidth leftBoxRound">
-            <Typography>Activity data, as % of total population</Typography>
+            <Typography>{chartHeading}</Typography>
             {loading ? <Loading /> :
                 <Box className="BoxChartType">
                     {activityData?.map((item, index) => {
@@ -104,7 +99,7 @@ const ActivityDonutChart = () => {
                             datasets: [
                                 {
                                     data: labels.map((label) => {
-                                        const activity = item?.activities?.find((activity: any) => activity[label]);
+                                        const activity = item?.activities?.find((activity) => activity[label]);
                                         return activity ? activity[label] : 0;
                                     }),
                                     backgroundColor: Object.values(activityType),

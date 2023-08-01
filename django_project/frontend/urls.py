@@ -28,6 +28,7 @@ from frontend.api_views.map import (
 from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
     SpeciesPopulationCountAPIView,
+    TotalCountPerActivityAPIView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -206,6 +207,11 @@ urlpatterns = [
         name='activity_percentage'
     ),
     path(
+        'total-count-per-activity/',
+        TotalCountPerActivityAPIView.as_view(),
+        name='total_count_per_activity'
+    ),
+    path(
         'add_totp_devices/',
         add_totp_device,
         name='add_totp_devices'
@@ -220,6 +226,7 @@ urlpatterns = [
         delete_totp_device,
         name='delete_totp_device'
     ),
+    path(
         'get_user_notifications/',
         get_user_notifications,
         name='get_user_notifications'
