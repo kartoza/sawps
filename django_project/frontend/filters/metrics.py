@@ -18,6 +18,14 @@ class SpeciesPopulationCountFilter(django_filters.FilterSet):
         species_list = value.split(',')
         return queryset.filter(common_name_varbatim__in=species_list)
 
+    def filter_month(self, queryset, name, value):
+        start_year = self.data.get('start_year')
+        end_year = self.data.get('end_year')
+        return queryset.filter(
+            ownedspecies__annualpopulationperactivity__year__range=(
+                start_year, end_year
+            )
+        )
 
     def filter_start_year(self, queryset, name, value):
         start_year = int(value)
@@ -29,11 +37,10 @@ class SpeciesPopulationCountFilter(django_filters.FilterSet):
         )
 
 
-class ActivityPercentageFilter(django_filters.FilterSet):
-    species = django_filters.CharFilter(method ='filter_species')
-    start_year = django_filters.CharFilter(method ='filter_start_year')
-    property = django_filters.CharFilter(method = 'filter_property')
-
+class BaseMetricsFilter(django_filters.FilterSet):
+    species = django_filters.CharFilter(method='filter_species')
+    start_year = django_filters.CharFilter(method='filter_start_year')
+    property = django_filters.CharFilter(method='filter_property')
 
     class Meta:
         model = Taxon
@@ -52,7 +59,6 @@ class ActivityPercentageFilter(django_filters.FilterSet):
                 end_year
             )
         )
-
 
     def filter_property(self, queryset, name, value):
         properties_list = value.split(',')
