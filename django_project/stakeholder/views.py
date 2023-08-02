@@ -58,13 +58,9 @@ class ProfileView(DetailView):
         if profile != self.request.user:
             raise Http404('Mismatch user')
 
-        if self.request.POST.get('first-name', ''):
-            profile.first_name = self.request.POST.get('first-name', '')
-        if self.request.POST.get('last-name', ''):
-            profile.last_name = self.request.POST.get('last-name', '')
-
-        if self.request.POST.get('email', ''):
-            profile.email = self.request.POST.get('email', '')
+        profile.first_name = self.request.POST.get('first-name', '')
+        profile.last_name = self.request.POST.get('last-name', '')
+        profile.email = self.request.POST.get('email', '')
 
         if not UserProfile.objects.filter(user=profile).exists():
             UserProfile.objects.create(
@@ -75,10 +71,13 @@ class ProfileView(DetailView):
             profile.user_profile.picture = self.request.FILES.get(
                 'profile-picture', None
             )
+
         if self.request.POST.get('title', ''):
             title = UserTitle.objects.get(
-                id=self.request.POST.get('title', ''))
+                id=self.request.POST.get('title', '')
+            )
             profile.user_profile.title_id = title
+
         if self.request.POST.get('role', ''):
             role = UserRoleType.objects.get(
                 id=self.request.POST.get('role', '')
