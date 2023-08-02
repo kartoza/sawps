@@ -235,3 +235,18 @@ def get_statistical_model_output_cache(taxon: Taxon, output_type: str,
     cache_key = get_statistical_model_output_cache_key(taxon, output_type,
                                                        add_key=add_key)
     return cache.get(cache_key)
+
+
+def clear_statistical_model_output_cache(taxon: Taxon):
+    """
+    Clear all output from species in the cache.
+
+    :param taxon: species
+    """
+    output_caches = (
+        cache._cache.get_client().keys(f'*species-{str(taxon.id)}-*')
+    )
+    if output_caches:
+        for cache_key in output_caches:
+            cleaned_key = str(cache_key).split(':')[-1].replace('\'', '')
+            cache.delete(cleaned_key)
