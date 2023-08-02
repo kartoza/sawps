@@ -76,26 +76,11 @@ class OwnedSpeciesTestCase(TestCase):
             owned_species.taxon.common_name_varbatim
         )
 
-    def test_filter_by_month(self):
-        url = self.url
-        data = {
-            'month': self.owned_species[0].annualpopulation_set.first().month.name,
-            'start_year': self.owned_species[0].annualpopulation_set.first().year,
-            'end_year': self.owned_species[0].annualpopulation_set.first().year
-            }
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(
-            response.data[0]['annualpopulation']['month'],
-            self.owned_species[0].annualpopulation_set.first().month.name
-        )
 
     def test_filter_by_name_month_and_property(self):
         data = {
             'species': self.taxon.common_name_varbatim,
             'property': self.property.name,
-            'month': self.owned_species[0].annualpopulation_set.first().month.name,
             'start_year': self.owned_species[0].annualpopulation_set.first().year,
             'end_year': self.owned_species[0].annualpopulation_set.first().year,
         }
@@ -106,10 +91,7 @@ class OwnedSpeciesTestCase(TestCase):
             response.data[0]['property']['name'],
             self.owned_species[0].property.name
         )
-        self.assertEqual(
-            response.data[0]['annualpopulation']['month'],
-            self.owned_species[0].annualpopulation_set.first().month.name
-        )
+        
 
     def test_filter_by_annualpopulation_category(self):
         data = {

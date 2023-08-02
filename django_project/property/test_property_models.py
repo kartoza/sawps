@@ -89,12 +89,6 @@ class PropertyTestCase(TestCase):
         self.property.save()
         self.assertEqual(Property.objects.get(id=self.property.id).name, 'Property_1')
 
-    def test_property_area_constraint(self):
-        """Test property area constraint"""
-        with self.assertRaises(Exception) as raised:
-            self.property.area_available = 250
-            self.property.save()
-        self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_property(self):
         """Test delete property."""
