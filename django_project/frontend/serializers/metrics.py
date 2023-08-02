@@ -22,9 +22,8 @@ class SpeciesPopulationCountSerializer(serializers.ModelSerializer):
 
     def get_species_colour(self, obj):
         return obj.colour
-    
+
     def get_annualpopulation_count(self, obj):
-        
         annual_populations = (
             AnnualPopulation.objects.filter(
                 owned_species__taxon=obj,
@@ -34,6 +33,7 @@ class SpeciesPopulationCountSerializer(serializers.ModelSerializer):
             .values("population_status__name", "population_status_total")
         )
         return list(annual_populations)
+
 
 class ActivityMatrixSerializer(serializers.ModelSerializer):
     total = serializers.SerializerMethodField()
