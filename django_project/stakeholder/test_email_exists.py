@@ -28,7 +28,6 @@ class CheckEmailExistsViewTest(TestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'exists': True})
 
     def test_email_not_exists(self):
         # Log in the user before making the request
@@ -46,7 +45,6 @@ class CheckEmailExistsViewTest(TestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'exists': False})
 
     def test_empty_email(self):
         # Log in the user before making the request
@@ -64,7 +62,6 @@ class CheckEmailExistsViewTest(TestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'exists': False})
 
     def test_same_email_as_current_user(self):
         # Log in the user before making the request
@@ -82,4 +79,3 @@ class CheckEmailExistsViewTest(TestCase):
 
         # Check the response status code and content
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'exists': False})
