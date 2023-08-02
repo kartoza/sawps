@@ -28,8 +28,21 @@ from django.db.models import Q
 from core.celery import app
 from frontend.views.base_view import RegisteredOrganisationBaseView
 from frontend.serializers.stakeholder import ReminderSerializer
+from django.contrib.auth.models import User
 logger = logging.getLogger(__name__)
 
+
+
+def check_email_exists(request):
+    if request.method == 'GET':
+        email = request.GET.get('email', '').strip()
+        current_user_email = request.user.email
+
+        if email and email != current_user_email:
+            email_exists = User.objects.filter(email=email).exists()
+            return JsonResponse({'exists': email_exists})
+
+    return JsonResponse({'exists': False})
 
 
 class ProfileView(DetailView):
