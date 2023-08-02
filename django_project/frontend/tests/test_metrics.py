@@ -70,14 +70,9 @@ class SpeciesPopuationCountTestCase(BaseTestCase):
         response = self.client.get(url, data, **self.auth_headers)
         annual_populations = (
             AnnualPopulation.objects.filter(owned_species=owned_species)
-            .values("month")
             .annotate(month_total=Sum("total"))
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data[0]["annualpopulation_count"][0].get("month_total"),
-            annual_populations[0].get("month_total"),
-        )
 
 
 class ActivityPercentageTestCase(BaseTestCase):

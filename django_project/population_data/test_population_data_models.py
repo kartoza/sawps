@@ -11,18 +11,18 @@ from population_data.factories import (
     AnnualPopulationPerActivityFactory,
     CertaintyF,
     CountMethodFactory,
-    MonthFactory,
-    NatureOfPopulationFactory,
     OpenCloseSystemF,
+    PopulationEstimateCategoryF,
+    PopulationStatusF,
 )
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     Certainty,
     CountMethod,
-    Month,
-    NatureOfPopulation,
     OpenCloseSystem,
+    PopulationStatus,
+    PopulationEstimateCategory
 )
 from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
 from species.models import OwnedSpecies, Taxon
@@ -60,86 +60,6 @@ class CountMethodTestCase(TestCase):
         """Test delete count method."""
         self.count_method.delete()
         self.assertEqual(CountMethod.objects.count(), 0)
-
-
-class MonthTestCase(TestCase):
-    """Month test case."""
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.month = MonthFactory(
-            name='month-0'
-        )
-
-    def test_create_month(self):
-        """Test create a month."""
-        self.assertTrue(isinstance(self.month, Month))
-        self.assertEqual(Month.objects.count(), 1)
-        self.assertEqual(self.month.name, 'month-0')
-
-    def test_update_month(self):
-        """Update month."""
-        self.month.name = 'month-1'
-        self.month.save()
-        self.assertEqual(Month.objects.get(id=self.month.id).name, 'month-1')
-
-    def test_month_unique_name_constraint(self):
-        """Test month unique name constraint."""
-        with self.assertRaises(Exception) as raised:
-            MonthFactory(name='month-1')
-            self.assertEqual(raised.exception, IntegrityError)
-
-    def test_month_unique_sort_order_constraint(self):
-        """Test month unique sort_order constraint."""
-        with self.assertRaises(Exception) as raised:
-            MonthFactory(sort_order=0)
-            self.assertEqual(raised.exception, IntegrityError)
-
-    def test_delete_month(self):
-        """Test delete month."""
-        self.month.delete()
-        self.assertEqual(Month.objects.count(), 0)
-
-
-class NatureOfPopulationTestCase(TestCase):
-    """Nature of population test case."""
-
-    @classmethod
-    def setUpTestData(cls):
-        """SetUpTestData for nature of population test case."""
-        cls.nature_of_population = NatureOfPopulationFactory(
-            name='nature of population-0'
-        )
-
-    def test_create_nature_of_population(self):
-        """Test create nature of population."""
-        self.assertTrue(
-            isinstance(self.nature_of_population, NatureOfPopulation)
-        )
-        self.assertEqual(NatureOfPopulation.objects.count(), 1)
-        self.assertEqual(
-            self.nature_of_population.name, 'nature of population-0'
-        )
-
-    def test_update_nature_of_population(self):
-        """Test update nature of population."""
-        self.nature_of_population.name = 'nature of population-1'
-        self.nature_of_population.save()
-        self.assertEqual(
-            NatureOfPopulation.objects.get(id=self.nature_of_population.id).name,
-            'nature of population-1',
-        )
-
-    def test_nature_of_population_unique_name_constraint(self):
-        """Test nature of population unique name constraint."""
-        with self.assertRaises(Exception) as raised:
-            NatureOfPopulationFactory(name='nature of population-1')
-            self.assertEqual(IntegrityError, type(raised.exception))
-
-    def test_delete_nature_of_population(self):
-        """Test delete nature of population."""
-        self.nature_of_population.delete()
-        self.assertEqual(NatureOfPopulation.objects.count(), 0)
 
 
 class PopulationCountTestCase(TestCase):
@@ -263,26 +183,27 @@ class AnnualPopulationPerActivityTestCase(TestCase):
         self.assertEqual(
             AnnualPopulationPerActivity.objects.count(),
             initial_count - 1,
-            msg="The count of AnnualPopulationPerActivity instances did not decrease by 1 after deletion."
+            msg="The count of AnnualPopulationPerActivity"
+            "instances did not decrease by 1 after deletion."
         )
 
 
 
 class TestCertainty(TestCase):
-    """Test for certainty model"""
+    """Test for certainty model."""
 
     def setUp(self) -> None:
         """setup test data"""
         self.Certainty = CertaintyF(name='name', description='text')
 
     def test_create_certainty(self):
-        """test create certainty"""
+        """test create certainty."""
         self.assertEqual(self.Certainty.name, 'name')
         self.assertEqual(self.Certainty.description, 'text')
         self.assertEqual(Certainty.objects.count(), 1)
 
     def test_update_Certainty(self):
-        """test update certainty"""
+        """test update certainty."""
         self.Certainty.name = 'Certainty'
         self.Certainty.description = 'Certainty description'
         self.Certainty.save()
@@ -290,30 +211,102 @@ class TestCertainty(TestCase):
         self.assertEqual(self.Certainty.description, 'Certainty description')
 
     def test_delete_certainty(self):
-        """test delete certainty"""
+        """test delete certainty."""
         self.Certainty.delete()
         self.assertEqual(Certainty.objects.count(), 0)
 
 
 class TestOpenCloseSystem(TestCase):
-    """Test for open close system model"""
+    """Test for open close system model."""
 
     def setUp(self) -> None:
         """setup test data"""
         self.open_close_sustem = OpenCloseSystemF(name='name')
 
     def test_create_open_close_system(self):
-        """test create pen close system"""
+        """test create open close system."""
         self.assertEqual(self.open_close_sustem.name, 'name')
         self.assertEqual(OpenCloseSystem.objects.count(), 1)
 
     def test_update_open_close_system(self):
-        """test update pen close system"""
+        """test update open close system."""
         self.open_close_sustem.name = 'OpenCloseSystem'
         self.open_close_sustem.save()
         self.assertEqual(self.open_close_sustem.name, 'OpenCloseSystem')
 
     def test_delete_open_close_system(self):
-        """test delete pen close system"""
+        """test delete open close system."""
         self.open_close_sustem.delete()
         self.assertEqual(OpenCloseSystem.objects.count(), 0)
+
+
+class TestPopulationEstimateCategory(TestCase):
+    """Test for population estimate category model."""
+
+    def setUp(self) -> None:
+        """setup test data."""
+        self.population_estimate_category = PopulationEstimateCategoryF(
+            name='name'
+            )
+
+    def test_create_population_estimate(self):
+        """test create population estimate category."""
+        self.assertEqual(self.population_estimate_category.name, 'name')
+        self.assertEqual(PopulationEstimateCategory.objects.count(), 1)
+
+    def test_update_population_estimate(self):
+        """test update population estimate category."""
+        self.population_estimate_category.name = 'PopulationEstimateCategory'
+        self.population_estimate_category.save()
+        self.assertEqual(
+            self.population_estimate_category.name, 
+            'PopulationEstimateCategory'
+        )
+
+    def test_delete_population_estimate(self):
+        """test delete population estimate category."""
+        self.population_estimate_category.delete()
+        self.assertEqual(PopulationEstimateCategory.objects.count(), 0)
+
+    def test_population_estimate_name_constraint(self):
+        """Test population estimate category name contraint."""
+        with self.assertRaises(Exception) as raised:
+            PopulationEstimateCategoryF(name='name')
+            self.assertEqual(IntegrityError, type(raised.exception))
+
+
+class TestPopulationSatatus(TestCase):
+    """Test for population status model."""
+
+    def setUp(self) -> None:
+        """setup test data."""
+        self.population_status = PopulationStatusF(
+            name='name'
+            )
+
+    def test_create_population_status(self):
+        """test create population status."""
+        self.assertEqual(self.population_status.name, 'name')
+        self.assertEqual(PopulationStatus.objects.count(), 1)
+
+    def test_update_population_status(self):
+        """test update population status."""
+        self.population_status.name = 'PopulationSatatus'
+        self.population_status.save()
+        self.assertEqual(
+            self.population_status.name, 
+            'PopulationSatatus'
+        )
+
+    def test_delete_population_status(self):
+        """test delete population status."""
+        self.population_status.delete()
+        self.assertEqual(PopulationStatus.objects.count(), 0)
+
+    def test_population_status_name_constraint(self):
+        """Test population status name contraint."""
+        with self.assertRaises(Exception) as raised:
+            PopulationStatusF(name='name')
+            self.assertEqual(IntegrityError, type(raised.exception))
+
+    

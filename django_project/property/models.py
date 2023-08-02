@@ -31,7 +31,6 @@ class Property(models.Model):
     name = models.CharField(max_length=300, unique=True)
     owner_email = models.EmailField(null=True, blank=True)
     property_size_ha = models.IntegerField(null=True, blank=True)
-    area_available = models.FloatField()
     geometry = models.MultiPolygonField(srid=4326, null=True, blank=True)
     province = models.ForeignKey(Province, on_delete=models.DO_NOTHING)
     property_type = models.ForeignKey(
@@ -43,19 +42,15 @@ class Property(models.Model):
 
     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField()
+    open = models.BooleanField(
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = 'Property'
         verbose_name_plural = 'Properties'
         db_table = 'property'
-        constraints = [
-            models.CheckConstraint(
-                check=models.Q(
-                    area_available__lte=models.F('property_size_ha')
-                ),
-                name='check property size',
-            ),
-        ]
 
     def __str__(self) -> str:
         return self.name

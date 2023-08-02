@@ -3,10 +3,8 @@ from django.contrib.auth.models import User
 from population_data.factories import (
     AnnualPopulationF,
     AnnualPopulationPerActivityFactory,
-    MonthFactory,
 )
 from species.models import (
-    ManagementStatus,
     OwnedSpecies,
     Taxon,
     TaxonRank,
@@ -50,23 +48,12 @@ class TaxonFactory(factory.django.DjangoModelFactory):
     icon = factory.django.ImageField(filename='icon.jpg', color='blue')
 
 
-class ManagementStatusFactory(factory.django.DjangoModelFactory):
-    """Management status factory."""
-    class Meta:
-        model = ManagementStatus
-
-    name = factory.Sequence(lambda n: 'management status_%d' % n)
-
 
 class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
     """Owned species factory."""
     class Meta:
         model = OwnedSpecies
 
-    management_status = factory.SubFactory(ManagementStatusFactory)
-    nature_of_population = factory.SubFactory(
-        'population_data.factories.NatureOfPopulationFactory'
-    )
     taxon = factory.SubFactory(TaxonFactory)
     user = factory.SubFactory(UserFactory)
     property = factory.SubFactory('property.factories.PropertyFactory')
@@ -82,14 +69,12 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
             total=100,
             adult_male=50,
             adult_female=50,
-            month=factory.SubFactory(MonthFactory),
             juvenile_male=30,
             juvenile_female=30,
             sub_adult_total=20,
             sub_adult_male=10,
             sub_adult_female=10,
             juvenile_total=40,
-            pride=5
         )
 
     @factory.post_generation
@@ -103,7 +88,6 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
             total=100,
             adult_male=50,
             adult_female=50,
-            month=factory.SubFactory(MonthFactory),
             juvenile_male=30,
             juvenile_female=30,
         )

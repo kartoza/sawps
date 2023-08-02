@@ -7,7 +7,8 @@ from django.db import models
 
 
 class CountMethod(models.Model):
-    """Count method model."""
+    """Count method model.
+    """
 
     name = models.CharField(max_length=200, unique=True)
 
@@ -20,46 +21,16 @@ class CountMethod(models.Model):
         db_table = "count_method"
 
 
-class Month(models.Model):
-    """Month model."""
-
-    name = models.CharField(max_length=100, unique=True)
-    sort_order = models.IntegerField(unique=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "month"
-        verbose_name_plural = "months"
-        db_table = "month"
-
-
-class NatureOfPopulation(models.Model):
-    """Nature of the population model."""
-
-    name = models.CharField(max_length=255, unique=True)
-    extensive = models.BooleanField()
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Nature of Population"
-        verbose_name_plural = "Nature of Population"
-        db_table = "nature_of_population"
-
 
 class AnnualPopulationAbstract(models.Model):
-    """ "Annual Population model."""
-
+    """ "Annual Population model.
+    """
     year = models.PositiveIntegerField()
     owned_species = models.ForeignKey("species.OwnedSpecies",
                                       on_delete=models.CASCADE)
     total = models.IntegerField()
     adult_male = models.IntegerField(null=True, blank=True)
     adult_female = models.IntegerField(null=True, blank=True)
-    month = models.ForeignKey(Month, on_delete=models.CASCADE)
     juvenile_male = models.IntegerField(null=True, blank=True)
     juvenile_female = models.IntegerField(null=True, blank=True)
     note = models.TextField(null=True, blank=True)
@@ -69,13 +40,13 @@ class AnnualPopulationAbstract(models.Model):
 
 
 class AnnualPopulation(AnnualPopulationAbstract):
-    """Population count model."""
+    """Population count model.
+    """
 
     sub_adult_total = models.IntegerField(null=True, blank=True)
     sub_adult_male = models.IntegerField(null=True, blank=True)
     sub_adult_female = models.IntegerField(null=True, blank=True)
     juvenile_total = models.IntegerField(null=True, blank=True)
-    pride = models.IntegerField(null=True, blank=True)
     area_covered = models.FloatField(null=False, default=0.0)
     sampling_effort = models.FloatField(null=False, default=0.0)
     survey_method = models.ForeignKey(
@@ -95,16 +66,21 @@ class AnnualPopulation(AnnualPopulationAbstract):
     )
     group = models.IntegerField(null=True, blank=True)
     presence = models.BooleanField(null=False, default=False)
+    population_status = models.ForeignKey(
+        "population_data.PopulationStatus", 
+        on_delete=models.CASCADE, null=True
+    )
+
+    population_estimate_category = models.ForeignKey(
+        "population_data.PopulationEstimateCategory", 
+        on_delete=models.CASCADE, null=True
+    )
 
     class Meta:
         verbose_name = "Annual Population"
         verbose_name_plural = "Annual Populations"
         db_table = "annual_population"
         constraints = [
-            models.UniqueConstraint(
-                fields=["year", "owned_species", "month"],
-                name="unique_population_count"
-            ),
             models.CheckConstraint(
                 name="Adult male and adult female"
                      " must not be greater than total",
@@ -117,7 +93,8 @@ class AnnualPopulation(AnnualPopulationAbstract):
 
 
 class AnnualPopulationPerActivity(AnnualPopulationAbstract):
-    """Annual Population per activity model."""
+    """Annual Population per activity model.
+    """
 
     activity_type = models.ForeignKey(
         "activity.ActivityType",
@@ -128,6 +105,7 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     intake_permit = models.IntegerField(null=True, blank=True)
     translocation_destination = models.TextField(null=True, blank=True)
     offtake_permit = models.IntegerField(null=True, blank=True)
+
 
     class Meta:
         verbose_name = "Population count per activity"
@@ -142,7 +120,8 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
 
 
 class Certainty(models.Model):
-    """Certainty model"""
+    """Certainty model.
+    """
 
     name = models.CharField(
         max_length=250, null=False, blank=False, default="", unique=True
@@ -157,7 +136,8 @@ class Certainty(models.Model):
 
 
 class OpenCloseSystem(models.Model):
-    """OpenCloseSystem model"""
+    """Open Close System model.
+    """
 
     name = models.CharField(
         max_length=250, null=False, blank=False, default="", unique=True
@@ -170,3 +150,39 @@ class OpenCloseSystem(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class PopulationStatus(models.Model):
+    """Population status model.
+    """
+
+    name = models.TextField(
+        null=False, 
+        blank=False,
+        default="",
+        unique=True,
+        help_text="Name"
+    )
+
+    class Meta:
+        verbose_name = "Population Status"
+        verbose_name_plural = "Population Status"
+        db_table = "population_status"
+
+
+class PopulationEstimateCategory(models.Model):
+    """Population Estimate Category model.
+    """
+
+    name = models.TextField(
+        null=False, 
+        blank=False,
+        default="",
+        unique=True,
+        help_text="Name"
+    )
+
+    class Meta:
+        verbose_name = "Population Estimate Category"
+        verbose_name_plural = "Population Estimate Categories"
+        db_table = "population_estimate_category"
