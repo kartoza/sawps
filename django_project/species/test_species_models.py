@@ -143,7 +143,6 @@ class TaxonTestCase(TestCase):
                 infraspecific_epithet='infra_1',
                 taxon_rank=self.taxonRank,
             )
-            self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_taxon_relation_to_self(self):
         """Test taxon relation to self."""

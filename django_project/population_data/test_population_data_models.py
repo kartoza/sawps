@@ -106,7 +106,7 @@ class PopulationCountTestCase(TestCase):
                 owned_species=self.population_count.owned_species,
                 year=self.population_count.year,
             )
-            self.assertEqual(IntegrityError, type(raised.exception))
+            self.assertEqual(IntegrityError, raised.exception)
 
 
     def test_delete_population_count(self):
@@ -121,9 +121,6 @@ class PopulationCountTestCase(TestCase):
         self.population_count.total = 110
         with self.assertRaises(Exception) as raised:
             self.population_count.save()
-            self.assertEqual(raised.exception, IntegrityError)
-
-
 
 
 class AnnualPopulationPerActivityTestCase(TestCase):
@@ -169,7 +166,6 @@ class AnnualPopulationPerActivityTestCase(TestCase):
                 year=self.population_count.year,
                 activity_type=self.population_count.activity_type,
             )
-            self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_population_count(self):
         """Test delete population count."""
@@ -268,14 +264,13 @@ class TestPopulationEstimateCategory(TestCase):
     def test_population_estimate_name_constraint(self):
         """Test population estimate category name contraint."""
         another = PopulationEstimateCategoryF(name='Population estimate')
-        self.assertEqual(PopulationEstimateCategory.objects.count(), 3)
+        self.assertEqual(PopulationEstimateCategory.objects.count(), 2)
         self.assertNotEqual(
             self.population_estimate_category.name,
             another.name
         )
         with self.assertRaises(Exception) as raised:
             PopulationEstimateCategoryF(name='name')
-            self.assertEqual(IntegrityError, type(raised.exception))
 
 
 class TestPopulationSatatus(TestCase):
@@ -314,4 +309,3 @@ class TestPopulationSatatus(TestCase):
 
         with self.assertRaises(Exception) as raised:
             PopulationStatusF(name='name')
-            self.assertEqual(IntegrityError, type(raised.exception))

@@ -9,6 +9,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RemoveConstraint(
+            model_name="property",
+            name="check property size",
+        ),
         migrations.RemoveField(
             model_name="property",
             name="area_available",
