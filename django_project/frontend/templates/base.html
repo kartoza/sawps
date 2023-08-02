@@ -56,7 +56,7 @@
       function extractBaseUrl(url) {
         // Find the index of the first forward slash after the initial //
         const slashIndex = url.indexOf('/', url.indexOf('//') + 2);
-          
+         
         // Extract the base URL
         const baseUrl = url.substring(0, slashIndex);
 
@@ -69,11 +69,11 @@
         try{
           var notifications = document.getElementById("notifications");
           if(!hide)
-            notifications.style = "block"
+            notifications.style.display = "block"
           else
-            notifications.style = "none"
+            notifications.style.display = "none"
         }catch(exception){
-          //ignore exception
+          // console.log(exception.message)
         }
       }
 
@@ -87,29 +87,59 @@
 
       // SHOW PROFILE BELL ICON IF ON PROFILE PAGES
       function updateProfileBellIcon(show_bell) {
-        const messageLength = getMessageLength();
-        var notificationBell = ''
-        var notificationBadge = ''
-        try{
-          notificationBell = document.getElementById('notificationBell');
-          notificationBadge = document.querySelector('.notification-badge');
+        // document.addEventListener("DOMContentLoaded", function() {
+          const messageLength = getMessageLength();
+          var notificationBell = ''
+          var notificationBadge = ''
+          try{
+            notificationBell = document.getElementById('notificationBell');
+            notificationBadge = document.querySelector('.notification-badge');
 
-          if (messageLength > 0 && show_bell) {
-            // Display the bell icon with the badge
-            notificationBell.style.display = 'block';
-            // Set the badge number
-            notificationBadge.innerText = messageLength;
-          }else {
-            // reset 
-            localStorage.setItem('message_length',0)
-            // Hide the bell icon when there are no messages
-            notificationBell.style.display = 'none';
+            if (messageLength > 0 && show_bell) {
+              // Display the bell icon with the badge
+              notificationBell.style.display = 'block';
+              // Set the badge number
+              notificationBadge.innerText = messageLength;
+            }else {
+              // reset
+              localStorage.setItem('message_length',0)
+              // Hide the bell icon when there are no messages
+              notificationBell.style.display = 'none';
+            }
+          }catch(exception){
+            return false
           }
-        }catch(exception){
-          return false
-        }
 
-        return true
+          return true
+        // });
+      }
+
+      function waitUpdateProfileBellIcon(show_bell) {
+        document.addEventListener("DOMContentLoaded", function() {
+          const messageLength = getMessageLength();
+          var notificationBell = ''
+          var notificationBadge = ''
+          try{
+            notificationBell = document.getElementById('notificationBell');
+            notificationBadge = document.querySelector('.notification-badge');
+
+            if (messageLength > 0 && show_bell) {
+              // Display the bell icon with the badge
+              notificationBell.style.display = 'block';
+              // Set the badge number
+              notificationBadge.innerText = messageLength;
+            }else {
+              // reset
+              localStorage.setItem('message_length',0)
+              // Hide the bell icon when there are no messages
+              notificationBell.style.display = 'none';
+            }
+          }catch(exception){
+            return false
+          }
+
+          return true
+        });
       }
 
       // SHOW HEADER BELL ICON
@@ -117,12 +147,12 @@
         try{
           var notificationIcon = document.getElementById("notificationIcon");
           if(show_bell)
-            notificationIcon.style = "block"
-          else 
-            notificationIcon.style = "none"
+            notificationIcon.style.display = "block"
+          else
+            notificationIcon.style.display = "none"
         }catch(exception){
           //ignore exception
-        } 
+        }
       }
 
       function updateLocalStorage(results){
@@ -134,14 +164,14 @@
           }
           localStorage.setItem('messages', JSON.stringify(messages))
 
-          return true 
+          return true
         }
 
         return false
       }
 
       function getMessages(){
-        messgaes = JSON.parse(localStorage.getItem('messages'))
+        messages = JSON.parse(localStorage.getItem('messages'))
         var return_obj = []
         for(var count =0; count < messages.length; count++){
           var save_obj = {
@@ -149,45 +179,45 @@
           }
           return_obj.push(save_obj)
         }
-        // return [
-        //   { url: "/notifications/" + '{{ user }}' + '/', text: "Notification 1" },
-        //   { url: "/notifications/" + '{{ user }}' + '/', text: "Notification 2" },
-        // ];
         return return_obj
       }
 
-      function populateDropdown() {
-        var dropdownItems = getMessages()
+      function waitPopulateDropdown() {
+        // document.addEventListener("DOMContentLoaded", function() {
+          var dropdownItems = getMessages()
 
-        var dropdownList = document.getElementById("notifications_dropdown");
+          var dropdownList = document.getElementById("notifications_dropdwon");
 
-        // Clear any existing items in the dropdown
-        dropdownList.innerHTML = "";
+          // Clear any existing items in the dropdown
+          dropdownList.innerHTML = "";
 
-        // Iterate through the dropdownItems array and add items as list items
-        dropdownItems.forEach(function(item) {
-          var listItem = document.createElement("li");
-          var link = document.createElement("a");
-          link.href = item.url;
-          link.textContent = item.text;
-          listItem.appendChild(link);
-          dropdownList.appendChild(listItem);
-        });
+          // Iterate through the dropdownItems array and add items as list items
+          dropdownItems.forEach(function(item) {
+            var listItem = document.createElement("li");
+            var link = document.createElement("a");
+            link.href = item.url;
+            link.textContent = item.text;
+            listItem.appendChild(link);
+            dropdownList.appendChild(listItem);
+          });
 
-        hideNotifications(false)
-        
+          hideNotifications(false)
+        // });
+       
       }
 
       function updateHeaderNotifications(){
-        populateDropdown()
+        waitPopulateDropdown()
         updateHeaderBellIcon(true)
       }
 
       function isProfilePages(){
         if(
-          window.location.href.includes("profile") || 
-          window.location.href.includes("reminders") || 
-          window.location.href.includes("backup_tokens"))
+          window.location.href.includes("profile") ||
+          window.location.href.includes("reminders") ||
+          window.location.href.includes("backup_tokens") ||
+          window.location.href.includes("setup")
+        )
             return true
         else return false
       }
@@ -244,6 +274,11 @@
             hideNotifications(true)
             localStorage.setItem('message_length' ,0)
             localStorage.setItem('messages' ,'')
+          }else if(getMessageLength() >= 1){
+            if(isProfilePages())
+            waitUpdateProfileBellIcon(true)
+            updateHeaderNotifications()
+            hideNotifications(false)
           }else
             setInterval(function() {
               checkNotificationsFromToApi()
@@ -252,10 +287,10 @@
       }
 
 
-      
+     
 
   </script>
-<div style="min-height:92vh">
+<div style="min-height:var(--min-content-height);">
 {% block content %}
 {% endblock %}
 </div>
