@@ -163,3 +163,17 @@ def write_plumber_data(headers, csv_data):
         writer.writerow(headers)
         writer.writerows(csv_data)
     return r_data_path
+
+
+def remove_plumber_data(data_filepath):
+    """
+    Remove csv data file.
+
+    :param data_filepath: filepath to the csv file
+    """
+    try:
+        if os.path.exists(data_filepath):
+            os.remove(data_filepath)
+    except Exception as ex:
+        logger.error(ex)
+        logger.error(traceback.format_exc())

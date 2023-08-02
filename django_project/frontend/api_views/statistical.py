@@ -2,6 +2,7 @@
 
 """API Views related to statistical.
 """
+import os
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -11,7 +12,8 @@ from population_data.models import AnnualPopulation
 from frontend.models import StatisticalModel, NATIONAL_TREND
 from frontend.utils.statistical_model import (
     execute_statistical_model,
-    write_plumber_data
+    write_plumber_data,
+    remove_plumber_data
 )
 
 
@@ -50,6 +52,8 @@ class SpeciesNationalTrend(APIView):
         data_filepath = write_plumber_data(csv_headers, csv_data)
         is_success, json_data = execute_statistical_model(
             data_filepath, model=statistical_model)
+        # remove data_filepath
+        remove_plumber_data(data_filepath)
         if is_success:
             return Response(status=200, data=json_data.get(NATIONAL_TREND, []))
         return Response(status=200, data=[])
