@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from species.models import TaxonRank, Taxon, ManagementStatus, OwnedSpecies
 from species.forms import TaxonForm
 
+
 @admin.action(description='Clean output caches')
 def clean_output_caches(modeladmin, request, queryset):
     """Clean statistical model output from taxons."""

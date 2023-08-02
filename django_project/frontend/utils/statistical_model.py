@@ -91,10 +91,10 @@ def kill_r_plumber_process():
     kill_process_by_pid(pid_path)
 
 
-def execute_statistical_model(data_filepath, model: StatisticalModel=None):
+def execute_statistical_model(data_filepath, model: StatisticalModel = None):
     """
     Execute R model from exported data.
-    
+
     :param data_filepath: file path of exported csv
     :param model: optional model to be executed, \
             if model=None, then generic one will be used
@@ -153,7 +153,7 @@ def write_plumber_file():
 def write_plumber_data(headers, csv_data):
     """
     Write csv data to file in plumber_data.
-    
+
     :param headers: list of header name
     :param csv_data: list of row
     :return: file path of exported csv

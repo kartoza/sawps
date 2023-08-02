@@ -54,4 +54,3 @@ def kill_process_by_pid(pidfile_path):
     if plumber_pid:
         # kill a process via pid
         os.kill(plumber_pid, SIGKILL)
-

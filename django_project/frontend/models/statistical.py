@@ -37,7 +37,8 @@ class StatisticalModel(models.Model):
 
 
 @receiver(post_save, sender=StatisticalModel)
-def statistical_model_post_create(sender, instance: StatisticalModel, created, *args, **kwargs):
+def statistical_model_post_create(sender, instance: StatisticalModel,
+                                  created, *args, **kwargs):
     from frontend.tasks.start_plumber import (
         start_plumber_process
     )
@@ -52,7 +53,8 @@ def statistical_model_post_create(sender, instance: StatisticalModel, created, *
 
 
 @receiver(pre_delete, sender=StatisticalModel)
-def statistical_model_pre_delete(sender, instance: StatisticalModel, *args, **kwargs):
+def statistical_model_pre_delete(sender, instance: StatisticalModel,
+                                 *args, **kwargs):
     from frontend.utils.statistical_model import (
         clear_statistical_model_output_cache
     )
@@ -60,7 +62,8 @@ def statistical_model_pre_delete(sender, instance: StatisticalModel, *args, **kw
 
 
 @receiver(post_delete, sender=StatisticalModel)
-def statistical_model_post_delete(sender, instance: StatisticalModel, *args, **kwargs):
+def statistical_model_post_delete(sender, instance: StatisticalModel,
+                                  *args, **kwargs):
     from frontend.tasks.start_plumber import (
         start_plumber_process
     )
