@@ -1,6 +1,7 @@
 import React, {FC} from 'react';
 import './styles.scss'
 import SpeciesChart from '../SpeciesChart';
+import Skeleton from '@mui/material/Skeleton';
 
 export interface IColors{
   line?:string,
@@ -9,6 +10,7 @@ export interface IColors{
 
 interface ISpeciesCardProps{
     pic:string,
+    species_id: number,
     species_name?:string,
     growth:string,
     loss:string,
@@ -21,7 +23,7 @@ const SpeciesCard:FC<ISpeciesCardProps> =(props)=>{
     return(
             <div className='species-card-container' data-testid='species-card-container'>
                 <div className='species-card-image-container'>
-                    <img src={props.pic} className='species-card-image' data-testid='species-card-image'/>
+                    { props.pic ? <img src={props.pic} className='species-card-image' data-testid='species-card-image'/> : <Skeleton variant="circular" className='species-card-no-image' /> }
                     <p className='species-card-text species-name-text'> {props.species_name} </p>
                     <hr/>
                 </div>
@@ -31,7 +33,7 @@ const SpeciesCard:FC<ISpeciesCardProps> =(props)=>{
                     <p className='species-card-text' data-testid='species-card-loss'>Population Loss : {props.loss}</p>
                 </div>
                 <div className='ChartHolder'>
-                <SpeciesChart species_name={props.species_name} lineColor={props.chartColors.line} areaFillColor={props.chartColors.area}  index={props.index}/>
+                    <SpeciesChart species_id={props.species_id} species_name={props.species_name} lineColor={props.chartColors.line} areaFillColor={props.chartColors.area}  index={props.index}/>
                 </div>
             </div>
     )   

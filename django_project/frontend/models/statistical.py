@@ -1,8 +1,5 @@
 """Classes for Statistical R Model."""
 from django.db import models
-from django.conf import settings
-from frontend.models.base_task import BaseTaskRequest
-from uuid import uuid4
 
 
 # model output types

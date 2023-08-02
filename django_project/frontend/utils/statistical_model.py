@@ -6,7 +6,10 @@ import csv
 import subprocess
 import requests
 from uuid import uuid4
+from django.core.cache import cache
+from django.utils.text import slugify
 from core.settings.utils import absolute_path
+from species.models import Taxon
 from frontend.models.statistical import StatisticalModel
 from frontend.utils.process import (
     write_pidfile,
@@ -22,15 +25,17 @@ def plumber_health_check():
     """Check whether API is up and running."""
     request_url = f'http://0.0.0.0:{PLUMBER_PORT}/statistical/echo'
     retry = 0
-    max_retry = 25
-    req = requests.get(request_url)
-    while req.status_code != 200 and retry < max_retry:
-        time.sleep(1)
+    max_retry = 5
+    req = None
+    while (req is None or req.status_code != 200) and retry < max_retry:
         try:
             req = requests.get(request_url)
+            if req.status_code != 200:
+                time.sleep(1)
         except Exception as ex:  # noqa
             logger.error(ex)
             logger.error(traceback.format_exc())
+            time.sleep(1)
         retry += 1
     if retry < max_retry:
         logger.info('Plumber API is up and running!')
@@ -177,3 +182,56 @@ def remove_plumber_data(data_filepath):
     except Exception as ex:
         logger.error(ex)
         logger.error(traceback.format_exc())
+
+
+def get_statistical_model_output_cache_key(taxon: Taxon, output_type: str,
+                                           add_key: str = None):
+    """
+    Build cache key for statistical model output.
+
+    :param taxon: species
+    :param output_type: model output type, e.g. NATIONAL_TREND
+    :param add_key: (Optional) additional cache key \
+        like Province name or Property Name
+    :return: cache key
+    """
+    cache_key = (
+        f"species-{str(taxon.id)}-{output_type.replace('_', '-')}"
+    )
+    if add_key:
+        cache_key = cache_key + f'-{slugify(add_key)}'
+    return cache_key
+
+
+def save_statistical_model_output_cache(taxon: Taxon, output_type: str,
+                                        json_data,
+                                        add_key: str = None):
+    """
+    Save output of statistical model to cache.
+
+    :param taxon: species
+    :param output_type: model output type, e.g. NATIONAL_TREND
+    :param json_data: json data of model output
+    :param add_key: (Optional) additional cache key \
+        like Province name or Property Name
+    """
+    cache_key = get_statistical_model_output_cache_key(taxon, output_type,
+                                                       add_key=add_key)
+    redis_time_cache = 21600  # 6 hours
+    cache.set(cache_key, json_data, redis_time_cache)
+
+
+def get_statistical_model_output_cache(taxon: Taxon, output_type: str,
+                                       add_key: str = None):
+    """
+    Retrieve output of statistical model from cache.
+
+    :param taxon: species
+    :param output_type: model output type, e.g. NATIONAL_TREND
+    :param add_key: (Optional) additional cache key \
+        like Province name or Property Name
+    :return: json data or None if there is no cache
+    """
+    cache_key = get_statistical_model_output_cache_key(taxon, output_type,
+                                                       add_key=add_key)
+    return cache.get(cache_key)

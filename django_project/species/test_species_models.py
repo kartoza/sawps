@@ -17,6 +17,7 @@ from species.factories import (
     OwnedSpeciesFactory,
     TaxonSurveyMethodF
 )
+from population_data.factories import AnnualPopulationF
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from occurrence.models import SurveyMethod
@@ -100,6 +101,7 @@ class TaxonTestCase(TestCase):
             common_name_varbatim='taxon_0',
             colour_variant=False,
             taxon_rank=cls.taxonRank,
+            show_on_front_page=False
         )
         cls.url = reverse('species')
         
@@ -119,6 +121,43 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = TaxonSerializer([self.taxon], many=True).data
         self.assertEqual(expected_data, response.data)
+    
+    def test_get_taxon_frontpage_list(self):
+        """Test fetch taxon list for frontpage."""
+        taxon = TaxonFactory.create(
+            scientific_name='taxon_1',
+            common_name_varbatim='taxon_1',
+            colour_variant=False,
+            taxon_rank=self.taxonRank,
+            show_on_front_page=True
+        )
+        client = Client()
+        response = client.get(reverse('species-front-page'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        taxon_1 = [d for d in response.data if d['id'] == taxon.id]
+        self.assertTrue(taxon_1)
+        self.assertEqual(taxon_1[0]['total_population'], 0)
+        self.assertEqual(taxon_1[0]['species_name'], taxon.scientific_name)
+        user_1 = User.objects.create_user(username='testuser_taxon_1', password='12345')
+        owned_species_1 = OwnedSpeciesFactory(taxon=taxon, user=user_1)
+        user_2 = User.objects.create_user(username='testuser_taxon_2', password='12345')
+        owned_species_2 = OwnedSpeciesFactory(taxon=taxon, user=user_2)
+        # create two years of data
+        AnnualPopulationF(owned_species=owned_species_1, year=2021, total=30,
+                          adult_male=10, adult_female=10)
+        AnnualPopulationF(owned_species=owned_species_1, year=2022, total=35,
+                          adult_male=10, adult_female=10)
+        AnnualPopulationF(owned_species=owned_species_2, year=2020, total=15,
+                          adult_male=10, adult_female=5)
+        AnnualPopulationF(owned_species=owned_species_2, year=2022, total=22,
+                          adult_male=10, adult_female=10)
+        response = client.get(reverse('species-front-page'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        taxon_1 = [d for d in response.data if d['id'] == taxon.id]
+        self.assertTrue(taxon_1)
+        self.assertEqual(taxon_1[0]['total_population'], 57)
 
     def test_create_taxon(self):
         """Test create taxon."""

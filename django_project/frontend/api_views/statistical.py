@@ -2,10 +2,9 @@
 
 """API Views related to statistical.
 """
-import os
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from species.models import Taxon
 from population_data.models import AnnualPopulation
@@ -13,7 +12,9 @@ from frontend.models import StatisticalModel, NATIONAL_TREND
 from frontend.utils.statistical_model import (
     execute_statistical_model,
     write_plumber_data,
-    remove_plumber_data
+    remove_plumber_data,
+    save_statistical_model_output_cache,
+    get_statistical_model_output_cache
 )
 
 
@@ -24,6 +25,10 @@ class SpeciesNationalTrend(APIView):
     def get(self, *args, **kwargs):
         species_id = kwargs.get('species_id')
         species = get_object_or_404(Taxon, id=species_id)
+        cached_json_data = get_statistical_model_output_cache(
+            species, NATIONAL_TREND)
+        if cached_json_data:
+            return Response(status=200, data=cached_json_data)
         statistical_model = StatisticalModel.objects.filter(
             taxon=species
         ).first()
@@ -55,5 +60,8 @@ class SpeciesNationalTrend(APIView):
         # remove data_filepath
         remove_plumber_data(data_filepath)
         if is_success:
-            return Response(status=200, data=json_data.get(NATIONAL_TREND, []))
+            national_trend_data = json_data.get(NATIONAL_TREND, [])
+            save_statistical_model_output_cache(species, NATIONAL_TREND,
+                                                national_trend_data)
+            return Response(status=200, data=national_trend_data)
         return Response(status=200, data=[])
