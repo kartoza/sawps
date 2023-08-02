@@ -4,12 +4,7 @@ from population_data.factories import (
     AnnualPopulationF,
     AnnualPopulationPerActivityFactory,
 )
-from species.models import (
-    OwnedSpecies,
-    Taxon,
-    TaxonRank,
-    TaxonSurveyMethod,
-)
+from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 
 
 class TaxonRankFactory(factory.django.DjangoModelFactory):
@@ -60,8 +55,6 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def create_annual_population(self, create, extracted, **kwargs):
-        if not create:
-            return
 
         AnnualPopulationF.create(
             year=factory.Faker('year'),
@@ -79,8 +72,6 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def create_annual_population_per_activity(self, create, *args):
-        if not create:
-            return
 
         AnnualPopulationPerActivityFactory.create(
             year=factory.Faker('year'),

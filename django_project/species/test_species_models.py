@@ -1,23 +1,18 @@
-from rest_framework import status
-from django.urls import reverse
 import base64
-from django.test import Client
-from django.test import TestCase
-from species.models import (
-    TaxonRank, 
-    Taxon, 
-    OwnedSpecies, 
-    TaxonSurveyMethod
-)
-from species.factories import (
-    TaxonRankFactory,
-    TaxonFactory,
-    OwnedSpeciesFactory,
-    TaxonSurveyMethodF
-)
+
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
+from django.test import Client, TestCase
+from django.urls import reverse
 from occurrence.models import SurveyMethod
+from rest_framework import status
+from species.factories import (
+    OwnedSpeciesFactory,
+    TaxonFactory,
+    TaxonRankFactory,
+    TaxonSurveyMethodF,
+)
+from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
 
 
@@ -33,7 +28,7 @@ class TaxonRankTestCase(TestCase):
         """Test create taxon rank."""
         self.assertTrue(isinstance(self.taxonRank, TaxonRank))
         self.assertEqual(
-            self.taxonRank.name, 
+            self.taxonRank.name,
             TaxonRank.objects.get(id=self.taxonRank.id).name
         )
 
@@ -42,7 +37,7 @@ class TaxonRankTestCase(TestCase):
         self.taxonRank.name = 'taxon_rank_1'
         self.taxonRank.save()
         self.assertEqual(
-            TaxonRank.objects.get(id=self.taxonRank.id).name, 
+            TaxonRank.objects.get(id=self.taxonRank.id).name,
             'taxon_rank_1'
         )
 
@@ -73,7 +68,7 @@ class TaxonTestCase(TestCase):
             taxon_rank=cls.taxonRank,
         )
         cls.url = reverse('species')
-        
+
     def test_get_taxon_list(self):
         """Taxon list API test"""
 
@@ -96,7 +91,7 @@ class TaxonTestCase(TestCase):
         self.assertTrue(isinstance(self.taxon, Taxon))
         self.assertEqual(Taxon.objects.count(), 1)
         self.assertEqual(
-            self.taxon.scientific_name, 
+            self.taxon.scientific_name,
             Taxon.objects.get(id=self.taxon.id).scientific_name
         )
 
@@ -106,11 +101,11 @@ class TaxonTestCase(TestCase):
         self.taxon.infraspecific_epithet = 'infra_1'
         self.taxon.save()
         self.assertEqual(
-            Taxon.objects.get(id=self.taxon.id).scientific_name, 
+            Taxon.objects.get(id=self.taxon.id).scientific_name,
             'taxon_1'
         )
         self.assertEqual(
-            Taxon.objects.get(id=self.taxon.id).infraspecific_epithet, 
+            Taxon.objects.get(id=self.taxon.id).infraspecific_epithet,
             'infra_1'
         )
 
@@ -127,6 +122,19 @@ class TaxonTestCase(TestCase):
 
     def test_taxon_unique_infraspecific_epithet_constraint(self):
         """Test taxon unique infraspecific epithet constraint."""
+
+        Taxon.objects.create(
+            scientific_name='taxon_2',
+            common_name_varbatim='taxon_2',
+            colour_variant=False,
+            infraspecific_epithet='infra_2',
+            taxon_rank=self.taxonRank,
+        )
+        self.assertEqual(
+            Taxon.objects.filter(infraspecific_epithet='infra_2').count(),
+            1
+        )
+
         with self.assertRaises(Exception) as raised:
             Taxon.objects.create(
                 scientific_name='taxon_0',
@@ -183,7 +191,7 @@ class OwnedSpeciesTestCase(TestCase):
         self.ownedSpecies.save()
         self.assertEqual(
             OwnedSpecies.objects.get(
-            id=self.ownedSpecies.id).area_available_to_species, 
+            id=self.ownedSpecies.id).area_available_to_species,
             45.67
         )
 
@@ -205,14 +213,14 @@ class TaxonSurveyMethodTestCase(TestCase):
             taxon_rank=TaxonRankFactory(),
         )
         cls.survey_method = SurveyMethod.objects.create(
-            name='Unknown', 
+            name='Unknown',
             sort_id='1'
-        )        
+        )
         cls.taxon_survey_method = TaxonSurveyMethodF(
-            taxon=cls.taxon, 
+            taxon=cls.taxon,
             survey_method=cls.survey_method
         )
-    
+
     def test_create_taxon_survey_method(self):
         """Test create Taxon survey method count."""
         self.assertTrue(
@@ -242,7 +250,7 @@ class TaxonSurveyMethodTestCase(TestCase):
         self.taxon_survey_method.save()
         self.assertEqual(
             TaxonSurveyMethod.objects.filter(
-            taxon__scientific_name='taxon').count(), 
+            taxon__scientific_name='taxon').count(),
             1
         )
 
