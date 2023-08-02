@@ -22,7 +22,6 @@ services:
       - ../django_project:/home/web/django_project
       - ./volumes/media:/home/web/media
       - ./volumes/layer_tiles:/opt/layer_tiles
-      - ./volumes/plumber_data:/home/web/plumber_data
 
   dev:
     image: kartoza/sanbi_dev

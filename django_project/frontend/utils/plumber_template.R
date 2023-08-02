@@ -6,14 +6,14 @@ library(mgcv)
 library(ggpubr)
 
 #* Echo back the input
-#* @get /echo
+#* @get /statistical/echo
 function() {
   list(msg = paste0("Plumber is working!"))
 }
 
 #* Generic Model
 #* @param filepath Path of data file
-#* @post /generic
+#* @post /statistical/generic
 function(filepath) {
   all_data <- read.csv(filepath)
   # do any data cleaning

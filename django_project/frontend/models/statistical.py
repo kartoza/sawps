@@ -5,12 +5,21 @@ from frontend.models.base_task import BaseTaskRequest
 from uuid import uuid4
 
 
+# model output types
+NATIONAL_TREND = 'national_trend'
+POPULATION_PER_PROVINCE = 'population_per_province'
+PROVINCE_TREND = 'province_trend'
+PROPERTY_TREND = 'property_trend'
+POPULATION_PER_PROPERTY = 'population_per_property'
+
+
 class StatisticalModel(models.Model):
     """Model that stores R code of statistical model."""
 
     taxon = models.ForeignKey(
         'species.Taxon',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        unique=True
     )
 
     name = models.CharField(
@@ -20,84 +29,31 @@ class StatisticalModel(models.Model):
     )
 
     code = models.TextField(
-        null=True,
-        blank=True
-    )
-
-    is_valid = models.BooleanField(
-        null=True
-    )
-
-    last_error = models.TextField(
-        null=True,
-        blank=True
+        null=False,
+        blank=False
     )
 
     def __str__(self) -> str:
         return f'{self.taxon} - {self.name}'
 
 
-class StatisticalTaskRequest(BaseTaskRequest):
-    """Task to run statistical R Model."""
+class StatisticalModelOutput(models.Model):
+    """Output of statistical model."""
 
-    request_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+    OUTPUT_TYPE_CHOICES = (
+        (NATIONAL_TREND, 'National Trend'),
+        (POPULATION_PER_PROVINCE, 'Population Per Province'),
+        (PROVINCE_TREND, 'Province Trend'),
+        (PROPERTY_TREND, 'Property Trend'),
+        (POPULATION_PER_PROPERTY, 'Population Per Property'),
     )
 
-    organisation = models.ForeignKey(
-        'stakeholder.Organisation', on_delete=models.CASCADE
-    )
-
-    image = models.ImageField(
-        upload_to='statistical/%Y/%m/%d/',
-        null=True,
-        blank=True
-    )
-
-    response = models.JSONField(
-        default=dict,
-        null=True,
-        blank=True
-    )
-
-    uuid = models.UUIDField(
-        default=uuid4
-    )
-
-    taxon = models.ForeignKey(
-        'species.Taxon',
-        on_delete=models.CASCADE
-    )
-
-    statistical_model = models.ForeignKey(
+    model = models.ForeignKey(
         'frontend.StatisticalModel',
         on_delete=models.CASCADE
     )
 
-    is_success = models.BooleanField(
-        null=True
+    type = models.CharField(
+        max_length=100,
+        choices=OUTPUT_TYPE_CHOICES
     )
-
-    return_code = models.IntegerField(
-        null=True,
-        blank=True
-    )
-
-    error = models.TextField(
-        null=True,
-        blank=True
-    )
-
-    def __str__(self) -> str:
-        return str(self.uuid)
-
-    def reset(self):
-        if self.image:
-            self.image.delete()
-        self.image = None
-        self.response = None
-        self.is_success = None
-        self.return_code = None
-        self.error = None
-        self.save()

@@ -15,13 +15,12 @@ from frontend.models import (
     BoundarySearchRequest,
     ContextLayerLegend,
     DraftSpeciesUpload,
-    StatisticalModel,
-    StatisticalTaskRequest
+    StatisticalModel
 )
 from frontend.tasks import (
     generate_vector_tiles_task,
     clear_older_vector_tiles,
-    run_statistical_model
+    start_plumber_process
 )
 
 
@@ -189,9 +188,20 @@ class DraftSpeciesUploadAdmin(admin.ModelAdmin):
     list_display = ('name', 'property', 'upload_by', 'taxon', 'year')
 
 
+@admin.action(description='Restart plumber process')
+def restart_plumber_process(modeladmin, request, queryset):
+    start_plumber_process.apply_async(queue='plumber')
+    modeladmin.message_user(
+        request,
+        'Plumber process will be started in background!',
+        messages.SUCCESS
+    )
+
+
 class StatisticalModelAdmin(admin.ModelAdmin):
-    list_display = ('taxon', 'name', 'is_valid')
+    list_display = ('taxon', 'name')
     search_fields = ['taxon', 'name']
+    actions = [restart_plumber_process]
 
 
 admin.site.register(ContextLayer, ContextLayerAdmin)

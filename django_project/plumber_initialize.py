@@ -12,8 +12,6 @@ This script initializes
 from django.db import connection
 from django.db.utils import OperationalError
 import time
-import os
-import shutil
 import django
 
 django.setup()
@@ -36,28 +34,15 @@ connection.close()
 
 print('-----------------------------------------------------')
 print('2. Generate plumber.R file')
-# TODO: generate plumber.R from db
-src_plumber = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    'frontend',
-    'utils',
-    'plumber_template.R'
+from frontend.utils.statistical_model import (  # noqa
+    spawn_r_plumber,
+    write_plumber_file
 )
-dest_plumber = os.path.join(
-    '/',
-    'home',
-    'web',
-    'plumber_data',
-    'plumber.R'
-)
-shutil.copyfile(src_plumber, dest_plumber)
+write_plumber_file()
 
 print('-----------------------------------------------------')
 print('3. Spawn initial plumber process')
-from frontend.tasks.run_statistical_model import (  # noqa
-    spawn_initial_r_plumber
-)
-plumber_process = spawn_initial_r_plumber()
+plumber_process = spawn_r_plumber()
 if plumber_process:
     print(f'plumber process pid {plumber_process.pid}')
 else:

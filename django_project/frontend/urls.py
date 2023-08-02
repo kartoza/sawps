@@ -51,6 +51,9 @@ from frontend.api_views.upload import (
     BoundaryFileSearchStatus,
     BoundaryFileUpload,
 )
+from frontend.api_views.statistical import (
+    SpeciesNationalTrend
+)
 from .views.totp_device import (
     add_totp_device,
     delete_totp_device,
@@ -168,6 +171,11 @@ urlpatterns = [
         r'^api/upload/population/(?P<property_id>\d+)/?$',
         UploadPopulationAPIVIew.as_view(),
         name='population-upload'
+    ),
+    re_path(
+        r'^api/species/(?P<species_id>\d+)/trend/national/?$',
+        SpeciesNationalTrend.as_view(),
+        name='species-national-trend'
     ),
     path(
         'api/upload/population/draft/<uuid:draft_uuid>/',
