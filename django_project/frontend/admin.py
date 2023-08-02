@@ -15,7 +15,8 @@ from frontend.models import (
     BoundarySearchRequest,
     ContextLayerLegend,
     DraftSpeciesUpload,
-    StatisticalModel
+    StatisticalModel,
+    StatisticalModelOutput
 )
 from frontend.tasks import (
     generate_vector_tiles_task,
@@ -198,10 +199,16 @@ def restart_plumber_process(modeladmin, request, queryset):
     )
 
 
+class StatisticalModelOutputInline(admin.TabularInline):
+    model = StatisticalModelOutput
+    extra = 1
+
+
 class StatisticalModelAdmin(admin.ModelAdmin):
     list_display = ('taxon', 'name')
     search_fields = ['taxon', 'name']
     actions = [restart_plumber_process]
+    inlines = [StatisticalModelOutputInline]
 
 
 admin.site.register(ContextLayer, ContextLayerAdmin)
