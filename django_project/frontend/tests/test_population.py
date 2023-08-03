@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+import mock
 from frontend.tests.model_factories import UserF
 from stakeholder.models import (
     OrganisationUser
@@ -24,6 +25,10 @@ from population_data.models import (
     AnnualPopulationPerActivity
 )
 from species.models import OwnedSpecies
+
+
+def mocked_clear_cache(self, *args, **kwargs):
+    pass
 
 
 class TestPopulationAPIViews(TestCase):
@@ -56,6 +61,11 @@ class TestPopulationAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
 
+    @mock.patch(
+        'frontend.api_views.population.'
+        'clear_statistical_model_output_cache',
+        mock.Mock(side_effect=mocked_clear_cache)
+    )
     def test_upload_population_data(self):
         property = PropertyFactory.create(
             organisation=self.organisation

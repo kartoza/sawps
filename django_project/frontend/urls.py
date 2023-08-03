@@ -68,11 +68,6 @@ from .views.home import HomeView
 from .views.map import MapView
 from .views.online_form import OnlineFormView
 from .views.switch_organisation import switch_organisation
-from .views.totp_device import (
-    add_totp_device,
-    delete_totp_device,
-    view_totp_devices,
-)
 from .views.users import OrganisationUsersView
 
 urlpatterns = [
