@@ -6,8 +6,8 @@ import "./index.scss";
 import axios from "axios";
 import DensityBarChart from "./DensityBarChart";
 
-const FETCH_ACTIVITY_PERCENTAGE_URL = '/activity-percentage/'
-const FETCH_ACTIVITY_TOTAL_COUNT = '/total-count-per-activity/'
+const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
+const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
 
 const Metrics = () => {
     const [loading, setLoading] = useState(false)

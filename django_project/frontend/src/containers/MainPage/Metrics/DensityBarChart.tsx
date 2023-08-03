@@ -12,7 +12,7 @@ import Loading from "../../../components/Loading";
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
-const FETCH_SPECIES_DENSITY = '/species-population-total-density/'
+const FETCH_SPECIES_DENSITY = '/api/species-population-total-density/'
 
 const DensityBarChart = () => {
     const [loading, setLoading] = useState(false)
