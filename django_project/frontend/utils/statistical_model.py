@@ -21,17 +21,18 @@ logger = logging.getLogger(__name__)
 PLUMBER_PORT = os.getenv('PLUMBER_PORT', 8181)
 
 
-def plumber_health_check():
+def plumber_health_check(max_retry=5):
     """Check whether API is up and running."""
     request_url = f'http://0.0.0.0:{PLUMBER_PORT}/statistical/echo'
     retry = 0
-    max_retry = 5
     req = None
     while (req is None or req.status_code != 200) and retry < max_retry:
         try:
             req = requests.get(request_url)
             if req.status_code != 200:
                 time.sleep(1)
+            else:
+                break
         except Exception as ex:  # noqa
             logger.error(ex)
             logger.error(traceback.format_exc())
@@ -148,6 +149,7 @@ def write_plumber_file():
     with open(r_file_path, 'w') as f:
         for line in lines:
             f.write(line)
+    return r_file_path
 
 
 def write_plumber_data(headers, csv_data):
