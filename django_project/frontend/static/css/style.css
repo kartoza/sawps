@@ -32,6 +32,7 @@ body {
   --orange: #FAA755;
   --purple: #9D85BE;
   --red: #FF5252;
+  --min-content-height: 92vh;
   --space-unit: 1em;
   --space-xxs: calc(0.25 * var(--space-unit));
   --space-xs: calc(0.5 * var(--space-unit));

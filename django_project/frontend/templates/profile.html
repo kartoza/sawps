@@ -6,14 +6,6 @@
 
 {% block content %}
 <section>
-  {% for message in messages %}
-    {% if 'notification' in message.tags %}
-      <div class="alert alert-success position-fixed top-0 end-0" role="alert">
-        {{ message }}
-      </div>
-    {% endif %}
-  {% endfor %}
-
   <div class="container py-5">
   <div class="row">
     {% include "profile_config_base.html" %}
@@ -28,7 +20,7 @@
               </div>
               <div class="form-group">
                 <label for="last-name">Last Name</label>
-                <input type="text" class="form-control" name="last-name" aria-describedby="LastNameHelp" value={{object.last_name}}>
+                <input type="text" class="form-control" name="last-name" aria-describedby="lastNameHelp" value={{object.last_name}}>
               </div>
               <div class="form-group">
                 <label for="title">Title</label>
@@ -45,28 +37,29 @@
               </div>
               <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" class="form-control" name="email" aria-describedby="emailHelp" value={{object.email}}>
+                <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value={{object.email}}>
+                <small id="email-error" class="form-text text-danger"></small>
               </div>
               <div class="form-group mt-3">
                 <small id="data-privacy" class="form-text text-muted">How would you like your data to be used see the SANBI data sharing agreement. 
                   Switching the toggle will be taken as full agreement to the terms of the option chosen</small>
               </div>
               <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="onlySANBI">
+                <input type="checkbox" class="custom-control-input" id="onlySANBI" disabled>
                 <label class="custom-control-label text-muted small" for="onlySANBI">Use of data by SANBI only</label>
               </div>
               <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="hostingDataSANBI">
+                <input type="checkbox" class="custom-control-input" id="hostingDataSANBI" disabled>
                 <label class="custom-control-label text-muted small" for="hostingDataSANBI">Hosting / serving the data through SANBI platforms and portals</label>
               </div>
               <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther">
+                <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther" disabled>
                 <label class="custom-control-label text-muted small" for="hostingDataSANBIOther">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the datas</label>
-              </div>
-              <div class="form-group">
+              </div>              
+              <!-- <div class="form-group">
                 <small id="data-privacy" class="form-text text-muted">Select user lists  you need to receive communications from</small>
-              </div>
-              <button type="submit" class="account-button">Update</button>
+              </div> -->
+              <button type="submit" class="account-button" id="submit-button">Update</button>
             </form>
           </div>
         </div>
@@ -79,6 +72,50 @@
             $('.alert').fadeOut('slow');
         }, 3000); // Adjust the duration (in milliseconds) as needed
     });
+
+    const emailInput = document.getElementById("email");
+    const submitButton = document.getElementById("submit-button");
+    const emailError = document.getElementById("email-error");
+
+    function validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    function checkEmailExists(email) {
+      // Make an AJAX query to check if the email exists in the database
+      // Replace the following with your actual AJAX call
+      // For example, using fetch API:
+      return fetch(`/check_email_exists/?email=${encodeURIComponent(email)}`)
+        .then(response => response.json())
+        .then(data => data.exists);
+    }
+
+    function handleEmailValidation() {
+      const email = emailInput.value.trim();
+      const isEmailValid = validateEmail(email);
+
+      if (!isEmailValid) {
+        emailError.textContent = "Email is invalid.";
+        submitButton.disabled = true;
+        return;
+      }else {
+        checkEmailExists(email).then(emailExists => {
+          if (emailExists) {
+            emailError.textContent = "Email already exists.";
+            submitButton.disabled = true;
+          } else {
+            emailError.textContent = "";
+            submitButton.disabled = false;
+          }
+        });
+        return
+      }
+
+      
+    }
+
+    emailInput.addEventListener("input", handleEmailValidation);
 
   
   </script>

@@ -4,14 +4,12 @@ from django.urls import reverse
 from stakeholder.models import (
     UserProfile
 )
-from stakeholder.views import ProfileView
 from sawps.tests.models.account_factory import UserF
 from stakeholder.factories import (
     userProfileFactory,
     userTitleFactory,
     userRoleTypeFactory
 )
-from django.views.generic import DetailView
 
 
 class TestProfile(TestCase):
@@ -46,9 +44,17 @@ class TestProfile(TestCase):
             'picture': 'profile_pictures/picture_P.jpg',
         }
         profile.__dict__.update(profile_picture)
+        profile.first_name = 'j'
+        profile.last_name = 'jj'
         profile.save()
 
+        user.email = 't@t.com'
+        user.save()
+
         self.assertIsNotNone(profile.picture)
+        self.assertIsNotNone(profile.first_name)
+        self.assertIsNotNone(profile.last_name)
+        self.assertIsNotNone(user.email)
 
     def test_profile_delete(self):
         """
@@ -81,6 +87,8 @@ class TestProfile(TestCase):
         )
         user.set_password('passwd')
         user.first_name = 'Fan'
+        user.last_name = 'Fan'
+        user.email = user.email
         user.save()
         UserProfile.objects.create(
             user=user,
@@ -92,7 +100,8 @@ class TestProfile(TestCase):
 
         post_dict = {
             'first-name': 'Fan',
-            'last-name': 'Andri',
+            'last-name': 'Fan',
+            'email': user.email,
             'organization': 'Kartoza',
             'title': '1',
             'role': '1'
