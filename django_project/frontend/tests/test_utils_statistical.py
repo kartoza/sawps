@@ -1,5 +1,6 @@
 import os
 from django.test import TestCase
+import mock
 import requests_mock
 from species.factories import TaxonF
 from frontend.models.statistical import NATIONAL_TREND, PROVINCE_TREND
@@ -13,6 +14,10 @@ from frontend.utils.statistical_model import (
     plumber_health_check
 )
 from frontend.tests.model_factories import StatisticalModelF
+
+
+def mocked_clear_cache(self, *args, **kwargs):
+    pass
 
 
 def find_r_line_code(lines, code):
@@ -45,6 +50,11 @@ class TestStatisticalUtils(TestCase):
             is_running = plumber_health_check(max_retry=1)
             self.assertFalse(is_running)
 
+    @mock.patch(
+        'frontend.utils.statistical_model.'
+        'clear_statistical_model_output_cache',
+        mock.Mock(side_effect=mocked_clear_cache)
+    )
     def test_execute_statistical_model(self):
         data_filepath = '/home/web/plumber_data/test.csv'
         model = StatisticalModelF.create()
@@ -61,6 +71,11 @@ class TestStatisticalUtils(TestCase):
             self.assertTrue(is_success)
             self.assertEqual(response, json_response)
 
+    @mock.patch(
+        'frontend.utils.statistical_model.'
+        'clear_statistical_model_output_cache',
+        mock.Mock(side_effect=mocked_clear_cache)
+    )
     def test_write_plumber_file(self):
         taxon = TaxonF.create()
         model = StatisticalModelF.create(

@@ -10,7 +10,11 @@ from frontend.models.parcels import (
     ParentFarm
 )
 from frontend.models.boundary_search import BoundaryFile
-from frontend.models.statistical import StatisticalModel
+from frontend.models.statistical import (
+    StatisticalModel,
+    StatisticalModelOutput,
+    NATIONAL_TREND
+)
 
 
 class UserF(factory.django.DjangoModelFactory):
@@ -100,6 +104,19 @@ class BoundaryFileF(factory.django.DjangoModelFactory):
     file = factory.django.FileField(filename='admin.geojson')
 
 
+class StatisticalModelOutputF(factory.django.DjangoModelFactory):
+    """Factory for StatisticalModelOutput Model."""
+    class Meta:
+        """Meta class Factory for StatisticalModelOutput Model."""
+        model = StatisticalModelOutput
+    
+    model = factory.SubFactory(
+        'frontend.tests.model_factories.StatisticalModelF'
+    )
+
+    type = NATIONAL_TREND
+
+
 class StatisticalModelF(factory.django.DjangoModelFactory):
     """Factory for StatisticalModel Model."""
     class Meta:
@@ -116,3 +133,11 @@ class StatisticalModelF(factory.django.DjangoModelFactory):
 
     code = 'cleaned_data <- all_data'
 
+    @factory.post_generation
+    def create_statistical_model(self, create, extracted, **kwargs):
+        if not create:
+            return
+        StatisticalModelOutputF.create(
+            model=self,
+            type=NATIONAL_TREND
+        )
