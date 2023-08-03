@@ -160,3 +160,41 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         ]
 
         return activities_list
+
+
+class SpeciesPopulationTotalAndDensitySerializer(serializers.ModelSerializer):
+    density = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Taxon
+        fields = ["density",]
+
+    def get_density(self, obj):
+        property = self.context["request"].GET.get("property")
+        property_list = property.split(',') if property else []
+        owned_species = OwnedSpecies.objects.values(
+            "taxon__common_name_varbatim").filter(taxon=obj)
+        if property_list:
+            owned_species = owned_species.filter(
+                property__id__in=property_list,
+            )
+        owned_species = owned_species.annotate(
+            total=Sum("annualpopulation__total"),
+            property_in_ha=Sum("property__property_size_ha")
+        )
+        if owned_species.exists():
+            owned_species = owned_species.first()
+            species_name = owned_species["taxon__common_name_varbatim"]
+            property_in_ha = owned_species["property_in_ha"]
+            total = owned_species["total"]
+            density = (
+                total / property_in_ha if total and property_in_ha else None
+            )
+            data = {
+                "species_name": species_name,
+                "total": total,
+                "density": density
+            }
+            return data
+        else:
+            return None

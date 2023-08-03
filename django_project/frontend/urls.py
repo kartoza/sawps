@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, re_path
-from frontend.views.base_view import get_user_notifications
 from frontend.api_views.data_table import DataTableAPIView
 from frontend.api_views.map import (
     AerialTile,
@@ -28,6 +27,7 @@ from frontend.api_views.map import (
 from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
     SpeciesPopulationCountAPIView,
+    SpeciesPopulationTotalAndDensityAPIView,
     TotalCountPerActivityAPIView,
 )
 from frontend.api_views.population import (
@@ -51,11 +51,7 @@ from frontend.api_views.upload import (
     BoundaryFileSearchStatus,
     BoundaryFileUpload,
 )
-from .views.totp_device import (
-    add_totp_device,
-    delete_totp_device,
-    view_totp_devices,
-)
+from frontend.views.base_view import get_user_notifications
 
 from .views.about import AboutView
 from .views.contact import ContactUsView
@@ -64,6 +60,11 @@ from .views.home import HomeView
 from .views.map import MapView
 from .views.online_form import OnlineFormView
 from .views.switch_organisation import switch_organisation
+from .views.totp_device import (
+    add_totp_device,
+    delete_totp_device,
+    view_totp_devices,
+)
 from .views.users import OrganisationUsersView
 
 urlpatterns = [
@@ -197,19 +198,24 @@ urlpatterns = [
     path('contact/', ContactUsView.as_view(), name='contact'),
     path('data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
-        'species-population-count/<int:property_id>/',
+        'api/species-population-count/<int:property_id>/',
         SpeciesPopulationCountAPIView.as_view(),
         name='species_population_count'
     ),
     path(
-        'activity-percentage/',
+        'api/activity-percentage/',
         ActivityPercentageAPIView.as_view(),
         name='activity_percentage'
     ),
     path(
-        'total-count-per-activity/',
+        'api/total-count-per-activity/',
         TotalCountPerActivityAPIView.as_view(),
         name='total_count_per_activity'
+    ),
+    path(
+        'api/species-population-total-density/',
+        SpeciesPopulationTotalAndDensityAPIView.as_view(),
+        name='species_population_total_density'
     ),
     path(
         'add_totp_devices/',
@@ -230,5 +236,5 @@ urlpatterns = [
         'get_user_notifications/',
         get_user_notifications,
         name='get_user_notifications'
-    )
+    ),
 ]

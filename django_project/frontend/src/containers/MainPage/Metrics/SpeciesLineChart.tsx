@@ -13,7 +13,7 @@ import { RootState } from "../../../app/store";
 Chart.register(CategoryScale);
 
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
-const FETCH_PROPERTY_POPULATION_SPECIES = '/species-population-count/'
+const FETCH_PROPERTY_POPULATION_SPECIES = '/api/species-population-count/'
 
 interface PopulationCount {
     month__name: string;

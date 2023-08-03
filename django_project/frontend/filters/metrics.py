@@ -55,5 +55,5 @@ class BaseMetricsFilter(django_filters.FilterSet):
     def filter_property(self, queryset, name, value):
         properties_list = value.split(',')
         return queryset.filter(
-            ownedspecies__property__name__in=properties_list
+            ownedspecies__property__id__in=properties_list
         )
