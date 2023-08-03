@@ -1,14 +1,13 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load i18n %}
-
-{% block head_title %}Help{% endblock %}
-
+{% block head_title %}Contact Us{% endblock%}
 
 {% block content %}
-<div class='help-container fs-background' data-testid='help-container'>
-    <div class='help-content-container' style='min-height:var(--min-content-height);'>
-        <div class='help-image-container'>
-            <div class='help-banner-img'></div>
+<section class="fs-background" style="background-color: #000000; min-height:var(--min-content-height);">
+    <div class="container-fluid full-height position-absolute">
+    <div class="row half-height">
+        <div class='help-image-container'>    
+            <img src='/static/images/help/help_page_banner.png' style="width: fit-content;">
         </div>
         <div class='help-texts-container'>
             <div class='help-content-title'>
@@ -27,4 +26,7 @@
         </div>
     </div>
 </div>
+</section>
 {% endblock %}
+
+</html>
