@@ -11,18 +11,34 @@ from frontend.utils.statistical_model import (
     get_statistical_model_output_cache_key,
     execute_statistical_model,
     PLUMBER_PORT,
-    plumber_health_check
+    plumber_health_check,
+    kill_r_plumber_process,
+    spawn_r_plumber
 )
+from frontend.utils.process import write_pidfile
 from frontend.tests.model_factories import StatisticalModelF
 
 
 def mocked_clear_cache(self, *args, **kwargs):
-    pass
+    return 1
+
+
+def mocked_os_kill(self, *args, **kwargs):
+    return 1
 
 
 def find_r_line_code(lines, code):
     filtered = [line for line in lines if code in line]
     return len(filtered) > 0
+
+
+class DummyProcess:
+    def __init__(self, pid):
+        self.pid = pid
+
+
+def mocked_process(*args, **kwargs):
+    return DummyProcess(1)
 
 
 class TestStatisticalUtils(TestCase):
@@ -49,6 +65,28 @@ class TestStatisticalUtils(TestCase):
             )
             is_running = plumber_health_check(max_retry=1)
             self.assertFalse(is_running)
+    
+    @mock.patch('subprocess.Popen',
+                mock.Mock(side_effect=mocked_process))
+    def test_spawn_r_plumber(self):
+        with requests_mock.Mocker() as m:
+            json_response = {'echo': 'ok'}
+            m.get(
+                f'http://0.0.0.0:{PLUMBER_PORT}/statistical/echo',
+                json=json_response,
+                headers={'Content-Type':'application/json'},
+                status_code=200
+            )
+            process = spawn_r_plumber()
+        self.assertEqual(process.pid, 1)
+
+    @mock.patch('os.kill')
+    def test_kill_r_plumber_process(self, mocked_os):
+        mocked_os.side_effect = mocked_os_kill
+        pid_path = '/tmp/plumber.pid'
+        write_pidfile(26, pid_path)
+        kill_r_plumber_process()
+        self.assertEqual(mocked_os.call_count, 1)
 
     @mock.patch(
         'frontend.utils.statistical_model.'
@@ -70,6 +108,18 @@ class TestStatisticalUtils(TestCase):
                                                              model)
             self.assertTrue(is_success)
             self.assertEqual(response, json_response)
+        with requests_mock.Mocker() as m:
+            json_response = {'error': 'Internal server error'}
+            m.post(
+                f'http://plumber:{PLUMBER_PORT}/statistical/api_{model.id}',
+                json=json_response,
+                headers={'Content-Type':'application/json'},
+                status_code=500
+            )
+            is_success, response = execute_statistical_model(data_filepath,
+                                                             model)
+            self.assertFalse(is_success)
+            self.assertFalse(response)
 
     @mock.patch(
         'frontend.utils.statistical_model.'
@@ -92,7 +142,6 @@ class TestStatisticalUtils(TestCase):
         )
         if os.path.exists(r_file_path):
             os.remove(r_file_path)
-
 
     def test_manage_plumber_data(self):
         headers = ['province', 'count_total']

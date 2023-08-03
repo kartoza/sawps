@@ -35,7 +35,6 @@ def plumber_health_check(max_retry=5):
                 break
         except Exception as ex:  # noqa
             logger.error(ex)
-            logger.error(traceback.format_exc())
             time.sleep(1)
         retry += 1
     if retry < max_retry:
@@ -106,20 +105,16 @@ def execute_statistical_model(data_filepath, model: StatisticalModel = None):
     data = {
         'filepath': data_filepath
     }
-    try:
-        response = requests.post(request_url, data=data)
-        content_type = response.headers['Content-Type']
-        if content_type == 'application/json':
-            if response.status_code == 200:
-                return True, response.json()
-            else:
-                logger.error(
-                    f'Plumber error response: {str(response.json())}')
+    response = requests.post(request_url, data=data)
+    content_type = response.headers['Content-Type']
+    if content_type == 'application/json':
+        if response.status_code == 200:
+            return True, response.json()
         else:
-            logger.error(f'Invalid response content type: {content_type}')
-    except Exception as ex:  # noqa
-        logger.error(ex)
-        logger.error(traceback.format_exc())
+            logger.error(
+                f'Plumber error response: {str(response.json())}')
+    else:
+        logger.error(f'Invalid response content type: {content_type}')
     return False, None
 
 
@@ -183,7 +178,6 @@ def remove_plumber_data(data_filepath):
             os.remove(data_filepath)
     except Exception as ex:
         logger.error(ex)
-        logger.error(traceback.format_exc())
 
 
 def get_statistical_model_output_cache_key(taxon: Taxon, output_type: str,

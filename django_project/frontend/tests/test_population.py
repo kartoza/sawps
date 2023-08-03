@@ -28,7 +28,7 @@ from species.models import OwnedSpecies
 
 
 def mocked_clear_cache(self, *args, **kwargs):
-    pass
+    return 1
 
 
 class TestPopulationAPIViews(TestCase):

@@ -54,3 +54,7 @@ def kill_process_by_pid(pidfile_path):
     if plumber_pid:
         # kill a process via pid
         os.kill(plumber_pid, SIGKILL)
+        try:
+            os.remove(pidfile_path)
+        except IOError as ex:
+            logger.error(ex)

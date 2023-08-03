@@ -1,6 +1,5 @@
 import base64
-from django.test import Client
-from django.test import TestCase
+import mock
 from species.models import (
     TaxonRank,
     Taxon,
@@ -20,6 +19,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from occurrence.models import SurveyMethod
 from rest_framework import status
+from django_otp.plugins.otp_totp.models import TOTPDevice
 from species.factories import (
     OwnedSpeciesFactory,
     TaxonFactory,
@@ -28,6 +28,10 @@ from species.factories import (
 )
 from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
+
+
+def mocked_clear_cache(self, *args, **kwargs):
+    return 1
 
 
 class TaxonRankTestCase(TestCase):
@@ -215,6 +219,39 @@ class TaxonTestCase(TestCase):
         """Test delete taxon rank."""
         self.taxonRank.delete()
         self.assertEqual(TaxonRank.objects.count(), 0)
+
+    @mock.patch(
+        'frontend.utils.statistical_model.'
+        'clear_statistical_model_output_cache',
+        mock.Mock(side_effect=mocked_clear_cache)
+    )
+    def test_taxon_admin_list(self):
+        taxon2 = Taxon.objects.create(
+            scientific_name='taxon_1',
+            common_name_varbatim='taxon_1',
+            colour_variant=False,
+            taxon_rank=self.taxonRank
+        )
+        user = User.objects.create(
+            username='admin123', is_superuser=True, is_staff=True,
+            is_active=True)
+        TOTPDevice.objects.create(
+            user=user, name='Test Device', confirmed=True)
+        client = Client()
+        client.force_login(user)
+        response = client.get(reverse('admin:species_taxon_changelist'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, 'Colour')
+        response = client.post(
+            reverse('admin:species_taxon_changelist'),
+            {
+                'action': 'clean_output_caches',
+                '_selected_action': [taxon2.id]
+            },
+            follow=True
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, 'cache has been cleared')
 
 
 class OwnedSpeciesTestCase(TestCase):
