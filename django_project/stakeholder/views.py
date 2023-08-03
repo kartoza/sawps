@@ -29,10 +29,13 @@ from core.celery import app
 from frontend.views.base_view import RegisteredOrganisationBaseView
 from frontend.serializers.stakeholder import ReminderSerializer
 from django.contrib.auth.models import User
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 logger = logging.getLogger(__name__)
 
 
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def check_email_exists(request):
     if request.method == 'GET':
         email = request.GET.get('email', '').strip()
