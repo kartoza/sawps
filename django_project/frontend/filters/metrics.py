@@ -2,6 +2,7 @@
 
 """
 import django_filters
+from property.models import Property
 from species.models import Taxon
 
 
@@ -57,3 +58,15 @@ class BaseMetricsFilter(django_filters.FilterSet):
         return queryset.filter(
             ownedspecies__property__id__in=properties_list
         )
+
+
+class PropertyFilter(django_filters.FilterSet):
+    property = django_filters.CharFilter(method='filter_property')
+
+    class Meta:
+        model = Property
+        fields = ['property']
+
+    def filter_property(self, queryset, name, value):
+        properties_list = value.split(',')
+        return queryset.filter(id__in=properties_list)
