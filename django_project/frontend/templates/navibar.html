@@ -119,9 +119,7 @@
                 </span>
 
                 <a class="dropdown-item" href="/profile">PROFILE</a>
-                <a class="dropdown-item" href="/about">ACCOUNT</a>
-                <a class="dropdown-item" href="/">DASHBOARD</a>
-                <hr class="divider" />
+                {% if '/accounts/two-factor/two_factor/setup' not in request.path and '/profile/' not in request.path and  '/accounts/two-factor/two_factor/backup_tokens' not in request.path %}
                 <span class="dropdown-header">CURRENT ORGANISATION:</span>
                 {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
                 <button class="btn btn-success btn-sm badge-btn center-button" type="button" data-toggle="modal" data-target="#organisationModal">REQUEST ORGANISATION</button>
@@ -149,6 +147,8 @@
                 </span>
                 {% endif %}
                 <hr class="divider" />
+                {% endif %}
+
                 {% endif %}
                 {% if user.is_superuser %}
                 <a class="dropdown-item" href="/admin/">DJANGO ADMIN</a>
