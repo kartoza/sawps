@@ -96,15 +96,14 @@ services:
       - db
       - redis
 
-  celery_beat:
+  beat:  # Define the Celery beat service
     <<: *default-common-django
     entrypoint: []
-    command: celery -A core beat --l info
+    command: 'celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler'
     volumes:
       - layer-tiles:/opt/layer_tiles
     links:
       - redis
-
 
   dev:
     image: kartoza/sanbi_dev

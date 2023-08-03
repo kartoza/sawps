@@ -44,7 +44,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                 labels: {
                     usePointStyle: true,
                     font: {
-                        size: 13,
+                        size: 11,
                     },
                     generateLabels: (chart: any) => {
                         const { datasets } = chart.data;
@@ -108,19 +108,22 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                             ],
                         };
                         return (
-                            <Box key={index} className="chartHalf">
-                                <Typography className="text-left">{item?.species_name}</Typography>
-                                <Box className="charBox">
-                                    <Box className="chart-container">
-                                        <Doughnut data={speciesDonutData} options={donutOptions} height={200} width={70} />
-                                    </Box>
-                                </Box>
-                                <Box className="chart-img">
-                                    <Box className="icon-image">
-                                        <img src={item?.icon} alt='Icon image' />
-                                    </Box>
-                                    <Typography className="charttext">{item?.total}</Typography>
-                                </Box>
+                            <Box>
+                                {item.activities.length > 0 &&
+                                    <Box key={index} className="chartHalf">
+                                        <Typography className="text-left">{item?.species_name}</Typography>
+                                        <Box className="charBox">
+                                            <Box className="chart-container">
+                                                <Doughnut data={speciesDonutData} options={donutOptions} height={200} width={70} />
+                                            </Box>
+                                        </Box>
+                                        <Box className="chart-img">
+                                            <Box className="icon-image">
+                                                <img src={item?.icon} alt='Icon image' />
+                                            </Box>
+                                            <Typography className="charttext">{item?.total}</Typography>
+                                        </Box>
+                                    </Box>}
                             </Box>
                         );
                     })}

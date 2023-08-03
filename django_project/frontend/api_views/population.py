@@ -18,8 +18,6 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     CountMethod,
-    Month,
-    NatureOfPopulation,
     OpenCloseSystem,
 )
 from population_data.serializers import (
@@ -30,7 +28,7 @@ from property.models import Property
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from species.models import ManagementStatus, OwnedSpecies, Taxon
+from species.models import OwnedSpecies, Taxon
 from species.serializers import TaxonSerializer
 from stakeholder.models import OrganisationUser
 
@@ -123,8 +121,6 @@ class UploadPopulationAPIVIew(APIView):
                     )
                 },
             )
-        month_id = request.data.get("month")
-        month = get_object_or_404(Month, sort_order=month_id)
         annual_population = request.data.get("annual_population")
         intake_population = request.data.get("intake_population")
         offtake_population = request.data.get("offtake_population")
@@ -153,9 +149,6 @@ class UploadPopulationAPIVIew(APIView):
         offtake_activity = get_object_or_404(
             ActivityType, id=offtake_population.get("activity_type_id", 0)
         )
-        # TODO: check for NatureOfPopulation and ManagementStatus
-        management_status = ManagementStatus.objects.all().first()
-        nature_of_population = NatureOfPopulation.objects.all().first()
         # area_available_to_species
         area_available_to_species = annual_population.get(
             "area_available_to_species", 0
@@ -165,8 +158,6 @@ class UploadPopulationAPIVIew(APIView):
             taxon=taxon,
             property=property,
             defaults={
-                "management_status": management_status,
-                "nature_of_population": nature_of_population,
                 "user": self.request.user,
                 "area_available_to_species": area_available_to_species,
             },
@@ -178,7 +169,6 @@ class UploadPopulationAPIVIew(APIView):
         AnnualPopulation.objects.create(
             year=year,
             owned_species=owned_species,
-            month=month,
             total=annual_population.get("total"),
             adult_male=annual_population.get("adult_male", 0),
             adult_female=annual_population.get("adult_female", 0),
@@ -206,7 +196,6 @@ class UploadPopulationAPIVIew(APIView):
             year=year,
             owned_species=owned_species,
             activity_type=intake_activity,
-            month=month,
             total=intake_population.get("total"),
             adult_male=intake_population.get("adult_male", 0),
             adult_female=intake_population.get("adult_female", 0),
@@ -223,7 +212,6 @@ class UploadPopulationAPIVIew(APIView):
             year=year,
             owned_species=owned_species,
             activity_type=offtake_activity,
-            month=month,
             total=offtake_population.get("total"),
             adult_male=offtake_population.get("adult_male", 0),
             adult_female=offtake_population.get("adult_female", 0),

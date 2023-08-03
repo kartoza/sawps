@@ -4,7 +4,8 @@ from django.views.generic import RedirectView
 from stakeholder.views import (
     ProfileView,
     RemindersView,
-    NotificationsView
+    NotificationsView,
+    check_email_exists
 )
 
 # views urls
@@ -36,5 +37,10 @@ urlpatterns = [  # '',
         'notifications/<str:slug>/',
         NotificationsView.as_view(),
         name='notifications'
-    )
+    ),
+    path(
+        'check_email_exists/',
+        check_email_exists,
+        name='check_email_exists'
+    ),
 ]

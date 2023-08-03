@@ -1,60 +1,33 @@
-from rest_framework import status
-from django.urls import reverse
 import base64
 from django.test import Client
 from django.test import TestCase
 from species.models import (
-    TaxonRank, 
-    Taxon, 
-    ManagementStatus, 
-    OwnedSpecies, 
+    TaxonRank,
+    Taxon,
+    OwnedSpecies,
     TaxonSurveyMethod
 )
 from species.factories import (
     TaxonRankFactory,
     TaxonFactory,
-    ManagementStatusFactory, 
     OwnedSpeciesFactory,
     TaxonSurveyMethodF
 )
 from population_data.factories import AnnualPopulationF
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
+from django.test import Client, TestCase
+from django.urls import reverse
 from occurrence.models import SurveyMethod
+from rest_framework import status
+from species.factories import (
+    OwnedSpeciesFactory,
+    TaxonFactory,
+    TaxonRankFactory,
+    TaxonSurveyMethodF,
+)
+from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
-
-
-class ManagementStatusTestCase(TestCase):
-    """Management status test case."""
-    @classmethod
-    def setUpTestData(cls):
-        """Set up data for management status test case."""
-        cls.management_status  = ManagementStatusFactory()
-
-    def test_management_status_create(self):
-        """ test management status create """
-        self.assertTrue(isinstance(self.management_status, ManagementStatus))
-        self.assertEqual(ManagementStatus.objects.count(), 1)
-        self.assertIn('management status', self.management_status.name)
-
-    def test_update_management_status(self):
-        """Test management status update."""
-        self.management_status.name = 'management status_1'
-        self.management_status.save()
-        self.assertEqual(ManagementStatus.objects.get(
-            id=self.management_status.id).name, 'management status_1')
-
-    
-    def test_management_status_unique_name_constraint(self):
-        """Test management status unique name constraint."""
-        with self.assertRaises(Exception) as raised:
-            ManagementStatusFactory(name='management status_1')
-            self.assertEqual(IntegrityError, type(raised.exception))
-
-    def test_delete_management_status(self):
-        """Test delete management status."""
-        self.management_status.delete()
-        self.assertEqual(ManagementStatus.objects.count(), 0)
 
 
 class TaxonRankTestCase(TestCase):
@@ -68,13 +41,19 @@ class TaxonRankTestCase(TestCase):
     def test_create_taxon_rank(self):
         """Test create taxon rank."""
         self.assertTrue(isinstance(self.taxonRank, TaxonRank))
-        self.assertEqual(self.taxonRank.name, TaxonRank.objects.get(id=self.taxonRank.id).name)
+        self.assertEqual(
+            self.taxonRank.name,
+            TaxonRank.objects.get(id=self.taxonRank.id).name
+        )
 
     def test_update_taxon_rank(self):
         """Test update taxon rank."""
         self.taxonRank.name = 'taxon_rank_1'
         self.taxonRank.save()
-        self.assertEqual(TaxonRank.objects.get(id=self.taxonRank.id).name, 'taxon_rank_1')
+        self.assertEqual(
+            TaxonRank.objects.get(id=self.taxonRank.id).name,
+            'taxon_rank_1'
+        )
 
     def test_unique_taxon_rank_name_constraint(self):
         """Test unique taxon rank name constraint."""
@@ -104,7 +83,7 @@ class TaxonTestCase(TestCase):
             show_on_front_page=False
         )
         cls.url = reverse('species')
-        
+
     def test_get_taxon_list(self):
         """Taxon list API test"""
 
@@ -163,15 +142,24 @@ class TaxonTestCase(TestCase):
         """Test create taxon."""
         self.assertTrue(isinstance(self.taxon, Taxon))
         self.assertEqual(Taxon.objects.count(), 1)
-        self.assertEqual(self.taxon.scientific_name, Taxon.objects.get(id=self.taxon.id).scientific_name)
+        self.assertEqual(
+            self.taxon.scientific_name,
+            Taxon.objects.get(id=self.taxon.id).scientific_name
+        )
 
     def test_update_taxon(self):
         """Test update taxon objects."""
         self.taxon.scientific_name = 'taxon_1'
         self.taxon.infraspecific_epithet = 'infra_1'
         self.taxon.save()
-        self.assertEqual(Taxon.objects.get(id=self.taxon.id).scientific_name, 'taxon_1')
-        self.assertEqual(Taxon.objects.get(id=self.taxon.id).infraspecific_epithet, 'infra_1')
+        self.assertEqual(
+            Taxon.objects.get(id=self.taxon.id).scientific_name,
+            'taxon_1'
+        )
+        self.assertEqual(
+            Taxon.objects.get(id=self.taxon.id).infraspecific_epithet,
+            'infra_1'
+        )
 
     def test_taxon_unique_scientific_name_constraint(self):
         """Test taxon unique scientific name constraint."""
@@ -186,6 +174,19 @@ class TaxonTestCase(TestCase):
 
     def test_taxon_unique_infraspecific_epithet_constraint(self):
         """Test taxon unique infraspecific epithet constraint."""
+
+        Taxon.objects.create(
+            scientific_name='taxon_2',
+            common_name_varbatim='taxon_2',
+            colour_variant=False,
+            infraspecific_epithet='infra_2',
+            taxon_rank=self.taxonRank,
+        )
+        self.assertEqual(
+            Taxon.objects.filter(infraspecific_epithet='infra_2').count(),
+            1
+        )
+
         with self.assertRaises(Exception) as raised:
             Taxon.objects.create(
                 scientific_name='taxon_0',
@@ -194,7 +195,6 @@ class TaxonTestCase(TestCase):
                 infraspecific_epithet='infra_1',
                 taxon_rank=self.taxonRank,
             )
-            self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_taxon_relation_to_self(self):
         """Test taxon relation to self."""
@@ -238,9 +238,13 @@ class OwnedSpeciesTestCase(TestCase):
 
     def test_update_owned_species(self):
         """Test update owned species."""
-        self.ownedSpecies.management_status = ManagementStatusFactory(name='management_status_1')
+        self.ownedSpecies.area_available_to_species = 45.67
         self.ownedSpecies.save()
-        self.assertEqual(OwnedSpecies.objects.get(id=self.ownedSpecies.id).management_status.name, 'management_status_1')
+        self.assertEqual(
+            OwnedSpecies.objects.get(
+            id=self.ownedSpecies.id).area_available_to_species,
+            45.67
+        )
 
     def test_delete_owned_species(self):
         """Test delete owned species."""
@@ -259,9 +263,15 @@ class TaxonSurveyMethodTestCase(TestCase):
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
-        cls.survey_method = SurveyMethod.objects.create(name='Unknown', sort_id='1')        
-        cls.taxon_survey_method = TaxonSurveyMethodF(taxon=cls.taxon, survey_method=cls.survey_method)
-    
+        cls.survey_method = SurveyMethod.objects.create(
+            name='Unknown',
+            sort_id='1'
+        )
+        cls.taxon_survey_method = TaxonSurveyMethodF(
+            taxon=cls.taxon,
+            survey_method=cls.survey_method
+        )
+
     def test_create_taxon_survey_method(self):
         """Test create Taxon survey method count."""
         self.assertTrue(
@@ -290,7 +300,9 @@ class TaxonSurveyMethodTestCase(TestCase):
         self.taxon_survey_method.taxon = taxon
         self.taxon_survey_method.save()
         self.assertEqual(
-            TaxonSurveyMethod.objects.filter(taxon__scientific_name='taxon').count(), 1
+            TaxonSurveyMethod.objects.filter(
+            taxon__scientific_name='taxon').count(),
+            1
         )
 
 
