@@ -119,6 +119,7 @@
                 </span>
 
                 <a class="dropdown-item" href="/profile">PROFILE</a>
+                <hr class="divider" />
                 {% if '/accounts/two-factor/two_factor/setup' not in request.path and '/profile/' not in request.path and  '/accounts/two-factor/two_factor/backup_tokens' not in request.path %}
                 <span class="dropdown-header">CURRENT ORGANISATION:</span>
                 {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
