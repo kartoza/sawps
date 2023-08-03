@@ -1,4 +1,5 @@
-"""Classes for upload helper."""
+"""Classes for upload helper.
+"""
 from django.db import models
 from django.conf import settings
 from uuid import uuid4

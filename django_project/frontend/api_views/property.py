@@ -1,4 +1,7 @@
-"""API Views related to property."""
+# -*- coding: utf-8 -*-
+
+"""API Views related to property.
+"""
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
@@ -148,7 +151,6 @@ class CreateNewProperty(APIView):
             'province_id': request.data.get('province_id'),
             'organisation_id': request.data.get('organisation_id'),
             'geometry': geom,
-            'area_available': 0,
             'property_size_ha': self.get_geom_size_in_ha(geom) if geom else 0,
             'created_by_id': self.request.user.id,
             'created_at': datetime.now()

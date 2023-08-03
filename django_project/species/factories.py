@@ -1,16 +1,10 @@
 import factory
-from species.models import (
-    TaxonRank,
-    Taxon,
-    ManagementStatus,
-    OwnedSpecies,
-    TaxonSurveyMethod
-)
 from django.contrib.auth.models import User
 from population_data.factories import (
     AnnualPopulationF,
-    MonthFactory,
+    AnnualPopulationPerActivityFactory,
 )
+from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 
 
 class TaxonRankFactory(factory.django.DjangoModelFactory):
@@ -46,14 +40,8 @@ class TaxonFactory(factory.django.DjangoModelFactory):
     parent = None
     show_on_front_page = factory.Faker('boolean')
     is_selected = factory.Faker('boolean')
+    icon = factory.django.ImageField(filename='icon.jpg', color='blue')
 
-
-class ManagementStatusFactory(factory.django.DjangoModelFactory):
-    """Management status factory."""
-    class Meta:
-        model = ManagementStatus
-
-    name = factory.Sequence(lambda n: 'management status_%d' % n)
 
 
 class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
@@ -61,18 +49,12 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = OwnedSpecies
 
-    management_status = factory.SubFactory(ManagementStatusFactory)
-    nature_of_population = factory.SubFactory(
-        'population_data.factories.NatureOfPopulationFactory'
-    )
     taxon = factory.SubFactory(TaxonFactory)
     user = factory.SubFactory(UserFactory)
     property = factory.SubFactory('property.factories.PropertyFactory')
 
     @factory.post_generation
     def create_annual_population(self, create, extracted, **kwargs):
-        if not create:
-            return
 
         AnnualPopulationF.create(
             year=factory.Faker('year'),
@@ -80,14 +62,25 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
             total=100,
             adult_male=50,
             adult_female=50,
-            month=factory.SubFactory(MonthFactory),
             juvenile_male=30,
             juvenile_female=30,
             sub_adult_total=20,
             sub_adult_male=10,
             sub_adult_female=10,
             juvenile_total=40,
-            pride=5
+        )
+
+    @factory.post_generation
+    def create_annual_population_per_activity(self, create, *args):
+
+        AnnualPopulationPerActivityFactory.create(
+            year=factory.Faker('year'),
+            owned_species=self,
+            total=100,
+            adult_male=50,
+            adult_female=50,
+            juvenile_male=30,
+            juvenile_female=30,
         )
 
 

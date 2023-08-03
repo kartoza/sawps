@@ -1,6 +1,8 @@
+"""Filters in Data table.
+
+"""
 import django_filters
 from django.db.models import Q
-
 from species.models import OwnedSpecies
 
 
@@ -24,15 +26,6 @@ class OwnedSpeciesFilter(django_filters.FilterSet):
     def filter_property(self, queryset, name, value):
         property_list = value.split(',')
         return queryset.filter(property__name__in=property_list)
-
-    def filter_month(self, queryset, name, value):
-        month = value.split(',')
-        start_year = self.data.get('start_year')
-        end_year = self.data.get('end_year')
-        return queryset.filter(
-            annualpopulation__month__name__in=month,
-            annualpopulation__year__range=(start_year, end_year)
-        )
 
     def filter_population_category(self, queryset, name, value):
         population_category = value.split(',')

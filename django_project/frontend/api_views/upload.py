@@ -1,4 +1,7 @@
-"""API Views for uploading file."""
+# -*- coding: utf-8 -*-
+
+"""API Views for uploading file.
+"""
 import os
 from datetime import datetime
 from django.core.files.uploadedfile import TemporaryUploadedFile

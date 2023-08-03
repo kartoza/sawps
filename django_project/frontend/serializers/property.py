@@ -43,7 +43,6 @@ class PropertySerializer(serializers.ModelSerializer):
     province = serializers.SerializerMethodField()
     organisation = serializers.SerializerMethodField()
     size = serializers.SerializerMethodField()
-    area_available = serializers.SerializerMethodField()
 
     def get_owner(self, obj: Property):
         name = (
@@ -66,8 +65,6 @@ class PropertySerializer(serializers.ModelSerializer):
     def get_size(self, obj: Property):
         return obj.property_size_ha
 
-    def get_area_available(self, obj: Property):
-        return obj.area_available
 
 
     class Meta:
@@ -77,7 +74,6 @@ class PropertySerializer(serializers.ModelSerializer):
             'property_type', 'property_type_id',
             'province', 'province_id',
             'size', 'organisation', 'organisation_id',
-            'area_available'
         ]
 
 

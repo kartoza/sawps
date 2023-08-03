@@ -1,11 +1,57 @@
-"""Provide classes for base view."""
+from django.http import JsonResponse
 from django.views.generic import TemplateView
-from stakeholder.models import OrganisationUser, Organisation
-from frontend.serializers.stakeholder import OrganisationSerializer
+from stakeholder.models import (
+    OrganisationUser,
+    Organisation,
+    Reminders,
+    UserProfile
+)
+from frontend.serializers.stakeholder import (
+    OrganisationSerializer
+)
 from frontend.utils.organisation import (
     CURRENT_ORGANISATION_ID_KEY,
     CURRENT_ORGANISATION_KEY
 )
+from django.contrib import messages
+from datetime import datetime
+
+
+def get_user_notifications(request):
+    current_date = datetime.now().date()
+    reminders = Reminders.objects.filter(
+        user=request.user,
+        organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
+        status=Reminders.PASSED,
+        email_sent=True,
+        date__date=current_date
+    )
+    notifications = []
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        if not user_profile.received_notif:
+            for reminder in reminders:
+                messages.success(
+                    request,
+                    reminder.title,
+                    extra_tags='notification'
+                )
+                notifications.append(reminder.title)
+            user_profile.received_notif = True
+            user_profile.save()
+        return JsonResponse(
+            {
+                'status': 'success',
+                'user_notifications': notifications
+            }
+        )
+    except Exception:
+        return JsonResponse(
+            {
+                'status': 'error',
+                'user_notifications': []
+            }
+        )
 
 
 class RegisteredOrganisationBaseView(TemplateView):
@@ -73,8 +119,6 @@ class RegisteredOrganisationBaseView(TemplateView):
                 id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
         return OrganisationSerializer(organisations, many=True).data
 
-
-
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if not self.request.user.is_authenticated:
@@ -88,4 +132,5 @@ class RegisteredOrganisationBaseView(TemplateView):
         )
         ctx['current_organisation_id'] = current_organisation_id
         ctx['organisations'] = self.get_organisation_list()
+        get_user_notifications(self.request)
         return ctx

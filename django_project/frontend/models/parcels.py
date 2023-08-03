@@ -1,4 +1,8 @@
-"""Cadastral Land Parcel tables."""
+# -*- coding: utf-8 -*-
+
+"""Cadastral Land Parcel tables.
+
+"""
 from django.contrib.gis.db import models
 
 

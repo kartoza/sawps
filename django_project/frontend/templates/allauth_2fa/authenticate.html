@@ -5,7 +5,7 @@
 
 
 {% block content %}
-<section class="login-page fs-background" style="background-color: #000000;">
+<section class="login-page fs-background" style="background-color: #000000; min-height:var(--min-content-height);">
     <div class="container-fluid full-height">
         <div class="row half-height">
             <div class="col-7"></div>
@@ -27,10 +27,32 @@
                     {% trans 'Authenticate' %}
                 </button>
                 </form>
+                <div class="login-help text-center">
+                    <a id="lostDeviceLink" href="javascript:void(0)">{% trans "Lost your device?" %}</a>
+                  </div>
+                  <!-- Hidden paragraph -->
+                  <p id="contactAdmin" style="display: none;">Contact the system administrator.</p> <!-- contact number still to be provided -->
             </div>
             </div>
 </div>
 </div>
 </div>
-</div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get references to the link and the hidden paragraph
+      const lostDeviceLink = document.getElementById('lostDeviceLink');
+      const contactAdmin = document.getElementById('contactAdmin');
+    
+      // Add a click event listener to the link
+      lostDeviceLink.addEventListener('click', function() {
+        // Toggle the visibility of the hidden paragraph
+        if (contactAdmin.style.display === 'none') {
+          contactAdmin.style.display = 'block';
+        } else {
+          contactAdmin.style.display = 'none';
+        }
+      });
+    });
+    </script>
+</section>
 {% endblock %}

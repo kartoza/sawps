@@ -17,15 +17,9 @@ from frontend.api_views.population import (
 from property.factories import (
     PropertyFactory
 )
-from species.factories import (
-    TaxonF,
-    ManagementStatusFactory
-)
-from population_data.factories import (
-    NatureOfPopulationFactory
-)
+from species.factories import TaxonF
+
 from population_data.models import (
-    Month,
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
@@ -50,12 +44,8 @@ class TestPopulationAPIViews(TestCase):
             user=self.user_1,
             organisation=self.organisation
         )
-        self.month = Month.objects.create(
-            name='July',
-            sort_order=7
-        )
-        ManagementStatusFactory.create()
-        NatureOfPopulationFactory.create()
+       
+    
 
     def test_get_metadata_list(self):
         request = self.factory.get(
