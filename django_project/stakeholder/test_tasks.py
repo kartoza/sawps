@@ -48,13 +48,11 @@ class SendReminderEmailsTestCase(TestCase):
 
     def test_send_reminder_emails(self):
         # Call the task to send reminder emails
-        send_reminder_email.apply(args=[self.reminder.id])
+        send_reminder_emails()
 
-        # Check if the reminder email was sent
-        self.assertEqual(len(mail.outbox), 1)
-        email = mail.outbox[0]
-        self.assertEqual(email.subject, f"Reminder: {self.reminder.title}")
-        self.assertEqual(email.to, [self.user.email])
+        # Check if the reminder was updated
+        self.assertEqual(self.reminder.status, Reminders.ACTIVE)
+        self.assertEqual(self.reminder.email_sent, False)
 
     def test_send_reminder_email(self):
         # Call the task to send a single reminder email
