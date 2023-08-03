@@ -38,6 +38,7 @@ x-common-django:
   volumes:
     - static-data:/home/web/static
     - media-data:/home/web/media
+    - plumber-data:/home/web/plumber_data
   restart: on-failure
 
 services:
@@ -79,8 +80,6 @@ services:
   django:
     <<: *default-common-django
     command: 'uwsgi --ini /uwsgi.conf'
-    volumes:
-      - plumber-data:/home/web/plumber_data
     links:
       - db
       - worker
@@ -109,8 +108,6 @@ services:
     image: kartoza/sanbi_dev
     <<: *default-common-django
     entrypoint: []
-    volumes:
-      - plumber-data:/home/web/plumber_data
     links:
       - db
       - worker
