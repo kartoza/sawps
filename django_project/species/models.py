@@ -2,20 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class ManagementStatus(models.Model):
-    """Management status model."""
-
-    name = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Management Status"
-        verbose_name_plural = "Management Status"
-        db_table = "management_status"
-
-
 class TaxonRank(models.Model):
     """Taxon rank model."""
 
@@ -66,12 +52,6 @@ class Taxon(models.Model):
 class OwnedSpecies(models.Model):
     """Owned species mdoel."""
 
-    management_status = models.ForeignKey(
-        "species.ManagementStatus", on_delete=models.CASCADE
-    )
-    nature_of_population = models.ForeignKey(
-        "population_data.NatureOfPopulation", on_delete=models.CASCADE
-    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     taxon = models.ForeignKey("species.Taxon", on_delete=models.CASCADE)
     property = models.ForeignKey("property.Property", on_delete=models.CASCADE)

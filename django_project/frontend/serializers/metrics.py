@@ -24,17 +24,13 @@ class SpeciesPopulationCountSerializer(serializers.ModelSerializer):
         return obj.colour
 
     def get_annualpopulation_count(self, obj):
-        months = self.context["request"].GET.get("month")
         annual_populations = (
             AnnualPopulation.objects.filter(
                 owned_species__taxon=obj,
-                month__name__in=(
-                    months.split(",") if months else F("month__name")
-                )
             )
-            .values("month__name")
-            .annotate(month_total=Sum("total"))
-            .values("month__name", "month_total")
+            .values("population_status__name")
+            .annotate(population_status_total=Sum("total"))
+            .values("population_status__name", "population_status_total")
         )
         return list(annual_populations)
 

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 """Test factories for population data package.
 """
 import factory
@@ -10,9 +7,9 @@ from population_data.models import (
     AnnualPopulationPerActivity,
     Certainty,
     CountMethod,
-    Month,
-    NatureOfPopulation,
     OpenCloseSystem,
+    PopulationEstimateCategory,
+    PopulationStatus,
 )
 
 
@@ -27,26 +24,6 @@ class CountMethodFactory(factory.django.DjangoModelFactory):
     name = "count method-1"
 
 
-class MonthFactory(factory.django.DjangoModelFactory):
-    """Month factory."""
-
-    class Meta:
-        model = Month
-
-    name = factory.Sequence(lambda n: f"month-{n}")
-    sort_order = factory.Sequence(lambda n: n)
-
-
-class NatureOfPopulationFactory(factory.django.DjangoModelFactory):
-    """Nature of the population factory."""
-
-    class Meta:
-        model = NatureOfPopulation
-
-    name = factory.Sequence(lambda n: f"nature of population-{n}")
-    extensive = True
-
-
 class AnnualPopulationAbstractFactory(factory.django.DjangoModelFactory):
     """Population count abstract factory."""
 
@@ -59,7 +36,6 @@ class AnnualPopulationAbstractFactory(factory.django.DjangoModelFactory):
     total = factory.Faker("random_int")
     adult_male = factory.Faker("random_int")
     adult_female = factory.Faker("random_int")
-    month = factory.SubFactory(MonthFactory)
     juvenile_male = factory.Faker("random_int")
     juvenile_female = factory.Faker("random_int")
 
@@ -74,7 +50,6 @@ class AnnualPopulationF(AnnualPopulationAbstractFactory):
     sub_adult_male = factory.Faker("random_int")
     sub_adult_female = factory.Faker("random_int")
     juvenile_total = factory.Faker("random_int")
-    pride = factory.Faker("random_int")
 
 
 class AnnualPopulationPerActivityFactory(AnnualPopulationAbstractFactory):
@@ -93,6 +68,7 @@ class AnnualPopulationPerActivityFactory(AnnualPopulationAbstractFactory):
     intake_permit = factory.Faker("random_int")
 
 
+
 class CertaintyF(factory.django.DjangoModelFactory):
     """Certainty factory."""
 
@@ -109,3 +85,21 @@ class OpenCloseSystemF(factory.django.DjangoModelFactory):
         """meta"""
 
         model = OpenCloseSystem
+
+
+class PopulationStatusF(factory.django.DjangoModelFactory):
+    """Population Status factory."""
+
+    class Meta:
+        """meta"""
+
+        model = PopulationStatus
+
+
+class PopulationEstimateCategoryF(factory.django.DjangoModelFactory):
+    """Population Status factory."""
+
+    class Meta:
+        """meta"""
+
+        model = PopulationEstimateCategory
