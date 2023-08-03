@@ -1,0 +1,132 @@
+{% extends 'admin/change_form.html' %}
+{% block extrastyle %}
+    {{ block.super }}
+    <style type="text/css">
+        #popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 200px;
+            text-align: center;
+            background-color: #d1d1d1;
+            box-sizing: border-box;
+            padding: 10px;
+            z-index: 100;
+            display: none;
+            overflow-y: auto;
+            /*to hide popup initially*/
+        }
+          
+        .close-popup-btn {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            background-color: black;
+            color: white;
+            border-radius: 50%;
+            padding: 4px;
+        }
+
+        #popup-expected-output-content {
+            text-align: left;
+        }
+    </style>
+{% endblock %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+    <div class="submit-row">
+        <input type="submit" value="Download Data Template" name="_download-data-template">
+        <input type="submit" value="Show Expected Output" id="show-expected-output">
+    </div>
+    <!-- div containing the popup -->
+    <div id="popup-content">
+        <div onclick="togglePopup()" class="close-popup-btn">
+            ×
+        </div>
+        <h3>Model Expected Output</h3>
+  
+        <p id="popup-expected-output-content"></p>
+    </div>
+    <script>
+        var $ = window.django.jQuery;
+        $( document ).ready(function(e) {
+            $('.close-popup-btn').click(function(e) {
+                $("#popup-content").toggle();
+            });
+            $('#show-expected-output').click(function(e) {
+                e.preventDefault();
+                var selectedValues = [];
+                var rows = $('tr.dynamic-statisticalmodeloutput_set');
+                if (rows && rows.length) {
+                    for (var i = 0; i < rows.length; ++i) {
+                        var selectId = '#id_statisticalmodeloutput_set-'+i.toString()+'-type';
+                        var selectedValue = $(selectId).find(':selected').val();
+                        if (selectedValue) {
+                            if (!selectedValues.includes(selectedValue)) {
+                                selectedValues.push(selectedValue);
+                            }
+                        }
+                    }
+                }
+                data = {}
+                for (var i = 0; i < selectedValues.length; ++i) {
+                    var type = selectedValues[i];
+                    if (type === 'population_per_province') {
+                        data[type] = [{
+                            "count_total": 110,
+                            "province": "Gauteng",
+                            "freq": 1
+                        }]
+                    } else if (type === 'national_trend') {
+                        data[type] = [
+                            {
+                                "year": 2016,
+                                "fit": 1602.2308,
+                                "se.fit": 156.6036,
+                                "lower_ci": 1132.4201,
+                                "upper_ci": 2072.0414
+                            }
+                        ]
+                    } else if (type === 'province_trend') {
+                        data[type] = {
+                            "Gauteng": [
+                                {
+                                    "year": 2016,
+                                    "province": "Gauteng",
+                                    "fit": 1602.2308,
+                                    "se.fit": 156.6036,
+                                    "lower_ci": 1289.0237,
+                                    "upper_ci": 1915.4379
+                                }
+                            ]
+                        }
+                    } else if (type === 'property_trend') {
+                        data[type] = {
+                            "Property A": [{
+                                "year": 2016,
+                                "fit": 89.0128,
+                                "se.fit": 8.7002,
+                                "lower_ci": 62.9122,
+                                "upper_ci": 115.1134
+                            }]
+                        }
+                    } else if (type === 'population_per_property') {
+                        data[type] = {
+                            "Property A": [{
+                                "year": 2016,
+                                "count_total": 78
+                            }]
+                        }
+                    }
+                }
+                var str = JSON.stringify(data, null, 2); // spacing level = 2
+                console.log(str);
+                $('#popup-expected-output-content').html('<pre>'+str+'</pre>');
+                $("#popup-content").toggle();
+            });
+        });
+    </script>
+{% endblock %}

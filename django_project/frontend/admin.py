@@ -1,13 +1,14 @@
 """Admin page for Context Layer models."""
 from django.contrib import admin, messages
 from django.urls import path
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from django.utils.html import format_html
 from django.core.management import call_command
 from celery.result import AsyncResult
 from core.celery import app
+from core.settings.utils import absolute_path
 from frontend.models import (
     ContextLayer,
     ContextLayerTilingTask,
@@ -205,10 +206,26 @@ class StatisticalModelOutputInline(admin.TabularInline):
 
 
 class StatisticalModelAdmin(admin.ModelAdmin):
+    change_form_template = "admin/statistical_model_change_form.html"
     list_display = ('taxon', 'name')
     search_fields = ['taxon', 'name']
     actions = [restart_plumber_process]
     inlines = [StatisticalModelOutputInline]
+
+    def response_change(self, request, obj):
+        if "_download-data-template" in request.POST:
+            template_file = absolute_path(
+                'frontend', 'utils', 'data_sample.csv'
+            )
+            with open(template_file, 'r') as f:
+                response = HttpResponse(
+                    f.read(), content_type='text/csv'
+                )
+            response['Content-Disposition'] = (
+                'attachment; filename="data_template.csv"'
+            )
+            return response
+        return super().response_change(request, obj)
 
 
 admin.site.register(ContextLayer, ContextLayerAdmin)

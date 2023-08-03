@@ -38,12 +38,14 @@ class SpeciesNationalTrend(APIView):
         ).first()
         csv_headers = [
             'property', 'province', 'species', 'year', 'count_total',
-            'survey_method', 'count_method'
+            'survey_method', 'count_method', 'open_closed', 'property_type',
+            'property_size', 'area_available_to_species'
         ]
         rows = AnnualPopulation.objects.select_related(
             'owned_species', 'survey_method', 'count_method',
             'owned_species__taxon',
-            'owned_species__property', 'owned_species__property__province'
+            'owned_species__property', 'owned_species__property__province',
+            'owned_species__property__property_type'
         ).filter(
             owned_species__taxon=species
         ).order_by('year')
@@ -55,7 +57,11 @@ class SpeciesNationalTrend(APIView):
                 row.year,
                 row.total,
                 row.survey_method.name,
-                row.count_method.name
+                row.count_method.name,
+                'Open' if row.owned_species.property.open else 'Closed',
+                row.owned_species.property.property_type.name,
+                row.owned_species.property.property_size_ha,
+                row.owned_species.area_available_to_species
             ] for row in rows
         ]
         data_filepath = write_plumber_data(csv_headers, csv_data)
