@@ -2,6 +2,7 @@ import React, { FC ,useState, useEffect} from 'react';
 import './styles.scss'
 import SpeciesCard from '../SpeciesCard';
 import axios from 'axios';
+import Grid from '@mui/material/Grid';
 import { alpha } from '@mui/material';
 
 interface IOverviewCardsHolder{}
@@ -37,16 +38,19 @@ const OverviewCardsHolder:FC<IOverviewCardsHolder> = ()=>{
     }, [])
 
     return(
-        <div className='landing-page-overview-cards-holder' data-testid='landing-page-overview-cards-holder'> 
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}  data-testid='landing-page-overview-cards-holder' className='landing-page-overview-cards-holder-flex'>        
             {species.map((species,index)=>{
                 let chartColors = {
                     'line': species.colour,
                     'area': alpha(species.colour, 0.3)
                 }
-                return <SpeciesCard key={index} species_id={species.id} species_name={species.species_name} pic={species.icon} population={species.total_population.toString()}
-                    growth={species.population_growth.toString()} loss={species.population_loss.toString()} chartColors={chartColors} index={index}
-            />})}
-        </div>
+                return <Grid item key={index}>
+                    <SpeciesCard key={index} species_id={species.id} species_name={species.species_name} pic={species.icon} population={species.total_population.toString()}
+                        growth={species.population_growth.toString()} loss={species.population_loss.toString()} chartColors={chartColors} index={index}
+                    />
+                </Grid>
+            })}
+        </Grid>
     )
 }
 
