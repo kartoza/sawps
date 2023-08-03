@@ -132,12 +132,3 @@ class StatisticalModelF(factory.django.DjangoModelFactory):
     )
 
     code = 'cleaned_data <- all_data'
-
-    @factory.post_generation
-    def create_statistical_model(self, create, extracted, **kwargs):
-        if not create:
-            return
-        StatisticalModelOutputF.create(
-            model=self,
-            type=NATIONAL_TREND
-        )

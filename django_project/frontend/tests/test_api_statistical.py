@@ -6,7 +6,11 @@ import mock
 from rest_framework.test import APIRequestFactory
 from frontend.tests.model_factories import UserF
 from species.factories import TaxonF
-from frontend.tests.model_factories import StatisticalModelF
+from frontend.tests.model_factories import (
+    StatisticalModelF,
+    StatisticalModelOutputF
+)
+from frontend.models.statistical import NATIONAL_TREND
 from frontend.utils.statistical_model import PLUMBER_PORT
 from frontend.api_views.statistical import SpeciesNationalTrend
 
@@ -64,6 +68,10 @@ class TestAPIStatistical(TestCase):
         model = StatisticalModelF.create(
             taxon=self.taxon
         )
+        StatisticalModelOutputF.create(
+            model=model,
+            type=NATIONAL_TREND
+        )
         kwargs = {
             'species_id': self.taxon.id
         }
@@ -83,3 +91,37 @@ class TestAPIStatistical(TestCase):
             response = view(request, **kwargs)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data, 'abcde')
+
+    @mock.patch(
+        'frontend.utils.statistical_model.'
+        'clear_statistical_model_output_cache',
+        mock.Mock(side_effect=mocked_clear_cache)
+    )
+    @mock.patch(
+        'frontend.utils.statistical_model.'
+        'save_statistical_model_output_cache',
+        mock.Mock(side_effect=mocked_clear_cache)
+    )
+    @mock.patch('django.core.cache.cache.get',
+                mock.Mock(side_effect=mocked_cache_get_empty))
+    def test_national_trend_without_output(self):
+        kwargs = {
+            'species_id': self.taxon.id
+        }
+        request = self.factory.get(
+            reverse('species-national-trend', kwargs=kwargs)
+        )
+        with requests_mock.Mocker() as m:
+            # without national trend model, it will use generic model
+            json_response = {'national_trend': 'qwerty'}
+            m.post(
+                f'http://plumber:{PLUMBER_PORT}/statistical/generic',
+                json=json_response,
+                headers={'Content-Type':'application/json'},
+                status_code=200
+            )
+            request.user = UserF.create()
+            view = SpeciesNationalTrend.as_view()
+            response = view(request, **kwargs)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data, 'qwerty')
