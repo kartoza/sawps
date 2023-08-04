@@ -1,6 +1,7 @@
 
 .landing-page-population-overview-container {
-    background-color: rgb(40,40,41);
+    /* Define the gradient background */
+    background-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 0.6));
     height:auto;
     display:flex;
     flex-direction:column;
