@@ -117,6 +117,20 @@ class SpeciesPopulationTotalAndDensityAPIView(APIView):
 
 
 class PropertiesPerPopulationCategoryAPIView(APIView):
+    """
+    API endpoint to retrieve population categories
+    for properties within an organization.
+
+    This endpoint provides population distribution categories
+    for properties owned by the currently authenticated user's organization.
+    The distribution is based on the total annual population of owned species.
+
+    Requires authentication.
+
+    Attributes:
+        permission_classes (list): A list of permission classes
+        that determine who can access this endpoint.
+    """
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

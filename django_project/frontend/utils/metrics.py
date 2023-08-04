@@ -1,11 +1,28 @@
 from collections import Counter
+from typing import Dict
 
-from django.db.models import Sum
+from django.db.models import QuerySet, Sum
 from property.models import Property
 
 
-def calculate_population_categories(queryset):
-    POPULATION_CATEGORY_DICT = {
+def calculate_population_categories(queryset: QuerySet) -> Dict[str, int]:
+    """
+    Calculate population categories for a given queryset of properties.
+
+    This function takes a queryset of properties and calculates
+    the distribution of property populations into predefined
+    categories based on the total annual population of owned species.
+
+    Args:
+        queryset (QuerySet): A Django QuerySet containing Property objects.
+
+    Returns:
+        Dict[str, int]: A dictionary containing population categories
+        as keys and their corresponding counts as values.
+
+    """
+
+    population_category_dict = {
         "1-10": 0,
         "11-20": 0,
         "21-50": 0,
@@ -32,6 +49,6 @@ def calculate_population_categories(queryset):
         for _, population in property_population_totals
     )
 
-    POPULATION_CATEGORY_DICT.update(population_counter)
+    population_category_dict.update(population_counter)
 
-    return POPULATION_CATEGORY_DICT
+    return population_category_dict
