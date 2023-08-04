@@ -9,10 +9,6 @@ def calculate_population_categories(queryset: QuerySet) -> Dict[str, int]:
     """
     Calculate population categories for a given queryset of properties.
 
-    This function takes a queryset of properties and calculates
-    the distribution of property populations into predefined
-    categories based on the total annual population of owned species.
-
     Args:
         queryset (QuerySet): A Django QuerySet containing Property objects.
 

@@ -1,5 +1,6 @@
 """API Views related to metrics.
 """
+from django.db.models.query import QuerySet
 from frontend.filters.metrics import (
     BaseMetricsFilter,
     PropertyFilter,
@@ -120,20 +121,13 @@ class PropertiesPerPopulationCategoryAPIView(APIView):
     """
     API endpoint to retrieve population categories
     for properties within an organization.
-
-    This endpoint provides population distribution categories
-    for properties owned by the currently authenticated user's organization.
-    The distribution is based on the total annual population of owned species.
-
-    Requires authentication.
-
-    Attributes:
-        permission_classes (list): A list of permission classes
-        that determine who can access this endpoint.
     """
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Property]:
+        """
+        Get the filtered queryset of properties owned by the organization.
+        """
         organisation_id = self.request.session.get('current_organisation_id')
         queryset = Property.objects.filter(organisation_id=organisation_id)
         filtered_queryset = PropertyFilter(
@@ -141,6 +135,9 @@ class PropertiesPerPopulationCategoryAPIView(APIView):
         ).qs
         return filtered_queryset
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve population categories for properties.
+        """
         queryset = self.get_queryset()
         return Response(calculate_population_categories(queryset))

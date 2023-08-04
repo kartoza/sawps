@@ -127,6 +127,10 @@ class SpeciesPopulationTotalAndDensityTestCase(BaseTestCase):
 
 
 class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    properties population categories.
+    """
     def setUp(self):
         super().setUp()
         self.url = reverse("properties_per_population_category")

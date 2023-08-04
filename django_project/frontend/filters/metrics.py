@@ -2,6 +2,7 @@
 
 """
 import django_filters
+from django.db.models.query import QuerySet
 from property.models import Property
 from species.models import Taxon
 
@@ -61,12 +62,22 @@ class BaseMetricsFilter(django_filters.FilterSet):
 
 
 class PropertyFilter(django_filters.FilterSet):
+    """
+    A custom filter for filtering Property objects based on
+    a comma-separated list of property IDs.
+    """
     property = django_filters.CharFilter(method='filter_property')
 
     class Meta:
         model = Property
         fields = ['property']
 
-    def filter_property(self, queryset, name, value):
+    def filter_property(self, queryset: QuerySet, value: str) -> QuerySet:
+        """
+        Custom filter method to filter properties by their IDs.
+        params:
+            queryset (QuerySet): The initial queryset of Property objects.
+            value (str): A comma-separated list of property IDs.
+        """
         properties_list = value.split(',')
         return queryset.filter(id__in=properties_list)
