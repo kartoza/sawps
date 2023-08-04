@@ -3,11 +3,12 @@ import factory
 
 from django.contrib.auth import get_user_model
 from frontend.models.context_layer import ContextLayer
-from frontend.models.parcels import (
+from frontend.models import (
     Erf,
     FarmPortion,
     Holding,
-    ParentFarm
+    ParentFarm,
+    UploadSpeciesCSV
 )
 from frontend.models.boundary_search import BoundaryFile
 
@@ -97,3 +98,12 @@ class BoundaryFileF(factory.django.DjangoModelFactory):
     )
 
     file = factory.django.FileField(filename='admin.geojson')
+
+
+class UploadSpeciesCSVF(factory.django.DjangoModelFactory):
+    """
+    Upload session factory
+    """
+    class Meta:
+        model = UploadSpeciesCSV
+    uploader = factory.SubFactory(UserF)

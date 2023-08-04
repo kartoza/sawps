@@ -18,7 +18,6 @@ class CountMethod(models.Model):
         db_table = "count_method"
 
 
-
 class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
@@ -102,7 +101,6 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     intake_permit = models.IntegerField(null=True, blank=True)
     translocation_destination = models.TextField(null=True, blank=True)
     offtake_permit = models.IntegerField(null=True, blank=True)
-
 
     class Meta:
         verbose_name = "Population count per activity"

@@ -1,7 +1,7 @@
 import csv
 import logging
 from celery import shared_task
-from sawps.models import UploadSession
+from frontend.models import UploadSpeciesCSV
 from property.models import (
     PropertyType,
     Province,
@@ -13,17 +13,17 @@ from population_data.models import CountMethod
 logger = logging.getLogger('sawps')
 
 
-@shared_task(name='sawps.tasks.upload_species_data')
+@shared_task(name='upload_species_data')
 def upload_species_data(upload_session_id):
     try:
-        upload_session = UploadSession.objects.get(id=upload_session_id)
-    except UploadSession.DoesNotExist:
+        upload_session = UploadSpeciesCSV.objects.get(id=upload_session_id)
+    except UploadSpeciesCSV.DoesNotExist:
         logger.error("upload session doesn't exist")
         return
 
     encoding = 'utf-8-sig'
 
-    with open(uploads_session.process_file.path, encoding=encoding
+    with open(upload_session.process_file.path, encoding=encoding
               ) as csv_file:
         reader = csv.DictReader(csv_file)
         headers = reader.fieldnames

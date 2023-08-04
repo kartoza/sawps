@@ -5,14 +5,16 @@ from frontend.models import (
     Erf,
     FarmPortion,
     Holding,
-    ParentFarm
+    ParentFarm,
+    UploadSpeciesCSV
 )
 from frontend.tests.model_factories import (
     ContextLayerF,
     ErfF,
     FarmPortionF,
     HoldingF,
-    ParentFarmF
+    ParentFarmF,
+    UploadSpeciesCSVF
 )
 
 
@@ -134,3 +136,42 @@ class TestParentFarmModels(TestCase):
     def test_delete_context_layer(self):
         self.layer.delete()
         self.assertEqual(ParentFarm.objects.count(), 0)
+
+
+class TestUploadSpeciesCSV(TestCase):
+    """Test upload species csv model."""
+
+
+    def test_create_new_upload_species_csv(self):
+        """Test creating new upload species csv."""
+        upload_species_csv = UploadSpeciesCSVF.create(
+            id=1,
+            success_notes='success_message'
+        )
+        self.assertEqual(UploadSpeciesCSV.objects.count(), 1)
+        self.assertEqual(
+            upload_species_csv.success_notes,
+            'success_message'
+        )
+
+    def test_update_upload_species_csv(self):
+        """Test updating a upload species csv."""
+        UploadSpeciesCSV.create(
+            id=1,
+            success_notes='success_message'
+        )
+        upload_species_csv = UploadSpeciesCSV.objects.get(
+            id=1
+        )
+        upload_species_csv.success_notes='success message'
+        upload_species_csv.save()
+        self.assertEqual(upload_species_csv.success_notes, 'success message')
+
+    def test_delete_role(self):
+        """Test deleting upload species csv."""
+        upload_species_csv = UploadSpeciesCSVF.create(
+            id=1,
+            success_notes='success_message'
+        )
+        upload_species_csv.delete()
+        self.assertEqual(UploadSpeciesCSV.objects.count(), 0)

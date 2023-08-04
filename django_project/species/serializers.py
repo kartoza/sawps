@@ -12,10 +12,7 @@ class TaxonSerializer(serializers.ModelSerializer):
             for field_name in remove_fields:
                 self.fields.pop(field_name)
 
-    class Meta():
+    class Meta:
         model = Taxon
         fields = '__all__'
 
-
-class FileUploadSerializer(serializers.Serializer):
-    file = serializers.FileField()
