@@ -76,5 +76,5 @@ def send_reminder_emails():
                 except Exception:
                     continue
         reminder.status = Reminders.PASSED
-        reminder.email_sent = True
+        reminder.email_sent = False
         reminder.save()

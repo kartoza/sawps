@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 """Test factories for population data package.
 """
 import factory
@@ -11,8 +8,8 @@ from population_data.models import (
     Certainty,
     CountMethod,
     OpenCloseSystem,
+    PopulationEstimateCategory,
     PopulationStatus,
-    PopulationEstimateCategory
 )
 
 
@@ -97,7 +94,6 @@ class PopulationStatusF(factory.django.DjangoModelFactory):
         """meta"""
 
         model = PopulationStatus
-
 
 
 class PopulationEstimateCategoryF(factory.django.DjangoModelFactory):

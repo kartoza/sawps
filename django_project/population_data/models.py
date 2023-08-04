@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 """Models for population data package.
 """
 from django.db import models
@@ -67,12 +64,12 @@ class AnnualPopulation(AnnualPopulationAbstract):
     group = models.IntegerField(null=True, blank=True)
     presence = models.BooleanField(null=False, default=False)
     population_status = models.ForeignKey(
-        "population_data.PopulationStatus", 
+        "population_data.PopulationStatus",
         on_delete=models.CASCADE, null=True
     )
 
     population_estimate_category = models.ForeignKey(
-        "population_data.PopulationEstimateCategory", 
+        "population_data.PopulationEstimateCategory",
         on_delete=models.CASCADE, null=True
     )
 
@@ -157,7 +154,7 @@ class PopulationStatus(models.Model):
     """
 
     name = models.TextField(
-        null=False, 
+        null=False,
         blank=False,
         default="",
         unique=True,
@@ -175,7 +172,7 @@ class PopulationEstimateCategory(models.Model):
     """
 
     name = models.TextField(
-        null=False, 
+        null=False,
         blank=False,
         default="",
         unique=True,

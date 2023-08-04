@@ -9,7 +9,7 @@ from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
 from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
-from species.models import TaxonRank
+from species.models import OwnedSpecies, TaxonRank
 from stakeholder.factories import organisationFactory, organisationUserFactory
 
 
@@ -65,15 +65,21 @@ class SpeciesPopuationCountTestCase(BaseTestCase):
         owned_species = OwnedSpeciesFactory(
             taxon__common_name_varbatim="Lion"
         )
+
         url = self.url
         data = {"species": "Lion"}
         response = self.client.get(url, data, **self.auth_headers)
         annual_populations = (
-            AnnualPopulation.objects.filter(owned_species=owned_species)
-            .annotate(month_total=Sum("total"))
+            AnnualPopulation.objects.filter(owned_species__taxon=owned_species.taxon)
+            .values('population_status')
+            .annotate(population_status_total=Sum("total"))
+            .values("population_status__name", "population_status_total")
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
+        self.assertEqual(
+            response.data[0]["annualpopulation_count"][0].get("population_status__name"),
+            annual_populations[0].get("population_status__name"),
+        )
 
 class ActivityPercentageTestCase(BaseTestCase):
     def setUp(self):
@@ -84,21 +90,37 @@ class ActivityPercentageTestCase(BaseTestCase):
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        owned_species = self.owned_species[0]
-        population = AnnualPopulationPerActivity.objects.filter(
-            owned_species=owned_species
-        ).annotate(total_count=Sum("total")).values(
-            "activity_type__name", "total_count"
-        )
-        total = owned_species.annualpopulationperactivity_set.first().total
-        activity_type = population[0]["activity_type__name"]
-        percentage = (total / population[0]['total_count']) * 100
-        data = {activity_type:percentage}
+        self.assertEqual(response.data['data'][0]['total'], 500)
         self.assertEqual(
-            list(response.data['data'][0]['activities'][0].keys())[0],
-            activity_type,
+            list(response.data['data'][0]['activities'][0].values())[0], 20.0
+        )
+
+
+class TotalCountPerActivityTestCase(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("total_count_per_activity")
+
+    def test_total_count_per_activity(self):
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data[0]['activities']), 5)
+        self.assertEqual(list(response.data[0]['activities'][0].values())[0], 100)
+
+
+class SpeciesPopulationTotalAndDensityTestCase(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("species_population_total_density")
+
+    def test_species_population_total_and_density(self):
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]['density'].get('density'), 0.5
         )
         self.assertEqual(
-            response.data['data'][0]['activities'][0],
-            data,
+            response.data[0]['density'].get('total'), 100
         )

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 """Test case for population data models.
 """
 from django.contrib.auth.models import User
@@ -21,8 +18,8 @@ from population_data.models import (
     Certainty,
     CountMethod,
     OpenCloseSystem,
+    PopulationEstimateCategory,
     PopulationStatus,
-    PopulationEstimateCategory
 )
 from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
 from species.models import OwnedSpecies, Taxon
@@ -109,7 +106,7 @@ class PopulationCountTestCase(TestCase):
                 owned_species=self.population_count.owned_species,
                 year=self.population_count.year,
             )
-            self.assertEqual(IntegrityError, type(raised.exception))
+            self.assertEqual(IntegrityError, raised.exception)
 
 
     def test_delete_population_count(self):
@@ -124,9 +121,6 @@ class PopulationCountTestCase(TestCase):
         self.population_count.total = 110
         with self.assertRaises(Exception) as raised:
             self.population_count.save()
-            self.assertEqual(raised.exception, IntegrityError)
-
-
 
 
 class AnnualPopulationPerActivityTestCase(TestCase):
@@ -172,7 +166,6 @@ class AnnualPopulationPerActivityTestCase(TestCase):
                 year=self.population_count.year,
                 activity_type=self.population_count.activity_type,
             )
-            self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_delete_population_count(self):
         """Test delete population count."""
@@ -259,7 +252,7 @@ class TestPopulationEstimateCategory(TestCase):
         self.population_estimate_category.name = 'PopulationEstimateCategory'
         self.population_estimate_category.save()
         self.assertEqual(
-            self.population_estimate_category.name, 
+            self.population_estimate_category.name,
             'PopulationEstimateCategory'
         )
 
@@ -270,9 +263,14 @@ class TestPopulationEstimateCategory(TestCase):
 
     def test_population_estimate_name_constraint(self):
         """Test population estimate category name contraint."""
+        another = PopulationEstimateCategoryF(name='Population estimate')
+        self.assertEqual(PopulationEstimateCategory.objects.count(), 2)
+        self.assertNotEqual(
+            self.population_estimate_category.name,
+            another.name
+        )
         with self.assertRaises(Exception) as raised:
             PopulationEstimateCategoryF(name='name')
-            self.assertEqual(IntegrityError, type(raised.exception))
 
 
 class TestPopulationSatatus(TestCase):
@@ -294,7 +292,7 @@ class TestPopulationSatatus(TestCase):
         self.population_status.name = 'PopulationSatatus'
         self.population_status.save()
         self.assertEqual(
-            self.population_status.name, 
+            self.population_status.name,
             'PopulationSatatus'
         )
 
@@ -305,8 +303,9 @@ class TestPopulationSatatus(TestCase):
 
     def test_population_status_name_constraint(self):
         """Test population status name contraint."""
+        another = PopulationStatusF(name='Population Status')
+        self.assertEqual(PopulationStatus.objects.count(), 2)
+        self.assertNotEqual(self.population_status.name, another.name)
+
         with self.assertRaises(Exception) as raised:
             PopulationStatusF(name='name')
-            self.assertEqual(IntegrityError, type(raised.exception))
-
-    

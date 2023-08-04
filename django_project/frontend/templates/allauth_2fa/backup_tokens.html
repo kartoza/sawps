@@ -8,39 +8,358 @@
   <div class="container py-5">
     <div class="row">
       {% include "profile_config_base.html" %}
+    </div>
 
-      <div class="col-lg-8">
-        <div class="card mb-4">
-            <div class="card-body">
-            <h3 class="sawps-text-menu">
-              {% trans "Two-Factor Authentication Backup Tokens" %}
-            </h3>
-
-        {% if backup_tokens %}
-          {% if reveal_tokens %}
-            <ul>
-              {% for token in backup_tokens %}
-                <li>{{ token.token }}</li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            {% trans 'Backup tokens have been generated, but are not revealed here for security reasons. Press the button below to generate new ones.' %}
-          {% endif %}
-        {% else %}
-          {% trans 'No tokens. Press the button below to generate some.' %}
-        {% endif %}
-
-        <form method="post">
-          {% csrf_token %}
-          <button type="submit" class="account-button">
-            {% trans 'Generate backup tokens' %}
-          </button>
-        </form>
-        <a  href="{% url 'two-factor-remove' %}">Disable Two Factor</a>
+    <!-- delete Modal -->
+    <div class="modal fade" id="confirmRemoveModal" tabindex="-1" role="dialog" aria-labelledby="confirmRemoveModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="confirmRemoveModalLabel" style="color: var(--green);">Confirmation</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <p>This authentication device will be removed. Are you sure you want to proceed?</p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn" style="background-color: var(--red); color: #FFFFFF;" id="deleteDevice">Delete</button>
+              </div>
+          </div>
       </div>
+    </div>
+
+    
+
+    
+
+    <div class="container">
+      
+      <div class="border p-3 mb-3" style="border-radius: 6px;">
+        <h3>Current 2FA Method</h3>
+          <div class="col-md-3 " style="padding-left: 0%;">
+            <select id="filterSelect" class="form-control custom-select" style="width:100%;">
+            <option value="">Authenticator App</option>
+          </select>  
         </div>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-auto ml-auto">
+            <button class="btn btn-custom" data-toggle="modal" data-target="#myModal">
+                <i class="fas fa-plus"></i> Add Device
+              </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- save device modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Add new device</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="reminderForm">
+                        <div class="form-group">
+                            <label for="title">Device Name</label>
+                            <input type="text" class="form-control" id="device_name" name="device_name" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="account-button" id="addReminderBtn">Add</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+      </div>
+     
+      <!-- modal for displaying the QR code image -->
+      <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrCodeModalLabel">QR Code Image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img src="" id="qrCodeImage" alt="QR Code Image" style="max-width: 100%;">
+    
+                    <p class="text-center mt-3">
+                      Kindly utilize a token generator app to scan the QR code provided. Once scanned, you will be able to use your new device for secure login purposes.
+                    </p>
+    
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeModal">Close</button>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- verify success -->
+    <div id="successModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+              <div class="modal-body">
+                  <div class="success-animation">
+                      <svg id="successCircle" class="success-circle" viewBox="0 0 70 70">
+                          <circle class="success-circle-bg" cx="35" cy="35" r="24"></circle>
+                          <path class="success-tick" d="M25 35l10 10l20-20"></path>
+                      </svg>
+                  </div>
+                  <p class="success-message text-black" id="successMessage">Token verified.</p>
+                  <p class="failed-message text-black" id="failedMessage" style="display: none;">Failed to verify.</p>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+    
+
+      <h3>2FA Devices</h3>
+      <table class="table table-striped" id="totp_devices">
+        <thead style="background-color: var(--green);">
+          <tr>
+            <th scope="col">Device Name</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <td></td>
+              <td>
+                <!-- <i class="fas fa-eye eye-icon" data-qr-code="{{ device.qr_code }}"></i> -->
+                <!-- <i class="fas fa-trash-alt trash-icon" data-object-id="{{ device.id }}" data-toggle="modal" data-target="#confirmRemoveModal"></i> -->
+              </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <div class="border-top mt-3 pt-3">
+          <h4>Recovery Options</h4>
+          <!-- <p>Add or edit your recovery options for 2FA:</p> -->
+            <div class="card mb-4">
+                <div class="card-body">
+                <h3 class="sawps-text-menu">
+                  {% trans "Two-Factor Authentication Backup Tokens" %}
+                </h3>
+    
+            {% if backup_tokens %}
+              {% if reveal_tokens %}
+                <ul>
+                  {% for token in backup_tokens %}
+                    <li>{{ token.token }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                {% trans 'Backup tokens have been generated, but are not revealed here for security reasons. Press the button below to generate new ones.' %}
+              {% endif %}
+            {% else %}
+              {% trans 'No tokens. Press the button below to generate some.' %}
+            {% endif %}
+    
+            <form method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-custom">
+                {% trans 'Generate backup tokens' %}
+              </button>
+            </form>
+          </div>
+    
+            </div>
+            
+      </div>
+  </div>
+  
+<script>
+    function extractBaseUrl(url) {
+        // Find the index of the first forward slash after the initial //
+        const slashIndex = url.indexOf('/', url.indexOf('//') + 2);
+        
+        // Extract the base URL
+        const baseUrl = url.substring(0, slashIndex);
+
+        return baseUrl;
+     }
+
+    function hideAllPromptModals(){
+      try{
+        $('#confirmRemoveModal').modal('hide');
+        $('#myModal').modal('hide');
+        $('#successModal').modal('hide');
+
+      }catch(exception){
+        // ignore
+      }
+    }
+
+    var get_devices_url = extractBaseUrl(window.location.href) + "/view_totp_devices/";
+
+    var results = []
+
+
+    function makeQueryToApi(device_name){
+      device_name = device_name === undefined ? 'none': device_name
+      $.ajax({
+        type: 'POST',
+        url: get_devices_url,
+        data: {
+          'device_name': device_name,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+
+          constructDevicesTable(response.totp_devices)
+
+          hideAllPromptModals()
+
+        },
+        error: function(xhr, status, error) {
+          // return []
+        }
+      });
+    }
+
+    function addDeviceQuery(device_name){
+      device_name = device_name === undefined ? 'none': device_name
+      $.ajax({
+        type: 'POST',
+        url: get_devices_url,
+        data: {
+          'device_name': device_name,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+
+          document.getElementById('qrCodeImage').src = 'data:image/svg+xml;base64,' + response.totp_devices[0].qrcode;
+          // Show the qr code for the newly added device
+          $("#qrCodeModal").modal("show");
+
+          var inputField = document.getElementById("device_name");
+          inputField.value = "";
+
+          get_devices_url = extractBaseUrl(window.location.href) + "/view_totp_devices/";
+
+          makeQueryToApi()
+        
+        },
+        error: function(xhr, status, error) {
+          // return []
+        }
+      });
+    }
+  
+
+
+    // REFRESH TABLE
+    function constructDevicesTable(data){
+      var tableBody = $('#totp_devices tbody');
+      tableBody.empty();
+
+      if (data.length > 0) {
+        for (var i = 0; i < data.length; i++) {
+          var row = '<tr>';
+          if(data[i].name !== '')
+            row += '<td>' + data[i].name + '</td>';
+          else row += '<td>' + data[i].user + '</td>';
+                          
+          // row += '<td><i class="fas fa-eye eye-icon" data-qr-code='+ data[i].id + '></i></td>';
+          row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].id + '></i></td>';
+                          
+          row += '</tr>';
+
+          tableBody.append(row);
+        }
+      }
+
+      return true
+    }
+
+    // Add device
+    $(document).ready(function() {
+      // Event handler for the "Add" button in the modal
+      $('#addReminderBtn').on('click', async function() {
+
+        var addBtn = document.getElementById("addReminderBtn");
+        addBtn.style.display = "block";
+
+        var device_name = $('#device_name').val();
+
+        get_devices_url = extractBaseUrl(window.location.href) + "/add_totp_devices/";
+
+        addDeviceQuery(device_name)
+
+      })
+    });
+
+
+    // Event delegation for eye icon click
+    $(document).ready(function() {
+      $('.eye-icon').click(function() {
+        var qrCodeImage = $(this).data('qr-code');
+        $('#qrCodeImage').attr('src', qrCodeImage);
+        $('#qrCodeModal').modal('show');
+      });
+    });
+
+     // Event delegation for trash icon click
+    $(document).ready(function() {
+        $(document).on('click', '.trash-icon', function() {
+          var objectId = parseInt($(this).data('object-id').toString());
+
+          $('#confirmRemoveModal').modal('show');
+
+          document.getElementById('deleteDevice').addEventListener('click', async function() {
+
+          get_devices_url = extractBaseUrl(window.location.href) + "/delete_totp_device/"+ objectId + "/";
+
+          makeQueryToApi()
+
+          });
+        })
+    });
+
+    makeQueryToApi()
+
+    
+</script>
+
+  <style>
+    .btn-custom {
+        background-color: var(--green);
+        border-color: var(--green); 
+        color: #FFFFFF;
+    }
+
+    .btn-custom:hover {
+        background-color: var(--green); 
+        border-color: var(--green);
+        color: #FFFFFF; 
+    }
+    
+    .custom-select {
+      color: black; /* Set the default text color to black */
+      background-color: #f8f9fa;
+    }
+
+  .custom-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    border-color: var(--green);
+  }
+  </style>
 </section>
 
 {% endblock %}

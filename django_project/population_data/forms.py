@@ -1,4 +1,3 @@
-
 from django.forms import ModelForm
 from population_data.models import AnnualPopulation
 
@@ -27,5 +26,5 @@ class AnnualPopulationForm(ModelForm):
             "certainty",
             "open_close_system",
             "presence",
-            "note",    
+            "note",
         )

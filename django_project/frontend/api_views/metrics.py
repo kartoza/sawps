@@ -3,12 +3,14 @@
 """API Views related to metrics.
 """
 from frontend.filters.metrics import (
-    ActivityPercentageFilter,
-    SpeciesPopulationCountFilter,
+    BaseMetricsFilter,
+    SpeciesPopulationCountFilter
 )
 from frontend.serializers.metrics import (
     ActivityMatrixSerializer,
     SpeciesPopulationCountSerializer,
+    SpeciesPopulationTotalAndDensitySerializer,
+    TotalCountPerActivitySerializer,
 )
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from rest_framework.permissions import IsAuthenticated
@@ -50,7 +52,7 @@ class ActivityPercentageAPIView(APIView):
             ownedspecies__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
-        filtered_queryset = ActivityPercentageFilter(
+        filtered_queryset = BaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
         return filtered_queryset
@@ -65,3 +67,49 @@ class ActivityPercentageAPIView(APIView):
             "activity_colours": ACTIVITY_COLORS_DICT
         }
         return Response(serializer_data)
+
+
+class TotalCountPerActivityAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ActivityMatrixSerializer
+
+    def get_queryset(self):
+        organisation_id = self.request.session.get('current_organisation_id')
+        queryset = Taxon.objects.filter(
+            ownedspecies__property__organisation_id=organisation_id,
+            taxon_rank__name='Species'
+        ).distinct()
+        filtered_queryset = BaseMetricsFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = TotalCountPerActivitySerializer(
+            queryset, many=True, context={"request": request}
+        )
+        return Response(serializer.data)
+
+
+class SpeciesPopulationTotalAndDensityAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ActivityMatrixSerializer
+
+    def get_queryset(self):
+        organisation_id = self.request.session.get('current_organisation_id')
+        queryset = Taxon.objects.filter(
+            ownedspecies__property__organisation_id=organisation_id,
+            taxon_rank__name='Species'
+        ).distinct()
+        filtered_queryset = BaseMetricsFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = SpeciesPopulationTotalAndDensitySerializer(
+            queryset, many=True, context={"request": request}
+        )
+        return Response(serializer.data)

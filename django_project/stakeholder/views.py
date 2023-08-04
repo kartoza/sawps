@@ -28,8 +28,24 @@ from django.db.models import Q
 from core.celery import app
 from frontend.views.base_view import RegisteredOrganisationBaseView
 from frontend.serializers.stakeholder import ReminderSerializer
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 logger = logging.getLogger(__name__)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_email_exists(request):
+    if request.method == 'GET':
+        email = request.GET.get('email', '').strip()
+        current_user_email = request.user.email
+
+        if email and email != current_user_email:
+            email_exists = User.objects.filter(email=email).exists()
+            return JsonResponse({'exists': email_exists})
+
+    return JsonResponse({'exists': False})
 
 
 class ProfileView(DetailView):
@@ -45,13 +61,9 @@ class ProfileView(DetailView):
         if profile != self.request.user:
             raise Http404('Mismatch user')
 
-        if self.request.POST.get('first-name', ''):
-            profile.first_name = self.request.POST.get('first-name', '')
-        if self.request.POST.get('last-name', ''):
-            profile.last_name = self.request.POST.get('last-name', '')
-
-        if self.request.POST.get('email', ''):
-            profile.email = self.request.POST.get('email', '')
+        profile.first_name = self.request.POST.get('first-name', '')
+        profile.last_name = self.request.POST.get('last-name', '')
+        profile.email = self.request.POST.get('email', '')
 
         if not UserProfile.objects.filter(user=profile).exists():
             UserProfile.objects.create(
@@ -62,10 +74,13 @@ class ProfileView(DetailView):
             profile.user_profile.picture = self.request.FILES.get(
                 'profile-picture', None
             )
+
         if self.request.POST.get('title', ''):
             title = UserTitle.objects.get(
-                id=self.request.POST.get('title', ''))
+                id=self.request.POST.get('title', '')
+            )
             profile.user_profile.title_id = title
+
         if self.request.POST.get('role', ''):
             role = UserRoleType.objects.get(
                 id=self.request.POST.get('role', '')
