@@ -1,46 +1,59 @@
-"""Filters in Data table.
+"""Filters in metrics.
 
 """
 import django_filters
-from django.db.models import Q
-from species.models import OwnedSpecies
+from species.models import Taxon
 
 
-class OwnedSpeciesFilter(django_filters.FilterSet):
+class SpeciesPopulationCountFilter(django_filters.FilterSet):
     species = django_filters.CharFilter(method ='filter_species')
-    property = django_filters.CharFilter(method ='filter_property')
-    month = django_filters.CharFilter(method = 'filter_month')
-    activity_type = django_filters.CharFilter(method = 'filter_activity_type')
-    population_category = django_filters.CharFilter(
-        method = 'filter_population_category'
-    )
+    start_year = django_filters.CharFilter(method ='filter_start_year')
+
 
     class Meta:
-        model = OwnedSpecies
-        fields = ['species', 'property', 'month']
+        model = Taxon
+        fields = ['species', 'start_year']
 
     def filter_species(self, queryset, name, value):
         species_list = value.split(',')
-        return queryset.filter(taxon__common_name_varbatim__in=species_list)
+        return queryset.filter(common_name_varbatim__in=species_list)
+
+
+    def filter_start_year(self, queryset, name, value):
+        start_year = int(value)
+        end_year = int(self.data.get('end_year'))
+        return queryset.filter(
+            ownedspecies__annualpopulationperactivity__year__range=(
+                start_year, end_year
+            )
+        )
+
+
+class BaseMetricsFilter(django_filters.FilterSet):
+    species = django_filters.CharFilter(method='filter_species')
+    start_year = django_filters.CharFilter(method='filter_start_year')
+    property = django_filters.CharFilter(method='filter_property')
+
+    class Meta:
+        model = Taxon
+        fields = ['species', 'start_year', 'property']
+
+    def filter_species(self, queryset, name, value):
+        species_list = value.split(',')
+        return queryset.filter(common_name_varbatim__in=species_list)
+
+    def filter_start_year(self, queryset, name, value):
+        start_year = int(value)
+        end_year = int(self.data.get('end_year'))
+        return queryset.filter(
+            ownedspecies__annualpopulationperactivity__year__range=(
+                start_year,
+                end_year
+            )
+        )
 
     def filter_property(self, queryset, name, value):
-        property_list = value.split(',')
-        return queryset.filter(property__name__in=property_list)
-
-    def filter_population_category(self, queryset, name, value):
-        population_category = value.split(',')
-        ranges = [range.split('-') for range in population_category]
-        query = Q()
-        for range_values in ranges:
-            query |= Q(
-                annualpopulation__total__range=(
-                    range_values[0], range_values[1]
-                )
-            )
-        return queryset.filter(query)
-
-    def filter_activity_type(self, queryset, name, value):
-        activity_type = value.split(',')
+        properties_list = value.split(',')
         return queryset.filter(
-            annualpopulationperactivity__activity_type__name__in=activity_type
+            ownedspecies__property__id__in=properties_list
         )
