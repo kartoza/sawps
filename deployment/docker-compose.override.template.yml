@@ -67,8 +67,6 @@ services:
     links:
       - db
       - redis
-    ports:
-      - "${PLUMBER_PORT:-8181}:8181"
 
   nginx:
     volumes:

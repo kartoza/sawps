@@ -22,7 +22,13 @@ PLUMBER_PORT = os.getenv('PLUMBER_PORT', 8181)
 
 
 def plumber_health_check(max_retry=5):
-    """Check whether API is up and running."""
+    """
+    Check whether API is up and running.
+
+    This will be called from worker.
+    :param max_retry: maximum retry of checking
+    :return: True if successful number of check is less than max_retry
+    """
     request_url = f'http://0.0.0.0:{PLUMBER_PORT}/statistical/echo'
     retry = 0
     req = None
