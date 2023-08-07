@@ -9,7 +9,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from frontend.tasks.parcel import boundary_files_search
+from species.tasks.upload_species import upload_species_data
+
 
 
 class SpeciesUploader(APIView):
@@ -17,44 +18,44 @@ class SpeciesUploader(APIView):
     parser_classes = (MultiPartParser,)
 
     def post(self, request, *args, **kwargs):
-        # species_file = request.FILES['file']
-        #
-        # if not species_file:
-        #     return JsonResponse({
-        #         'status': 'error',
-        #         'message': 'CSV file not valide',
-        #     })
-        #
-        # upload_session = UploadSpeciesCSV.objects.create(
-        #     process_file=species_file,
-        #     uploader=self.request.user,
-        #     uploaded_at=datetime.now(),
-        # )
-        # reader = csv.DictReader(codecs.iterdecode(species_file, 'utf-8'))
-        # headers = reader.fieldnames
+        species_file = request.FILES['file']
+        
+        if not species_file:
+            return Response(
+                    {"status": "file is not correct"},
+                    status.HTTP_424_FAILED_DEPENDENCY
+                )
+        
+        upload_session = UploadSpeciesCSV.objects.create(
+            process_file=species_file,
+            uploader=self.request.user,
+            uploaded_at=datetime.now(),
+        )
+        reader = csv.DictReader(codecs.iterdecode(species_file, 'utf-8'))
+        headers = reader.fieldnames
         # check headers
-        # for header in CSV_FILE_HEADERS:
-        #     if header not in headers:
-        #         error_message = (
-        #             'Header row does not follow the correct format'
-        #         )
-        #         upload_session.progress = error_message
-        #         upload_session.error_file = (
-        #             upload_session.process_file
-        #         )
-        #         upload_session.processed = True
-        #         upload_session.save()
-        #         return Response(
-        #             {"status": "Header row does not follow the correct format"},
-        #             status.HTTP_424_FAILED_DEPENDENCY
-        #         )
+        for header in CSV_FILE_HEADERS:
+            if header not in headers:
+                error_message = (
+                    'Header row does not follow the correct format'
+                )
+                upload_session.error_notes = error_message
+                upload_session.error_file = (
+                    upload_session.process_file
+                )
+                upload_session.canceled = True
+                upload_session.save()
+                return Response(
+                    {"status": "Header row does not follow the correct format"},
+                    status.HTTP_424_FAILED_DEPENDENCY
+                )
 
-        # finished = True
-        # if finished:
-        task = boundary_files_search.delay(1)
+        task = upload_species_data.delay(
+                upload_session.id
+        )
 
-            # upload_session.token = task.id
-            # upload_session.save()
+        if task:
+            return Response(status=200)
+        
+        return Response(status=404)
 
-        return Response({"status": "success"},
-                            status.HTTP_201_CREATED)

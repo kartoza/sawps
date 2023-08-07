@@ -213,7 +213,6 @@ class TaxonSurveyMethodTestCase(TestCase):
         )
         cls.survey_method = SurveyMethod.objects.create(
             name='Unknown',
-            sort_id='1'
         )
         cls.taxon_survey_method = TaxonSurveyMethodF(
             taxon=cls.taxon,
