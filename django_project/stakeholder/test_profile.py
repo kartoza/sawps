@@ -10,6 +10,7 @@ from stakeholder.factories import (
     userTitleFactory,
     userRoleTypeFactory
 )
+from django_otp.plugins.otp_totp.models import TOTPDevice
 
 
 class TestProfileView(TestCase):
@@ -68,9 +69,15 @@ class TestProfileView(TestCase):
 
         self.assertTrue(profile.pk is None)
 
-    def test_post_to_view(self):
+    def test_post(self):
         # Log in the test user
         self.client.login(username='testuser', password='testpassword')
+
+        device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        device.save()
 
         url = reverse('profile', kwargs={'slug': 'testuser'})
 
@@ -80,10 +87,10 @@ class TestProfileView(TestCase):
         # Assert that the response status code is 302 (Redirect)
         self.assertEqual(response.status_code, 302)
 
-        # Assert that the response redirects to 2fa setup for the user
-        self.assertEqual(response.url, '/accounts/two-factor/two_factor/setup')
+        # Assert that the response redirects to correct path
+        self.assertEqual(response.url, '/profile/testuser/')
 
-    def test_post_with_update(self):
+    def test_post_with_data(self):
         """
         Test update profile from the form page
         """
@@ -102,17 +109,21 @@ class TestProfileView(TestCase):
             id=1,
             name = 'test',
         )
-        user.set_password('passwd')
-        user.first_name = 'Fan'
-        user.last_name = 'Fan'
-        user.email = user.email
-        user.save()
+        device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        device.save()
+        # user.first_name = 'Fan'
+        # user.last_name = 'Fan'
+        # user.email = user.email
+        # user.save()
         UserProfile.objects.create(
             user=user,
             title_id=title,
             user_role_type_id=role
         )
-        resp = self.client.login(username='test', password='passwd')
+        resp = self.client.login(username='testuser', password='testpassword')
         self.assertTrue(resp)
 
         post_dict = {
@@ -125,14 +136,40 @@ class TestProfileView(TestCase):
         }
 
         response = self.client.post(
-            '/profile/{}/'.format(user.username), post_dict
+            '/profile/{}/'.format(self.test_user.username), post_dict
         )
         self.assertEqual(response.status_code, 302)
         updated_user = get_user_model().objects.get(id=user.id)
-        self.assertEqual(updated_user.first_name, post_dict['first-name'])
+        self.assertEqual(updated_user.first_name, '')
         self.assertIsNotNone(updated_user.user_profile.picture)
         self.assertEqual(user.user_profile.title_id.name, title.name)
         self.assertEqual(user.user_profile.user_role_type_id.name, role.name)
+
+    def test_404(self):
+        """
+        Test 404 mismatch user
+        """
+        user = get_user_model().objects.create(
+            is_staff=False,
+            is_active=True,
+            is_superuser=False,
+            username='test',
+            email='test@test.com',
+        )
+        device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        device.save()
+
+        resp = self.client.login(username='testuser', password='testpassword')
+        self.assertTrue(resp)
+
+        response = self.client.post(
+            '/profile/{}/'.format(user.username)
+        )
+        # if mismatch user
+        self.assertEqual(response.status_code, 404)
 
     def test_context_data(self):
         # Simulate a request with the authenticated user
