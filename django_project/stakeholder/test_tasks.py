@@ -12,7 +12,8 @@ from stakeholder.tasks import (
 from stakeholder.models import (
     OrganisationUser,
     Reminders,
-    Organisation
+    Organisation,
+    UserProfile
 )
 from regulatory_permit.models import DataUsePermission
 
