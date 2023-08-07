@@ -318,7 +318,7 @@ class RemindersView(RegisteredOrganisationBaseView):
                     timezone=timezone_value
                 )
                 # Schedule the Celery task to send the reminder email
-                task = send_reminder_email.apply_async(
+                task = send_reminder_emails.apply_async(
                     args=[reminder.id],
                     eta=adjusted_datetime
                 )
