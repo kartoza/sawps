@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
-
 """API Views related to metrics.
 """
+from django.db.models.query import QuerySet
 from frontend.filters.metrics import (
     BaseMetricsFilter,
-    SpeciesPopulationCountFilter
+    PropertyFilter,
+    SpeciesPopulationCountFilter,
 )
 from frontend.serializers.metrics import (
     ActivityMatrixSerializer,
@@ -13,6 +13,8 @@ from frontend.serializers.metrics import (
     TotalCountPerActivitySerializer,
 )
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
+from frontend.utils.metrics import calculate_population_categories
+from property.models import Property
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -113,3 +115,29 @@ class SpeciesPopulationTotalAndDensityAPIView(APIView):
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
+
+
+class PropertiesPerPopulationCategoryAPIView(APIView):
+    """
+    API endpoint to retrieve population categories
+    for properties within an organization.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> QuerySet[Property]:
+        """
+        Get the filtered queryset of properties owned by the organization.
+        """
+        organisation_id = self.request.session.get('current_organisation_id')
+        queryset = Property.objects.filter(organisation_id=organisation_id)
+        filtered_queryset = PropertyFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve population categories for properties.
+        """
+        queryset = self.get_queryset()
+        return Response(calculate_population_categories(queryset))

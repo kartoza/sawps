@@ -9,6 +9,7 @@ volumes:
   backups-data:
   data-volume:
   layer-tiles:
+  plumber-data:
 
 x-tegola-image: &tegola-image gospatial/tegola:v0.16.0
 x-common-django:
@@ -37,6 +38,7 @@ x-common-django:
   volumes:
     - static-data:/home/web/static
     - media-data:/home/web/media
+    - plumber-data:/home/web/plumber_data
   restart: on-failure
 
 services:
@@ -81,6 +83,7 @@ services:
     links:
       - db
       - worker
+      - plumber
 
   worker:
     <<: *default-common-django
@@ -89,6 +92,7 @@ services:
     volumes:
       - layer-tiles:/opt/layer_tiles
     links:
+      - db
       - redis
 
   beat:  # Define the Celery beat service
@@ -107,6 +111,7 @@ services:
     links:
       - db
       - worker
+      - plumber
 
   tegola:
     image: *tegola-image
@@ -139,3 +144,27 @@ services:
     links:
       - django
       - tegola
+  
+  plumber:
+    build:
+      context: ../
+      dockerfile: deployment/plumber/Dockerfile
+      target: prod
+    environment:
+      # editable in .env
+      - DATABASE_NAME=${DATABASE_NAME:-django}
+      - DATABASE_USERNAME=${DATABASE_USERNAME:-docker}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-docker}
+      - DATABASE_HOST=${DATABASE_HOST:-db}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_password}
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-core.settings.prod}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - PLUMBER_PORT=${PLUMBER_PORT:-8181}
+    volumes:
+      - plumber-data:/home/web/plumber_data
+      - media-data:/home/web/media
+    links:
+      - db
+      - redis

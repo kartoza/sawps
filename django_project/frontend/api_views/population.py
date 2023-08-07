@@ -31,6 +31,9 @@ from rest_framework.views import APIView
 from species.models import OwnedSpecies, Taxon
 from species.serializers import TaxonSerializer
 from stakeholder.models import OrganisationUser
+from frontend.utils.statistical_model import (
+    clear_statistical_model_output_cache
+)
 
 
 class PopulationMetadataList(APIView):
@@ -219,11 +222,12 @@ class UploadPopulationAPIVIew(APIView):
             juvenile_female=offtake_population.get("juvenile_female", 0),
             intake_permit=offtake_population.get("permit_number", None),
         )
-        # TODO: missing field translocation_destination
         # if draft exists, then delete it
         draft_uuid = request.GET.get("uuid", None)
         if draft_uuid:
             DraftSpeciesUpload.objects.filter(uuid=draft_uuid).delete()
+        # clear caches of the species
+        clear_statistical_model_output_cache(taxon)
         return Response(status=204)
 
 
