@@ -1,8 +1,8 @@
-from django.urls import path, include
-from .views import TaxonListAPIView, SpeciesForm
+from django.urls import path
+from .views import TaxonListAPIView, TaxonFrontPageListAPIView
 
 urlpatterns = [
+    path('api/species/front-page/list/', TaxonFrontPageListAPIView.as_view(),
+         name='species-front-page'),
     path('species/', TaxonListAPIView.as_view(), name='species'),
-    path('api/', include('species.api_urls')),
-     path('species-form/', SpeciesForm.as_view(), name='species-from'),
 ]

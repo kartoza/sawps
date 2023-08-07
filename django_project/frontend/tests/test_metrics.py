@@ -124,3 +124,19 @@ class SpeciesPopulationTotalAndDensityTestCase(BaseTestCase):
         self.assertEqual(
             response.data[0]['density'].get('total'), 100
         )
+
+
+class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    properties population categories.
+    """
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("properties_per_population_category")
+
+    def test_species_population_total_and_density(self):
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['>200'], 1)

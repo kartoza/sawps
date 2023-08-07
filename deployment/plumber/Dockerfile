@@ -1,0 +1,67 @@
+FROM rstudio/plumber:v1.2.0 AS prod
+
+# install python 3.10
+RUN apt-get update -y && apt-get upgrade -y
+
+RUN apt install software-properties-common -y
+
+RUN add-apt-repository ppa:deadsnakes/ppa
+
+RUN apt install Python3.10
+
+RUN apt-get install -y --no-install-recommends \
+    gcc gettext cron \
+    spatialite-bin libsqlite3-mod-spatialite \
+    python3-dev python3-gdal python3-psycopg2 python3-ldap \
+    python3-pip python3-pil python3-lxml python3-pylibmc \
+    uwsgi uwsgi-plugin-python3
+
+# Install pip packages
+ADD deployment/docker/requirements.txt /requirements.txt
+RUN pip3 install --upgrade pip && pip install --upgrade pip
+# Fix uwsgi build failure missing cc1
+ARG CPUCOUNT=1
+RUN pip3 install -r /requirements.txt
+
+# install R packages
+RUN install2.r --error tidyverse tidygam mgcv ggpubr
+
+# add django project
+ADD django_project /home/web/django_project
+
+# create directories
+RUN mkdir -p /home/web/plumber_data/
+
+# add entrypoint.sh
+ADD django_project/plumber_entrypoint.sh /home/web/plumber_entrypoint.sh
+
+EXPOSE 8181
+
+WORKDIR /home/web/django_project
+ENTRYPOINT [ "/home/web/plumber_entrypoint.sh" ]
+
+FROM prod as vscode
+
+ADD deployment/docker/requirements-dev.txt /requirements-dev.txt
+RUN pip install -r /requirements-dev.txt
+
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    #
+    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+# ********************************************************
+# * Anything else you want to do like clean up goes here *
+# ********************************************************
+
+# [Optional] Set the default user. Omit if you want to keep the default as root.
+USER $USERNAME

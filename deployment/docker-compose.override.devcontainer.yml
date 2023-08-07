@@ -34,9 +34,11 @@ services:
       - ../:/home/web/project
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
+      - ./volumes/plumber_data:/home/web/plumber_data
     links:
       - db
       - worker
+      - plumber
   
   tegola:
     volumes:
@@ -46,3 +48,16 @@ services:
       - "${TEGOLA_DEV_PORT:-9191}:9090"
     links:
       - db
+  
+  plumber:
+    build:
+      context: ../
+      dockerfile: deployment/plumber/Dockerfile
+      target: vscode
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/plumber_data:/home/web/plumber_data
+      - ./volumes/media:/home/web/media
+    links:
+      - db
+      - redis

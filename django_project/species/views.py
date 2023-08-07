@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from .models import Taxon
-from .serializers import TaxonSerializer
-from django.views.generic import TemplateView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
+from .models import Taxon
+from .serializers import TaxonSerializer, FrontPageTaxonSerializer
+# Create your views here.
 
 
 class TaxonListAPIView(APIView):
@@ -18,6 +18,14 @@ class TaxonListAPIView(APIView):
         )
 
 
+class TaxonFrontPageListAPIView(APIView):
+    """Fetch taxon list to display on FrontPage."""
+    permission_classes = [AllowAny]
 
-class SpeciesForm(TemplateView):
-    template_name  = 'species_form.html'
+    def get(self, request):
+        taxon = Taxon.objects.filter(
+            show_on_front_page=True).order_by('front_page_order')
+        return Response(
+            status=200,
+            data=FrontPageTaxonSerializer(taxon, many=True).data
+        )
