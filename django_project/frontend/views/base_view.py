@@ -39,8 +39,8 @@ def get_user_notifications(request):
                     reminder.title,
                     extra_tags='notification'
                 )
-                notifications.append(reminder.title)   
-        if(len(notifications) > 0):
+                notifications.append(reminder.title)
+        if (len(notifications) > 0):
             user_profile.received_notif = True
             user_profile.save()
         return JsonResponse(
