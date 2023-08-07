@@ -310,7 +310,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
-                                        <TextField id='area_covered' required label='Sampled Area' value={data.annual_population.area_covered}
+                                        <TextField id='area_covered' required label='Sampled Area' value={data.annual_population.area_covered.toString()}
                                             variant='standard' type='number'
                                             InputProps={{
                                                 endAdornment: (
@@ -489,7 +489,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             type='number'
                                             variant="standard"
                                             fullWidth
-                                            value={data.annual_population.area_available_to_species}
+                                            value={data.annual_population.area_available_to_species.toString()}
                                             onChange={(e) => updateAnnualPopulation('area_available_to_species', parseFloat(e.target.value))}
                                             helperText=" "
                                         />
@@ -536,7 +536,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             type='number'
                                             variant="standard"
                                             fullWidth
-                                            value={data.annual_population.sampling_effort}
+                                            value={data.annual_population.sampling_effort.toString()}
                                             onChange={(e) => updateAnnualPopulation('sampling_effort', parseFloat(e.target.value)) }
                                             helperText=' '
                                         />
