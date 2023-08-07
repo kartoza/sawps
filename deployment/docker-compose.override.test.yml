@@ -5,8 +5,18 @@ services:
       - "${DATABASE_PORT:-6432}:5432"
 
   dev:
-    container_name: sawps_dev
-    image: kartoza/sanbi:dev
-  
+    image: kartoza/sanbi:test
+    volumes:
+      - ../django_project:/home/web/django_project
+    ports:
+      # for django test server
+      - "61100:8080"
+    command:
+      - tail
+      - -f
+      - /dev/null
+
   worker:
-    image: kartoza/sanbi:dev
+    volumes:
+      - ../django_project:/home/web/django_project
+    image: kartoza/sanbi:test
