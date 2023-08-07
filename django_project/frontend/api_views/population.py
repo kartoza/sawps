@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from frontend.models.upload import DraftSpeciesUpload
 from occurrence.models import SamplingSizeUnit, SurveyMethod
 from occurrence.serializers import (
-    SamplingSizeUnitSerializer,
+    SamplingSizeUnitMetadataSerializer,
     SurveyMethodSerializer
 )
 from population_data.models import (
@@ -42,7 +42,9 @@ class PopulationMetadataList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        taxons = Taxon.objects.all().order_by("scientific_name")
+        taxons = Taxon.objects.filter(
+            taxon_rank__name__iexact="species"
+        ).order_by('scientific_name')
         open_close_systems = OpenCloseSystem.objects.all().order_by("name")
         survey_methods = SurveyMethod.objects.all().order_by("name")
         sampling_size_units = SamplingSizeUnit.objects.all().order_by("unit")
@@ -62,7 +64,7 @@ class PopulationMetadataList(APIView):
                 "survey_methods": (
                     SurveyMethodSerializer(survey_methods, many=True).data
                 ),
-                "sampling_size_units": (SamplingSizeUnitSerializer(
+                "sampling_size_units": (SamplingSizeUnitMetadataSerializer(
                     sampling_size_units, many=True).data
                                         ),
                 "count_methods": CountMethodSerializer(
