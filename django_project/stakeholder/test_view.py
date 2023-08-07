@@ -358,24 +358,27 @@ class TestAddReminderAndScheduleTask(TestCase):
         date_str = (timezone.now() + timedelta(days=1)
                     ).strftime('%Y-%m-%dT%H:%M')
 
-        response = self.client.post(
-            url,
-            {
-                'action': 'add_reminder',
-                'title': 'Test Reminder',
-                'reminder': 'Test Reminder Note',
-                'date': date_str,
-                'timezone': 'Africa/Johannesburg',
-                'reminder_type': 'personal',
-                'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
-            }
-        )
+        data = {
+            'action': 'add_reminder',
+            'title': 'Test Reminder',
+            'reminder': 'Test Reminder Note',
+            'date': date_str,
+            'timezone': 'Africa/Johannesburg',
+            'reminder_type': 'personal',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+
+        self.factory = RequestFactory()
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        view = RemindersView()
+
+        response = view.add_reminder_and_schedule_task(request)
 
         # Check the response status code and content
         self.assertEqual(response.status_code, 200)
-        self.assertIn('status', response.json())
-        # requires a session object
-        self.assertEqual(response.json()['status'], 'error')
 
         # Check that the reminder was added to the database and task was scheduled
         reminders = Reminders.objects.filter(user=self.user)
