@@ -2,3 +2,6 @@ images:
   - name: sawps
     dockerfile: deployment/docker/Dockerfile
     buildPath: .
+  - name: sawps-plumber
+    dockerfile: deployment/plumber/Dockerfile
+    buildPath: .
