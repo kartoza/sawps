@@ -352,6 +352,30 @@ class TestAddReminderAndScheduleTask(TestCase):
             reminder='Test Reminder Note'
         )
 
+    def test_get_reminders(self):
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        data = {
+            'action': 'get_reminders',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+        self.factory = RequestFactory()
+        request = self.factory.post(url, data)
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        view = RemindersView()
+
+        response = view.get_reminders(request)
+
+        rows_per_page = 1
+        page = 1
+        rows = [f"Item {i}" for i in range(1, 2)]
+
+        paginated_rows = paginate(rows, rows_per_page, page)
+
+        #response should contain a page
+        self.assertEqual(str(response), str(paginated_rows))
+
     def test_add_reminder_and_schedule_task_success(self):
         # Test the success case for adding a reminder and scheduling a task
         url = reverse('reminders', kwargs={'slug': self.user.username})
