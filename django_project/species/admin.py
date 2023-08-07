@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.contrib import admin, messages
 from django.utils.html import format_html
 from species.models import TaxonRank, Taxon, OwnedSpecies
@@ -20,6 +22,9 @@ def clean_output_caches(modeladmin, request, queryset):
 
 
 class TaxonAdmin(admin.ModelAdmin):
+    """Admin page for Taxon model
+
+    """
     list_display = ('scientific_name', 'common_name_varbatim',
                     'taxon_rank', 'show_on_front_page', 'display_color')
     search_fields = ['scientific_name', 'common_name_varbatim',
