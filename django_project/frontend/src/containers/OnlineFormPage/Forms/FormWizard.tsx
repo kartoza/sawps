@@ -100,8 +100,8 @@ function FormWizard(props: FormWizardInterface) {
         setData({
             ...formData,
             annual_population: {...formData.annual_population},
-            intake_population: {...formData.intake_population},
-            offtake_population: {...formData.offtake_population}
+            intake_populations: [...formData.intake_populations],
+            offtake_populations: [...formData.offtake_populations]
         })
         handleNext()
     }
@@ -110,8 +110,8 @@ function FormWizard(props: FormWizardInterface) {
         setData({
             ...formData,
             annual_population: {...formData.annual_population},
-            intake_population: {...formData.intake_population},
-            offtake_population: {...formData.offtake_population}
+            intake_populations: [...formData.intake_populations],
+            offtake_populations: [...formData.offtake_populations]
         })
         handleBack()
     }
@@ -200,8 +200,8 @@ function FormWizard(props: FormWizardInterface) {
                     setData({
                         ..._formData,
                         annual_population: {..._formData.annual_population},
-                        intake_population: {..._formData.intake_population},
-                        offtake_population: {..._formData.offtake_population}
+                        intake_populations: [..._formData.intake_populations],
+                        offtake_populations: [..._formData.offtake_populations]
                     })
                     if (_lastStep > 0) {
                         setActiveStep(_lastStep)

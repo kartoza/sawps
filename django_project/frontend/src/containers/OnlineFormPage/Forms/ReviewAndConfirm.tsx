@@ -274,7 +274,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                             <Grid item>
                                 <Typography variant='h6'>Introduction/Reintroduction</Typography>
                             </Grid>
-                            <Grid item className='InputContainer'>
+                            {/* <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
                                         <TextField
@@ -397,7 +397,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                             <Grid item className='InputContainer'>
                                 <TextField id='intake_note' label='Notes' defaultValue={displayText(data.intake_population.note)}
                                     variant='standard' fullWidth disabled />
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -405,7 +405,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                             <Grid item>
                                 <Typography variant='h6'>Off-take</Typography>
                             </Grid>
-                            <Grid item className='InputContainer'>
+                            {/* <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
                                         <TextField
@@ -517,7 +517,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                 <TextField id='offtake_note' label='Notes' defaultValue={displayText(data.offtake_population.note)}
                                     variant='standard' disabled fullWidth
                                     />
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </Grid>
                 </Grid>
@@ -553,7 +553,7 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                     </Grid>
                     <Divider />
                     <Grid item>
-                        <ActivityDetailReview data={props.initialData} />
+                        {/* <ActivityDetailReview data={props.initialData} /> */}
                     </Grid>
                 </Grid>                
             </Grid>

@@ -43,6 +43,7 @@ export interface AnnualPopulationPerActivityInterface {
     permit?: number;
     translocation_destination?: string;
     note?: string;
+    id?: number;
 }
 
 export interface UploadSpeciesDetailInterface {
@@ -53,8 +54,8 @@ export interface UploadSpeciesDetailInterface {
     property_id: number;
     month_name?: string;
     annual_population: AnnualPopulationInterface;
-    intake_population: AnnualPopulationPerActivityInterface;
-    offtake_population: AnnualPopulationPerActivityInterface;
+    intake_populations: AnnualPopulationPerActivityInterface[];
+    offtake_populations: AnnualPopulationPerActivityInterface[];
 }
 
 export interface TaxonMetadata {
@@ -109,13 +110,19 @@ const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
     }
 }
 
-const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActivityInterface => {
+export const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActivityInterface => {
     return {
         activity_type_id: 0,
+        adult_male: 0,
+        adult_female: 0,
+        juvenile_male: 0,
+        juvenile_female: 0,
         total: 0,
         founder_population: false,
         reintroduction_source: '',
-        translocation_destination: ''
+        translocation_destination: '',
+        note: '',
+        permit: 0
     }
 }
 
@@ -128,8 +135,8 @@ export const getDefaultUploadSpeciesDetail = (propertyId: number):UploadSpeciesD
         year: _currentDate.getFullYear(),
         property_id: propertyId,
         annual_population: getDefaultAnnualPopulation(),
-        intake_population: getDefaultAnnualPopulationPerActivity(),
-        offtake_population: getDefaultAnnualPopulationPerActivity()
+        intake_populations: [],
+        offtake_populations: []
     }
 }
 

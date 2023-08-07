@@ -92,6 +92,12 @@
         }
     }
 
+    .ButtonContainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+
     .DataPreview {
         .Mui-disabled:before {
             border-bottom-style: none;
@@ -107,6 +113,16 @@
         }
         .MuiInputBase-root.Mui-disabled::before {
             border-bottom-style: none;
+        }
+    }
+
+    .ActivityTable {
+        width: 100%;
+        margin-bottom: 10px;
+        .MuiTablePagination-toolbar {
+            p {
+                margin-bottom: 0.1rem;
+            }
         }
     }
 }

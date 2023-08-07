@@ -60,8 +60,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 taxon_name: _selected.scientific_name,
                 common_name: _selected.common_name_varbatim,
                 annual_population: {...data.annual_population},
-                intake_population: {...data.intake_population},
-                offtake_population: {...data.offtake_population}            
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]            
             })
             setIsDirty(true)
             setValidation({...validation, taxon_id: false})
@@ -73,8 +73,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             ...data,
             year: year,
             annual_population: {...data.annual_population},
-            intake_population: {...data.intake_population},
-            offtake_population: {...data.offtake_population}            
+            intake_populations: [...data.intake_populations],
+            offtake_populations: [...data.offtake_populations]            
         })
         setIsDirty(true)
     }
@@ -99,8 +99,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 [field]: value,
                 total: _total,
             },
-            intake_population: {...data.intake_population},
-            offtake_population: {...data.offtake_population}            
+            intake_populations: [...data.intake_populations],
+            offtake_populations: [...data.offtake_populations]            
         })
         setIsDirty(true)
         setValidation({
@@ -123,8 +123,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                     [field]: value,
                     [_name_field]: _selected.name
                 },
-                intake_population: {...data.intake_population},
-                offtake_population: {...data.offtake_population}            
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]            
             })
             setIsDirty(true)
             setValidation({
@@ -189,8 +189,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         setData({
             ...initialData,
             annual_population: {...initialData.annual_population},
-            intake_population: {...initialData.intake_population},
-            offtake_population: {...initialData.offtake_population}
+            intake_populations: [...initialData.intake_populations],
+            offtake_populations: [...initialData.offtake_populations]
         })
         setValidation({})
     }, [initialData])
