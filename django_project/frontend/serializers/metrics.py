@@ -83,7 +83,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
             "taxon__common_name_varbatim").filter(taxon=obj)
         if property_list:
             owned_species = owned_species.filter(
-                property__name__in=property_list,
+                property__id__in=property_list,
             )
         owned_species = owned_species.annotate(
             total=Sum("annualpopulationperactivity__total")
@@ -105,7 +105,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
 
         if property_list:
             owned_species = owned_species.filter(
-                property__name__in=property_list
+                property__id__in=property_list
             )
 
         owned_species = owned_species.annotate(
@@ -152,7 +152,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             "taxon__common_name_varbatim").filter(taxon=obj)
         if property_list:
             owned_species = owned_species.filter(
-                property__name__in=property_list,
+                property__id__in=property_list,
             )
         owned_species = owned_species.annotate(
             total=Sum("annualpopulationperactivity__total")
@@ -172,7 +172,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
 
         q_filters = Q(taxon=obj)
         if property_list:
-            q_filters &= Q(property__name__in=property_list)
+            q_filters &= Q(property__id__in=property_list)
 
         owned_species = OwnedSpecies.objects.values(
             activity_type=F(

@@ -98,11 +98,13 @@ class PropertyFilter(django_filters.FilterSet):
         model = Property
         fields = ['property']
 
-    def filter_property(self, queryset: QuerySet, value: str) -> QuerySet:
+    def filter_property(self, queryset: QuerySet, name: str, value: str) \
+        -> QuerySet:
         """
         Custom filter method to filter properties by their IDs.
         params:
             queryset (QuerySet): The initial queryset of Property objects.
+            name (str): The name of the field to be filtered (property).
             value (str): A comma-separated list of property IDs.
         """
         properties_list = value.split(',')
