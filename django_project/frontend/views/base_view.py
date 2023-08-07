@@ -19,7 +19,7 @@ from datetime import datetime
 
 def get_user_notifications(request):
     """Method checks if there are new notifications
-    to send the user, these notifications are 
+    to send the user, these notifications are
     updated from stakeholder.tasks."""
     current_date = datetime.now().date()
     reminders = Reminders.objects.filter(
