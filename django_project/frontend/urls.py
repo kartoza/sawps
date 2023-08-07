@@ -26,6 +26,7 @@ from frontend.api_views.map import (
 )
 from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
+    PropertiesPerPopulationCategoryAPIView,
     SpeciesPopulationCountAPIView,
     SpeciesPopulationTotalAndDensityAPIView,
     TotalCountPerActivityAPIView,
@@ -224,6 +225,11 @@ urlpatterns = [
         'api/species-population-total-density/',
         SpeciesPopulationTotalAndDensityAPIView.as_view(),
         name='species_population_total_density'
+    ),
+    path(
+        'api/properties-per-population-category/',
+        PropertiesPerPopulationCategoryAPIView.as_view(),
+        name='properties_per_population_category'
     ),
     path(
         'add_totp_devices/',
