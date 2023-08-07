@@ -68,11 +68,10 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         }
     }
 
-    const updateMonthYearDetail = (month: number, year: number) => {
+    const updateYearDetail = (year: number) => {
         setData({
             ...data,
             year: year,
-            month: month,
             annual_population: {...data.annual_population},
             intake_population: {...data.intake_population},
             offtake_population: {...data.offtake_population}            
@@ -145,9 +144,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         }
         if (data.year === 0) {
             _error_validation = {..._error_validation, year: true}
-        }
-        if (data.month === 0) {
-            _error_validation = {..._error_validation, month: true}
         }
         if (data.annual_population.open_close_id === 0) {
             _error_validation = {
@@ -237,10 +233,10 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
                                         <LocalizationProvider dateAdapter={AdapterMoment}>
-                                            <DatePicker label={'Month and Year of Count'} views={['month', 'year']}
+                                            <DatePicker label={'Year of Count'} views={['year']}
                                                 slotProps={{ textField: { size: 'small', variant: 'standard', className: 'Calendar', required: true } }}
-                                                value={moment({'year': data.year, 'month': data.month - 1})}
-                                                onChange={(newValue: Moment) => updateMonthYearDetail(newValue.month() + 1, newValue.year())}
+                                                value={moment({'year': data.year})}
+                                                onChange={(newValue: Moment) => updateYearDetail(newValue.year())}
                                             />
                                             <FormHelperText>{' '}</FormHelperText>
                                         </LocalizationProvider>

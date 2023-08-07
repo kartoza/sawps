@@ -60,7 +60,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
-                                        <TextField id='scientific-name' label='Month and Year of Count' defaultValue={`${moment({month: data.month - 1, year: data.year}).format('MMMM YYYY')}`}
+                                        <TextField id='scientific-name' label='Year of Count' defaultValue={`${moment({year: data.year}).format('YYYY')}`}
                                             variant='standard' disabled fullWidth />
                                     </Grid>
                                     <Grid item xs={6}>

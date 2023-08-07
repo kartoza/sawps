@@ -51,7 +51,6 @@ export interface UploadSpeciesDetailInterface {
     common_name?: string;
     year: number;
     property_id: number;
-    month: number;
     month_name?: string;
     annual_population: AnnualPopulationInterface;
     intake_population: AnnualPopulationPerActivityInterface;
@@ -89,7 +88,6 @@ export interface AnnualPopulationPerActivityValidation {
 export interface UploadSpeciesDetailValidation {
     taxon_id?: boolean;
     year?: boolean;
-    month?: boolean;
     annual_population?: AnnualPopulationValidation;
     intake_population?: AnnualPopulationPerActivityValidation;
     offtake_population?: AnnualPopulationPerActivityValidation;
@@ -128,7 +126,6 @@ export const getDefaultUploadSpeciesDetail = (propertyId: number):UploadSpeciesD
         taxon_name: '',
         common_name: ' ',
         year: _currentDate.getFullYear(),
-        month: _currentDate.getMonth() + 1,
         property_id: propertyId,
         annual_population: getDefaultAnnualPopulation(),
         intake_population: getDefaultAnnualPopulationPerActivity(),
