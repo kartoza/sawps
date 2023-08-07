@@ -11,7 +11,7 @@ from stakeholder.models import (
     Reminders
 )
 from django.contrib import messages
-from stakeholder.tasks import send_reminder_email
+from stakeholder.tasks import send_reminder_emails
 from django.utils import timezone
 from datetime import datetime
 from frontend.utils.organisation import (
