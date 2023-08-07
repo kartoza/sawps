@@ -18,9 +18,9 @@ from datetime import datetime
 
 
 def get_user_notifications(request):
-    """method checks if they're new notifications
+    """Method checks if there are new notifications
     to send the user, these notifications are 
-    updated from stakeholder.tasks"""
+    updated from stakeholder.tasks."""
     current_date = datetime.now().date()
     reminders = Reminders.objects.filter(
         user=request.user,
@@ -40,7 +40,7 @@ def get_user_notifications(request):
                     extra_tags='notification'
                 )
                 notifications.append(reminder.title)
-        if (len(notifications) > 0):
+        if len(notifications) > 0:
             user_profile.received_notif = True
             user_profile.save()
         return JsonResponse(
@@ -56,6 +56,7 @@ def get_user_notifications(request):
                 'user_notifications': []
             }
         )
+
 
 
 class RegisteredOrganisationBaseView(TemplateView):
