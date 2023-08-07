@@ -75,7 +75,40 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
             100
         )
 
+    def test_species_population_count_filter_by_name(self):
+        data = {'species': 'Lion'}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['species_name'], 'Lion')
+
+    def test_species_population_count_filter_by_property(self):
+        id = self.owned_species[0].property_id
+        data = {'property':id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]['annualpopulation_count'][0].get('year_total'),
+            100
+        )
+
+    def test_species_population_count_filter_by_year(self):
+        year = self.owned_species[1].annualpopulation_set.first().year
+        data = {'start_year': year, "end_year":year}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]['annualpopulation_count'][0].get('year'),
+            year
+        )
+
+
 class ActivityPercentageTestCase(BaseTestCase):
+    """
+    Test the activity percentage API endpoint.
+    """
     def setUp(self):
         super().setUp()
         self.url = reverse("activity_percentage")
@@ -88,6 +121,15 @@ class ActivityPercentageTestCase(BaseTestCase):
         self.assertEqual(
             list(response.data['data'][0]['activities'][0].values())[0], 20.0
         )
+
+    def test_activity_percentage_filter_by_year(self):
+        year = self.owned_species[1].annualpopulationperactivity_set.first().year
+        data = {'start_year': year, "end_year":year}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data.get('data')[0].get('total'), 500)
 
 
 class TotalCountPerActivityTestCase(BaseTestCase):
@@ -134,3 +176,11 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['>200'], 1)
+
+    def test_properties_population_category_filter_by_property(self):
+        id = self.owned_species[0].property_id
+        data = {'property':id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['1-10'], 0)
