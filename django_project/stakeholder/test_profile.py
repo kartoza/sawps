@@ -12,14 +12,16 @@ from stakeholder.factories import (
 )
 
 
-class TestProfile(TestCase):
-    """Tests CURD Profile."""
+class TestProfileView(TestCase):
+    """Tests CURD on Profile Model
+    and test update profile view."""
 
     def setUp(self):
-        """
-        Sets up before each test
-        """
-        pass
+        self.client = Client()
+        # Create a test user
+        self.test_user = get_user_model().objects.create_user(
+            username='testuser', password='testpassword'
+        )
 
     def test_profile_create(self):
         """
@@ -66,7 +68,22 @@ class TestProfile(TestCase):
 
         self.assertTrue(profile.pk is None)
 
-    def test_profile_update_request(self):
+    def test_post_to_view(self):
+        # Log in the test user
+        self.client.login(username='testuser', password='testpassword')
+
+        url = reverse('profile', kwargs={'slug': 'testuser'})
+
+        # Send a POST request to the view
+        response = self.client.post(url)
+
+        # Assert that the response status code is 302 (Redirect)
+        self.assertEqual(response.status_code, 302)
+
+        # Assert that the response redirects to 2fa setup for the user
+        self.assertEqual(response.url, '/accounts/two-factor/two_factor/setup')
+
+    def test_post_with_update(self):
         """
         Test update profile from the form page
         """
@@ -128,7 +145,7 @@ class TestProfile(TestCase):
         client.force_login(user)
         response = client.get(url, follow=True)
 
-        # Check if the response is successful (status code 200)
+        # Check if the response is successful
         self.assertEqual(response.status_code, 200)
         context = response.context
 
