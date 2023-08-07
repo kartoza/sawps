@@ -6,7 +6,8 @@ from django.core import mail
 from django.contrib.auth.models import User
 from stakeholder.tasks import (
     send_reminder_emails,
-    send_reminder_email
+    send_reminder_email,
+    update_user_profile
 )
 from stakeholder.models import (
     OrganisationUser,
@@ -32,6 +33,9 @@ class SendReminderEmailsTestCase(TestCase):
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
+            user=self.user
+        )
+        self.user_profile = UserProfile.objects.create(
             user=self.user
         )
 
@@ -63,3 +67,11 @@ class SendReminderEmailsTestCase(TestCase):
         email = mail.outbox[0]
         self.assertEqual(email.subject, f"Reminder: {self.reminder.title}")
         self.assertEqual(email.to, [self.user.email])
+
+
+    def test_update_user_profile(self):
+        # Call the task to send a single reminder email
+        update_user_profile(self.user)
+
+        # when email is sent this is updated to false
+        self.assertEqual(False, self.user_profile.received_notif)
