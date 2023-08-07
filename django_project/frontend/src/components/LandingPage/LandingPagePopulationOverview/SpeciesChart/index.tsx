@@ -1,4 +1,6 @@
-import React, {FC} from 'react';
+import React, {FC, useState, useEffect} from 'react';
+import axios from 'axios';
+import Skeleton from '@mui/material/Skeleton';
 import './styles.scss'
 import {
     Chart as ChartJS,
@@ -9,6 +11,7 @@ import {
     Legend,
     Tooltip,
     Filler,
+    LegendItem,
 } from 'chart.js';
 
 import {Line} from 'react-chartjs-2'
@@ -24,6 +27,7 @@ ChartJS.register(
 );
 
 interface ISpeciesChartProps{
+    species_id: number,
     species_name?:string,
     areaFillColor?:string,
     areaLineColor?:string,
@@ -31,60 +35,110 @@ interface ISpeciesChartProps{
     index?:number
 }
 
+// National trend structure
+interface NationalTrendInterface {
+    year: number;
+    fit: number;
+    'se.fit': number;
+    lower_ci: number;
+    upper_ci: number;
+}
+
+const SPECIES_NATIONAL_TREND_URL = '/api/species/{species_id}/trend/national/'
+
 const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
-    const data={
-        labels:['January', 'March', 'May','July','September', 'December'],
-        datasets:[{
-            label:props.species_name,
-            data:[65, 75, 78, 73, 78, 75],
-            borderColor:props.lineColor,
-            fill:false,
-        }]
-    }
+    const [chartData, setChartData] = useState(null)
 
-    const shadingArea = {
-        id:"shadingArea",
-        beforeDatasetsDraw(chart:any,args:any,pluginOptions:object){
-            const {ctx,chartArea, scales} = chart;
-            const y:{height:number,max:number} = scales.y;
-            const tickHeight:number = y.height / y.max;
-            let numberOfDataPoints:number = chart.data.labels.length;
-            ctx.save()
-            ctx.beginPath();
-            ctx.moveTo(chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y+(tickHeight*30));
-            for(let i=1; i<numberOfDataPoints;i++){
-                ctx.lineTo(chart.getDatasetMeta(0).data[i].x, chart.getDatasetMeta(0).data[i].y+(tickHeight*30));
-            };
-
-            for(let i=numberOfDataPoints-1;0<i;i--){
-                ctx.lineTo(chart.getDatasetMeta(0).data[i].x, chart.getDatasetMeta(0).data[i].y-(tickHeight*30));
+    const fetchChartData = () => {
+        axios.get(SPECIES_NATIONAL_TREND_URL.replace('{species_id}', props.species_id.toString())).then((response) => {
+            if (response) {
+                let _data = response.data as NationalTrendInterface[]
+                setChartData({
+                    labels: _data.map((a) => {
+                        if (a.year % 2 === 0) return a.year
+                        return ""
+                    }),
+                    datasets:[
+                        {
+                            label: props.species_name,
+                            data: _data,
+                            borderColor: props.lineColor,
+                            fill: false,
+                            parsing: {
+                                xAxisKey: 'year',
+                                yAxisKey: 'fit'
+                            },
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'upper_ci',
+                            data: _data,
+                            fill: 1,
+                            parsing: {
+                                xAxisKey: 'year',
+                                yAxisKey: 'upper_ci'
+                            },
+                            backgroundColor: props.areaFillColor,
+                            showLine: false,
+                            pointRadius: 0,
+                        },
+                        {
+                            label: 'lower_ci',
+                            data: _data,
+                            fill: 1,
+                            parsing: {
+                                xAxisKey: 'year',
+                                yAxisKey: 'lower_ci'
+                            },
+                            backgroundColor: props.areaFillColor,
+                            showLine: false,
+                            pointRadius: 0,
+                        },
+                    ]
+                })
             }
-            ctx.lineTo(chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y-(tickHeight*30));
-            ctx.closePath();
-            ctx.fillStyle = props.areaFillColor;
-            ctx.fill();
-            ctx.restore();
-        
-        }
+        }).catch((error) => {
+            console.log(error)
+        })
     }
+
+    useEffect(() => {
+        fetchChartData()
+    }, [])
 
     const options:object={
         responsive: true,
         maintainAspectRatio: true,
-        aspectRatio:1.5,
-        scales:{
-            y:{grace:50},
+        aspectRatio: 1.5,
+        scales: {
+            y: {grace:50},
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    filter: function(item: LegendItem, chart: ChartJS) {
+                        // Logic to remove a particular legend item goes here
+                        return !item.text.includes('_ci');
+                    }
+                }
+            },
+            tooltips: {
+                enabled: false
+           }
         }
     }
     
     return(
         <>
             <div className="species-chart-container" data-testid="species-chart">
-                <Line
-                    data={data}
-                    options={options}
-                    plugins={[shadingArea]}
-                ></Line>
+                {chartData ? 
+                    <Line
+                        data={chartData}
+                        options={options}
+                        plugins={[]}
+                    ></Line> :
+                    <Skeleton variant='rectangular' className='species-chart-skeleton' />
+                }
             </div>
         </>
     )

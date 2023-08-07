@@ -1,24 +1,28 @@
 """Admin page for Context Layer models."""
 from django.contrib import admin, messages
 from django.urls import path
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from django.utils.html import format_html
 from django.core.management import call_command
 from celery.result import AsyncResult
 from core.celery import app
+from core.settings.utils import absolute_path
 from frontend.models import (
     ContextLayer,
     ContextLayerTilingTask,
     BoundaryFile,
     BoundarySearchRequest,
     ContextLayerLegend,
-    DraftSpeciesUpload
+    DraftSpeciesUpload,
+    StatisticalModel,
+    StatisticalModelOutput
 )
 from frontend.tasks import (
     generate_vector_tiles_task,
-    clear_older_vector_tiles
+    clear_older_vector_tiles,
+    start_plumber_process
 )
 
 
@@ -186,9 +190,50 @@ class DraftSpeciesUploadAdmin(admin.ModelAdmin):
     list_display = ('name', 'property', 'upload_by', 'taxon', 'year')
 
 
+@admin.action(description='Restart plumber process')
+def restart_plumber_process(modeladmin, request, queryset):
+    start_plumber_process.apply_async(queue='plumber')
+    modeladmin.message_user(
+        request,
+        'Plumber process will be started in background!',
+        messages.SUCCESS
+    )
+
+
+class StatisticalModelOutputInline(admin.TabularInline):
+    model = StatisticalModelOutput
+    extra = 1
+
+
+class StatisticalModelAdmin(admin.ModelAdmin):
+    change_form_template = "admin/statistical_model_change_form.html"
+    list_display = ('taxon', 'name')
+    search_fields = ['taxon', 'name']
+    actions = [restart_plumber_process]
+    inlines = [StatisticalModelOutputInline]
+
+    def response_change(self, request, obj):
+        print('hereeeee')
+        print(request.POST['_download-data-template'])
+        if '_download-data-template' in request.POST:
+            template_file = absolute_path(
+                'frontend', 'utils', 'data_sample.csv'
+            )
+            with open(template_file, 'r') as f:
+                response = HttpResponse(
+                    f.read(), content_type='text/csv'
+                )
+            response['Content-Disposition'] = (
+                'attachment; filename="data_template.csv"'
+            )
+            return response
+        return super().response_change(request, obj)
+
+
 admin.site.register(ContextLayer, ContextLayerAdmin)
 admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
 admin.site.register(BoundaryFile, BoundaryFileAdmin)
 admin.site.register(BoundarySearchRequest, BoundarySearchRequestAdmin)
 admin.site.register(DraftSpeciesUpload, DraftSpeciesUploadAdmin)
+admin.site.register(StatisticalModel, StatisticalModelAdmin)

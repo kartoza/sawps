@@ -167,7 +167,7 @@ class SpeciesPopulationTotalAndDensitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Taxon
-        fields = ["density",]
+        fields = ["density", ]
 
     def get_density(self, obj):
         property = self.context["request"].GET.get("property")
