@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from frontend.models.upload import DraftSpeciesUpload
 from occurrence.models import SamplingSizeUnit, SurveyMethod
 from occurrence.serializers import (
-    SamplingSizeUnitSerializer,
+    SamplingSizeUnitMetadataSerializer,
     SurveyMethodSerializer
 )
 from population_data.models import (
@@ -59,7 +59,7 @@ class PopulationMetadataList(APIView):
                 "survey_methods": (
                     SurveyMethodSerializer(survey_methods, many=True).data
                 ),
-                "sampling_size_units": (SamplingSizeUnitSerializer(
+                "sampling_size_units": (SamplingSizeUnitMetadataSerializer(
                     sampling_size_units, many=True).data
                                         ),
                 "count_methods": CountMethodSerializer(
