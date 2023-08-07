@@ -1,14 +1,17 @@
 """API Views related to metrics.
 """
+from typing import List
+
 from django.db.models.query import QuerySet
+from django.http import HttpRequest
 from frontend.filters.metrics import (
+    ActivityBaseMetricsFilter,
     BaseMetricsFilter,
     PropertyFilter,
-    SpeciesPopulationCountFilter,
 )
 from frontend.serializers.metrics import (
     ActivityMatrixSerializer,
-    SpeciesPopulationCountSerializer,
+    SpeciesPopuationCountPerYearSerializer,
     SpeciesPopulationTotalAndDensitySerializer,
     TotalCountPerActivitySerializer,
 )
@@ -21,24 +24,36 @@ from rest_framework.views import APIView
 from species.models import Taxon
 
 
-class SpeciesPopulationCountAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = SpeciesPopulationCountSerializer
+class SpeciesPopuationCountPerYearAPIView(APIView):
+    """
+    An API view to retrieve species population count per year.
+    """
 
-    def get_queryset(self, property_id):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SpeciesPopuationCountPerYearSerializer
+
+    def get_queryset(self) -> List[Taxon]:
+        """
+        Returns a filtered queryset of Taxon objects representing
+        species within the specified organization.
+        """
         organisation_id = self.request.session.get('current_organisation_id')
         queryset = Taxon.objects.filter(
             ownedspecies__property__organisation_id=organisation_id,
-            taxon_rank__name='Species', ownedspecies__property_id=property_id
+            taxon_rank__name='Species'
         ).distinct()
-        filtered_queryset = SpeciesPopulationCountFilter(
+        filtered_queryset = BaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
         return filtered_queryset
 
-    def get(self, request, property_id, *args, **kwargs):
-        queryset = self.get_queryset(property_id=property_id)
-        serializer = self.serializer_class(
+    def get(self, request: HttpRequest, *args, **kwargs) -> Response:
+        """
+        Handles HTTP GET requests and returns a serialized JSON response.
+        Params: The HTTP request object containing the user's request data.
+        """
+        queryset = self.get_queryset()
+        serializer = SpeciesPopuationCountPerYearSerializer(
             queryset, many=True, context={'request': request}
         )
         return Response(serializer.data)
@@ -54,7 +69,7 @@ class ActivityPercentageAPIView(APIView):
             ownedspecies__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
-        filtered_queryset = BaseMetricsFilter(
+        filtered_queryset = ActivityBaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
         return filtered_queryset
@@ -81,7 +96,7 @@ class TotalCountPerActivityAPIView(APIView):
             ownedspecies__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
-        filtered_queryset = BaseMetricsFilter(
+        filtered_queryset = ActivityBaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
         return filtered_queryset
