@@ -69,6 +69,7 @@ jobs:
           make npm-install
           make build-react
           make dev-runserver
+          make sleep
       - name: Test django endpoint
         run: |
           curl http://localhost:61100/
