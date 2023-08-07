@@ -58,7 +58,6 @@ def get_user_notifications(request):
         )
 
 
-
 class RegisteredOrganisationBaseView(TemplateView):
     """
     Base view to provide organisation context for logged-in users.
