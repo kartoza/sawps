@@ -19,6 +19,7 @@ services:
     volumes:
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
+      - ./volumes/plumber_data:/home/web/plumber_data
 
   worker:
     image: kartoza/sanbi_dev
@@ -40,6 +41,7 @@ services:
       - ../django_project:/home/web/django_project
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
+      - ./volumes/plumber_data:/home/web/plumber_data
     ports:
       # for django test server
       - "${DEV_SERVER:-61100}:8080"
@@ -52,6 +54,19 @@ services:
     volumes:
       - ./tegola:/opt/tegola_config
       - ./volumes/layer_tiles:/opt/layer_tiles
+
+  plumber:
+    build:
+      context: ../
+      dockerfile: deployment/plumber/Dockerfile
+      target: prod
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/plumber_data:/home/web/plumber_data
+      - ./volumes/media:/home/web/media
+    links:
+      - db
+      - redis
 
   nginx:
     volumes:

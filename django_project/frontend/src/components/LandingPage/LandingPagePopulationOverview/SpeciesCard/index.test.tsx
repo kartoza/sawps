@@ -5,7 +5,7 @@ import SpeciesCard from '.';
 
 describe('species card testing suite', ()=>{
     it('renders species card component',()=>{
-        render(<SpeciesCard pic='http://images.google.com' population='300' growth='200' loss='100' chartColors={{"line":"fff","area":"fff"}}/>)
+        render(<SpeciesCard species_id={1} pic='http://images.google.com' population='300' growth='200' loss='100' chartColors={{"line":"fff","area":"fff"}}/>)
         const speciesCard = screen.getByTestId('species-card-container')
         expect(speciesCard).toBeInTheDocument()
     })

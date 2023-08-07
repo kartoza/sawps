@@ -1,34 +1,56 @@
-import React, { FC ,useState} from 'react';
+import React, { FC ,useState, useEffect} from 'react';
 import './styles.scss'
 import SpeciesCard from '../SpeciesCard';
+import axios from 'axios';
+import Grid from '@mui/material/Grid';
+import { alpha } from '@mui/material';
 
 interface IOverviewCardsHolder{}
 
+interface FrontPageSpecies {
+    id: number;
+    species_name: string;
+    icon?: string;
+    total_population: number;
+    population_growth: number;
+    population_loss: number;
+    colour: string;
+}
+
+const FETCH_FRONT_PAGE_SPECIES_LIST = '/api/species/front-page/list/'
+
+
 const OverviewCardsHolder:FC<IOverviewCardsHolder> = ()=>{
-    const [species, setSpecies] = useState([
-        {'species_name':'Panthera leo','image':'/static/images/species/leo.png','total_population':'25000','population_growth':'1000','population_loss':'1500'},
-        {'species_name':'Panthera pardus','image':'/static/images/species/pardus.png','total_population':'15000','population_growth':'2000','population_loss':'900'},
-        {'species_name':'Ceratotherium simum','image':'/static/images/species/simum.png','total_population':'50000','population_growth':'200','population_loss':'900'},
-        {'species_name':'Diceros bicornis','image':'/static/images/species/bicornis.png','total_population':'20000','population_growth':'100','population_loss':'200'},
-        {'species_name':'Loxodonta africana','image':'/static/images/species/africana.png','total_population':'550000','population_growth':'100','population_loss':'200'},
-        {'species_name':'Acinonyx jubatus','image':'/static/images/species/jubatus.png','total_population':'10000','population_growth':'100','population_loss':'200'},
+    const [species, setSpecies] = useState<FrontPageSpecies[]>([])
 
-    ])
+    const fetchSpeciesList = () => {
+        axios.get(FETCH_FRONT_PAGE_SPECIES_LIST).then((response) => {
+            if (response) {
+                setSpecies(response.data as FrontPageSpecies[])
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
 
-    const [chartsColors, setChartsColors] = useState([
-        {'line':'#86BC8B', 'area':'rgb(112,178,118,.5)'},{'line':'#FAA755','area':'rgb(173,122,75,.5)'},
-        {'line':'#9F89BF', 'area':'rgb(111,98,132,.5)'},{'line':'#000', 'area':'rgb(70,70,71,.5)'},
-        {'line':'#FFF', 'area':'rgb(169,169,169,.5)'},{'line':'#FF5252', 'area':'rgb(162,64,64,.5)'}
-    ])
+    useEffect(() => {
+        fetchSpeciesList()
+    }, [])
 
     return(
-        <div className='landing-page-overview-cards-holder' data-testid='landing-page-overview-cards-holder'> 
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}  data-testid='landing-page-overview-cards-holder' className='landing-page-overview-cards-holder-flex'>        
             {species.map((species,index)=>{
-            let chartColors = chartsColors[index]
-            return <SpeciesCard key={index} species_name={species.species_name} pic={species.image} population={species.total_population}
-            growth={species.population_growth} loss={species.population_loss} chartColors={chartColors} index={index}
-            />})}
-        </div>
+                let chartColors = {
+                    'line': species.colour,
+                    'area': alpha(species.colour, 0.3)
+                }
+                return <Grid item key={index}>
+                    <SpeciesCard key={index} species_id={species.id} species_name={species.species_name} pic={species.icon} population={species.total_population.toString()}
+                        growth={species.population_growth.toString()} loss={species.population_loss.toString()} chartColors={chartColors} index={index}
+                    />
+                </Grid>
+            })}
+        </Grid>
     )
 }
 
