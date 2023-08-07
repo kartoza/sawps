@@ -87,7 +87,10 @@ jobs:
           export DJANGO_SETTINGS_MODULE=core.settings.dev && coverage run manage.py test && coverage xml
           EOF
           docker cp sanbi_dev_1:/home/web/django_project/coverage.xml ../coverage.xml
-      - name: Install dependencies
+      - name: Update dependencies
+        working-directory: ./django_project/frontend
+        run: npm install
+      - name: Install exact dependencies
         working-directory: ./django_project/frontend
         run: npm ci
       - name: Install Playwright Browsers
