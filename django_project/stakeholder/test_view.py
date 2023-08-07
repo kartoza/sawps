@@ -668,7 +668,7 @@ class GetReminderOrNotificationTest(TestCase):
         url = reverse('reminders', kwargs={'slug': self.user.username})
         data = {
             'action': 'get_reminder',
-            'ids': [self.reminder_1.id],
+            'ids': [str(self.reminder_1.id)],
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
         request = self.factory.post(url, data)
@@ -683,7 +683,7 @@ class GetReminderOrNotificationTest(TestCase):
         url = reverse('reminders', kwargs={'slug': self.user.username})
         data = {
             'action': 'get_reminder',
-            'ids': [999],
+            'ids': ['999'],
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
         request = self.factory.post(url, data)
