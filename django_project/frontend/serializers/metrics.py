@@ -1,10 +1,15 @@
+from typing import List
+
 from django.db.models import F, Q, Sum
 from population_data.models import AnnualPopulation
 from rest_framework import serializers
 from species.models import OwnedSpecies, Taxon
 
 
-class SpeciesPopulationCountSerializer(serializers.ModelSerializer):
+class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for serializing population count per year for a species.
+    """
     species_name = serializers.SerializerMethodField()
     species_colour = serializers.SerializerMethodField()
     annualpopulation_count = serializers.SerializerMethodField()
@@ -17,20 +22,42 @@ class SpeciesPopulationCountSerializer(serializers.ModelSerializer):
             "annualpopulation_count",
         ]
 
-    def get_species_name(self, obj):
+    def get_species_name(self, obj: Taxon) -> str:
+        """Get the common name of the species.
+        Params:
+            obj (Taxon): The Taxon instance representing the species.
+        """
         return obj.common_name_varbatim
 
-    def get_species_colour(self, obj):
+    def get_species_colour(self, obj: Taxon) -> str:
+        """Get the color of the species.
+        Params:
+            obj (Taxon): The Taxon instance representing the species.
+        """
         return obj.colour
 
-    def get_annualpopulation_count(self, obj):
+    def get_annualpopulation_count(self, obj: Taxon) -> List[dict]:
+        """Get the population count per year for the species.
+        Params:
+            obj (Taxon): The Taxon instance representing the species.
+        """
+        start_year = self.context["request"].GET.get("start_year")
+        end_year = self.context["request"].GET.get("end_year")
+        property = self.context['request'].GET.get('property')
         annual_populations = (
             AnnualPopulation.objects.filter(
-                owned_species__taxon=obj,
+                Q(
+                    year__range=(start_year, end_year)
+                ) if start_year and end_year else Q(),
+                Q(
+                    owned_species__property__id__in=property.split(",")
+                ) if property else Q(),
+                owned_species__taxon=obj
             )
-            .values("population_status__name")
-            .annotate(population_status_total=Sum("total"))
-            .values("population_status__name", "population_status_total")
+            .values("year")
+            .annotate(year_total=Sum("total"))
+            .values("year", "year_total")
+            .order_by("-year")[:10]
         )
         return list(annual_populations)
 
@@ -56,7 +83,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
             "taxon__common_name_varbatim").filter(taxon=obj)
         if property_list:
             owned_species = owned_species.filter(
-                property__name__in=property_list,
+                property__id__in=property_list,
             )
         owned_species = owned_species.annotate(
             total=Sum("annualpopulationperactivity__total")
@@ -78,7 +105,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
 
         if property_list:
             owned_species = owned_species.filter(
-                property__name__in=property_list
+                property__id__in=property_list
             )
 
         owned_species = owned_species.annotate(
@@ -125,7 +152,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             "taxon__common_name_varbatim").filter(taxon=obj)
         if property_list:
             owned_species = owned_species.filter(
-                property__name__in=property_list,
+                property__id__in=property_list,
             )
         owned_species = owned_species.annotate(
             total=Sum("annualpopulationperactivity__total")
@@ -145,7 +172,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
 
         q_filters = Q(taxon=obj)
         if property_list:
-            q_filters &= Q(property__name__in=property_list)
+            q_filters &= Q(property__id__in=property_list)
 
         owned_species = OwnedSpecies.objects.values(
             activity_type=F(

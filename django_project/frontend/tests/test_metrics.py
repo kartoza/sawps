@@ -1,20 +1,24 @@
 import base64
 
 from django.contrib.auth.models import User
-from django.db.models import Sum
 from django.test import Client, TestCase
 from django.urls import reverse
 from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
-from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
 from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
-from species.models import OwnedSpecies, TaxonRank
+from species.models import TaxonRank
 from stakeholder.factories import organisationFactory, organisationUserFactory
 
 
 class BaseTestCase(TestCase):
     def setUp(self):
+        """
+        Set up test data and environment for the test cases.
+
+        This method creates necessary test objects like TaxonRank, Taxon, User, Organisation,
+        Property, and OwnedSpecies. It also sets up the client and session for testing.
+        """
         taxon_rank = TaxonRank.objects.filter(name="Species").first()
         if not taxon_rank:
             taxon_rank = TaxonRankFactory.create(name="Species")
@@ -53,35 +57,58 @@ class BaseTestCase(TestCase):
         session.save()
 
 
-class SpeciesPopuationCountTestCase(BaseTestCase):
+class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
+    """
+    Test the species population count API endpoint.
+    """
     def setUp(self):
         super().setUp()
-        self.url = reverse(
-            "species_population_count",
-            kwargs={"property_id": self.property.id},
-        )
+        self.url = reverse("species_population_count")
 
     def test_species_population_count(self):
-        owned_species = OwnedSpeciesFactory(
-            taxon__common_name_varbatim="Lion"
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0].get('species_name'), 'Lion')
+        self.assertEqual(
+            response.data[0]['annualpopulation_count'][0].get('year_total'),
+            100
         )
 
+    def test_species_population_count_filter_by_name(self):
+        data = {'species': 'Lion'}
         url = self.url
-        data = {"species": "Lion"}
         response = self.client.get(url, data, **self.auth_headers)
-        annual_populations = (
-            AnnualPopulation.objects.filter(owned_species__taxon=owned_species.taxon)
-            .values('population_status')
-            .annotate(population_status_total=Sum("total"))
-            .values("population_status__name", "population_status_total")
-        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['species_name'], 'Lion')
+
+    def test_species_population_count_filter_by_property(self):
+        id = self.owned_species[0].property_id
+        data = {'property':id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]["annualpopulation_count"][0].get("population_status__name"),
-            annual_populations[0].get("population_status__name"),
+            response.data[0]['annualpopulation_count'][0].get('year_total'),
+            100
         )
 
+    def test_species_population_count_filter_by_year(self):
+        year = self.owned_species[1].annualpopulation_set.first().year
+        data = {'start_year': year, "end_year":year}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]['annualpopulation_count'][0].get('year'),
+            year
+        )
+
+
 class ActivityPercentageTestCase(BaseTestCase):
+    """
+    Test the activity percentage API endpoint.
+    """
     def setUp(self):
         super().setUp()
         self.url = reverse("activity_percentage")
@@ -94,6 +121,15 @@ class ActivityPercentageTestCase(BaseTestCase):
         self.assertEqual(
             list(response.data['data'][0]['activities'][0].values())[0], 20.0
         )
+
+    def test_activity_percentage_filter_by_year(self):
+        year = self.owned_species[1].annualpopulationperactivity_set.first().year
+        data = {'start_year': year, "end_year":year}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data.get('data')[0].get('total'), 500)
 
 
 class TotalCountPerActivityTestCase(BaseTestCase):
@@ -140,3 +176,11 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['>200'], 1)
+
+    def test_properties_population_category_filter_by_property(self):
+        id = self.owned_species[0].property_id
+        data = {'property':id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['1-10'], 0)
