@@ -10,7 +10,7 @@ import uuid
 class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("frontend", "0011_merge_20230710_0834"),
+        ("frontend", "0012_statisticalmodel_statisticalmodeloutput"),
     ]
 
     operations = [
