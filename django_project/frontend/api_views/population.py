@@ -42,6 +42,7 @@ class PopulationMetadataList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
+        # filter only taxon with rank species
         taxons = Taxon.objects.filter(
             taxon_rank__name__iexact="species"
         ).order_by('scientific_name')
