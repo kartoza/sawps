@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 """Species models.
 """
 from django.contrib.auth.models import User
@@ -37,7 +34,7 @@ class Taxon(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        )
+    )
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True)
     show_on_front_page = models.BooleanField(default=False)

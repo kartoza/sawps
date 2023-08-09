@@ -1,20 +1,18 @@
 import csv
 import logging
+
+from activity.models import ActivityType
 from celery import shared_task
 from frontend.models import UploadSpeciesCSV
-from property.models import (
-    Property
-)
-from species.models import Taxon, OwnedSpecies, TaxonRank
-from population_data.models import (
-    AnnualPopulation, 
-    OpenCloseSystem,
-    CountMethod,
-    AnnualPopulationPerActivity
-)
 from occurrence.models import SurveyMethod
-from activity.models import ActivityType
-
+from population_data.models import (
+    AnnualPopulation,
+    AnnualPopulationPerActivity,
+    CountMethod,
+    OpenCloseSystem,
+)
+from property.models import Property
+from species.models import OwnedSpecies, Taxon
 
 logger = logging.getLogger('sawps')
 
@@ -56,11 +54,10 @@ def upload_species_data(upload_session_id):
 
     encoding = 'utf-8-sig'
     row_num = 1
-    
+
     with open(upload_session.process_file.path, encoding=encoding
               ) as csv_file:
         reader = csv.DictReader(csv_file)
-        headers = reader.fieldnames
         data = list(reader)
 
         for row in data:
@@ -107,21 +104,28 @@ def upload_species_data(upload_session_id):
             )
 
             # Save AnnualPopulation
-            annual_pop = AnnualPopulation.objects.get_or_create(
+            AnnualPopulation.objects.get_or_create(
                 year=int(string_to_number(row['Count_Year'])),
                 owned_species=owned_species,
                 total=int(string_to_number(row['COUNT_TOTAL'])),
                 adult_male=int(string_to_number(row['Count_adult_males'])),
                 adult_female=int(string_to_number(row['Count_adult_females'])),
-                juvenile_male=int(string_to_number(row['Count_Juvenile_males'])),
-                juvenile_female=int(string_to_number(row['Count_Juvenile_females'])),
-                sub_adult_total=int(string_to_number(row['COUNT_subadult_TOTAL'])),
-                sub_adult_male=int(string_to_number(row['Count_subadult_male'])),
-                sub_adult_female=int(string_to_number(row['Count_subadult_female'])),
-                juvenile_total=int(string_to_number(row['COUNT_Juvenile_TOTAL'])),
+                juvenile_male=int(string_to_number(
+                    row['Count_Juvenile_males'])),
+                juvenile_female=int(string_to_number(
+                    row['Count_Juvenile_females'])),
+                sub_adult_total=int(string_to_number(
+                    row['COUNT_subadult_TOTAL'])),
+                sub_adult_male=int(string_to_number(
+                    row['Count_subadult_male'])),
+                sub_adult_female=int(string_to_number(
+                    row['Count_subadult_female'])),
+                juvenile_total=int(string_to_number(
+                    row['COUNT_Juvenile_TOTAL'])),
                 group=int(string_to_number(row['No_groups'])),
                 open_close_system=open_sys,
-                area_covered=float(string_to_number(row['Area_available__ha'])),
+                area_covered=float(string_to_number(
+                    row['Area_available__ha'])),
                 count_method=count_meth,
                 survey_method=survey,
                 presence=string_to_boolean(row["PresenceOnly"]),
@@ -130,23 +134,28 @@ def upload_species_data(upload_session_id):
             )
 
             # Save AnnualPopulationPerActivity
-            annual_per_act = AnnualPopulationPerActivity.objects.get_or_create(
-                activity_type=ActivityType.objects.get(name="Planned translocation"),
+            AnnualPopulationPerActivity.objects.get_or_create(
+                activity_type=ActivityType.objects.get(
+                    name="Planned translocation"),
                 year=int(string_to_number(row['Count_Year'])),
                 owned_species=owned_species,
                 total=int(string_to_number(row['COUNT_TOTAL'])),
                 note=row["Notes"],
-                adult_male=int(string_to_number(row["(Re)Introduction_adult_males"])),
-                adult_female=int(string_to_number(row["(Re)Introduction_adult_females"])),
-                juvenile_male=int(string_to_number(row["(Re)Introduction_male_juveniles"])),
-                juvenile_female=int(string_to_number(row["(Re)Introduction_female_juveniles"])),
+                adult_male=int(string_to_number(
+                    row["(Re)Introduction_adult_males"])),
+                adult_female=int(string_to_number(
+                    row["(Re)Introduction_adult_females"])),
+                juvenile_male=int(string_to_number(
+                    row["(Re)Introduction_male_juveniles"])),
+                juvenile_female=int(string_to_number(
+                    row["(Re)Introduction_female_juveniles"])),
                 reintroduction_source=row["(Re)Introduction_source"],
                 translocation_destination=row["Translocation_destination"],
                 founder_population=string_to_boolean(row["FounderPop?"]),
             )
 
             upload_session.processed = True
-            success_response = '{} row have been added to the database'.format(row_num)
+            success_response = f'{row_num} row have been added to the database'
             upload_session.success_notes = (
                 success_response
             )

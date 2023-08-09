@@ -1,16 +1,15 @@
-import csv
 import codecs
-from scripts.csv_headers import CSV_FILE_HEADERS
-from rest_framework.parsers import MultiPartParser
-from frontend.models import UploadSpeciesCSV
+import csv
 from datetime import datetime
-from django.http import JsonResponse
-from rest_framework import generics, status
+
+from frontend.models import UploadSpeciesCSV
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from scripts.csv_headers import CSV_FILE_HEADERS
 from species.tasks.upload_species import upload_species_data
-
 
 
 class SpeciesUploader(APIView):
@@ -19,13 +18,13 @@ class SpeciesUploader(APIView):
 
     def post(self, request, *args, **kwargs):
         species_file = request.FILES['file']
-        
+
         if not species_file:
             return Response(
-                    {"status": "file is not correct"},
-                    status.HTTP_424_FAILED_DEPENDENCY
-                )
-        
+                {"status": "file is not correct"},
+                status.HTTP_424_FAILED_DEPENDENCY
+            )
+
         upload_session = UploadSpeciesCSV.objects.create(
             process_file=species_file,
             uploader=self.request.user,
@@ -46,16 +45,17 @@ class SpeciesUploader(APIView):
                 upload_session.canceled = True
                 upload_session.save()
                 return Response(
-                    {"status": "Header row does not follow the correct format"},
+                    {"status":
+                     "Header row does not follow the correct format"
+                     },
                     status.HTTP_424_FAILED_DEPENDENCY
                 )
 
         task = upload_species_data.delay(
-                upload_session.id
+            upload_session.id
         )
 
         if task:
             return Response(status=200)
-        
-        return Response(status=404)
 
+        return Response(status=404)
