@@ -49,10 +49,10 @@ def send_reminder_email(*args):
     )
 
 
-
-
 @shared_task
-def send_reminder_emails():
+def send_reminder_emails(*args):
+    """check any reminders that need to be sent,
+    update reminder status and user notifications"""
     current_datetime = timezone.now()
     due_reminders = Reminders.objects.filter(
         status=Reminders.ACTIVE,
@@ -62,19 +62,23 @@ def send_reminder_emails():
 
     for reminder in due_reminders:
         if reminder.type == Reminders.PERSONAL:
-            send_reminder_email.delay(reminder.id)
+            send_reminder_email(reminder.id)
+            update_user_profile(reminder.user)
         else:
             org_users_list = OrganisationUser.objects.filter(
                 organisation=reminder.organisation
             )
             for org_user in org_users_list:
-                send_reminder_email.delay(reminder.id, org_user.user.email)
-                try:
-                    user_profile = UserProfile.objects.get(user=org_user.user)
-                    user_profile.received_notif = False
-                    user_profile.save()
-                except Exception:
-                    continue
+                send_reminder_email(reminder.id, org_user.user.email)
+                update_user_profile(org_user.user)
         reminder.status = Reminders.PASSED
         reminder.email_sent = True
         reminder.save()
+
+
+def update_user_profile(user):
+    user_profiles = UserProfile.objects.filter(user=user)
+    if user_profiles.exists():
+        user_profile = user_profiles.first()
+        user_profile.received_notif = False
+        user_profile.save()

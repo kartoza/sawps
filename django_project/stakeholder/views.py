@@ -11,7 +11,7 @@ from stakeholder.models import (
     Reminders
 )
 from django.contrib import messages
-from stakeholder.tasks import send_reminder_email
+from stakeholder.tasks import send_reminder_emails
 from django.utils import timezone
 from datetime import datetime
 from frontend.utils.organisation import (
@@ -57,38 +57,39 @@ class ProfileView(DetailView):
         if 'slug' not in kwargs:
             raise Http404('Missing username')
 
-        profile = self.model.objects.get(username=kwargs['slug'])
-        if profile != self.request.user:
+        user = self.model.objects.get(username=kwargs['slug'])
+        if user != request.user:
             raise Http404('Mismatch user')
 
-        profile.first_name = self.request.POST.get('first-name', '')
-        profile.last_name = self.request.POST.get('last-name', '')
-        profile.email = self.request.POST.get('email', '')
+        first_name = request.POST.get('first-name', None)
+        last_name = request.POST.get('last-name', None)
+        email = request.POST.get('email', None)
+        profile_picture = request.FILES.get('profile-picture', None)
+        title = request.POST.get('title', None)
+        role = request.POST.get('role', None)
 
-        if not UserProfile.objects.filter(user=profile).exists():
+        if not UserProfile.objects.filter(user=user).exists():
             UserProfile.objects.create(
-                user=profile,
+                user=user,
             )
 
-        if self.request.FILES.get('profile-picture', None):
-            profile.user_profile.picture = self.request.FILES.get(
-                'profile-picture', None
-            )
+        if first_name is not None:
+            user.first_name = first_name
+        if last_name is not None:
+            user.last_name = last_name
+        if email is not None:
+            user.email = email
+        if profile_picture is not None:
+            user.user_profile.picture = profile_picture
+        if title is not None:
+            title = UserTitle.objects.get(id=title)
+            user.user_profile.title_id = title
+        if role is not None:
+            role = UserRoleType.objects.get(id=role)
+            user.user_profile.user_role_type_id = role
 
-        if self.request.POST.get('title', ''):
-            title = UserTitle.objects.get(
-                id=self.request.POST.get('title', '')
-            )
-            profile.user_profile.title_id = title
-
-        if self.request.POST.get('role', ''):
-            role = UserRoleType.objects.get(
-                id=self.request.POST.get('role', '')
-            )
-            profile.user_profile.user_role_type_id = role
-
-        profile.user_profile.save()
-        profile.save()
+        user.user_profile.save()
+        user.save()
 
         messages.success(
             request, 'Your changes have been saved.',
@@ -318,7 +319,7 @@ class RemindersView(RegisteredOrganisationBaseView):
                     timezone=timezone_value
                 )
                 # Schedule the Celery task to send the reminder email
-                task = send_reminder_email.apply_async(
+                task = send_reminder_emails.apply_async(
                     args=[reminder.id],
                     eta=adjusted_datetime
                 )
