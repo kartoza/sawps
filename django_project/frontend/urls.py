@@ -27,7 +27,7 @@ from frontend.api_views.map import (
 from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
     PropertiesPerPopulationCategoryAPIView,
-    SpeciesPopulationCountAPIView,
+    SpeciesPopuationCountPerYearAPIView,
     SpeciesPopulationTotalAndDensityAPIView,
     TotalCountPerActivityAPIView,
 )
@@ -45,20 +45,13 @@ from frontend.api_views.property import (
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
 )
+from frontend.api_views.statistical import SpeciesNationalTrend
 from frontend.api_views.upload import (
     BoundaryFileList,
     BoundaryFileRemove,
     BoundaryFileSearch,
     BoundaryFileSearchStatus,
     BoundaryFileUpload,
-)
-from frontend.api_views.statistical import (
-    SpeciesNationalTrend
-)
-from .views.totp_device import (
-    add_totp_device,
-    delete_totp_device,
-    view_totp_devices,
 )
 from frontend.views.base_view import get_user_notifications
 
@@ -69,6 +62,11 @@ from .views.home import HomeView
 from .views.map import MapView
 from .views.online_form import OnlineFormView
 from .views.switch_organisation import switch_organisation
+from .views.totp_device import (
+    add_totp_device,
+    delete_totp_device,
+    view_totp_devices
+)
 from .views.users import OrganisationUsersView
 
 urlpatterns = [
@@ -207,8 +205,8 @@ urlpatterns = [
     path('contact/', ContactUsView.as_view(), name='contact'),
     path('data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
-        'api/species-population-count/<int:property_id>/',
-        SpeciesPopulationCountAPIView.as_view(),
+        'api/species-population-count/',
+        SpeciesPopuationCountPerYearAPIView.as_view(),
         name='species_population_count'
     ),
     path(

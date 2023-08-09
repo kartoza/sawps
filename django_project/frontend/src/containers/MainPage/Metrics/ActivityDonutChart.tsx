@@ -4,8 +4,8 @@ import { Doughnut } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import "./index.scss";
 import Loading from "../../../components/Loading";
+import "./index.scss";
 
 
 Chart.register(CategoryScale);

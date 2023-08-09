@@ -1,6 +1,7 @@
 .overflow-auto-chart {
     overflow: auto;
     width: calc(100vw - 440px);
+    max-height: calc(100vh - 130px);
 }
 
 .main-chart {
