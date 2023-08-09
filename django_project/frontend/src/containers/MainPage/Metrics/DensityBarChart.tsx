@@ -24,7 +24,6 @@ const DensityBarChart = () => {
     const [loading, setLoading] = useState(false)
     const [densityData, setDesityData] = useState([])
     const labels = [];
-    const totalCounts = [];
     const density = [];
 
     const fetchActivityPercentageData = () => {
@@ -47,20 +46,12 @@ const DensityBarChart = () => {
 
     for (const each of densityData) {
         labels.push(each.density.species_name);
-        totalCounts.push(each.density.total);
         density.push(each.density.density);
     }
 
     const data = {
         labels: labels,
         datasets: [
-            {
-                label: 'Total Population',
-                backgroundColor: '#75B37A',
-                borderColor: '#75B37A',
-                borderWidth: 1,
-                data: totalCounts,
-            },
             {
                 label: 'Population density (individuals/Ha)',
                 backgroundColor: '#FAA755',
@@ -76,31 +67,8 @@ const DensityBarChart = () => {
             datalabels: {
                 display: false,
             },
-            legend: {
-                position: 'bottom' as 'bottom',
-                labels: {
-                    position: 'bottom' as 'bottom',
-                    usePointStyle: true,
-                    font: {
-                        size: 15,
-                    },
-                    generateLabels: (chart: any) => {
-                        const { datasets } = chart.data;
-                        return datasets.map((dataset: any, index: any) => ({
-                            text: dataset.label,
-                            fillStyle: dataset.borderColor,
-                            hidden: !chart.isDatasetVisible(index),
-                            lineCap: 'round',
-                            lineDash: [] as number[],
-                            lineDashOffset: 0,
-                            lineJoin: 'round',
-                            lineWidth: 10,
-                            strokeStyle: dataset.borderColor,
-                            pointStyle: 'rect',
-                            rotation: 0,
-                        }))
-                    },
-                },
+            legend:{
+                display: false,
             }
         },
         scales: {
@@ -115,14 +83,15 @@ const DensityBarChart = () => {
                 },
             },
         },
-    };
+    }
 
     return (
         <Box>
             {loading ? <Loading /> :
                 <Box className="white-chart" >
                     <Typography>Species Population Totals and Density</Typography>
-                    <Bar data={data} options={options} height={320} width={1000}/>
+                    <Bar data={data} options={options} height={225} width={1000} />
+                    <Typography> Propeerties</Typography>
                 </Box >}
         </Box>
     );
