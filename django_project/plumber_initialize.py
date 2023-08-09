@@ -12,9 +12,6 @@ This script initializes
 from django.db import connection
 from django.db.utils import OperationalError
 import time
-import django
-
-django.setup()
 
 #########################################################
 # 1. Waiting for PostgreSQL
