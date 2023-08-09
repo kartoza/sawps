@@ -85,7 +85,7 @@ const PopulationCategoryChart = () => {
                 <Box className="white-chart" >
                     <Box className="white-chart-heading">
                         <Typography>Number of properties per population category</Typography>
-                        <Bar data={data} options={options} height={435} width={1000}/>
+                        <Bar data={data} options={options} height={285} width={1000}/>
                     </Box>
                     <Typography>Population category</Typography>
                 </Box >

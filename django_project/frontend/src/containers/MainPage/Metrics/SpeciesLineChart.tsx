@@ -118,7 +118,7 @@ const SpeciesLineChart = () => {
                     <Box className="white-chart-heading">
                         <Typography>Species population counts per year </Typography>
                     </Box>
-                    <Line data={speciesPopulation} options={speciesOptions} height={450} width={1000} />
+                    <Line data={speciesPopulation} options={speciesOptions} height={320} width={1000} />
                 </Box>) : (
                 <Loading />
             )
