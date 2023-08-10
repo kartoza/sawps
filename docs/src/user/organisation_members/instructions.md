@@ -25,7 +25,7 @@ Under the current organisation depending on the one that is currently selected, 
 *   __1 Organization name__: This is a heading that indicates to the user the current organization they are viewing.
 *   __2 Add people button__: when clicked will evoke a pop-up modal.
 
-![instr_add_people_form](../img/add_people_form.png)
+![instr_send_organisation_invite](../img/send_organisation_invite.png)
 
 *   __1 Email address field__: the user should provide the email address for the individual they wish to invite to the organization.
 *   __2 Invite as field__: the user should specify if the individual they’re inviting will have a manager or member role within the organization.
