@@ -213,8 +213,6 @@ class StatisticalModelAdmin(admin.ModelAdmin):
     inlines = [StatisticalModelOutputInline]
 
     def response_change(self, request, obj):
-        print('hereeeee')
-        print(request.POST['_download-data-template'])
         if '_download-data-template' in request.POST:
             template_file = absolute_path(
                 'frontend', 'utils', 'data_sample.csv'
