@@ -191,7 +191,6 @@ def get_reminder_or_notification(request):
 
     try:
         for element in data:
-            element = str(element)
             if isinstance(element, str) and element.isdigit():
                 reminder = Reminders.objects.filter(
                     user=request.user,
