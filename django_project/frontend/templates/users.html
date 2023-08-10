@@ -11,7 +11,7 @@
         <div class="row">
           <h3 class="page-title sawps-text-menu mb-3" style="color: var(--green)">{{ current_organisation }}</h3>
           <div class="col-auto ml-auto">
-            {% if role == 'Admin' or role == 'Super User' or user.is_superuser %}
+            {% if role.name == 'Admin' or role.name == 'Super User' or user.is_superuser %}
               <button class="btn btn-custom" type="button" data-toggle="modal" data-target="#myModal">
                 <i class="fas fa-plus"></i> Add People
               </button>
@@ -170,11 +170,7 @@
               {% if org_user.joined %}
               <tr>
                 <td>{{ org_user.organisation_user }}</td>
-                {% if org_user.role == 'Base user' %}
-                <td>{{ 'Organisation Member' }}</td>
-                {% else %}
-                <td>{{ 'Organisation Manager' }}</td>
-                {% endif %}
+                <td>Organisation {{ org_user.assigned_as }}</td>
                 {% if org_user.role == 'Admin' or org_user.role == 'Super User' or user.is_superuser %}
                 <td>
                   <i class="fas fa-trash-alt trash-icon" data-object-id="{{ org_user.id }}"></i>
