@@ -305,7 +305,7 @@ class RemindersView(RegisteredOrganisationBaseView):
                 reminder_type = Reminders.EVERYONE
             try:
                 organisation = Organisation.objects.get(
-                    id=self.request.session[CURRENT_ORGANISATION_ID_KEY]
+                    id=request.session[CURRENT_ORGANISATION_ID_KEY]
                 )
                 # Save the reminder to the database
                 reminder = Reminders.objects.create(
