@@ -669,12 +669,9 @@ class GetReminderOrNotificationTest(TestCase):
 
     def test_get_reminder_or_notification_valid_ids(self):
         url = reverse('reminders', kwargs={'slug': self.user.username})
-        reminderId  = str(self.reminder_1.id)
-        id = []
-        id.append(reminderId)
         data = {
             'action': 'get_reminder',
-            'ids': str(id),
+            'ids': [str(self.reminder_1.id)],
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
         request = self.factory.post(url, data)
