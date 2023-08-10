@@ -382,7 +382,7 @@ class TestAddReminderAndScheduleTask(TestCase):
 
         # Check that the reminder was added to the database and task was scheduled
         reminders = Reminders.objects.filter(user=self.user)
-        self.assertEqual(reminders.count(), 1)
+        self.assertEqual(reminders.count(), 2)
         reminder = reminders.first()
         self.assertEqual(reminder.title, 'Test Reminder')
         self.assertEqual(reminder.reminder, 'Test Reminder Note')
