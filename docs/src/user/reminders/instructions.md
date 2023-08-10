@@ -36,7 +36,7 @@ When clicked will present the user with the form to fill for the reminder they i
 ## 3 Search box
 Allows the user to search for a specific reminder. The search looks for keywords within the reminder and the title.
 ## 4 Filter
-The user is able to filter by title or reminder. This refines the search to only return reminders containing the providing keywords specifically in the filter provided.
+The user is able to filter by title or reminder. This refines the search to only return reminders containing the providing keywords specifically by the filter selected.
 ## 5 Reminder
 Clicking on any reminder will cause the pop up modal for editing the reminder to appear.
 
@@ -58,3 +58,8 @@ Clicking on any reminder will cause the pop up modal for editing the reminder to
 
 *   __1. Delete Confirmation Title__: Title pointing to what the modal is.
 *   __2. Delete Button__: when clicked deletes the reminder.
+
+## 7 Rows per page
+The user is able to choose the number of reminders they prefer to see on a page. The minimum is 5.
+## 8 Pagination Link
+The user is able to see the current page they're own. They are also able to navigate to previous and next pages using the nav links.
