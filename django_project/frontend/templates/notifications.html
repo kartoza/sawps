@@ -205,11 +205,9 @@
     }
 
     // GET NOTIFICATION
-    var tableBody = document.getElementById('notifications');
-      tableBody.addEventListener('click', function(event) {
-        var target = event.target;
-        if (target.classList.contains('clickable-row')) {
-          var reminderId = target.getAttribute('data-href');
+    $(document).ready(function() {
+        $(document).on('click', '.clickable-row', function() {
+          var reminderId  = $(this).data('href');
           var id = []
           id.push(reminderId)
           $.ajax({
@@ -246,9 +244,9 @@
               // Handle the error response
               alert(error);
             }
-          });
-        }
-      });
+          }); 
+        });
+    });
 
       // DELETE ICON
       $(document).ready(function() {
