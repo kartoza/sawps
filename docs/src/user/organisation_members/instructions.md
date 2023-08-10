@@ -46,6 +46,8 @@ Under the current organisation depending on the one that is currently selected, 
 
 *   __II. Member already registered on platform__: if the individual is not new on the platform they will just be registered on to the organisation they're being invited.
 
+*   __III. Registration Complete__: Once the registration is complete the individual invited will be be able to login and see their new organisation under accessible organisations.
+
 
 
 ## 4 Search box:
