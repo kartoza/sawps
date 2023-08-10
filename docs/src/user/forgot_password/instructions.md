@@ -18,26 +18,26 @@ When clicked navigates the password reset page.
 
 ![instr_password_reset](../img/password_reset.png)
 
-*   I.	__1 Reset Password Label__ 
-*   II.	__2 Email Field__: the user should enter their email address into this field.
-*   III. __3 Reset Password button__: when clicked sends the reset password email and notifies the user.
+*   __1 Reset Password Label__ 
+*   __2 Email Field__: the user should enter their email address into this field.
+*   __3 Reset Password button__: when clicked sends the reset password email and notifies the user.
 
 ![instr_email_sent_instructions](../img/email_sent_instructions.png)
 
-*   I. __1 The message__: contains instructions the user should follow in order to be able to reset their password.
-*   II. __2 Go back link__: when clicked returns the user to the login page.
+*   __1 The message__: contains instructions the user should follow in order to be able to reset their password.
+*   __2 Go back link__: when clicked returns the user to the login page.
 
 ![instr_reset_password_email](../img/reset_password_email.png)
 
-*   I. __Email__: has further instructions on completing the reset password process.
-*   II. __Register button__: When the user clicks the register link, they will be redirected to the platform to complete resetting their password.
+*   __Email__: has further instructions on completing the reset password process.
+*   __Register button__: When the user clicks the register link, they will be redirected to the platform to complete resetting their password.
 
 ![instr_reset_password_form](../img/reset_password_form.png)
 
-*   I.	__1 New Password field__: the user should enter their new password into this field.
-*   II.	__2 Allowable Password characteristics__: the new password for the user should include the characteristics described.
-*   III. __3 New password confirmation field__: the user should re enter their password to make sure they didn’t make a mistake.
-*   IV.	__4 Reset password button__: when clicked sets the password the user provided as the new password for logging in and also shows a success message.
+*   __1 New Password field__: the user should enter their new password into this field.
+*   __2 Allowable Password characteristics__: the new password for the user should include the characteristics described.
+*   __3 New password confirmation field__: the user should re enter their password to make sure they didn’t make a mistake.
+*   __4 Reset password button__: when clicked sets the password the user provided as the new password for logging in and also shows a success message.
 
 ![instr_password_reset_success](../img/password_reset_success.png)
 
