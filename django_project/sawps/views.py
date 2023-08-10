@@ -127,7 +127,7 @@ class AddUserToOrganisation(View):
                     'role': email_details['user']['role'],
                     'organisation': email_details['user']['organisation'],
                     'support_email': email_details['support_email'],
-                    'email': email_details['recipient_email'],
+                    'email': SUPPORT_EMAIL,
                     'domain': email_details['domain']
                 }
             )
