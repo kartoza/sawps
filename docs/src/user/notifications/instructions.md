@@ -17,7 +17,7 @@ Functionalities offered on the Notifications Page:
 
 
 
-![instr_notifications_page](../img/notifications_page.png)
+![instr_notifications_page](../img/notfications_page.png)
 
 
 ## 1 Navigation Link
