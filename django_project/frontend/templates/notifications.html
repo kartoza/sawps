@@ -207,7 +207,7 @@
     // GET NOTIFICATION
     $(document).ready(function() {
         $(document).on('click', '.clickable-row', function() {
-          var reminderId  = $(this).data('href');
+          var reminderId  = JSON.stringify($(this).data('href'));
           var id = []
           id.push(reminderId)
           $.ajax({
