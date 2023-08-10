@@ -6,7 +6,7 @@
 
 Navigate to the two factor authentication tab under the profile page
 
-![instr_2fa_page](img/profile_2fa.png)
+![instr_2fa_page](../img/profile_2fa.png)
 
 
 <!-- Dark mode -->
