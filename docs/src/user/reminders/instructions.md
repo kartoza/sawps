@@ -46,13 +46,13 @@ Clicking on any reminder will cause the pop up modal for editing the reminder to
 *   __2 Date and Time__: the user can change scheduled time for the reminder.
 *   __3 Reminder__: the user can change the description of the reminder.
 *   __4 Reminder Type__: Based on the user role within that specific organisation the user is able to specify if the reminder is for all organisation members or if it's a personal reminder.
-*   __4 Reminder Status__: the user is able to change the state of the reminder. If set to active the reminder is still scheduled, if set to draft the reminder is on pause, if set to passed the reminder will not be moved to the notifications section but no email is sent.
+*   __4 Reminder Status__: the user is able to change the state of the reminder. If set to active the reminder is still scheduled, if set to draft the reminder is on pause, if set to passed the reminder will be moved to the notifications section but no email is sent.
 *   __5 Save button__: when clicked saves the new edited details.
 
 ## 6 Delete icon
-The user can delete their reminders.
-Organisation Managers can delete organisation reminders.
-When the delete icon is clicked a pop up modal is evoked prompting if the user is sure of the actions they wish to take.
+*   The user can delete their reminders.
+*   Organisation Managers can delete organisation reminders.
+*   When the delete icon is clicked a pop up modal is evoked prompting if the user is sure of the actions they wish to take.
 
 ![instr_delete_reminder](../img/delete_reminder.png)
 
