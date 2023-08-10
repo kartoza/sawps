@@ -391,6 +391,7 @@ export default function Map() {
         const _resultLayers = features.map((e:any) => e.layer.id)
         // display popup
         let _description = getMapPopupDescription(features)
+        localStorage.setItem('description',_description)
         if (_description) {
           new maplibregl.Popup()
             .setLngLat(e.lngLat)
