@@ -2,16 +2,16 @@
 
 ## Description
 When a user on the platform wishes to have an organisation. They can request for one.
-The sanbi administrator will review the request and if they approve will create the organisation for the user and notify them via email.
+-The sanbi administrator will review the request and if they approve will create the organisation for the user and notify them via email.
 
 
 ![instr_request_organisation_link](../img/request_organisation_link.png)
 
 
 ## 1 Request Organisation Link
-This Link is under the nav dropown next to the profile icon in the header.
-The Link is only visible to members without an organisation.
-When the Link is clicked a pop modal is evoked.
+*   This Link is under the nav dropown next to the profile icon in the header.
+*   The Link is only visible to members without an organisation.
+*   When the Link is clicked a pop modal is evoked.
 
 ![instr_organisation_request_form](../img/organisation_request_form.png)
 
@@ -24,5 +24,5 @@ When the user clickes the send button , a confirmation will be returned to the u
 
 ![instr_organisation_request_sent](../img/organisation_request_sent.png)
 
-## After these steps the user will now wait to receive feedback from the Sanbi administrator.
+After these steps the user will now wait to receive feedback from the Sanbi administrator.
 
