@@ -1,16 +1,22 @@
 # Two Factor Authentication Settings
 <!-- This will be instructions for actions like updating user two factor authentication settings, generating backup tokens, add and deleting 2fa devices-->
 
-<!-- e.g Title like this: -->
-## Accessing the page:
-
-Navigate to the two factor authentication tab under the profile page
+## Description
+The Two factor authentication page handles the user’s two factor authentication settings.
+These include:
+•	Backup tokens
+•	Two factor authentication devices
 
 ![instr_2fa_page](../img/profile_2fa.png)
 
 
 <!-- Dark mode -->
-## Switching between light and dark mode on the map:
+## 1 2FA Tab
+Navigate to the two factor authentication tab under the profile page.
+## 2 Current 2FA Method
+Shows the current 2fa method the user uses to log on to the platform.
+## 3 Add Device
+Clicking this button will eveoke a pop modal requiring the user to enter the new device details before saving.
 
 To switch to dark mode, simply go to your map and click on the little sun icon which is located next to the layers panel. 
 
