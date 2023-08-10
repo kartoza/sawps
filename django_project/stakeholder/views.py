@@ -191,6 +191,7 @@ def get_reminder_or_notification(request):
 
     try:
         for element in data:
+            element = str(element)
             if isinstance(element, str) and element.isdigit():
                 reminder = Reminders.objects.filter(
                     user=request.user,
@@ -201,8 +202,7 @@ def get_reminder_or_notification(request):
                     reminder[0].date,
                     reminder[0].timezone
                 )
-
-        return reminder
+                return reminder
     except Exception as e:
         return str(e)
 
