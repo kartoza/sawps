@@ -89,9 +89,9 @@ const DensityBarChart = () => {
         <Box>
             {loading ? <Loading /> :
                 <Box className="white-chart" >
-                    <Typography>Species Population Totals and Density</Typography>
+                    <Typography>Species Population Density per property</Typography>
                     <Bar data={data} options={options} height={225} width={1000} />
-                    <Typography> Propeerties</Typography>
+                    <Typography> Properties</Typography>
                 </Box >}
         </Box>
     );

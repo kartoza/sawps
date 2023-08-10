@@ -48,8 +48,8 @@ const PopulationCategoryChart = () => {
         labels: Object.keys(populationData),
         datasets: [
             {
-                backgroundColor: 'rgb(83 83 84)',
-                borderColor: 'rgb(83 83 84)',
+                backgroundColor: '#9F89BF',
+                borderColor: '#9F89BF',
                 borderWidth: 1,
                 data: Object.values(populationData),
             },
