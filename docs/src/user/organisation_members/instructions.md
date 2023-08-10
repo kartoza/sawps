@@ -15,7 +15,7 @@ This page offers the following functionality:
 
 
 ## 1 Navigation
-When the user clicks the dropdown icon next to their username and profile pictire, a dropdown nav will appear.
+When the user clicks the dropdown icon next to their username and profile picture, a dropdown nav will appear.
 ## 2 Navigation
 Under the current organisation depending on the one that is currently selected, when clicked will navigate to the organisation members page.
 
@@ -33,6 +33,7 @@ Under the current organisation depending on the one that is currently selected, 
 *   __4 Invite button__: when clicked will send the invitation to the individual being invited to the organization. A success message will show if the email has been sent.
 
 ![instr_invitation_sent](../img/invitation_sent.png)
+
 
 *   __I. Email Invitation Email__: the individual being invited to the organization will receive this email.
 
@@ -53,8 +54,8 @@ this allows the user to search for a specific member within the members table.
 this allows the user to determine how many rows they prefer to see on a single page. This can help on smaller deviecs for example.
 ## 6 Pagination:
 indicates the current page the user is on. As well as the nav links to manuever to the previous or next page. 
-## 7 Invitations table label:
+## 7 Invitations Table Label:
 this indicates to the user that the table below contains invites.
-## 8 status: 
+## 8 Status: 
 the invitations table has a status role that shows whether the individual whom has been invited has joined that organization yet.
 
