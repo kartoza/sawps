@@ -431,7 +431,7 @@ class RemindersView(RegisteredOrganisationBaseView):
 
 
         try:
-            org = self.request.session[CURRENT_ORGANISATION_ID_KEY],
+            org = request.session[CURRENT_ORGANISATION_ID_KEY],
             for element in data:
                 if isinstance(element, str) and element.isdigit():
                     reminder = Reminders.objects.get(
