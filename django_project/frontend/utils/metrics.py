@@ -1,8 +1,9 @@
 from collections import Counter
-from typing import Dict
+from typing import Dict, List
 
 from django.db.models import QuerySet, Sum
 from property.models import Property
+from species.models import OwnedSpecies
 
 
 def calculate_population_categories(queryset: QuerySet) -> Dict[str, int]:
@@ -48,3 +49,31 @@ def calculate_population_categories(queryset: QuerySet) -> Dict[str, int]:
     population_category_dict.update(population_counter)
 
     return population_category_dict
+
+
+def calculate_total_area_available_to_species(queryset: QuerySet[Property]) \
+    -> List[Dict[str, int]]:
+    """
+    Calculate the total area available to species for
+    each property in the queryset.
+
+    Params:
+        queryset (QuerySet[Property]): The queryset of properties for
+        which to calculate total area available to species.
+
+    Returns:
+        List[Dict[str, int]]: A list of dictionaries,
+        each containing the property name and
+        the total area available to species for that property.
+    """
+    properties = []
+    for property in queryset:
+        property_data = OwnedSpecies.objects.values("property__name").filter(
+            property=property
+        ).annotate(
+            total_species_area=Sum("area_available_to_species")
+        ).values("property__name", "total_species_area").distinct()
+
+        properties.extend(property_data)
+
+    return properties

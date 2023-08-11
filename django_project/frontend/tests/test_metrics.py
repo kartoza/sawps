@@ -235,3 +235,36 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['1-10'], 0)
+
+
+class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    total area available to species.
+    """
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("total_area_available_to_species")
+
+    def test_total_area_available_to_species(self) -> None:
+        """
+        Test total area available to species.
+        """
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['total_species_area'], 50.0)
+
+    def test_total_area_available_to_species_filter_by_property(self) -> None:
+        """
+        Test total area available to species filtered by property.
+        """
+        id = self.owned_species[0].property_id
+        data = {'property':id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['property__name'], 'PropertyA')

@@ -30,6 +30,7 @@ from frontend.api_views.metrics import (
     SpeciesPopuationCountPerYearAPIView,
     SpeciesPopulationTotalAndDensityAPIView,
     TotalCountPerActivityAPIView,
+    TotalAreaAvailableToSpeciesAPIView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -228,6 +229,11 @@ urlpatterns = [
         'api/properties-per-population-category/',
         PropertiesPerPopulationCategoryAPIView.as_view(),
         name='properties_per_population_category'
+    ),
+    path(
+        'api/total-area-available-to-species/',
+        TotalAreaAvailableToSpeciesAPIView.as_view(),
+        name='total_area_available_to_species'
     ),
     path(
         'add_totp_devices/',

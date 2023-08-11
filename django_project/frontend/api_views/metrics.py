@@ -1,6 +1,7 @@
 """API Views related to metrics.
 """
 from typing import List
+
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from frontend.filters.metrics import (
@@ -15,7 +16,10 @@ from frontend.serializers.metrics import (
     TotalCountPerActivitySerializer,
 )
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
-from frontend.utils.metrics import calculate_population_categories
+from frontend.utils.metrics import (
+    calculate_population_categories,
+    calculate_total_area_available_to_species,
+)
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -189,3 +193,29 @@ class PropertiesPerPopulationCategoryAPIView(APIView):
         """
         queryset = self.get_queryset()
         return Response(calculate_population_categories(queryset))
+
+
+class TotalAreaAvailableToSpeciesAPIView(APIView):
+    """
+    An API view to retrieve total area available to species.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> QuerySet[Property]:
+        """
+        Get the filtered queryset of properties for the current organization.
+            """
+        organisation_id = self.request.session.get('current_organisation_id')
+        queryset = Property.objects.filter(organisation_id=organisation_id)
+        filtered_queryset = PropertyFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> Response:
+        """
+        Retrieve the calculated total area available to species and
+        return it as a Response.
+        """
+        queryset = self.get_queryset()
+        return Response(calculate_total_area_available_to_species(queryset))
