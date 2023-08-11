@@ -535,6 +535,26 @@ class TestRemindersView(TestCase):
 
         # Check if the task is canceled when status is 'draft' or 'passed'
         self.assertTrue(reminder.status in [Reminders.ACTIVE])
+        
+        # test with status passed and everyone
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        response = self.client.post(
+            url,
+            {
+                'action': 'edit_reminder',
+                'ids': [str(reminder.id)],
+                'title': 'Updated Reminder',
+                'status': 'passed',
+                'date': date_str,
+                'timezone': 'Africa/Johannesburg',
+                'reminder_type': 'everyone',
+                'reminder': 'Updated Reminder Note',
+                'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        serialized_reminders = response.json()
+        self.assertEqual(len(serialized_reminders), 2)
 
 
 class SearchRemindersOrNotificationsTest(TestCase):
