@@ -1,25 +1,14 @@
 import base64
-import mock
-from species.models import (
-    TaxonRank,
-    Taxon,
-    OwnedSpecies,
-    TaxonSurveyMethod
-)
-from species.factories import (
-    TaxonRankFactory,
-    TaxonFactory,
-    OwnedSpeciesFactory,
-    TaxonSurveyMethodF
-)
-from population_data.factories import AnnualPopulationF
+from unittest import mock
+
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from django.test import Client, TestCase
 from django.urls import reverse
-from occurrence.models import SurveyMethod
-from rest_framework import status
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from occurrence.models import SurveyMethod
+from population_data.factories import AnnualPopulationF
+from rest_framework import status
 from species.factories import (
     OwnedSpeciesFactory,
     TaxonFactory,
@@ -104,7 +93,7 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = TaxonSerializer([self.taxon], many=True).data
         self.assertEqual(expected_data, response.data)
-    
+
     def test_get_taxon_frontpage_list(self):
         """Test fetch taxon list for frontpage."""
         taxon = TaxonFactory.create(

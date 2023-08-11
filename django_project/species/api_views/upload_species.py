@@ -4,7 +4,6 @@ from datetime import datetime
 
 from frontend.models import UploadSpeciesCSV
 from property.models import Property
-from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -23,8 +22,10 @@ class SpeciesUploader(APIView):
 
         if not species_file:
             return Response(
-                {"status": "file is not correct"},
-                status.HTTP_424_FAILED_DEPENDENCY
+                status=400,
+                data={
+                    'detail': 'File not found'
+                }
             )
 
         upload_session = UploadSpeciesCSV.objects.create(
