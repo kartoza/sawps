@@ -555,6 +555,26 @@ class TestRemindersView(TestCase):
         self.assertEqual(response.status_code, 200)
         serialized_reminders = response.json()
         self.assertEqual(len(serialized_reminders), 2)
+        
+        # test with status active status
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        response = self.client.post(
+            url,
+            {
+                'action': 'edit_reminder',
+                'ids': json.dumps([reminder.id]),
+                'title': 'Updated Reminder',
+                'status': 'active',
+                'date': date_str,
+                'timezone': 'Africa/Johannesburg',
+                'reminder_type': 'everyone',
+                'reminder': 'Updated Reminder Note',
+                'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        serialized_reminders = response.json()
+        self.assertEqual(len(serialized_reminders), 2)
 
 
 class SearchRemindersOrNotificationsTest(TestCase):
