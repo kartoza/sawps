@@ -1,5 +1,4 @@
 from typing import List
-
 from django.db.models import F, Q, Sum
 from population_data.models import AnnualPopulation
 from rest_framework import serializers
@@ -63,6 +62,9 @@ class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
 
 
 class ActivityMatrixSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for serializing activity percentage data for species.
+    """
     total = serializers.SerializerMethodField()
     species_name = serializers.SerializerMethodField()
     activities = serializers.SerializerMethodField()
@@ -76,7 +78,10 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
             "activities",
         ]
 
-    def get_total(self, obj):
+    def get_total(self, obj) -> int:
+        """Get the total count of species.
+        Params: obj (Taxon): The Taxon instance.
+        """
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
         owned_species = OwnedSpecies.objects.values(
@@ -93,10 +98,16 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
         else:
             return None
 
-    def get_species_name(self, obj):
+    def get_species_name(self, obj) -> str:
+        """Get the species name.
+        Params: obj (Taxon): The Taxon instance.
+        """
         return obj.common_name_varbatim
 
-    def get_activities(self, obj):
+    def get_activities(self, obj) -> List[dict]:
+        """Calculate activity percentage data for species.
+        Params: obj (Taxon): The Taxon instance.
+        """
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
         owned_species = OwnedSpecies.objects.values(
@@ -132,6 +143,9 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
 
 
 class TotalCountPerActivitySerializer(serializers.ModelSerializer):
+    """
+    Serializer class for serializing the total count per activity data.
+    """
     total = serializers.SerializerMethodField()
     species_name = serializers.SerializerMethodField()
     activities = serializers.SerializerMethodField()
@@ -145,7 +159,10 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             "activities",
         ]
 
-    def get_total(self, obj):
+    def get_total(self, obj) -> int:
+        """Get the total count of species.
+        Params: obj (Taxon): The Taxon instance.
+        """
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
         owned_species = OwnedSpecies.objects.values(
@@ -162,11 +179,17 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         else:
             return None
 
-    def get_species_name(self, obj):
+    def get_species_name(self, obj) -> str:
+        """Get the species name.
+        Params: obj (Taxon): The Taxon instance.
+        """
         return obj.common_name_varbatim
 
 
-    def get_activities(self, obj):
+    def get_activities(self, obj) -> List[dict]:
+        """Calculate total count per activity for species.
+        Params: obj (Taxon): The Taxon instance.
+        """
         property_param = self.context['request'].GET.get('property')
         property_list = property_param.split(',') if property_param else []
 
@@ -190,13 +213,19 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
 
 
 class SpeciesPopulationTotalAndDensitySerializer(serializers.ModelSerializer):
+    """
+    Serializer class for serializing species population total and density.
+    """
     density = serializers.SerializerMethodField()
 
     class Meta:
         model = Taxon
         fields = ["density", ]
 
-    def get_density(self, obj):
+    def get_density(self, obj) -> dict:
+        """ Calculate and get species population total and density.
+        Params: obj (Taxon): The Taxon instance.
+        """
         property = self.context["request"].GET.get("property")
         property_list = property.split(',') if property else []
         owned_species = OwnedSpecies.objects.values(

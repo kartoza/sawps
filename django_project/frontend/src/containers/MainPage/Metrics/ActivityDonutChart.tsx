@@ -27,7 +27,7 @@ interface ActivityDonutChartProps {
 }
 
 const ActivityDonutChart = (props: ActivityDonutChartProps) => {
-    const { activityData, activityType, loading, chartHeading,showPercentage } = props
+    const { activityData, activityType, loading, chartHeading, showPercentage } = props
     const labels = Object.keys(activityType);
 
 
@@ -71,7 +71,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                     if (value > 0) {
                         if (showPercentage) {
                             const dataset = context.dataset;
-                            const sum = dataset.data.reduce((acc:any, cur:any) => acc + cur, 0);
+                            const sum = dataset.data.reduce((acc: any, cur: any) => acc + cur, 0);
                             const percentage = ((value * 100) / sum).toFixed(1) + '%';
                             return percentage;
                         } else {
@@ -89,32 +89,32 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
     };
 
     return (
-        <Box className="white-chart chartFullWidth leftBoxRound">
-            <Typography>{chartHeading}</Typography>
-            {loading ? <Loading /> :
-                <Box className="BoxChartType">
-                    {activityData?.map((item, index) => {
-                        const speciesDonutData = {
-                            labels: labels,
-                            datasets: [
-                                {
-                                    data: labels.map((label) => {
-                                        const activity = item?.activities?.find((activity) => activity[label]);
-                                        return activity ? activity[label] : 0;
-                                    }),
-                                    backgroundColor: Object.values(activityType),
-                                    borderWidth: 1
-                                },
-                            ],
-                        };
-                        return (
-                            <Box>
+
+        <Box>
+            {activityData?.map((item, index) => {
+                const speciesDonutData = {
+                    labels: labels,
+                    datasets: [
+                        {
+                            data: labels.map((label) => {
+                                const activity = item?.activities?.find((activity) => activity[label]);
+                                return activity ? activity[label] : 0;
+                            }),
+                            backgroundColor: Object.values(activityType),
+                            borderWidth: 1
+                        },
+                    ],
+                };
+                return (
+                    <Box className="white-chart chartFullWidth leftBoxRound">
+                        <Typography>{chartHeading}</Typography>
+                        {loading ? <Loading /> :
+                            <Box className="BoxChartType">
                                 {item.activities.length > 0 &&
                                     <Box key={index} className="chartHalf">
-                                        <Typography className="text-left">{item?.species_name}</Typography>
                                         <Box className="charBox">
                                             <Box className="chart-container">
-                                                <Doughnut data={speciesDonutData} options={donutOptions} height={200} width={70} />
+                                                <Doughnut data={speciesDonutData} options={donutOptions} height={186} width={70} />
                                             </Box>
                                         </Box>
                                         <Box className="chart-img">
@@ -125,10 +125,11 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                                         </Box>
                                     </Box>}
                             </Box>
-                        );
-                    })}
-                </Box>
-            }
+                        }
+                    </Box>
+                );
+            })}
+
         </Box>
     );
 };

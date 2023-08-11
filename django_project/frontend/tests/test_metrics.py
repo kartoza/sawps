@@ -61,11 +61,17 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
     """
     Test the species population count API endpoint.
     """
-    def setUp(self):
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
         super().setUp()
         self.url = reverse("species_population_count")
 
-    def test_species_population_count(self):
+    def test_species_population_count(self) -> None:
+        """
+        Test species population count.
+        """
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -75,14 +81,20 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
             100
         )
 
-    def test_species_population_count_filter_by_name(self):
+    def test_species_population_count_filter_by_name(self) -> None:
+        """
+        Test species population count filtered by species name.
+        """
         data = {'species': 'Lion'}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['species_name'], 'Lion')
 
-    def test_species_population_count_filter_by_property(self):
+    def test_species_population_count_filter_by_property(self) -> None:
+        """
+        Test species population count filtered by property.
+        """
         id = self.owned_species[0].property_id
         data = {'property':id}
         url = self.url
@@ -93,7 +105,10 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
             100
         )
 
-    def test_species_population_count_filter_by_year(self):
+    def test_species_population_count_filter_by_year(self) -> None:
+        """
+        Test species population count filtered by year.
+        """
         year = self.owned_species[1].annualpopulation_set.first().year
         data = {'start_year': year, "end_year":year}
         url = self.url
@@ -109,11 +124,17 @@ class ActivityPercentageTestCase(BaseTestCase):
     """
     Test the activity percentage API endpoint.
     """
-    def setUp(self):
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
         super().setUp()
         self.url = reverse("activity_percentage")
 
-    def test_activity_percentage(self):
+    def test_activity_percentage(self) -> None:
+        """
+        Test activity percentage calculation.
+        """
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -122,7 +143,10 @@ class ActivityPercentageTestCase(BaseTestCase):
             list(response.data['data'][0]['activities'][0].values())[0], 20.0
         )
 
-    def test_activity_percentage_filter_by_year(self):
+    def test_activity_percentage_filter_by_year(self) -> None:
+        """
+        Test activity percentage calculation with year-based filters.
+        """
         year = self.owned_species[1].annualpopulationperactivity_set.first().year
         data = {'start_year': year, "end_year":year}
         url = self.url
@@ -133,11 +157,20 @@ class ActivityPercentageTestCase(BaseTestCase):
 
 
 class TotalCountPerActivityTestCase(BaseTestCase):
-    def setUp(self):
+    """
+    Test the total count per activity API endpoint.
+    """
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
         super().setUp()
         self.url = reverse("total_count_per_activity")
 
-    def test_total_count_per_activity(self):
+    def test_total_count_per_activity(self) -> None:
+        """
+        Test total count per activity calculation.
+        """
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -146,11 +179,20 @@ class TotalCountPerActivityTestCase(BaseTestCase):
 
 
 class SpeciesPopulationTotalAndDensityTestCase(BaseTestCase):
-    def setUp(self):
+    """
+    Test the species population total density API endpoint.
+    """
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
         super().setUp()
         self.url = reverse("species_population_total_density")
 
-    def test_species_population_total_and_density(self):
+    def test_species_population_total_and_density(self) -> None:
+        """
+        Test species population total and density calculation.
+        """
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -167,17 +209,26 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
     Test case for the endpoint that retrieves
     properties population categories.
     """
-    def setUp(self):
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
         super().setUp()
         self.url = reverse("properties_per_population_category")
 
-    def test_species_population_total_and_density(self):
+    def test_species_population_total_and_density(self) -> None:
+        """
+        Test species population categories.
+        """
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['>200'], 1)
 
-    def test_properties_population_category_filter_by_property(self):
+    def test_properties_population_category_filter_by_property(self) -> None:
+        """
+        Test species population categories filtered by property.
+        """
         id = self.owned_species[0].property_id
         data = {'property':id}
         url = self.url

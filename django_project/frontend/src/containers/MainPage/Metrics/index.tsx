@@ -60,12 +60,14 @@ const Metrics = () => {
             <Box className="main-chart">
                 <Box className="chart-left">
                     <SpeciesLineChart />
-                    <DensityBarChart/>
-                    <ActivityDonutChart activityData={totalCoutData} activityType={activityType} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
+                    <DensityBarChart />
                 </Box>
                 <Box className="chart-right">
-                    <PopulationCategoryChart/>
-                    <ActivityDonutChart activityData={activityData} activityType={activityType} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+                    <PopulationCategoryChart />
+                    <Box className="boxChart-lion">
+                        <ActivityDonutChart activityData={totalCoutData} activityType={activityType} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
+                        <ActivityDonutChart activityData={activityData} activityType={activityType} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+                    </Box>
                 </Box>
             </Box>
         </Box>
