@@ -1,10 +1,10 @@
 """Classes for upload helper.
 """
-from django.db import models
-from django.conf import settings
-from uuid import uuid4
 from datetime import datetime
+from uuid import uuid4
 
+from django.conf import settings
+from django.db import models
 
 FILE_STORAGE = 'species'
 
@@ -61,10 +61,14 @@ class DraftSpeciesUpload(models.Model):
         return f'{self.name}'
 
 
-
 class UploadSpeciesCSV(models.Model):
     """Upload species csv model
     """
+
+    property = models.ForeignKey(
+        'property.Property',
+        on_delete=models.CASCADE
+    )
 
     uploader = models.ForeignKey(
         settings.AUTH_USER_MODEL,

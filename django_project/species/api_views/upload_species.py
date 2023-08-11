@@ -3,6 +3,7 @@ import csv
 from datetime import datetime
 
 from frontend.models import UploadSpeciesCSV
+from property.models import Property
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
@@ -13,6 +14,7 @@ from species.tasks.upload_species import upload_species_data
 
 
 class SpeciesUploader(APIView):
+    """API to upload csv file."""
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser,)
 
@@ -26,9 +28,10 @@ class SpeciesUploader(APIView):
             )
 
         upload_session = UploadSpeciesCSV.objects.create(
-            process_file=species_file,
             uploader=self.request.user,
             uploaded_at=datetime.now(),
+            token=request.POST['token'],
+            property=Property.objects.get(id=request.POST['property'])
         )
         reader = csv.DictReader(codecs.iterdecode(species_file, 'utf-8'))
         headers = reader.fieldnames
@@ -45,17 +48,47 @@ class SpeciesUploader(APIView):
                 upload_session.canceled = True
                 upload_session.save()
                 return Response(
-                    {"status":
-                     "Header row does not follow the correct format"
-                     },
-                    status.HTTP_424_FAILED_DEPENDENCY
+                    status=400,
+                    data={
+                        'detail': 'Header row does not follow the '
+                                  'correct format.'
+                    }
                 )
+        upload_session.process_file = species_file
+        upload_session.save()
+        return Response(status=204)
 
+
+class SaveCsvSpecies(APIView):
+    """API to save csv file into the database."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        try:
+            upload_session = UploadSpeciesCSV.objects.get(
+                property=request.data.get('property'),
+                uploader=self.request.user,
+                token=request.data.get('token')
+            )
+        except UploadSpeciesCSV.DoesNotExist:
+            return Response(
+                status=400,
+                data={
+                    'detail': 'There is something wrong please try again.'
+                }
+            )
         task = upload_species_data.delay(
             upload_session.id
         )
 
         if task:
-            return Response(status=200)
+            return Response(
+                status=200
+            )
 
-        return Response(status=404)
+        return Response(
+            status=404,
+            data={
+                'detail': 'Somthing wrong with the csv file'
+            }
+        )

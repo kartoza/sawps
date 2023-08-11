@@ -54,7 +54,7 @@ def upload_species_data(upload_session_id):
 
     encoding = 'utf-8-sig'
     row_num = 1
-
+    success_response = None
     with open(upload_session.process_file.path, encoding=encoding
               ) as csv_file:
         reader = csv.DictReader(csv_file)
@@ -72,7 +72,6 @@ def upload_species_data(upload_session_id):
                 upload_session.canceled = True
                 upload_session.save
                 return None
-
 
             # Save Taxon
             taxon, taxon_created = Taxon.objects.get_or_create(
@@ -155,7 +154,7 @@ def upload_species_data(upload_session_id):
             )
 
             upload_session.processed = True
-            success_response = f'{row_num} row have been added to the database'
+            success_response = row_num
             upload_session.success_notes = (
                 success_response
             )
