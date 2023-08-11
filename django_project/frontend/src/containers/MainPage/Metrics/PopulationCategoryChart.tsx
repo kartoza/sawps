@@ -48,8 +48,8 @@ const PopulationCategoryChart = () => {
         labels: Object.keys(populationData),
         datasets: [
             {
-                backgroundColor: 'rgb(83 83 84)',
-                borderColor: 'rgb(83 83 84)',
+                backgroundColor: '#9F89BF',
+                borderColor: '#9F89BF',
                 borderWidth: 1,
                 data: Object.values(populationData),
             },
@@ -82,11 +82,9 @@ const PopulationCategoryChart = () => {
     return (
         <Box>
             {loading ? <Loading /> :
-                <Box className="white-chart" >
-                    <Box className="white-chart-heading">
+                <Box className="white-chart " >
                         <Typography>Number of properties per population category</Typography>
-                        <Bar data={data} options={options} height={435} width={1000}/>
-                    </Box>
+                        <Bar data={data} options={options} height={225} width={1000}/>
                     <Typography>Population category</Typography>
                 </Box >
             }

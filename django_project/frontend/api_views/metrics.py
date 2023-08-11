@@ -1,7 +1,6 @@
 """API Views related to metrics.
 """
 from typing import List
-
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from frontend.filters.metrics import (
@@ -60,10 +59,17 @@ class SpeciesPopuationCountPerYearAPIView(APIView):
 
 
 class ActivityPercentageAPIView(APIView):
+    """
+    API view to retrieve activity percentage data for species.
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = ActivityMatrixSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> List[Taxon]:
+        """
+        Returns a filtered queryset of Taxon objects representing
+        species within the specified organization.
+        """
         organisation_id = self.request.session.get('current_organisation_id')
         queryset = Taxon.objects.filter(
             ownedspecies__property__organisation_id=organisation_id,
@@ -74,7 +80,11 @@ class ActivityPercentageAPIView(APIView):
         ).qs
         return filtered_queryset
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle the GET request to retrieve activity percentage data.
+        Params: request (Request): The HTTP request object.
+        """
         queryset = self.get_queryset()
         serializer = ActivityMatrixSerializer(
             queryset, many=True, context={"request": request}
@@ -87,10 +97,17 @@ class ActivityPercentageAPIView(APIView):
 
 
 class TotalCountPerActivityAPIView(APIView):
+    """
+    API view to retrieve total counts per activity for species.
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = ActivityMatrixSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> List[Taxon]:
+        """
+        Returns a filtered queryset of Taxon objects representing
+        species within the specified organization.
+        """
         organisation_id = self.request.session.get('current_organisation_id')
         queryset = Taxon.objects.filter(
             ownedspecies__property__organisation_id=organisation_id,
@@ -101,7 +118,11 @@ class TotalCountPerActivityAPIView(APIView):
         ).qs
         return filtered_queryset
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle the GET request to retrieve total counts per activity data.
+        Params:request (Request): The HTTP request object.
+        """
         queryset = self.get_queryset()
         serializer = TotalCountPerActivitySerializer(
             queryset, many=True, context={"request": request}
@@ -110,10 +131,17 @@ class TotalCountPerActivityAPIView(APIView):
 
 
 class SpeciesPopulationTotalAndDensityAPIView(APIView):
+    """
+    API view to retrieve species population total and density data for specie.
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = ActivityMatrixSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> List[Taxon]:
+        """
+        Returns a filtered queryset of Taxon objects representing
+        species within the specified organization.
+        """
         organisation_id = self.request.session.get('current_organisation_id')
         queryset = Taxon.objects.filter(
             ownedspecies__property__organisation_id=organisation_id,
@@ -124,7 +152,12 @@ class SpeciesPopulationTotalAndDensityAPIView(APIView):
         ).qs
         return filtered_queryset
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle the GET request to retrieve species
+        population total and density data.
+        Params:request (Request): The HTTP request object.
+        """
         queryset = self.get_queryset()
         serializer = SpeciesPopulationTotalAndDensitySerializer(
             queryset, many=True, context={"request": request}
