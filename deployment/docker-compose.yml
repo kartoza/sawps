@@ -149,7 +149,6 @@ services:
     build:
       context: ../
       dockerfile: deployment/plumber/Dockerfile
-      target: prod
     environment:
       # editable in .env
       - DATABASE_NAME=${DATABASE_NAME:-django}
