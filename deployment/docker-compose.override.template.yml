@@ -59,7 +59,6 @@ services:
     build:
       context: ../
       dockerfile: deployment/plumber/Dockerfile
-      target: prod
     volumes:
       - ../django_project:/home/web/django_project
       - ./volumes/plumber_data:/home/web/plumber_data
