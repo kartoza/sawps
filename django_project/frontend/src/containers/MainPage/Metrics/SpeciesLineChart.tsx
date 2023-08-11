@@ -54,30 +54,7 @@ const SpeciesLineChart = () => {
                 display: false,
             },
             legend: {
-                position: 'bottom' as 'bottom',
-                labels: {
-                    usePointStyle: true,
-                    font: {
-                        size: 15,
-                    },
-                    generateLabels: (chart: any) => {
-                        const { datasets } = chart.data;
-                        return datasets.map((dataset: any, index: any) => ({
-                            text: dataset.label,
-                            fillStyle: dataset.borderColor,
-                            hidden: !chart.isDatasetVisible(index),
-                            lineCap: 'round',
-                            lineDash: [] as number[],
-                            lineDashOffset: 0,
-                            lineJoin: 'round',
-                            lineWidth: 10,
-                            strokeStyle: dataset.borderColor,
-                            pointStyle: 'rect',
-                            rotation: 0,
-                        }))
-                    },
-                },
-
+                display: false,
             },
         },
         scales: {
@@ -115,10 +92,9 @@ const SpeciesLineChart = () => {
         <Box>
             {!loading ? (
                 <Box className="white-chart">
-                    <Box className="white-chart-heading">
-                        <Typography>Species population counts per year </Typography>
-                    </Box>
-                    <Line data={speciesPopulation} options={speciesOptions} height={450} width={1000} />
+                        <Typography>Species count per year </Typography>
+                    <Line data={speciesPopulation} options={speciesOptions} height={225} width={1000}/>
+                    <Typography>Year</Typography>
                 </Box>) : (
                 <Loading />
             )
