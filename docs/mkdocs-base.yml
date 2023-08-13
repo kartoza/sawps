@@ -44,7 +44,9 @@ nav:
                           - Installation/Getting started instructions: user/quickstart.md
                           - Link to releases: user/releases.md
                   - User Guide:
-                          - Tutorials: user/instructions.md
+                          - Tutorials:
+                                  Map: user/instructions.md
+                                  DATA UPLOAD: user/data_upload.md
                   - User Reference Manual :
                           - Conceptual Model: user/conceptual_model.md
                           - Page View/ View Manual: user/view_manual.md
