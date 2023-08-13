@@ -4,8 +4,13 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams, GridActionsCellItem } from '@mui/x-data-grid';
+import {
+    DataGrid,
+    GridColDef,
+    GridValueGetterParams,
+    GridActionsCellItem,
+    GridRowId 
+} from '@mui/x-data-grid';
 import {
     UploadSpeciesDetailInterface,
     getDefaultUploadSpeciesDetail,
@@ -14,76 +19,6 @@ import {
     AnnualPopulationPerActivityValidation
 } from '../../../models/Upload';
 import EventDetailForm, {EventType} from './EventDetailForm';
-
-
-const IntakeColumns: GridColDef[] = [
-    {
-        field: 'activity_type_name',
-        headerName: 'Activity',
-        flex: 1,
-    },
-    {
-        field: 'total',
-        headerName: 'Total',
-        flex: 1,
-    },
-    {
-        field: 'reintroduction_source',
-        headerName: 'Source',
-        flex: 1,
-    },
-    {
-        field: 'actions',
-        type: 'actions',
-        getActions: (params) => [
-            <GridActionsCellItem
-              icon={<EditIcon />}
-              label="Edit"
-              onClick={() => {}}
-            />,
-            <GridActionsCellItem
-              icon={<DeleteIcon />}
-              label="Delete"
-              onClick={() => {}}
-            />,
-        ]
-    }
-]
-
-
-const OfftakeColumns: GridColDef[] = [
-    {
-        field: 'activity_type_name',
-        headerName: 'Activity',
-        flex: 1,
-    },
-    {
-        field: 'total',
-        headerName: 'Total',
-        flex: 1,
-    },
-    {
-        field: 'translocation_destination',
-        headerName: 'Destination',
-        flex: 1,
-    },
-    {
-        field: 'actions',
-        type: 'actions',
-        getActions: (params) => [
-            <GridActionsCellItem
-              icon={<EditIcon />}
-              label="Edit"
-              onClick={() => {}}
-            />,
-            <GridActionsCellItem
-              icon={<DeleteIcon />}
-              label="Delete"
-              onClick={() => {}}
-            />,
-        ]
-    }
-]
 
 interface ActivityDetailInterface {
     initialData: UploadSpeciesDetailInterface;
@@ -100,7 +35,123 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
         initialData, intakeEventMetadataList, offtakeEventMetadataList,
         setIsDirty, handleBack, handleNext, handleSaveDraft
     } = props
-    const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
+    const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))    
+    const [selectedIntakeActivity, setSelectedIntakeActivity] = useState<AnnualPopulationPerActivityInterface>(null)
+    const [selectedOfftakeActivity, setSelectedOfftakeActivity] = useState<AnnualPopulationPerActivityInterface>(null)
+    const IntakeColumns: GridColDef[] = [
+        {
+            field: 'activity_type_name',
+            headerName: 'Activity',
+            flex: 1,
+        },
+        {
+            field: 'total',
+            headerName: 'Total',
+            flex: 1,
+        },
+        {
+            field: 'reintroduction_source',
+            headerName: 'Source',
+            flex: 1,
+        },
+        {
+            field: 'actions',
+            type: 'actions',
+            getActions: ({ id }) => [
+                <GridActionsCellItem
+                    icon={<EditIcon />}
+                    label="Edit"
+                    onClick={() => handleEditRow(id, EventType.intake)}
+                />,
+                <GridActionsCellItem
+                    icon={<DeleteIcon />}
+                    label="Delete"
+                    onClick={() => handleDeleteRow(id, EventType.intake)}
+                />,
+            ]
+        }
+    ]
+    const OfftakeColumns: GridColDef[] = [
+        {
+            field: 'activity_type_name',
+            headerName: 'Activity',
+            flex: 1,
+        },
+        {
+            field: 'total',
+            headerName: 'Total',
+            flex: 1,
+        },
+        {
+            field: 'translocation_destination',
+            headerName: 'Destination',
+            flex: 1,
+        },
+        {
+            field: 'actions',
+            type: 'actions',
+            getActions: ({ id }) => [
+                <GridActionsCellItem
+                    icon={<EditIcon />}
+                    label="Edit"
+                    onClick={() => handleEditRow(id, EventType.offtake)}
+                />,
+                <GridActionsCellItem
+                    icon={<DeleteIcon />}
+                    label="Delete"
+                    onClick={() => handleDeleteRow(id, EventType.offtake)}
+                />,
+            ]
+        }
+    ]
+
+    const handleEditRow = (id: GridRowId, eventType: EventType) => {
+        if (eventType === EventType.intake) {
+            if (selectedIntakeActivity && selectedIntakeActivity.id === id) {
+                // toggle edit
+                setSelectedIntakeActivity(null)
+            } else {
+                let _row = data.intake_populations.find((row) => row.id === id)
+                if (_row) {
+                    setSelectedIntakeActivity(_row)
+                } else {
+                    setSelectedIntakeActivity(null)
+                }
+            }
+        } else {
+            if (selectedOfftakeActivity && selectedOfftakeActivity.id === id) {
+                // toggle edit
+                setSelectedOfftakeActivity(null)
+            } else {
+                let _row = data.offtake_populations.find((row) => row.id === id)
+                if (_row) {
+                    setSelectedOfftakeActivity(_row)
+                } else {
+                    setSelectedOfftakeActivity(null)
+                }
+            }
+        }
+    }
+
+    const handleDeleteRow = (id: GridRowId, eventType: EventType) => {
+        if (eventType === EventType.intake) {
+            if (selectedIntakeActivity && selectedIntakeActivity.id === id) {
+                setSelectedIntakeActivity(null)
+            }
+            setData({
+                ...data,
+                intake_populations: data.intake_populations.filter((row) => row.id !== id)
+            })
+        } else {
+            if (selectedOfftakeActivity && selectedOfftakeActivity.id === id) {
+                setSelectedOfftakeActivity(null)
+            }
+            setData({
+                ...data,
+                offtake_populations: data.offtake_populations.filter((row) => row.id !== id)
+            })
+        }
+    }
 
     const validateIntakeActivity = (activity: AnnualPopulationPerActivityInterface) => {
         let _error_validation:AnnualPopulationPerActivityValidation = {}
@@ -140,8 +191,14 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
         setData({
             ...initialData,
             annual_population: {...initialData.annual_population},
-            intake_populations: [...initialData.intake_populations],
-            offtake_populations: [...initialData.offtake_populations]
+            intake_populations: initialData.intake_populations.map((element, idx) => {
+                element.id = idx
+                return element
+            }),
+            offtake_populations: initialData.offtake_populations.map((element, idx) => {
+                element.id = idx
+                return element
+            })
         })
     }, [initialData])
 
@@ -159,17 +216,26 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                                     />
                             </Grid>
                             <Grid item>
-                                <EventDetailForm eventMetadataList={intakeEventMetadataList} eventType={EventType.intake}
-                                   setIsDirty={setIsDirty} validate={validateIntakeActivity} onSave={(isCreate: boolean, activity: AnnualPopulationPerActivityInterface) =>{
-                                    console.log('is create ', isCreate)
+                                <EventDetailForm initialData={selectedIntakeActivity} eventMetadataList={intakeEventMetadataList} eventType={EventType.intake}
+                                   setIsDirty={setIsDirty} validate={validateIntakeActivity} onSave={(isCreate: boolean, activity: AnnualPopulationPerActivityInterface, isCancel?: boolean) =>{
+                                    if (isCancel) {
+                                        setSelectedIntakeActivity(null)
+                                        return;
+                                    }
                                     if (isCreate) {
-                                        activity.id = data.intake_populations.length + 1
+                                        activity.id = data.intake_populations.length ? data.intake_populations[data.intake_populations.length - 1].id + 1 : 0
                                         setData({
                                             ...data,
                                             intake_populations: [...data.intake_populations, activity]
                                         })
                                     } else {
-                                        // TODO: handle update                                    }
+                                        setData({
+                                            ...data,
+                                            intake_populations: data.intake_populations.map((element) => {
+                                                return element.id === activity.id ? activity : element
+                                            })
+                                        })
+                                        setSelectedIntakeActivity(null)
                                     }
                                    }} />
                             </Grid>
@@ -184,16 +250,26 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                                 <DataGrid columns={OfftakeColumns} rows={data.offtake_populations} autoHeight />
                             </Grid>
                             <Grid item>
-                                <EventDetailForm eventMetadataList={offtakeEventMetadataList} eventType={EventType.offtake}
-                                   setIsDirty={setIsDirty} validate={validateOfftakeActivity} onSave={(isCreate: boolean, activity: AnnualPopulationPerActivityInterface) =>{
+                                <EventDetailForm initialData={selectedOfftakeActivity} eventMetadataList={offtakeEventMetadataList} eventType={EventType.offtake}
+                                   setIsDirty={setIsDirty} validate={validateOfftakeActivity} onSave={(isCreate: boolean, activity: AnnualPopulationPerActivityInterface, isCancel?: boolean) =>{
+                                    if (isCancel) {
+                                        setSelectedOfftakeActivity(null)
+                                        return;
+                                    }
                                     if (isCreate) {
-                                        activity.id = data.offtake_populations.length + 1
+                                        activity.id = data.offtake_populations.length ? data.offtake_populations[data.offtake_populations.length - 1].id + 1 : 0
                                         setData({
                                             ...data,
                                             offtake_populations: [...data.offtake_populations, activity]
                                         })
                                     } else {
-                                        // TODO: handle update                                    }
+                                        setData({
+                                            ...data,
+                                            offtake_populations: data.offtake_populations.map((element) => {
+                                                return element.id === activity.id ? activity : element
+                                            })
+                                        })
+                                        setSelectedOfftakeActivity(null)
                                     }
                                    }} />
                             </Grid>
@@ -207,14 +283,16 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                         handleSaveDraft(data)
                     }}>SAVE DRAFT</Button>
                 </Grid>
-                <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
-                    <Grid item>
-                        <Button variant='outlined' onClick={() => handleBack(data)}>BACK</Button>
-                    </Grid>
-                    <Grid item>
-                        <Button variant='contained' onClick={() => {
-                            handleNext(data)
-                        }}>NEXT</Button>
+                <Grid item>
+                    <Grid container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
+                        <Grid item>
+                            <Button variant='outlined' onClick={() => handleBack(data)}>BACK</Button>
+                        </Grid>
+                        <Grid item>
+                            <Button variant='contained' onClick={() => {
+                                handleNext(data)
+                            }}>NEXT</Button>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>

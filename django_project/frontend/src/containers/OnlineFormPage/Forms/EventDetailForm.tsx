@@ -15,6 +15,8 @@ import MenuItem from '@mui/material/MenuItem';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import AddIcon from '@mui/icons-material/Add';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import CloseIcon from '@mui/icons-material/Close';
 import {
     CommonUploadMetadata,
     AnnualPopulationPerActivityInterface,
@@ -36,7 +38,7 @@ interface EventDetailFormInterface {
     eventMetadataList: CommonUploadMetadata[],
     setIsDirty: (isDirty: boolean) => void,
     validate: (data: AnnualPopulationPerActivityInterface) => AnnualPopulationPerActivityValidation,
-    onSave: (isCreate: boolean, data: AnnualPopulationPerActivityInterface) => void
+    onSave: (isCreate: boolean, data: AnnualPopulationPerActivityInterface, isCancel?: boolean) => void
 }
 
 export default function EventDetailForm(props: EventDetailFormInterface) {
@@ -95,11 +97,16 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
     const saveForm = () => {
         let _validationResult = validate(data)
         if (Object.keys(_validationResult).length === 0) {
-            onSave(!(props.initialData && props.initialData.activity_type_id !== 0), {...data})
+            onSave(!(props.initialData && props.initialData.id >= 0), {...data})
             setData(getDefaultAnnualPopulationPerActivity())
         } else {
             setValidation({..._validationResult})
         }
+    }
+
+    const cancelUpdate = () => {
+        onSave(!(props.initialData && props.initialData.id >= 0), {...data}, true)
+        setData(getDefaultAnnualPopulationPerActivity())
     }
 
     useEffect(() => {
@@ -275,7 +282,12 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                         helperText=" " />
                 </Grid>
                 <Grid item className='ButtonContainer'>
-                    <Button variant="outlined" startIcon={<AddIcon />} onClick={saveForm}>
+                    { initialData ? 
+                       <Button variant="outlined" className='CancelUpdateButton' startIcon={<CloseIcon />} onClick={cancelUpdate}>
+                            Cancel
+                        </Button> : null
+                    }
+                    <Button variant="outlined" startIcon={ initialData ? <ModeEditIcon /> : <AddIcon />} onClick={saveForm}>
                         { initialData ? 'Update' : 'Add' }
                     </Button>
                 </Grid>
@@ -432,7 +444,12 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                     helperText=" " />
             </Grid>
             <Grid item className='ButtonContainer'>
-                <Button variant="outlined" startIcon={<AddIcon />} onClick={saveForm}>
+                { initialData ? 
+                    <Button variant="outlined" className='CancelUpdateButton' startIcon={<CloseIcon />} onClick={cancelUpdate}>
+                        Cancel
+                    </Button> : null
+                }
+                <Button variant="outlined" startIcon={ initialData ? <ModeEditIcon /> : <AddIcon />} onClick={saveForm}>
                     { initialData ? 'Update' : 'Add' }
                 </Button>
             </Grid>

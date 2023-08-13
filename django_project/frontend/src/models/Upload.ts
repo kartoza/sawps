@@ -122,7 +122,8 @@ export const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActiv
         reintroduction_source: '',
         translocation_destination: '',
         note: '',
-        permit: 0
+        permit: 0,
+        id: -1
     }
 }
 
