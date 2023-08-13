@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import Box from '@mui/material/Box';
 import { DataGrid, GridColDef, GridValueGetterParams, GridActionsCellItem } from '@mui/x-data-grid';
 import {
     UploadSpeciesDetailInterface,
@@ -153,8 +154,9 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                             <Grid item>
                                 <Typography variant='h6'>Introduction/Reintroduction</Typography>
                             </Grid>
-                            <Grid item className='ActivityTable'>
-                                <DataGrid columns={IntakeColumns} rows={data.intake_populations} autoHeight />
+                            <Grid item className={'ActivityTable' + (data.intake_populations.length === 0 ? ' EmptyRows' : '')}>
+                                <DataGrid columns={IntakeColumns} rows={data.intake_populations} autoHeight
+                                    />
                             </Grid>
                             <Grid item>
                                 <EventDetailForm eventMetadataList={intakeEventMetadataList} eventType={EventType.intake}
@@ -178,7 +180,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                             <Grid item>
                                 <Typography variant='h6'>Off-take</Typography>
                             </Grid>
-                            <Grid item className='ActivityTable'>
+                            <Grid item className={'ActivityTable' + (data.offtake_populations.length === 0 ? ' EmptyRows' : '')}>
                                 <DataGrid columns={OfftakeColumns} rows={data.offtake_populations} autoHeight />
                             </Grid>
                             <Grid item>

@@ -124,5 +124,13 @@
                 margin-bottom: 0.1rem;
             }
         }
+        &.EmptyRows {
+            .MuiDataGrid-virtualScrollerContent {
+                height: 52px !important;
+            }
+            .MuiDataGrid-overlayWrapperInner {
+                height: 52px !important;
+            }
+        }
     }
 }
