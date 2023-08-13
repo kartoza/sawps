@@ -11,8 +11,15 @@ import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import Divider from '@mui/material/Divider';
 import {
-    UploadSpeciesDetailInterface} from '../../../models/Upload';
+    GridRowId 
+} from '@mui/x-data-grid';
+import {
+    UploadSpeciesDetailInterface,
+    AnnualPopulationPerActivityInterface
+} from '../../../models/Upload';
 import Loading from '../../../components/Loading';
+import {EventType} from './EventDetailForm';
+import ActivityDataTable from './ActivityDataTable';
 
 
 
@@ -265,6 +272,9 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
 
 function ActivityDetailReview(props: ReviewItemInterface) {
     const { data } = props;
+    const [selectedIntakeActivity, setSelectedIntakeActivity] = useState<AnnualPopulationPerActivityInterface>(null)
+    const [selectedOfftakeActivity, setSelectedOfftakeActivity] = useState<AnnualPopulationPerActivityInterface>(null)
+
     return (
         <Grid container className='DataPreview' flexDirection={'column'} rowSpacing={2}>
             <Grid item>
@@ -274,130 +284,152 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                             <Grid item>
                                 <Typography variant='h6'>Introduction/Reintroduction</Typography>
                             </Grid>
-                            {/* <Grid item className='InputContainer'>
-                                <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='intake_adult_male'
-                                            label='Adult Males'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            variant="standard"
-                                            fullWidth
-                                            disabled
-                                            defaultValue={displayNumber(data.intake_population.adult_male)}                                            
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='intake_adult_female'
-                                            label='Adult Females'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <FemaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            variant="standard"
-                                            fullWidth
-                                            disabled
-                                            defaultValue={displayNumber(data.intake_population.adult_female)}                                            
-                                        />
-                                    </Grid>
-                                </Grid>
+                            <Grid item>
+                                <ActivityDataTable data={data.intake_populations} eventType={EventType.intake}
+                                    isReadOnly={true} handlePreviewRow={(id: GridRowId, eventType: EventType) => {
+                                        if (selectedIntakeActivity && selectedIntakeActivity.id === id) {
+                                            setSelectedIntakeActivity(null)
+                                        } else {
+                                            let _row = data.intake_populations.find((row) => row.id === id)
+                                            if (_row) {
+                                                setSelectedIntakeActivity({..._row})
+                                            } else {
+                                                setSelectedIntakeActivity(null)
+                                            }
+                                        }
+                                    }} />
                             </Grid>
-                            <Grid item className='InputContainer'>
-                                <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='intake_juvenile_male'
-                                            label='Juvenile Males'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            variant="standard"
-                                            fullWidth
-                                            disabled
-                                            defaultValue={displayNumber(data.intake_population.juvenile_male)}                                            
-                                        />
+                            <Grid item>
+                                { selectedIntakeActivity && 
+                                    <Grid container className='ActivityPreviewContainer' flexDirection={'column'} rowSpacing={1}>
+                                        <Grid item className='InputContainer'>
+                                            <Grid container flexDirection={'row'} spacing={2}>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='intake_adult_male'
+                                                        label='Adult Males'
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <MaleIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        variant="standard"
+                                                        fullWidth
+                                                        disabled
+                                                        value={displayNumber(selectedIntakeActivity.adult_male)}                                            
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='intake_adult_female'
+                                                        label='Adult Females'
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <FemaleIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        variant="standard"
+                                                        fullWidth
+                                                        disabled
+                                                        value={displayNumber(selectedIntakeActivity.adult_female)}                                            
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <Grid container flexDirection={'row'} spacing={2}>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='intake_juvenile_male'
+                                                        label='Juvenile Males'
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <MaleIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        variant="standard"
+                                                        fullWidth
+                                                        disabled
+                                                        value={displayNumber(selectedIntakeActivity.juvenile_male)}                                            
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='intake_juvenile_female'
+                                                        label='Juvenile Females'
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <FemaleIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        variant="standard"
+                                                        fullWidth
+                                                        disabled
+                                                        value={displayNumber(selectedIntakeActivity.juvenile_female)}                                            
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <Grid container flexDirection={'row'} spacing={2}>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='intake_total_count'
+                                                        label='Total Count'
+                                                        disabled
+                                                        variant="standard"
+                                                        fullWidth
+                                                        value={displayNumber(selectedIntakeActivity.total)}                                            
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='intake_founder population'
+                                                        label='Founder Population'
+                                                        disabled
+                                                        required
+                                                        variant="standard"
+                                                        fullWidth
+                                                        value={displayBoolean(selectedIntakeActivity.founder_population)}                                            
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <TextField
+                                                id='intake_event'
+                                                label='Event'
+                                                disabled
+                                                required
+                                                variant="standard"
+                                                fullWidth
+                                                value={displayText(selectedIntakeActivity.activity_type_name)}                                    
+                                            />
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <TextField id='intake_source' label='Source' required value={displayText(selectedIntakeActivity.reintroduction_source)}
+                                                variant='standard' fullWidth disabled />
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <TextField id='intake_permit' label='Permit Number' value={displayText(selectedIntakeActivity.permit ? selectedIntakeActivity.permit.toString() : '')}
+                                                variant='standard' fullWidth disabled />
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <TextField id='intake_note' label='Notes' value={displayText(selectedIntakeActivity.note)}
+                                                variant='standard' fullWidth disabled />
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='intake_juvenile_female'
-                                            label='Juvenile Females'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <FemaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            variant="standard"
-                                            fullWidth
-                                            disabled
-                                            defaultValue={displayNumber(data.intake_population.juvenile_female)}                                            
-                                        />
-                                    </Grid>
-                                </Grid>
+                                }
                             </Grid>
-                            <Grid item className='InputContainer'>
-                                <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='intake_total_count'
-                                            label='Total Count'
-                                            disabled
-                                            variant="standard"
-                                            fullWidth
-                                            defaultValue={displayNumber(data.intake_population.total)}                                            
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='intake_founder population'
-                                            label='Founder Population'
-                                            disabled
-                                            required
-                                            variant="standard"
-                                            fullWidth
-                                            defaultValue={displayBoolean(data.intake_population.founder_population)}                                            
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField
-                                    id='intake_event'
-                                    label='Event'
-                                    disabled
-                                    required
-                                    variant="standard"
-                                    fullWidth
-                                    defaultValue={displayText(data.intake_population.activity_type_name)}                                    
-                                />
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField id='intake_source' label='Source' required defaultValue={displayText(data.intake_population.reintroduction_source)}
-                                    variant='standard' fullWidth disabled />
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField id='intake_permit' label='Permit Number' defaultValue={displayText(data.intake_population.permit ? data.intake_population.permit.toString() : '')}
-                                    variant='standard' fullWidth disabled />
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField id='intake_note' label='Notes' defaultValue={displayText(data.intake_population.note)}
-                                    variant='standard' fullWidth disabled />
-                            </Grid> */}
+                            
                         </Grid>
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -405,119 +437,141 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                             <Grid item>
                                 <Typography variant='h6'>Off-take</Typography>
                             </Grid>
-                            {/* <Grid item className='InputContainer'>
-                                <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='offtake_adult_male'
-                                            label='Adult Males'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            variant="standard"
-                                            fullWidth disabled
-                                            defaultValue={displayNumber(data.offtake_population.adult_male)} 
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='offtake_adult_female'
-                                            label='Adult Females'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <FemaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            variant="standard"
-                                            fullWidth disabled
-                                            defaultValue={displayNumber(data.offtake_population.adult_female)} 
-                                        />
-                                    </Grid>
-                                </Grid>
+                            <Grid item>
+                                <ActivityDataTable data={data.offtake_populations} eventType={EventType.offtake}
+                                    isReadOnly={true} handlePreviewRow={(id: GridRowId, eventType: EventType) => {
+                                        if (selectedOfftakeActivity && selectedOfftakeActivity.id === id) {
+                                            setSelectedOfftakeActivity(null)
+                                        } else {
+                                            let _row = data.offtake_populations.find((row) => row.id === id)
+                                            if (_row) {
+                                                setSelectedOfftakeActivity({..._row})
+                                            } else {
+                                                setSelectedOfftakeActivity(null)
+                                            }
+                                        }
+                                    }} />
                             </Grid>
-                            <Grid item className='InputContainer'>
-                                <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='offtake_juvenile_male'
-                                            label='Juvenile Males'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            variant="standard"
-                                            fullWidth disabled
-                                            defaultValue={displayNumber(data.offtake_population.juvenile_male)} 
-                                        />
+                            <Grid item>
+                                { selectedOfftakeActivity && 
+                                    <Grid container className='ActivityPreviewContainer' flexDirection={'column'} rowSpacing={1}>
+                                        <Grid item className='InputContainer'>
+                                            <Grid container flexDirection={'row'} spacing={2}>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='offtake_adult_male'
+                                                        label='Adult Males'
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <MaleIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        variant="standard"
+                                                        fullWidth disabled
+                                                        value={displayNumber(selectedOfftakeActivity.adult_male)} 
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='offtake_adult_female'
+                                                        label='Adult Females'
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <FemaleIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        variant="standard"
+                                                        fullWidth disabled
+                                                        value={displayNumber(selectedOfftakeActivity.adult_female)} 
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <Grid container flexDirection={'row'} spacing={2}>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='offtake_juvenile_male'
+                                                        label='Juvenile Males'
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <MaleIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        variant="standard"
+                                                        fullWidth disabled
+                                                        value={displayNumber(selectedOfftakeActivity.juvenile_male)} 
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='offtake_juvenile_female'
+                                                        label='Juvenile Females'
+                                                        InputProps={{
+                                                            startAdornment: (
+                                                                <InputAdornment position="start">
+                                                                    <FemaleIcon />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        variant="standard"
+                                                        fullWidth disabled
+                                                        value={displayNumber(selectedOfftakeActivity.juvenile_female)} 
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <Grid container flexDirection={'row'} spacing={2}>
+                                                <Grid item xs={6}>
+                                                    <TextField
+                                                        id='offtake_total_count'
+                                                        label='Total Count'
+                                                        disabled
+                                                        variant="standard"
+                                                        fullWidth
+                                                        value={displayNumber(selectedOfftakeActivity.total)}                                            
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <TextField
+                                                id='offtake-activity-label'
+                                                label='Event'
+                                                disabled
+                                                variant="standard"
+                                                fullWidth
+                                                value={displayText(selectedOfftakeActivity.activity_type_name)}                                    
+                                            />
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <TextField id='offtake_translocation_destination' label='Translocation Destination' required value={displayText(selectedOfftakeActivity.translocation_destination)}
+                                                variant='standard' disabled fullWidth
+                                                />
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <TextField id='offtake_permit' label='Permit Number' value={displayText(selectedOfftakeActivity.permit ? selectedOfftakeActivity.permit.toString() : '')}
+                                                variant='standard' disabled fullWidth
+                                                />
+                                        </Grid>
+                                        <Grid item className='InputContainer'>
+                                            <TextField id='offtake_note' label='Notes' value={displayText(selectedOfftakeActivity.note)}
+                                                variant='standard' disabled fullWidth
+                                                />
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='offtake_juvenile_female'
-                                            label='Juvenile Females'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <FemaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            variant="standard"
-                                            fullWidth disabled
-                                            defaultValue={displayNumber(data.offtake_population.juvenile_female)} 
-                                        />
-                                    </Grid>
-                                </Grid>
+                                }
                             </Grid>
-                            <Grid item className='InputContainer'>
-                                <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            id='offtake_total_count'
-                                            label='Total Count'
-                                            disabled
-                                            variant="standard"
-                                            fullWidth
-                                            defaultValue={displayNumber(data.offtake_population.total)}                                            
-                                        />
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField
-                                    id='offtake-activity-label'
-                                    label='Event'
-                                    disabled
-                                    variant="standard"
-                                    fullWidth
-                                    defaultValue={displayText(data.offtake_population.activity_type_name)}                                    
-                                />
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField id='offtake_translocation_destination' label='Translocation Destination' required defaultValue={displayText(data.offtake_population.translocation_destination)}
-                                    variant='standard' disabled fullWidth
-                                    />
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField id='offtake_permit' label='Permit Number' defaultValue={displayText(data.offtake_population.permit ? data.offtake_population.permit.toString() : '')}
-                                    variant='standard' disabled fullWidth
-                                    />
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <TextField id='offtake_note' label='Notes' defaultValue={displayText(data.offtake_population.note)}
-                                    variant='standard' disabled fullWidth
-                                    />
-                            </Grid> */}
+                            
                         </Grid>
                     </Grid>
                 </Grid>
@@ -553,7 +607,7 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                     </Grid>
                     <Divider />
                     <Grid item>
-                        {/* <ActivityDetailReview data={props.initialData} /> */}
+                        <ActivityDetailReview data={props.initialData} />
                     </Grid>
                 </Grid>                
             </Grid>
@@ -563,19 +617,21 @@ export default function ReviewAndConfirm(props: ReviewAndConfirmInterface) {
                         props.handleSaveDraft()
                     }}>SAVE DRAFT</Button>
                 </Grid>
-                <Grid item container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
-                    <Grid item>
-                        <Button variant='outlined' disabled={props.loading} onClick={() => props.handleBack(props.initialData)}>BACK</Button>
-                    </Grid>
-                    <Grid item>
-                        {!props.loading && (
-                            <Button variant='contained' onClick={props.handleSubmit}>SUBMIT</Button>
-                        )}
-                        {props.loading && (
-                            <Button variant='contained'>
-                                <Loading size={20} style={{'color': 'white'}} label='SUBMITTING...' />
-                            </Button>
-                        )}
+                <Grid item>
+                    <Grid container flexDirection={'row'} justifyContent={'flex-end'} columnSpacing={2}>
+                        <Grid item>
+                            <Button variant='outlined' disabled={props.loading} onClick={() => props.handleBack(props.initialData)}>BACK</Button>
+                        </Grid>
+                        <Grid item>
+                            {!props.loading && (
+                                <Button variant='contained' onClick={props.handleSubmit}>SUBMIT</Button>
+                            )}
+                            {props.loading && (
+                                <Button variant='contained'>
+                                    <Loading size={20} style={{'color': 'white'}} label='SUBMITTING...' />
+                                </Button>
+                            )}
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>

@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Grid from "@mui/material/Grid";
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import {
-    DataGrid,
-    GridColDef,
-    GridValueGetterParams,
-    GridActionsCellItem,
     GridRowId 
 } from '@mui/x-data-grid';
 import {
@@ -19,6 +13,7 @@ import {
     AnnualPopulationPerActivityValidation
 } from '../../../models/Upload';
 import EventDetailForm, {EventType} from './EventDetailForm';
+import ActivityDataTable from './ActivityDataTable';
 
 interface ActivityDetailInterface {
     initialData: UploadSpeciesDetailInterface;
@@ -35,75 +30,9 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
         initialData, intakeEventMetadataList, offtakeEventMetadataList,
         setIsDirty, handleBack, handleNext, handleSaveDraft
     } = props
-    const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))    
+    const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
     const [selectedIntakeActivity, setSelectedIntakeActivity] = useState<AnnualPopulationPerActivityInterface>(null)
     const [selectedOfftakeActivity, setSelectedOfftakeActivity] = useState<AnnualPopulationPerActivityInterface>(null)
-    const IntakeColumns: GridColDef[] = [
-        {
-            field: 'activity_type_name',
-            headerName: 'Activity',
-            flex: 1,
-        },
-        {
-            field: 'total',
-            headerName: 'Total',
-            flex: 1,
-        },
-        {
-            field: 'reintroduction_source',
-            headerName: 'Source',
-            flex: 1,
-        },
-        {
-            field: 'actions',
-            type: 'actions',
-            getActions: ({ id }) => [
-                <GridActionsCellItem
-                    icon={<EditIcon />}
-                    label="Edit"
-                    onClick={() => handleEditRow(id, EventType.intake)}
-                />,
-                <GridActionsCellItem
-                    icon={<DeleteIcon />}
-                    label="Delete"
-                    onClick={() => handleDeleteRow(id, EventType.intake)}
-                />,
-            ]
-        }
-    ]
-    const OfftakeColumns: GridColDef[] = [
-        {
-            field: 'activity_type_name',
-            headerName: 'Activity',
-            flex: 1,
-        },
-        {
-            field: 'total',
-            headerName: 'Total',
-            flex: 1,
-        },
-        {
-            field: 'translocation_destination',
-            headerName: 'Destination',
-            flex: 1,
-        },
-        {
-            field: 'actions',
-            type: 'actions',
-            getActions: ({ id }) => [
-                <GridActionsCellItem
-                    icon={<EditIcon />}
-                    label="Edit"
-                    onClick={() => handleEditRow(id, EventType.offtake)}
-                />,
-                <GridActionsCellItem
-                    icon={<DeleteIcon />}
-                    label="Delete"
-                    onClick={() => handleDeleteRow(id, EventType.offtake)}
-                />,
-            ]
-        }
-    ]
 
     const handleEditRow = (id: GridRowId, eventType: EventType) => {
         if (eventType === EventType.intake) {
@@ -211,9 +140,9 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                             <Grid item>
                                 <Typography variant='h6'>Introduction/Reintroduction</Typography>
                             </Grid>
-                            <Grid item className={'ActivityTable' + (data.intake_populations.length === 0 ? ' EmptyRows' : '')}>
-                                <DataGrid columns={IntakeColumns} rows={data.intake_populations} autoHeight
-                                    />
+                            <Grid item>
+                                <ActivityDataTable data={data.intake_populations} eventType={EventType.intake} isReadOnly={false}
+                                handleDeleteRow={handleDeleteRow} handleEditRow={handleEditRow} />
                             </Grid>
                             <Grid item>
                                 <EventDetailForm initialData={selectedIntakeActivity} eventMetadataList={intakeEventMetadataList} eventType={EventType.intake}
@@ -246,8 +175,9 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                             <Grid item>
                                 <Typography variant='h6'>Off-take</Typography>
                             </Grid>
-                            <Grid item className={'ActivityTable' + (data.offtake_populations.length === 0 ? ' EmptyRows' : '')}>
-                                <DataGrid columns={OfftakeColumns} rows={data.offtake_populations} autoHeight />
+                            <Grid item>
+                                <ActivityDataTable data={data.offtake_populations} eventType={EventType.offtake} isReadOnly={false}
+                                    handleDeleteRow={handleDeleteRow} handleEditRow={handleEditRow} />
                             </Grid>
                             <Grid item>
                                 <EventDetailForm initialData={selectedOfftakeActivity} eventMetadataList={offtakeEventMetadataList} eventType={EventType.offtake}
