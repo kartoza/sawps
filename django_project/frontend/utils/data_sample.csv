@@ -1,0 +1,15 @@
+property,province,species,year,count_total,survey_method,count_method,open_closed,property_type,property_size,area_available_to_species
+Prop A,Eastern Cape,Loxodonta africana,2010,30,Transect survey - drive,Point sampling,Closed,Private,10,8
+Prop B,Eastern Cape,Loxodonta africana,2010,30,Transect survey - drive,Point sampling,Closed,State,7,7
+Prop A,Eastern Cape,Loxodonta africana,2011,20,Camera trapping,Distance sampling,Closed,Private,10,6
+Prop B,Eastern Cape,Loxodonta africana,2011,20,Camera trapping,Distance sampling,Closed,State,7,5
+Prop B,Eastern Cape,Loxodonta africana,2012,15,Aquatic survey,Distance sampling,Closed,State,7,4
+Prop A,Eastern Cape,Loxodonta africana,2012,15,Aquatic survey,Distance sampling,Closed,Private,10,8
+Prop B,Eastern Cape,Loxodonta africana,2013,10,Aquatic survey,Belt sampling,Open,State,7,7
+Prop A,Eastern Cape,Loxodonta africana,2013,10,Aquatic survey,Belt sampling,Open,Private,10,6
+Prop A,Eastern Cape,Loxodonta africana,2014,35,Aquatic survey,Distance sampling,Open,Private,10,5
+Prop B,Eastern Cape,Loxodonta africana,2014,35,Aquatic survey,Distance sampling,Open,State,7,4
+Prop A,Eastern Cape,Loxodonta africana,2017,30,Transect survey - drive,Point sampling,Closed,Private,10,6
+Prop B,Eastern Cape,Loxodonta africana,2019,15,Aquatic survey,Distance sampling,Closed,State,7,5
+Prop A,Eastern Cape,Loxodonta africana,2019,25,Transect survey - drive,Point sampling,Closed,Private,10,4
+Prop B,Eastern Cape,Loxodonta africana,2021,3,Aquatic survey,Distance sampling,Closed,State,7,9
