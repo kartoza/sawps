@@ -42,18 +42,27 @@ interface EventDetailFormInterface {
     onSave: (isCreate: boolean, data: AnnualPopulationPerActivityInterface, isCancel?: boolean) => void
 }
 
+const isTranslocationSourceFieldVisible = (selectedActivityName: string) => {
+    let _name = selectedActivityName ? selectedActivityName.toLocaleLowerCase() : ''
+    if (_name.includes('translocation intake')) return true
+    return false
+}
+
 const isTranslocationDestinationFieldVisible = (selectedActivityName: string) => {
     let _name = selectedActivityName ? selectedActivityName.toLocaleLowerCase() : ''
-    if (_name.includes('planned hunt') || _name.includes('planned euthanasia') || _name.includes('illegal hunting')) {
-        return false
+    if (_name.includes('translocation offtake')) {
+        return true
     }
-    return true
+    return false
 }
 
 const isPermitNumberFieldVisible = (selectedActivityName: string) => {
     let _name = selectedActivityName ? selectedActivityName.toLocaleLowerCase() : ''
-    if (_name.includes('illegal hunting')) return false
-    return true
+    if (_name.includes('translocation offtake') || _name.includes('translocation intake') ||
+        _name.includes('planned hunt') || _name.includes('planned euthanasia')) {
+        return true
+    }
+    return false
 }
 
 export default function EventDetailForm(props: EventDetailFormInterface) {
@@ -476,6 +485,15 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                     <FormHelperText>{validation.activity_type_id ? getErrorMessage(validationMessages, 'activity_type_id') : ' '}</FormHelperText>
                 </FormControl>
             </Grid>
+            { isTranslocationSourceFieldVisible(data.activity_type_name) &&
+                <Grid item className='InputContainer'>
+                    <TextField id='offtake_translocation_source' label='Translocation Source' value={data.reintroduction_source}
+                        variant='standard'
+                        onChange={(e) => updateActivityPopulation('reintroduction_source', e.target.value) } fullWidth
+                        error={validation?.reintroduction_source}
+                        helperText={validation?.reintroduction_source ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
+                </Grid>
+            }
             { isTranslocationDestinationFieldVisible(data.activity_type_name) &&
                 <Grid item className='InputContainer'>
                     <TextField id='offtake_translocation_destination' label='Translocation Destination' value={data.translocation_destination}
@@ -484,7 +502,7 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                         error={validation?.translocation_destination}
                         helperText={validation?.translocation_destination ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
                 </Grid>
-            }            
+            }
             { isPermitNumberFieldVisible(data.activity_type_name) &&
                 <Grid item className='InputContainer'>
                     <TextField id='offtake_permit' label='Permit Number' value={data.permit}

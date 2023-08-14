@@ -230,6 +230,8 @@ class UploadPopulationAPIVIew(APIView):
                 adult_female=offtake_population.get("adult_female", 0),
                 juvenile_male=offtake_population.get("juvenile_male", 0),
                 juvenile_female=offtake_population.get("juvenile_female", 0),
+                reintroduction_source=offtake_population.get(
+                    "reintroduction_source", None),
                 translocation_destination=offtake_population.get(
                     "translocation_destination", None),
                 offtake_permit=offtake_population.get("permit", None),

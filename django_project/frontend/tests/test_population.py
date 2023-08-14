@@ -49,8 +49,6 @@ class TestPopulationAPIViews(TestCase):
             user=self.user_1,
             organisation=self.organisation
         )
-       
-    
 
     def test_get_metadata_list(self):
         request = self.factory.get(
@@ -129,7 +127,16 @@ class TestPopulationAPIViews(TestCase):
                 'translocation_destination': 'Dest A',
                 'permit': 900,
                 'note': 'This is invalid notes'
-            }]
+            },
+            {
+                'activity_type_id': 3,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            },]
         }
         kwargs = {
             'property_id': property.id
