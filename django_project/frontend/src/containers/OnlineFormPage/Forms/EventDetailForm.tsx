@@ -42,6 +42,20 @@ interface EventDetailFormInterface {
     onSave: (isCreate: boolean, data: AnnualPopulationPerActivityInterface, isCancel?: boolean) => void
 }
 
+const isTranslocationDestinationFieldVisible = (selectedActivityName: string) => {
+    let _name = selectedActivityName ? selectedActivityName.toLocaleLowerCase() : ''
+    if (_name.includes('planned hunt') || _name.includes('planned euthanasia') || _name.includes('illegal hunting')) {
+        return false
+    }
+    return true
+}
+
+const isPermitNumberFieldVisible = (selectedActivityName: string) => {
+    let _name = selectedActivityName ? selectedActivityName.toLocaleLowerCase() : ''
+    if (_name.includes('illegal hunting')) return false
+    return true
+}
+
 export default function EventDetailForm(props: EventDetailFormInterface) {
     const {
         initialData, eventType, eventMetadataList, setIsDirty, validate, onSave
@@ -462,21 +476,25 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                     <FormHelperText>{validation.activity_type_id ? getErrorMessage(validationMessages, 'activity_type_id') : ' '}</FormHelperText>
                 </FormControl>
             </Grid>
-            <Grid item className='InputContainer'>
-                <TextField id='offtake_translocation_destination' label='Translocation Destination' required value={data.translocation_destination}
-                    variant='standard'
-                    onChange={(e) => updateActivityPopulation('translocation_destination', e.target.value) } fullWidth
-                    error={validation?.translocation_destination}
-                    helperText={validation?.translocation_destination ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
-            </Grid>
-            <Grid item className='InputContainer'>
-                <TextField id='offtake_permit' label='Permit Number' value={data.permit}
-                    variant='standard'
-                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                    onChange={(e) => updateActivityPopulation('permit', parseInt(e.target.value)) } fullWidth
-                    error={validation?.permit}
-                    helperText={validation?.permit ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
-            </Grid>
+            { isTranslocationDestinationFieldVisible(data.activity_type_name) &&
+                <Grid item className='InputContainer'>
+                    <TextField id='offtake_translocation_destination' label='Translocation Destination' value={data.translocation_destination}
+                        variant='standard'
+                        onChange={(e) => updateActivityPopulation('translocation_destination', e.target.value) } fullWidth
+                        error={validation?.translocation_destination}
+                        helperText={validation?.translocation_destination ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
+                </Grid>
+            }            
+            { isPermitNumberFieldVisible(data.activity_type_name) &&
+                <Grid item className='InputContainer'>
+                    <TextField id='offtake_permit' label='Permit Number' value={data.permit}
+                        variant='standard'
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        onChange={(e) => updateActivityPopulation('permit', parseInt(e.target.value)) } fullWidth
+                        error={validation?.permit}
+                        helperText={validation?.permit ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
+                </Grid>
+            }            
             <Grid item className='InputContainer'>
                 <TextField id='offtake_note' label='Notes' value={data.note}
                     variant='standard'

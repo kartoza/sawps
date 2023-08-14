@@ -136,12 +136,6 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                 }
             }
         }
-        if (!activity.translocation_destination || activity.translocation_destination.trim() === '') {
-            _error_validation = {
-                ..._error_validation,
-                translocation_destination: true
-            }
-        }
         return [_error_validation, _error_messages] as [AnnualPopulationPerActivityValidation, AnnualPopulationPerActivityErrorMessage]
     }
 
