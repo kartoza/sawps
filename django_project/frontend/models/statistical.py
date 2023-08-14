@@ -18,7 +18,9 @@ class StatisticalModel(models.Model):
     taxon = models.ForeignKey(
         'species.Taxon',
         on_delete=models.CASCADE,
-        unique=True
+        unique=True,
+        blank=True,
+        null=True,
     )
 
     name = models.CharField(

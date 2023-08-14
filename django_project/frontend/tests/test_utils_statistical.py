@@ -129,13 +129,22 @@ class TestStatisticalUtils(TestCase):
     def test_write_plumber_file(self):
         taxon = TaxonF.create()
         model = StatisticalModelF.create(
+            taxon=None
+        )
+        model = StatisticalModelF.create(
             taxon=taxon
         )
-        r_file_path = write_plumber_file()
+        r_file_path = write_plumber_file(
+            os.path.join(
+                '/home/web/plumber_data',
+                'plumber_test.R'
+            )
+        )
         with open(r_file_path, 'r') as f:
             lines = f.readlines()
         self.assertTrue(find_r_line_code(lines, '@get /statistical/echo'))
-        self.assertTrue(find_r_line_code(lines, '@post /statistical/generic'))
+        self.assertTrue(
+            find_r_line_code(lines, '@post /statistical/generic'))
         self.assertTrue(
             find_r_line_code(lines,
                              f'@post /statistical/api_{str(model.id)}')

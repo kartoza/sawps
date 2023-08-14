@@ -124,9 +124,9 @@ def execute_statistical_model(data_filepath, model: StatisticalModel = None):
     return False, None
 
 
-def write_plumber_file():
+def write_plumber_file(file_path = None):
     """Write R codes to plumber.R"""
-    r_file_path = os.path.join(
+    r_file_path = file_path if file_path else os.path.join(
         '/home/web/plumber_data',
         'plumber.R'
     )
@@ -139,8 +139,14 @@ def write_plumber_file():
     models = StatisticalModel.objects.all()
     for model in models:
         lines.append('\n')
-        lines.append(f'#* Model for species {model.taxon.scientific_name}\n')
-        lines.append(f'#* @post /statistical/api_{str(model.id)}\n')
+        if model.taxon:
+            lines.append(
+                f'#* Model for species {model.taxon.scientific_name}\n')
+            lines.append(f'#* @post /statistical/api_{str(model.id)}\n')
+        else:
+            lines.append('#* Generic Model\n')
+            lines.append('#* @post /statistical/generic\n')
+
         lines.append('function(filepath) {\n')
         lines.append('  all_data <- read.csv(filepath)\n')
         code_lines = model.code.splitlines()
@@ -245,9 +251,14 @@ def clear_statistical_model_output_cache(taxon: Taxon):
 
     :param taxon: species
     """
-    output_caches = (
-        cache._cache.get_client().keys(f'*species-{str(taxon.id)}-*')
-    )
+    if taxon:
+        output_caches = (
+            cache._cache.get_client().keys(f'*species-{str(taxon.id)}-*')
+        )
+    else:
+        output_caches = (
+            cache._cache.get_client().keys('*species-*')
+        )
     if output_caches:
         for cache_key in output_caches:
             cleaned_key = str(cache_key).split(':')[-1].replace('\'', '')
