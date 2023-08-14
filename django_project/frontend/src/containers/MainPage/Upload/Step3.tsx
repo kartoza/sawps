@@ -25,7 +25,7 @@ export default function Step3(props: Step3Interface) {
                 <Grid container flexDirection={'row'} flexWrap={'nowrap'} justifyContent={'space-between'} rowGap={2} className='ButtonContainer'>
                     <Button variant='contained' className='ManualForm' href={`/upload-data/${props.property.id}/`}>ONLINE FORM</Button>
                     <Button variant='contained' className='Download'>DOWNLOAD TEMPLATE</Button>
-                    <Button variant='contained' className='Upload' onClick={() => setOpenUploader(true)}>UPLOAD CSV</Button>
+                    <Button variant='contained' className='Upload' onClick={() => setOpenUploader(true)}>UPLOAD DATA</Button>
                 </Grid>
             </Grid>
             <Grid item className='UploadSectionHeader'>
