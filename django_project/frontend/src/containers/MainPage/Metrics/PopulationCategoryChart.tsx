@@ -6,6 +6,8 @@ import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
 import Loading from "../../../components/Loading";
+import { useAppSelector } from "../../../app/hooks";
+import { RootState } from "../../../app/store";
 import "./index.scss";
 
 
@@ -16,13 +18,17 @@ Chart.register(ChartDataLabels);
 const FETCH_SPECIES_DENSITY = '/api/properties-per-population-category/'
 
 const PopulationCategoryChart = () => {
+    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
+    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
+    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
     const [populationData, setPopulationData] = useState([])
 
 
     const fetchpopulationCategoryData = () => {
         setLoading(true)
-        axios.get(FETCH_SPECIES_DENSITY).then((response) => {
+        axios.get(`${FETCH_SPECIES_DENSITY}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setPopulationData(response.data)
@@ -36,14 +42,14 @@ const PopulationCategoryChart = () => {
 
     useEffect(() => {
         fetchpopulationCategoryData();
-    }, [])
+    }, [propertyId, startYear, endYear, selectedSpecies])
 
     const data = {
         labels: Object.keys(populationData),
         datasets: [
             {
-                backgroundColor: 'rgb(83 83 84)',
-                borderColor: 'rgb(83 83 84)',
+                backgroundColor: '#9F89BF',
+                borderColor: '#9F89BF',
                 borderWidth: 1,
                 data: Object.values(populationData),
             },
@@ -76,11 +82,9 @@ const PopulationCategoryChart = () => {
     return (
         <Box>
             {loading ? <Loading /> :
-                <Box className="white-chart" >
-                    <Box className="white-chart-heading">
+                <Box className="white-chart " >
                         <Typography>Number of properties per population category</Typography>
-                        <Bar data={data} options={options} height={435} width={1000}/>
-                    </Box>
+                        <Bar data={data} options={options} height={225} width={1000}/>
                     <Typography>Population category</Typography>
                 </Box >
             }

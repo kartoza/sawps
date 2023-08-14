@@ -13,6 +13,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'webpack_loader',
     'guardian',
     'django_cleanup.apps.CleanupConfig',
+    'easyaudit',
     'django_celery_beat',
     'django_celery_results',
     # Configure the django-otp package.
@@ -106,7 +107,19 @@ AUTH_PASSWORD_VALIDATORS = [
 CONTACT_US_RECIPIENTS = ast.literal_eval(os.environ.get('CONTACT_US_RECIPIENTS', "['amy@kartoza.com']"))
 SUPPORT_EMAIL = 'amy@kartoza.com'
 
+MIDDLEWARE += (
+    'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
+)
 
 DISABLE_2FA = ast.literal_eval(os.environ.get('DISABLE_2FA', 'False'))
 if DISABLE_2FA:
     MIDDLEWARE = [m for m in MIDDLEWARE if m != 'sawps.middleware.RequireSuperuser2FAMiddleware']
+
+DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = [
+    'django_celery_beat.PeriodicTask',
+    'django_celery_beat.PeriodicTasks',
+]
+
+DJANGO_EASY_AUDIT_UNREGISTERED_URLS_EXTRA = [
+    r'^/get_user_notifications/',
+]
