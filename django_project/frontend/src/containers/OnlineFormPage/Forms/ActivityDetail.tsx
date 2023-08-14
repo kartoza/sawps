@@ -10,7 +10,8 @@ import {
     getDefaultUploadSpeciesDetail,
     AnnualPopulationPerActivityInterface,
     CommonUploadMetadata,
-    AnnualPopulationPerActivityValidation
+    AnnualPopulationPerActivityValidation,
+    AnnualPopulationPerActivityErrorMessage
 } from '../../../models/Upload';
 import EventDetailForm, {EventType} from './EventDetailForm';
 import ActivityDataTable from './ActivityDataTable';
@@ -84,10 +85,24 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
 
     const validateIntakeActivity = (activity: AnnualPopulationPerActivityInterface) => {
         let _error_validation:AnnualPopulationPerActivityValidation = {}
+        let _error_messages:AnnualPopulationPerActivityErrorMessage = {}
         if (activity.activity_type_id === 0) {
             _error_validation = {
                 ..._error_validation,
                 activity_type_id: true
+            }
+        } else {
+            // validate if selected activity has not been added yet
+            let _exist = data.intake_populations.find((element) => element.activity_type_id === activity.activity_type_id)
+            if (_exist) {
+                _error_validation = {
+                    ..._error_validation,
+                    activity_type_id: true
+                }
+                _error_messages = {
+                    ..._error_messages,
+                    activity_type_id: `Event ${activity.activity_type_name} has been selected!`
+                }
             }
         }
         if (!activity.reintroduction_source || activity.reintroduction_source.trim() === '') {
@@ -96,15 +111,29 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                 reintroduction_source: true
             }
         }
-        return _error_validation
+        return [_error_validation, _error_messages] as [AnnualPopulationPerActivityValidation, AnnualPopulationPerActivityErrorMessage]
     }
 
     const validateOfftakeActivity = (activity: AnnualPopulationPerActivityInterface) => {
         let _error_validation:AnnualPopulationPerActivityValidation = {}
+        let _error_messages:AnnualPopulationPerActivityErrorMessage = {}
         if (activity.activity_type_id === 0) {
             _error_validation = {
                 ..._error_validation,
                 activity_type_id: true
+            }
+        } else {
+            // validate if selected activity has not been added yet
+            let _exist = data.offtake_populations.find((element) => element.activity_type_id === activity.activity_type_id)
+            if (_exist) {
+                _error_validation = {
+                    ..._error_validation,
+                    activity_type_id: true
+                }
+                _error_messages = {
+                    ..._error_messages,
+                    activity_type_id: `Event ${activity.activity_type_name} has been selected! Please select other event!`
+                }
             }
         }
         if (!activity.translocation_destination || activity.translocation_destination.trim() === '') {
@@ -113,7 +142,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                 translocation_destination: true
             }
         }
-        return _error_validation
+        return [_error_validation, _error_messages] as [AnnualPopulationPerActivityValidation, AnnualPopulationPerActivityErrorMessage]
     }
 
     useEffect(() => {
@@ -146,7 +175,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
                             </Grid>
                             <Grid item>
                                 <EventDetailForm initialData={selectedIntakeActivity} eventMetadataList={intakeEventMetadataList} eventType={EventType.intake}
-                                   setIsDirty={setIsDirty} validate={validateIntakeActivity} onSave={(isCreate: boolean, activity: AnnualPopulationPerActivityInterface, isCancel?: boolean) =>{
+                                   setIsDirty={setIsDirty} validate={validateIntakeActivity} onSave={(isCreate: boolean, activity: AnnualPopulationPerActivityInterface, isCancel?: boolean) => {
                                     if (isCancel) {
                                         setSelectedIntakeActivity(null)
                                         return;

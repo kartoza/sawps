@@ -92,7 +92,7 @@ class TestPopulationAPIViews(TestCase):
                 'area_covered': 1.2,
                 'note': 'This is notes'
             },
-            'intake_population': {
+            'intake_populations': [{
                 'activity_type_id': 1,
                 'total': 12,
                 'adult_male': 5,
@@ -101,8 +101,8 @@ class TestPopulationAPIViews(TestCase):
                 'reintroduction_source': 'Source A',
                 'permit': 900,
                 'note': 'This is intake notes'
-            },
-            'offtake_population': {
+            }],
+            'offtake_populations': [{
                 'activity_type_id': 2,
                 'total': 6,
                 'adult_male': 4,
@@ -110,7 +110,7 @@ class TestPopulationAPIViews(TestCase):
                 'translocation_destination': 'Dest A',
                 'permit': 900,
                 'note': 'This is intake notes'
-            }
+            }]
         }
         kwargs = {
             'property_id': property.id
@@ -177,7 +177,7 @@ class TestPopulationAPIViews(TestCase):
                 'area_covered': 1.2,
                 'note': 'This is notes'
             },
-            'intake_population': {
+            'intake_populations': [{
                 'activity_type_id': 1,
                 'total': 12,
                 'adult_male': 5,
@@ -186,8 +186,8 @@ class TestPopulationAPIViews(TestCase):
                 'reintroduction_source': 'Source A',
                 'permit': 900,
                 'note': 'This is intake notes'
-            },
-            'offtake_population': {
+            }],
+            'offtake_populations': [{
                 'activity_type_id': 2,
                 'total': 6,
                 'adult_male': 4,
@@ -195,7 +195,7 @@ class TestPopulationAPIViews(TestCase):
                 'translocation_destination': 'Dest A',
                 'permit': 900,
                 'note': 'This is intake notes'
-            }
+            }]
         }
         kwargs = {
             'property_id': property.id

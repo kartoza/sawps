@@ -86,6 +86,10 @@ export interface AnnualPopulationPerActivityValidation {
     translocation_destination?: boolean;
 }
 
+export interface AnnualPopulationPerActivityErrorMessage {
+    activity_type_id?: string;
+}
+
 export interface UploadSpeciesDetailValidation {
     taxon_id?: boolean;
     year?: boolean;

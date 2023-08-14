@@ -24,8 +24,9 @@ import {
     getDefaultAnnualPopulationPerActivity,
     FIELD_COUNTER,
     OTHER_NUMBER_FIELDS,
+    AnnualPopulationPerActivityErrorMessage
 } from '../../../models/Upload';
-import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
+import { REQUIRED_FIELD_ERROR_MESSAGE, getErrorMessage } from '../../../utils/Validation';
 
 export enum EventType {
     intake = 'intake',
@@ -37,7 +38,7 @@ interface EventDetailFormInterface {
     eventType: EventType,
     eventMetadataList: CommonUploadMetadata[],
     setIsDirty: (isDirty: boolean) => void,
-    validate: (data: AnnualPopulationPerActivityInterface) => AnnualPopulationPerActivityValidation,
+    validate: (data: AnnualPopulationPerActivityInterface) => [AnnualPopulationPerActivityValidation, AnnualPopulationPerActivityErrorMessage],
     onSave: (isCreate: boolean, data: AnnualPopulationPerActivityInterface, isCancel?: boolean) => void
 }
 
@@ -47,6 +48,7 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
     } = props
     const [data, setData] = useState<AnnualPopulationPerActivityInterface>(getDefaultAnnualPopulationPerActivity())
     const [validation, setValidation] = useState<AnnualPopulationPerActivityValidation>({})
+    const [validationMessages, setValidationMessages] = useState<AnnualPopulationPerActivityErrorMessage>({})
 
     const updateActivityPopulation = (field: keyof AnnualPopulationPerActivityInterface, value: any) => {
         let _total = data.total
@@ -71,6 +73,10 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
             ...validation,
             [field]: false
         })
+        setValidationMessages({
+            ...validationMessages,
+            [field]: ''
+        })
     }
 
     const updateActivityPopulationSelectValue = (field: keyof AnnualPopulationPerActivityInterface, value: number, sourceList: CommonUploadMetadata[]) => {
@@ -91,16 +97,22 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
             }
             setData(_updated)
             setValidation(_validation)
+            setValidationMessages({
+                ...validationMessages,
+                [field]: ''
+            })
         }
     }
 
     const saveForm = () => {
-        let _validationResult = validate(data)
+        let _validationWithErrorMessage = validate(data)
+        let _validationResult = _validationWithErrorMessage[0]
         if (Object.keys(_validationResult).length === 0) {
             onSave(!(props.initialData && props.initialData.id >= 0), {...data})
             setData(getDefaultAnnualPopulationPerActivity())
         } else {
             setValidation({..._validationResult})
+            setValidationMessages({..._validationWithErrorMessage[1]})
         }
     }
 
@@ -258,7 +270,7 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                             })                                            
                             }
                         </Select>
-                        <FormHelperText>{validation?.activity_type_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
+                        <FormHelperText>{validation?.activity_type_id ? getErrorMessage(validationMessages, 'activity_type_id') : ' '}</FormHelperText>
                     </FormControl>
                 </Grid>
                 <Grid item className='InputContainer'>
