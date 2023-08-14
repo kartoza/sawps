@@ -101,6 +101,16 @@ class TestPopulationAPIViews(TestCase):
                 'reintroduction_source': 'Source A',
                 'permit': 900,
                 'note': 'This is intake notes'
+            },
+            {
+                'activity_type_id': 100,
+                'total': 12,
+                'adult_male': 5,
+                'adult_female': 7,
+                'founder_population': True,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is intake notes'
             }],
             'offtake_populations': [{
                 'activity_type_id': 2,
@@ -109,7 +119,16 @@ class TestPopulationAPIViews(TestCase):
                 'adult_female': 2,
                 'translocation_destination': 'Dest A',
                 'permit': 900,
-                'note': 'This is intake notes'
+                'note': 'This is invalid notes'
+            },
+            {
+                'activity_type_id': 100,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'translocation_destination': 'Dest A',
+                'permit': 900,
+                'note': 'This is invalid notes'
             }]
         }
         kwargs = {
