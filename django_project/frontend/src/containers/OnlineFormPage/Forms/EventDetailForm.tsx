@@ -51,23 +51,47 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
     const [validationMessages, setValidationMessages] = useState<AnnualPopulationPerActivityErrorMessage>({})
 
     const updateActivityPopulation = (field: keyof AnnualPopulationPerActivityInterface, value: any) => {
-        let _total = data.total
-        if (FIELD_COUNTER.includes(field)) {
+        if (field === 'total') {
+            // if total is updated, then reset other number fields
             if (isNaN(value)) {
                 value = 0
             }
-            let _currentValue = data[field] as number
-            _total = _total - (isNaN(_currentValue) ? 0 : _currentValue) + (value as number)
-        } else if (OTHER_NUMBER_FIELDS.includes(field)) {
-            if (isNaN(value)) {
-                value = 0
+            setData({
+                ...data,
+                total: value,
+                adult_male: 0,
+                adult_female: 0,
+                juvenile_male: 0,
+                juvenile_female: 0,
+            })
+        } else {
+            let _total = data.total
+            if (FIELD_COUNTER.includes(field)) {
+                if (isNaN(value)) {
+                    value = 0
+                }
+                // sum the counter fields
+                _total = 0
+                for (let _field of FIELD_COUNTER) {
+                    if (_field === field) {
+                        _total += value
+                    } else {
+                        let _keyField = _field as keyof AnnualPopulationPerActivityInterface
+                        let _fieldVal = data[_keyField] as number
+                        _total += isNaN(_fieldVal) ? 0 : _fieldVal
+                    }
+                }
+            } else if (OTHER_NUMBER_FIELDS.includes(field)) {
+                if (isNaN(value)) {
+                    value = 0
+                }
             }
+            setData({
+                ...data,
+                [field]: value,
+                total: _total           
+            })
         }
-        setData({
-            ...data,
-            [field]: value,
-            total: _total           
-        })
         setIsDirty(true)
         setValidation({
             ...validation,
@@ -119,6 +143,8 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
     const cancelUpdate = () => {
         onSave(!(props.initialData && props.initialData.id >= 0), {...data}, true)
         setData(getDefaultAnnualPopulationPerActivity())
+        setValidation({})
+        setValidationMessages({})
     }
 
     useEffect(() => {
@@ -127,6 +153,8 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
         } else {
             setData(getDefaultAnnualPopulationPerActivity())
         }
+        setValidation({})
+        setValidationMessages({})
     }, [initialData])
 
     if (eventType === EventType.intake) {
@@ -222,11 +250,11 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                             <TextField
                                 id='intake_total_count'
                                 label='Total Count'
-                                disabled
                                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                 variant="standard"
                                 fullWidth
                                 value={data.total}
+                                onChange={(e) => updateActivityPopulation('total', parseInt(e.target.value))}
                                 helperText=" "
                             />
                         </Grid>
@@ -399,11 +427,11 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                         <TextField
                             id='offtake_total_count'
                             label='Total Count'
-                            disabled
                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                             variant="standard"
                             fullWidth
                             value={data.total}
+                            onChange={(e) => updateActivityPopulation('total', parseInt(e.target.value))}
                             helperText=" "
                         />
                     </Grid>
@@ -431,7 +459,7 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                         })
                         }
                     </Select>
-                    <FormHelperText>{validation.activity_type_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
+                    <FormHelperText>{validation.activity_type_id ? getErrorMessage(validationMessages, 'activity_type_id') : ' '}</FormHelperText>
                 </FormControl>
             </Grid>
             <Grid item className='InputContainer'>

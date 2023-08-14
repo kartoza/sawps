@@ -80,28 +80,59 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
     }
 
     const updateAnnualPopulation = (field: keyof AnnualPopulationInterface, value: any) => {
-        let _total = data.annual_population.total
-        if (FIELD_COUNTER.includes(field)) {
+        if (field === 'total') {
+            // if total is updated, then reset other number fields
             if (isNaN(value)) {
                 value = 0
             }
-            let _currentValue = data.annual_population[field] as number
-            _total = _total - (isNaN(_currentValue) ? 0 : _currentValue) + (value as number)
-        } else if (OTHER_NUMBER_FIELDS.includes(field)) {
-            if (isNaN(value)) {
-                value = 0
+            setData({
+                ...data,
+                annual_population: {
+                    ...data.annual_population,
+                    total: value,
+                    adult_male: 0,
+                    adult_female: 0,
+                    sub_adult_male: 0,
+                    sub_adult_female: 0,
+                    juvenile_male: 0,
+                    juvenile_female: 0,
+                },
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]     
+            })
+        } else {
+            let _total = data.annual_population.total
+            if (FIELD_COUNTER.includes(field)) {
+                if (isNaN(value)) {
+                    value = 0
+                }
+                // sum the counter fields
+                _total = 0
+                for (let _field of FIELD_COUNTER) {
+                    if (_field === field) {
+                        _total += value
+                    } else {
+                        let _keyField = _field as keyof AnnualPopulationInterface
+                        let _fieldVal = data.annual_population[_keyField] as number
+                        _total += isNaN(_fieldVal) ? 0 : _fieldVal
+                    }
+                }
+            } else if (OTHER_NUMBER_FIELDS.includes(field)) {
+                if (isNaN(value)) {
+                    value = 0
+                }
             }
+            setData({
+                ...data,
+                annual_population: {
+                    ...data.annual_population,
+                    [field]: value,
+                    total: _total,
+                },
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]     
+            })
         }
-        setData({
-            ...data,
-            annual_population: {
-                ...data.annual_population,
-                [field]: value,
-                total: _total,
-            },
-            intake_populations: [...data.intake_populations],
-            offtake_populations: [...data.offtake_populations]            
-        })
         setIsDirty(true)
         setValidation({
             ...validation,
@@ -466,11 +497,11 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         <TextField
                                             id='total_count'
                                             label='Total Count'
-                                            disabled
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             variant="standard"
                                             fullWidth
                                             value={data.annual_population.total}
+                                            onChange={(e) => updateAnnualPopulation('total', parseInt(e.target.value))}
                                             helperText=" "
                                         />
                                     </Grid>

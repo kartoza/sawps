@@ -93,7 +93,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
             }
         } else {
             // validate if selected activity has not been added yet
-            let _exist = data.intake_populations.find((element) => element.activity_type_id === activity.activity_type_id)
+            let _exist = data.intake_populations.find((element) => element.activity_type_id === activity.activity_type_id && element.id !== activity.id)
             if (_exist) {
                 _error_validation = {
                     ..._error_validation,
@@ -124,7 +124,7 @@ export default function ActivityDetail(props: ActivityDetailInterface) {
             }
         } else {
             // validate if selected activity has not been added yet
-            let _exist = data.offtake_populations.find((element) => element.activity_type_id === activity.activity_type_id)
+            let _exist = data.offtake_populations.find((element) => element.activity_type_id === activity.activity_type_id && element.id !== activity.id)
             if (_exist) {
                 _error_validation = {
                     ..._error_validation,
