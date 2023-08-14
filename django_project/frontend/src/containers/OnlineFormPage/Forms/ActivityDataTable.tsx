@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Grid from "@mui/material/Grid";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
     DataGrid,
     GridColDef,
@@ -76,7 +77,7 @@ export default function ActivityDataTable(props: ActivityDataTableInterface) {
                 if (isReadOnly) {
                     return [
                         <GridActionsCellItem
-                            icon={<EditIcon />}
+                            icon={<VisibilityIcon />}
                             label="Preview"
                             onClick={() => {
                                 if (handlePreviewRow) {

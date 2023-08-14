@@ -22,7 +22,6 @@ import {EventType} from './EventDetailForm';
 import ActivityDataTable from './ActivityDataTable';
 
 
-
 interface ReviewAndConfirmInterface {
     loading: boolean;
     initialData: UploadSpeciesDetailInterface;
