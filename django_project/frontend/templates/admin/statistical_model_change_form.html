@@ -40,7 +40,6 @@
     <div class="submit-row">
         <input type="submit" value="Download Data Template" name="_download-data-template">
         <input type="submit" value="Show Expected Output" id="show-expected-output">
-        <input type="submit" value="Output JSON Schema" id="show-output-json-schema">
     </div>
     <!-- div containing the popup -->
     <div id="popup-content">
@@ -72,12 +71,7 @@
                         }
                     }
                 }
-                var speciesName = $('#id_taxon').find(":selected").text();
-                data = {
-                    'metadata': {
-                        'species': speciesName ? speciesName : 'Species A'
-                    }
-                }
+                data = {}
                 for (var i = 0; i < selectedValues.length; ++i) {
                     var type = selectedValues[i];
                     if (type === 'population_per_province') {
@@ -91,6 +85,7 @@
                             {
                                 "year": 2016,
                                 "fit": 1602.2308,
+                                "se.fit": 156.6036,
                                 "lower_ci": 1132.4201,
                                 "upper_ci": 2072.0414
                             }
@@ -100,7 +95,9 @@
                             "Gauteng": [
                                 {
                                     "year": 2016,
+                                    "province": "Gauteng",
                                     "fit": 1602.2308,
+                                    "se.fit": 156.6036,
                                     "lower_ci": 1289.0237,
                                     "upper_ci": 1915.4379
                                 }
@@ -111,6 +108,7 @@
                             "Property A": [{
                                 "year": 2016,
                                 "fit": 89.0128,
+                                "se.fit": 8.7002,
                                 "lower_ci": 62.9122,
                                 "upper_ci": 115.1134
                             }]
@@ -125,6 +123,7 @@
                     }
                 }
                 var str = JSON.stringify(data, null, 2); // spacing level = 2
+                console.log(str);
                 $('#popup-expected-output-content').html('<pre>'+str+'</pre>');
                 $("#popup-content").toggle();
             });
