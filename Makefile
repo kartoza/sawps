@@ -43,6 +43,34 @@ dev:
 	@echo "------------------------------------------------------------------"
 	@docker-compose ${ARGS} up -d dev worker 
 
+dev-runserver:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Start django runserver in dev container"
+	@echo "------------------------------------------------------------------"
+	@docker-compose $(ARGS) exec -T dev bash -c "nohup python manage.py runserver 0.0.0.0:8080 &"
+
+npm-install:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Install frontend dependencies"
+	@echo "------------------------------------------------------------------"
+	@docker-compose ${ARGS} exec -T dev npm --prefix /home/web/django_project/frontend install
+
+migrate:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running migration"
+	@echo "------------------------------------------------------------------"
+	@docker-compose ${ARGS} exec -T dev python manage.py migrate
+
+build-react:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Execute webpack build command"
+	@echo "------------------------------------------------------------------"
+	@docker-compose ${ARGS} exec -T dev npm --prefix /home/web/django_project/frontend run build
+
 serve:
 	@echo
 	@echo "------------------------------------------------------------------"

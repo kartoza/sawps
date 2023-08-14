@@ -116,7 +116,7 @@
 
       function waitUpdateProfileBellIcon(show_bell) {
         document.addEventListener("DOMContentLoaded", function() {
-          const messageLength = getMessageLength();
+          const messageLength = getMessages().length;
           var notificationBell = ''
           var notificationBadge = ''
           try{
@@ -157,7 +157,7 @@
 
       function updateLocalStorage(results){
         if(results.length > 0){
-          localStorage.setItem('message_length', results.length)
+          localStorage.setItem('message_length',results.length)
           messages = []
           for(var count = 0; count < results.length; count ++){
             messages.push(results[count])
@@ -171,7 +171,13 @@
       }
 
       function getMessages(){
-        messages = JSON.parse(localStorage.getItem('messages'))
+        messages = localStorage.getItem('messages') 
+        try{
+          messages = JSON.parse(localStorage.getItem('messages'))
+        }catch(exception){
+          //ignore
+        }
+          
         var return_obj = []
         for(var count =0; count < messages.length; count++){
           var save_obj = {
@@ -238,6 +244,8 @@
                 updateHeaderNotifications()
                 if (isProfilePages())
                   updateProfileBellIcon(true)
+                  if(window.location.href.includes("reminders"))
+                    window.location.reload() // to refresh reminders
                 else updateProfileBellIcon(false)
               }
 
@@ -274,9 +282,11 @@
             hideNotifications(true)
             localStorage.setItem('message_length' ,0)
             localStorage.setItem('messages' ,'')
-          }else if(getMessageLength() >= 1){
-            if(isProfilePages())
-            waitUpdateProfileBellIcon(true)
+          }else if(getMessages().length >= 1){
+            if(isProfilePages()){
+              waitUpdateProfileBellIcon(true)
+            }
+              
             updateHeaderNotifications()
             hideNotifications(false)
           }else

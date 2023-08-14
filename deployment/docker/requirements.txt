@@ -52,3 +52,6 @@ fiona==1.8.21
 
 # For filtering
 django-filter==23.2
+
+# Django audit log app
+django-easy-audit==1.3.5
