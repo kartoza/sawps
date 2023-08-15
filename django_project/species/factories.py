@@ -52,6 +52,7 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
     taxon = factory.SubFactory(TaxonFactory)
     user = factory.SubFactory(UserFactory)
     property = factory.SubFactory('property.factories.PropertyFactory')
+    area_available_to_species = 10.0
 
     @factory.post_generation
     def create_annual_population(self, create, extracted, **kwargs):
