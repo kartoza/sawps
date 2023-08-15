@@ -60,49 +60,79 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 taxon_name: _selected.scientific_name,
                 common_name: _selected.common_name_varbatim,
                 annual_population: {...data.annual_population},
-                intake_population: {...data.intake_population},
-                offtake_population: {...data.offtake_population}            
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]            
             })
             setIsDirty(true)
             setValidation({...validation, taxon_id: false})
         }
     }
 
-    const updateMonthYearDetail = (month: number, year: number) => {
+    const updateYearDetail = (year: number) => {
         setData({
             ...data,
             year: year,
-            month: month,
             annual_population: {...data.annual_population},
-            intake_population: {...data.intake_population},
-            offtake_population: {...data.offtake_population}            
+            intake_populations: [...data.intake_populations],
+            offtake_populations: [...data.offtake_populations]            
         })
         setIsDirty(true)
     }
 
     const updateAnnualPopulation = (field: keyof AnnualPopulationInterface, value: any) => {
-        let _total = data.annual_population.total
-        if (FIELD_COUNTER.includes(field)) {
+        if (field === 'total') {
+            // if total is updated, then reset other number fields
             if (isNaN(value)) {
                 value = 0
             }
-            let _currentValue = data.annual_population[field] as number
-            _total = _total - (isNaN(_currentValue) ? 0 : _currentValue) + (value as number)
-        } else if (OTHER_NUMBER_FIELDS.includes(field)) {
-            if (isNaN(value)) {
-                value = 0
+            setData({
+                ...data,
+                annual_population: {
+                    ...data.annual_population,
+                    total: value,
+                    adult_male: 0,
+                    adult_female: 0,
+                    sub_adult_male: 0,
+                    sub_adult_female: 0,
+                    juvenile_male: 0,
+                    juvenile_female: 0,
+                },
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]     
+            })
+        } else {
+            let _total = data.annual_population.total
+            if (FIELD_COUNTER.includes(field)) {
+                if (isNaN(value)) {
+                    value = 0
+                }
+                // sum the counter fields
+                _total = 0
+                for (let _field of FIELD_COUNTER) {
+                    if (_field === field) {
+                        _total += value
+                    } else {
+                        let _keyField = _field as keyof AnnualPopulationInterface
+                        let _fieldVal = data.annual_population[_keyField] as number
+                        _total += isNaN(_fieldVal) ? 0 : _fieldVal
+                    }
+                }
+            } else if (OTHER_NUMBER_FIELDS.includes(field)) {
+                if (isNaN(value)) {
+                    value = 0
+                }
             }
+            setData({
+                ...data,
+                annual_population: {
+                    ...data.annual_population,
+                    [field]: value,
+                    total: _total,
+                },
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]     
+            })
         }
-        setData({
-            ...data,
-            annual_population: {
-                ...data.annual_population,
-                [field]: value,
-                total: _total,
-            },
-            intake_population: {...data.intake_population},
-            offtake_population: {...data.offtake_population}            
-        })
         setIsDirty(true)
         setValidation({
             ...validation,
@@ -124,8 +154,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                     [field]: value,
                     [_name_field]: _selected.name
                 },
-                intake_population: {...data.intake_population},
-                offtake_population: {...data.offtake_population}            
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]            
             })
             setIsDirty(true)
             setValidation({
@@ -145,9 +175,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         }
         if (data.year === 0) {
             _error_validation = {..._error_validation, year: true}
-        }
-        if (data.month === 0) {
-            _error_validation = {..._error_validation, month: true}
         }
         if (data.annual_population.open_close_id === 0) {
             _error_validation = {
@@ -193,8 +220,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         setData({
             ...initialData,
             annual_population: {...initialData.annual_population},
-            intake_population: {...initialData.intake_population},
-            offtake_population: {...initialData.offtake_population}
+            intake_populations: [...initialData.intake_populations],
+            offtake_populations: [...initialData.offtake_populations]
         })
         setValidation({})
     }, [initialData])
@@ -237,10 +264,10 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
                                         <LocalizationProvider dateAdapter={AdapterMoment}>
-                                            <DatePicker label={'Month and Year of Count'} views={['month', 'year']}
+                                            <DatePicker label={'Year of Count'} views={['year']}
                                                 slotProps={{ textField: { size: 'small', variant: 'standard', className: 'Calendar', required: true } }}
-                                                value={moment({'year': data.year, 'month': data.month - 1})}
-                                                onChange={(newValue: Moment) => updateMonthYearDetail(newValue.month() + 1, newValue.year())}
+                                                value={moment({'year': data.year})}
+                                                onChange={(newValue: Moment) => updateYearDetail(newValue.year())}
                                             />
                                             <FormHelperText>{' '}</FormHelperText>
                                         </LocalizationProvider>
@@ -314,7 +341,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
-                                        <TextField id='area_covered' required label='Sampled Area' value={data.annual_population.area_covered}
+                                        <TextField id='area_covered' required label='Sampled Area' value={data.annual_population.area_covered.toString()}
                                             variant='standard' type='number'
                                             InputProps={{
                                                 endAdornment: (
@@ -470,11 +497,11 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         <TextField
                                             id='total_count'
                                             label='Total Count'
-                                            disabled
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             variant="standard"
                                             fullWidth
                                             value={data.annual_population.total}
+                                            onChange={(e) => updateAnnualPopulation('total', parseInt(e.target.value))}
                                             helperText=" "
                                         />
                                     </Grid>
@@ -493,7 +520,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             type='number'
                                             variant="standard"
                                             fullWidth
-                                            value={data.annual_population.area_available_to_species}
+                                            value={data.annual_population.area_available_to_species.toString()}
                                             onChange={(e) => updateAnnualPopulation('area_available_to_species', parseFloat(e.target.value))}
                                             helperText=" "
                                         />
@@ -540,7 +567,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             type='number'
                                             variant="standard"
                                             fullWidth
-                                            value={data.annual_population.sampling_effort}
+                                            value={data.annual_population.sampling_effort.toString()}
                                             onChange={(e) => updateAnnualPopulation('sampling_effort', parseFloat(e.target.value)) }
                                             helperText=' '
                                         />
