@@ -131,6 +131,7 @@ class TestProfileView(TestCase):
             'last-name': 'Fan',
             'email': user.email,
             'organization': 'Kartoza',
+            'profile_picture': '/profile/pic/path',
             'title': '1',
             'role': '1'
         }

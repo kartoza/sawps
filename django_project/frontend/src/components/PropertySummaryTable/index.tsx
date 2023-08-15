@@ -14,6 +14,9 @@ interface PropertySummaryTableInterface {
 }
 
 export default function PropertySummaryTable(props: PropertySummaryTableInterface) {
+    const localStorageItem = localStorage.getItem('description');
+    const descriptionParts = localStorageItem ? localStorageItem.split(': ') : [];
+
     return (
         <TableContainer component={Paper}>
             <Table className='PropertySiteDetailTable' aria-label="property site detail table" size='medium'>
@@ -22,33 +25,15 @@ export default function PropertySummaryTable(props: PropertySummaryTableInterfac
                     <col width="50%" />
                 </colgroup>
                 <TableHead>
-                    <TableRow>
-                        <TableCell colSpan={2}>Site Details</TableCell>
-                    </TableRow>
                 </TableHead>
                 <TableBody>
-                    <TableRow key='property_code'>
-                        <TableCell component="th" scope="row">
-                            Property Code
-                        </TableCell>
-                        <TableCell>
-                            { `ID${props.propertyItem.id}` }
-                        </TableCell>
-                    </TableRow>
+                    
                     <TableRow key='property_name'>
                         <TableCell component="th" scope="row">
                             Property Name
                         </TableCell>
                         <TableCell>
                             {props.propertyItem.name}
-                        </TableCell>
-                    </TableRow>
-                    <TableRow key='owner_name'>
-                        <TableCell component="th" scope="row">
-                            Owner Name
-                        </TableCell>
-                        <TableCell>
-                            {props.propertyItem.owner}
                         </TableCell>
                     </TableRow>
                     <TableRow key='property_type'>
@@ -61,10 +46,10 @@ export default function PropertySummaryTable(props: PropertySummaryTableInterfac
                     </TableRow>
                     <TableRow key='size'>
                         <TableCell component="th" scope="row">
-                            Property Size (in ha)
+                            Property Size
                         </TableCell>
                         <TableCell>
-                            {props.propertyItem.size}
+                            {props.propertyItem.size}ha
                         </TableCell>
                     </TableRow>
                     <TableRow key='organisation'>
@@ -75,6 +60,24 @@ export default function PropertySummaryTable(props: PropertySummaryTableInterfac
                             {props.propertyItem.organisation}
                         </TableCell>
                     </TableRow>
+                    <TableRow key='province'>
+                        <TableCell component="th" scope="row">
+                            Province
+                        </TableCell>
+                        <TableCell>
+                            {props.propertyItem.province}
+                        </TableCell>
+                    </TableRow>
+                        {descriptionParts.length === 2 && descriptionParts[0] === 'Ecosystem Type' && (
+                        <TableRow key='ecosystem_type'>
+                            <TableCell component="th" scope="row">
+                                {descriptionParts[0]}
+                            </TableCell>
+                            <TableCell>
+                                {descriptionParts[1]}
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
         </TableContainer>

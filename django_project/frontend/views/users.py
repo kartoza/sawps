@@ -298,6 +298,7 @@ class OrganisationUsersView(
                     "id": user.user.id,
                     "organisation_user": str(user.user),
                     "role": role.user_role,
+                    "assigned_as": role.assigned_as,
                     "joined": role.joined
                 }
             else:
@@ -305,6 +306,7 @@ class OrganisationUsersView(
                     "id": user.user.id,
                     "organisation_user": str(user.user),
                     "role": None,
+                    "assigned_as": role.assigned_as,
                     "joined": False
                 }
             if not user.user == self.request.user:

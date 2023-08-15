@@ -201,8 +201,7 @@ def get_reminder_or_notification(request):
                     reminder[0].date,
                     reminder[0].timezone
                 )
-
-        return reminder
+                return reminder
     except Exception as e:
         return str(e)
 
@@ -306,7 +305,7 @@ class RemindersView(RegisteredOrganisationBaseView):
                 reminder_type = Reminders.EVERYONE
             try:
                 organisation = Organisation.objects.get(
-                    id=self.request.session[CURRENT_ORGANISATION_ID_KEY]
+                    id=request.session[CURRENT_ORGANISATION_ID_KEY]
                 )
                 # Save the reminder to the database
                 reminder = Reminders.objects.create(
@@ -432,7 +431,7 @@ class RemindersView(RegisteredOrganisationBaseView):
 
 
         try:
-            org = self.request.session[CURRENT_ORGANISATION_ID_KEY],
+            org = request.session[CURRENT_ORGANISATION_ID_KEY],
             for element in data:
                 if isinstance(element, str) and element.isdigit():
                     reminder = Reminders.objects.get(
