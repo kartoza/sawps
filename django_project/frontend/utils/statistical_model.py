@@ -32,6 +32,7 @@ def plumber_health_check(max_retry=5):
     request_url = f'http://0.0.0.0:{PLUMBER_PORT}/statistical/echo'
     retry = 0
     req = None
+    time.sleep(1)
     while (req is None or req.status_code != 200) and retry < max_retry:
         try:
             req = requests.get(request_url)
