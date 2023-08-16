@@ -302,11 +302,20 @@ class OrganisationUsersView(
                     "joined": role.joined
                 }
             else:
+                assigned_as = 'Member'
+                role = None
+                if hasattr(user.user, 'user_profile'):
+                    user_profile = user.user.user_profile
+                    role = str(user_profile.user_role_type_id)
+                    if role == 'Admin' or role == 'Super User':
+                        assigned_as = 'Manager'
+                        role = user_profile.user_role_type_id
+
                 object_to_save = {
                     "id": user.user.id,
                     "organisation_user": str(user.user),
-                    "role": None,
-                    "assigned_as": role.assigned_as,
+                    "role": role,
+                    "assigned_as": assigned_as,
                     "joined": False
                 }
             if not user.user == self.request.user:
