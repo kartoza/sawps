@@ -41,22 +41,20 @@ nav:
                   - Code of Conduct: about/code-of-conduct.md
                   - License: about/license.md
         - User:
+                  - user/index.md
                   - Quickstart: user/quickstart/index.md
                   - Guide:
                           - user/guide/index.md
-                          - Map: user/guide/instructions.md
+                          - Instructions: user/guide/instructions.md
                           - Data Upload: user/guide/data-upload.md
                   - Manual :
                           - user/manual/index.md
-        - Admin:
-                  - admin/index.md
-                  - Guide:
-                      - Tutorials: admin/tutorials.md
-                  - Manual:
-                      - Conceptual Model: admin/conceptual_model.md
-                      - Page View/ View Manual: admin/view_manual.md
-                      - Screen by screen explanation of: admin/screen.md
-                      - Permissions: admin/permissions.md
+        - Administrators:
+                - administrator/index.md
+                - Guide:
+                        - administrator/guide/index.md
+                - Manual:
+                        - administrator/manual/index.md
         - Developer:
                   - developer/index.md
                   - API:
