@@ -1,10 +1,10 @@
 import json
-from django.test import TestCase, Client
+from django.test import RequestFactory, TestCase, Client
 from django.contrib.auth.models import User
+from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
 from stakeholder.factories import userRoleTypeFactory
 from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
-
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
@@ -35,13 +35,13 @@ class OrganisationUsersViewTest(TestCase):
             email=self.user.email,
             organisation=self.organisation
         )
-        role = userRoleTypeFactory.create(
+        self.role = userRoleTypeFactory.create(
             id=1,
             name = 'Admin',
         )
         UserProfile.objects.create(
             user=self.user,
-            user_role_type_id=role
+            user_role_type_id=self.role
         )
 
 
@@ -122,6 +122,55 @@ class OrganisationUsersViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_get_organisation_users(self):
+
+        factory = RequestFactory()
+        request = factory.post('/users/')
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        view = OrganisationUsersView()
+
+        response = view.get_organisation_users(request)
+
+        self.assertIsNotNone(response)
+
+        # test user without an invite
+        user = User.objects.create_user(
+            username='testuser33',
+            password='testpassword',
+            email='test33@gmail.com'
+        )
+        UserProfile.objects.create(
+            user=user,
+            user_role_type_id=self.role
+        )
+        OrganisationUser.objects.create(
+            organisation=self.organisation, user=user
+        )
+
+        factory = RequestFactory()
+        request = factory.post('/users/')
+        request.user = user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        view = OrganisationUsersView()
+
+        response = view.get_organisation_users(request)
+
+        self.assertIsNotNone(response)
+
+    def test_get_organisation_invites(self):
+        factory = RequestFactory()
+        request = factory.post('/users/')
+        request.user = self.user
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
+
+        view = OrganisationUsersView()
+
+        response = view.get_organisation_users(request)
+
+        self.assertIsNotNone(response)
 
         
     def test_search_user_table(self):
@@ -175,6 +224,23 @@ class OrganisationUsersViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_json)
 
+        # search with fake org
+        response = self.client.post(
+            '/users/',
+            {
+                'action': 'search_user_table',
+                'query': 'q=test',
+                'current_organisation': 'fake_org'
+            }
+        )
+                   
+        # Assert the expected outcome
+        expected_data = []
+        expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
+            
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_json)
+
     def test_get_user_by_email(self):
 
         view = OrganisationUsersView()
@@ -196,6 +262,26 @@ class OrganisationUsersViewTest(TestCase):
         response = view.get_role(self.user, self.organisation)
 
         self.assertEqual(response, None)
+
+        # get role from user profile
+        user = User.objects.create_user(
+            username='testuser23',
+            password='testpassword',
+            email='test2@gmail.com'
+        )
+        UserProfile.objects.create(
+            user=user,
+            user_role_type_id=self.role
+        )
+        OrganisationUser.objects.create(
+            organisation=self.organisation, user=user
+        )
+
+        response = view.get_role(user, self.organisation)
+
+        self.assertEqual(str(response), 'Admin')
+        
+        
 
     def test_is_new_invitation(self):
         view = OrganisationUsersView()
