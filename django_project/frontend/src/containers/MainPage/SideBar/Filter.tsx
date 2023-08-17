@@ -2,18 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import {
     Box,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     Checkbox,
     Accordion,
     AccordionSummary,
     Typography,
     AccordionDetails,
     Chip,
-    IconButton,
-    SelectChangeEvent,
     FormControlLabel,
 } from '@mui/material';
 import List from '@mui/material/List';
@@ -36,7 +30,7 @@ import './index.scss';
 import PropertyInterface from '../../../models/Property';
 
 const yearRangeStart = 1960;
-const yearRangeEnd = 2023;
+const yearRangeEnd = new Date().getFullYear();
 const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 
