@@ -77,3 +77,23 @@ def calculate_total_area_available_to_species(queryset: QuerySet[Property]) \
         properties.extend(property_data)
 
     return properties
+
+
+def calculate_total_area_per_property_type(queryset: QuerySet) -> List[dict]:
+    """
+    Calculate the total area per property type
+    for a given queryset of properties.
+    Params:
+        queryset (QuerySet): The queryset of Property objects.
+    Returns:
+        list[dict]: A list of dictionaries, each containing property_type
+                    and total_area keys representing the property type name
+                    and the aggregated total area respectively.
+    """
+    property_ids = [query.id for query in queryset]
+    properties_type_area = Property.objects.filter(
+        id__in=property_ids
+    ).values('property_type__name').annotate(
+        total_area=Sum('property_size_ha')
+    ).values('property_type__name', 'total_area')
+    return properties_type_area
