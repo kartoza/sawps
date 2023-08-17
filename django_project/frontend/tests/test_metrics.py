@@ -220,9 +220,9 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         super().setUp()
         self.url = reverse("properties_per_population_category")
 
-    def test_species_population_total_and_density(self) -> None:
+    def test_properties_per_population_category(self) -> None:
         """
-        Test species population categories.
+        Test properties per population category.
         """
         url = self.url
         response = self.client.get(url, **self.auth_headers)

@@ -90,7 +90,7 @@ def calculate_total_area_per_property_type(queryset: QuerySet) -> List[dict]:
                     and total_area keys representing the property type name
                     and the aggregated total area respectively.
     """
-    property_ids = [query.id for query in queryset]
+    property_ids = queryset.values_list('id', flat=True)
     properties_type_area = Property.objects.filter(
         id__in=property_ids
     ).values('property_type__name').annotate(
