@@ -282,7 +282,7 @@ class OrganisationUsersView(
 
 
 
-    def get_organisation_users(self,request):
+    def get_organisation_users(self, request):
         organisation_user_list = OrganisationUser.objects.filter(
             organisation_id=request.session[CURRENT_ORGANISATION_ID_KEY])
         organisation_users = []
@@ -336,7 +336,7 @@ class OrganisationUsersView(
 
         return users
 
-    def get_organisation_invites(self,request):
+    def get_organisation_invites(self, request):
         organisation_invites = OrganisationInvites.objects.filter(
             organisation_id=request.session[CURRENT_ORGANISATION_ID_KEY])
         paginated_organisation_invites = []
