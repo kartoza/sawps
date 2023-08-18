@@ -19,7 +19,7 @@ from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_available_to_species,
-    calculate_total_area_per_property_type
+    calculate_total_area_per_property_type,
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -208,7 +208,7 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
         filtered_queryset = PropertyFilter(
             self.request.GET, queryset=queryset
         ).qs
-        return filtered_queryset
+        return filtered_queryset.distinct('name')
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Response:
         """

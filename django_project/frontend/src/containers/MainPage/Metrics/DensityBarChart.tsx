@@ -45,7 +45,7 @@ const DensityBarChart = () => {
     }, [propertyId, startYear, endYear, selectedSpecies])
 
     for (const each of densityData) {
-        labels.push(each.density.species_name);
+        labels.push(each.density.property_name);
         density.push(each.density.density);
     }
 
