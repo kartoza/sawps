@@ -9,6 +9,7 @@ import PopulationCategoryChart from "./PopulationCategoryChart";
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
 import PropertyAvailableBarChart from "./PropertyAvailable";
+import PropertyTypeBarChart from "./PropertyType";
 
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
@@ -62,6 +63,7 @@ const Metrics = () => {
                 <Box className="chart-left">
                     <SpeciesLineChart />
                     <DensityBarChart />
+                    <PropertyTypeBarChart/>
                 </Box>
                 <Box className="chart-right">
                     <PopulationCategoryChart />
