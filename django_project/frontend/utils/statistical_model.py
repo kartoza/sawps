@@ -257,13 +257,13 @@ def clear_statistical_model_output_cache(taxon: Taxon):
     :param taxon: species
     """
     if taxon:
-        output_caches = (
-            cache._cache.get_client().keys(f'*species-{str(taxon.id)}-*')
-        )
+        keys_pattern = f'*species-{str(taxon.id)}-*'
     else:
-        output_caches = (
-            cache._cache.get_client().keys('*species-*')
-        )
+        # updated generic model, all cache can be cleared
+        keys_pattern = '*species-*'
+    output_caches = (
+        cache._cache.get_client().keys(keys_pattern)
+    )
     if output_caches:
         for cache_key in output_caches:
             cleaned_key = str(cache_key).split(':')[-1].replace('\'', '')

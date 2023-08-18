@@ -13,7 +13,8 @@ from frontend.utils.statistical_model import (
     PLUMBER_PORT,
     plumber_health_check,
     kill_r_plumber_process,
-    spawn_r_plumber
+    spawn_r_plumber,
+    clear_statistical_model_output_cache
 )
 from frontend.utils.process import write_pidfile
 from frontend.tests.model_factories import StatisticalModelF
@@ -35,6 +36,26 @@ def find_r_line_code(lines, code):
 class DummyProcess:
     def __init__(self, pid):
         self.pid = pid
+
+
+class DummyCacheClient:
+    def __init__(self, results = []):
+        self.results = results
+
+    def keys(self, key_pattern):
+        return self.results
+
+
+class DummyCacheHandler:
+    def __init__(self, results = []):
+        self.results = results
+        self._cache = self
+
+    def get_client(self):
+        return DummyCacheClient(self.results)
+    
+    def delete(self, key):
+        return 1
 
 
 def mocked_process(*args, **kwargs):
@@ -174,3 +195,10 @@ class TestStatisticalUtils(TestCase):
             taxon, PROVINCE_TREND, 'Gauteng')
         self.assertEqual(
             cache_key, f'species-{taxon.id}-province-trend-gauteng')
+
+    @mock.patch('frontend.utils.statistical_model.cache')
+    def test_clear_statistical_model_output_cache(self, mocked_cached):
+        mocked_cached.return_value = DummyCacheHandler()
+        taxon = TaxonF.create()
+        clear_statistical_model_output_cache(taxon)
+        clear_statistical_model_output_cache(None)
