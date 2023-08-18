@@ -70,7 +70,7 @@ class SpeciesNationalTrend(APIView):
             statistical_model_output else None
         )
         is_success, json_data = execute_statistical_model(
-            data_filepath, model=statistical_model)
+            data_filepath, species, model=statistical_model)
         # remove data_filepath
         remove_plumber_data(data_filepath)
         if is_success:

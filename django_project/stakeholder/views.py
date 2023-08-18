@@ -1,5 +1,4 @@
 import logging
-from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
 import pytz
@@ -48,7 +47,7 @@ def check_email_exists(request):
     return JsonResponse({'exists': False})
 
 
-class ProfileView(DetailView):
+class ProfileView(RegisteredOrganisationBaseView):
     template_name = 'profile.html'
     model = get_user_model()
     slug_field = 'username'
@@ -99,9 +98,11 @@ class ProfileView(DetailView):
         return HttpResponseRedirect(request.path_info)
 
     def get_context_data(self, **kwargs):
-        context = super(ProfileView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['titles'] = UserTitle.objects.all()
         context['roles'] = UserRoleType.objects.all()
+        context['object'] = User.objects.filter(
+            pk=self.request.user.id).first()
 
         return context
 

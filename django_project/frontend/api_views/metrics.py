@@ -19,6 +19,7 @@ from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_available_to_species,
+    calculate_total_area_per_property_type
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -219,3 +220,29 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
         """
         queryset = self.get_queryset()
         return Response(calculate_total_area_available_to_species(queryset))
+
+
+class TotalAreaPerPropertyTypeAPIView(APIView):
+    """
+    API endpoint to retrieve total area per property type
+    for properties within an organization.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> QuerySet[Property]:
+        """
+        Get the filtered queryset of properties owned by the organization.
+        """
+        organisation_id = self.request.session.get('current_organisation_id')
+        queryset = Property.objects.filter(organisation_id=organisation_id)
+        filtered_queryset = PropertyFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve total area per property type.
+        """
+        queryset = self.get_queryset()
+        return Response(calculate_total_area_per_property_type(queryset))
