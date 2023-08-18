@@ -186,6 +186,6 @@ class TestProfileView(TestCase):
         self.assertEqual(response.status_code, 200)
         context = response.context
 
-        self.assertNotIn('titles', context)
-        self.assertNotIn('roles', context)
-        self.assertNotIn('object', context)
+        self.assertIn('titles', context)
+        self.assertIn('roles', context)
+        self.assertIn('object', context)
