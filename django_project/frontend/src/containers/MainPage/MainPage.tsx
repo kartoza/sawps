@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {useSearchParams} from "react-router-dom";
+import {useSearchParams, useLocation, useNavigate} from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
@@ -30,6 +30,8 @@ import DataList from './Data';
 import Metrics from './Metrics';
 
 
+
+
 enum RightSideBarMode {
   None = -1,
   Upload = 0,
@@ -38,23 +40,35 @@ enum RightSideBarMode {
 }
 
 function MainPage() {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams()
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
-  const [selectedTab, setSelectedTab] = useState(0)
   const [rightSideBarMode, setRightSideBarMode] = useState(RightSideBarMode.None) // 0: upload data, 1: property summary, 2: filtered properties summary
   const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
   const mapSelectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
 
+  const initialTabParam = new URLSearchParams(location.search).get('tab');
+  const initialSelectedTab = initialTabParam !== null ? parseInt(initialTabParam) : 0;
+  const [selectedTab, setSelectedTab] = useState(initialSelectedTab);
+
   useEffect(() => {
-    let tab = 0
-    if (searchParams.get('tab')) {
-      tab = parseInt(searchParams.get('tab'))
+    const tabParam = new URLSearchParams(location.search).get('tab');
+    if (tabParam !== null) {
+      const tab = parseInt(tabParam);
+      if (tab >= 0 && tab <= 3) {
+        setSelectedTab(tab); // Set the selected tab based on URL parameter
+      }
     }
-    if (tab >= 0 && tab <= 3) {
-      setSelectedTab(tab)
+  }, [location.search]);
+
+  useEffect(() => {
+    if (location.search !== `?tab=${selectedTab}`) {
+      // Update URL when tab is changed and only if it's not already set
+      navigate(`?tab=${selectedTab}`);
     }
-  }, [searchParams])
+  }, [selectedTab, navigate,location.search]);
 
   useEffect(() => {
     if (rightSideBarMode === RightSideBarMode.None) {
