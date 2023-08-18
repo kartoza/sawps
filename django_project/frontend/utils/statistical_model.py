@@ -148,8 +148,9 @@ def write_plumber_file(file_path = None):
             lines.append('#* Generic Model\n')
             lines.append('#* @post /statistical/generic\n')
 
-        lines.append('function(filepath) {\n')
+        lines.append('function(filepath, taxon_name) {\n')
         lines.append('  all_data <- read.csv(filepath)\n')
+        lines.append('  metadata <- list(species=taxon_name)\n')
         code_lines = model.code.splitlines()
         for code in code_lines:
             lines.append(f'  {code}\n')
