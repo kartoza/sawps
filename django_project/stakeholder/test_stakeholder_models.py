@@ -10,7 +10,11 @@ from stakeholder.models import (
     OrganisationRepresentative,
     UserLogin,
     OrganisationInvites,
-    Reminders
+    Reminders,
+    SUPERUSER_ROLE,
+    ADMIN_ROLE,
+    DECISION_MAKER_ROLE,
+    DATA_CONTRIBUTOR_ROLE
 )
 from stakeholder.factories import (
     userRoleTypeFactory,
@@ -39,17 +43,18 @@ class TestUserRoleType(TestCase):
         self.assertEqual(UserRoleType.objects.count(), 1)
         self.assertTrue(
             self.UserRoleTypeFactory.name
-            in ['base user', 'admin', 'super user']
+            in [SUPERUSER_ROLE, ADMIN_ROLE,
+                DECISION_MAKER_ROLE, DATA_CONTRIBUTOR_ROLE]
         )
 
     def test_update_role(self):
         """Test updating a role."""
-        self.UserRoleTypeFactory.name = 'admin'
+        self.UserRoleTypeFactory.name = ADMIN_ROLE
         self.UserRoleTypeFactory.save()
         UserRoleObject = UserRoleType.objects.get(
             id=self.UserRoleTypeFactory.id
         )
-        self.assertEqual(UserRoleObject.name, 'admin')
+        self.assertEqual(UserRoleObject.name, ADMIN_ROLE)
 
     def test_delete_role(self):
         """Test deleting new role."""
@@ -120,7 +125,15 @@ class TestUser(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.profileFactory = userProfileFactory()
+        cls.role1 = userRoleTypeFactory.create(
+            name=DATA_CONTRIBUTOR_ROLE
+        )
+        cls.role2 = userRoleTypeFactory.create(
+            name=SUPERUSER_ROLE
+        )
+        cls.profileFactory = userProfileFactory(
+            user_role_type=cls.role1
+        )
 
     def test_create_new_user_with_new_profile(self):
         """Test creating new user when new profile is created."""
@@ -128,6 +141,8 @@ class TestUser(TestCase):
         self.assertEqual(
             User.objects.count(), 2
         )  # Anon user is created by default
+        self.assertTrue(self.profileFactory.is_data_contributor)
+        self.assertFalse(self.profileFactory.user.is_superuser)
 
     def test_update_user_profile(self):
         """Test updating user through profile."""
@@ -137,6 +152,13 @@ class TestUser(TestCase):
         self.assertEqual(
             User.objects.get(username='test').first_name, 'test123'
         )
+        self.assertFalse(self.profileFactory.user.is_superuser)
+        # elevate to superuser
+        self.profileFactory.user_role_type = UserRoleType.objects.filter(
+            name=SUPERUSER_ROLE
+        ).first()
+        self.profileFactory.save()
+        self.assertTrue(self.profileFactory.user.is_superuser)
 
     def test_delete_role(self):
         """Test deleting user when a profile is deleted."""

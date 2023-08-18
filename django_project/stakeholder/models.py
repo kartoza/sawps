@@ -4,10 +4,26 @@ from django.conf import settings
 from django.utils import timezone
 
 
+# Role choices
+SUPERUSER_ROLE = 'Super user'
+ADMIN_ROLE = 'Admin'
+DECISION_MAKER_ROLE = 'Decision maker'
+DATA_CONTRIBUTOR_ROLE = 'Data contributor'
+
+
 class UserRoleType(models.Model):
     """User role type (Base users, admins ..etc.) model."""
 
-    name = models.CharField(unique=True, max_length=50)
+    name = models.CharField(
+        unique=True,
+        max_length=50,
+        choices=(
+            (SUPERUSER_ROLE, SUPERUSER_ROLE),
+            (ADMIN_ROLE, ADMIN_ROLE),
+            (DECISION_MAKER_ROLE, DECISION_MAKER_ROLE),
+            (DATA_CONTRIBUTOR_ROLE, DATA_CONTRIBUTOR_ROLE)
+        )
+    )
     description = models.TextField()
 
     def __str__(self):
@@ -55,7 +71,7 @@ class UserProfile(models.Model):
         unique=True,
         related_name='user_profile'
     )
-    title_id = models.ForeignKey(
+    title = models.ForeignKey(
         UserTitle,
         on_delete=models.DO_NOTHING,
         null=True,
@@ -68,7 +84,7 @@ class UserProfile(models.Model):
         null=True,
         blank=True
     )
-    user_role_type_id = models.ForeignKey(
+    user_role_type = models.ForeignKey(
         UserRoleType,
         on_delete=models.DO_NOTHING,
         null=True,
@@ -95,6 +111,52 @@ class UserProfile(models.Model):
                     media=settings.MEDIA_ROOT,
                     url=self.picture,
             )
+
+    @property
+    def is_superuser(self):
+        return (
+            self.user_role_type.name == SUPERUSER_ROLE and
+            self.user.is_superuser if self.user_role_type else False
+        )
+
+    @property
+    def is_admin(self):
+        return (
+            self.user_role_type.name == ADMIN_ROLE and self.user.is_staff if
+            self.user_role_type else False
+        )
+
+    @property
+    def is_decision_maker(self):
+        return (
+            self.user_role_type.name == DECISION_MAKER_ROLE if
+            self.user_role_type else False
+        )
+
+    @property
+    def is_data_contributor(self):
+        return (
+            self.user_role_type.name == DATA_CONTRIBUTOR_ROLE if
+            self.user_role_type else False
+        )
+
+    def save(self, *args, **kwargs):
+        if self.user_role_type:
+            if self.user_role_type.name == SUPERUSER_ROLE:
+                self.user.is_superuser = True
+                self.user.is_staff = True
+            elif self.user_role_type.name == ADMIN_ROLE:
+                self.user.is_superuser = False
+                self.user.is_staff = True
+            else:
+                self.user.is_superuser = False
+                self.user.is_staff = False
+            self.user.save()
+        else:
+            self.user_role_type = UserRoleType.objects.filter(
+                name=DATA_CONTRIBUTOR_ROLE
+            ).first()
+        super(UserProfile, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'User'
@@ -129,6 +191,15 @@ class Organisation(models.Model):
     data_use_permission = models.ForeignKey(
         'regulatory_permit.dataUsePermission',
         on_delete=models.DO_NOTHING
+    )
+    national = models.BooleanField(
+        null=True,
+        blank=True
+    )
+    province = models.ForeignKey(
+        'property.Province',
+        on_delete=models.DO_NOTHING,
+        null=True, blank=True
     )
 
     class Meta:

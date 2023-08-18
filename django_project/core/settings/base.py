@@ -77,6 +77,8 @@ MIDDLEWARE = (
     'allauth_2fa.middleware.AllauthTwoFactorMiddleware',
     # request 2fa to all active user
     'sawps.middleware.RequireSuperuser2FAMiddleware',
+    # append user role to request object
+    'stakeholder.middleware.UserProfileMiddleware'
 )
 
 ROOT_URLCONF = 'core.urls'

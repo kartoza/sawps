@@ -6,7 +6,11 @@ from stakeholder.models import (
     Organisation,
     OrganisationUser,
     OrganisationRepresentative,
-    UserLogin
+    UserLogin,
+    SUPERUSER_ROLE,
+    ADMIN_ROLE,
+    DECISION_MAKER_ROLE,
+    DATA_CONTRIBUTOR_ROLE
 )
 import factory
 from django.contrib.auth.models import User
@@ -19,7 +23,13 @@ class userRoleTypeFactory(factory.django.DjangoModelFactory):
         model = UserRoleType
 
     name = factory.Faker(
-        'random_element', elements=('base user', 'admin', 'super user')
+        'random_element',
+        elements=(
+            SUPERUSER_ROLE,
+            ADMIN_ROLE,
+            DECISION_MAKER_ROLE,
+            DATA_CONTRIBUTOR_ROLE
+        )
     )
     description = factory.Faker('text', max_nb_chars=200)
 
@@ -64,9 +74,9 @@ class userProfileFactory(factory.django.DjangoModelFactory):
         model = UserProfile
 
     user = factory.SubFactory('stakeholder.factories.userFactory')
-    title_id = factory.SubFactory('stakeholder.factories.userTitleFactory')
+    title = factory.SubFactory('stakeholder.factories.userTitleFactory')
     cell_number = factory.Faker('random_int', min=10000, max=99999)
-    user_role_type_id = factory.SubFactory(
+    user_role_type = factory.SubFactory(
         'stakeholder.factories.userRoleTypeFactory'
     )
 
@@ -93,6 +103,8 @@ class organisationFactory(factory.django.DjangoModelFactory):
     name = factory.Faker('company')
     data_use_permission = factory.SubFactory(
         'regulatory_permit.factories.DataUsePermissionFactory')
+    province = factory.SubFactory(
+        'property.factories.ProvinceFactory')
 
 
 class organisationUserFactory(factory.django.DjangoModelFactory):

@@ -8,7 +8,8 @@ from stakeholder.models import (
     UserProfile,
     UserRoleType,
     UserTitle,
-    Reminders
+    Reminders,
+    DATA_CONTRIBUTOR_ROLE
 )
 from django.contrib import messages
 from stakeholder.tasks import send_reminder_emails
@@ -71,6 +72,9 @@ class ProfileView(DetailView):
         if not UserProfile.objects.filter(user=user).exists():
             UserProfile.objects.create(
                 user=user,
+                user_role_type=UserRoleType.objects.filter(
+                    name=DATA_CONTRIBUTOR_ROLE
+                ).first()
             )
 
         if first_name is not None:

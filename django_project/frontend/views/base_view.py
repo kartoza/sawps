@@ -86,7 +86,10 @@ class RegisteredOrganisationBaseView(TemplateView):
                 self.request.session[CURRENT_ORGANISATION_KEY]
             )
         organisation: Organisation = None
-        if self.request.user.is_superuser:
+        if (
+            self.request.user_profile.is_admin or
+            self.request.user_profile.is_superuser
+        ):
             organisation = Organisation.objects.all().order_by('name').first()
         else:
             organisation_user = OrganisationUser.objects.filter(
@@ -102,7 +105,10 @@ class RegisteredOrganisationBaseView(TemplateView):
         ) if organisation else (0, '')
 
     def get_organisation_list(self):
-        if self.request.user.is_superuser:
+        if (
+            self.request.user_profile.is_admin or
+            self.request.user_profile.is_superuser
+        ):
             # fetch all organisations
             organisations = Organisation.objects.all().order_by('name')
             if CURRENT_ORGANISATION_ID_KEY in self.request.session:
@@ -136,5 +142,9 @@ class RegisteredOrganisationBaseView(TemplateView):
         )
         ctx['current_organisation_id'] = current_organisation_id
         ctx['organisations'] = self.get_organisation_list()
+        ctx['can_request_organisation'] = (
+            self.request.user_profile.is_decision_maker or
+            self.request.user_profile.is_data_contributor
+        )
         get_user_notifications(self.request)
         return ctx

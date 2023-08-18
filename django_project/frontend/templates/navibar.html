@@ -122,7 +122,7 @@
                 <hr class="divider" />
                 {% if '/accounts/two-factor/two_factor/setup' not in request.path and '/profile/' not in request.path and  '/accounts/two-factor/two_factor/backup_tokens' not in request.path %}
                 <span class="dropdown-header">CURRENT ORGANISATION:</span>
-                {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
+                {% if organisations|length == 0 and current_organisation == "-" and can_request_organisation %}
                 <button class="btn btn-success btn-sm badge-btn center-button" type="button" data-toggle="modal" data-target="#organisationModal">REQUEST ORGANISATION</button>
                 {% else %}
                 <span class="dropdown-item font-weight-bolder clickable " onclick="redirectToDesiredPage()">{{ current_organisation }}</span>
@@ -151,7 +151,7 @@
                 {% endif %}
 
                 {% endif %}
-                {% if user.is_superuser %}
+                {% if user.is_staff %}
                 <a class="dropdown-item" href="/admin/">DJANGO ADMIN</a>
                 {% endif %}
             </div>
