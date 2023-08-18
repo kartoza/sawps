@@ -182,7 +182,7 @@ class TotalCountPerActivityTestCase(BaseTestCase):
         self.assertEqual(list(response.data[0]['activities'][0].values())[0], 100)
 
 
-class SpeciesPopulationTotalAndDensityTestCase(BaseTestCase):
+class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
     """
     Test the species population total density API endpoint.
     """
@@ -193,18 +193,15 @@ class SpeciesPopulationTotalAndDensityTestCase(BaseTestCase):
         super().setUp()
         self.url = reverse("species_population_total_density")
 
-    def test_species_population_total_and_density(self) -> None:
+    def test_species_population_density_per_property(self) -> None:
         """
-        Test species population total and density calculation.
+        Test species population density per property.
         """
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]['density'].get('density'), 0.5
-        )
-        self.assertEqual(
-            response.data[0]['density'].get('total'), 100
         )
 
 
