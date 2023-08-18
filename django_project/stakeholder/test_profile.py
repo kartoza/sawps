@@ -183,7 +183,7 @@ class TestProfileView(TestCase):
         response = self.client.get(
             '/profile/{}/'.format(self.test_user.username),
         )
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         context = response.context
 
         self.assertNotIn('titles', context)
