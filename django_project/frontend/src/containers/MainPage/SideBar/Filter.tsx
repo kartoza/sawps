@@ -112,7 +112,9 @@ function Filter() {
 
     const handleChange = (event: any, newValue: number | number[]) => {
         if (Array.isArray(newValue)) {
+            setLocalStartYear((newValue[0]))
             dispatch(setStartYear(newValue[0]));
+            setLocalEndYear((newValue[1]))
             dispatch(setEndYear(newValue[1]));
         }
     };
