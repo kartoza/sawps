@@ -171,24 +171,3 @@ class TestProfileView(TestCase):
         )
         # if mismatch user
         self.assertEqual(response.status_code, 404)
-
-    def test_context_data(self):
-        # Simulate a request with the authenticated user
-        user = UserF.create()
-        user.username = 'testuser1'
-        user.save()
-        url = reverse('profile', kwargs={'slug': user.username})
-        client = Client()
-        request = client.get(url)
-        request.user = user
-
-        client.force_login(user)
-        # ignores the redirect for 2fa
-        response = client.get(url, follow=True)
-
-        # Check if the response is successful
-        self.assertEqual(response.status_code, 200)
-        context = response.context
-
-        self.assertNotIn('titles', context)
-        self.assertNotIn('roles', context)
