@@ -175,12 +175,15 @@ class TestProfileView(TestCase):
     def test_context_data(self):
         # Simulate a request with the authenticated user
         user = UserF.create()
+        user.username = 'testuser1'
+        user.save()
         url = reverse('profile', kwargs={'slug': user.username})
         client = Client()
         request = client.get(url)
         request.user = user
 
         client.force_login(user)
+        # ignores the redirect for 2fa
         response = client.get(url, follow=True)
 
         # Check if the response is successful
