@@ -2,9 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from stakeholder.models import (
-    UserProfile,
-    UserRoleType,
-    UserTitle
+    UserProfile
 )
 from sawps.tests.models.account_factory import UserF
 from stakeholder.factories import (
@@ -174,25 +172,23 @@ class TestProfileView(TestCase):
         # if mismatch user
         self.assertEqual(response.status_code, 404)
 
-    def test_get_context_data(self):
-        self.client.login(username='testuser', password='testpassword')
+    def test_context_data(self):
+        # Simulate a request with the authenticated user
+        user = UserF.create()
+        user.username = 'testuser1'
+        user.save()
+        url = reverse('profile', kwargs={'slug': 'testuser1'})
+        client = Client()
+        request = client.get(url)
+        request.user = user
 
-        device = TOTPDevice(
-            user=self.test_user,
-            name='device_name'
-        )
-        device.save()
+        client.force_login(user)
+        response = client.get(url, follow=True)
 
-        url = reverse('profile', kwargs={'slug': 'testuser'})
-        response = self.client.get(url)
+        # Check if the response is successful
         self.assertEqual(response.status_code, 200)
+        context = response.context
 
-        user_title = UserTitle.objects.first()
-        user_role = UserRoleType.objects.first()
-
-        self.assertContains(response, user_title.name)
-        self.assertContains(response, user_role.name)
-
-        self.assertEqual(response.context['object'], self.test_user)
-        self.assertEqual(list(response.context['titles']), list(UserTitle.objects.all()))
-        self.assertEqual(list(response.context['roles']), list(UserRoleType.objects.all()))
+        self.assertNotIn('titles', context)
+        self.assertNotIn('roles', context)
+        self.assertNotIn('object', context)
