@@ -75,7 +75,7 @@
                 var speciesName = $('#id_taxon').find(":selected").text();
                 data = {
                     'metadata': {
-                        'species': speciesName ? speciesName : 'Species A'
+                        'species': [speciesName ? speciesName : 'Species Name']
                     }
                 }
                 for (var i = 0; i < selectedValues.length; ++i) {
@@ -109,11 +109,17 @@
                     } else if (type === 'property_trend') {
                         data[type] = {
                             "Property A": [{
-                                "count_total": 100,
                                 "year": 2016,
                                 "fit": 89.0128,
                                 "lower_ci": 62.9122,
                                 "upper_ci": 115.1134
+                            }]
+                        }
+                    } else if (type === 'population_per_property') {
+                        data[type] = {
+                            "Property A": [{
+                                "year": 2016,
+                                "count_total": 78
                             }]
                         }
                     }
@@ -133,7 +139,10 @@
                             "type": "object",
                             "properties": {
                                 "species": {
-                                    "type": "string"
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
                                 }
                             },
                             "required": [
@@ -145,18 +154,18 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                "year": {
-                                    "type": "number"
-                                },
-                                "fit": {
-                                    "type": "number"
-                                },
-                                "lower_ci": {
-                                    "type": "number"
-                                },
-                                "upper_ci": {
-                                    "type": "number"
-                                }
+                                    "year": {
+                                        "type": "number"
+                                    },
+                                    "fit": {
+                                        "type": "number"
+                                    },
+                                    "lower_ci": {
+                                        "type": "number"
+                                    },
+                                    "upper_ci": {
+                                        "type": "number"
+                                    }
                                 },
                                 "required": [
                                     "year",
@@ -166,20 +175,88 @@
                                 ]
                             }
                         },
+                        "province_trend": {
+                            "type": "object",
+                            "properties": {
+                                "ProvinceName": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "year": {
+                                                "type": "number"
+                                            },
+                                            "fit": {
+                                                "type": "number"
+                                            },
+                                            "lower_ci": {
+                                                "type": "number"
+                                            },
+                                            "upper_ci": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "year",
+                                            "fit",
+                                            "lower_ci",
+                                            "upper_ci"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required": [
+                                "ProvinceName"
+                            ]
+                        },
+                        "property_trend": {
+                            "type": "object",
+                            "properties": {
+                                "PropertyName": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "year": {
+                                                "type": "number"
+                                            },
+                                            "fit": {
+                                                "type": "number"
+                                            },
+                                            "lower_ci": {
+                                                "type": "number"
+                                            },
+                                            "upper_ci": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "year",
+                                            "fit",
+                                            "lower_ci",
+                                            "upper_ci"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required": [
+                                "PropertyName"
+                            ]
+                        },
                         "population_per_province": {
                             "type": "array",
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                "count_total": {
-                                    "type": "number"
-                                },
-                                "province": {
-                                    "type": "string"
-                                },
-                                "freq": {
-                                    "type": "number"
-                                }
+                                    "count_total": {
+                                        "type": "number"
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "freq": {
+                                        "type": "number"
+                                    }
                                 },
                                 "required": [
                                     "count_total",
@@ -188,88 +265,43 @@
                                 ]
                             }
                         },
-                        "province_trend": {
+                        "population_per_property": {
                             "type": "object",
                             "properties": {
-                                "Gauteng": {
+                                "PropertyName": {
                                     "type": "array",
                                     "items": {
                                         "type": "object",
                                         "properties": {
-                                        "year": {
-                                            "type": "number"
-                                        },
-                                        "fit": {
-                                            "type": "number"
-                                        },
-                                        "lower_ci": {
-                                            "type": "number"
-                                        },
-                                        "upper_ci": {
-                                            "type": "number"
-                                        }
+                                            "year": {
+                                                "type": "number"
+                                            },
+                                            "count_total": {
+                                                "type": "number"
+                                            }
                                         },
                                         "required": [
-                                        "year",
-                                        "fit",
-                                        "lower_ci",
-                                        "upper_ci"
+                                            "year",
+                                            "count_total"
                                         ]
                                     }
                                 }
                             },
                             "required": [
-                                "Gauteng"
-                            ]
-                        },
-                        "property_trend": {
-                            "type": "object",
-                            "properties": {
-                                "Property A": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                        "count_total": {
-                                            "type": "number"
-                                        },
-                                        "year": {
-                                            "type": "number"
-                                        },
-                                        "fit": {
-                                            "type": "number"
-                                        },
-                                        "lower_ci": {
-                                            "type": "number"
-                                        },
-                                        "upper_ci": {
-                                            "type": "number"
-                                        }
-                                        },
-                                        "required": [
-                                        "count_total",
-                                        "year",
-                                        "fit",
-                                        "lower_ci",
-                                        "upper_ci"
-                                        ]
-                                    }
-                                }
-                            },
-                            "required": [
-                                "Property A"
+                                "PropertyName"
                             ]
                         }
                     },
                     "required": [
                         "metadata",
                         "national_trend",
-                        "population_per_province",
                         "province_trend",
-                        "property_trend"
+                        "property_trend",
+                        "population_per_province",
+                        "population_per_property"
                     ]
-                };
-                
+                    };
+
                 var str = JSON.stringify(jsonSchema, null, 2); // spacing level = 2
                 $('#popup-expected-output-content').html('<pre>'+str+'</pre>');
                 $("#popup-content").toggle();

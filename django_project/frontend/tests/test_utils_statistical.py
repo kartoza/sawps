@@ -105,6 +105,7 @@ class TestStatisticalUtils(TestCase):
                 status_code=200
             )
             is_success, response = execute_statistical_model(data_filepath,
+                                                             model.taxon,
                                                              model)
             self.assertTrue(is_success)
             self.assertEqual(response, json_response)
@@ -117,6 +118,7 @@ class TestStatisticalUtils(TestCase):
                 status_code=500
             )
             is_success, response = execute_statistical_model(data_filepath,
+                                                             model.taxon,
                                                              model)
             self.assertFalse(is_success)
             self.assertFalse(response)
