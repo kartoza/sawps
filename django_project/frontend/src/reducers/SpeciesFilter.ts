@@ -17,7 +17,7 @@ const initialState: SpeciesFilterInterface = {
   months: [],
   selectedMonths: "",
   startYear: 1960,
-  endYear: 2023,
+  endYear:new Date().getFullYear(),
   propertyId:"",
 };
 
