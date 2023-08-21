@@ -1,5 +1,3 @@
-# coding=utf-8
-
 """Project level settings."""
 import ast
 
@@ -62,8 +60,6 @@ LOGGING = {
 # -------------------------------------------------- #
 # ----------            SENTRY          ------------ #
 # -------------------------------------------------- #
-
-SENTRY_DSN = os.environ.get('SENTRY_DSN', '')
 
 if SENTRY_DSN is not None and SENTRY_DSN.strip():
     import sentry_sdk

@@ -29,6 +29,7 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    baseURL: process.env.STAGING === '1' ? 'http://sawps.sta.do.kartoza.com/' : 'http://localhost:61100/'
   },
 
   /* Configure projects for major browsers */

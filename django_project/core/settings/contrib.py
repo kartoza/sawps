@@ -1,7 +1,7 @@
-# coding=utf-8
 """Settings for 3rd party."""
-from .base import *  # noqa
 import ast
+
+from .base import *  # noqa
 
 # Extra installed apps
 INSTALLED_APPS = INSTALLED_APPS + (
@@ -123,3 +123,5 @@ DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = [
 DJANGO_EASY_AUDIT_UNREGISTERED_URLS_EXTRA = [
     r'^/get_user_notifications/',
 ]
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN', '')
