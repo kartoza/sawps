@@ -43,8 +43,6 @@ class AnnualPopulation(AnnualPopulationAbstract):
     sub_adult_male = models.IntegerField(null=True, blank=True)
     sub_adult_female = models.IntegerField(null=True, blank=True)
     juvenile_total = models.IntegerField(null=True, blank=True)
-    area_covered = models.FloatField(null=False, default=0.0)
-    sampling_effort = models.FloatField(null=False, default=0.0)
     survey_method = models.ForeignKey(
         "occurrence.SurveyMethod", on_delete=models.CASCADE, null=True
     )
@@ -69,6 +67,11 @@ class AnnualPopulation(AnnualPopulationAbstract):
 
     population_estimate_category = models.ForeignKey(
         "population_data.PopulationEstimateCategory",
+        on_delete=models.CASCADE, null=True
+    )
+
+    sampling_effort_coverage = models.ForeignKey(
+        "population_data.SamplingEffortCoverage",
         on_delete=models.CASCADE, null=True
     )
 
@@ -98,9 +101,9 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     founder_population = models.BooleanField(null=True, blank=True)
     reintroduction_source = models.CharField(max_length=250, null=True,
                                              blank=True)
-    intake_permit = models.IntegerField(null=True, blank=True)
+    intake_permit = models.CharField(null=True, blank=True, max_length=100)
     translocation_destination = models.TextField(null=True, blank=True)
-    offtake_permit = models.IntegerField(null=True, blank=True)
+    offtake_permit = models.CharField(null=True, blank=True, max_length=100)
 
     class Meta:
         verbose_name = "Population count per activity"
@@ -181,3 +184,21 @@ class PopulationEstimateCategory(models.Model):
         verbose_name = "Population Estimate Category"
         verbose_name_plural = "Population Estimate Categories"
         db_table = "population_estimate_category"
+
+
+class SamplingEffortCoverage(models.Model):
+    """Sampling Effort Coverage model.
+    """
+
+    name = models.TextField(
+        null=False,
+        blank=False,
+        default="",
+        unique=True,
+        help_text="Name"
+    )
+
+    class Meta:
+        verbose_name = "Sampling Effort Coverage"
+        verbose_name_plural = "Sampling Effort Coverages"
+        db_table = "sampling_effort_coverage"

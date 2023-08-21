@@ -52,7 +52,7 @@ class SpeciesUploader(APIView):
                     status=400,
                     data={
                         'detail': 'Header row does not follow the '
-                                  'correct format.'
+                                  'correct format.' + header
                     }
                 )
         upload_session.process_file = species_file
