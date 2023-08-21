@@ -120,8 +120,8 @@ class TestProfileView(TestCase):
         # user.save()
         UserProfile.objects.create(
             user=user,
-            title_id=title,
-            user_role_type_id=role
+            title=title,
+            user_role_type=role
         )
         resp = self.client.login(username='testuser', password='testpassword')
         self.assertTrue(resp)
@@ -143,8 +143,8 @@ class TestProfileView(TestCase):
         updated_user = get_user_model().objects.get(id=user.id)
         self.assertEqual(updated_user.first_name, '')
         self.assertIsNotNone(updated_user.user_profile.picture)
-        self.assertEqual(user.user_profile.title_id.name, title.name)
-        self.assertEqual(user.user_profile.user_role_type_id.name, role.name)
+        self.assertEqual(user.user_profile.title.name, title.name)
+        self.assertEqual(user.user_profile.user_role_type.name, role.name)
 
     def test_404(self):
         """

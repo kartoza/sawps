@@ -87,10 +87,10 @@ class ProfileView(DetailView):
             user.user_profile.picture = profile_picture
         if title is not None:
             title = UserTitle.objects.get(id=title)
-            user.user_profile.title_id = title
+            user.user_profile.title = title
         if role is not None:
             role = UserRoleType.objects.get(id=role)
-            user.user_profile.user_role_type_id = role
+            user.user_profile.user_role_type = role
 
         user.user_profile.save()
         user.save()

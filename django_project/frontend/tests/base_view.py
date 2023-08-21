@@ -5,6 +5,7 @@ from django.test import (
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.auth.models import AnonymousUser
+from stakeholder.middleware import UserProfileMiddleware
 from frontend.tests.model_factories import UserF
 from stakeholder.factories import (
     organisationFactory,
@@ -12,7 +13,10 @@ from stakeholder.factories import (
 )
 from stakeholder.models import (
     Reminders,
-    UserProfile
+    UserProfile,
+    UserRoleType,
+    DATA_CONTRIBUTOR_ROLE,
+    SUPERUSER_ROLE
 )
 
 
@@ -20,10 +24,12 @@ from stakeholder.models import (
 class RegisteredBaseViewTestBase(TestCase):
     view_name = 'home'
     view_cls = None
+    fixtures = ['stakeholder_user_role_types.json']
 
     def setUp(self) -> None:
         self.factory = RequestFactory()
         self.middleware = SessionMiddleware(lambda x: None)
+        self.profile_middleware = UserProfileMiddleware(lambda x: None)
         self.user_1 = UserF.create(username='test_1')
         self.superuser = UserF.create(
             username='test_2',
@@ -52,11 +58,29 @@ class RegisteredBaseViewTestBase(TestCase):
         )
         self.user_profile = UserProfile.objects.create(
             user=self.user_1,
-            received_notif=False
+            received_notif=False,
+            user_role_type=UserRoleType.objects.filter(
+                name=DATA_CONTRIBUTOR_ROLE
+            ).first()
+        )
+        self.user_profile_1 = UserProfile.objects.create(
+            user=self.user_2,
+            received_notif=False,
+            user_role_type=UserRoleType.objects.filter(
+                name=DATA_CONTRIBUTOR_ROLE
+            ).first()
+        )
+        self.user_profile_2 = UserProfile.objects.create(
+            user=self.superuser,
+            received_notif=False,
+            user_role_type=UserRoleType.objects.filter(
+                name=SUPERUSER_ROLE
+            ).first()
         )
 
     def process_session(self, request):
         self.middleware.process_request(request)
+        self.profile_middleware(request)
         request.session.save()
 
     def do_test_anonymous_user(self):

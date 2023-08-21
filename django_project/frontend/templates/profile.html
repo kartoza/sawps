@@ -26,7 +26,7 @@
                 <label for="title">Title</label>
                 <select class="form-control" name="title" id="title">
                   {% for title in titles %}
-                    {% if title.name == object.user_profile.title_id.name %}
+                    {% if title.name == object.user_profile.title.name %}
                       <option value="{{ title.id }}" selected>{{ title.name }}</option>
                     {% else %}
                       <option value="{{ title.id }}">{{ title.name }}</option>

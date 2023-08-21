@@ -20,7 +20,10 @@ from stakeholder.views import (
 from stakeholder.models import (
     Reminders,
     Organisation,
-    OrganisationUser
+    OrganisationUser,
+    UserProfile,
+    UserRoleType,
+    DATA_CONTRIBUTOR_ROLE
 )
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -390,12 +393,20 @@ class TestAddReminderAndScheduleTask(TestCase):
 
 
 class TestRemindersView(TestCase):
+    fixtures = ['stakeholder_user_role_types.json']
+
     def setUp(self):
         self.user = User.objects.create_user(
             username='testuser',
             password='testpassword123454$',
             email='email@gamil.com'
         )
+        self.user_profile = UserProfile.objects.create(
+            user=self.user,
+            user_role_type=UserRoleType.objects.filter(
+                name=DATA_CONTRIBUTOR_ROLE
+            ).first()
+        )        
         self.data_use_permission = DataUsePermission.objects.create(
             name="test"
         )
@@ -481,10 +492,12 @@ class TestRemindersView(TestCase):
         url = reverse('reminders', kwargs={'slug': self.user.username})
 
         response = self.client.get(url)
+        req_obj = response.wsgi_request
+        req_obj.user_profile = self.user_profile
         # self.assertEqual(response.status_code, 200)
 
         view = RemindersView()
-        view.setup(request=response.wsgi_request)
+        view.setup(request=req_obj)
 
         reminders = []
         view.get_reminders = lambda request: reminders
@@ -946,12 +959,20 @@ class RemindersViewTest(TestCase):
 
 
 class NotificationsViewTest(TestCase):
+    fixtures = ['stakeholder_user_role_types.json']
+
     def setUp(self):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(
             username='testuser',
             password='testpassword123454$',
             email='email@gamil.com'
+        )
+        self.user_profile = UserProfile.objects.create(
+            user=self.user,
+            user_role_type=UserRoleType.objects.filter(
+                name=DATA_CONTRIBUTOR_ROLE
+            ).first()
         )
         self.data_use_permission = DataUsePermission.objects.create(
             name="test"
@@ -1145,6 +1166,7 @@ class NotificationsViewTest(TestCase):
         request = self.factory.get(url)
         request.user = self.user
         request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        request.user_profile = self.user_profile
 
         view = NotificationsView.as_view()
         response = view(request)

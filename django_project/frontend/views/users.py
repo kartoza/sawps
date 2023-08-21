@@ -81,7 +81,7 @@ class OrganisationUsersView(
         else:
             role = UserProfile.objects.filter(user=user).first()
             if role:
-                return role.user_role_type_id
+                return role.user_role_type
 
     def is_new_invitation(self, email, organisation):
         """
