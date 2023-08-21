@@ -42,14 +42,26 @@ interface EventDetailFormInterface {
     onSave: (isCreate: boolean, data: AnnualPopulationPerActivityInterface, isCancel?: boolean) => void
 }
 
+const cleanActivityName = (activityName: string) => {
+    if (activityName) {
+        let _name = activityName.toLocaleLowerCase()
+        // replace non word characters
+        _name = _name.replaceAll(/[\W_]+/g, ' ')
+        // replace one or more spaces/tabs
+        _name = _name.replaceAll(/\s\s+/g, ' ')
+        return _name
+    }
+    return ''
+}
+
 const isTranslocationSourceFieldVisible = (selectedActivityName: string) => {
-    let _name = selectedActivityName ? selectedActivityName.toLocaleLowerCase() : ''
+    let _name = cleanActivityName(selectedActivityName)
     if (_name.includes('translocation intake')) return true
     return false
 }
 
 const isTranslocationDestinationFieldVisible = (selectedActivityName: string) => {
-    let _name = selectedActivityName ? selectedActivityName.toLocaleLowerCase() : ''
+    let _name = cleanActivityName(selectedActivityName)
     if (_name.includes('translocation offtake')) {
         return true
     }
@@ -57,7 +69,7 @@ const isTranslocationDestinationFieldVisible = (selectedActivityName: string) =>
 }
 
 const isPermitNumberFieldVisible = (selectedActivityName: string) => {
-    let _name = selectedActivityName ? selectedActivityName.toLocaleLowerCase() : ''
+    let _name = cleanActivityName(selectedActivityName)
     if (_name.includes('translocation offtake') || _name.includes('translocation intake') ||
         _name.includes('planned hunt') || _name.includes('planned euthanasia')) {
         return true
