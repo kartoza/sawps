@@ -23,6 +23,8 @@ const Metrics = () => {
     const [activityData, setActivityData] = useState([])
     const [activityType, setActivityType] = useState({})
     const [totalCoutData, setTotalCountData] = useState([])
+    const labels = Object.keys(activityType);
+    const totalCountLabel = labels.filter(item => item !== "Base population");
 
 
     const fetchActivityPercentageData = () => {
@@ -52,7 +54,6 @@ const Metrics = () => {
         })
     }
 
-
     useEffect(() => {
         fetchActivityPercentageData()
         fetchActivityTotalCount()
@@ -69,8 +70,8 @@ const Metrics = () => {
                     <PopulationCategoryChart />
                     <PropertyAvailableBarChart/>
                     <Box className="boxChart-lion">
-                        <ActivityDonutChart activityData={totalCoutData} activityType={activityType} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
-                        <ActivityDonutChart activityData={activityData} activityType={activityType} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+                        <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
+                        <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
                     </Box>
                 </Box>
             </Box>

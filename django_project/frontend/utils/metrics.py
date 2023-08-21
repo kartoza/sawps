@@ -104,26 +104,28 @@ def calculate_total_area_per_property_type(queryset: QuerySet) -> List[dict]:
     return properties_type_area
 
 
-def calculate_base_population_of_species(data: List[Dict[str, Any]]) -> Dict[str, Any]:
+def calculate_base_population_of_species(data: List[Dict[str, Any]]) \
+    -> Dict[str, Any]:
     """
     Calculate base population of species and modify the input data.
     Params:
         data (List[Dict[str, Any]]): List of dictionaries
         representing species data.
     Returns:
-        Dict[str, Any]: A dictionary containing modified species 
+        Dict[str, Any]: A dictionary containing modified species
         data with base percentages and activity colors.
     """
     calculated_data = []
     for species in data:
         activities_total = sum(
-            activity['activity_total'] for activity in species['activities']
+            activity["activity_total"] for activity in species["activities"]
         )
-        if species['total']:
-            base = species['total'] - activities_total
-            species['base_percentage'] = (
-                base / species['total']
+        if species["total"]:
+            base = species["total"] - activities_total
+            base_percentage = (
+                base / species["total"]
             ) * 100 if base else None
+            species["activities"].append({"Base population": base_percentage})
             calculated_data.append(species)
     species_data = {
         "data": calculated_data,
