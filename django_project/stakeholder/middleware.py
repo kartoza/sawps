@@ -9,7 +9,7 @@ from stakeholder.models import (
 
 class UserProfileMiddleware:
     """Middleware to inject UserProfile to request.
-    
+
     This class must be placed after SessionMiddleware.
     """
     def __init__(self, get_response):
@@ -24,7 +24,7 @@ class UserProfileMiddleware:
                 # create default profile based on superuser/staff flags
                 role = DATA_CONTRIBUTOR_ROLE
                 if request.user.is_superuser:
-                     role = SUPERUSER_ROLE
+                    role = SUPERUSER_ROLE
                 elif request.user.is_staff:
                     role = ADMIN_ROLE
                 request.user_profile = UserProfile.objects.create(
