@@ -1,6 +1,8 @@
 from stakeholder.models import (
     UserProfile,
     UserRoleType,
+    SUPERUSER_ROLE,
+    ADMIN_ROLE,
     DATA_CONTRIBUTOR_ROLE
 )
 
@@ -19,10 +21,16 @@ class UserProfileMiddleware:
                 user=request.user
             ).first()
             if request.user_profile is None:
+                # create default profile based on superuser/staff flags
+                role = DATA_CONTRIBUTOR_ROLE
+                if request.user.is_superuser:
+                     role = SUPERUSER_ROLE
+                elif request.user.is_staff:
+                    role = ADMIN_ROLE
                 request.user_profile = UserProfile.objects.create(
                     user=request.user,
                     user_role_type=UserRoleType.objects.filter(
-                        name=DATA_CONTRIBUTOR_ROLE
+                        name=role
                     ).first()
                 )
         response = self.get_response(request)
