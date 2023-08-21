@@ -241,8 +241,9 @@ class SpeciesPopulationDensityPerPropertySerializer(
             density = (
                 total / property_in_ha if total and property_in_ha else None
             )
+            property_name = owned_species[0].get("property__name").capitalize()
             data = {
-                "property_name": owned_species[0].get("property__name"),
+                "property_name": property_name,
                 "density": density
             }
             return data

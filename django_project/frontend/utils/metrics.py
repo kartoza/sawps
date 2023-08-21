@@ -74,7 +74,11 @@ def calculate_total_area_available_to_species(queryset: QuerySet[Property]) \
             total_species_area=Sum("area_available_to_species")
         ).values("property__name", "total_species_area").distinct()
 
-        properties.extend(property_data)
+        data = {
+            "property_name": property_data[0]["property__name"].capitalize(),
+            "area": property_data[0]["total_species_area"]
+        }
+        properties.append(data)
 
     return properties
 
