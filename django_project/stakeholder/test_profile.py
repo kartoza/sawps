@@ -131,6 +131,7 @@ class TestProfileView(TestCase):
             'last-name': 'Fan',
             'email': user.email,
             'organization': 'Kartoza',
+            'profile_picture': '/profile/pic/path',
             'title': '1',
             'role': '1'
         }
@@ -172,19 +173,19 @@ class TestProfileView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_context_data(self):
-        # Simulate a request with the authenticated user
-        user = UserF.create()
-        url = reverse('profile', kwargs={'slug': user.username})
-        client = Client()
-        request = client.get(url)
-        request.user = user
-
-        client.force_login(user)
-        response = client.get(url, follow=True)
-
-        # Check if the response is successful
+        device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        device.save()
+        resp = self.client.login(username='testuser', password='testpassword')
+        self.assertTrue(resp)
+        response = self.client.get(
+            '/profile/{}/'.format(self.test_user.username),
+        )
         self.assertEqual(response.status_code, 200)
         context = response.context
 
-        self.assertNotIn('titles', context)
-        self.assertNotIn('roles', context)
+        self.assertIn('titles', context)
+        self.assertIn('roles', context)
+        self.assertIn('object', context)

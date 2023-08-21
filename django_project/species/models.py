@@ -63,7 +63,7 @@ class OwnedSpecies(models.Model):
     area_available_to_species = models.FloatField(default=0.0)
 
     def __str__(self):
-        return f"Owned species#{self.id}"
+        return self.property.name
 
     class Meta:
         verbose_name = "Owned Species"

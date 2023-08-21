@@ -3,7 +3,7 @@ CSV_FILE_HEADERS = [
     "Scientific_name",
     "Common_name_verbatim",
     "open/close_system",
-    "presence/absence"
+    "presence/absence",
     "Year of estimate",
     "COUNT_TOTAL",
     "Count_adult_males",

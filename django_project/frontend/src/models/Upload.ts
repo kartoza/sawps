@@ -43,6 +43,7 @@ export interface AnnualPopulationPerActivityInterface {
     permit?: number;
     translocation_destination?: string;
     note?: string;
+    id?: number;
 }
 
 export interface UploadSpeciesDetailInterface {
@@ -51,11 +52,10 @@ export interface UploadSpeciesDetailInterface {
     common_name?: string;
     year: number;
     property_id: number;
-    month: number;
     month_name?: string;
     annual_population: AnnualPopulationInterface;
-    intake_population: AnnualPopulationPerActivityInterface;
-    offtake_population: AnnualPopulationPerActivityInterface;
+    intake_populations: AnnualPopulationPerActivityInterface[];
+    offtake_populations: AnnualPopulationPerActivityInterface[];
 }
 
 export interface TaxonMetadata {
@@ -86,10 +86,13 @@ export interface AnnualPopulationPerActivityValidation {
     translocation_destination?: boolean;
 }
 
+export interface AnnualPopulationPerActivityErrorMessage {
+    activity_type_id?: string;
+}
+
 export interface UploadSpeciesDetailValidation {
     taxon_id?: boolean;
     year?: boolean;
-    month?: boolean;
     annual_population?: AnnualPopulationValidation;
     intake_population?: AnnualPopulationPerActivityValidation;
     offtake_population?: AnnualPopulationPerActivityValidation;
@@ -111,13 +114,20 @@ const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
     }
 }
 
-const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActivityInterface => {
+export const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActivityInterface => {
     return {
         activity_type_id: 0,
+        adult_male: 0,
+        adult_female: 0,
+        juvenile_male: 0,
+        juvenile_female: 0,
         total: 0,
         founder_population: false,
         reintroduction_source: '',
-        translocation_destination: ''
+        translocation_destination: '',
+        note: '',
+        permit: 0,
+        id: -1
     }
 }
 
@@ -128,11 +138,10 @@ export const getDefaultUploadSpeciesDetail = (propertyId: number):UploadSpeciesD
         taxon_name: '',
         common_name: ' ',
         year: _currentDate.getFullYear(),
-        month: _currentDate.getMonth() + 1,
         property_id: propertyId,
         annual_population: getDefaultAnnualPopulation(),
-        intake_population: getDefaultAnnualPopulationPerActivity(),
-        offtake_population: getDefaultAnnualPopulationPerActivity()
+        intake_populations: [],
+        offtake_populations: []
     }
 }
 

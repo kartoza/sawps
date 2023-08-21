@@ -9,6 +9,7 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     OpenCloseSystem,
+    SamplingEffortCoverage,
 )
 from property.models import Property
 from species.models import OwnedSpecies, Taxon
@@ -49,7 +50,7 @@ def upload_species_data(upload_session_id):
         upload_session = UploadSpeciesCSV.objects.get(id=upload_session_id)
     except UploadSpeciesCSV.DoesNotExist:
         logger.error("upload session doesn't exist")
-        return None
+        return
 
     encoding = 'utf-8-sig'
     row_num = 1
@@ -60,6 +61,12 @@ def upload_species_data(upload_session_id):
         data = list(reader)
 
         for row in data:
+
+            # Save Sampling Effort Coverage
+            sampling_effort_coverage, \
+                c = SamplingEffortCoverage.objects.get_or_create(
+                    name=row["Sampling_effort_coverage"]
+                )
 
             # get property
             try:
@@ -101,6 +108,7 @@ def upload_species_data(upload_session_id):
                 name=row["open/close_system"]
             )
 
+            # Save Survey method
             survey, created = SurveyMethod.objects.get_or_create(
                 name=row["Survey_method"]
             )
@@ -127,11 +135,17 @@ def upload_species_data(upload_session_id):
                 group=int(string_to_number(
                     row["No. subpopulations / groups"])),
                 open_close_system=open_sys,
-                area_covered=float(string_to_number(
-                    row['Area_available__ha'])),
                 survey_method=survey,
                 presence=string_to_boolean(row["presence/absence"]),
-
+                upper_confidence_level=float(string_to_number(
+                    row["Upper confidence limits for population estimate"])),
+                lower_confidence_level=float(string_to_number(
+                    row["Lower confidence limits for population estimate"])),
+                certainty_of_bounds=int(string_to_number(
+                    row["Certainity of population bounds"])),
+                sampling_effort_coverage=sampling_effort_coverage,
+                population_estimate_certainty=int(string_to_number(
+                    row["Population estimate certainty"]))
             )
 
             # Save AnnualPopulationPerActivity Planned translocation intake
@@ -155,7 +169,7 @@ def upload_species_data(upload_session_id):
                     founder_population=string_to_boolean(
                         row["Founder population?"]),
                     intake_permit=int(string_to_number(
-                        row["Permit_number (if applicable)?"]))
+                        row["Permit_number (if applicable)"]))
                 )
 
             # Save AnnualPopulationPerActivity Planned translocation offtake
@@ -245,7 +259,8 @@ def upload_species_data(upload_session_id):
                     juvenile_male=int(string_to_number(
                         row["Unplanned/illegal hunting_Offtake_male_juveniles"]
                     )),
-                    juvenile_female=int(string_to_number(row[
+                    juvenile_female=
+                    int(string_to_number(row[
                         "Unplanned/illegal hunting_Offtake_female_juveniles"
                     ]))
                 )

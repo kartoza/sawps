@@ -74,6 +74,21 @@ class AnnualPopulation(AnnualPopulationAbstract):
         "population_data.SamplingEffortCoverage",
         on_delete=models.CASCADE, null=True
     )
+    upper_confidence_level = models.FloatField(
+        null=True, blank=True
+    )
+    lower_confidence_level = models.FloatField(
+        null=True, blank=True
+    )
+    certainty_of_bounds = models.IntegerField(
+        null=True, blank=True
+    )
+    population_estimate_certainty = models.IntegerField(
+        null=True, blank=True
+    )
+
+    def __str__(self):
+        return f"{self.sub_adult_total}"
 
     class Meta:
         verbose_name = "Annual Population"
@@ -105,13 +120,21 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     translocation_destination = models.TextField(null=True, blank=True)
     offtake_permit = models.CharField(null=True, blank=True, max_length=100)
 
+    def __str__(self):
+        return self.activity_type.name
+
     class Meta:
         verbose_name = "Population count per activity"
         verbose_name_plural = "Population count per activities"
         db_table = "annual_population_per_activity"
         constraints = [
             models.UniqueConstraint(
-                fields=["year", "owned_species", "activity_type"],
+                fields=["year",
+                        "owned_species",
+                        "activity_type",
+                        "intake_permit",
+                        "offtake_permit"
+                        ],
                 name="unique_population_count_per_activity",
             )
         ]

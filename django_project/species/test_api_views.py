@@ -162,14 +162,35 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.status_code, 204)
         upload_session = UploadSpeciesCSV.objects.get(token=self.token)
         ActivityType.objects.create(
-            name="Planned translocation"),
+            name="Planned translocation")
+        ActivityType.objects.create(
+            name="Planned hunt/cull")
+        ActivityType.objects.create(
+            name="Planned euthanasia")
+        ActivityType.objects.create(
+            name="Unplanned/illegal hunting")
+        Taxon.objects.create(
+            scientific_name='Panthera leo',
+            common_name_varbatim='Lion'
+        )
         upload_species_data(upload_session.id)
-        self.assertEqual(Taxon.objects.all().count(), 2)
-        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 2)
-        self.assertEqual(AnnualPopulation.objects.all().count(), 2)
-        self.assertTrue(CountMethod.objects.all().count() > 0)
-        self.assertTrue(OwnedSpecies.objects.all().count() > 0)
-        self.assertTrue(OpenCloseSystem.objects.all().count() > 0)
+        self.assertEqual(Taxon.objects.all().count(), 1)
+        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
+        self.assertEqual(AnnualPopulation.objects.all().count(), 1)
+        self.assertTrue(OwnedSpecies.objects.all().count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Planned translocation"
+        ).count(), 2)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Planned hunt/cull"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Planned euthanasia"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Unplanned/illegal hunting"
+        ).count(), 1)
+        self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
 
 
     def test_task_string_to_boolean(self):

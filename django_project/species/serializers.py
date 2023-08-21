@@ -36,7 +36,8 @@ class FrontPageTaxonSerializer(serializers.ModelSerializer):
             'owned_species__property'
         )
         data = AnnualPopulation.objects.filter(
-            id__in=latest_data_per_year
+            id__in=latest_data_per_year,
+            owned_species__taxon=obj
         ).aggregate(Sum('total'))
         return data['total__sum'] if data['total__sum'] else 0
 

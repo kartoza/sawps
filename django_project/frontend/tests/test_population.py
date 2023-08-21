@@ -49,8 +49,6 @@ class TestPopulationAPIViews(TestCase):
             user=self.user_1,
             organisation=self.organisation
         )
-       
-    
 
     def test_get_metadata_list(self):
         request = self.factory.get(
@@ -92,7 +90,7 @@ class TestPopulationAPIViews(TestCase):
                 'area_covered': 1.2,
                 'note': 'This is notes'
             },
-            'intake_population': {
+            'intake_populations': [{
                 'activity_type_id': 1,
                 'total': 12,
                 'adult_male': 5,
@@ -102,15 +100,43 @@ class TestPopulationAPIViews(TestCase):
                 'permit': 900,
                 'note': 'This is intake notes'
             },
-            'offtake_population': {
+            {
+                'activity_type_id': 100,
+                'total': 12,
+                'adult_male': 5,
+                'adult_female': 7,
+                'founder_population': True,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is intake notes'
+            }],
+            'offtake_populations': [{
                 'activity_type_id': 2,
                 'total': 6,
                 'adult_male': 4,
                 'adult_female': 2,
                 'translocation_destination': 'Dest A',
                 'permit': 900,
-                'note': 'This is intake notes'
-            }
+                'note': 'This is invalid notes'
+            },
+            {
+                'activity_type_id': 100,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'translocation_destination': 'Dest A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            },
+            {
+                'activity_type_id': 3,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            },]
         }
         kwargs = {
             'property_id': property.id
@@ -177,7 +203,7 @@ class TestPopulationAPIViews(TestCase):
                 'area_covered': 1.2,
                 'note': 'This is notes'
             },
-            'intake_population': {
+            'intake_populations': [{
                 'activity_type_id': 1,
                 'total': 12,
                 'adult_male': 5,
@@ -186,8 +212,8 @@ class TestPopulationAPIViews(TestCase):
                 'reintroduction_source': 'Source A',
                 'permit': 900,
                 'note': 'This is intake notes'
-            },
-            'offtake_population': {
+            }],
+            'offtake_populations': [{
                 'activity_type_id': 2,
                 'total': 6,
                 'adult_male': 4,
@@ -195,7 +221,7 @@ class TestPopulationAPIViews(TestCase):
                 'translocation_destination': 'Dest A',
                 'permit': 900,
                 'note': 'This is intake notes'
-            }
+            }]
         }
         kwargs = {
             'property_id': property.id

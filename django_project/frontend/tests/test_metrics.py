@@ -6,7 +6,11 @@ from django.urls import reverse
 from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
 from property.factories import PropertyFactory
 from rest_framework import status
-from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
+from species.factories import (
+    OwnedSpeciesFactory,
+    TaxonFactory,
+    TaxonRankFactory,
+)
 from species.models import TaxonRank
 from stakeholder.factories import organisationFactory, organisationUserFactory
 
@@ -78,7 +82,7 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         self.assertEqual(response.data[0].get('species_name'), 'Lion')
         self.assertEqual(
             response.data[0]['annualpopulation_count'][0].get('year_total'),
-            100
+            self.owned_species[0].annualpopulation_set.first().total
         )
 
     def test_species_population_count_filter_by_name(self) -> None:
@@ -102,7 +106,7 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]['annualpopulation_count'][0].get('year_total'),
-            100
+            self.owned_species[0].annualpopulation_set.first().total
         )
 
     def test_species_population_count_filter_by_year(self) -> None:
@@ -216,9 +220,9 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         super().setUp()
         self.url = reverse("properties_per_population_category")
 
-    def test_species_population_total_and_density(self) -> None:
+    def test_properties_per_population_category(self) -> None:
         """
-        Test species population categories.
+        Test properties per population category.
         """
         url = self.url
         response = self.client.get(url, **self.auth_headers)
@@ -235,3 +239,75 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['1-10'], 0)
+
+
+class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    total area available to species.
+    """
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("total_area_available_to_species")
+
+    def test_total_area_available_to_species(self) -> None:
+        """
+        Test total area available to species.
+        """
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['total_species_area'], 50.0)
+
+    def test_total_area_available_to_species_filter_by_property(self) -> None:
+        """
+        Test total area available to species filtered by property.
+        """
+        id = self.owned_species[0].property_id
+        data = {'property':id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['property__name'], 'PropertyA')
+
+
+class TotalAreaPerPropertyTypeTestCase(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    total area per property type.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("total_area_per_property_type")
+
+    def test_total_area_per_property_type(self) -> None:
+        """
+        Test total area per property type
+        """
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        property_type = self.property.property_type.name
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['total_area'], 200)
+        self.assertEqual(
+            response.data[0]['property_type__name'],
+            property_type
+        )
+
+    def test_total_area_per_property_type_filter_by_property(self):
+        """
+        Test total area per property type filtered by property.
+        """
+        id = self.owned_species[0].property_id
+        data = {'property':id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['total_area'], 200)
