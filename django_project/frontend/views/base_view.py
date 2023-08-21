@@ -146,5 +146,12 @@ class RegisteredOrganisationBaseView(TemplateView):
             self.request.user_profile.is_decision_maker or
             self.request.user_profile.is_data_contributor
         )
+        ctx['can_invite_organisation'] = (
+            self.request.user_profile.is_superuser or
+            self.request.user_profile.is_admin
+        )
+        ctx['user_role'] = (
+            self.request.user_profile.user_role_type.name
+        )
         get_user_notifications(self.request)
         return ctx

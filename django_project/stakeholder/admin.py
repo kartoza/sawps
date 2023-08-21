@@ -15,8 +15,12 @@ from stakeholder.models import (
 admin.site.register(UserRoleType)
 admin.site.register(UserTitle)
 admin.site.register(LoginStatus)
-admin.site.register(UserProfile)
 admin.site.register(Organisation)
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "user_role_type", "cell_number")
 
 
 @admin.register(OrganisationUser)

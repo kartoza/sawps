@@ -177,6 +177,8 @@
 
 <script>
     function redirectToDesiredPage() {
+        var canInviteToOrganisation = "{{ can_invite_organisation }}" === 'True';
+        if (!canInviteToOrganisation) return;
         // Retrieve the current window location
         var currentLocation = window.location.href;
 

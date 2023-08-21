@@ -22,6 +22,7 @@
 <script>
   window.csrfToken = "{{ csrf_token }}";
   window.isLoggedIn = {% if user.is_authenticated %}true{% else %}false{% endif %};
+  window.userRole = "{{ user_role }}";
 </script>
 <body>
   {% block header %}
