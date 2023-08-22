@@ -15,6 +15,7 @@ from species.factories import (
     TaxonRankFactory,
     TaxonSurveyMethodF,
 )
+from property.factories import PropertyFactory
 from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
 
@@ -103,6 +104,8 @@ class TaxonTestCase(TestCase):
             taxon_rank=self.taxonRank,
             show_on_front_page=True
         )
+        property_1 = PropertyFactory.create()
+        property_2 = PropertyFactory.create()
         client = Client()
         response = client.get(reverse('species-front-page'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -112,9 +115,9 @@ class TaxonTestCase(TestCase):
         self.assertEqual(taxon_1[0]['total_population'], 0)
         self.assertEqual(taxon_1[0]['species_name'], taxon.scientific_name)
         user_1 = User.objects.create_user(username='testuser_taxon_1', password='12345')
-        owned_species_1 = OwnedSpeciesFactory(taxon=taxon, user=user_1)
+        owned_species_1 = OwnedSpeciesFactory(taxon=taxon, user=user_1, property=property_1)
         user_2 = User.objects.create_user(username='testuser_taxon_2', password='12345')
-        owned_species_2 = OwnedSpeciesFactory(taxon=taxon, user=user_2)
+        owned_species_2 = OwnedSpeciesFactory(taxon=taxon, user=user_2, property=property_2)
         # create two years of data
         AnnualPopulationF(owned_species=owned_species_1, year=2021, total=30,
                           adult_male=10, adult_female=10)
