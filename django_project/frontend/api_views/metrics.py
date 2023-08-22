@@ -12,14 +12,14 @@ from frontend.filters.metrics import (
 from frontend.serializers.metrics import (
     ActivityMatrixSerializer,
     SpeciesPopuationCountPerYearSerializer,
-    SpeciesPopulationTotalAndDensitySerializer,
+    SpeciesPopulationDensityPerPropertySerializer,
     TotalCountPerActivitySerializer,
 )
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_available_to_species,
-    calculate_total_area_per_property_type
+    calculate_total_area_per_property_type,
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -135,36 +135,33 @@ class TotalCountPerActivityAPIView(APIView):
         return Response(serializer.data)
 
 
-class SpeciesPopulationTotalAndDensityAPIView(APIView):
+class SpeciesPopulationDensityPerPropertyAPIView(APIView):
     """
-    API view to retrieve species population total and density data for specie.
+    API view to retrieve species population density per property.
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = ActivityMatrixSerializer
+    serializer_class = SpeciesPopulationDensityPerPropertySerializer
 
-    def get_queryset(self) -> List[Taxon]:
+    def get_queryset(self) -> QuerySet[Property]:
         """
-        Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        Returns a filtered queryset of property objects
+        within the specified organization.
         """
         organisation_id = self.request.session.get('current_organisation_id')
-        queryset = Taxon.objects.filter(
-            ownedspecies__property__organisation_id=organisation_id,
-            taxon_rank__name='Species'
-        ).distinct()
-        filtered_queryset = BaseMetricsFilter(
+        queryset = Property.objects.filter(organisation_id=organisation_id)
+        filtered_queryset = PropertyFilter(
             self.request.GET, queryset=queryset
         ).qs
-        return filtered_queryset
+        return filtered_queryset.distinct('name')
 
     def get(self, request, *args, **kwargs) -> Response:
         """
         Handle the GET request to retrieve species
-        population total and density data.
+        population density per property.
         Params:request (Request): The HTTP request object.
         """
         queryset = self.get_queryset()
-        serializer = SpeciesPopulationTotalAndDensitySerializer(
+        serializer = SpeciesPopulationDensityPerPropertySerializer(
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
@@ -211,7 +208,7 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
         filtered_queryset = PropertyFilter(
             self.request.GET, queryset=queryset
         ).qs
-        return filtered_queryset
+        return filtered_queryset.distinct('name')
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Response:
         """

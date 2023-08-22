@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """API Views related to uploading population data.
 """
 from datetime import datetime
@@ -9,10 +7,13 @@ from activity.serializers import ActivityTypeSerializer
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from frontend.models.upload import DraftSpeciesUpload
+from frontend.utils.statistical_model import (
+    clear_statistical_model_output_cache
+)
 from occurrence.models import SamplingSizeUnit, SurveyMethod
 from occurrence.serializers import (
     SamplingSizeUnitMetadataSerializer,
-    SurveyMethodSerializer
+    SurveyMethodSerializer,
 )
 from population_data.models import (
     AnnualPopulation,
@@ -31,9 +32,6 @@ from rest_framework.views import APIView
 from species.models import OwnedSpecies, Taxon
 from species.serializers import TaxonSerializer
 from stakeholder.models import OrganisationUser
-from frontend.utils.statistical_model import (
-    clear_statistical_model_output_cache
-)
 
 
 class PopulationMetadataList(APIView):
@@ -172,8 +170,8 @@ class UploadPopulationAPIVIew(APIView):
             adult_female=annual_population.get("adult_female", 0),
             juvenile_male=annual_population.get("juvenile_male", 0),
             juvenile_female=annual_population.get("juvenile_female", 0),
-            area_covered=annual_population.get("area_covered", 0),
-            sampling_effort=annual_population.get("sampling_effort", 0),
+            # area_covered=annual_population.get("area_covered", 0),
+            # sampling_effort=annual_population.get("sampling_effort", 0),
             group=annual_population.get("group", 0),
             note=annual_population.get("note", None),
             survey_method=survey_method,

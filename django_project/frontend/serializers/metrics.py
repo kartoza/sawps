@@ -3,6 +3,7 @@ from django.db.models import F, Q, Sum
 from population_data.models import AnnualPopulation
 from rest_framework import serializers
 from species.models import OwnedSpecies, Taxon
+from property.models import Property
 
 
 class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
@@ -212,43 +213,37 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         return activities_list
 
 
-class SpeciesPopulationTotalAndDensitySerializer(serializers.ModelSerializer):
+class SpeciesPopulationDensityPerPropertySerializer(
+    serializers.ModelSerializer
+):
     """
     Serializer class for serializing species population total and density.
     """
     density = serializers.SerializerMethodField()
 
     class Meta:
-        model = Taxon
-        fields = ["density", ]
+        model = Property
+        fields = ["density"]
 
     def get_density(self, obj) -> dict:
-        """ Calculate and get species population total and density.
+        """ Calculate and get density of property.
         Params: obj (Taxon): The Taxon instance.
         """
-        property = self.context["request"].GET.get("property")
-        property_list = property.split(',') if property else []
-        owned_species = OwnedSpecies.objects.values(
-            "taxon__common_name_varbatim").filter(taxon=obj)
-        if property_list:
-            owned_species = owned_species.filter(
-                property__id__in=property_list,
-            )
-        owned_species = owned_species.annotate(
+        owned_species = OwnedSpecies.objects.values("property__id").filter(
+            property=obj
+        ).annotate(
             total=Sum("annualpopulation__total"),
             property_in_ha=Sum("property__property_size_ha")
-        )
+        ).values("property__name", "total", "property_in_ha")
         if owned_species.exists():
-            owned_species = owned_species.first()
-            species_name = owned_species["taxon__common_name_varbatim"]
-            property_in_ha = owned_species["property_in_ha"]
-            total = owned_species["total"]
+            property_in_ha = owned_species[0].get("property_in_ha")
+            total = owned_species[0].get("total")
             density = (
                 total / property_in_ha if total and property_in_ha else None
             )
+            property_name = owned_species[0].get("property__name").capitalize()
             data = {
-                "species_name": species_name,
-                "total": total,
+                "property_name": property_name,
                 "density": density
             }
             return data
