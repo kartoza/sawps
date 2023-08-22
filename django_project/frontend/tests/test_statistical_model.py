@@ -40,6 +40,9 @@ class StatisticalModelAdminTestCase(TestCase):
         TOTPDevice.objects.create(
             user=cls.user, name='Test Device', confirmed=True)
 
+    @mock.patch('frontend.tasks.start_plumber.'
+                'start_plumber_process.apply_async',
+                mock.Mock(side_effect=mocked_process))
     def test_statistical_model_listing(self):
         client = Client()
         client.force_login(self.user)
