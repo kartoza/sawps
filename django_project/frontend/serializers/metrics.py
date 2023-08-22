@@ -92,7 +92,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
                 property__id__in=property_list,
             )
         owned_species = owned_species.annotate(
-            total=Sum("annualpopulationperactivity__total")
+            total=Sum("annualpopulation__total")
         )
         if owned_species.exists():
             return owned_species[0].get("total")
@@ -137,7 +137,10 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
                 percentage = (
                     total / total_count
                 ) * 100 if total_count else None
-                activity_data = {activity_type: percentage}
+                activity_data = {
+                    activity_type: percentage,
+                    "activity_total": total
+                }
                 activities_list.append(activity_data)
 
         return activities_list

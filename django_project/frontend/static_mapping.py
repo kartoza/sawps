@@ -3,5 +3,6 @@ ACTIVITY_COLORS_DICT = {
             "Planned euthanasia": "rgb(83 83 84)",
             "Unplanned/natural deaths": "#75B37A",
             "Planned hunt/cull": "#282829",
-            "Planned translocation": "#F9A95D"
+            "Planned translocation": "#F9A95D",
+            "Base population": "rgb(212 212 212)"
         }
