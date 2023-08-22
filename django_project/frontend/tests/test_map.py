@@ -7,9 +7,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
 from core.settings.utils import absolute_path
+from stakeholder.models import UserProfile
 from property.factories import PropertyFactory
 from stakeholder.factories import (
-    organisationFactory
+    organisationFactory,
+    userRoleTypeFactory
 )
 from frontend.models.parcels import (
     Erf,
@@ -81,6 +83,18 @@ class TestMapAPIViews(TestCase):
         session_key = None
         request.session = engine.SessionStore(session_key)
         view = MapStyles.as_view()
+        response = view(request) 
+        self.assertEqual(response.status_code, 200)
+        # test with user role as decision maker
+        role = userRoleTypeFactory.create(
+            id=1,
+            name = 'Decision Maker',
+        )
+        UserProfile.objects.create(
+            user=self.user_1,
+            user_role_type_id=role
+        )
+        request.user = self.user_1
         response = view(request)
         self.assertEqual(response.status_code, 200)
 
