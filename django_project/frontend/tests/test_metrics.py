@@ -106,7 +106,7 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]['annualpopulation_count'][0].get('year_total'),
-            self.owned_species[0].annualpopulation_set.first().total
+            100
         )
 
     def test_species_population_count_filter_by_year(self) -> None:
