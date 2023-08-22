@@ -236,6 +236,53 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.data['status'], 'Done')
         self.assertEqual(response.data['message'], '1 row have been uploaded')
 
+    def test_upload_species_status_404(self):
+        kwargs = {
+            'token': '8f1c1181-982a-4286-b2fe-da1abe8f7172'
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 404)
+
+    def test_upload_species_status_not_processed(self):
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'Canceled')
+        self.assertEqual(response.data['message'], '')
+
     def test_task_string_to_boolean(self):
         """Test string_to_boolean functionality in task"""
 
