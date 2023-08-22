@@ -93,10 +93,11 @@ class PropertyFilter(django_filters.FilterSet):
     a comma-separated list of property IDs.
     """
     property = django_filters.CharFilter(method='filter_property')
+    start_year = django_filters.CharFilter(method='filter_start_year')
 
     class Meta:
         model = Property
-        fields = ['property']
+        fields = ['property', 'start_year']
 
     def filter_property(self, queryset: QuerySet, name: str, value: str) \
         -> QuerySet:
@@ -109,3 +110,22 @@ class PropertyFilter(django_filters.FilterSet):
         """
         properties_list = value.split(',')
         return queryset.filter(id__in=properties_list)
+
+    def filter_start_year(self, queryset: QuerySet, name: str, value: str) \
+        -> QuerySet:
+        """
+        Filter property based on range from start_year to end_year.
+
+        Params:
+            queryset (QuerySet): The base queryset of Taxon model.
+            value (str): The start year of the annual population.
+            name (str): The name of the field to be filtered (property).
+        """
+        start_year = int(value)
+        end_year = int(self.data.get('end_year'))
+        return queryset.filter(
+            ownedspecies__annualpopulation__year__range=(
+                start_year,
+                end_year
+            )
+        )

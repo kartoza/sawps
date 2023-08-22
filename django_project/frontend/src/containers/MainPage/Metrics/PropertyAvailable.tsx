@@ -44,8 +44,8 @@ const PropertyAvailableBarChart = () => {
     }, [propertyId, startYear, endYear, selectedSpecies])
 
     for (const each of propertyAreaAvailableData) {
-        labels.push(each.property__name);
-        totalArea.push(each.total_species_area);
+        labels.push(each.property_name);
+        totalArea.push(each.area);
     }
 
     const data = {
