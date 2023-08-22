@@ -1,5 +1,9 @@
-from django.urls import path
-from species.api_views.upload_species import SaveCsvSpecies, SpeciesUploader
+from django.urls import path, re_path
+from species.api_views.upload_species import (
+    SaveCsvSpecies,
+    SpeciesUploader,
+    UploadSpeciesStatus,
+)
 
 from .views import TaxonFrontPageListAPIView, TaxonListAPIView
 
@@ -12,5 +16,9 @@ urlpatterns = [
          name='upload-species'),
     path('api/save-csv-species/', SaveCsvSpecies.as_view(),
          name='save-csv-species'),
+    re_path(r'api/upload-species-status/(?P<token>[\da-f-]+)/?$',
+            UploadSpeciesStatus.as_view(),
+            name='upload-species-status'
+            ),
 
 ]

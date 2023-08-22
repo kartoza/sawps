@@ -16,7 +16,11 @@ from population_data.models import (
 from property.factories import PropertyFactory
 from rest_framework import status
 from rest_framework.test import APIClient, APIRequestFactory
-from species.api_views.upload_species import SaveCsvSpecies, SpeciesUploader
+from species.api_views.upload_species import (
+    SaveCsvSpecies,
+    SpeciesUploader,
+    UploadSpeciesStatus,
+)
 from species.models import OwnedSpecies, Taxon
 from species.tasks.upload_species import (
     string_to_boolean,
@@ -37,6 +41,18 @@ class TestUploadSpeciesApiView(TestCase):
         )
         self.token = '8f1c1181-982a-4286-b2fe-da1abe8f7174'
         self.api_url = '/api/upload-species/'
+        ActivityType.objects.create(
+            name="Planned translocation")
+        ActivityType.objects.create(
+            name="Planned hunt/cull")
+        ActivityType.objects.create(
+            name="Planned euthanasia")
+        ActivityType.objects.create(
+            name="Unplanned/illegal hunting")
+        Taxon.objects.create(
+            scientific_name='Panthera leo',
+            common_name_varbatim='Lion'
+        )
 
     def test_upload_species_without_login(self):
         """Test upload species api"""
@@ -161,18 +177,7 @@ class TestUploadSpeciesApiView(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 204)
         upload_session = UploadSpeciesCSV.objects.get(token=self.token)
-        ActivityType.objects.create(
-            name="Planned translocation")
-        ActivityType.objects.create(
-            name="Planned hunt/cull")
-        ActivityType.objects.create(
-            name="Planned euthanasia")
-        ActivityType.objects.create(
-            name="Unplanned/illegal hunting")
-        Taxon.objects.create(
-            scientific_name='Panthera leo',
-            common_name_varbatim='Lion'
-        )
+
         upload_species_data(upload_session.id)
         self.assertEqual(Taxon.objects.all().count(), 1)
         self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
@@ -192,6 +197,43 @@ class TestUploadSpeciesApiView(TestCase):
         ).count(), 1)
         self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
 
+    def test_upload_species_status(self):
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+
+        upload_species_data(upload_session.id)
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'Done')
+        self.assertEqual(response.data['message'], '1 row have been uploaded')
 
     def test_task_string_to_boolean(self):
         """Test string_to_boolean functionality in task"""

@@ -93,3 +93,37 @@ class SaveCsvSpecies(APIView):
                 'detail': 'Somthing wrong with the csv file'
             }
         )
+
+
+class UploadSpeciesStatus(APIView):
+    """Check upload species status."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        token = kwargs.get('token')
+        try:
+            upload_species = UploadSpeciesCSV.objects.get(
+                token=token
+            )
+        except UploadSpeciesCSV.DoesNotExist:
+            return Response(status=404)
+
+        if not upload_species.processed:
+            return Response(
+                status=200,
+                data={
+                    'status': 'Canceled',
+                    'message': upload_species.error_notes if
+                    upload_species.error_notes else ""
+                }
+            )
+
+        return Response(
+            status=200,
+            data={
+                'status': 'Done',
+                'message': upload_species.success_notes,
+                'warning': (upload_species.error_notes if
+                            upload_species.error_notes else None)
+            }
+        )

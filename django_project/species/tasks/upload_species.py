@@ -62,12 +62,6 @@ def upload_species_data(upload_session_id):
 
         for row in data:
 
-            # Save Sampling Effort Coverage
-            sampling_effort_coverage, \
-                c = SamplingEffortCoverage.objects.get_or_create(
-                    name=row["Sampling_effort_coverage"]
-                )
-
             # get property
             try:
                 property = Property.objects.get(
@@ -76,7 +70,7 @@ def upload_species_data(upload_session_id):
             except Property.DoesNotExist:
                 upload_session.error_notes = 'Property does not exist'
                 upload_session.canceled = True
-                upload_session.save
+                upload_session.save()
                 return
 
             # Get Taxon
@@ -86,21 +80,26 @@ def upload_species_data(upload_session_id):
                     common_name_varbatim=row["Common_name_verbatim"],
                 )
             except Taxon.DoesNotExist:
-                upload_session.error_notes = 'Taxon does not exist'
-                upload_session.canceled = True
-                upload_session.save
-                return
+                upload_session.error_notes = \
+                    "Taxon {} in row {} does not exist".format(
+                        row["Scientific_name"], row_num
+                    )
+                upload_session.save()
+                continue
 
             # Save OwnedSpecies
             owned_species, created = OwnedSpecies.objects.get_or_create(
                 taxon=taxon,
                 user=upload_session.uploader,
                 property=property,
-                area_available_to_species=float(
-                    row
-                    ["Area_available to population (total enclosure area)_ha"]
+                area_available_to_species=float(row[
+                    "Area_available to population (total enclosure area)_ha"]
                 )
+            )
 
+            # Save Sampling Effort Coverage
+            sampling_effort, c = SamplingEffortCoverage.objects.get_or_create(
+                name=row["Sampling_effort_coverage"]
             )
 
             # Save OpenCloseSystem
@@ -143,7 +142,7 @@ def upload_species_data(upload_session_id):
                     row["Lower confidence limits for population estimate"])),
                 certainty_of_bounds=int(string_to_number(
                     row["Certainity of population bounds"])),
-                sampling_effort_coverage=sampling_effort_coverage,
+                sampling_effort_coverage=sampling_effort,
                 population_estimate_certainty=int(string_to_number(
                     row["Population estimate certainty"]))
             )
@@ -259,14 +258,13 @@ def upload_species_data(upload_session_id):
                     juvenile_male=int(string_to_number(
                         row["Unplanned/illegal hunting_Offtake_male_juveniles"]
                     )),
-                    juvenile_female=
-                    int(string_to_number(row[
+                    juvenile_female=int(string_to_number(row[
                         "Unplanned/illegal hunting_Offtake_female_juveniles"
                     ]))
                 )
 
             upload_session.processed = True
-            success_response = row_num
+            success_response = f"{row_num} row have been uploaded"
             upload_session.success_notes = (
                 success_response
             )

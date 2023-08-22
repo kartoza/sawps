@@ -20,6 +20,7 @@ import {
 } from '../../../reducers/MapState';
 import '../../../assets/styles/RDU.styles.scss';
 import './index.scss';
+import {wait} from "@testing-library/user-event/dist/utils";
 
 interface UploaderInterface {
     open: boolean;
@@ -33,6 +34,7 @@ const ALLOWABLE_FILE_TYPES = [
 
 const UPLOAD_FILE_URL = '/api/upload-species/'
 const PROCESS_FILE_URL = '/api/save-csv-species/'
+const STATUS_URL = '/api/upload-species-status/'
 
 const CustomInput = (props: IInputProps) => {
     const {
@@ -92,6 +94,7 @@ export default function Uploader(props: UploaderInterface) {
     const [loading, setLoading] = useState(false)
     const dropZone = useRef(null)
     const [alertMessage, setAlertMessage] = useState('')
+    const [alertMessageTaxon, setAlertMessageTaxon] = useState('')
     const [isError, setIsError] = useState(false)
     const [savingSpeciesCSV, setSavingSpeciesCSV] = useState(false)
     const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
@@ -103,6 +106,7 @@ export default function Uploader(props: UploaderInterface) {
             setSession(uuidv4())
             setIsError(false)
             setAlertMessage('')
+            setAlertMessageTaxon('')
             setSavingSpeciesCSV(false)
             setTotalFile(0)
         }
@@ -182,15 +186,24 @@ export default function Uploader(props: UploaderInterface) {
             })
             }).then( response => {
                 if (response.ok) {
-                    setIsError(false)
-                    setAlertMessage('Upload data success')
-                    setTotalFile(totalFile - 1)
-                    setSavingSpeciesCSV(false)
-                    setCloseButton('CLOSE')
-                    setLoading(false)
+                    wait(500).then(r =>
+                    axios.get(`${STATUS_URL}${session}/`).then((response)=>{
+                    if (response.data) {
+                        let status = response.data['status']
+                        if (status === 'Done'){
+                            setIsError(false)
+                            setAlertMessage(response.data['message'])
+                            setAlertMessageTaxon(response.data['warning'])
+                            setTotalFile(totalFile - 1)
+                            setSavingSpeciesCSV(false)
+                            setCloseButton('CLOSE')
+                            setLoading(false)
+                        }
+                    }
+                    }))
                 } else {
                     setIsError(true)
-                    setAlertMessage('Could not remove the layer, please try again later')
+                    setAlertMessage('There is something wrong with the data please check again')
                 }
             }).catch((error) => {
                 setLoading(false)
@@ -205,7 +218,6 @@ export default function Uploader(props: UploaderInterface) {
             return () => clearInterval(interval);
         }
     }, [savingSpeciesCSV])
-
     const CustomLayout = ({ input, previews, submitButton, dropzoneProps, files, extra: { maxFiles } }: ILayoutProps) => {
         return (
             <Grid container flexDirection={'column'} rowSpacing={2} className='uploader-container'>
@@ -230,17 +242,21 @@ export default function Uploader(props: UploaderInterface) {
         )
     }
 
-    return (
+        return (
         <Dialog onClose={handleClose} open={open} className='Uploader'>
             <DialogTitle>Upload</DialogTitle>
             <Grid container flexDirection={'column'} className='UploaderContent' rowSpacing={2}>
                 <Grid item>
                 { alertMessage ?
-                    <Alert style={{ width: '100%'}} severity={ isError ? 'error' : 'success' }>
-                    <AlertTitle>{ isError ? 'Error' : 'Success' }</AlertTitle>
+                    <Alert style={{ width: '100%'}} severity={isError ? "error" : alertMessageTaxon ? "warning" : "success"}>
+                    <AlertTitle>{ isError ? 'Error' : <> { alertMessageTaxon ? 'Warning': 'Success' }</>}</AlertTitle>
                     <p className="display-linebreak">
                         { alertMessage }
                     </p>
+                    { alertMessageTaxon ?
+                    <p className="display-linebreak">
+                        { alertMessageTaxon }
+                    </p>: null }
                     </Alert> : null }
                     <Dropzone
                         ref={dropZone}
