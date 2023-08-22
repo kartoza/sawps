@@ -20,7 +20,7 @@ def get_map_template_style(request, theme_choice: int = 0, token: str = None):
         user_role = str(
             request.user.user_profile.user_role_type_id
         )
-        if "Decision maker" in user_role:
+        if "Decision Maker" in user_role:
             style_file_path = absolute_path(
                 'frontend', 'utils', 'country_level_light_v1.json'
             )
