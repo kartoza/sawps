@@ -18,8 +18,6 @@ class AnnualPopulationForm(ModelForm):
             "group",
             "juvenile_male",
             "juvenile_female",
-            "area_covered",
-            "sampling_effort",
             "survey_method",
             "count_method",
             "sampling_size_unit",
