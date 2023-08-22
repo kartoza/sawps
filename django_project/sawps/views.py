@@ -194,11 +194,14 @@ class CustomPasswordResetView(View):
 
         try:
             user = User.objects.get(email=user_email)
-            user_name = user_email
-            if user.username is not None:
-                user_name = user.username
-            elif user.first_name is not None:
-                user_name = user.first_name
+            user_name = ''
+            try:
+                if user.username is not None:
+                    user_name = user.username
+                elif user.first_name is not None:
+                    user_name = user.first_name
+            except AttributeError:
+                user_name = user_email
             # Generate the reset token and UID
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
