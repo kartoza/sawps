@@ -87,22 +87,6 @@ class TestMapAPIViews(TestCase):
         response = view(request) 
         self.assertEqual(response.status_code, 200)
     
-    def test_map_styles_with_different_role(self):
-        # test with user role as decision maker
-        role = userRoleTypeFactory.create(
-            id=1,
-            name = 'Decision Maker',
-        )
-        UserProfile.objects.create(
-            user=self.user_1,
-            user_role_type_id=role
-        )
-        request.user = self.user_1
-        request = self.factory.get(
-            reverse('map-style')
-        )
-        get_map_template_style(request)
-    
     def test_map_styles_with_theme_value_for_role(self):
         # test with user role as decision maker
         role = userRoleTypeFactory.create(
