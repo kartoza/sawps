@@ -1,0 +1,583 @@
+{
+  "version": 8,
+  "name": "sanbi",
+  "metadata": {
+    "maputnik:license": "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
+    "maputnik:renderer": "mbgljs",
+    "openmaptiles:version": "3.x",
+    "sanbi:version": "12",
+    "sanbi:theme": "dark"
+  },
+  "center": [25.86, -28.52],
+  "zoom": 5,
+  "sources": {
+    "sanbi": {
+      "type": "vector",
+      "tiles": ["http://localhost:9090/maps/sanbi/{z}/{x}/{y}.pbf"],
+      "minZoom": 0,
+      "maxZoom": 14,
+      "maxzoom": 24
+    },
+    "NGI Aerial Imagery": {
+      "type": "raster",
+      "tiles": [
+        "http://aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg"
+      ],
+      "minzoom": 0,
+      "maxzoom": 24,
+      "layout": {"visibility": "none"}
+    }
+  },
+  "sprite": "",
+  "glyphs": "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key={key}",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "minzoom": 0,
+      "maxzoom": 24,
+      "layout": {"visibility": "visible"},
+      "paint": {"background-color": "rgba(0, 0, 0, 1)", "background-opacity": 1}
+    },
+    {
+      "id": "sadc_countries",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "world",
+      "maxzoom": 6,
+      "filter": [
+        "any",
+        ["==", "iso_a2", "NA"],
+        ["==", "iso_a2", "BW"],
+        ["==", "iso_a2", "ZW"],
+        ["==", "iso_a2", "MZ"],
+        ["==", "iso_a2", "SZ"],
+        ["==", "iso_a2", "LS"]
+      ],
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(10, 10, 10, 1)"}
+    },
+    {
+      "id": "sadc_zaf",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "world",
+      "maxzoom": 7.01,
+      "filter": ["any", ["==", "iso_a2", "ZA"]],
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(40, 40, 41, 1)"}
+    },
+    {
+      "id": "sadc_countries_outline",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "world",
+      "maxzoom": 6,
+      "filter": [
+        "any",
+        ["==", "iso_a2", "NA"],
+        ["==", "iso_a2", "BW"],
+        ["==", "iso_a2", "ZW"],
+        ["==", "iso_a2", "MZ"],
+        ["==", "iso_a2", "SZ"],
+        ["==", "iso_a2", "LS"],
+        ["==", "iso_a2", "ZA"]
+      ],
+      "layout": {"visibility": "visible"},
+      "paint": {"line-color": "rgba(153, 153, 153, 1)", "line-width": 1}
+    },
+    {
+      "id": "zaf_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_boundary_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_kwazulu_natal_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "KwaZulu-Natal"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_eastern_cape_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Eastern Cape"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_western_cape_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Western Cape"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_northern_cape_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Northern Cape"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_free_state_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Free State"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_north_west_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "North West"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_mpumalanga_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Mpumalanga"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_gauteng_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Gauteng"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "provinces_limpopo_fill_highlight",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Limpopo"]],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(250, 167, 85, 1)", "fill-opacity": 0.3}
+    },
+    {
+      "id": "rivers_major",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "major_rivers2018",
+      "minzoom": 5,
+      "maxzoom": 12,
+      "layout": {
+        "visibility": "visible",
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "rgba(27, 88, 123, 1)",
+        "line-width": {"stops": [[5.25, 0], [12, 5]]}
+      }
+    },
+    {
+      "id": "waterbodies_major_dws_dams_50k",
+      "type": "fill",
+      "source": "sanbi",
+      "source-layer": "major_dws_dams_50k",
+      "minzoom": 5,
+      "maxzoom": 10,
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
+    },
+    {
+      "id": "roads_midscale_primary_ca",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "midscale_zaf_roads",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "filter": ["all", ["==", "highway", "primary"]],
+      "layout": {
+        "visibility": "visible",
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "rgba(116, 116, 116, 1)",
+        "line-width": {"stops": [[8, 0.75], [14, 3]]}
+      }
+    },
+    {
+      "id": "roads_midscale_primary_inner",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "midscale_zaf_roads",
+      "minzoom": 7,
+      "maxzoom": 14,
+      "filter": ["all", ["==", "highway", "primary"]],
+      "layout": {
+        "visibility": "visible",
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "rgba(98, 98, 98, 1)",
+        "line-width": {"stops": [[8, 0.75], [14, 2]]}
+      }
+    },
+    {
+      "id": "roads_midscale_trunk_casing",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "midscale_zaf_roads",
+      "minzoom": 12,
+      "maxzoom": 14,
+      "filter": ["all", ["==", "highway", "trunk"]],
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(116, 116, 116, 1)",
+        "line-width": {"stops": [[12, 2], [14, 3]]}
+      }
+    },
+    {
+      "id": "roads_midscale_trunk_inner",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "midscale_zaf_roads",
+      "minzoom": 12,
+      "maxzoom": 14,
+      "filter": ["all", ["==", "highway", "trunk"]],
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(98, 98, 98, 1)",
+        "line-width": {"stops": [[12, 1], [14, 2]]}
+      }
+    },
+    {
+      "id": "roads_midscale_mway_hway_casing",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "midscale_zaf_roads",
+      "minzoom": 12,
+      "maxzoom": 14,
+      "filter": [
+        "any",
+        ["==", "highway", "highway"],
+        ["==", "highway", "motorway"]
+      ],
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(98, 98, 98, 1)",
+        "line-width": {"stops": [[12, 4], [14, 5]]}
+      }
+    },
+    {
+      "id": "roads_midscale_mway_hway_inner",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "midscale_zaf_roads",
+      "minzoom": 12,
+      "maxzoom": 14,
+      "filter": [
+        "any",
+        ["==", "highway", "highway"],
+        ["==", "highway", "motorway"]
+      ],
+      "layout": {
+        "visibility": "visible",
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(0, 0, 0, 1)",
+        "line-width": {"stops": [[12, 3], [14, 4]]}
+      }
+    },
+    {
+      "id": "roads_highways_casing",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_highways",
+      "minzoom": 5,
+      "maxzoom": 12,
+      "filter": ["all"],
+      "layout": {
+        "visibility": "visible",
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "rgba(98, 98, 98, 1)",
+        "line-width": {"stops": [[5.25, 0], [12, 4]]}
+      }
+    },
+    {
+      "id": "roads_highways_inner",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_highways",
+      "minzoom": 5,
+      "maxzoom": 12,
+      "filter": ["all"],
+      "layout": {
+        "visibility": "visible",
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "rgba(0, 0, 0, 1)",
+        "line-width": {"stops": [[9, 0], [10, 1.5], [12, 3]]}
+      }
+    },
+    {
+      "id": "provinces_small_scale",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0], [20, 10]]},
+        "line-color": "rgba(153, 153, 153, 1)"
+      }
+    },
+    {
+      "id": "zaf_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_boundary_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-color": "rgba(250, 167, 85, 1)",
+        "line-width": {"stops": [[4, 0.5], [20, 12]]}
+      }
+    },
+    {
+      "id": "provinces_kwazulu_natal_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "KwaZulu-Natal"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "provinces_eastern_cape_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Eastern Cape"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "provinces_western_cape_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Western Cape"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "provinces_northern_cape_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Northern Cape"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "provinces_free_state_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Free State"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "provinces_north_west_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "North West"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "provinces_mpumalanga_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Mpumalanga"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "provinces_gauteng_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Gauteng"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "provinces_limpopo_highlight",
+      "type": "line",
+      "source": "sanbi",
+      "source-layer": "zaf_provinces_small_scale",
+      "minzoom": 5,
+      "maxzoom": 7.01,
+      "filter": ["all", ["==", "adm1_en", "Limpopo"]],
+      "layout": {"visibility": "none"},
+      "paint": {
+        "line-opacity": 1,
+        "line-width": {"stops": [[4, 0.5], [20, 12]]},
+        "line-color": "rgba(250, 167, 85, 1)"
+      }
+    },
+    {
+      "id": "label_place_name_smallest_scale",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "place_name_smallest_scale",
+      "minzoom": 5,
+      "maxzoom": 7,
+      "layout": {
+        "text-field": "{name}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase",
+        "text-size": 16
+      },
+      "paint": {
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "label_place_name_midscale",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "place_name_midscale",
+      "minzoom": 7,
+      "maxzoom": 10,
+      "layout": {
+        "text-field": "{name}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase"
+      },
+      "paint": {
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
+      }
+    }
+  ],
+  "id": "osm-liberty"
+}
