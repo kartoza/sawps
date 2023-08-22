@@ -10,6 +10,7 @@ from population_data.models import (
     AnnualPopulationPerActivity,
     OpenCloseSystem,
     SamplingEffortCoverage,
+    PopulationEstimateCategory
 )
 from property.models import Property
 from species.models import OwnedSpecies, Taxon
@@ -88,13 +89,12 @@ def upload_species_data(upload_session_id):
                 continue
 
             # Save OwnedSpecies
-            owned_species, created = OwnedSpecies.objects.get_or_create(
+            owned_species, cr = OwnedSpecies.objects.get_or_create(
                 taxon=taxon,
                 user=upload_session.uploader,
                 property=property,
                 area_available_to_species=float(row[
-                    "Area_available to population (total enclosure area)_ha"]
-                )
+                    "Area_available to population (total enclosure area)_ha"])
             )
 
             # Save Sampling Effort Coverage
@@ -109,8 +109,17 @@ def upload_species_data(upload_session_id):
 
             # Save Survey method
             survey, created = SurveyMethod.objects.get_or_create(
-                name=row["Survey_method"]
+                name=(row["Survey_method"] if row["Survey_method"] else
+                      row["If other (survey method), please explain"]
+                      )
             )
+
+            # Save Population estimate category
+            p, pc = PopulationEstimateCategory.objects.get_or_create(name=(
+                row["Population estimate category"] if
+                row["Population estimate category"] else
+                row["If other (population estimate category) , please explain"]
+            ))
 
             # Save AnnualPopulation
             AnnualPopulation.objects.get_or_create(
@@ -144,7 +153,8 @@ def upload_species_data(upload_session_id):
                     row["Certainity of population bounds"])),
                 sampling_effort_coverage=sampling_effort,
                 population_estimate_certainty=int(string_to_number(
-                    row["Population estimate certainty"]))
+                    row["Population estimate certainty"])),
+                population_estimate_category=p
             )
 
             # Save AnnualPopulationPerActivity Planned translocation intake
@@ -259,8 +269,7 @@ def upload_species_data(upload_session_id):
                         row["Unplanned/illegal hunting_Offtake_male_juveniles"]
                     )),
                     juvenile_female=int(string_to_number(row[
-                        "Unplanned/illegal hunting_Offtake_female_juveniles"
-                    ]))
+                        "Unplanned/illegal hunting_Offtake_female_juveniles"]))
                 )
 
             upload_session.processed = True
