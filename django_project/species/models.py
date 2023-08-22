@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 """Species models.
 """
 from django.contrib.auth.models import User
@@ -28,13 +25,16 @@ class Taxon(models.Model):
     common_name_varbatim = models.CharField(
         max_length=250,
         null=True, blank=True)
-    colour_variant = models.BooleanField()
+    colour_variant = models.BooleanField(null=True, blank=True)
     infraspecific_epithet = models.CharField(
         max_length=250, unique=True, null=True, blank=True
     )
     taxon_rank = models.ForeignKey(
         "species.TaxonRank",
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True)
     show_on_front_page = models.BooleanField(default=False)
@@ -63,7 +63,7 @@ class OwnedSpecies(models.Model):
     area_available_to_species = models.FloatField(default=0.0)
 
     def __str__(self):
-        return f"Owned species#{self.id}"
+        return self.property.name
 
     class Meta:
         verbose_name = "Owned Species"
