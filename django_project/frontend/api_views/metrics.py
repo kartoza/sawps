@@ -15,11 +15,11 @@ from frontend.serializers.metrics import (
     SpeciesPopulationDensityPerPropertySerializer,
     TotalCountPerActivitySerializer,
 )
-from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_available_to_species,
     calculate_total_area_per_property_type,
+    calculate_base_population_of_species,
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -94,11 +94,7 @@ class ActivityPercentageAPIView(APIView):
         serializer = ActivityMatrixSerializer(
             queryset, many=True, context={"request": request}
         )
-        serializer_data = {
-            "data": serializer.data,
-            "activity_colours": ACTIVITY_COLORS_DICT
-        }
-        return Response(serializer_data)
+        return Response(calculate_base_population_of_species(serializer.data))
 
 
 class TotalCountPerActivityAPIView(APIView):

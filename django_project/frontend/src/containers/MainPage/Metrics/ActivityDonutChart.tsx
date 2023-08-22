@@ -24,13 +24,11 @@ interface ActivityDonutChartProps {
     loading: boolean;
     chartHeading: string;
     showPercentage: boolean;
+    labels: string[];
 }
 
 const ActivityDonutChart = (props: ActivityDonutChartProps) => {
-    const { activityData, activityType, loading, chartHeading, showPercentage } = props
-    const labels = Object.keys(activityType);
-
-
+    const { activityData, activityType, loading, chartHeading, showPercentage, labels } = props
     const donutOptions = {
         cutout: 50,
         maintainAspectRatio: false,
