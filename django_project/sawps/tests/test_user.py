@@ -1,10 +1,10 @@
 from django.core import mail
-from django.test import TestCase, RequestFactory
+from django.test import Client, TestCase, RequestFactory
+from regulatory_permit.models import DataUsePermission
 from sawps.tests.models.account_factory import (
     UserF,
     GroupF,
 )
-
 from sawps.forms.account_forms import CustomSignupForm
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -13,6 +13,18 @@ from sawps.views import (
     CustomPasswordResetView,
     custom_password_reset_complete_view
 )
+from django.test import TestCase
+from django.urls import reverse
+from django.contrib.auth.models import User
+from stakeholder.models import (
+    Organisation,
+    OrganisationInvites,
+    OrganisationUser
+)
+from sawps.views import (
+    AddUserToOrganisation
+)
+from django_otp.plugins.otp_totp.models import TOTPDevice
 
 logger = logging.getLogger(__name__)
 
@@ -135,5 +147,124 @@ class CustomPasswordResetCompleteViewTest(TestCase):
         # Check that the response is a rendered template
         self.assertEqual(response.status_code, 200)
         self.assertIn('Password Reset', response.content.decode('utf-8'))
-        self.assertIn('Your password has been successfully reset. You can now log in using your new password.',
+        self.assertIn('Your password has been reset successfully. Kindly proceed to log in.',
                       response.content.decode('utf-8'))
+
+
+
+
+class AddUserToOrganisationTestCase(TestCase):
+    def setUp(self):
+        self.user_email = 'test@example.com'
+        self.organisation_name = 'Test Organisation'
+        self.user = User.objects.create_user(
+            username='testuser',
+            email=self.user_email,
+            password='testpass'
+        )
+        self.data_use_permission = DataUsePermission.objects.create(
+            name="test"
+        )
+        self.organisation = Organisation.objects.create(
+            name=self.organisation_name,
+            data_use_permission = self.data_use_permission
+        )
+        self.organisation_user = OrganisationUser.objects.create(
+            organisation=self.organisation,
+            user=self.user
+        )
+        self.invite = OrganisationInvites.objects.create(
+            email=self.user_email,
+            organisation=self.organisation
+        )
+
+    def test_add_user(self):
+        view = AddUserToOrganisation()
+        view.adduser(self.user_email, self.organisation_name)
+        org_user = OrganisationUser.objects.filter(user=self.user, organisation=self.organisation).first()
+        org_invite = OrganisationInvites.objects.filter(email=self.user_email, organisation=self.organisation).first()
+        
+        self.assertIsNotNone(org_user)
+        self.assertIsNotNone(org_invite)
+        self.assertTrue(org_invite.joined)
+
+    def test_is_user_already_joined(self):
+        view = AddUserToOrganisation()
+        self.assertTrue(
+            view.is_user_already_joined(
+                self.user_email,
+                self.organisation_name
+            )
+        )
+        self.assertFalse(
+            view.is_user_already_joined(
+            'another@example.com',
+            self.organisation_name
+            )
+        )
+        self.assertFalse(
+            view.is_user_already_joined(
+            self.user_email,
+            'Nonexistent Organisation'
+            )
+        )
+
+    def test_send_invitation_email(self):
+        view = AddUserToOrganisation()
+        email_details = {
+            'return_url': 'http://example.com',
+            'user': {'role': 'Admin', 'organisation': 'Test Org'},
+            'support_email': 'support@example.com',
+            'recipient_email': 'test@example.com',
+            'domain': 'example.com',
+        }
+        success = view.send_invitation_email(email_details)
+        self.assertTrue(success)
+
+    def test_add_user_view(self):
+        url = reverse(
+            'adduser',
+            args=[self.user_email, self.organisation_name]
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('home'))
+        org_user = OrganisationUser.objects.filter(
+            user=self.user,
+            organisation=self.organisation).first()
+        org_invite = OrganisationInvites.objects.filter(
+            email=self.user_email,
+            organisation=self.organisation).first()
+        self.assertIsNotNone(org_user)
+        self.assertIsNotNone(org_invite)
+        self.assertTrue(org_invite.joined)
+
+
+
+
+
+class SendRequestEmailTestCase(TestCase):
+    def test_send_email_success(self):
+        user = User.objects.create_user(
+            username='testuser',
+            email='test@gmail.com',
+            password='testpass'
+        )
+        self.client = Client()
+        device = TOTPDevice(
+            user=user,
+            name='device_name'
+        )
+        device.save()
+        resp = self.client.login(
+            username='testuser', password='testpass')
+        self.assertTrue(resp)
+        request = self.client.post(reverse('sendrequest'), data={
+            'action': 'sendrequest',
+            'organisationName': 'Test Org',
+            'message': 'Test message',
+        })
+        self.assertEqual(request.status_code, 200)
+        response_data = request.json()
+        self.assertEqual(response_data['status'], 'success')
+
