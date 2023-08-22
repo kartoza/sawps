@@ -101,7 +101,7 @@ class TestMapAPIViews(TestCase):
             reverse('map-style')
         )
         request.user = self.user_1
-        response = get_map_template_style(request)
+        get_map_template_style(request)
     
     def test_map_styles_with_theme_value_for_role(self):
         # test with user role as decision maker
@@ -117,7 +117,7 @@ class TestMapAPIViews(TestCase):
             reverse('map-style')
         )
         request.user = self.user_1
-        response = get_map_template_style(request,1)
+        get_map_template_style(request,1)
 
     def test_map_styles_with_different_role(self):
         request = self.factory.get(
