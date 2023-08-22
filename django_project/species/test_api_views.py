@@ -197,7 +197,8 @@ class TestUploadSpeciesApiView(TestCase):
         ).count(), 1)
         self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
 
-    def test_upload_species_status(self):
+    @mock.patch("species.tasks.upload_species.upload_species_data")
+    def test_upload_species_status(self, mock):
         csv_path = absolute_path(
             'frontend', 'tests',
             'csv', 'test.csv')
