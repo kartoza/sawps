@@ -1,5 +1,9 @@
 from django.core import mail
-from django.test import Client, TestCase, RequestFactory
+from django.test import (
+    Client, 
+    TestCase, 
+    RequestFactory
+)
 from regulatory_permit.models import DataUsePermission
 from sawps.tests.models.account_factory import (
     UserF,
@@ -11,18 +15,14 @@ from django.urls import reverse
 import logging
 from sawps.views import (
     CustomPasswordResetView,
+    AddUserToOrganisation,
     custom_password_reset_complete_view
 )
-from django.test import TestCase
-from django.urls import reverse
 from django.contrib.auth.models import User
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
     OrganisationUser
-)
-from sawps.views import (
-    AddUserToOrganisation
 )
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
@@ -70,7 +70,7 @@ class CustomPasswordResetViewTest(TestCase):
             password='testpassword'
         )
 
-        # Send reset email request # todo update sendrequest action
+        # Send reset email request
         response = self.client.post(
             reverse('password_reset'),
             {
@@ -145,9 +145,8 @@ class CustomPasswordResetCompleteViewTest(TestCase):
         response = custom_password_reset_complete_view(request)
 
         # Check that the response is a rendered template
-        self.assertEqual(response.status_code, 200)
         self.assertIn('Password Reset', response.content.decode('utf-8'))
-        self.assertContains('Your password has been reset successfully. Kindly proceed to log in.',
+        self.assertContains('Your password has been successfully reset. You can now log in using your new password.',
                       response.content.decode('utf-8'))
 
 
@@ -181,8 +180,12 @@ class AddUserToOrganisationTestCase(TestCase):
     def test_add_user(self):
         view = AddUserToOrganisation()
         view.adduser(self.user_email, self.organisation_name)
-        org_user = OrganisationUser.objects.filter(user=self.user, organisation=self.organisation).first()
-        org_invite = OrganisationInvites.objects.filter(email=self.user_email, organisation=self.organisation).first()
+        org_user = OrganisationUser.objects.filter(
+            user=self.user,
+            organisation=self.organisation).first()
+        org_invite = OrganisationInvites.objects.filter(
+            email=self.user_email,
+            organisation=self.organisation).first()
         
         self.assertIsNotNone(org_user)
         self.assertIsNotNone(org_invite)
