@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-let url = 'http://localhost:61100';
+let url = '/';
 
 
 test.describe('navigation', () => {
