@@ -15,13 +15,28 @@ def get_map_template_style(request, theme_choice: int = 0, token: str = None):
     :param theme_choice: 0 light, 1 dark
     :return: json map style
     """
-    style_file_path = absolute_path(
-        'frontend', 'utils', 'sanbi_styling_light.json'
-    )
-    if theme_choice == 1:
-        style_file_path = absolute_path(
-            'frontend', 'utils', 'sanbi_styling_dark.json'
+    load_normal_map = True
+    if hasattr(request.user, 'user_profile'):
+        user_role = str(
+            request.user.user_profile.user_role_type_id
         )
+        if "Decision maker" in user_role:
+            style_file_path = absolute_path(
+                'frontend', 'utils', 'country_level_light_v1.json'
+            )
+            if theme_choice == 1:
+                style_file_path = absolute_path(
+                    'frontend', 'utils', 'country_level_dark_v1.json'
+                )
+            load_normal_map = False
+    if load_normal_map:
+        style_file_path = absolute_path(
+            'frontend', 'utils', 'sanbi_styling_light.json'
+        )
+        if theme_choice == 1:
+            style_file_path = absolute_path(
+                'frontend', 'utils', 'sanbi_styling_dark.json'
+            )
     styles = {}
     with open(style_file_path) as config_file:
         styles = json.load(config_file)
