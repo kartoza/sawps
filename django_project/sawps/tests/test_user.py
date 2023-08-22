@@ -278,16 +278,3 @@ class SendRequestEmailTestCase(TestCase):
         self.assertEqual(request.status_code, 200)
         response_data = request.json()
         self.assertEqual(response_data['status'], 'success')
-
-
-
-class ActivateAccountTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = get_user_model().objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpassword'
-        )
-        self.token = default_token_generator.make_token(self.user)
-        self.uidb64 = urlsafe_b64encode(force_bytes(self.user.pk)).decode('utf-8')
