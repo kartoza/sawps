@@ -29,7 +29,7 @@ export default function PropertySummaryTable(props: PropertySummaryTableInterfac
 
     return (
         <TableContainer component={Paper}>
-            <Table className='PropertySiteDetailTable' aria-label="property site detail table" size='medium'>
+            <Table className='PropertySiteDetailTable' aria-label="property site detail table" size='small'>
                 <colgroup>
                     <col width="50%" />
                     <col width="50%" />
