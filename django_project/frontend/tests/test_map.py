@@ -97,10 +97,10 @@ class TestMapAPIViews(TestCase):
             user=self.user_1,
             user_role_type_id=role
         )
+        request.user = self.user_1
         request = self.factory.get(
             reverse('map-style')
         )
-        request.user = self.user_1
         get_map_template_style(request)
     
     def test_map_styles_with_theme_value_for_role(self):
