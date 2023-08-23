@@ -252,3 +252,49 @@ class SpeciesPopulationDensityPerPropertySerializer(
             return data
         else:
             return None
+
+
+class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
+    """
+    Serializer class for serializing population per age group.
+    """
+    age_group = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Taxon
+        fields = ["age_group", "icon", "common_name_varbatim"]
+
+    def get_age_group(self, obj) -> dict:
+        """ Calculate population per age group.
+        Params: obj (Taxon): The Taxon instance.
+        """
+        sum_fields = [
+            "adult_male",
+            "adult_female",
+            "sub_adult_male",
+            "sub_adult_female",
+            "juvenile_male",
+            "juvenile_female"
+        ]
+
+        filters = {
+            "owned_species__taxon": obj
+        }
+
+        property_list = self.context['request'].GET.get("property")
+        if property_list:
+            property_ids = property_list.split(",")
+            filters["owned_species__property__id__in"] = property_ids
+
+        start_year = self.context['request'].GET.get("start_year")
+        if start_year:
+            end_year = self.context['request'].GET.get("end_year")
+            filters["year__range"] = (start_year, end_year)
+
+        age_groups_totals = AnnualPopulation.objects.values(
+            "owned_species__taxon__common_name_varbatim"
+        ).filter(**filters).annotate(
+            **{f"total_{field}": Sum(field) for field in sum_fields}
+        )
+
+        return age_groups_totals

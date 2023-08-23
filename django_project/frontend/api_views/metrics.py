@@ -14,13 +14,13 @@ from frontend.serializers.metrics import (
     SpeciesPopuationCountPerYearSerializer,
     SpeciesPopulationDensityPerPropertySerializer,
     TotalCountPerActivitySerializer,
+    PopulationPerAgeGroupSerialiser,
 )
 from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_available_to_species,
     calculate_total_area_per_property_type,
     calculate_base_population_of_species,
-    calculate_totals_per_age_group,
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -241,6 +241,7 @@ class TotalAreaPerPropertyTypeAPIView(APIView):
         queryset = self.get_queryset()
         return Response(calculate_total_area_per_property_type(queryset))
 
+
 class PopulationPerAgeGroupAPIView(APIView):
     """
     API endpoint to retrieve population of age group.
@@ -267,4 +268,7 @@ class PopulationPerAgeGroupAPIView(APIView):
         Params:request (Request): The HTTP request object.
         """
         queryset = self.get_queryset()
-        return Response(calculate_totals_per_age_group(queryset, request))
+        serializer = PopulationPerAgeGroupSerialiser(
+            queryset, many=True, context={"request": request}
+        )
+        return Response(serializer.data)

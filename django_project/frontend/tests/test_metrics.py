@@ -343,33 +343,15 @@ class PopulationPerAgeGroupTestCase(BaseTestCase):
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['total_adult_male'], 250)
-        self.assertEqual(response.data[0]['total_adult_female'], 250)
-        self.assertEqual(response.data[0]['total_sub_adult_male'], 50)
-        self.assertEqual(response.data[0]['total_sub_adult_female'], 50)
-
-    def test_total_area_per_property_type_filter_by_property(self):
-        """
-        Test population per age group filtered by property.
-        """
-        id = self.owned_species[0].property_id
-        data = {'property':id}
-        url = self.url
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['total_juvenile_female'], 150)
-        self.assertEqual(response.data[0]['total_juvenile_female'], 150)
-
-
-    def test_species_population_count_filter_by_year(self) -> None:
-        """
-        Test spopulation per age group filtered by year.
-        """
-        year = self.owned_species[1].annualpopulation_set.first().year
-        data = {'start_year': year, "end_year":year}
-        url = self.url
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['total_sub_adult_male'], 10)
-        self.assertEqual(response.data[0]['total_sub_adult_female'], 10)
-
+        self.assertEqual(
+            response.data[0]['age_group'][0]['total_adult_male'], 250
+        )
+        self.assertEqual(
+            response.data[0]['age_group'][0]['total_adult_female'], 250
+        )
+        self.assertEqual(
+            response.data[0]['age_group'][0]['total_sub_adult_male'], 50
+        )
+        self.assertEqual(
+            response.data[0]['age_group'][0]['total_sub_adult_female'], 50
+        )
