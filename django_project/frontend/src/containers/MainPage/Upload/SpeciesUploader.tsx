@@ -199,6 +199,14 @@ export default function Uploader(props: UploaderInterface) {
                             setCloseButton('CLOSE')
                             setLoading(false)
                         }
+                        else{
+                            setIsError(true)
+                            setAlertMessage(response.data['message'])
+                            setTotalFile(totalFile - 1)
+                            setSavingSpeciesCSV(false)
+                            setCloseButton('CLOSE')
+                            setLoading(false)
+                        }
                     }
                     }))
                 } else {
@@ -230,7 +238,7 @@ export default function Uploader(props: UploaderInterface) {
                     <Grid container flexDirection={'column'}>
                         <Grid item>
                             <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
-                                Uploaded Files
+                                Uploaded File
                             </Typography>
                         </Grid>
                         <Grid item className='UploadedFilesPreview'>
@@ -244,7 +252,7 @@ export default function Uploader(props: UploaderInterface) {
 
         return (
         <Dialog onClose={handleClose} open={open} className='Uploader'>
-            <DialogTitle>Upload</DialogTitle>
+            <DialogTitle>Upload Data</DialogTitle>
             <Grid container flexDirection={'column'} className='UploaderContent' rowSpacing={2}>
                 <Grid item>
                 { alertMessage ?
@@ -276,9 +284,9 @@ export default function Uploader(props: UploaderInterface) {
                         </Grid>
                         <Grid item>
                             { savingSpeciesCSV ? (
-                                <Button variant='contained' disabled={true}><CircularProgress size={16} sx={{marginRight: '5px' }}/> PROCESSING FILES...</Button>
+                                <Button variant='contained' disabled={true}><CircularProgress size={16} sx={{marginRight: '5px' }}/> PROCESSING FILE...</Button>
                             ) : (
-                                <Button variant='contained' disabled={loading || savingSpeciesCSV || totalFile === 0} onClick={saveBoundaryFiles}>UPLOAD FILES</Button>
+                                <Button variant='contained' disabled={loading || savingSpeciesCSV || totalFile === 0} onClick={saveBoundaryFiles}>UPLOAD FILE</Button>
                             )}
                         </Grid>
                     </Grid>

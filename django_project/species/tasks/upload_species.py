@@ -9,8 +9,8 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     OpenCloseSystem,
+    PopulationEstimateCategory,
     SamplingEffortCoverage,
-    PopulationEstimateCategory
 )
 from property.models import Property
 from species.models import OwnedSpecies, Taxon
@@ -53,9 +53,9 @@ def upload_species_data(upload_session_id):
         logger.error("upload session doesn't exist")
         return
 
+    property_name = upload_session.property.name
     encoding = 'utf-8-sig'
     row_num = 1
-    success_response = None
     with open(upload_session.process_file.path, encoding=encoding
               ) as csv_file:
         reader = csv.DictReader(csv_file)
@@ -69,7 +69,10 @@ def upload_species_data(upload_session_id):
                     name=row["Property_name"],
                 )
             except Property.DoesNotExist:
-                upload_session.error_notes = 'Property does not exist'
+                upload_session.error_notes = "The property name: {}, in the " \
+                    "in the CSV file does not match the selected property. " \
+                    "Please replace it with {}.".format(
+                        row["Property_name"], property_name)
                 upload_session.canceled = True
                 upload_session.save()
                 return
@@ -98,9 +101,10 @@ def upload_species_data(upload_session_id):
             )
 
             # Save Sampling Effort Coverage
-            sampling_effort, c = SamplingEffortCoverage.objects.get_or_create(
-                name=row["Sampling_effort_coverage"]
-            )
+            if row["Sampling_effort_coverage"]:
+                sampling_eff, c = SamplingEffortCoverage.objects.get_or_create(
+                    name=row["Sampling_effort_coverage"]
+                )
 
             # Save OpenCloseSystem
             open_sys, open_created = OpenCloseSystem.objects.get_or_create(
@@ -151,7 +155,7 @@ def upload_species_data(upload_session_id):
                     row["Lower confidence limits for population estimate"])),
                 certainty_of_bounds=int(string_to_number(
                     row["Certainity of population bounds"])),
-                sampling_effort_coverage=sampling_effort,
+                sampling_effort_coverage=sampling_eff,
                 population_estimate_certainty=int(string_to_number(
                     row["Population estimate certainty"])),
                 population_estimate_category=p
