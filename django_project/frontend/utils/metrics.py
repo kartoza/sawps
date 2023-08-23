@@ -5,6 +5,7 @@ from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from django.db.models import QuerySet, Sum
 from property.models import Property
 from species.models import OwnedSpecies
+from population_data.models import AnnualPopulation
 
 
 def calculate_population_categories(queryset: QuerySet) -> Dict[str, int]:
@@ -132,3 +133,35 @@ def calculate_base_population_of_species(data: List[Dict[str, Any]]) \
         "activity_colours": ACTIVITY_COLORS_DICT
     }
     return species_data
+
+from django.db.models import Q, Sum
+
+def calculate_totals_per_age_group(queryset, request):
+    owned_species_ids = queryset.values_list("ownedspecies__id", flat=True)
+    sum_fields = [
+        "adult_male",
+        "adult_female",
+        "sub_adult_male",
+        "sub_adult_female",
+        "juvenile_male",
+        "juvenile_female"
+    ]
+
+    filters = {
+        "owned_species__id__in": owned_species_ids
+    }
+
+    property_list = request.GET.get("property")
+    if property_list:
+        property_ids = property_list.split(",")
+        filters["owned_species__property__id__in"] = property_ids
+
+    start_year = request.GET.get("start_year")
+    if start_year:
+        end_year = request.GET.get("end_year")
+        filters["year__range"] = (start_year, end_year)
+
+    age_groups_totals = AnnualPopulation.objects.filter(**filters).aggregate(
+        **{f"total_{field}": Sum(field) for field in sum_fields}
+    )
+    return [age_groups_totals]
