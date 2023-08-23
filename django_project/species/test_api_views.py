@@ -155,6 +155,7 @@ class TestUploadSpeciesApiView(TestCase):
 
     @mock.patch("species.tasks.upload_species.upload_species_data")
     def test_upload_csv_task(self, mock_app):
+        """Test upload csv task."""
         csv_path = absolute_path(
             'frontend', 'tests',
             'csv', 'test.csv')
@@ -199,6 +200,7 @@ class TestUploadSpeciesApiView(TestCase):
 
     @mock.patch("species.tasks.upload_species.upload_species_data")
     def test_upload_species_status(self, mock):
+        """Test upload species status."""
         csv_path = absolute_path(
             'frontend', 'tests',
             'csv', 'test.csv')
@@ -237,6 +239,7 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.data['message'], '1 row have been uploaded')
 
     def test_upload_species_status_404(self):
+        """Test upload species status with 404 error."""
         kwargs = {
             'token': '8f1c1181-982a-4286-b2fe-da1abe8f7172'
         }

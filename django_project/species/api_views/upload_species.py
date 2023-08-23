@@ -108,7 +108,7 @@ class UploadSpeciesStatus(APIView):
         except UploadSpeciesCSV.DoesNotExist:
             return Response(status=404)
 
-        if upload_species.canceled:
+        if upload_species.canceled or not upload_species.processed:
             return Response(
                 status=200,
                 data={
