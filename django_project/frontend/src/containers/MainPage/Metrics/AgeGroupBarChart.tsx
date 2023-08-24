@@ -6,7 +6,7 @@ import "./index.scss";
 import Loading from '../../../components/Loading';
 
 const AgeGroupBarChart = (props: any) => {
-    const { loading, ageGroupData, icon, name } = props
+    const { loading, ageGroupData, icon, name, colour } = props
     const datasetMale: number[] = [];
     const datasetFemale: number[] = [];
     ageGroupData?.forEach((data: any) => {
@@ -20,12 +20,12 @@ const AgeGroupBarChart = (props: any) => {
             {
                 label: 'Male',
                 data: datasetMale,
-                backgroundColor: ['#442eb4'],
+                backgroundColor: colour,
             },
             {
                 label: 'Female',
                 data: datasetFemale,
-                backgroundColor: ['#9fd234'],
+                backgroundColor: (colour.slice(0, 7) + '80' + colour.slice(7)),
             },
         ],
     };
