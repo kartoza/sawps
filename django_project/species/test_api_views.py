@@ -42,13 +42,15 @@ class TestUploadSpeciesApiView(TestCase):
         self.token = '8f1c1181-982a-4286-b2fe-da1abe8f7174'
         self.api_url = '/api/upload-species/'
         ActivityType.objects.create(
-            name="Planned translocation")
+            name="Unplanned/Illegal Hunting")
         ActivityType.objects.create(
-            name="Planned hunt/cull")
+            name="Planned Euthanasia/DCA")
         ActivityType.objects.create(
-            name="Planned euthanasia")
+            name="Planned Hunt/Cull")
         ActivityType.objects.create(
-            name="Unplanned/illegal hunting")
+            name="Translocation (Intake)")
+        ActivityType.objects.create(
+            name="Translocation (Offtake)")
         Taxon.objects.create(
             scientific_name='Panthera leo',
             common_name_varbatim='Lion'
@@ -185,16 +187,19 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(AnnualPopulation.objects.all().count(), 1)
         self.assertTrue(OwnedSpecies.objects.all().count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
-            activity_type__name="Planned translocation"
-        ).count(), 2)
-        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
-            activity_type__name="Planned hunt/cull"
+            activity_type__name="Translocation (Offtake)"
         ).count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
-            activity_type__name="Planned euthanasia"
+            activity_type__name="Translocation (Intake)"
         ).count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
-            activity_type__name="Unplanned/illegal hunting"
+            activity_type__name="Planned Hunt/Cull"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Planned Euthanasia/DCA"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Unplanned/Illegal Hunting"
         ).count(), 1)
         self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
 
