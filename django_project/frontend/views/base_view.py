@@ -24,7 +24,6 @@ def get_user_notifications(request):
     current_date = datetime.now().date()
     reminders = Reminders.objects.filter(
         user=request.user,
-        organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
         status=Reminders.PASSED,
         email_sent=True,
         date__date=current_date
