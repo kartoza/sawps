@@ -60,9 +60,12 @@ const styles = StyleSheet.create({
     marginRight: -90
   },
   line_chartImage: {
-    width: "45%",
-    height: "45%",
-    marginLeft: 5
+    width: "100%",
+    height: "70%",
+    display: "flex",
+    flexDirection: "row",
+    marginLeft: 20,
+    marginTop: 10,
   },
   mapImage: {
     width: "100%",
