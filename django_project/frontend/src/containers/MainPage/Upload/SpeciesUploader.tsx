@@ -109,6 +109,7 @@ export default function Uploader(props: UploaderInterface) {
             setAlertMessageTaxon('')
             setSavingSpeciesCSV(false)
             setTotalFile(0)
+            setLoading(false)
         }
     }, [open])
 
@@ -126,7 +127,6 @@ export default function Uploader(props: UploaderInterface) {
         const headers = {
             'X-CSRFToken': _csrfToken
         }
-        console.log(session)
         return {url: UPLOAD_FILE_URL, body, headers}
     }
 
@@ -161,6 +161,7 @@ export default function Uploader(props: UploaderInterface) {
                 let response = JSON.parse(xhr.response)
                 setIsError(true)
                 setAlertMessage(response.detail)
+
             }, 300)
         }
     };
