@@ -1,30 +1,30 @@
+from django.contrib.auth.models import User
+from django.db.models import Q
 from django.test import TestCase
+from property.models import Province
 from regulatory_permit.models import DataUsePermission
-from stakeholder.models import (
-    UserRoleType,
-    UserTitle,
-    LoginStatus,
-    UserProfile,
-    Organisation,
-    OrganisationUser,
-    OrganisationRepresentative,
-    UserLogin,
-    OrganisationInvites,
-    Reminders
-)
 from stakeholder.factories import (
-    userRoleTypeFactory,
-    userTitleFactory,
     loginStatusFactory,
+    organisationFactory,
+    organisationRepresentativeFactory,
+    organisationUserFactory,
     userLoginFactory,
     userProfileFactory,
-    organisationFactory,
-    organisationUserFactory,
-    organisationRepresentativeFactory
+    userRoleTypeFactory,
+    userTitleFactory,
 )
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.db.models import Q
+from stakeholder.models import (
+    LoginStatus,
+    Organisation,
+    OrganisationInvites,
+    OrganisationRepresentative,
+    OrganisationUser,
+    Reminders,
+    UserLogin,
+    UserProfile,
+    UserRoleType,
+    UserTitle,
+)
 
 
 class TestUserRoleType(TestCase):
@@ -146,6 +146,7 @@ class TestUser(TestCase):
 
 class TestUserLogin(TestCase):
     """"User login testcase."""
+
     @classmethod
     def setUpTestData(cls):
         cls.user_login = userLoginFactory()
@@ -173,6 +174,7 @@ class TestUserLogin(TestCase):
 
 class OrganizationTestCase(TestCase):
     """Organization test case."""
+
     @classmethod
     def setUpTestData(cls):
         cls.organization = organisationFactory()
@@ -186,10 +188,19 @@ class OrganizationTestCase(TestCase):
 
     def test_update_organization(self):
         """Test updating organization."""
+        province, created = Province.objects.get_or_create(
+                    name="Limpopo"
+        )
         self.organization.name = 'test'
+        self.organization.national = True
+        self.organization.province = province
         self.organization.save()
         self.assertEqual(Organisation.objects.get(
             id=self.organization.id).name, 'test')
+        self.assertEqual(Organisation.objects.filter(
+            national=True).count(), 1)
+        self.assertEqual(Organisation.objects.filter(
+            province__name="Limpopo").count(), 1)
 
     def test_delete_organization(self):
         """Test deleting organization."""
@@ -233,11 +244,11 @@ class OrganizationUserTestCase(TestCase):
 
 class OrganizationRepresentativeTestCase(TestCase):
     """Test case for organization representative."""
+
     @classmethod
     def setUpTestData(cls):
         """Setup test data for organisation representative model."""
         cls.organizationRep = organisationRepresentativeFactory()
-
 
     def test_create_organisation_user(self):
         """Test creating organisation representative."""
@@ -264,7 +275,6 @@ class OrganizationRepresentativeTestCase(TestCase):
         self.assertEqual(OrganisationRepresentative.objects.count(), 0)
 
 
-
 class OrganisationInvitesModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -273,7 +283,7 @@ class OrganisationInvitesModelTest(TestCase):
             name="test")
         self.organisation = Organisation.objects.create(
             name="test_organisation",
-            data_use_permission = self.data_use_permission
+            data_use_permission=self.data_use_permission
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
@@ -281,12 +291,14 @@ class OrganisationInvitesModelTest(TestCase):
         )
 
     def test_create_organisation_invite(self):
+        """Test create organisation invite."""
         invite = OrganisationInvites.objects.create(
             organisation=self.organisation, email='test@kartoza.com')
         self.assertEqual(invite.organisation, self.organisation)
         self.assertEqual(invite.email, 'test@kartoza.com')
 
     def test_read_organisation_invite(self):
+        """Test read organisation invite."""
         invite = OrganisationInvites.objects.create(
             organisation=self.organisation, email='test@kartoza.com')
         saved_invite = OrganisationInvites.objects.get(pk=invite.pk)
@@ -294,6 +306,7 @@ class OrganisationInvitesModelTest(TestCase):
         self.assertEqual(saved_invite.email, 'test@kartoza.com')
 
     def test_update_organisation_invite(self):
+        """Test update organisation invite."""
         invite = OrganisationInvites.objects.create(
             organisation=self.organisation, email='test@kartoza.com')
         invite.organisation = self.organisation
@@ -302,6 +315,7 @@ class OrganisationInvitesModelTest(TestCase):
         self.assertEqual(updated_invite.organisation, self.organisation)
 
     def test_delete_organisation_invite(self):
+        """Test delete organisation invite."""
         invite = OrganisationInvites.objects.create(
             organisation=self.organisation, email='test@kartoza.com')
         invite.delete()
@@ -320,7 +334,7 @@ class RemindersModelTest(TestCase):
         )
         self.organisation = Organisation.objects.create(
             name="test_organisation",
-            data_use_permission = self.data_use_permission
+            data_use_permission=self.data_use_permission
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
