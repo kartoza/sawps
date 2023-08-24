@@ -1,11 +1,10 @@
 from typing import List
-from django.db.models import F, Q, Sum
+from django.db.models import Q, Sum
 from population_data.models import AnnualPopulation
 from rest_framework import serializers
-from species.models import OwnedSpecies, Taxon
+from species.models import Taxon
 from datetime import datetime
 
-    
 class SpeciesListSerializer(serializers.ModelSerializer):
     """
     Serializer class for serializing species.
@@ -101,3 +100,4 @@ class NationalStatisticsSerializer(serializers.Serializer):
     total_property_count = serializers.IntegerField()
     total_property_area = serializers.FloatField()
     total_area_available_to_species = serializers.FloatField()
+
