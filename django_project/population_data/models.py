@@ -137,9 +137,7 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
             models.UniqueConstraint(
                 fields=["year",
                         "owned_species",
-                        "activity_type",
-                        "intake_permit",
-                        "offtake_permit"
+                        "activity_type"
                         ],
                 name="unique_population_count_per_activity",
             )

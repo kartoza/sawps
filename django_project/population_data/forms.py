@@ -24,5 +24,12 @@ class AnnualPopulationForm(ModelForm):
             "certainty",
             "open_close_system",
             "presence",
+            "population_status",
+            "population_estimate_category",
+            "sampling_effort_coverage",
+            "upper_confidence_level",
+            "lower_confidence_level",
+            "certainty_of_bounds",
+            "population_estimate_certainty",
             "note",
         )
