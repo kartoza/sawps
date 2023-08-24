@@ -6,6 +6,7 @@ import { Button } from "@mui/material";
 
 // import chart componenents to be rendered here
 import FirstPageCharts from "./FirstPageContent";
+import ChartsContainer from "./chartsContainer";
 
 import html2canvas from "html2canvas";
 
@@ -15,6 +16,7 @@ const GenerateChartImages: React.FC = () => {
 
   // define refs to capture charts
   const firstPageRefs = useRef(null);
+  const OtherPageRefs = useRef(null);
 
   // define variables to save charts base64 strings
   const [charts, setCharts] = useState([]);
@@ -44,12 +46,14 @@ const GenerateChartImages: React.FC = () => {
   
         // retrieve the charts refs as canvas
         const first_page_canvas = await html2canvas(firstPageRefs.current);
+        const other_pages_canvas = await html2canvas(OtherPageRefs.current);
   
         // convert the canvas to base64 strings
         const first_page_charts = first_page_canvas.toDataURL('image/png');
+        const other_pages_charts = other_pages_canvas.toDataURL('image/png');
   
         // Save base64 strings in an array
-        const base64StringsArray = [first_page_charts];
+        const base64StringsArray = [first_page_charts, other_pages_charts];
   
         // Update the state with the entire array of base64 strings
         setCharts(base64StringsArray);
@@ -75,6 +79,10 @@ const GenerateChartImages: React.FC = () => {
       <div ref={firstPageRefs} style={{ display: showChartsDiv ? 'block' : 'none' }}>
         <FirstPageCharts />
       </div>
+      {/* other charts */}
+      <div ref={OtherPageRefs} style={{ display: showChartsDiv ? 'block' : 'none' }}>
+          <ChartsContainer />
+      </div>
 
       <div className="export-button-container">
         <Button onClick={openModal} variant="contained" color="primary">
@@ -95,6 +103,17 @@ const GenerateChartImages: React.FC = () => {
                   <img key={index} src={chart} alt={`Chart ${index}`} />
                 ))}
               </div>
+              // smaller preview
+            //   <div className="charts-container">
+            //   {charts.map((chart, index) => (
+            //     <img
+            //       key={index}
+            //       src={chart}
+            //       alt={`Chart ${index}`}
+            //       style={{ width: '50%', height: 'auto' }}
+            //     />
+            //   ))}
+            // </div>
             )}
 
             <div className="modal-buttons">
