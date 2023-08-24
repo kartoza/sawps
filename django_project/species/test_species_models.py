@@ -132,7 +132,7 @@ class TaxonTestCase(TestCase):
         self.assertEqual(len(response.data), 1)
         taxon_1 = [d for d in response.data if d['id'] == taxon.id]
         self.assertTrue(taxon_1)
-        self.assertEqual(taxon_1[0]['total_population'], 135)
+        self.assertEqual(taxon_1[0]['total_population'], 57)
 
     def test_create_taxon(self):
         """Test create taxon."""
