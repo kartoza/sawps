@@ -88,7 +88,10 @@ class AnnualPopulation(AnnualPopulationAbstract):
     )
 
     def __str__(self):
-        return f"{self.sub_adult_total}"
+        return "{} {}".format(
+            self.owned_species.property.name,
+            self.year
+        )
 
     class Meta:
         verbose_name = "Annual Population"
@@ -121,7 +124,10 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     offtake_permit = models.CharField(null=True, blank=True, max_length=100)
 
     def __str__(self):
-        return self.activity_type.name
+        return "{} {} {}".format(
+            self.owned_species.property.name,
+            self.year,
+            self.activity_type.name)
 
     class Meta:
         verbose_name = "Population count per activity"
