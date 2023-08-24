@@ -165,7 +165,7 @@ def upload_species_data(upload_session_id):
             if row["(Re)Introduction_TOTAL"]:
                 AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
-                        name="Planned translocation"),
+                        name="Translocation (Intake)"),
                     year=int(string_to_number(row['Year of estimate'])),
                     owned_species=owned_species,
                     total=int(string_to_number(row["(Re)Introduction_TOTAL"])),
@@ -189,7 +189,7 @@ def upload_species_data(upload_session_id):
             if row["Translocation_offtake_total"]:
                 AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
-                        name="Planned translocation"),
+                        name="Translocation (Offtake)"),
                     year=int(string_to_number(row['Year of estimate'])),
                     owned_species=owned_species,
                     total=int(string_to_number(
@@ -212,7 +212,7 @@ def upload_species_data(upload_session_id):
             if row["Planned hunt/culling_TOTAL"]:
                 AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
-                        name="Planned hunt/cull"),
+                        name="Planned Hunt/Cull"),
                     year=int(string_to_number(row['Year of estimate'])),
                     owned_species=owned_species,
                     total=int(string_to_number(
@@ -234,7 +234,7 @@ def upload_species_data(upload_session_id):
             if row["Planned euthanasia_TOTAL"]:
                 AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
-                        name="Planned euthanasia"),
+                        name="Planned Euthanasia/DCA"),
                     year=int(string_to_number(row['Year of estimate'])),
                     owned_species=owned_species,
                     total=int(string_to_number(
@@ -256,7 +256,7 @@ def upload_species_data(upload_session_id):
             if row["Unplanned/illegal hunting_TOTAL"]:
                 AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
-                        name="Unplanned/illegal hunting"),
+                        name="Unplanned/Illegal Hunting"),
                     year=int(string_to_number(row['Year of estimate'])),
                     owned_species=owned_species,
                     total=int(string_to_number(
