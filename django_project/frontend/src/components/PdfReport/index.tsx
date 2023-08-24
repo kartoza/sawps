@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 0,
-    height: 110
+    height: 70
   },
   other_pages_header: {
     backgroundColor: "black",
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   first_page_chartImage: {
-    width: "60%",
-    height: "95%",
+    width: "55%",
+    height: "70%",
     marginLeft: 125,
     marginRight: -90
   },
@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
   },
   mapImage: {
     width: "100%",
-    height: "100%",
-    marginBottom:-47
+    height: "60%",
+    marginBottom:-69
   },
   tableContainer: {
     marginTop: 2, 
@@ -78,14 +78,14 @@ const styles = StyleSheet.create({
     height: "40%"
   },
   tableRow: {
-    marginTop: -123,
+    marginTop: -190,
     marginLeft: 0,
     flexDirection: "row",
     alignItems: "center",
     width: "40%",
     height: "40%",
     border: "none",
-    marginBottom: -70,
+    marginBottom: -100,
   },
   tableCell: {
     flex: 1,
@@ -110,13 +110,17 @@ interface Statistics {
 
 const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) => {
   // variable for statistics
-  const [statistics, setStatistics] = useState<Statistics[]>([]);
+  const [statistics, setStatistics] = useState({
+    total_property_count: null,
+    total_property_area: null,
+    total_area_available_to_species: null
+  });
 
   const fetchStatistics = () => {
     axios.get(FETCH_STATISTICS)
       .then((response) => {
         if (response) {
-          setStatistics(response.data as Statistics[]);
+          setStatistics(response.data as Statistics);
         }
       })
       .catch((error) => {
@@ -158,16 +162,19 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
                 <Text style={styles.tableCell}>Total Property Density</Text>
                 <Text style={styles.tableCell}>Total Property Area Available for Animals</Text>
               </View>
-              {statistics.map((stat, index) => (
-                <View style={styles.tableRow} key={index}>
-                  <Text style={styles.tableCell}>{stat.total_property_count}</Text>
-                  <Text style={styles.tableCell}>{stat.total_property_area} ha</Text>
-                  <Text style={styles.tableCell}>X</Text>
-                  <Text style={styles.tableCell}>
-                    {stat.total_area_available_to_species} ha
-                  </Text>
-                </View>
-              ))}
+              
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCell}>
+                  {statistics.total_property_count !== null ? `${statistics.total_property_count}` : 'X'}
+                </Text>
+                <Text style={styles.tableCell}>
+                  {statistics.total_property_area !== null ? `${statistics.total_property_area} ha` : 'X'}
+                </Text>
+                <Text style={styles.tableCell}>X</Text>
+                <Text style={styles.tableCell}>
+                  {statistics.total_area_available_to_species !== null ? `${statistics.total_area_available_to_species} ha` : 'X'}
+                </Text>
+              </View>
 
               {/* Chart Image */}
               <View>
