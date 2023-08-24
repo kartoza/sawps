@@ -31,6 +31,7 @@ const Metrics = () => {
     const [ageGroupData, setAgeGroupData] = useState([])
     const labels = Object.keys(activityType);
     const totalCountLabel = labels.filter(item => item !== "Base population");
+    const [userRole, setUserRole] = useState('');
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
