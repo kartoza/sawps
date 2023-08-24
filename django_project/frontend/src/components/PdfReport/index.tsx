@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   mapImage: {
     width: "100%",
     height: "60%",
-    marginBottom:-69
+    marginBottom:-68
   },
   tableContainer: {
     marginTop: 2, 
