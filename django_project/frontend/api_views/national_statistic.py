@@ -45,7 +45,7 @@ class NationalSpeciesView(APIView):
         )
         return Response(serializer.data)
     
-class NationalStatisticsView(APIView): 
+class NationalStatisticsView(APIView):
     """
     An API view to retrieve
     the statics for the national report
@@ -102,6 +102,6 @@ class NationalStatisticsView(APIView):
         Handles the request
         and returns a serialized JSON response.
         """
-        statistics = self.get_statistics()
+        statistics = self.get_statistics(self.request)
         serializer = NationalStatisticsSerializer(statistics)
         return Response(serializer.data)
