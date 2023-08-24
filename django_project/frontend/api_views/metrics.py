@@ -14,6 +14,7 @@ from frontend.serializers.metrics import (
     SpeciesPopuationCountPerYearSerializer,
     SpeciesPopulationDensityPerPropertySerializer,
     TotalCountPerActivitySerializer,
+    PopulationPerAgeGroupSerialiser,
 )
 from frontend.utils.metrics import (
     calculate_population_categories,
@@ -239,3 +240,35 @@ class TotalAreaPerPropertyTypeAPIView(APIView):
         """
         queryset = self.get_queryset()
         return Response(calculate_total_area_per_property_type(queryset))
+
+
+class PopulationPerAgeGroupAPIView(APIView):
+    """
+    API endpoint to retrieve population of age group.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> QuerySet[Taxon]:
+        """
+        Get the filtered queryset taxon owned by the organization.
+        """
+        organisation_id = self.request.session.get('current_organisation_id')
+        queryset = Taxon.objects.filter(
+            ownedspecies__property__organisation_id=organisation_id,
+            taxon_rank__name='Species'
+        ).distinct()
+        filtered_queryset = BaseMetricsFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle the GET request to retrieve population of age groups.
+        Params:request (Request): The HTTP request object.
+        """
+        queryset = self.get_queryset()
+        serializer = PopulationPerAgeGroupSerialiser(
+            queryset, many=True, context={"request": request}
+        )
+        return Response(serializer.data)

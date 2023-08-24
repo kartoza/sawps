@@ -11,7 +11,7 @@ import "./index.scss";
 
 Chart.register(CategoryScale);
 
-const FETCH_PROPERTY_POPULATION_SPECIES = '/api/species-population-count/'
+const FETCH_PROPERTY_POPULATION_SPECIES = '/api/species-population-count/';
 
 interface PopulationCount {
     year: number;
@@ -20,18 +20,27 @@ interface PopulationCount {
 
 interface Species {
     species_name: string;
-    species_colour: string;
     annualpopulation_count: PopulationCount[];
 }
 
+const speciesColors: { [key: string]: string } = {
+    'Lion': '#70B276',
+    'Cheetah': '#000000',
+    'Elephant': '#A9A9AA',
+    'White rhinoceros': '#9F89BF',
+    'Black rhinoceros': '#282829',
+    'Leopard': '#F9A95D',
+    // Add other species and their colors here
+};
+
 const SpeciesSideBarLineChart = (props: {property: any}) => {
-    const selectedSpecies = ['Lion', 'Cheetah', 'Elephant', 'White rhinoceros', 'Black rhinoceros', 'Leopard']
+    const selectedSpecies = ['Lion', 'Cheetah', 'Elephant', 'White rhinoceros', 'Black rhinoceros', 'Leopard'];
     const propertyId = props.property;
     const currentYear = new Date().getFullYear();
     const startYear = currentYear - 1;
     const endYear = currentYear;
-    const [loading, setLoading] = useState(false)
-    const [speciesData, setSpeciesData] = useState<Species[]>([])
+    const [loading, setLoading] = useState(false);
+    const [speciesData, setSpeciesData] = useState<Species[]>([]);
 
     const yearsData = Array.from(new Set(speciesData.flatMap(species => species.annualpopulation_count.map(entry => entry.year))));
     yearsData.sort((a, b) => a - b);
@@ -44,7 +53,7 @@ const SpeciesSideBarLineChart = (props: {property: any}) => {
                 return yearData ? yearData.year_total : 0;
             }),
             fill: false,
-            borderColor: species.species_colour,
+            borderColor: speciesColors[species.species_name], // Use the color from the mapping
             borderWidth: 1,
         })),
     };
@@ -96,21 +105,21 @@ const SpeciesSideBarLineChart = (props: {property: any}) => {
     };
 
     const fetchPropertyPopulation = () => {
-        setLoading(true)
+        setLoading(true);
         axios.get(`${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
-            setLoading(false)
+            setLoading(false);
             if (response.data) {
-                setSpeciesData(response.data)
+                setSpeciesData(response.data);
             }
         }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
+            setLoading(false);
+            console.log(error);
+        });
+    };
 
     useEffect(() => {
-        fetchPropertyPopulation()
-    }, [propertyId])
+        fetchPropertyPopulation();
+    }, [propertyId]);
 
     return (
         <Box>
@@ -122,8 +131,7 @@ const SpeciesSideBarLineChart = (props: {property: any}) => {
                     <Line data={speciesPopulation} options={speciesOptions} />
                 </Box>) : (
                 <Loading />
-            )
-            }
+            )}
         </Box>
     );
 };

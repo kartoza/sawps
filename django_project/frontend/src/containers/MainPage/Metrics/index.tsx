@@ -10,9 +10,11 @@ import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
 import PropertyAvailableBarChart from "./PropertyAvailable";
 import PropertyTypeBarChart from "./PropertyType";
+import AgeGroupBarChart from "./AgeGroupBarChart";
 
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
+const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -23,9 +25,9 @@ const Metrics = () => {
     const [activityData, setActivityData] = useState([])
     const [activityType, setActivityType] = useState({})
     const [totalCoutData, setTotalCountData] = useState([])
+    const [ageGroupData, setAgeGroupData] = useState([])
     const labels = Object.keys(activityType);
     const totalCountLabel = labels.filter(item => item !== "Base population");
-
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
@@ -54,25 +56,47 @@ const Metrics = () => {
         })
     }
 
+    const fetchPopulationAgeGroupData = () => {
+        setLoading(true)
+        axios.get(`${FETCH_POPULATION_AGE_GROUP}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setAgeGroupData(response.data)
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
     useEffect(() => {
-        fetchActivityPercentageData()
-        fetchActivityTotalCount()
+        fetchActivityPercentageData();
+        fetchActivityTotalCount();
+        fetchPopulationAgeGroupData();
     }, [propertyId, startYear, endYear, selectedSpecies])
+
     return (
         <Box className="overflow-auto-chart">
             <Box className="main-chart">
                 <Box className="chart-left">
                     <SpeciesLineChart />
                     <DensityBarChart />
-                    <PropertyTypeBarChart/>
+                    <PropertyTypeBarChart />
                 </Box>
                 <Box className="chart-right">
                     <PopulationCategoryChart />
-                    <PropertyAvailableBarChart/>
+                    <PropertyAvailableBarChart />
                     <Box className="boxChart-lion">
                         <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
                         <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
                     </Box>
+                    {ageGroupData.map((data) =>
+                        <AgeGroupBarChart
+                            loading={loading}
+                            ageGroupData={data?.age_group}
+                            icon={data?.icon}
+                            name={data?.common_name_varbatim}
+                        />)}
                 </Box>
             </Box>
         </Box>

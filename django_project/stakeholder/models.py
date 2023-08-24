@@ -1,7 +1,8 @@
-from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
 from django.utils import timezone
+from property.models import Province
 
 
 class UserRoleType(models.Model):
@@ -129,6 +130,13 @@ class Organisation(models.Model):
     data_use_permission = models.ForeignKey(
         'regulatory_permit.dataUsePermission',
         on_delete=models.DO_NOTHING
+    )
+    national = models.BooleanField(null=True, blank=True)
+    province = models.ForeignKey(
+        Province,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True
     )
 
     class Meta:
