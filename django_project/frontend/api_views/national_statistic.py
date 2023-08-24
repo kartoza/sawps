@@ -1,23 +1,20 @@
-"""API View related to national report
-statistics
-"""
 from typing import List
 from property.models import Property
 from frontend.serializers.national_statistics import (
     NationalStatisticsSerializer,
-    SpeciesListSerializer
+    SpeciesListSerializer,
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from species.models import OwnedSpecies, Taxon
-from django.db.models import Count, Sum
+from django.db.models import Sum
 
 
-class NationalSpeciesView(APIView): 
+class NationalSpeciesView(APIView):
     """
     An API view to retrieve
-    the statics for the national report
+    the statistics for the national report.
     """
 
     permission_classes = [IsAuthenticated]
@@ -27,14 +24,14 @@ class NationalSpeciesView(APIView):
         """
         Returns a filtered queryset
         of Taxon objects representing
-        species
+        species.
         """
         queryset = Taxon.objects.filter(
             taxon_rank__name='Species'
         ).distinct()
-        return queryset 
+        return queryset
 
-    def get(self,*args, **kwargs) -> Response:
+    def get(self, *args, **kwargs) -> Response:
         """
         Handles the request
         and returns a serialized JSON response.
@@ -44,27 +41,28 @@ class NationalSpeciesView(APIView):
             queryset, many=True,
         )
         return Response(serializer.data)
-    
+
+
 class NationalStatisticsView(APIView):
     """
     An API view to retrieve
-    the statics for the national report
+    the statistics for the national report.
     """
 
     permission_classes = [IsAuthenticated]
     serializer_class = NationalStatisticsSerializer
-    
+
     def get_statistics(self, request):
         """
         This method calculates the property
-        count ,total property area and
+        count, total property area, and
         total property area available for
-        owned species (national
+        owned species (national).
         """
         organisation_id = request.session.get(
             'current_organisation_id'
         )
-       
+
         national_properties = Property.objects.filter(
             property_type__name='national',
             organisation=organisation_id
@@ -95,9 +93,8 @@ class NationalStatisticsView(APIView):
         }
 
         return aggregated_data
- 
 
-    def get(self,*args, **kwargs) -> Response:
+    def get(self, *args, **kwargs) -> Response:
         """
         Handles the request
         and returns a serialized JSON response.
