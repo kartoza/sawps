@@ -5,6 +5,7 @@ from rest_framework import serializers
 from species.models import Taxon
 from datetime import datetime
 
+
 class SpeciesListSerializer(serializers.ModelSerializer):
     """
     Serializer class for serializing species.
@@ -41,14 +42,15 @@ class SpeciesListSerializer(serializers.ModelSerializer):
             obj (Taxon): The Taxon instance representing the species.
         """
         return obj.colour
-    
+
     def get_annualpopulation_count(self, obj: Taxon) -> List[dict]:
         """Get the population count per year for the species.
         Params:
             obj (Taxon): The Taxon instance representing the species.
         """
+
         current_year = datetime.now().year
-        start_year = current_year - 10 # should start from 10 years before
+        start_year = current_year - 10  # should start from 10 years before
         end_year = current_year
         annual_populations = (
             AnnualPopulation.objects.filter(
@@ -72,7 +74,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
             .order_by("-year")[:10]
         )
         return list(annual_populations)
-    
+
     def get_total_population(self, obj: Taxon):
         # get latest year from current species
         latest_data_per_year = AnnualPopulation.objects.filter(
@@ -95,9 +97,9 @@ class SpeciesListSerializer(serializers.ModelSerializer):
     def get_population_loss(self, obj: Taxon):
         # TODO: Danang calculate population loss
         return 200
-    
+
+
 class NationalStatisticsSerializer(serializers.Serializer):
     total_property_count = serializers.IntegerField()
     total_property_area = serializers.FloatField()
     total_area_available_to_species = serializers.FloatField()
-
