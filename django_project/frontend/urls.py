@@ -32,6 +32,7 @@ from frontend.api_views.metrics import (
     SpeciesPopulationDensityPerPropertyAPIView,
     TotalCountPerActivityAPIView,
     TotalAreaAvailableToSpeciesAPIView,
+    PopulationPerAgeGroupAPIView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -240,6 +241,11 @@ urlpatterns = [
         'api/total-area-per-property-type/',
         TotalAreaPerPropertyTypeAPIView.as_view(),
         name='total_area_per_property_type'
+    ),
+    path(
+        'api/population-per-age-group/',
+        PopulationPerAgeGroupAPIView.as_view(),
+        name='population_per_age_group'
     ),
     path(
         'add_totp_devices/',
