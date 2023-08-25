@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     height: "70%",
     display: "flex",
     flexDirection: "row",
-    marginLeft: 20,
+    marginLeft: 70,
     marginTop: 10,
   },
   mapImage: {
