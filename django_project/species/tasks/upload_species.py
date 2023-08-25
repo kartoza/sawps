@@ -56,6 +56,17 @@ def upload_species_data(upload_session_id):
     property_name = upload_session.property.name
     encoding = 'utf-8-sig'
     row_num = 1
+    owned_species_created = 0
+    annual_created_nb = 0
+    sampling_eff_nb = 0
+    open_created_nb = 0
+    survey_nb = 0
+    pop_estim_nb = 0
+    intake_nb = 0
+    offtake_nb = 0
+    hunt_nb = 0
+    euthanasia_nb = 0
+    unplanned_nb = 0
     with open(upload_session.process_file.path, encoding=encoding
               ) as csv_file:
         reader = csv.DictReader(csv_file)
@@ -73,9 +84,8 @@ def upload_species_data(upload_session_id):
                     "in the CSV file does not match the selected property. " \
                     "Please replace it with {}.".format(
                         row["Property_name"], property_name)
-                upload_session.canceled = True
                 upload_session.save()
-                return
+                continue
 
             # Get Taxon
             try:
@@ -99,34 +109,48 @@ def upload_species_data(upload_session_id):
                 area_available_to_species=float(row[
                     "Area_available to population (total enclosure area)_ha"])
             )
+            if cr:
+                owned_species_created += owned_species_created
 
             # Save Sampling Effort Coverage
             if row["Sampling_effort_coverage"]:
                 sampling_eff, c = SamplingEffortCoverage.objects.get_or_create(
                     name=row["Sampling_effort_coverage"]
                 )
+                if c:
+                    sampling_eff_nb += sampling_eff_nb
 
             # Save OpenCloseSystem
-            open_sys, open_created = OpenCloseSystem.objects.get_or_create(
-                name=row["open/close_system"]
-            )
+            if row["open/close_system"]:
+                open_sys, open_created = OpenCloseSystem.objects.get_or_create(
+                    name=row["open/close_system"]
+                )
+                if open_created:
+                    open_created_nb += open_created_nb
 
             # Save Survey method
-            survey, created = SurveyMethod.objects.get_or_create(
-                name=(row["Survey_method"] if row["Survey_method"] else
-                      row["If other (survey method), please explain"]
-                      )
-            )
+            if row["Survey_method"] or row["If other (survey method), please explain"]:
+                survey, created = SurveyMethod.objects.get_or_create(
+                    name=(row["Survey_method"] if row["Survey_method"] else
+                          row["If other (survey method), please explain"]
+                          )
+                )
+                if created:
+                    survey_nb += survey_nb
 
             # Save Population estimate category
-            p, pc = PopulationEstimateCategory.objects.get_or_create(name=(
-                row["Population estimate category"] if
-                row["Population estimate category"] else
-                row["If other (population estimate category) , please explain"]
-            ))
+            if row["Population estimate category"] or\
+                    row["If other (population estimate category) , please explain"]:
+                p, pc = PopulationEstimateCategory.objects.get_or_create(name=(
+                    row["Population estimate category"] if
+                    row["Population estimate category"] else
+                    row["If other (population estimate category) , please explain"]
+                ))
+                if pc:
+                    pop_estim_nb += pop_estim_nb
 
             # Save AnnualPopulation
-            AnnualPopulation.objects.get_or_create(
+            annual, annual_created = AnnualPopulation.objects.get_or_create(
                 year=int(string_to_number(row["Year of estimate"])),
                 owned_species=owned_species,
                 total=int(string_to_number(row['COUNT_TOTAL'])),
@@ -160,10 +184,12 @@ def upload_species_data(upload_session_id):
                     row["Population estimate certainty"])),
                 population_estimate_category=p
             )
+            if annual_created:
+                annual_created_nb += annual_created_nb
 
-            # Save AnnualPopulationPerActivity Planned translocation intake
+            # Save AnnualPopulationPerActivity translocation intake
             if row["(Re)Introduction_TOTAL"]:
-                AnnualPopulationPerActivity.objects.get_or_create(
+                intake, in_c = AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
                         name="Translocation (Intake)"),
                     year=int(string_to_number(row['Year of estimate'])),
@@ -184,10 +210,12 @@ def upload_species_data(upload_session_id):
                     intake_permit=int(string_to_number(
                         row["Permit_number (if applicable)"]))
                 )
+                if in_c:
+                    intake_nb += intake_nb
 
-            # Save AnnualPopulationPerActivity Planned translocation offtake
+            # Save AnnualPopulationPerActivity translocation offtake
             if row["Translocation_offtake_total"]:
-                AnnualPopulationPerActivity.objects.get_or_create(
+                off, off_c = AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
                         name="Translocation (Offtake)"),
                     year=int(string_to_number(row['Year of estimate'])),
@@ -207,10 +235,12 @@ def upload_species_data(upload_session_id):
                     offtake_permit=int(string_to_number(
                         row["Translocation_Offtake_Permit_number"]))
                 )
+                if off_c:
+                    offtake_nb += offtake_nb
 
             # Save AnnualPopulationPerActivity Planned hunt/cull
             if row["Planned hunt/culling_TOTAL"]:
-                AnnualPopulationPerActivity.objects.get_or_create(
+                hunt, hunt_c = AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
                         name="Planned Hunt/Cull"),
                     year=int(string_to_number(row['Year of estimate'])),
@@ -229,10 +259,12 @@ def upload_species_data(upload_session_id):
                     offtake_permit=int(string_to_number(
                         row["Planned hunt/culling_Permit_number"]))
                 )
+                if hunt_c:
+                    hunt_nb += hunt_nb
 
             # Save AnnualPopulationPerActivity Planned euthanasia
             if row["Planned euthanasia_TOTAL"]:
-                AnnualPopulationPerActivity.objects.get_or_create(
+                pe, pe_c = AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
                         name="Planned Euthanasia/DCA"),
                     year=int(string_to_number(row['Year of estimate'])),
@@ -251,10 +283,12 @@ def upload_species_data(upload_session_id):
                     offtake_permit=int(string_to_number(
                         row["Planned euthanasia_Permit_number"]))
                 )
+                if pe_c:
+                    euthanasia_nb += euthanasia_nb
 
             # Save AnnualPopulationPerActivity Unplanned/illegal hunting
             if row["Unplanned/illegal hunting_TOTAL"]:
-                AnnualPopulationPerActivity.objects.get_or_create(
+                unp, unp_c = AnnualPopulationPerActivity.objects.get_or_create(
                     activity_type=ActivityType.objects.get(
                         name="Unplanned/Illegal Hunting"),
                     year=int(string_to_number(row['Year of estimate'])),
@@ -275,11 +309,37 @@ def upload_species_data(upload_session_id):
                     juvenile_female=int(string_to_number(row[
                         "Unplanned/illegal hunting_Offtake_female_juveniles"]))
                 )
+                if unp_c:
+                    unplanned_nb += unplanned_nb
+            row_num += 1
 
-            upload_session.processed = True
-            success_response = f"{row_num} row have been uploaded"
-            upload_session.success_notes = (
+        if owned_species_created > 0 and annual_created_nb > 0:
+            success_response = "{} rows have been uploaded. With {} Annual " \
+                "population, {} sampling effort coverage, {} " \
+                "open/close_system, {} survey method, annual population " \
+                "per activity: {} Translocation (Intake)," \
+                "{} Translocation (Offtake), {} Planned Hunt/Cull" \
+                "{} Planned Euthanasia/DCA, {} Unplanned/Illegal " \
+                "Hunting".format(
+                    row_num,
+                    annual_created_nb,
+                    sampling_eff_nb,
+                    open_created_nb,
+                    survey_nb,
+                    pop_estim_nb,
+                    intake_nb,
+                    offtake_nb,
+                    hunt_nb,
+                    euthanasia_nb,
+                    unplanned_nb,
+                )
+        else:
+            success_response = "0 row added, data already exist on the " \
+                               "database."
+
+        upload_session.processed = True
+
+        upload_session.success_notes = (
                 success_response
             )
-            upload_session.save()
-            row_num += 1
+        upload_session.save()
