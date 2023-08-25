@@ -75,30 +75,56 @@ const Metrics = () => {
         fetchPopulationAgeGroupData();
     }, [propertyId, startYear, endYear, selectedSpecies])
 
+
+    const combinedArray: any = [];
+
+    // Iterate through Percentage array
+    for (const percentageEntry of activityData) {
+        const totalEntry = totalCoutData.find(data => data.species_name === percentageEntry.species_name);
+        const ageGroup = ageGroupData.find(data => data.common_name_varbatim === percentageEntry.species_name);
+        console.log('=====>>>', ageGroup)
+
+        if (totalEntry) {
+            combinedArray.push({
+                species_name: percentageEntry.species_name,
+                icon: percentageEntry.icon,
+                activities_percentage: percentageEntry.activities,
+                activities_total: totalEntry.activities,
+                total: percentageEntry.total,
+                age_group: ageGroup.age_group
+            });
+        }
+    }
+
+    // console.log('======>>>>', combinedArray)
+
     return (
-        <Box className="overflow-auto-chart">
-            <Box className="main-chart">
-                <Box className="chart-left">
-                    <SpeciesLineChart />
-                    <DensityBarChart />
-                    <PropertyTypeBarChart />
-                </Box>
-                <Box className="chart-right">
-                    <PopulationCategoryChart />
-                    <PropertyAvailableBarChart />
-                    <Box className="boxChart-lion">
-                        <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
-                        <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+        <Box>
+            {combinedArray.map((data: any) => (
+                <Box className="overflow-auto-chart">
+                    <Box className="main-chart">
+                        <Box className="chart-left">
+                            <SpeciesLineChart />
+                            <DensityBarChart />
+                            <PropertyTypeBarChart />
+                        </Box>
+                        <Box className="chart-right">
+                            <PopulationCategoryChart />
+                            <PropertyAvailableBarChart />
+                            <Box className="boxChart-lion">
+                                <ActivityDonutChart activityData={combinedArray} total={data.total} icon={data.icon} activities={data.activities_total} activityType={activityType} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
+                                <ActivityDonutChart activityData={combinedArray} total={data.total} icon={data.icon} activities={data.activities_total} activityType={activityType} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+                            </Box>
+                            <AgeGroupBarChart
+                                loading={loading}
+                                ageGroupData={data.age_group}
+                                icon={data.icon}
+                                name={data.species_name}
+                            />
+                        </Box>
                     </Box>
-                    {ageGroupData.map((data) =>
-                        <AgeGroupBarChart
-                            loading={loading}
-                            ageGroupData={data?.age_group}
-                            icon={data?.icon}
-                            name={data?.common_name_varbatim}
-                        />)}
                 </Box>
-            </Box>
+            ))}
         </Box>
     );
 };

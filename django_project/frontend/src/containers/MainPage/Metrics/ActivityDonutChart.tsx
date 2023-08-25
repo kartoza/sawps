@@ -16,19 +16,27 @@ interface ActivityDataItem {
     species_name: string;
     icon: string;
     activities?: Array<{ [key: string]: number }>;
+
+
 }
 
 interface ActivityDonutChartProps {
-    activityData: ActivityDataItem[];
+    activityData: any[];
     activityType: {};
     loading: boolean;
     chartHeading: string;
     showPercentage: boolean;
-    labels: string[];
+    activities: any;
+    icon: string
+    total: number
+
 }
 
 const ActivityDonutChart = (props: ActivityDonutChartProps) => {
-    const { activityData, activityType, loading, chartHeading, showPercentage, labels } = props
+    const { activityData, activityType, loading, chartHeading, showPercentage, activities, icon, total } = props
+    const labels = Object.keys(activityType);
+
+
     const donutOptions = {
         cutout: 50,
         maintainAspectRatio: false,
@@ -86,48 +94,43 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
         }
     };
 
+    const speciesDonutData = {
+        labels: labels,
+        datasets: [
+            {
+                data: labels.map((label) => {
+                    const activity = activities?.find((activity: any) => activity[label]);
+                    return activity ? activity[label] : 0;
+                }),
+                backgroundColor: Object.values(activityType),
+                borderWidth: 1
+            },
+        ],
+    };
+
     return (
-
         <Box>
-            {activityData?.map((item, index) => {
-                const speciesDonutData = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            data: labels.map((label) => {
-                                const activity = item?.activities?.find((activity) => activity[label]);
-                                return activity ? activity[label] : 0;
-                            }),
-                            backgroundColor: Object.values(activityType),
-                            borderWidth: 1
-                        },
-                    ],
-                };
-                return (
-                    <Box className="white-chart chartFullWidth leftBoxRound">
-                        <Typography>{chartHeading}</Typography>
-                        {loading ? <Loading /> :
-                            <Box className="BoxChartType">
-                                {item.activities.length > 0 &&
-                                    <Box key={index} className="chartHalf">
-                                        <Box className="charBox">
-                                            <Box className="chart-container">
-                                                <Doughnut data={speciesDonutData} options={donutOptions} height={186} width={70} />
-                                            </Box>
-                                        </Box>
-                                        <Box className="chart-img">
-                                            <Box className="icon-image">
-                                                <img src={item?.icon} alt='Icon image' />
-                                            </Box>
-                                            <Typography className="charttext">{item?.total}</Typography>
-                                        </Box>
-                                    </Box>}
-                            </Box>
-                        }
+            <Box className="white-chart chartFullWidth leftBoxRound">
+                <Typography>{chartHeading}</Typography>
+                {loading ? <Loading /> :
+                    <Box className="BoxChartType">
+                        {activities.length > 0 &&
+                            <Box className="chartHalf">
+                                <Box className="charBox">
+                                    <Box className="chart-container">
+                                        <Doughnut data={speciesDonutData} options={donutOptions} height={186} width={70} />
+                                    </Box>
+                                </Box>
+                                <Box className="chart-img">
+                                    <Box className="icon-image">
+                                        <img src={icon} alt='Icon image' />
+                                    </Box>
+                                    <Typography className="charttext">{total}</Typography>
+                                </Box>
+                            </Box>}
                     </Box>
-                );
-            })}
-
+                }
+            </Box>
         </Box>
     );
 };
