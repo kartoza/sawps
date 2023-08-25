@@ -1,3 +1,5 @@
+from random import randint
+
 import factory
 from django.contrib.auth.models import User
 from population_data.factories import (
@@ -56,9 +58,9 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def create_annual_population(self, create, extracted, **kwargs):
-
+        year = randint(2000, 2022)
         AnnualPopulationF.create(
-            year=factory.Faker('year'),
+            year=year,
             owned_species=self,
             total=100,
             adult_male=50,
@@ -73,9 +75,9 @@ class OwnedSpeciesFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def create_annual_population_per_activity(self, create, *args):
-
+        year = randint(2000, 2022)
         AnnualPopulationPerActivityFactory.create(
-            year=factory.Faker('year'),
+            year=year,
             owned_species=self,
             total=100,
             adult_male=50,
