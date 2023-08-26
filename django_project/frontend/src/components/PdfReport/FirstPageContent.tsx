@@ -26,7 +26,6 @@ const FirstPageCharts:FC<IOverviewCardsHolder> = ()=>{
     const fetchSpeciesList = () => {
         axios.get(FETCH_FRONT_PAGE_SPECIES_LIST).then((response) => {
             if (response) {
-                console.log('species list ',response.data)
                 setSpecies(response.data as FrontPageSpecies[])
             }
         }).catch((error) => {
@@ -38,21 +37,37 @@ const FirstPageCharts:FC<IOverviewCardsHolder> = ()=>{
         fetchSpeciesList()
     }, [])
 
-    return(
-        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}  data-testid='landing-page-overview-cards-holder' className='landing-page-overview-cards-holder-flex'>        
-            {species.map((species,index)=>{
+    return (
+        <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 4, sm: 8, md: 12 }}
+            data-testid="landing-page-overview-cards-holder"
+            className="landing-page-overview-cards-holder-flex"
+        >
+            {species.map((species, index) => {
                 let chartColors = {
-                    'line': species.species_colour,
-                    'area': alpha(species.species_colour, 0.3)
-                }
-                return <Grid item key={index}>
-                    <CustomFirstPageCard key={index} species_id={species.id} species_name={species.species_name} pic={species.icon} population={species.total_population.toString()}
-                        growth={species.population_growth.toString()} loss={species.population_loss.toString()} chartColors={chartColors} index={index} 
-                    />
-                </Grid>
+                    line: species.species_colour,
+                    area: alpha(species.species_colour, 0.3)
+                };
+                return (
+                    <Grid item key={index} xs={12} sm={6} md={4}>
+                        <CustomFirstPageCard
+                            key={index}
+                            species_id={species.id}
+                            species_name={species.species_name}
+                            pic={species.icon}
+                            population={species.total_population.toString()}
+                            growth={species.population_growth.toString()}
+                            loss={species.population_loss.toString()}
+                            chartColors={chartColors}
+                            index={index}
+                        />
+                    </Grid>
+                );
             })}
         </Grid>
-    )
+    );
 }
 
 export default FirstPageCharts
