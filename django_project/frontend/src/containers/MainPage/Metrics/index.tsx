@@ -16,6 +16,9 @@ const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 
+// national metrics and download button
+import GenerateChartImages from "../../../components/PdfReport/generateChartImage";
+
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
