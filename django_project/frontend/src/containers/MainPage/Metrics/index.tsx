@@ -28,6 +28,7 @@ const Metrics = () => {
     const [ageGroupData, setAgeGroupData] = useState([])
     const labels = Object.keys(activityType);
     const totalCountLabel = labels.filter(item => item !== "Base population");
+    const [userRole, setUserRole] = useState('');
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
@@ -75,6 +76,12 @@ const Metrics = () => {
         fetchPopulationAgeGroupData();
     }, [propertyId, startYear, endYear, selectedSpecies])
 
+    useEffect(() => {
+        // Fetch the user role from local storage
+        const storedUserRole = localStorage.getItem('user_role');
+        setUserRole(storedUserRole.toLocaleLowerCase());
+    }, []);
+
     return (
         <Box className="overflow-auto-chart">
             <Box className="main-chart">
@@ -100,6 +107,10 @@ const Metrics = () => {
                         />)}
                 </Box>
             </Box>
+            {/* for decision makers only */}
+            {userRole === 'decision maker' && (
+                <GenerateChartImages />
+            )}
         </Box>
     );
 };
