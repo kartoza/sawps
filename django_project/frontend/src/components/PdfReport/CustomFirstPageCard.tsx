@@ -31,19 +31,19 @@ const CustomFirstPageCard: FC<ISpeciesCardProps> = (props) => {
         ) : (
           <Skeleton variant='circular' className='species-card-no-image' />
         )}
-        <p className='species-card-text species-name-text' style={{ color: textColor }}>
+        <p className='species-card-text species-name-text' style={{ color: textColor, fontSize: '22px', fontWeight: 'bold' }}>
           {props.species_name}
         </p>
         <hr />
       </div>
       <div className='species-card-text-container'>
-        <p className='species-card-text' style={{ color: textColor }} data-testid='species-card-population'>
+        <p className='species-card-text' style={{ color: textColor, fontSize: '20px' }} data-testid='species-card-population'>
           Total Population : {props.population}
         </p>
-        <p className='species-card-text' style={{ color: textColor }} data-testid='species-card-growth'>
+        <p className='species-card-text' style={{ color: textColor, fontSize: '20px' }} data-testid='species-card-growth'>
           Population Growth : {props.growth}
         </p>
-        <p className='species-card-text' style={{ color: textColor }} data-testid='species-card-loss'>
+        <p className='species-card-text' style={{ color: textColor, fontSize: '20px' }} data-testid='species-card-loss'>
           Population Loss : {props.loss}
         </p>
       </div>
