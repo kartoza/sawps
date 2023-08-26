@@ -54,15 +54,18 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   first_page_chartImage: {
-    width: "55%",
-    height: "70%",
+    width: "60%",
+    height: "90%",
     marginLeft: 125,
     marginRight: -90
   },
   line_chartImage: {
-    width: "45%",
-    height: "45%",
-    marginLeft: 5
+    width: "100%",
+    height: "70%",
+    display: "flex",
+    flexDirection: "row",
+    marginLeft: 70,
+    marginTop: 10,
   },
   mapImage: {
     width: "100%",
@@ -70,21 +73,20 @@ const styles = StyleSheet.create({
     marginBottom:-68
   },
   tableContainer: {
-    marginTop: 2, 
-    marginLeft: 2,
-    flexDirection: "row",
-    alignItems: "center",
-    width: "40%",
-    height: "40%"
-  },
-  tableRow: {
-    marginTop: -190,
-    marginLeft: 0,
+    marginTop: 10, 
+    marginLeft: 190,
     flexDirection: "row",
     alignItems: "center",
     width: "40%",
     height: "40%",
-    border: "none",
+  },
+  tableRow: {
+    marginTop: -161,
+    marginLeft: 192,
+    flexDirection: "row",
+    alignItems: "center",
+    width: "40%",
+    height: "40%",
     marginBottom: -100,
   },
   tableCell: {
@@ -93,7 +95,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     width: "40%",
-    height: "40%"
+    height: "40%",
+    // borderBottom: "1px",
+    // borderTop: "1px",
+    // borderLeft: "1px",
+    // borderRight: "1px"
+
   },
   firstPageCharts: {
     width: "100%",
@@ -196,7 +203,6 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
                   <Text style={styles.headerText}>National Summary Report</Text>
                 </View>
               </View>
-
               {/* Chart Image */}
               <Image style={styles.line_chartImage} src={chartBase64} />
             </View>
