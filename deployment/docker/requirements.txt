@@ -10,7 +10,7 @@ djangorestframework-gis==1.0
 requests==2.31.0
 
 # The uWSGI server
-uwsgi==2.0.21
+uwsgi==2.0.22
 
 # Use webpack to generate your static bundles without django's staticfiles or opaque wrappers.
 django-webpack-loader==1.8.1

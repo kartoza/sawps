@@ -105,6 +105,7 @@ const Metrics = () => {
                             loading={loading}
                             ageGroupData={data?.age_group}
                             icon={data?.icon}
+                            colour={data?.colour}
                             name={data?.common_name_varbatim}
                         />)}
                 </Box>
