@@ -92,8 +92,13 @@ const GenerateChartImages: React.FC = () => {
             ) : (
               <div className="charts-container">
                 {charts.map((chart, index) => (
-                  <img key={index} src={chart} alt={`Chart ${index}`} />
-                ))}
+                  <img
+                      key={index}
+                      src={chart}
+                      alt={`Chart ${index}`}
+                      style={{  ...(index === 0 ? { width: '100%', height: 'auto'} : {}) }}
+                  />
+              ))}
               </div>
             )}
 
