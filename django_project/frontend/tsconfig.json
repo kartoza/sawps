@@ -13,4 +13,5 @@
       "dom"
     ],
   },
+  "include": ["src", "src/components"]
 }
