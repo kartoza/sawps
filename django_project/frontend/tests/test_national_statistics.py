@@ -4,10 +4,12 @@ from django.urls import reverse
 from rest_framework.test import APITestCase, APIRequestFactory
 from rest_framework import status
 from unittest.mock import patch
+from activity.models import ActivityType
+from population_data.models import AnnualPopulationPerActivity
 from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
 from frontend.api_views.map import User
 from stakeholder.factories import organisationFactory
-from species.models import Taxon
+from species.models import OwnedSpecies, Taxon
 from frontend.serializers.national_statistics import (
     SpeciesListSerializer,
     NationalStatisticsSerializer
@@ -171,37 +173,65 @@ class NationalPropertiesViewTest(TestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-# class NationalActivityCountViewTestCase(TestCase):
+class NationalActivityCountViewTestCase(TestCase):
 
-#     def setUp(self):
-#         # Create test properties, species, activity types, and population data
-#         # Populate the test database with data for testing
-#         self.data = {}
+    def setUp(self):
+        self.url = reverse('activity_count')
+        self.test_user = get_user_model().objects.create_user(
+            username='testuser', password='testpassword'
+        )
+        self.device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        self.device.save()
+        self.client = Client()
 
-#     def test_get_activity_count(self):
-#         view = NationalActivityCountView()
-#         view.request = APIRequestFactory().get("/")
-#         result = view.get_activity_count()
+    def test_get_activity_count(self):
+        self.organisation = organisationFactory.create()
+        Province.objects.create(name='Gauteng')
+        organisation_id = self.organisation.pk
+        PropertyType.objects.create(name='national')
+        PropertyType.objects.create(name='private')
+        property = Property.objects.create(
+            organisation_id=organisation_id,
+            property_type=PropertyType.objects.filter(name='national').first(),
+            created_at=datetime.datetime.now(),
+            created_by=self.test_user,
+            province=Province.objects.filter(name='Gauteng').first()
+        )
+        taxon = Taxon.objects.create(
+            scientific_name='Lion',
+            common_name_varbatim='Lion'
+        )
+        specie = OwnedSpecies.objects.create(
+            user=self.test_user,
+            taxon=taxon,
+            property= property
+        )
+        ActivityType.objects.create(
+            name='unplanned'
+        )
+        activity = ActivityType.objects.create(
+            name='hunting'
+        )
+        AnnualPopulationPerActivity.objects.create(
+            activity_type=activity,
+            owned_species=specie,
+            year=2023,
+            total=50
+        )
+        self.auth_headers = {
+            "HTTP_AUTHORIZATION": "Basic "
+            + base64.b64encode(b"testuser:testpassword").decode("ascii"),
+        }
 
-#         # Check if result is a dictionary
-#         self.assertIsInstance(result, dict)
-
-#         # Perform additional checks on the result dictionary
-#         # For example, check if keys and values are correct
-
-#     def test_get(self):
-#         view = NationalActivityCountView()
-#         view.request = APIRequestFactory().get("/")
-#         response = view.get()
-
-#         # Check if the response status code is 200
-#         self.assertEqual(response.status_code, 200)
-        
-#         # Check if the response is of type Response
-#         self.assertIsInstance(response, Response)
-
-#         # Perform additional checks on the response content
-#         # For example, check JSON structure, keys, values, etc.
+        session = self.client.session
+        session[CURRENT_ORGANISATION_ID_KEY] = self.organisation.id
+        session.save()
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 
