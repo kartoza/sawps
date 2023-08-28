@@ -14,7 +14,7 @@ Chart.register(ChartDataLabels);
 interface ActivityDataItem {
     total: number;
     species_name: string;
-    icon: string;
+    graph_icon: string;
     activities?: Array<{ [key: string]: number }>;
 }
 
@@ -117,7 +117,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                                         </Box>
                                         <Box className="chart-img">
                                             <Box className="icon-image">
-                                                <img src={item?.icon} alt='Icon image' />
+                                                <img src={item?.graph_icon} alt='Icon image' />
                                             </Box>
                                             <Typography className="charttext">{item?.total}</Typography>
                                         </Box>
