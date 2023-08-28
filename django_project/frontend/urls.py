@@ -71,6 +71,12 @@ from .views.totp_device import (
     view_totp_devices
 )
 from .views.users import OrganisationUsersView
+from frontend.api_views.national_statistic import (
+    NationalStatisticsView,
+    NationalSpeciesView,
+    NationalPropertiesView,
+    NationalActivityCountView
+)
 
 urlpatterns = [
     re_path(
@@ -266,5 +272,25 @@ urlpatterns = [
         'get_user_notifications/',
         get_user_notifications,
         name='get_user_notifications'
+    ),
+    path(
+        'api/species-list/',
+        NationalSpeciesView.as_view(),
+        name='species_list_national'
+    ),
+    path(
+        'api/statistics/',
+        NationalStatisticsView.as_view(),
+        name='statistics_national'
+    ),
+    path(
+        'api/properties_population_category/',
+        NationalPropertiesView.as_view(),
+        name='properties_population_category'
+    ),
+    path(
+        'api/activity_count_percentage/',
+        NationalActivityCountView.as_view(),
+        name='activity_count'
     ),
 ]
