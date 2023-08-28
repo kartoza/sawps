@@ -141,7 +141,7 @@ class NationalPropertiesView(APIView):
 
     def get(self, *args, **kwargs) -> Response:
         """
-        Handle GET request to 
+        Handle GET request to
         retrieve population categories for properties.
         """
         queryset = self.get_properties_per_population_category()
@@ -188,7 +188,9 @@ class NationalActivityCountView(APIView):
                 population_count = AnnualPopulationPerActivity.objects.filter(
                     owned_species__taxon=species['taxon'],
                     activity_type=activity_type
-                ).aggregate(population_count=Coalesce(Sum('total'), 0))['population_count']
+                ).aggregate(
+                    population_count=Coalesce(Sum('total'), 0)
+                )['population_count']
 
                 population_counts.append({
                     'species': species['taxon'],
@@ -213,16 +215,18 @@ class NationalActivityCountView(APIView):
             activity_type = item['activity_type']
             population_count = item['population_count']
             total_population = total_population_per_species[species]
-            percentage = (population_count / total_population) * 100 if total_population != 0 else 0
+            percentage = (
+                population_count / total_population
+            ) * 100 if total_population != 0 else 0
 
-            
+
             taxa = OwnedSpecies.objects.filter(id=species).first()
             if taxa:
                 taxon = taxa.taxon
                 common_name = taxon.common_name_varbatim
                 icon_url = taxon.icon.url if taxon.icon else None
 
-            else: 
+            else:
                 common_name = 'None'
                 icon_url = None
             if species not in result:
