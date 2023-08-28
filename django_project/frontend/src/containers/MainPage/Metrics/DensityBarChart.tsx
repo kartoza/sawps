@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import React, { useEffect, useState, ReactNode } from "react";
 import { Bar } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
-import Loading from "../../../components/Loading";
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
 import "./index.scss";
+import {ChartCard} from "./ChartCard";
 
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
 const FETCH_SPECIES_DENSITY = '/api/species-population-total-density/'
+
 
 const DensityBarChart = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -86,15 +86,15 @@ const DensityBarChart = () => {
     }
 
     return (
-        <Box>
-            {loading ? <Loading /> :
-                <Box className="white-chart" >
-                    <Typography>Species Population Density per property</Typography>
-                    <Bar data={data} options={options} height={225} width={1000} />
-                    <Typography> Properties</Typography>
-                </Box >}
-        </Box>
-    );
+        <ChartCard
+            loading={loading}
+            chartComponent={
+                <Bar data={data} options={options} height={225} width={1000} />
+            }
+            title={'Species Population Density per property'}
+            xLabel={'Year'}
+            />
+        )
 };
 
 export default DensityBarChart;

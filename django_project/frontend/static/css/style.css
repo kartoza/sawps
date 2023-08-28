@@ -254,6 +254,7 @@ form {
   width: max-content;
   padding: 20px;
   margin-top: 10vh;
+  max-width: 400px;
 }
 
 .custom-form-container {
