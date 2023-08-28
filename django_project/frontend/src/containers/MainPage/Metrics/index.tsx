@@ -104,7 +104,7 @@ const Metrics = () => {
                         <AgeGroupBarChart
                             loading={loading}
                             ageGroupData={data?.age_group}
-                            icon={data?.icon}
+                            icon={data?.graph_icon}
                             colour={data?.colour}
                             name={data?.common_name_varbatim}
                         />)}
