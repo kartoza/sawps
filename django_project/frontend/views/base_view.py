@@ -17,8 +17,6 @@ from django.contrib import messages
 from datetime import datetime
 
 
-from django.utils.timezone import datetime
-
 def get_user_notifications(request):
     """Method checks if there are new notifications
     to send the user, these notifications are
