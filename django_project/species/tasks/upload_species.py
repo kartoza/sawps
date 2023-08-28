@@ -320,8 +320,8 @@ def upload_species_data(upload_session_id):
         if owned_species_created > 0 and annual_created_nb > 0:
             success_response = "{} rows have been uploaded. With {} Annual " \
                     "population, {} sampling effort coverage, {} " \
-                    "open/close_system, {} survey method, {} population estimate" \
-                    " category annual population " \
+                    "open/close_system, {} survey method, {} population " \
+                    "estimate category annual population " \
                     "per activity: {} Translocation (Intake)," \
                     "{} Translocation (Offtake), {} Planned Hunt/Cull" \
                     "{} Planned Euthanasia/DCA, {} Unplanned/Illegal " \
@@ -343,6 +343,6 @@ def upload_species_data(upload_session_id):
                 "They already exist in the database.".format(annual_created_nb)
 
         upload_session.success_notes = (
-                    success_response
-            )
+            success_response
+        )
         upload_session.save()
