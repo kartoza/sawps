@@ -240,7 +240,7 @@ class NationalActivityCountView(APIView):
 
     def get(self, *args, **kwargs) -> Response:
         """
-        Handle GET request to 
+        Handle GET request to
         retrieve population categories for properties.
         """
         queryset = self.get_activity_count()
