@@ -80,10 +80,10 @@ def upload_species_data(upload_session_id):
                     name=row["Property_name"],
                 )
             except Property.DoesNotExist:
-                upload_session.error_notes = "The property name: {}, in the " \
-                    "in the CSV file does not match the selected property. " \
-                    "Please replace it with {}.".format(
-                        row["Property_name"], property_name)
+                upload_session.error_notes = "The property name: {} in the " \
+                    "CSV line number {} does not match the selected " \
+                    "property. Please replace it with {}.".format(
+                        row["Property_name"], row_num, property_name)
                 upload_session.save()
                 continue
 
@@ -110,7 +110,7 @@ def upload_species_data(upload_session_id):
                     "Area_available to population (total enclosure area)_ha"])
             )
             if cr:
-                owned_species_created += owned_species_created
+                owned_species_created += 1
 
             # Save Sampling Effort Coverage
             if row["Sampling_effort_coverage"]:
@@ -118,7 +118,7 @@ def upload_species_data(upload_session_id):
                     name=row["Sampling_effort_coverage"]
                 )
                 if c:
-                    sampling_eff_nb += sampling_eff_nb
+                    sampling_eff_nb += 1
 
             # Save OpenCloseSystem
             if row["open/close_system"]:
@@ -126,7 +126,7 @@ def upload_species_data(upload_session_id):
                     name=row["open/close_system"]
                 )
                 if open_created:
-                    open_created_nb += open_created_nb
+                    open_created_nb += 1
 
             # Save Survey method
             suv = row["If other (survey method), please explain"]
@@ -137,7 +137,7 @@ def upload_species_data(upload_session_id):
                           )
                 )
                 if created:
-                    survey_nb += survey_nb
+                    survey_nb += 1
 
             # Save Population estimate category
             e = row["If other (population estimate category) , please explain"]
@@ -148,7 +148,7 @@ def upload_species_data(upload_session_id):
 
                 ))
                 if pc:
-                    pop_estim_nb += pop_estim_nb
+                    pop_estim_nb += 1
 
             # Save AnnualPopulation
             annual, annual_created = AnnualPopulation.objects.get_or_create(
@@ -186,7 +186,7 @@ def upload_species_data(upload_session_id):
                 population_estimate_category=p
             )
             if annual_created:
-                annual_created_nb += annual_created_nb
+                annual_created_nb += 1
 
             # Save AnnualPopulationPerActivity translocation intake
             if row["(Re)Introduction_TOTAL"]:
@@ -212,7 +212,7 @@ def upload_species_data(upload_session_id):
                         row["Permit_number (if applicable)"]))
                 )
                 if in_c:
-                    intake_nb += intake_nb
+                    intake_nb += 1
 
             # Save AnnualPopulationPerActivity translocation offtake
             if row["Translocation_offtake_total"]:
@@ -237,7 +237,7 @@ def upload_species_data(upload_session_id):
                         row["Translocation_Offtake_Permit_number"]))
                 )
                 if off_c:
-                    offtake_nb += offtake_nb
+                    offtake_nb += 1
 
             # Save AnnualPopulationPerActivity Planned hunt/cull
             if row["Planned hunt/culling_TOTAL"]:
@@ -261,7 +261,7 @@ def upload_species_data(upload_session_id):
                         row["Planned hunt/culling_Permit_number"]))
                 )
                 if hunt_c:
-                    hunt_nb += hunt_nb
+                    hunt_nb += 1
 
             # Save AnnualPopulationPerActivity Planned euthanasia
             if row["Planned euthanasia_TOTAL"]:
@@ -285,7 +285,7 @@ def upload_species_data(upload_session_id):
                         row["Planned euthanasia_Permit_number"]))
                 )
                 if pe_c:
-                    euthanasia_nb += euthanasia_nb
+                    euthanasia_nb += 1
 
             # Save AnnualPopulationPerActivity Unplanned/illegal hunting
             if row["Unplanned/illegal hunting_TOTAL"]:
@@ -311,37 +311,38 @@ def upload_species_data(upload_session_id):
                         "Unplanned/illegal hunting_Offtake_female_juveniles"]))
                 )
                 if unp_c:
-                    unplanned_nb += unplanned_nb
+                    unplanned_nb += 1
             row_num += 1
+            upload_session.processed = True
+            upload_session.save()
 
+    if upload_session.processed:
         if owned_species_created > 0 and annual_created_nb > 0:
             success_response = "{} rows have been uploaded. With {} Annual " \
-                "population, {} sampling effort coverage, {} " \
-                "open/close_system, {} survey method, {} population estimate" \
-                " category annual population " \
-                "per activity: {} Translocation (Intake)," \
-                "{} Translocation (Offtake), {} Planned Hunt/Cull" \
-                "{} Planned Euthanasia/DCA, {} Unplanned/Illegal " \
-                "Hunting".format(
-                    row_num,
-                    annual_created_nb,
-                    sampling_eff_nb,
-                    open_created_nb,
-                    survey_nb,
-                    pop_estim_nb,
-                    intake_nb,
-                    offtake_nb,
-                    hunt_nb,
-                    euthanasia_nb,
-                    unplanned_nb,
-                )
+                    "population, {} sampling effort coverage, {} " \
+                    "open/close_system, {} survey method, {} population estimate" \
+                    " category annual population " \
+                    "per activity: {} Translocation (Intake)," \
+                    "{} Translocation (Offtake), {} Planned Hunt/Cull" \
+                    "{} Planned Euthanasia/DCA, {} Unplanned/Illegal " \
+                    "Hunting".format(
+                        owned_species_created,
+                        annual_created_nb,
+                        sampling_eff_nb,
+                        open_created_nb,
+                        survey_nb,
+                        pop_estim_nb,
+                        intake_nb,
+                        offtake_nb,
+                        hunt_nb,
+                        euthanasia_nb,
+                        unplanned_nb,
+                    )
         else:
-            success_response = "0 row added, data already exist on the " \
-                               "database."
-
-        upload_session.processed = True
+            success_response = "The {} rows have not been saved. " \
+                "They already exist in the database.".format(annual_created_nb)
 
         upload_session.success_notes = (
-                success_response
-        )
+                    success_response
+            )
         upload_session.save()
