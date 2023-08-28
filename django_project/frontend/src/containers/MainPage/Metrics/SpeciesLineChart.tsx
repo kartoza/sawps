@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { Line } from "react-chartjs-2";
+import {Bar, Line} from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import axios from "axios";
@@ -8,6 +8,8 @@ import Loading from "../../../components/Loading";
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
 import "./index.scss";
+import Card from "@mui/material/Card";
+import {ChartCard} from "./ChartCard";
 
 Chart.register(CategoryScale);
 
@@ -88,19 +90,17 @@ const SpeciesLineChart = () => {
         fetchPropertyPopulation()
     }, [propertyId, startYear, endYear, selectedSpecies])
 
+
     return (
-        <Box>
-            {!loading ? (
-                <Box className="white-chart">
-                        <Typography>Species count per year </Typography>
-                    <Line data={speciesPopulation} options={speciesOptions} height={225} width={1000}/>
-                    <Typography>Year</Typography>
-                </Box>) : (
-                <Loading />
-            )
+        <ChartCard
+            loading={loading}
+            chartComponent={
+                <Line data={speciesPopulation} options={speciesOptions} height={225} width={1000}/>
             }
-        </Box>
-    );
+            title={'Species count per year'}
+            xLabel={'Year'}
+        />
+    )
 };
 
 export default SpeciesLineChart;
