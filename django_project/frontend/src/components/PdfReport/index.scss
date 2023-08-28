@@ -41,6 +41,7 @@
         padding: 15px;
         margin-bottom: 20px;
         width: 750px;
+        margin-right: 20px;
 
         .white-chart-heading {
             width: 100%;
@@ -341,3 +342,41 @@
     align-items: center;
     padding: 40px 0;
   }
+
+/* Styles for centering the overall chart */
+.chart-wrapper-donught {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Adjust this value as needed */
+  }
+  
+  /* Styles for each individual chart container */
+  .chart-container-donught {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 20px; /* Add margin between charts if desired */
+  }
+  
+  /* Styles for the icon container */
+  .icon-container-donught {
+    // margin-top: 10px; /* Add space between chart and icon */
+    position: relative;
+    display: flex;
+    top: -250px;
+    left: 85px;
+  }
+  
+  /* In your CSS file */
+.chart-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.chart-pair {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px; /* Adjust this value to control the vertical spacing */
+}

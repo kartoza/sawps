@@ -67,9 +67,10 @@ const LineChartForPdf = () => {
     const generatedCharts = speciesWithChartData.map((specie, index) => (
         <Box key={index} style={{ width: '50%', padding: '10px' }}>
             <Typography style={{ marginRight: '10px' }}>{specie.species_name}</Typography>
-            {specie.icon && (
+            {(
                 <img
-                src={specie.icon} alt={specie.species_name}
+                src={specie.icon}
+                alt={specie.species_name}
                 style={{ maxWidth: '60px', maxHeight: '60px' ,marginLeft: '251px'}} // Adjust the max width and height as needed
                 onLoad={() => console.log('Image loaded')}
                 onError={() => console.log('Image error')}
@@ -107,20 +108,17 @@ const LineChartForPdf = () => {
 
     return (
         <Box className="white-chart" display="flex" flexWrap="wrap">
-            <Typography variant="h6" gutterBottom style={{ textAlign: "center" }}>
-                Total population count per species by year
-            </Typography>
-            {!loading ? (
-                speciesWithChartData.length > 0 ? (
-                    generatedCharts
-                ) : (
-                    <Typography>No species data available.</Typography>
-                )
-            ) : (
-                <Loading />
+            {speciesWithChartData.length > 0 && (
+                <Typography variant="h6" gutterBottom style={{ textAlign: "center" }}>
+                    Total population count per species by year
+                </Typography>
             )}
+            {!loading && speciesWithChartData.length > 0 ? (
+                generatedCharts
+            ) : null}
         </Box>
     );
+    
 };
 
 export default LineChartForPdf;

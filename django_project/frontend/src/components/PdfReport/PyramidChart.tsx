@@ -141,7 +141,7 @@ const PyramidChartForPdf = () => {
             <Box>
                 <Typography style={{ marginRight: '10px' }}>
                     {species.species_name}
-                    <img src={species.icon} alt="species Icon" 
+                    <img src={species.Icon} alt="species Icon" 
                     style={{ maxWidth: '60px', maxHeight: '60px' ,marginLeft: '262px'}} />
                 </Typography>
                 <Bar 
@@ -187,26 +187,23 @@ const PyramidChartForPdf = () => {
 
     return (
         <Box>
-            <Typography className="white-chart" display="flex" flexWrap="wrap" gutterBottom style={{ marginLeft: '10px', fontWeight: 'bold' }}>
-                Population Pyramids
-            </Typography>
+            {generatedCharts.length > 0 && (
+                <Typography variant="h6" gutterBottom style={{ textAlign: "left" }}>
+                    Population Pyramids
+                </Typography>
+            )}
             <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
                 {!loading ? (
-                    speciesWithCurrentYearValues.length > 0 ? (
-                        generatedCharts.length > 0 ? (
-                            generatedCharts
-                        ) : (
-                            <Typography>No species data available.</Typography>
-                        )
-                    ) : (
-                        <Typography>No species data available for the current year.</Typography>
-                    )
+                    speciesWithCurrentYearValues.length > 0 && generatedCharts.length > 0 ? (
+                        generatedCharts
+                    ) : null
                 ) : (
                     <Loading />
                 )}
             </Box>
         </Box>
     );
+    
 };
 
 export default PyramidChartForPdf;

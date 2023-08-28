@@ -6,7 +6,8 @@ import { Button } from "@mui/material";
 
 // import chart componenents to be rendered here
 import FirstPageCharts from "./FirstPageContent";
-import ChartsContainer from "./chartsContainer";
+import SecondPageCharts from "./SecondPageContainer";
+// import ThirdPageCharts from "./ThirdPageContainer";
 
 import html2canvas from "html2canvas";
 
@@ -16,7 +17,8 @@ const GenerateChartImages: React.FC = () => {
 
   // define refs to capture charts
   const firstPageRefs = useRef(null);
-  const OtherPageRefs = useRef(null);
+  const secondPageRefs = useRef(null);
+  // const thirdPageRefs = useRef(null);
 
   // define variables to save charts base64 strings
   const [charts, setCharts] = useState([]);
@@ -46,14 +48,35 @@ const GenerateChartImages: React.FC = () => {
   
         // retrieve the charts refs as canvas
         const first_page_canvas = await html2canvas(firstPageRefs.current);
-        const other_pages_canvas = await html2canvas(OtherPageRefs.current);
+        const second_page_canvas = await html2canvas(secondPageRefs.current);
+        // const third_page_canvas = await html2canvas(thirdPageRefs.current);
   
         // convert the canvas to base64 strings
-        const first_page_charts = first_page_canvas.toDataURL('image/png');
-        const other_pages_charts = other_pages_canvas.toDataURL('image/png');
+        // const first_page_charts = first_page_canvas.toDataURL('image/png');
+        // const second_page_charts = second_page_canvas.toDataURL('image/png');
+        // const third_page_charts = third_page_canvas.toDataURL('image/png');
+
   
         // Save base64 strings in an array
-        const base64StringsArray = [first_page_charts, other_pages_charts];
+        // const base64StringsArray = [first_page_charts, second_page_charts, third_page_charts];
+
+        // Convert the canvas to base64 strings
+        const base64StringsArray = [];
+
+        if (first_page_canvas.toDataURL) {
+            const first_page_charts = first_page_canvas.toDataURL('image/png');
+            base64StringsArray.push(first_page_charts);
+        }
+
+        if (second_page_canvas.toDataURL) {
+            const second_page_charts = second_page_canvas.toDataURL('image/png');
+            base64StringsArray.push(second_page_charts);
+        }
+
+        // if (third_page_canvas.toDataURL) {
+        //     const third_page_charts = third_page_canvas.toDataURL('image/png');
+        //     base64StringsArray.push(third_page_charts);
+        // }
   
         // Update the state with the entire array of base64 strings
         setCharts(base64StringsArray);
@@ -80,9 +103,13 @@ const GenerateChartImages: React.FC = () => {
         <FirstPageCharts />
       </div>
       {/* second page charts */}
-      <div ref={OtherPageRefs} style={{ display: showChartsDiv ? 'block' : 'none' }}>
-          <ChartsContainer />
+      <div ref={secondPageRefs} style={{ display: showChartsDiv ? 'block' : 'none' }}>
+          <SecondPageCharts />
       </div>
+      {/* third page charts */}
+      {/* <div ref={thirdPageRefs} style={{ display: showChartsDiv ? 'block' : 'none' }}>
+          <ThirdPageCharts />
+      </div> */}
 
       <div className="export-button-container">
         <Button onClick={openModal} variant="contained" color="primary">
