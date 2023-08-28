@@ -285,9 +285,10 @@ class NationalActivityCountPerProvinceView(APIView):
                     'species_area': 0
                 }
 
+            area = area_available
             result[species_name][province_name]['total_area'] += area_available
-            result[species_name][province_name]['species_area'] += \
-            area_available
+            result[species_name][province_name]['species_area'] += area
+
 
         # Calculate total area for each province and each species
         province_totals = {}
@@ -299,7 +300,7 @@ class NationalActivityCountPerProvinceView(APIView):
 
                 if province_name not in province_totals:
                     province_totals[province_name] = 0
-                
+
                 province_totals[province_name] += province_total
 
         # Calculate and update percentages for
@@ -308,7 +309,7 @@ class NationalActivityCountPerProvinceView(APIView):
             for province_name, area_data in province_data.items():
                 species_area = area_data['species_area']
                 province_total = province_totals[province_name]
-                
+
                 percentage = (
                     species_area / province_total
                 ) * 100 if province_total != 0 else 0
@@ -370,10 +371,9 @@ class NationalActivityCountPerPropertyView(APIView):
                     'species_area': 0
                 }
 
-            result[species_name][property_type_name]['total_area'] += \
-            area_available
-            result[species_name][property_type_name]['species_area'] += \
-            area_available
+            area = area_available
+            result[species_name][property_type_name]['total_area'] += area
+            result[species_name][property_type_name]['species_area'] += area
 
         # Calculate total area for each property type and each species
         property_type_totals = {}
@@ -398,8 +398,8 @@ class NationalActivityCountPerPropertyView(APIView):
                 percentage = (
                     species_area / property_type_total
                 ) * 100 if property_type_total != 0 else 0
-                result[species_name][property_type_name]['percentage'] = \
-                f'{percentage:.2f}%'
+                a = f'{percentage:.2f}%'
+                result[species_name][property_type_name]['percentage'] = a
 
         return result
 
