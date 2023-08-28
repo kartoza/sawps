@@ -309,7 +309,7 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Taxon
-        fields = ["get_area", "common_name_varbatim"]
+        fields = ["area", "common_name_varbatim"]
 
     def get_get_area(self, obj) -> list:
         """ Calculate and get total area and available area.
