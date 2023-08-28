@@ -17,13 +17,15 @@ from django.contrib import messages
 from datetime import datetime
 
 
+from django.utils.timezone import datetime
+
 def get_user_notifications(request):
     """Method checks if there are new notifications
     to send the user, these notifications are
     updated from stakeholder.tasks."""
     current_date = datetime.now().date()
     reminders = Reminders.objects.filter(
-        user=request.user,
+        user=request.user.id,  # Use the user ID instead of the object
         status=Reminders.PASSED,
         email_sent=True,
         date__date=current_date
@@ -55,6 +57,7 @@ def get_user_notifications(request):
                 'user_notifications': []
             }
         )
+
 
 
 class RegisteredOrganisationBaseView(TemplateView):
