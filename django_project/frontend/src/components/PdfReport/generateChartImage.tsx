@@ -28,6 +28,16 @@ const GenerateChartImages: React.FC = () => {
   const [showChartsDiv, setShowChartsDiv] = useState(false); 
   const [loadingCharts, setLoadingCharts] = useState(true); 
 
+  const [show3rdPageChartsDiv, set3rdPageShowChartsDiv] = useState(true);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+          set3rdPageShowChartsDiv(false);
+        }, 5000); // Set the duration in milliseconds
+
+        return () => clearTimeout(timeout); // Clear the timeout when the component unmounts
+    }, []);
+
   useEffect(() => {
 
     // Simulating fetching of charts data
@@ -38,6 +48,7 @@ const GenerateChartImages: React.FC = () => {
 
   const openModal = async () => {
     setShowChartsDiv(true);
+    set3rdPageShowChartsDiv(true)
     setIsModalOpen(true);
   
     // Only fetch and generate charts if charts are not loaded yet
@@ -83,9 +94,11 @@ const GenerateChartImages: React.FC = () => {
   
         // Hide the div after generating charts
         setShowChartsDiv(false);
+        set3rdPageShowChartsDiv(false)
         setLoadingCharts(false);
       }, 3000); // Simulated 3 seconds delay
     } else {
+      set3rdPageShowChartsDiv(false)
       setShowChartsDiv(false); // Hide the div if charts are already loaded
     }
   };
@@ -107,7 +120,7 @@ const GenerateChartImages: React.FC = () => {
           <SecondPageCharts />
       </div>
       {/* third page charts */}
-      <div ref={thirdPageRefs} style={{ display: showChartsDiv ? 'block' : 'none' }}>
+      <div ref={thirdPageRefs} style={{ display: show3rdPageChartsDiv ? 'block' : 'none' }}>
           <ThirdPageCharts />
       </div>
 
