@@ -12,7 +12,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
     """
     species_name = serializers.SerializerMethodField()
     species_colour = serializers.SerializerMethodField()
-    icon = serializers.ImageField(use_url=True) 
+    icon = serializers.ImageField(use_url=True)
     annualpopulation_count = serializers.SerializerMethodField()
     total_population = serializers.SerializerMethodField()
     population_growth = serializers.SerializerMethodField()
@@ -44,7 +44,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
             obj (Taxon): The Taxon instance representing the species.
         """
         return obj.colour
-    
+
     def get_species_icon(self, obj: Taxon) -> str:
         """Get the icon of the species.
         Params:
@@ -112,4 +112,3 @@ class NationalStatisticsSerializer(serializers.Serializer):
     total_property_count = serializers.IntegerField()
     total_property_area = serializers.FloatField()
     total_area_available_to_species = serializers.FloatField()
-
