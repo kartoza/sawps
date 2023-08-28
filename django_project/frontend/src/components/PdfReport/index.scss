@@ -1,0 +1,395 @@
+.PageContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    min-height: 100vh; /* Ensures the container takes at least the full viewport height */
+  }
+  
+  .ButtonContainer {
+    margin-top: auto; /* Pushes the button to the bottom of the container */
+    margin-right: 20px; /* Adjust this value to control the horizontal position */
+    justify-content: flex-end;
+  }
+  
+
+.overflow-auto-chart {
+    overflow: auto;
+    width: calc(100vw - 440px);
+    max-height: calc(100vh - 130px);
+}
+
+.main-chart {
+    width: 100%;
+    display: flex;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 30px;
+
+    .chart-left {
+        width: 790px;
+    }
+
+    .chart-right {
+        width: 750px;
+    }
+
+    .white-chart {
+        background: #FFF;
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+        padding: 15px;
+        margin-bottom: 20px;
+        width: 750px;
+        margin-right: 20px;
+
+        .white-chart-heading {
+            width: 100%;
+            text-align: left;
+
+            p {
+                text-align: left;
+                align-items: center;
+                display: flex;
+                margin-bottom: 20px;
+                gap: 10px;
+
+                .selecedown {
+                    .MuiSelect-select {
+                        padding-top: 7.5px;
+                        padding-bottom: 7.5px;
+                    }
+                }
+            }
+        }
+
+        .charBox {
+            width: 100%;
+        }
+
+        .chart-img {
+            position: absolute;
+            width: 106px;
+            top: 46px;
+            left: 27px;
+            text-align: center;
+            height: 98px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+            .icon-image {
+                width: 65px;
+                margin: 0 auto;
+
+                img {
+                    max-width: 100%;
+                }
+            }
+        }
+
+        .charttext {
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 23px;
+            text-shadow: 2px 2px 4px #838383;
+        }
+
+        .chartHalf {
+            width: 322px;
+            position: relative;
+            margin-bottom: 0px;
+
+            .text-left {
+                text-align: left;
+            }
+        }
+    }
+
+
+    .chartFullWidth {
+        width: 100%;
+    }
+    .boxChart-lion{
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-between;
+        .white-chart{
+            width: 363px;
+        }
+    }
+}
+
+.chart-container {
+    position: relative;
+
+    canvas {
+        position: relative;
+    }
+}
+
+.chart-container::before {
+    content: " ";
+    position: absolute;
+    top: 97px;
+    left: 84px;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #fff;
+    bottom: 0px;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.leftBoxRound {
+    flex-direction: column;
+}
+
+.BoxChartType {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* define chracteristics of components to render on pdf */
+.report-charts {
+    height: 100%;
+    margin-bottom: 50px;
+    height: 800px; /* Set the desired height */
+    width: 1200px;
+  }
+  
+  .map-only {
+    height: 100%;
+    width: 100%;
+  }
+  
+  .map-population-overview {
+    display: flex;
+  }
+  
+  th {
+    font-weight: normal; /* Remove bold for headers */
+    font-size: 25px;
+  
+  }
+  
+  td {
+    text-align: center;
+    font-weight: bold; /* Add bold for rows */
+    font-size: 25px;
+  }
+  
+  table {
+    width: 600px;
+    height: 70px;
+  }
+  
+  .row {
+    display: flex;
+  }
+
+
+  
+  .overflow-auto-chart {
+    overflow: auto;
+    width: calc(100vw - 440px);
+    max-height: calc(100vh - 130px);
+}
+
+.main-chart {
+    width: 100%;
+    display: flex;
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 30px;
+
+    .chart-left {
+        width: 750px;
+    }
+
+    .chart-right {
+        width: 750px;
+    }
+
+    .white-chart {
+        background: #FFF;
+        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+        padding: 15px;
+        margin-bottom: 20px;
+        width: 750px;
+
+        .white-chart-heading {
+            width: 100%;
+            text-align: left;
+
+            p {
+                text-align: left;
+                align-items: center;
+                display: flex;
+                margin-bottom: 20px;
+                gap: 10px;
+
+                .selecedown {
+                    .MuiSelect-select {
+                        padding-top: 7.5px;
+                        padding-bottom: 7.5px;
+                    }
+                }
+            }
+        }
+
+        .charBox {
+            width: 50%;
+        }
+
+        .chart-img {
+            position: absolute;
+            width: 106px;
+            top: 46px;
+            left: 27px;
+            text-align: center;
+            height: 98px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+
+            .icon-image {
+                width: 65px;
+                margin: 0 auto;
+
+                img {
+                    max-width: 100%;
+                }
+            }
+        }
+
+        .charttext {
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 23px;
+            text-shadow: 2px 2px 4px #838383;
+        }
+
+        .chartHalf {
+            width: 322px;
+            position: relative;
+            margin-bottom: 0px;
+
+            .text-left {
+                text-align: left;
+            }
+        }
+    }
+
+
+    .chartFullWidth {
+        width: 100%;
+    }
+    .boxChart-lion{
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-between;
+        .white-chart{
+            width: 363px;
+        }
+    }
+}
+
+.chart-container {
+    position: relative;
+
+    canvas {
+        position: relative;
+    }
+}
+
+.chart-container::before {
+    content: " ";
+    position: absolute;
+    top: 97px;
+    left: 84px;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #fff;
+    bottom: 0px;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.leftBoxRound {
+    flex-direction: column;
+}
+
+.BoxChartType {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.report-charts {
+    height: 100%;
+    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0;
+  }
+
+/* Styles for centering the overall chart */
+.chart-wrapper-donught {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Adjust this value as needed */
+  }
+  
+  /* Styles for each individual chart container */
+  .chart-container-donught {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 20px; /* Add margin between charts if desired */
+  }
+  
+  /* Styles for the icon container */
+  .icon-container-donught {
+    // margin-top: 10px; /* Add space between chart and icon */
+    position: relative;
+    display: flex;
+    top: -250px;
+    left: 85px;
+  }
+  
+  /* In your CSS file */
+.chart-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.chart-pair {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px; /* Adjust this value to control the vertical spacing */
+}
+
+.chart-row-donut {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Adjust the gap as needed */
+    margin-left: 110px;
+}
+
+.chart-title {
+    margin-top: 10px;
+    margin-left: 0px; /* Adjust the margin as needed */
+    font-weight: bold; /* Optionally add font-weight or other styles */
+}
