@@ -3,7 +3,7 @@ from activity.models import ActivityType
 from population_data.models import AnnualPopulationPerActivity
 from frontend.utils.metrics import calculate_population_categories
 from frontend.filters.metrics import PropertyFilter
-from property.models import Property, PropertyType, Province
+from property.models import Property, PropertyType
 from frontend.serializers.national_statistics import (
     NationalStatisticsSerializer,
     SpeciesListSerializer,
@@ -239,7 +239,7 @@ class NationalActivityCountView(APIView):
 
     def get(self, *args, **kwargs) -> Response:
         """
-        Handle GET request to 
+        Handle GET request to
         retrieve population categories for properties.
         """
         queryset = self.get_activity_count()
@@ -275,18 +275,19 @@ class NationalActivityCountPerProvinceView(APIView):
             species_name = species.taxon.common_name_varbatim
             province_name = species.property.province.name
             area_available = species.area_available_to_species
-            
+
             if species_name not in result:
                 result[species_name] = {}
-            
+
             if province_name not in result[species_name]:
                 result[species_name][province_name] = {
                     'total_area': 0,
                     'species_area': 0
                 }
-            
+
             result[species_name][province_name]['total_area'] += area_available
-            result[species_name][province_name]['species_area'] += area_available
+            result[species_name][province_name]['species_area'] += \
+            area_available
 
         # Calculate total area for each province and each species
         province_totals = {}
@@ -295,7 +296,7 @@ class NationalActivityCountPerProvinceView(APIView):
             for province_name, area_data in province_data.items():
                 province_total = area_data['total_area']
                 species_area = area_data['species_area']
-                
+
                 if province_name not in province_totals:
                     province_totals[province_name] = 0
                 
@@ -310,7 +311,7 @@ class NationalActivityCountPerProvinceView(APIView):
                 
                 percentage = (
                     species_area / province_total
-                    ) * 100 if province_total != 0 else 0
+                ) * 100 if province_total != 0 else 0
                 result[species_name][province_name]['percentage'] = \
                     f'{percentage:.2f}%'
 
@@ -324,6 +325,7 @@ class NationalActivityCountPerProvinceView(APIView):
         """
         queryset = self.get_activity_count()
         return Response(queryset)
+
 
 class NationalActivityCountPerPropertyView(APIView):
     """
@@ -348,7 +350,7 @@ class NationalActivityCountPerPropertyView(APIView):
         # Step 2: Get all provinces
         # provinces = Province.objects.all()
 
-        # Step 3 and 4: Calculate percentages 
+        # Step 3 and 4: Calculate percentages
         # and build the object array
         result = {}
 
@@ -358,17 +360,20 @@ class NationalActivityCountPerPropertyView(APIView):
             species_name = species.taxon.common_name_varbatim
             property_type_name = species.property.property_type.name
             area_available = species.area_available_to_species
-            
+
             if species_name not in result:
                 result[species_name] = {}
-            
+
             if property_type_name not in result[species_name]:
                 result[species_name][property_type_name] = {
-                    'total_area': 0, 'species_area': 0
+                    'total_area': 0,
+                    'species_area': 0
                 }
-            
-            result[species_name][property_type_name]['total_area'] += area_available
-            result[species_name][property_type_name]['species_area'] += area_available
+
+            result[species_name][property_type_name]['total_area'] += \
+            area_available
+            result[species_name][property_type_name]['species_area'] += \
+            area_available
 
         # Calculate total area for each property type and each species
         property_type_totals = {}
@@ -377,21 +382,22 @@ class NationalActivityCountPerPropertyView(APIView):
             for property_type_name, area_data in property_type_data.items():
                 property_type_total = area_data['total_area']
                 species_area = area_data['species_area']
-                
+
                 if property_type_name not in property_type_totals:
                     property_type_totals[property_type_name] = 0
-                
+
                 property_type_totals[property_type_name] += property_type_total
 
-        # Calculate and update percentages for each species in each property type
+        # Calculate and update percentages
+        # for each species in each property type
         for species_name, property_type_data in result.items():
             for property_type_name, area_data in property_type_data.items():
                 species_area = area_data['species_area']
                 property_type_total = property_type_totals[property_type_name]
-                
+
                 percentage = (
                     species_area / property_type_total
-                    ) * 100 if property_type_total != 0 else 0
+                ) * 100 if property_type_total != 0 else 0
                 result[species_name][property_type_name]['percentage'] = \
                 f'{percentage:.2f}%'
 
