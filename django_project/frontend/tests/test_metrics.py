@@ -388,3 +388,52 @@ class PopulationPerAgeGroupTestCase(BaseTestCase):
         self.assertEqual(
             response.data[0]['age_group'][0]['total_sub_adult_female'], 10
         )
+
+
+class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    total area versus area available to species.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("total_area_vs_available_area")
+
+    def test_total_area_vs_area_available(self) -> None:
+        """
+        Test total area versus area available.
+        """
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['get_area'][0]['area_total'], 200)
+        self.assertEqual(response.data[0]['get_area'][0]['area_available'], 10)
+
+    def test_total_area_vs_area_available_filter_by_property(self) -> None:
+        """
+        Test total area versus area available filtered by property.
+        """
+        id = self.owned_species[0].property_id
+        data = {'property':id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['get_area'][0]['area_total'], 200)
+
+    def test_total_area_vs_area_available_filter_by_year(self) -> None:
+        """
+        Test total area versus area available filtered by year.
+        """
+        year = self.owned_species[1].annualpopulation_set.first().year
+        data = {'start_year': year, "end_year":year}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]['get_area'][0]['annualpopulation__year'],
+            year
+        )

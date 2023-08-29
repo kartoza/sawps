@@ -33,6 +33,7 @@ from frontend.api_views.metrics import (
     TotalCountPerActivityAPIView,
     TotalAreaAvailableToSpeciesAPIView,
     PopulationPerAgeGroupAPIView,
+    TotalAreaVSAvailableAreaAPIView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -246,6 +247,11 @@ urlpatterns = [
         'api/population-per-age-group/',
         PopulationPerAgeGroupAPIView.as_view(),
         name='population_per_age_group'
+    ),
+    path(
+        'api/total-area-vs-available-area/',
+        TotalAreaVSAvailableAreaAPIView.as_view(),
+        name='total_area_vs_available_area'
     ),
     path(
         'add_totp_devices/',

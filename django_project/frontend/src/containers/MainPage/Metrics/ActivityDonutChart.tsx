@@ -87,7 +87,6 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
     };
 
     return (
-
         <Grid item xs={12} md={12} xl={6} className="white-chart" style={{ padding: 10 }}>
             {activityData?.map((item, index) => {
                 const speciesDonutData = {

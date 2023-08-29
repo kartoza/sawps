@@ -12,10 +12,12 @@ import PropertyAvailableBarChart from "./PropertyAvailable";
 import PropertyTypeBarChart from "./PropertyType";
 import AgeGroupBarChart from "./AgeGroupBarChart";
 import Card from "@mui/material/Card";
+import AreaAvailableLineChart from "./AreaAvailableLineChart";
 
+const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
-const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
+const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -29,6 +31,7 @@ const Metrics = () => {
     const [ageGroupData, setAgeGroupData] = useState([])
     const labels = Object.keys(activityType);
     const totalCountLabel = labels.filter(item => item !== "Base population");
+    const [areaData, setAreaData] = useState([])
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
@@ -70,10 +73,25 @@ const Metrics = () => {
         })
     }
 
+
+    const fetchAreaAvailableLineData = () => {
+        setLoading(true)
+        axios.get(`${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setAreaData(response.data)
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
     useEffect(() => {
         fetchActivityPercentageData();
         fetchActivityTotalCount();
         fetchPopulationAgeGroupData();
+        fetchAreaAvailableLineData();
     }, [propertyId, startYear, endYear, selectedSpecies])
 
     return (
@@ -83,17 +101,22 @@ const Metrics = () => {
                     <SpeciesLineChart />
                     <DensityBarChart />
                     <PropertyTypeBarChart />
+                    {areaData.map((data) =>
+                        <AreaAvailableLineChart
+                            loading={loading}
+                            areaData={data?.get_area}
+                        />)}
                 </Grid>
                 <Grid item xs={12} md={12} lg={6}>
                     <PopulationCategoryChart />
                     <PropertyAvailableBarChart />
-                    { totalCoutData.length > 0 && activityData.length > 0 ?
-                    <Card className="card-chart">
-                        <Grid container spacing={2}>
-                            <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
-                            <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
-                        </Grid>
-                    </Card> : null }
+                    {totalCoutData.length > 0 && activityData.length > 0 ?
+                        <Card className="card-chart">
+                            <Grid container spacing={2}>
+                                <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
+                                <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+                            </Grid>
+                        </Card> : null}
                     {ageGroupData.map((data) =>
                         <AgeGroupBarChart
                             loading={loading}

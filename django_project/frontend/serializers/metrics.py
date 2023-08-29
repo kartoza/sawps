@@ -299,3 +299,39 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
         )
 
         return age_groups_totals
+
+
+class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for serializing total area and available area.
+    """
+    get_area = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Taxon
+        fields = ["get_area", "common_name_varbatim"]
+
+    def get_get_area(self, obj) -> dict:
+        """ Calculate and get total area and available area.
+        Params: obj (Taxon): The Taxon instance.
+        """
+
+        filters = {}
+        property_list = self.context['request'].GET.get("property")
+        if property_list:
+            property_ids = property_list.split(",")
+            filters["property__id__in"] = property_ids
+
+        start_year = self.context['request'].GET.get("start_year")
+        if start_year:
+            end_year = self.context['request'].GET.get("end_year")
+            filters["annualpopulation__year__range"] = (start_year, end_year)
+
+        owned_species = OwnedSpecies.objects.values(
+            "annualpopulation__year",
+        ).filter(**filters, taxon=obj).annotate(
+            area_total=Sum("property__property_size_ha"),
+            area_available=Sum("area_available_to_species")
+        )[:10]
+
+        return owned_species
