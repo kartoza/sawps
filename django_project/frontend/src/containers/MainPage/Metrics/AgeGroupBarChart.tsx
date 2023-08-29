@@ -1,12 +1,12 @@
 // src/BiDirectionalChart.js
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, Typography } from "@mui/material";
-import { Bar } from 'react-chartjs-2';
+import {Bar} from 'react-chartjs-2';
 import "./index.scss";
-import Loading from '../../../components/Loading';
+import {ChartCard} from "./ChartCard";
 
 const AgeGroupBarChart = (props: any) => {
-    const { loading, ageGroupData, icon, name } = props
+    const { loading, ageGroupData, icon, name, colour } = props
     const datasetMale: number[] = [];
     const datasetFemale: number[] = [];
     ageGroupData?.forEach((data: any) => {
@@ -20,12 +20,12 @@ const AgeGroupBarChart = (props: any) => {
             {
                 label: 'Male',
                 data: datasetMale,
-                backgroundColor: ['#442eb4'],
+                backgroundColor: colour,
             },
             {
                 label: 'Female',
                 data: datasetFemale,
-                backgroundColor: ['#9fd234'],
+                backgroundColor: (colour.slice(0, 7) + '80' + colour.slice(7)),
             },
         ],
     };
@@ -61,10 +61,12 @@ const AgeGroupBarChart = (props: any) => {
             }
         },
     } as const;
+
     return (
-        <Box>
-            {loading ? <Loading /> :
-                <Box>
+        <ChartCard
+            loading={loading}
+            chartComponent={
+                <>
                     {ageGroupData?.length > 0 && <Box className="white-chart1" >
                         <Box className="barchart-head">
                             <Box className="barchart-head-left"></Box>
@@ -91,10 +93,12 @@ const AgeGroupBarChart = (props: any) => {
                             </Box>
                         </Box>
                     </Box >}
-                </Box>
+                </>
             }
-        </Box>
-    );
+            title={''}
+            xLabel={''}
+        />
+    )
 };
 
 export default AgeGroupBarChart;

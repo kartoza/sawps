@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import ActivityDonutChart from "./ActivityDonutChart";
 import SpeciesLineChart from "./SpeciesLineChart";
 import "./index.scss";
@@ -11,6 +11,7 @@ import { RootState } from "../../../app/store";
 import PropertyAvailableBarChart from "./PropertyAvailable";
 import PropertyTypeBarChart from "./PropertyType";
 import AgeGroupBarChart from "./AgeGroupBarChart";
+import Card from "@mui/material/Card";
 
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
@@ -77,28 +78,32 @@ const Metrics = () => {
 
     return (
         <Box className="overflow-auto-chart">
-            <Box className="main-chart">
-                <Box className="chart-left">
+            <Grid container spacing={3} style={{ padding: 20 }}>
+                <Grid item xs={12} md={12} lg={6}>
                     <SpeciesLineChart />
                     <DensityBarChart />
                     <PropertyTypeBarChart />
-                </Box>
-                <Box className="chart-right">
+                </Grid>
+                <Grid item xs={12} md={12} lg={6}>
                     <PopulationCategoryChart />
                     <PropertyAvailableBarChart />
-                    <Box className="boxChart-lion">
-                        <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
-                        <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
-                    </Box>
+                    { totalCoutData.length > 0 && activityData.length > 0 ?
+                    <Card className="card-chart">
+                        <Grid container spacing={2}>
+                            <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
+                            <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+                        </Grid>
+                    </Card> : null }
                     {ageGroupData.map((data) =>
                         <AgeGroupBarChart
                             loading={loading}
                             ageGroupData={data?.age_group}
-                            icon={data?.icon}
+                            icon={data?.graph_icon}
+                            colour={data?.colour}
                             name={data?.common_name_varbatim}
                         />)}
-                </Box>
-            </Box>
+                </Grid>
+            </Grid>
         </Box>
     );
 };

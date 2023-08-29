@@ -120,7 +120,7 @@
                 <a class="dropdown-item toggle-dropdown-icon" href="#" role="button" id="switchOrganisationDropdown" aria-haspopup="true" aria-expanded="false">
                     Switch Organisation <span class="dropdown-icon">&#9656;</span>
                 </a>
-                {% for organisation in organisations|slice:":3" %}
+                {% for organisation in organisations %}
                 <a class="dropdown-item organisation-item" key="{{ organisation.id }}" href="{% url 'switch-organisation' organisation.id %}?next={{ request.get_full_path|urlencode }}" style="display: none;">{{ organisation.name }}</a>
                 {% endfor %}
                     

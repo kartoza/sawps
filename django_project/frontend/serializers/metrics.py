@@ -1,9 +1,10 @@
 from typing import List
+
 from django.db.models import F, Q, Sum
 from population_data.models import AnnualPopulation
+from property.models import Property
 from rest_framework import serializers
 from species.models import OwnedSpecies, Taxon
-from property.models import Property
 
 
 class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
@@ -75,7 +76,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
         fields = [
             "total",
             "species_name",
-            "icon",
+            "graph_icon",
             "activities",
         ]
 
@@ -159,7 +160,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         fields = [
             "total",
             "species_name",
-            "icon",
+            "graph_icon",
             "activities",
         ]
 
@@ -262,7 +263,7 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = Taxon
-        fields = ["age_group", "icon", "common_name_varbatim"]
+        fields = ["age_group", "graph_icon", "common_name_varbatim", "colour"]
 
     def get_age_group(self, obj) -> dict:
         """ Calculate population per age group.

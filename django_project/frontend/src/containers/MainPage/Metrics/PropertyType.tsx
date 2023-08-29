@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Card } from "@mui/material";
 import { Bar } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
@@ -9,6 +9,7 @@ import Loading from "../../../components/Loading";
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
 import "./index.scss";
+import {ChartCard} from "./ChartCard";
 
 
 Chart.register(CategoryScale);
@@ -85,15 +86,15 @@ const PropertyTypeBarChart = () => {
     }
 
     return (
-        <Box>
-            {loading ? <Loading /> :
-                <Box className="white-chart" >
-                    <Typography>Total area per property type</Typography>
-                    <Bar data={data} options={options} height={225} width={1000} />
-                    <Typography>Property type</Typography>
-                </Box >}
-        </Box>
-    );
+        <ChartCard
+            loading={loading}
+            chartComponent={
+                <Bar data={data} options={options} height={225} width={1000} />
+            }
+            title={'Total area per property type'}
+            xLabel={'Property type'}
+        />
+    )
 };
 
 export default PropertyTypeBarChart;
