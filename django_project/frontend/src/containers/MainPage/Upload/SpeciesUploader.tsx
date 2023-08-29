@@ -144,7 +144,7 @@ export default function Uploader(props: UploaderInterface) {
         }
         if (status === 'removed') {
             const dropZoneCurrent = dropZone.current;
-            setTotalFile(totalFile - 1)
+            setTotalFile(0)
             if (!dropZoneCurrent) {
                 setIsError(true)
                 setAlertMessage('Unable to remove the layer file, Please try again!')
@@ -195,7 +195,7 @@ export default function Uploader(props: UploaderInterface) {
                             setIsError(false)
                             setAlertMessage(response.data['message'])
                             setAlertMessageTaxon(response.data['warning'])
-                            setTotalFile(totalFile - 1)
+                            setTotalFile( 0)
                             setSavingSpeciesCSV(false)
                             setCloseButton('CLOSE')
                             setLoading(false)

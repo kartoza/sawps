@@ -340,7 +340,7 @@ def upload_species_data(upload_session_id):
                     )
         else:
             success_response = "The {} rows have not been saved. " \
-                "They already exist in the database.".format(annual_created_nb)
+                "They already exist in the database.".format(row_num - 1)
 
         upload_session.success_notes = (
             success_response
