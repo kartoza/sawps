@@ -89,18 +89,20 @@ const Metrics = () => {
     return (
         <Box className="overflow-auto-chart">
             <Grid container spacing={3} style={{ padding: 20 }}>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={12} lg={6}>
                     <SpeciesLineChart />
                     <DensityBarChart />
                     <PropertyTypeBarChart />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={12} lg={6}>
                     <PopulationCategoryChart />
                     <PropertyAvailableBarChart />
-                    { totalCoutData.length > 0 || activityData.length > 0 ?
+                    { totalCoutData.length > 0 && activityData.length > 0 ?
                     <Card className="card-chart">
-                        <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
-                        <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+                        <Grid container spacing={2}>
+                            <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
+                            <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+                        </Grid>
                     </Card> : null }
                     {ageGroupData.map((data) =>
                         <AgeGroupBarChart
