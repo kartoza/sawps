@@ -13,6 +13,16 @@
     box-shadow: none;
 }
 
+.species-donut-chart-container {
+    width: 380px;
+    padding-bottom: 20px;
+
+    .chart-img-container {
+        margin-top: -100px !important;
+        transform: translate(-22.5%, -22.5%) !important;
+    }
+}
+
 .main-chart {
     width: 100%;
     display: flex;
@@ -98,6 +108,7 @@
                 text-align: left;
             }
         }
+
     }
 
 
