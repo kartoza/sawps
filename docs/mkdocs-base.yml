@@ -57,10 +57,6 @@ nav:
                         - administrator/manual/index.md
         - Developer:
                   - developer/index.md
-                  - API:
-                      - developer/api/index.md
-                      - Reference: developer/api/manual/index.md
-                      - Guide: developer/api/guide/index.md
                   - Guide:
                       - developer/guide/index.md
                       - Architecture: developer/guide/architecture.md
@@ -73,7 +69,6 @@ nav:
                       - Workflows: developer/guide/workflows.md
                       - "": developer/guide/templates/pull-request-template.md
                       - "": developer/guide/templates/commit-message-convention.md
-                  - Documentation: developer/documentation/index.md
                   - Manual:
                       - developer/manual/index.md
                       - Activity: developer/manual/activity.md
@@ -88,6 +83,11 @@ nav:
                       - SAWPS: developer/manual/sawps.md
                       - Species: developer/manual/species.md
                       - Stakeholder: developer/manual/stakeholder.md
+                  - API:
+                      - developer/api/index.md
+                      - Reference: developer/api/manual/index.md
+                      - Guide: developer/api/guide/index.md
+                  - Documentation Writing: developer/documentation/index.md
                   - License: about/license.md
         - DevOps:
                   - devops/index.md
