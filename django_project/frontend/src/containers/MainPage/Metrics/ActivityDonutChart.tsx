@@ -87,8 +87,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
     };
 
     return (
-
-        <Grid item xs={12} md={12} xl={6} className="white-chart" style={{ padding: 10 }}>
+        <Grid item xs={12} md={12} xl={6} style={{ padding: 10 }}>
             {activityData?.map((item, index) => {
                 const speciesDonutData = {
                     labels: labels,
@@ -104,14 +103,14 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                     ],
                 };
                 return (
-                    <>
+                    <><Box className="white-chart chartFullWidth leftBoxRound">
                         <Typography>{chartHeading}</Typography>
                         {loading ? <Loading /> :
                             <Box className="BoxChartType">
                                 {item.activities.length > 0 &&
-                                    <Box key={index} className="species-donut-chart-container">
+                                    <Box key={index} className="species-donut-chart-container chartHalf">
                                         <Box className="charBox">
-                                            <Doughnut data={speciesDonutData} options={donutOptions} height={186} />
+                                            <Box className="chart-container"><Doughnut data={speciesDonutData} options={donutOptions} height={186} /></Box>
                                         </Box>
                                         <Box className="chart-img chart-img-container">
                                             <Box className="icon-image">
@@ -122,6 +121,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                                     </Box>}
                             </Box>
                         }
+                        </Box>
                     </>
                 );
             })}

@@ -1,5 +1,5 @@
 from typing import List
-
+from frontend.static_mapping import YEAR_DATA_LIMIT
 from django.db.models import F, Q, Sum
 from population_data.models import AnnualPopulation
 from property.models import Property
@@ -299,3 +299,48 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
         )
 
         return age_groups_totals
+
+
+class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for serializing total area and available area.
+    """
+    area = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Taxon
+        fields = ["area", "common_name_varbatim"]
+
+    def get_area(self, obj) -> list:
+        """ Calculate and get total area and available area.
+        Params: obj (Taxon): The Taxon instance.
+        """
+
+        filters = {}
+        property_list = self.context['request'].GET.get("property")
+        if property_list:
+            property_ids = property_list.split(",")
+            filters["property__id__in"] = property_ids
+
+        start_year = self.context['request'].GET.get("start_year")
+        if start_year:
+            end_year = self.context['request'].GET.get("end_year")
+            filters["annualpopulation__year__range"] = (start_year, end_year)
+
+        owned_species = OwnedSpecies.objects.values(
+            "annualpopulation__year",
+        ).filter(**filters, taxon=obj).annotate(
+            area_total=Sum("property__property_size_ha"),
+            area_available=Sum("area_available_to_species")
+        )
+        data = {
+            "owned_species": owned_species
+        }
+        if len(owned_species) > YEAR_DATA_LIMIT:
+            data = {
+                "owned_species": owned_species[:YEAR_DATA_LIMIT],
+                "message": "Only last 10 years data are displayed \
+                for search with >10 years data returned"
+            }
+
+        return data

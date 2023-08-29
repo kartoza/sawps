@@ -24,12 +24,9 @@
 }
 
 .main-chart {
-    width: 100%;
-    display: flex;
     padding-top: 15px;
     padding-left: 10px;
     padding-right: 10px;
-    gap: 30px;
 
     .chart-left {
         width: 750px;
@@ -43,7 +40,7 @@
         background: #FFF;
         padding: 15px;
         margin-bottom: 20px;
-        width: 750px;
+        width: 100%;
         border-radius: 4px;
 
         .white-chart-heading {
@@ -73,8 +70,8 @@
         .chart-img {
             position: absolute;
             width: 106px;
-            top: 46px;
-            left: 27px;
+            top: 165px;
+            left: 50px;
             text-align: center;
             height: 98px;
             display: flex;
@@ -177,9 +174,10 @@
         justify-content: center;
         align-items: center;
         position: relative;
-        img{
+
+        img {
             position: absolute;
-            right: 0;
+            right: -30px;
         }
     }
 }
@@ -205,6 +203,9 @@
             display: flex;
             align-items: center;
             margin-bottom: 8px;
+            @media (max-width: 1600px) {
+                min-height: 25px;
+            }
         }
     }
 
@@ -233,4 +234,59 @@
             width: 100%;
         }
     }
+}
+
+.white-species {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+
+    .white-chart-species {
+        width: 65%;
+        display: flex;
+        flex-direction: column;
+
+        .AreaDataValue {
+            width: 100%;
+        }
+
+        .total-heading {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            color: #000;
+        }
+    }
+
+    .white-species-text {
+        width: 35%;
+        display: flex;
+        flex-direction: column;
+        padding-left: 20px;
+
+        .species-Typography {
+            margin-bottom: 10px;
+            gap: 15px;
+            display: flex;
+        }
+    }
+    @media (max-width: 1600px) {
+        flex-direction: column;
+        gap: 20px;
+        .white-chart-species {
+            width: 100%;
+        }
+        .white-species-text {
+            width: 100%;
+        }
+    }
+}
+
+.info-message {
+    text-align: left;
+    font-weight: bold;
 }
