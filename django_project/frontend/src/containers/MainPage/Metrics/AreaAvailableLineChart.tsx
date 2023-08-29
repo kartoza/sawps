@@ -5,11 +5,12 @@ import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import Loading from "../../../components/Loading";
 import "./index.scss";
+import { ChartCard } from "./ChartCard";
 
 Chart.register(CategoryScale);
 
 const AreaAvailableLineChart = (props: any) => {
-    const { loading, areaData } = props
+    const { loading, areaData, message } = props
     const AreaDataValue = {
         labels: areaData.map((item: any) => item?.annualpopulation__year),
         datasets: [
@@ -70,37 +71,41 @@ const AreaAvailableLineChart = (props: any) => {
     };
 
     return (
-        <Box>
-            {!loading ? (
-                <Box className="white-species">
-                    <Box className="white-chart-species">
-                        <Typography className="total-heading">Total area vs area available to species</Typography>
-                        <Box className="AreaDataValue"><Line data={AreaDataValue} options={AreaOptions} height={225} width={1000} /></Box>
-                    </Box>
+        <ChartCard
+            loading={loading}
+            chartComponent={
+                <>
+                    <Box className="white-species">
+                        <Box className="white-chart-species">
+                            {message && <Typography className="info-message">{message}</Typography>}
+                            <Typography className="total-heading">Total area vs area available to species</Typography>
+                            <Box className="AreaDataValue"><Line data={AreaDataValue} options={AreaOptions} height={225} width={1000} /></Box>
+                        </Box>
 
-                    <Box className="white-species-text">
-                        <Box className="flex species-Typography">
-                            <Box
-                                width={20}
-                                height={20}
-                                sx={{ backgroundColor: '#FF5252' }}
-                            />
-                            <Typography>Total area of property</Typography>
-                        </Box>
-                        <Box className="flex species-Typography">
-                            <Box
-                                width={20}
-                                height={20}
-                                sx={{ backgroundColor: '#F9A95D' }}
-                            />
-                            <Typography>Area available to species</Typography>
+                        <Box className="white-species-text">
+                            <Box className="flex species-Typography">
+                                <Box
+                                    width={20}
+                                    height={20}
+                                    sx={{ backgroundColor: '#FF5252' }}
+                                />
+                                <Typography>Total area of property</Typography>
+                            </Box>
+                            <Box className="flex species-Typography">
+                                <Box
+                                    width={20}
+                                    height={20}
+                                    sx={{ backgroundColor: '#F9A95D' }}
+                                />
+                                <Typography>Area available to species</Typography>
+                            </Box>
                         </Box>
                     </Box>
-                </Box>
-            ) : (<Loading />
-            )
+                </>
             }
-        </Box>
+            title={''}
+            xLabel={''}
+        />
     );
 };
 

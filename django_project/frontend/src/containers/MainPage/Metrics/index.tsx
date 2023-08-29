@@ -96,7 +96,7 @@ const Metrics = () => {
 
     return (
         <Box className="overflow-auto-chart">
-            <Grid container spacing={3} style={{ padding: 20 }}>
+            <Grid className="main-chart" container spacing={3} style={{ padding: 20 }}>
                 <Grid item xs={12} md={12} lg={6}>
                     <SpeciesLineChart />
                     <DensityBarChart />
@@ -104,7 +104,8 @@ const Metrics = () => {
                     {areaData.map((data) =>
                         <AreaAvailableLineChart
                             loading={loading}
-                            areaData={data?.get_area}
+                            areaData={data?.area?.owned_species}
+                            message={data?.area?.message}
                         />)}
                 </Grid>
                 <Grid item xs={12} md={12} lg={6}>
@@ -112,7 +113,7 @@ const Metrics = () => {
                     <PropertyAvailableBarChart />
                     {totalCoutData.length > 0 && activityData.length > 0 ?
                         <Card className="card-chart">
-                            <Grid container spacing={2}>
+                            <Grid container className="boxChart-lion" spacing={2}>
                                 <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
                                 <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
                             </Grid>

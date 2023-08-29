@@ -24,12 +24,9 @@
 }
 
 .main-chart {
-    width: 100%;
-    display: flex;
     padding-top: 15px;
     padding-left: 10px;
     padding-right: 10px;
-    gap: 30px;
 
     .chart-left {
         width: 750px;
@@ -43,7 +40,7 @@
         background: #FFF;
         padding: 15px;
         margin-bottom: 20px;
-        width: 750px;
+        width: 100%;
         border-radius: 4px;
 
         .white-chart-heading {
@@ -73,8 +70,8 @@
         .chart-img {
             position: absolute;
             width: 106px;
-            top: 46px;
-            left: 27px;
+            top: 165px;
+            left: 50px;
             text-align: center;
             height: 98px;
             display: flex;
@@ -180,7 +177,7 @@
 
         img {
             position: absolute;
-            right: 0;
+            right: -30px;
         }
     }
 }
@@ -206,6 +203,9 @@
             display: flex;
             align-items: center;
             margin-bottom: 8px;
+            @media (max-width: 1600px) {
+                min-height: 25px;
+            }
         }
     }
 
@@ -249,7 +249,6 @@
 
         .AreaDataValue {
             width: 100%;
-            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
         }
 
         .total-heading {
@@ -275,4 +274,19 @@
             display: flex;
         }
     }
+    @media (max-width: 1600px) {
+        flex-direction: column;
+        gap: 20px;
+        .white-chart-species {
+            width: 100%;
+        }
+        .white-species-text {
+            width: 100%;
+        }
+    }
+}
+
+.info-message {
+    text-align: left;
+    font-weight: bold;
 }
