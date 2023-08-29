@@ -76,7 +76,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
         fields = [
             "total",
             "species_name",
-            "icon",
+            "graph_icon",
             "activities",
         ]
 
@@ -160,7 +160,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         fields = [
             "total",
             "species_name",
-            "icon",
+            "graph_icon",
             "activities",
         ]
 
@@ -263,7 +263,7 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = Taxon
-        fields = ["age_group", "icon", "common_name_varbatim", "colour"]
+        fields = ["age_group", "graph_icon", "common_name_varbatim", "colour"]
 
     def get_age_group(self, obj) -> dict:
         """ Calculate population per age group.

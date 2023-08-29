@@ -9,6 +9,8 @@ import Loading from "../../../components/Loading";
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
 import "./index.scss";
+import Card from "@mui/material/Card";
+import {ChartCard} from "./ChartCard";
 
 
 Chart.register(CategoryScale);
@@ -85,15 +87,16 @@ const PropertyAvailableBarChart = () => {
     }
 
     return (
-        <Box>
-            {loading ? <Loading /> :
-                <Box className="white-chart" >
-                    <Typography>Total area available to species (ha)</Typography>
-                    <Bar data={data} options={options} height={225} width={1000} />
-                    <Typography>Properties</Typography>
-                </Box >}
-        </Box>
-    );
+        <ChartCard
+            loading={loading}
+            chartComponent={
+                <Bar data={data} options={options} height={225} width={1000} />
+            }
+            title={'Total area available to species (ha)'}
+            xLabel={'Properties'}
+        />
+    )
+
 };
 
 export default PropertyAvailableBarChart;
