@@ -68,11 +68,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   ThirdPagechartImage: {
-    width: "73%",
-    height: "60%",
+    width: "70%",
+    height: "70%",
     display: "flex",
     flexDirection: "row",
-    marginLeft: 50,
+    marginLeft: 90,
+    marginTop: 4,
+  },
+  FourthPagechartImage: {
+    width: "80%",
+    height: "80%",
+    display: "flex",
+    flexDirection: "row",
+    marginLeft: 160,
     marginTop: 10,
   },
   mapImage: {
@@ -244,7 +252,7 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
                 </View>
               </View>
               {/* Chart Image */}
-              <Image style={styles.ThirdPagechartImage} src={chartBase64} />
+              <Image style={styles.FourthPagechartImage} src={chartBase64} />
             </View>
           )}
   

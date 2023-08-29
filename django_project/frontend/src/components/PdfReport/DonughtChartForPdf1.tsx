@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, responsiveFontSizes } from "@mui/material";
 import axios from "axios";
 import Loading from "../Loading";
 import { Doughnut } from "react-chartjs-2";
@@ -39,7 +39,6 @@ const PerProvinceDonutChart = () => {
       .get(FETCH_ACTVITY_COUNT)
       .then((response) => {
         if (response.data) {
-          console.log(response.data);
           setSpeciesData(response.data);
         }
       })
@@ -83,8 +82,12 @@ const PerProvinceDonutChart = () => {
             position: "right" as "right",
             display: true,
             labels: {
-              boxWidth: 12,
-              padding: 10,
+              boxWidth: 30,
+              boxHeight: 30,
+              padding: 12,
+              font : {
+                size: 20
+              }
             },
           },
           datalabels: {
@@ -92,9 +95,12 @@ const PerProvinceDonutChart = () => {
             formatter: (value: number) => {
               return `${value.toFixed(2)}%`;
             },
+            font : {
+              size: 20
+            }
           },
           font: {
-            size: 8,
+            size: 20,
             weight: "bold" as "bold",
           },
         },
@@ -103,7 +109,7 @@ const PerProvinceDonutChart = () => {
       return (
         <div className="chart-container-donught" key={index}>
           <div className="donut-chart">
-            <div className="chart-title">{speciesName}</div>
+            <div className="chart-title" style={{ fontSize: '20px' }}>{speciesName}</div>
             <Doughnut data={chartData} options={options} width={400} />
           </div>
         </div>

@@ -85,37 +85,35 @@ const DonutChart = () => {
         };
 
         const options = {
-            cutout: "50%", // Reduce the cutout size
+            cutout: "50%",
             plugins: {
-                legend: {
-                    position: 'right' as 'right',
-                    display: true,
-                    labels: {
-                        boxWidth: 12, // Adjust the legend item size
-                        padding: 10, // Adjust the padding
-                    },
-                },
-                datalabels: { // Add datalabels plugin for labeling data
-                    color: '#fff', // Label color
-                    formatter: (value: number) => {
-                        return `${value.toFixed(2)}%`; // Format label value as a percentage
-                    },
-                },
-                font: {
-                    size: 8,
-                    weight: 'bold' as 'bold',
-                },
-            },
-            title: {
+              legend: {
+                position: "right" as "right",
                 display: true,
-                text: 'speciesName',
-                font: {
-                    size: 14,
-                    weight: 'bold',
+                labels: {
+                  boxWidth: 30,
+                  boxHeight: 30,
+                  padding: 12,
+                  font : {
+                    size: 20
+                  }
                 },
+              },
+              datalabels: {
+                color: "#fff",
+                formatter: (value: number) => {
+                  return `${value.toFixed(2)}%`;
+                },
+                font : {
+                  size: 20
+                }
+              },
+              font: {
+                size: 20,
+                weight: "bold" as "bold",
+              },
             },
-            
-        };
+          };
 
         return (
             <div className="chart-container-donught" key={index}>
@@ -124,10 +122,10 @@ const DonutChart = () => {
                 //     backgroundImage: 'url("http://localhost:9000/static/201859c0c5a44a3b690ae8035d3fa696.png")',
                 //     backgroundRepeat: "no-repeat"}}
                     >
-                    <div className="chart-title">{species.species_name}</div>
+                    <div className="chart-title" style={{ fontSize: '20px', marginLeft: '0px'  }}>{species.species_name}</div>
                     <Doughnut data={chartData} options={options} 
                     // height={300} 
-                    width={400} 
+                    width={500} 
                     />
                 </div>
             </div>
