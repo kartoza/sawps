@@ -7,7 +7,10 @@ from frontend.serializers.national_statistics import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from species.models import OwnedSpecies, Taxon
+from species.models import (
+    OwnedSpecies,
+    Taxon
+)
 from django.db.models import Sum
 
 
