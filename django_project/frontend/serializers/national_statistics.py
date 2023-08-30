@@ -1,5 +1,8 @@
 from typing import List
-from django.db.models import Q, Sum
+from django.db.models import (
+    Q,
+    Sum
+)
 from population_data.models import AnnualPopulation
 from rest_framework import serializers
 from species.models import Taxon
