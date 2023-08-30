@@ -117,8 +117,6 @@ An alert message 1️⃣ is displayed in the case that the file is incorrect. Yo
 
 #### Step 4
 
-1️⃣, 2️⃣, 3️⃣, 4️⃣, 5️⃣, 6️⃣, 7️⃣, 8️⃣
-
 Once the system has checked the file you have selected, it will allow you to **UPLOAD FILES** if it's correct.
 
 ![step 4 1](img/upload-data-step-4-1.png)
