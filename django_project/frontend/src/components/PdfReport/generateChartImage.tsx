@@ -18,7 +18,6 @@ const GenerateChartImages: React.FC = () => {
   // define refs to capture charts
   const firstPageRefs = useRef(null);
   const secondPageRefs = useRef(null);
-  // const thirdPageRefs = useRef(null);
 
   // define variables to save charts base64 strings
   const [charts, setCharts] = useState([]);
@@ -215,6 +214,7 @@ const GenerateChartImages: React.FC = () => {
             align-items: flex-start;
             gap: 10px;
             max-height: 60vh;
+
             overflow-y: auto;
           }
 
