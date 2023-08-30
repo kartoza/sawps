@@ -18,7 +18,10 @@ class NationalSpeciesViewTest(APITestCase):
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list(self, mock_get_species_list):
         # Create mock Taxon objects
-        taxon1 = Taxon(common_name_varbatim='Species 1')
+        taxon1 = Taxon(
+            common_name_varbatim='Species 1',
+            icon='profile_pictures/picture_P.jpg'
+        )
         taxon2 = Taxon(common_name_varbatim='Species 2')
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
