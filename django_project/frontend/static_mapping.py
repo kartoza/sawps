@@ -6,3 +6,5 @@ ACTIVITY_COLORS_DICT = {
             "Planned translocation": "#F9A95D",
             "Base population": "rgb(212 212 212)"
         }
+
+YEAR_DATA_LIMIT = 10
