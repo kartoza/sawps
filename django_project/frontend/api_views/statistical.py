@@ -57,7 +57,7 @@ class SpeciesNationalTrend(APIView):
                 row.year,
                 row.total,
                 row.survey_method.name,
-                row.count_method.name,
+                row.count_method.name if row.count_method else '',
                 'Open' if row.owned_species.property.open else 'Closed',
                 row.owned_species.property.property_type.name,
                 row.owned_species.property.property_size_ha,
