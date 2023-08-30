@@ -4,13 +4,29 @@
     max-height: calc(100vh - 130px);
 }
 
+.card-chart {
+    padding: 15px;
+    min-height: 200px;
+    margin-bottom: 20px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.species-donut-chart-container {
+    width: 380px;
+    padding-bottom: 20px;
+
+    .chart-img-container {
+        margin-top: -100px !important;
+        transform: translate(-22.5%, -22.5%) !important;
+    }
+}
+
 .main-chart {
-    width: 100%;
-    display: flex;
     padding-top: 15px;
     padding-left: 10px;
     padding-right: 10px;
-    gap: 30px;
 
     .chart-left {
         width: 750px;
@@ -22,10 +38,10 @@
 
     .white-chart {
         background: #FFF;
-        box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
         padding: 15px;
         margin-bottom: 20px;
-        width: 750px;
+        width: 100%;
+        border-radius: 4px;
 
         .white-chart-heading {
             width: 100%;
@@ -54,8 +70,8 @@
         .chart-img {
             position: absolute;
             width: 106px;
-            top: 46px;
-            left: 27px;
+            top: 165px;
+            left: 50px;
             text-align: center;
             height: 98px;
             display: flex;
@@ -89,18 +105,21 @@
                 text-align: left;
             }
         }
+
     }
 
 
     .chartFullWidth {
         width: 100%;
     }
-    .boxChart-lion{
+
+    .boxChart-lion {
         display: flex;
         flex-wrap: wrap;
         width: 100%;
         justify-content: space-between;
-        .white-chart{
+
+        .white-chart {
             width: 363px;
         }
     }
@@ -136,4 +155,138 @@
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
+}
+
+.barchart-head {
+    width: 100%;
+    display: flex;
+    margin-bottom: 12px;
+    margin-top: 11px;
+
+    .barchart-head-left {
+        width: 160px;
+    }
+
+    .barchart-head-right {
+        width: calc(100% - 160px);
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+
+        img {
+            position: absolute;
+            right: -30px;
+        }
+    }
+}
+
+.white-chart1 {
+    margin-bottom: 20px;
+}
+
+.barChartBox {
+    width: 100%;
+    display: flex;
+
+    .barchartleft {
+        width: 160px;
+        padding-right: 20px;
+        display: flex;
+        flex-direction: column;
+
+        .adult-box {
+            text-align: left;
+            min-height: 35px;
+            vertical-align: middle;
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            @media (max-width: 1600px) {
+                min-height: 25px;
+            }
+        }
+    }
+
+    .barchartright {
+        width: calc(100% - 160px);
+        margin-bottom: 24px;
+    }
+}
+
+.chartBottom {
+    width: 100%;
+    display: flex;
+
+    .chartBottom-left {
+        width: 160px;
+        padding-right: 20px;
+    }
+
+    .chartBottom-right {
+        width: calc(100% - 160px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .femaleBox {
+            width: 100%;
+        }
+    }
+}
+
+.white-species {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+
+    .white-chart-species {
+        width: 65%;
+        display: flex;
+        flex-direction: column;
+
+        .AreaDataValue {
+            width: 100%;
+        }
+
+        .total-heading {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            color: #000;
+        }
+    }
+
+    .white-species-text {
+        width: 35%;
+        display: flex;
+        flex-direction: column;
+        padding-left: 20px;
+
+        .species-Typography {
+            margin-bottom: 10px;
+            gap: 15px;
+            display: flex;
+        }
+    }
+    @media (max-width: 1600px) {
+        flex-direction: column;
+        gap: 20px;
+        .white-chart-species {
+            width: 100%;
+        }
+        .white-species-text {
+            width: 100%;
+        }
+    }
+}
+
+.info-message {
+    text-align: left;
+    font-weight: bold;
 }

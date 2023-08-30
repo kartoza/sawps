@@ -18,7 +18,6 @@ class CountMethod(models.Model):
         db_table = "count_method"
 
 
-
 class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
@@ -44,8 +43,6 @@ class AnnualPopulation(AnnualPopulationAbstract):
     sub_adult_male = models.IntegerField(null=True, blank=True)
     sub_adult_female = models.IntegerField(null=True, blank=True)
     juvenile_total = models.IntegerField(null=True, blank=True)
-    area_covered = models.FloatField(null=False, default=0.0)
-    sampling_effort = models.FloatField(null=False, default=0.0)
     survey_method = models.ForeignKey(
         "occurrence.SurveyMethod", on_delete=models.CASCADE, null=True
     )
@@ -73,6 +70,29 @@ class AnnualPopulation(AnnualPopulationAbstract):
         on_delete=models.CASCADE, null=True
     )
 
+    sampling_effort_coverage = models.ForeignKey(
+        "population_data.SamplingEffortCoverage",
+        on_delete=models.CASCADE, null=True
+    )
+    upper_confidence_level = models.FloatField(
+        null=True, blank=True
+    )
+    lower_confidence_level = models.FloatField(
+        null=True, blank=True
+    )
+    certainty_of_bounds = models.IntegerField(
+        null=True, blank=True
+    )
+    population_estimate_certainty = models.IntegerField(
+        null=True, blank=True
+    )
+
+    def __str__(self):
+        return "{} {}".format(
+            self.owned_species.property.name,
+            self.year
+        )
+
     class Meta:
         verbose_name = "Annual Population"
         verbose_name_plural = "Annual Populations"
@@ -99,10 +119,15 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     founder_population = models.BooleanField(null=True, blank=True)
     reintroduction_source = models.CharField(max_length=250, null=True,
                                              blank=True)
-    intake_permit = models.IntegerField(null=True, blank=True)
+    intake_permit = models.CharField(null=True, blank=True, max_length=100)
     translocation_destination = models.TextField(null=True, blank=True)
-    offtake_permit = models.IntegerField(null=True, blank=True)
+    offtake_permit = models.CharField(null=True, blank=True, max_length=100)
 
+    def __str__(self):
+        return "{} {} {}".format(
+            self.owned_species.property.name,
+            self.year,
+            self.activity_type.name)
 
     class Meta:
         verbose_name = "Population count per activity"
@@ -110,7 +135,10 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
         db_table = "annual_population_per_activity"
         constraints = [
             models.UniqueConstraint(
-                fields=["year", "owned_species", "activity_type"],
+                fields=["year",
+                        "owned_species",
+                        "activity_type"
+                        ],
                 name="unique_population_count_per_activity",
             )
         ]
@@ -183,3 +211,21 @@ class PopulationEstimateCategory(models.Model):
         verbose_name = "Population Estimate Category"
         verbose_name_plural = "Population Estimate Categories"
         db_table = "population_estimate_category"
+
+
+class SamplingEffortCoverage(models.Model):
+    """Sampling Effort Coverage model.
+    """
+
+    name = models.TextField(
+        null=False,
+        blank=False,
+        default="",
+        unique=True,
+        help_text="Name"
+    )
+
+    class Meta:
+        verbose_name = "Sampling Effort Coverage"
+        verbose_name_plural = "Sampling Effort Coverages"
+        db_table = "sampling_effort_coverage"

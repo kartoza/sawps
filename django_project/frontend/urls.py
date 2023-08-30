@@ -28,8 +28,12 @@ from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
     PropertiesPerPopulationCategoryAPIView,
     SpeciesPopuationCountPerYearAPIView,
-    SpeciesPopulationTotalAndDensityAPIView,
+    TotalAreaPerPropertyTypeAPIView,
+    SpeciesPopulationDensityPerPropertyAPIView,
     TotalCountPerActivityAPIView,
+    TotalAreaAvailableToSpeciesAPIView,
+    PopulationPerAgeGroupAPIView,
+    TotalAreaVSAvailableAreaAPIView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -68,6 +72,10 @@ from .views.totp_device import (
     view_totp_devices
 )
 from .views.users import OrganisationUsersView
+from frontend.api_views.national_statistic import (
+    NationalStatisticsView,
+    NationalSpeciesView
+)
 
 urlpatterns = [
     re_path(
@@ -221,13 +229,33 @@ urlpatterns = [
     ),
     path(
         'api/species-population-total-density/',
-        SpeciesPopulationTotalAndDensityAPIView.as_view(),
+        SpeciesPopulationDensityPerPropertyAPIView.as_view(),
         name='species_population_total_density'
     ),
     path(
         'api/properties-per-population-category/',
         PropertiesPerPopulationCategoryAPIView.as_view(),
         name='properties_per_population_category'
+    ),
+    path(
+        'api/total-area-available-to-species/',
+        TotalAreaAvailableToSpeciesAPIView.as_view(),
+        name='total_area_available_to_species'
+    ),
+    path(
+        'api/total-area-per-property-type/',
+        TotalAreaPerPropertyTypeAPIView.as_view(),
+        name='total_area_per_property_type'
+    ),
+    path(
+        'api/population-per-age-group/',
+        PopulationPerAgeGroupAPIView.as_view(),
+        name='population_per_age_group'
+    ),
+    path(
+        'api/total-area-vs-available-area/',
+        TotalAreaVSAvailableAreaAPIView.as_view(),
+        name='total_area_vs_available_area'
     ),
     path(
         'add_totp_devices/',
@@ -248,5 +276,15 @@ urlpatterns = [
         'get_user_notifications/',
         get_user_notifications,
         name='get_user_notifications'
+    ),
+    path(
+        'api/species-list/',
+        NationalSpeciesView.as_view(),
+        name='species_list_national'
+    ),
+    path(
+        'api/statistics/',
+        NationalStatisticsView.as_view(),
+        name='statistics_national'
     ),
 ]

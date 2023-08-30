@@ -350,7 +350,16 @@ export default function Map() {
       })
       map.current.on('styledata', () => {
         dispatch(setMapReady(true))
-        addParcelInvisibleFillLayers(map.current)
+        
+        var user_role = localStorage.getItem('user_role')
+        var enable_parcel_layers = true
+
+        if (user_role !== undefined)
+          if (user_role.toString().toLowerCase().includes('decision maker'))
+            enable_parcel_layers = false
+
+        if(enable_parcel_layers)
+          addParcelInvisibleFillLayers(map.current)
       })
     }
   }, [mapTheme]);
@@ -391,6 +400,7 @@ export default function Map() {
         const _resultLayers = features.map((e:any) => e.layer.id)
         // display popup
         let _description = getMapPopupDescription(features)
+        localStorage.setItem('description',_description)
         if (_description) {
           new maplibregl.Popup()
             .setLngLat(e.lngLat)

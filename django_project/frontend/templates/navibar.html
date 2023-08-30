@@ -98,30 +98,17 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu">
                
-                <!-- Notifications -->
-                <!-- <span class="submenu-item">
-                    {% if messages %}
-                    <a class="dropdown-item notification-text" href="#"> NOTIFICATIONS &raquo; </a>
-                    {% endif %}
-                    <ul class="dropdown-menu dropdown-submenu dropdown-submenu-left text-center">
-                        {% for message in messages %}
-                            {% if 'notification' in message.tags %}
-                                <li><a href="/notifications/{{ user }}/">{{ message }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>                    
-                </span> -->
 
                 <span class="submenu-item" style="display: none;" id="notifications">
-                    <a class="dropdown-item notification-text" href="#"> NOTIFICATIONS &raquo; </a>
+                    <a class="dropdown-item notification-text" href="#"> Notifications &raquo; </a>
                     <ul class="dropdown-menu dropdown-submenu dropdown-submenu-left text-center" id="notifications_dropdwon">
                     </ul>                    
                 </span>
 
-                <a class="dropdown-item" href="/profile">PROFILE</a>
+                <a class="dropdown-item" href="/profile">My Profile</a>
                 <hr class="divider" />
-                {% if '/accounts/two-factor/two_factor/setup' not in request.path and '/profile/' not in request.path and  '/accounts/two-factor/two_factor/backup_tokens' not in request.path %}
-                <span class="dropdown-header">CURRENT ORGANISATION:</span>
+                {% if '/accounts/two-factor/two_factor/setup' not in request.path and  '/accounts/two-factor/two_factor/backup_tokens' not in request.path %}
+                <span class="dropdown-header">Active Organisation</span>
                 {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
                 <button class="btn btn-success btn-sm badge-btn center-button" type="button" data-toggle="modal" data-target="#organisationModal">REQUEST ORGANISATION</button>
                 {% else %}
@@ -130,29 +117,20 @@
                 <hr class="divider" />
                
                 {% if organisations %}
-                <span class="dropdown-header">ACCESSIBLE ORGANISATIONS:</span>
-                {% for organisation in organisations|slice:":3" %}
-                <a class="dropdown-item" key="{{ organisation.id }}" href="{% url 'switch-organisation' organisation.id %}?next={{ request.get_full_path|urlencode }}">{{ organisation.name }}</a>
+                <a class="dropdown-item toggle-dropdown-icon" href="#" role="button" id="switchOrganisationDropdown" aria-haspopup="true" aria-expanded="false">
+                    Switch Organisation <span class="dropdown-icon">&#9656;</span>
+                </a>
+                {% for organisation in organisations %}
+                <a class="dropdown-item organisation-item" key="{{ organisation.id }}" href="{% url 'switch-organisation' organisation.id %}?next={{ request.get_full_path|urlencode }}" style="display: none;">{{ organisation.name }}</a>
                 {% endfor %}
-                {% if organisations|length > 3 %}
-                <hr class="divider" />
-                <span class="submenu-item">
-                    <a class="dropdown-item" href="#"> Others &raquo; </a>
-                    <ul class="dropdown-menu dropdown-submenu dropdown-submenu-left">
-                        {% for organisation in organisations|slice:"3:" %}
-                        <li>
-                            <a class="dropdown-item" href="{% url 'switch-organisation' organisation.id %}?next={{ request.get_full_path|urlencode }}" key="{{ organisation.id }}">{{ organisation.name }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </span>
-                {% endif %}
+                    
+                
                 <hr class="divider" />
                 {% endif %}
 
                 {% endif %}
                 {% if user.is_superuser %}
-                <a class="dropdown-item" href="/admin/">DJANGO ADMIN</a>
+                <a class="dropdown-item" href="/admin/">Django Admin</a>
                 {% endif %}
             </div>
         </li>
@@ -176,6 +154,33 @@
 </nav>
 
 <script>
+    $(document).ready(function() {
+        $(".toggle-dropdown-icon").on("click", function() {
+            console.log("Switch Organisation clicked");
+            $(".organisation-dropdown-menu").toggleClass("show");
+            $(this).toggleClass("open");
+
+            // Toggle the display of the hidden dropdown items
+            $(".organisation-item").toggle();
+        });
+
+        $(".organisation-dropdown-menu").on("hide.bs.dropdown", function() {
+            $(".toggle-dropdown-icon").removeClass("open");
+        });
+    });
+
+    $(document).ready(function() {
+        // Prevent event propagation when clicking on the inner dropdown items
+        $('.organisation-item').on('click', function(event) {
+            event.stopPropagation();
+        });
+
+        // Prevent the main dropdown from closing when clicking on inner dropdown
+        $('#switchOrganisationDropdown').on('click', function(event) {
+            event.stopPropagation();
+        });
+    });
+    
     function redirectToDesiredPage() {
         // Retrieve the current window location
         var currentLocation = window.location.href;
@@ -223,6 +228,24 @@
 </script>
 
 <style>
+    .dropdown-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .dropdown-icon {
+        transition: transform 0.3s;
+        margin-left: 5%;
+        margin-bottom: 1%;
+    }
+
+    .open .dropdown-icon {
+        transform: rotate(90deg);
+        margin-left: 5%;
+        margin-bottom: 0%;
+    }
+
     .notification-text {
         color: var(--green);
     }

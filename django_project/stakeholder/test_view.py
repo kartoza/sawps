@@ -382,7 +382,7 @@ class TestAddReminderAndScheduleTask(TestCase):
 
         # Check that the reminder was added to the database and task was scheduled
         reminders = Reminders.objects.filter(user=self.user)
-        self.assertEqual(reminders.count(), 1)
+        self.assertEqual(reminders.count(), 2)
         reminder = reminders.first()
         self.assertEqual(reminder.title, 'Test Reminder')
         self.assertEqual(reminder.reminder, 'Test Reminder Note')
@@ -535,6 +535,46 @@ class TestRemindersView(TestCase):
 
         # Check if the task is canceled when status is 'draft' or 'passed'
         self.assertTrue(reminder.status in [Reminders.ACTIVE])
+        
+        # test with status passed and everyone
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        response = self.client.post(
+            url,
+            {
+                'action': 'edit_reminder',
+                'ids': [str(reminder.id)],
+                'title': 'Updated Reminder',
+                'status': 'passed',
+                'date': date_str,
+                'timezone': 'Africa/Johannesburg',
+                'reminder_type': 'everyone',
+                'reminder': 'Updated Reminder Note',
+                'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        serialized_reminders = response.json()
+        self.assertEqual(len(serialized_reminders), 2)
+        
+        # test with status active status
+        url = reverse('reminders', kwargs={'slug': self.user.username})
+        response = self.client.post(
+            url,
+            {
+                'action': 'edit_reminder',
+                'ids': json.dumps([reminder.id]),
+                'title': 'Updated Reminder',
+                'status': 'active',
+                'date': date_str,
+                'timezone': 'Africa/Johannesburg',
+                'reminder_type': 'everyone',
+                'reminder': 'Updated Reminder Note',
+                'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        serialized_reminders = response.json()
+        self.assertEqual(len(serialized_reminders), 2)
 
 
 class SearchRemindersOrNotificationsTest(TestCase):

@@ -1,31 +1,21 @@
 import base64
-import mock
-from species.models import (
-    TaxonRank,
-    Taxon,
-    OwnedSpecies,
-    TaxonSurveyMethod
-)
-from species.factories import (
-    TaxonRankFactory,
-    TaxonFactory,
-    OwnedSpeciesFactory,
-    TaxonSurveyMethodF
-)
-from population_data.factories import AnnualPopulationF
+from unittest import mock
+
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from django.test import Client, TestCase
 from django.urls import reverse
-from occurrence.models import SurveyMethod
-from rest_framework import status
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from occurrence.models import SurveyMethod
+from population_data.factories import AnnualPopulationF
+from rest_framework import status
 from species.factories import (
     OwnedSpeciesFactory,
     TaxonFactory,
     TaxonRankFactory,
     TaxonSurveyMethodF,
 )
+from property.factories import PropertyFactory
 from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
 
@@ -104,7 +94,7 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = TaxonSerializer([self.taxon], many=True).data
         self.assertEqual(expected_data, response.data)
-    
+
     def test_get_taxon_frontpage_list(self):
         """Test fetch taxon list for frontpage."""
         taxon = TaxonFactory.create(
@@ -114,6 +104,8 @@ class TaxonTestCase(TestCase):
             taxon_rank=self.taxonRank,
             show_on_front_page=True
         )
+        property_1 = PropertyFactory.create()
+        property_2 = PropertyFactory.create()
         client = Client()
         response = client.get(reverse('species-front-page'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -123,9 +115,9 @@ class TaxonTestCase(TestCase):
         self.assertEqual(taxon_1[0]['total_population'], 0)
         self.assertEqual(taxon_1[0]['species_name'], taxon.scientific_name)
         user_1 = User.objects.create_user(username='testuser_taxon_1', password='12345')
-        owned_species_1 = OwnedSpeciesFactory(taxon=taxon, user=user_1)
+        owned_species_1 = OwnedSpeciesFactory(taxon=taxon, user=user_1, property=property_1)
         user_2 = User.objects.create_user(username='testuser_taxon_2', password='12345')
-        owned_species_2 = OwnedSpeciesFactory(taxon=taxon, user=user_2)
+        owned_species_2 = OwnedSpeciesFactory(taxon=taxon, user=user_2, property=property_2)
         # create two years of data
         AnnualPopulationF(owned_species=owned_species_1, year=2021, total=30,
                           adult_male=10, adult_female=10)
@@ -302,7 +294,6 @@ class TaxonSurveyMethodTestCase(TestCase):
         )
         cls.survey_method = SurveyMethod.objects.create(
             name='Unknown',
-            sort_id='1'
         )
         cls.taxon_survey_method = TaxonSurveyMethodF(
             taxon=cls.taxon,

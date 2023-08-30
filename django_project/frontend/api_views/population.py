@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """API Views related to uploading population data.
 """
 from datetime import datetime
@@ -9,10 +7,13 @@ from activity.serializers import ActivityTypeSerializer
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from frontend.models.upload import DraftSpeciesUpload
+from frontend.utils.statistical_model import (
+    clear_statistical_model_output_cache
+)
 from occurrence.models import SamplingSizeUnit, SurveyMethod
 from occurrence.serializers import (
     SamplingSizeUnitMetadataSerializer,
-    SurveyMethodSerializer
+    SurveyMethodSerializer,
 )
 from population_data.models import (
     AnnualPopulation,
@@ -31,9 +32,6 @@ from rest_framework.views import APIView
 from species.models import OwnedSpecies, Taxon
 from species.serializers import TaxonSerializer
 from stakeholder.models import OrganisationUser
-from frontend.utils.statistical_model import (
-    clear_statistical_model_output_cache
-)
 
 
 class PopulationMetadataList(APIView):
@@ -128,8 +126,8 @@ class UploadPopulationAPIVIew(APIView):
                 },
             )
         annual_population = request.data.get("annual_population")
-        intake_population = request.data.get("intake_population")
-        offtake_population = request.data.get("offtake_population")
+        intake_populations = request.data.get("intake_populations")
+        offtake_populations = request.data.get("offtake_populations")
         # get survey_method
         survey_method = get_object_or_404(
             SurveyMethod, id=annual_population.get("survey_method_id", 0)
@@ -147,14 +145,6 @@ class UploadPopulationAPIVIew(APIView):
         open_close_system = get_object_or_404(
             OpenCloseSystem, id=annual_population.get("open_close_id")
         )
-        # get intake activity
-        intake_activity = get_object_or_404(
-            ActivityType, id=intake_population.get("activity_type_id", 0)
-        )
-        # get offtake activity
-        offtake_activity = get_object_or_404(
-            ActivityType, id=offtake_population.get("activity_type_id", 0)
-        )
         # area_available_to_species
         area_available_to_species = annual_population.get(
             "area_available_to_species", 0
@@ -171,7 +161,7 @@ class UploadPopulationAPIVIew(APIView):
         if not is_new:
             owned_species.area_available_to_species = area_available_to_species
             owned_species.save()
-        # add annual population
+        # add or update annual population
         AnnualPopulation.objects.create(
             year=year,
             owned_species=owned_species,
@@ -180,8 +170,8 @@ class UploadPopulationAPIVIew(APIView):
             adult_female=annual_population.get("adult_female", 0),
             juvenile_male=annual_population.get("juvenile_male", 0),
             juvenile_female=annual_population.get("juvenile_female", 0),
-            area_covered=annual_population.get("area_covered", 0),
-            sampling_effort=annual_population.get("sampling_effort", 0),
+            # area_covered=annual_population.get("area_covered", 0),
+            # sampling_effort=annual_population.get("sampling_effort", 0),
             group=annual_population.get("group", 0),
             note=annual_population.get("note", None),
             survey_method=survey_method,
@@ -198,33 +188,53 @@ class UploadPopulationAPIVIew(APIView):
                             ),
         )
         # add annual population per activity - intake
-        AnnualPopulationPerActivity.objects.create(
-            year=year,
-            owned_species=owned_species,
-            activity_type=intake_activity,
-            total=intake_population.get("total"),
-            adult_male=intake_population.get("adult_male", 0),
-            adult_female=intake_population.get("adult_female", 0),
-            juvenile_male=intake_population.get("juvenile_male", 0),
-            juvenile_female=intake_population.get("juvenile_female", 0),
-            founder_population=intake_population.get(
-                "founder_population", None),
-            reintroduction_source=intake_population.get(
-                "reintroduction_source", None),
-            intake_permit=intake_population.get("permit_number", None),
-        )
+        for intake_population in intake_populations:
+            # get intake activity
+            intake_activity = ActivityType.objects.filter(
+                id=intake_population.get("activity_type_id", 0)
+            ).first()
+            if intake_activity is None:
+                continue
+            AnnualPopulationPerActivity.objects.create(
+                year=year,
+                owned_species=owned_species,
+                activity_type=intake_activity,
+                total=intake_population.get("total"),
+                adult_male=intake_population.get("adult_male", 0),
+                adult_female=intake_population.get("adult_female", 0),
+                juvenile_male=intake_population.get("juvenile_male", 0),
+                juvenile_female=intake_population.get("juvenile_female", 0),
+                founder_population=intake_population.get(
+                    "founder_population", None),
+                reintroduction_source=intake_population.get(
+                    "reintroduction_source", None),
+                intake_permit=intake_population.get("permit", None),
+                note=intake_population.get("note", None),
+            )
         # add annual population per activity - offtake
-        AnnualPopulationPerActivity.objects.create(
-            year=year,
-            owned_species=owned_species,
-            activity_type=offtake_activity,
-            total=offtake_population.get("total"),
-            adult_male=offtake_population.get("adult_male", 0),
-            adult_female=offtake_population.get("adult_female", 0),
-            juvenile_male=offtake_population.get("juvenile_male", 0),
-            juvenile_female=offtake_population.get("juvenile_female", 0),
-            intake_permit=offtake_population.get("permit_number", None),
-        )
+        for offtake_population in offtake_populations:
+            # get offtake activity
+            offtake_activity = ActivityType.objects.filter(
+                id=offtake_population.get("activity_type_id", 0)
+            ).first()
+            if offtake_activity is None:
+                continue
+            AnnualPopulationPerActivity.objects.create(
+                year=year,
+                owned_species=owned_species,
+                activity_type=offtake_activity,
+                total=offtake_population.get("total"),
+                adult_male=offtake_population.get("adult_male", 0),
+                adult_female=offtake_population.get("adult_female", 0),
+                juvenile_male=offtake_population.get("juvenile_male", 0),
+                juvenile_female=offtake_population.get("juvenile_female", 0),
+                reintroduction_source=offtake_population.get(
+                    "reintroduction_source", None),
+                translocation_destination=offtake_population.get(
+                    "translocation_destination", None),
+                offtake_permit=offtake_population.get("permit", None),
+                note=offtake_population.get("note", None),
+            )
         # if draft exists, then delete it
         draft_uuid = request.GET.get("uuid", None)
         if draft_uuid:

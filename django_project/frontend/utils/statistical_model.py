@@ -32,6 +32,7 @@ def plumber_health_check(max_retry=5):
     request_url = f'http://0.0.0.0:{PLUMBER_PORT}/statistical/echo'
     retry = 0
     req = None
+    time.sleep(1)
     while (req is None or req.status_code != 200) and retry < max_retry:
         try:
             req = requests.get(request_url)
@@ -97,11 +98,13 @@ def kill_r_plumber_process():
     kill_process_by_pid(pid_path)
 
 
-def execute_statistical_model(data_filepath, model: StatisticalModel = None):
+def execute_statistical_model(data_filepath, taxon: Taxon,
+                              model: StatisticalModel = None):
     """
     Execute R model from exported data.
 
     :param data_filepath: file path of exported csv
+    :param taxon: species
     :param model: optional model to be executed, \
             if model=None, then generic one will be used
     :return: tuple of is_success, json response
@@ -109,7 +112,8 @@ def execute_statistical_model(data_filepath, model: StatisticalModel = None):
     api_name = f'api_{model.id}' if model else 'generic'
     request_url = f'http://plumber:{PLUMBER_PORT}/statistical/{api_name}'
     data = {
-        'filepath': data_filepath
+        'filepath': data_filepath,
+        'taxon_name': taxon.scientific_name
     }
     response = requests.post(request_url, data=data)
     content_type = response.headers['Content-Type']
@@ -124,9 +128,9 @@ def execute_statistical_model(data_filepath, model: StatisticalModel = None):
     return False, None
 
 
-def write_plumber_file():
+def write_plumber_file(file_path = None):
     """Write R codes to plumber.R"""
-    r_file_path = os.path.join(
+    r_file_path = file_path if file_path else os.path.join(
         '/home/web/plumber_data',
         'plumber.R'
     )
@@ -139,10 +143,17 @@ def write_plumber_file():
     models = StatisticalModel.objects.all()
     for model in models:
         lines.append('\n')
-        lines.append(f'#* Model for species {model.taxon.scientific_name}\n')
-        lines.append(f'#* @post /statistical/api_{str(model.id)}\n')
-        lines.append('function(filepath) {\n')
+        if model.taxon:
+            lines.append(
+                f'#* Model for species {model.taxon.scientific_name}\n')
+            lines.append(f'#* @post /statistical/api_{str(model.id)}\n')
+        else:
+            lines.append('#* Generic Model\n')
+            lines.append('#* @post /statistical/generic\n')
+
+        lines.append('function(filepath, taxon_name) {\n')
         lines.append('  all_data <- read.csv(filepath)\n')
+        lines.append('  metadata <- list(species=taxon_name)\n')
         code_lines = model.code.splitlines()
         for code in code_lines:
             lines.append(f'  {code}\n')
@@ -245,8 +256,13 @@ def clear_statistical_model_output_cache(taxon: Taxon):
 
     :param taxon: species
     """
+    if taxon:
+        keys_pattern = f'*species-{str(taxon.id)}-*'
+    else:
+        # updated generic model, all cache can be cleared
+        keys_pattern = '*species-*'
     output_caches = (
-        cache._cache.get_client().keys(f'*species-{str(taxon.id)}-*')
+        cache._cache.get_client().keys(keys_pattern)
     )
     if output_caches:
         for cache_key in output_caches:

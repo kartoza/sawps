@@ -136,7 +136,11 @@ class AnnualPopulationPerActivityTestCase(TestCase):
         )
         user = User.objects.create_user(username='testuser', password='12345')
         owned_species = OwnedSpeciesFactory(taxon=taxon, user=user)
-        cls.population_count = AnnualPopulationPerActivityFactory(owned_species=owned_species)
+        cls.population_count = AnnualPopulationPerActivityFactory(
+            owned_species=owned_species,
+            intake_permit='1',
+            offtake_permit='1'
+        )
 
     def test_create_population_count(self):
         """Test create population count."""
@@ -165,6 +169,8 @@ class AnnualPopulationPerActivityTestCase(TestCase):
                 owned_species=self.population_count.owned_species,
                 year=self.population_count.year,
                 activity_type=self.population_count.activity_type,
+                intake_permit='1',
+                offtake_permit='1'
             )
 
     def test_delete_population_count(self):

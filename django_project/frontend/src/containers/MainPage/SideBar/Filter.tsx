@@ -2,18 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import {
     Box,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     Checkbox,
     Accordion,
     AccordionSummary,
     Typography,
     AccordionDetails,
     Chip,
-    IconButton,
-    SelectChangeEvent,
     FormControlLabel,
 } from '@mui/material';
 import List from '@mui/material/List';
@@ -35,10 +29,11 @@ import { selectedPropertyId, setEndYear, setSpeciesFilter, setStartYear, toggleS
 import './index.scss';
 import PropertyInterface from '../../../models/Property';
 
+const yearRangeStart = 1960;
+const yearRangeEnd = new Date().getFullYear();
 const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
-const yearRangeStart = 1960;
-const yearRangeEnd = 2023;
+
 
 function Filter() {
     const dispatch = useAppDispatch()
@@ -50,6 +45,8 @@ function Filter() {
     const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
     const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
+    const [localStartYear, setLocalStartYear] = useState(startYear);
+    const [localEndYear, setLocalEndYear] = useState(endYear);
 
     const marks = [
         {
@@ -115,7 +112,9 @@ function Filter() {
 
     const handleChange = (event: any, newValue: number | number[]) => {
         if (Array.isArray(newValue)) {
+            setLocalStartYear((newValue[0]))
             dispatch(setStartYear(newValue[0]));
+            setLocalEndYear((newValue[1]))
             dispatch(setEndYear(newValue[1]));
         }
     };
@@ -187,9 +186,29 @@ function Filter() {
     };
 
     useEffect(() => {
+
         dispatch(selectedPropertyId(selectedProperty.length > 0 ? selectedProperty.join(',') : ''));
     }, [selectedProperty])
 
+    const handleStartYearChange = (value: string) => {
+        const newValue = parseInt(value, 10);
+        setLocalStartYear(newValue);
+        if (newValue < yearRangeStart && newValue > yearRangeEnd) {
+            dispatch(setStartYear(yearRangeStart));
+        } else {
+            dispatch(setStartYear(newValue));
+        }
+    }
+
+    const handleEndYearChange = (value: string) => {
+        const newValue = parseInt(value, 10);
+        setLocalEndYear(newValue);
+        if (newValue < yearRangeStart && newValue > yearRangeEnd) {
+            dispatch(setEndYear(yearRangeEnd));
+        } else {
+            dispatch(setEndYear(newValue));
+        }
+    }
     return (
         <Box>
             <Box className='searchBar'>
@@ -313,6 +332,18 @@ function Filter() {
                         marks={marks}
                     />
                 </Box>
+
+                <Box className='formboxInput'>
+                    <Box className='form-inputFild'>
+                        <TextField type="number" size='small' value={localStartYear} onChange={(e) => handleStartYearChange(e.target.value)} />
+                        <Typography className='formtext'>From</Typography>
+                    </Box>
+                    <Box className='form-inputFild right-flids'>
+                        <TextField type="number" size='small' value={localEndYear} onChange={(e) => handleEndYearChange(e.target.value)} />
+                        <Typography className='formtext'>To</Typography>
+                    </Box>
+                </Box>
+
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/FilterIcon.png" alt='Filter image' />
                     <Typography color='#75B37A' fontSize='medium'>Spatial filters</Typography>
