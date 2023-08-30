@@ -47,6 +47,10 @@ let conf = {
                     MiniCssExtractPlugin.loader, "css-loader",
                 ],
             },
+            {
+                test: /\.(png|jpe?g|gif|jp2|svg|jpg|webp|JPG)$/,
+                use: ['file-loader'],
+            },
         ],
     },
     optimization: {
