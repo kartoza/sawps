@@ -10,6 +10,7 @@ from frontend.serializers.national_statistics import (
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.templatetags.static import static
 
 class NationalSpeciesViewTest(APITestCase):
     def setUp(self):
@@ -20,11 +21,11 @@ class NationalSpeciesViewTest(APITestCase):
         # Create mock Taxon objects
         taxon1 = Taxon(
             common_name_varbatim='Species 1',
-            icon=url('profile_pictures/picture_P.jpg')
+            icon=static('profile_pictures/picture_P.jpg')
         )
         taxon2 = Taxon(
             common_name_varbatim='Species 2',
-            icon=url('profile_pictures/picture_P.jpg')
+            icon=static('profile_pictures/picture_P.jpg')
         )
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
