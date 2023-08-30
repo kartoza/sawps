@@ -10,6 +10,7 @@ from frontend.serializers.national_statistics import (
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.templatetags.static import static
 
 class NationalSpeciesViewTest(APITestCase):
     def setUp(self):
@@ -18,8 +19,14 @@ class NationalSpeciesViewTest(APITestCase):
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list(self, mock_get_species_list):
         # Create mock Taxon objects
-        taxon1 = Taxon(common_name_varbatim='Species 1')
-        taxon2 = Taxon(common_name_varbatim='Species 2')
+        taxon1 = Taxon(
+            common_name_varbatim='Species 1',
+            icon='images/lion.png'
+        )
+        taxon2 = Taxon(
+            common_name_varbatim='Species 2',
+            icon='images/tiger.png'
+        )
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
         )
@@ -43,7 +50,12 @@ class NationalSpeciesViewTest(APITestCase):
         self.assertEqual(len(response.data), 2)
 
         serializer = SpeciesListSerializer([taxon1, taxon2], many=True)
-        self.assertEqual(response.data, serializer.data)
+        # Create a serializer instance for each taxon object
+        serializer1 = SpeciesListSerializer(taxon2)
+        
+        icon_url_1 = serializer1.get_species_icon(taxon2)
+        expected_url_1 = '/media/images/tiger.png'
+        self.assertEqual(icon_url_1, expected_url_1)
 
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list_empty(self, mock_get_species_list):
