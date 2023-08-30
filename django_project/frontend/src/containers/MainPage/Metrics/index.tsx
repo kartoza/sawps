@@ -22,9 +22,6 @@ const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 // national metrics and download button
 import GenerateChartImages from "../../../components/PdfReport/generateChartImage";
 
-// national metrics and download button
-import GenerateChartImages from "../../../components/PdfReport/generateChartImage";
-
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
