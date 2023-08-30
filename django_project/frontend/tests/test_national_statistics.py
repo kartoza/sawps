@@ -20,9 +20,12 @@ class NationalSpeciesViewTest(APITestCase):
         # Create mock Taxon objects
         taxon1 = Taxon(
             common_name_varbatim='Species 1',
-            icon='profile_pictures/picture_P.jpg'
+            icon=url('profile_pictures/picture_P.jpg')
         )
-        taxon2 = Taxon(common_name_varbatim='Species 2')
+        taxon2 = Taxon(
+            common_name_varbatim='Species 2',
+            icon=url('profile_pictures/picture_P.jpg')
+        )
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
         )
