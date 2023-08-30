@@ -120,7 +120,8 @@ class UploadSpeciesStatus(APIView):
                 status=200,
                 data={
                     'status': 'Canceled',
-                    'property': (property_message if property_message else None),
+                    'property': (property_message if property_message
+                                 else None),
                     'taxon': (taxon_message if taxon_message else None)
                 }
             )
