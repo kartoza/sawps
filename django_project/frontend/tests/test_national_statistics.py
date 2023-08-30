@@ -50,6 +50,9 @@ class NationalSpeciesViewTest(APITestCase):
         self.assertEqual(len(response.data), 2)
 
         serializer = SpeciesListSerializer([taxon1, taxon2], many=True)
+        icon_url_1 = serializer.get_species_icon(taxon1)
+        expected_url_1 = '/static/images/lion.png'
+        self.assertEqual(icon_url_1, expected_url_1)
 
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list_empty(self, mock_get_species_list):
