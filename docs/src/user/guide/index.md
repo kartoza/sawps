@@ -85,12 +85,11 @@ The year filter works slightly differently from the rest. Simply drag the dots o
 
 ## Uploading Data
 
-The data upload function allows users to fill in an online form or upload a CSV file to the SAWPS platform to further enrich
-their data.
+The data upload function allows users to fill in an online form or upload a CSV file to the SAWPS platform to further enrich their data.
 
 ### How to upload CSV data
 
-Users must first download a template, which they populate with their own data.
+Users must first download a template from the platform, which they populate with their own data.
 
 #### Step 1
 
@@ -98,8 +97,7 @@ On the **Map** page
 
 ![step 1](img/upload-data-step-1.png)
 
-1. Click on **DATA UPLOAD**
-2. Select the property name
+To begin, click on `DATA UPLOAD` 1️⃣ then select the property name 2️⃣.
 
 #### Step 2
 
@@ -107,29 +105,26 @@ In this step, you have two choices to use the online form or to upload a CSV.
 
 ![step 2](img/upload-data-step-2.png)
 
-1. To upload a csv, click on **UPLOAD CSV**
-2. A pop-up window will open
-3. Browse and select the CSV file on your computer
+To upload a CSV, click on `UPLOAD CSV` 1️⃣. A pop-up window 2️⃣ will open, you can then browse and select the CSV file on your computer 3️⃣. To cancel uploading you can click on the `cancel` button 4️⃣.
 
 #### Step 3
 
 After selecting your CSV file, the system will check whether your file complies with the template.
 
-![step 3](img/upload-data-step-3.png)
-
-<!-- Steps need to be added here -->
-
 ![step 3 error](img/upload-data-step-3-error.png)
 
-1. An alert message is displayed in the case that the file is incorrect.
-2. You can close the pop-up.
+An alert message 1️⃣ is displayed in the case that the file is incorrect. You can close the pop-up by clicking on `Close` 2️⃣.
 
 #### Step 4
 
+1️⃣, 2️⃣, 3️⃣, 4️⃣, 5️⃣, 6️⃣, 7️⃣, 8️⃣
+
 Once the system has checked the file you have selected, it will allow you to **UPLOAD FILES** if it's correct.
 
-![step 4](img/upload-data-step-4.png)
+![step 4 1](img/upload-data-step-4-1.png)
 
-1. A success message is displayed when the download is complete.
-2. The file you selected
-3. The pop-up window can be closed
+You can drag and drop files to be uploaded or click on `Browse` 1️⃣ to select files from your file explorer. A chosen file will appear here 2️⃣ when it is being uploaded. You can cancel uploading by clicking on the `cancel` button 3️⃣. Once your files have finished uploading you can click on `Upload Files` 4️⃣ to finish the process.
+
+![step 4 2](img/upload-data-step-4-2.png)
+
+A success message 1️⃣ is displayed when the download is complete. The file you selected shows here 2️⃣. The pop-up window can be closed by clicking on `Close` 3️⃣.
