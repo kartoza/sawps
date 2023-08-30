@@ -15,6 +15,7 @@ from frontend.serializers.metrics import (
     SpeciesPopulationDensityPerPropertySerializer,
     TotalCountPerActivitySerializer,
     PopulationPerAgeGroupSerialiser,
+    TotalAreaVSAvailableAreaSerializer,
 )
 from frontend.utils.metrics import (
     calculate_population_categories,
@@ -269,6 +270,38 @@ class PopulationPerAgeGroupAPIView(APIView):
         """
         queryset = self.get_queryset()
         serializer = PopulationPerAgeGroupSerialiser(
+            queryset, many=True, context={"request": request}
+        )
+        return Response(serializer.data)
+
+
+class TotalAreaVSAvailableAreaAPIView(APIView):
+    """
+    API endpoint to retrieve total area and area available.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> List[Taxon]:
+        """
+        Returns a filtered queryset of Taxon objects representing
+        species within the specified organization.
+        """
+        organisation_id = self.request.session.get('current_organisation_id')
+        queryset = Taxon.objects.filter(
+            ownedspecies__property__organisation_id=organisation_id,
+            taxon_rank__name='Species'
+        ).distinct()
+        filtered_queryset = BaseMetricsFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve total area and available area.
+        """
+        queryset = self.get_queryset()
+        serializer = TotalAreaVSAvailableAreaSerializer(
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)

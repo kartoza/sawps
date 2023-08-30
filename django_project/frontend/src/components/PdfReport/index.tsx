@@ -199,7 +199,6 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
           )}
 
           
-
           {/* Content for page 1 */}
           {pageIndex === 1 && (
             <View>
@@ -229,6 +228,7 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
               </View>
               {/* Chart Image */}
               <Image style={styles.ThirdPagechartImage} src={chartBase64} />
+
             </View>
           )}
   

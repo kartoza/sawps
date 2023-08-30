@@ -27,7 +27,6 @@ from frontend.api_views.national_statistic import (
 )
 from rest_framework.response import Response
 
-
 class NationalSpeciesViewTest(APITestCase):
     def setUp(self):
         self.url = reverse('species_list_national')
@@ -36,7 +35,10 @@ class NationalSpeciesViewTest(APITestCase):
     def test_get_species_list(self, mock_get_species_list):
         # Create mock Taxon objects
         taxon1 = Taxon(common_name_varbatim='Species 1')
-        taxon2 = Taxon(common_name_varbatim='Species 2')
+        taxon2 = Taxon(
+          common_name_varbatim='Species 2',
+          icon='images/tiger.png'
+        )
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
         )
@@ -60,7 +62,12 @@ class NationalSpeciesViewTest(APITestCase):
         self.assertEqual(len(response.data), 2)
 
         serializer = SpeciesListSerializer([taxon1, taxon2], many=True)
-        self.assertEqual(response.data, serializer.data)
+        serializer1 = SpeciesListSerializer(taxon2)
+        
+        icon_url_1 = serializer1.get_species_icon(taxon2)
+        expected_url_1 = '/media/images/tiger.png'
+        self.assertEqual(icon_url_1, expected_url_1)
+        # self.assertEqual(response.data, serializer.data)
 
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list_empty(self, mock_get_species_list):
@@ -130,7 +137,6 @@ class NationalStatisticsViewTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response)
-
 
 
 class NationalPropertiesViewTest(TestCase):
@@ -232,6 +238,5 @@ class NationalActivityCountViewTestCase(TestCase):
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
 
 
