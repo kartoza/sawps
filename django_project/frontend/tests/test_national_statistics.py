@@ -25,7 +25,7 @@ class NationalSpeciesViewTest(APITestCase):
         )
         taxon2 = Taxon(
             common_name_varbatim='Species 2',
-            icon='images/lion.png'
+            icon='images/tiger.png'
         )
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
@@ -50,8 +50,11 @@ class NationalSpeciesViewTest(APITestCase):
         self.assertEqual(len(response.data), 2)
 
         serializer = SpeciesListSerializer([taxon1, taxon2], many=True)
-        icon_url_1 = serializer.get_species_icon(taxon1)
-        expected_url_1 = '/static/images/lion.png'
+        # Create a serializer instance for each taxon object
+        serializer1 = SpeciesListSerializer(taxon2)
+        
+        icon_url_1 = serializer1.get_species_icon(taxon2)
+        expected_url_1 = '/media/images/tiger.png'
         self.assertEqual(icon_url_1, expected_url_1)
 
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
