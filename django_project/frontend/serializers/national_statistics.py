@@ -4,7 +4,6 @@ from population_data.models import AnnualPopulation
 from rest_framework import serializers
 from species.models import Taxon
 from datetime import datetime
-from django.templatetags.static import static
 
 
 class SpeciesListSerializer(serializers.ModelSerializer):
@@ -51,8 +50,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
         Params:
             obj (Taxon): The Taxon instance representing the species.
         """
-        # use static to generate url for icon
-        return static(obj.icon)
+        return obj.icon.url
 
     def get_annualpopulation_count(self, obj: Taxon) -> List[dict]:
         """Get the population count per year for the species.
