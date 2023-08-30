@@ -33,6 +33,7 @@ from frontend.api_views.metrics import (
     TotalCountPerActivityAPIView,
     TotalAreaAvailableToSpeciesAPIView,
     PopulationPerAgeGroupAPIView,
+    TotalAreaVSAvailableAreaAPIView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -71,6 +72,10 @@ from .views.totp_device import (
     view_totp_devices
 )
 from .views.users import OrganisationUsersView
+from frontend.api_views.national_statistic import (
+    NationalStatisticsView,
+    NationalSpeciesView
+)
 
 urlpatterns = [
     re_path(
@@ -248,6 +253,11 @@ urlpatterns = [
         name='population_per_age_group'
     ),
     path(
+        'api/total-area-vs-available-area/',
+        TotalAreaVSAvailableAreaAPIView.as_view(),
+        name='total_area_vs_available_area'
+    ),
+    path(
         'add_totp_devices/',
         add_totp_device,
         name='add_totp_devices'
@@ -266,5 +276,15 @@ urlpatterns = [
         'get_user_notifications/',
         get_user_notifications,
         name='get_user_notifications'
+    ),
+    path(
+        'api/species-list/',
+        NationalSpeciesView.as_view(),
+        name='species_list_national'
+    ),
+    path(
+        'api/statistics/',
+        NationalStatisticsView.as_view(),
+        name='statistics_national'
     ),
 ]

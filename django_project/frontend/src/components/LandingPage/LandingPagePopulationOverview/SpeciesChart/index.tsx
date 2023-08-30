@@ -117,8 +117,10 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
             legend: {
                 labels: {
                     filter: function(item: LegendItem, chart: ChartJS) {
-                        // Logic to remove a particular legend item goes here
-                        return !item.text.includes('_ci');
+                        if (item.text && typeof item.text === 'string') {
+                            return !item.text.includes('_ci');
+                        }
+                        return true; // Return true to keep all other items
                     }
                 }
             },
