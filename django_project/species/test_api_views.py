@@ -243,14 +243,8 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.data['status'], 'Done')
         self.assertEqual(
             response.data['message'],
-            '1 rows have been uploaded. '
-            'With 1 Annual population, '
-            '1 sampling effort coverage, '
-            '1 open/close_system, 1 survey method, '
-            '1 population estimate category annual '
-            'population per activity: 1 Translocation (Intake),'
-            '1 Translocation (Offtake), 1 Planned Hunt/Cull1 '
-            'Planned Euthanasia/DCA, 1 Unplanned/Illegal Hunting')
+            '1 row has been uploaded.'
+            )
 
     def test_upload_species_status_404(self):
         """Test upload species status with 404 error."""
@@ -298,7 +292,8 @@ class TestUploadSpeciesApiView(TestCase):
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'Canceled')
-        self.assertEqual(response.data['message'], '')
+        self.assertEqual(response.data['taxon'], None)
+        self.assertEqual(response.data['property'], None)
 
     def test_task_string_to_boolean(self):
         """Test string_to_boolean functionality in task"""

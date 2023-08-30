@@ -95,6 +95,7 @@ export default function Uploader(props: UploaderInterface) {
     const dropZone = useRef(null)
     const [alertMessage, setAlertMessage] = useState('')
     const [alertMessageTaxon, setAlertMessageTaxon] = useState('')
+    const [alertMessageProperty, setAlertMessageProperty] = useState('')
     const [isError, setIsError] = useState(false)
     const [savingSpeciesCSV, setSavingSpeciesCSV] = useState(false)
     const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
@@ -194,7 +195,8 @@ export default function Uploader(props: UploaderInterface) {
                         if (status === 'Done'){
                             setIsError(false)
                             setAlertMessage(response.data['message'])
-                            setAlertMessageTaxon(response.data['warning'])
+                            setAlertMessageTaxon(response.data['taxon'])
+                            setAlertMessageProperty(response.data['property'])
                             setTotalFile( 0)
                             setSavingSpeciesCSV(false)
                             setCloseButton('CLOSE')
@@ -202,7 +204,7 @@ export default function Uploader(props: UploaderInterface) {
                         }
                         else{
                             setIsError(true)
-                            setAlertMessage(response.data['message'])
+                            setAlertMessage(response.data['property']+'\n'+response.data['taxon'])
                             setTotalFile(totalFile - 1)
                             setSavingSpeciesCSV(false)
                             setCloseButton('CLOSE')
@@ -262,8 +264,12 @@ export default function Uploader(props: UploaderInterface) {
                     <p className="display-linebreak">
                         { alertMessage }
                     </p>
+                    { alertMessageProperty ?
+                    <p>
+                        { alertMessageProperty }
+                    </p>: null }
                     { alertMessageTaxon ?
-                    <p className="display-linebreak">
+                    <p>
                         { alertMessageTaxon }
                     </p>: null }
                     </Alert> : null }

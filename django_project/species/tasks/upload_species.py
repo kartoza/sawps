@@ -45,6 +45,12 @@ def string_to_number(string):
         return float(0)
 
 
+def plural(number):
+    if number > 1:
+        return "rows have"
+    return "row has"
+
+
 @shared_task(name='upload_species_data')
 def upload_species_data(upload_session_id):
     try:
@@ -58,33 +64,28 @@ def upload_species_data(upload_session_id):
     row_num = 1
     owned_species_created = 0
     annual_created_nb = 0
-    sampling_eff_nb = 0
-    open_created_nb = 0
-    survey_nb = 0
-    pop_estim_nb = 0
-    intake_nb = 0
-    offtake_nb = 0
-    hunt_nb = 0
-    euthanasia_nb = 0
-    unplanned_nb = 0
+    taxa_error = []
+    property_error = []
+    line_added = 0
+
     with open(upload_session.process_file.path, encoding=encoding
               ) as csv_file:
         reader = csv.DictReader(csv_file)
         data = list(reader)
 
         for row in data:
-
+            row_num += 1
             # get property
             try:
                 property = Property.objects.get(
                     name=row["Property_name"],
                 )
             except Property.DoesNotExist:
-                upload_session.error_notes = "The property name: {} in the " \
-                    "CSV line number {} does not match the selected " \
-                    "property. Please replace it with {}.".format(
-                        row["Property_name"], row_num, property_name)
-                upload_session.save()
+                property_error.append(
+                    "{} in line number {}".format(
+                        row["Property_name"], row_num
+                    )
+                )
                 continue
 
             # Get Taxon
@@ -94,11 +95,9 @@ def upload_species_data(upload_session_id):
                     common_name_varbatim=row["Common_name_verbatim"],
                 )
             except Taxon.DoesNotExist:
-                upload_session.error_notes = \
-                    "Taxon {} in row {} does not exist".format(
-                        row["Scientific_name"], row_num
-                    )
-                upload_session.save()
+                taxa_error.append("{} in line number {}".format(
+                    row["Scientific_name"], row_num
+                ))
                 continue
 
             # Save OwnedSpecies
@@ -117,16 +116,12 @@ def upload_species_data(upload_session_id):
                 sampling_eff, c = SamplingEffortCoverage.objects.get_or_create(
                     name=row["Sampling_effort_coverage"]
                 )
-                if c:
-                    sampling_eff_nb += 1
 
             # Save OpenCloseSystem
             if row["open/close_system"]:
                 open_sys, open_created = OpenCloseSystem.objects.get_or_create(
                     name=row["open/close_system"]
                 )
-                if open_created:
-                    open_created_nb += 1
 
             # Save Survey method
             suv = row["If other (survey method), please explain"]
@@ -136,8 +131,6 @@ def upload_species_data(upload_session_id):
                           suv
                           )
                 )
-                if created:
-                    survey_nb += 1
 
             # Save Population estimate category
             e = row["If other (population estimate category) , please explain"]
@@ -147,8 +140,6 @@ def upload_species_data(upload_session_id):
                     row["Population estimate category"] else e
 
                 ))
-                if pc:
-                    pop_estim_nb += 1
 
             # Save AnnualPopulation
             annual, annual_created = AnnualPopulation.objects.get_or_create(
@@ -211,8 +202,6 @@ def upload_species_data(upload_session_id):
                     intake_permit=int(string_to_number(
                         row["Permit_number (if applicable)"]))
                 )
-                if in_c:
-                    intake_nb += 1
 
             # Save AnnualPopulationPerActivity translocation offtake
             if row["Translocation_offtake_total"]:
@@ -236,8 +225,6 @@ def upload_species_data(upload_session_id):
                     offtake_permit=int(string_to_number(
                         row["Translocation_Offtake_Permit_number"]))
                 )
-                if off_c:
-                    offtake_nb += 1
 
             # Save AnnualPopulationPerActivity Planned hunt/cull
             if row["Planned hunt/culling_TOTAL"]:
@@ -260,8 +247,6 @@ def upload_species_data(upload_session_id):
                     offtake_permit=int(string_to_number(
                         row["Planned hunt/culling_Permit_number"]))
                 )
-                if hunt_c:
-                    hunt_nb += 1
 
             # Save AnnualPopulationPerActivity Planned euthanasia
             if row["Planned euthanasia_TOTAL"]:
@@ -284,8 +269,6 @@ def upload_species_data(upload_session_id):
                     offtake_permit=int(string_to_number(
                         row["Planned euthanasia_Permit_number"]))
                 )
-                if pe_c:
-                    euthanasia_nb += 1
 
             # Save AnnualPopulationPerActivity Unplanned/illegal hunting
             if row["Unplanned/illegal hunting_TOTAL"]:
@@ -310,39 +293,52 @@ def upload_species_data(upload_session_id):
                     juvenile_female=int(string_to_number(row[
                         "Unplanned/illegal hunting_Offtake_female_juveniles"]))
                 )
-                if unp_c:
-                    unplanned_nb += 1
-            row_num += 1
+            line_added += 1
             upload_session.processed = True
             upload_session.save()
 
+    if len(taxa_error) > 0 or len(property_error) > 0:
+        taxa_message = ''
+        property_message = ''
+        for error in taxa_error:
+            taxa_message += error + ','
+        if len(taxa_error) > 0:
+            v = 'do not exist.' if len(taxa_error) > 1 \
+                else 'does not exist'
+            taxa_message += v + ' in the database. ' \
+                'Please select species available in the dropdown only.'
+            taxa_message = "Taxon name: " + taxa_message
+
+        for error in property_error:
+            property_message += error + ','
+        if len(property_error) > 0:
+            v = 'do' if len(property_error) > 1 else 'does'
+            property_message += v + " not match the selected property. " \
+                "Please replace it with {}.".format(property_name)
+            property_message = "The property name: " + property_message
+        upload_session.error_notes =  \
+            property_message + '\n' + taxa_message
+
     if upload_session.processed:
         if owned_species_created > 0 and annual_created_nb > 0:
-            success_response = "{} rows have been uploaded. With {} Annual " \
-                    "population, {} sampling effort coverage, {} " \
-                    "open/close_system, {} survey method, {} population " \
-                    "estimate category annual population " \
-                    "per activity: {} Translocation (Intake)," \
-                    "{} Translocation (Offtake), {} Planned Hunt/Cull" \
-                    "{} Planned Euthanasia/DCA, {} Unplanned/Illegal " \
-                    "Hunting".format(
+            success_response = "{} {} been uploaded.".format(
+                        line_added, plural(line_added)
+                    )
+            if owned_species_created < line_added:
+                success_response = "{} {} been uploaded.The {} " \
+                    "{} not been saved. " \
+                    "They already exist in the database.".format(
                         owned_species_created,
-                        annual_created_nb,
-                        sampling_eff_nb,
-                        open_created_nb,
-                        survey_nb,
-                        pop_estim_nb,
-                        intake_nb,
-                        offtake_nb,
-                        hunt_nb,
-                        euthanasia_nb,
-                        unplanned_nb,
+                        plural(owned_species_created),
+                        plural(line_added - owned_species_created),
+                        line_added - owned_species_created
                     )
         else:
-            success_response = "The {} rows have not been saved. " \
-                "They already exist in the database.".format(row_num - 1)
+            success_response = "The {} {} not been saved. " \
+                "They already exist in the database.".format(
+                    line_added, plural(line_added))
 
         upload_session.success_notes = (
             success_response
         )
-        upload_session.save()
+    upload_session.save()
