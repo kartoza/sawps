@@ -19,6 +19,9 @@ const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
 const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
+// national metrics and download button
+import GenerateChartImages from "../../../components/PdfReport/generateChartImage";
+
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
@@ -31,6 +34,7 @@ const Metrics = () => {
     const [ageGroupData, setAgeGroupData] = useState([])
     const labels = Object.keys(activityType);
     const totalCountLabel = labels.filter(item => item !== "Base population");
+    const [userRole, setUserRole] = useState('');
     const [areaData, setAreaData] = useState([])
 
     const fetchActivityPercentageData = () => {
@@ -94,6 +98,12 @@ const Metrics = () => {
         fetchAreaAvailableLineData();
     }, [propertyId, startYear, endYear, selectedSpecies])
 
+    useEffect(() => {
+        // Fetch the user role from local storage
+        const storedUserRole = localStorage.getItem('user_role');
+        setUserRole(storedUserRole.toLocaleLowerCase());
+    }, []);
+
     return (
         <Box className="overflow-auto-chart">
             <Grid className="main-chart" container spacing={3} style={{ padding: 20 }}>
@@ -128,6 +138,10 @@ const Metrics = () => {
                         />)}
                 </Grid>
             </Grid>
+            {/* for decision makers only */}
+            {userRole === 'decision maker' && (
+                <GenerateChartImages />
+            )}
         </Box>
     );
 };
