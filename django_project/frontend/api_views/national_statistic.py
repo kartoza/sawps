@@ -103,6 +103,7 @@ class NationalStatisticsView(APIView):
         serializer = NationalStatisticsSerializer(statistics)
         return Response(serializer.data)
 
+
 class NationalPropertiesView(APIView):
     """
     An API view to retrieve
