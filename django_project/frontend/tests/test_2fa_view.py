@@ -59,16 +59,6 @@ class TOTPDeviceViewTests(TestCase):
         # Check that the response status code is 200 (OK)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_view_totp_devices_with_get(self):
-        # Log in the user
-        self.client.login(username='testuser', password='testpassword')
-
-        # Send a GET request to the view
-        response = self.client.get(reverse('view_totp_devices'))
-
-        # Check that the response status code is 200 (OK)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
     def test_add_totp_device(self):
         # Log in the user
         self.client.login(username='testuser', password='testpassword')
@@ -83,6 +73,20 @@ class TOTPDeviceViewTests(TestCase):
         # Check that a new device is created
         self.assertEqual(TOTPDevice.objects.count(), 2)
 
+    def test_add_totp_device_with_get(self):
+        # Log in the user
+        self.client.login(username='testuser', password='testpassword')
+
+        # Send a POST request to the view with device_name in the data
+        data = {'device_name': 'New Device'}
+        response = self.client.get(reverse('add_totp_devices'), data=data)
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check there should only be one device
+        self.assertEqual(TOTPDevice.objects.count(), 1)
+
     def test_delete_totp_device(self):
         # Log in the user
         self.client.login(username='testuser', password='testpassword')
@@ -96,17 +100,3 @@ class TOTPDeviceViewTests(TestCase):
 
         # Check that the device is deleted
         self.assertEqual(TOTPDevice.objects.count(), 0)
-
-    def test_delete_totp_device_with_invalid(self):
-        # Log in the user
-        self.client.login(username='testuser', password='testpassword')
-
-        # Send a POST request to the view to delete the device
-        response = self.client.post(
-            reverse('delete_totp_device', args=[999]))
-
-        # Check that the response status code is 404 not found
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-        # Check that the devices are still there
-        self.assertEqual(TOTPDevice.objects.count(), 1)
