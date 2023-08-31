@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from unittest.mock import patch
-from species.models import Taxon
+from species.models import Taxon, TaxonRank
 from frontend.serializers.national_statistics import (
     SpeciesListSerializer,
     NationalStatisticsSerializer
@@ -19,13 +19,16 @@ class NationalSpeciesViewTest(APITestCase):
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list(self, mock_get_species_list):
         # Create mock Taxon objects
+        taxon_rank = TaxonRank.objects.create(name='Species')
         taxon1 = Taxon(
             common_name_varbatim='Species 1',
-            icon='images/lion.png'
+            icon='images/lion.png',
+            taxon_rank=taxon_rank
         )
         taxon2 = Taxon(
             common_name_varbatim='Species 2',
-            icon='images/tiger.png'
+            icon='images/tiger.png',
+            taxon_rank=taxon_rank
         )
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
