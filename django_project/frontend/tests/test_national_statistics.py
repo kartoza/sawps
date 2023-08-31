@@ -20,6 +20,11 @@ class NationalSpeciesViewTest(APITestCase):
     def test_get_species_list(self, mock_get_species_list):
         # Create mock Taxon objects
         taxon_rank = TaxonRank.objects.create(name='Species')
+        Taxon.objects.create(
+            common_name_varbatim='Species 3',
+            icon='images/lion.png',
+            taxon_rank=taxon_rank
+        )
         taxon1 = Taxon(
             common_name_varbatim='Species 1',
             icon='images/lion.png',
