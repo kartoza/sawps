@@ -26,6 +26,7 @@ from species.tasks.upload_species import (
     string_to_boolean,
     string_to_number,
     upload_species_data,
+    plural
 )
 
 
@@ -244,7 +245,7 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(
             response.data['message'],
             '1 row has been uploaded.'
-            )
+        )
 
     def test_upload_species_status_404(self):
         """Test upload species status with 404 error."""
@@ -306,3 +307,60 @@ class TestUploadSpeciesApiView(TestCase):
 
         self.assertEqual(10, string_to_number('10'))
         self.assertEqual(0.0, string_to_number(''))
+
+    def test_task_plural(self):
+        """Test plural has and have."""
+
+        self.assertEqual("rows have", plural(2))
+        self.assertEqual("row has", plural(1))
+
+    @mock.patch("species.tasks.upload_species.upload_species_data")
+    def test_task_with_property_taxon_not_exit(self, mock):
+        """Test upload csv task with a property and taxon not existing."""
+
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_property_taxon.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_species_data(upload_session.id)
+        self.assertEqual(upload_session.canceled, False)
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.data['taxon'], "Taxon name: Lemurs in line number 3,does not exist in "
+            "the database. "
+            "Please select species available in the dropdown only."
+                         )
+        self.assertEqual(
+            response.data['property'],
+            "The property name: Luna in line number 2,does not match the "
+            "selected property. Please replace it with {}.".format(
+                self.property.name
+            )
+        )
