@@ -136,7 +136,7 @@ const PerPropertyTypeDonutChart = () => {
           pairs.length > 0 ? (
             <Box className="chart-wrapper">
               <Typography variant="h6" gutterBottom style={{ textAlign: "left" }}>
-                Total count as % of the total population per province
+                Total count as % of the total population per property type
               </Typography>
               {pairs}
             </Box>
