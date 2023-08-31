@@ -28,7 +28,7 @@
     "model": "frontend.contextlayer",
     "pk": 4,
     "fields": {
-        "name": "Ecosystem type",
+        "name": "Biome type",
         "is_static": true,
         "layer_names": [
             "ecosystems",
