@@ -3,7 +3,7 @@ from activity.models import ActivityType
 from population_data.models import AnnualPopulationPerActivity
 from frontend.utils.metrics import calculate_population_categories
 from frontend.filters.metrics import PropertyFilter
-from property.models import Property, PropertyType
+from property.models import Property
 from frontend.serializers.national_statistics import (
     NationalStatisticsSerializer,
     SpeciesListSerializer,
@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from species.models import OwnedSpecies, Taxon
 from django.db.models.query import QuerySet
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from django.db.models.functions import Coalesce
 
 
@@ -65,14 +65,8 @@ class NationalStatisticsView(APIView):
         total property area available for
         owned species (national).
         """
-        organisation_id = request.session.get(
-            'current_organisation_id'
-        )
 
-        national_properties = Property.objects.filter(
-            property_type__name='national',
-            organisation=organisation_id
-        )
+        national_properties = Property.objects.filter()
 
         # Count the number of matching properties
         total_property_count = national_properties.count()
@@ -123,16 +117,7 @@ class NationalPropertiesView(APIView):
         Get the filtered queryset
         of properties owned by the organization.
         """
-        organisation_id = self.request.session.get(
-            'current_organisation_id'
-        )
-        property_type = PropertyType.objects.filter(
-            Q(name__iexact='national')
-        ).first()
-        queryset = Property.objects.filter(
-            organisation_id=organisation_id,
-            property_type=property_type
-        )
+        queryset = Property.objects.filter()
         filtered_queryset = PropertyFilter(
             self.request.GET, queryset=queryset
         ).qs
@@ -160,16 +145,7 @@ class NationalActivityCountView(APIView):
         Get activity count of the total
         population as percentage
         """
-        organisation_id = self.request.session.get(
-            'current_organisation_id'
-        )
-        property_type = PropertyType.objects.filter(
-            name__iexact='national'
-        ).first()
-        properties = Property.objects.filter(
-            organisation_id=organisation_id,
-            property_type=property_type
-        )
+        properties = Property.objects.filter()
 
         # Retrieve species on each property
         species_per_property = OwnedSpecies.objects.filter(
@@ -410,3 +386,4 @@ class NationalActivityCountPerPropertyView(APIView):
         """
         queryset = self.get_activity_count()
         return Response(queryset)
+

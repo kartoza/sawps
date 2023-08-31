@@ -10,6 +10,7 @@ import SecondPageCharts from "./SecondPageContainer";
 import ThirdPageCharts from "./ThirdPageContainer";
 import FourthPageCharts from "./FourthPageContainer";
 
+
 import html2canvas from "html2canvas";
 
 Chart.register(LinearScale);
@@ -160,17 +161,6 @@ const GenerateChartImages: React.FC = () => {
                   />
               ))}
               </div>
-              // smaller preview
-            //   <div className="charts-container">
-            //   {charts.map((chart, index) => (
-            //     <img
-            //       key={index}
-            //       src={chart}
-            //       alt={`Chart ${index}`}
-            //       style={{ width: '50%', height: 'auto' }}
-            //     />
-            //   ))}
-            // </div>
             )}
 
             <div className="modal-buttons">

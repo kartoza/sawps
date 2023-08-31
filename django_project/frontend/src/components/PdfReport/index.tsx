@@ -207,7 +207,6 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
           )}
 
           
-
           {/* Content for page 1 */}
           {pageIndex === 1 && (
             <View>
