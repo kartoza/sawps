@@ -5,7 +5,8 @@ from unittest.mock import patch
 from species.models import Taxon, TaxonRank
 from frontend.serializers.national_statistics import (
     SpeciesListSerializer,
-    NationalStatisticsSerializer
+    NationalStatisticsSerializer,
+    NationalSpeciesView
 )
 from django.contrib.auth import get_user_model
 from django.test import Client
@@ -15,6 +16,21 @@ from django.templatetags.static import static
 class NationalSpeciesViewTest(APITestCase):
     def setUp(self):
         self.url = reverse('species_list_national')
+
+    def test_get_species_list_via_view(self):
+
+        taxon_rank1 = TaxonRank.objects.create(name="Species")
+        Taxon.objects.create(
+            common_name_varbatim='Species 1',
+             icon='images/tiger.png',
+            taxon_rank=taxon_rank1
+        )
+
+        view = NationalSpeciesView()
+
+        results = view.get_species_list()
+
+        self.assertEqual(len(results),1)
 
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list(self, mock_get_species_list):
