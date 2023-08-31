@@ -60,7 +60,7 @@ def view_totp_devices(request):
     user = request.user
 
     # Fetch all TOTP devices for the user
-    totp_devices = TOTPDevice.objects.filter(user=user)
+    totp_devices = TOTPDevice.objects.filter(user=user.id)
 
     serialized_devices = TOTPDeviceSerializer(
                     totp_devices, many=True)
