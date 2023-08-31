@@ -127,7 +127,7 @@ Please follow these conventions when writing your documentation:
 
 ## Contributing to the documentation
 
-To start adding to the documentation navigate to the [home page](https://github.com/unicef-drp/GeoSight-OS) of the repository.
+To start adding to the documentation navigate to the [home page](https://github.com/kartoza/sawps/) of the repository.
 
 Once on the repository home page, click on Fork 1️⃣
 
