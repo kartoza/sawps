@@ -16,11 +16,6 @@
 .species-donut-chart-container {
     width: 380px;
     padding-bottom: 20px;
-
-    .chart-img-container {
-        margin-top: -100px !important;
-        transform: translate(-22.5%, -22.5%) !important;
-    }
 }
 
 .main-chart {
@@ -70,23 +65,23 @@
         .chart-img {
             position: absolute;
             width: 106px;
-            top: 165px;
-            left: 50px;
+            top: 50px;
+            left: 25px;
             text-align: center;
             height: 98px;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+        }
 
-            .icon-image {
-                width: 65px;
-                margin: 0 auto;
+        .chart-img .icon-image {
+            width: 65px;
+            margin: 0 auto;
+        }
 
-                img {
-                    max-width: 100%;
-                }
-            }
+        .chart-img .icon-image img {
+            max-width: 100%;
         }
 
         .charttext {
@@ -107,7 +102,6 @@
         }
 
     }
-
 
     .chartFullWidth {
         width: 100%;
@@ -203,6 +197,7 @@
             display: flex;
             align-items: center;
             margin-bottom: 8px;
+
             @media (max-width: 1600px) {
                 min-height: 25px;
             }
@@ -274,12 +269,15 @@
             display: flex;
         }
     }
+
     @media (max-width: 1600px) {
         flex-direction: column;
         gap: 20px;
+
         .white-chart-species {
             width: 100%;
         }
+
         .white-species-text {
             width: 100%;
         }
