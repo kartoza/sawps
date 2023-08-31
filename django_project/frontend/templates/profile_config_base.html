@@ -13,6 +13,9 @@
                   <div class="notification-badge" id="notificationBell" style="display: none;"> </div> 
               </a>
               <a class="nav-link {% if request.path|slice:":21" == '/accounts/two-factor/' %}active{% endif %}" href="/accounts/two-factor/two_factor/backup_tokens/">2FA Authentication</a>
+              <a class="nav-link {% if request.path|slice:":15" == '/organisations/' %}active{% endif %}" href="/organisations/{{ user }}/">
+                ORGANISATIONS
+              </a>
           </nav>
       
       
