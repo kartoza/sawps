@@ -108,13 +108,21 @@ class UploadSpeciesStatus(APIView):
         except UploadSpeciesCSV.DoesNotExist:
             return Response(status=404)
 
+        property_message = None
+        taxon_message = None
+        if upload_species.error_notes:
+            messages = upload_species.error_notes.splitlines()
+            property_message = messages[0]
+            taxon_message = messages[1]
+
         if upload_species.canceled or not upload_species.processed:
             return Response(
                 status=200,
                 data={
                     'status': 'Canceled',
-                    'message': upload_species.error_notes if
-                    upload_species.error_notes else ""
+                    'property': (property_message if property_message
+                                 else None),
+                    'taxon': (taxon_message if taxon_message else None)
                 }
             )
 
@@ -123,7 +131,7 @@ class UploadSpeciesStatus(APIView):
             data={
                 'status': 'Done',
                 'message': upload_species.success_notes,
-                'warning': (upload_species.error_notes if
-                            upload_species.error_notes else None)
+                'property': (property_message if property_message else None),
+                'taxon': (taxon_message if taxon_message else None)
             }
         )
