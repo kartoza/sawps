@@ -5,13 +5,15 @@ from unittest.mock import patch
 from species.models import Taxon, TaxonRank
 from frontend.serializers.national_statistics import (
     SpeciesListSerializer,
-    NationalStatisticsSerializer,
-    NationalSpeciesView
+    NationalStatisticsSerializer
 )
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.templatetags.static import static
+from frontend.api_views.national_statistic import (
+    NationalSpeciesView
+)
 
 class NationalSpeciesViewTest(APITestCase):
     def setUp(self):
