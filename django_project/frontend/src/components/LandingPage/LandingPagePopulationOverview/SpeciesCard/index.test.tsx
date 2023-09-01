@@ -5,7 +5,7 @@ import SpeciesCard from '.';
 
 describe('species card testing suite', ()=>{
     it('renders species card component',()=>{
-        render(<SpeciesCard species_id={1} pic='http://images.google.com' population='300' growth='200' loss='100' chartColors={{"line":"fff","area":"fff"}}/>)
+        render(<SpeciesCard species_id={1} pic='http://images.google.com' population='300' total_area={200} chartColors={{"line":"fff","area":"fff"}}/>)
         const speciesCard = screen.getByTestId('species-card-container')
         expect(speciesCard).toBeInTheDocument()
     })
@@ -19,15 +19,8 @@ describe('species card testing suite', ()=>{
         expect(speciesTotalPopulationText).toBeInTheDocument()
         expect(speciesTotalPopulationText).toContain("300")
 
-        const speciesPopulationGrowthText = screen.getByTestId('species-card-growth')
+        const speciesPopulationGrowthText = screen.getByTestId('species-card-total-area')
         expect(speciesPopulationGrowthText).toBeInTheDocument()
-        expect(speciesPopulationGrowthText).toContain("200")
-
-
-        const speciesPopulationLossText = screen.getByTestId('species-card-loss')
-        expect(speciesPopulationLossText).toBeInTheDocument()
-        expect(speciesPopulationLossText).toContain("200")
-        
-        
+        expect(speciesPopulationGrowthText).toContain(200)        
     })
 })

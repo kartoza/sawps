@@ -12,8 +12,7 @@ interface ISpeciesCardProps {
   pic: string;
   species_id: number;
   species_name?: string;
-  growth: string;
-  loss: string;
+  total_area?: number;
   chartColors: IColors;
   index?: number;
   population?: string;
@@ -40,11 +39,8 @@ const CustomFirstPageCard: FC<ISpeciesCardProps> = (props) => {
         <p className='species-card-text' style={{ color: textColor, fontSize: '20px' }} data-testid='species-card-population'>
           Total Population : {props.population}
         </p>
-        <p className='species-card-text' style={{ color: textColor, fontSize: '20px' }} data-testid='species-card-growth'>
-          Population Growth : {props.growth}
-        </p>
-        <p className='species-card-text' style={{ color: textColor, fontSize: '20px' }} data-testid='species-card-loss'>
-          Population Loss : {props.loss}
+        <p className='species-card-text' style={{ color: textColor, fontSize: '20px' }} data-testid='species-card-total-area'>
+          Total Area : {props.total_area}
         </p>
       </div>
       <div className='ChartHolder'>
