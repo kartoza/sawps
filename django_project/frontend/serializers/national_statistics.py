@@ -2,7 +2,7 @@ from typing import List
 from django.db.models import Q, Sum
 from population_data.models import AnnualPopulation
 from rest_framework import serializers
-from species.models import Taxon
+from species.models import Taxon, OwnedSpecies
 from datetime import datetime
 
 
@@ -15,8 +15,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
     icon = serializers.ImageField(use_url=True)
     annualpopulation_count = serializers.SerializerMethodField()
     total_population = serializers.SerializerMethodField()
-    population_growth = serializers.SerializerMethodField()
-    population_loss = serializers.SerializerMethodField()
+    total_area = serializers.SerializerMethodField()
 
     class Meta:
         model = Taxon
@@ -27,8 +26,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
             "icon",
             "annualpopulation_count",
             "total_population",
-            "population_growth",
-            "population_loss"
+            "total_area"
         ]
 
     def get_species_name(self, obj: Taxon) -> str:
@@ -95,13 +93,14 @@ class SpeciesListSerializer(serializers.ModelSerializer):
         ).aggregate(Sum('total'))
         return data['total__sum'] if data['total__sum'] else 0
 
-    def get_population_growth(self, obj: Taxon):
-        # TODO: Danang calculate population growth
-        return 100
-
-    def get_population_loss(self, obj: Taxon):
-        # TODO: Danang calculate population loss
-        return 200
+    def get_total_area(self, obj: Taxon):
+        data = OwnedSpecies.objects.filter(
+            taxon=obj
+        ).aggregate(Sum('area_available_to_species'))
+        return (
+            data['area_available_to_species__sum'] if
+            data['area_available_to_species__sum'] else 0
+        )
 
 
 class NationalStatisticsSerializer(serializers.Serializer):

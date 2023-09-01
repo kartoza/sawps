@@ -12,7 +12,7 @@
     <div class="container">
         <div class="row">
             <div class="col-auto ml-auto mb-3">
-              <button class="btn btn-custom" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn">
+              <button class="sawps-font-button green-button mt-0" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn">
                 <i class="fas fa-plus"></i> ADD REMINDER
               </button>
             </div>
@@ -38,6 +38,8 @@
                             <div class="form-group">
                                 <label for="date">Date and Time</label>
                                 <input type="datetime-local" class="form-control" id="date" name="date" required>
+                                <!-- This is the fallback date input -->
+                                <input type="text" id="datetimepicker" class="form-control" style="display: none;" required>
                             </div>
                             <div class="form-group">
                                 <label for="reminder">Reminder</label>
@@ -48,7 +50,7 @@
                                 <label for="reminderType">Reminder Type</label>
                                 <select class="form-control" id="reminderType" name="reminderType">
                                     <option value="personal" selected>Personal</option>
-                                    <option value="all">Everyone</option>
+                                    <option value="all">Whole Organisation</option>
                                 </select>
                             </div>
                             {% endif %}
@@ -192,6 +194,29 @@
 
   <script>
 
+    const datetimePickerInput = document.getElementById('datetimepicker');
+    var useFallbackDate = false
+
+    if (!Modernizr.inputtypes.datetime) {
+        // Hide the original datetime-local input
+        document.getElementById('date').style.display = 'none';
+
+        document.getElementById('datetimepicker').style.display = 'block';
+
+        document.getElementById('datetimepicker').style.backgroundColor = 'white';
+
+        // Initialize flatpickr on the input element
+        flatpickr(datetimePickerInput, {
+          enableTime: true,
+          dateFormat: "Y-m-dTH:i",
+          minuteIncrement: 1, // Allow selection in 1 minute intervals
+          allowInput: true, // Enable manual input
+        });
+
+        useFallbackDate = true
+        
+      }
+
       function convertToLocalDateTime(datetimeStr) {
         // create a date formate to add to datetime local input field
         const datetime = new Date(datetimeStr);
@@ -272,7 +297,9 @@
 
               // Populate the modal with the retrieved data
               $('#myModal #title').val(reminder.title);
-              $('#myModal #date').val(localDatetimeStr);
+              if(useFallbackDate)
+                $('#myModal #date').val(localDatetimeStr);
+              else $('#myModal #datetimepicker').val(localDatetimeStr);
 
               if (reminder.type == 'Everyone')
                 $('#myModal #reminderType').val('all');
@@ -299,7 +326,8 @@
               $('#myModal #editReminderBtn').click(function() {
                 // Get the values from the modal
                 var title = $('#myModal #title').val();
-                var date = $('#myModal #date').val();
+                var date = useFallbackDate? $('#myModal #datetimepicker').val():$('#myModal #date').val();
+                // var date = $('#myModal #date').val();
                 var time = $('#myModal #time').val();
                 var type = $('#myModal #reminderType').val();
                 var reminder = $('#myModal #reminder').val();
@@ -371,7 +399,7 @@
 
               // Get the input values from the modal
               var title = $('#title').val();
-              var date = $('#date').val();
+              var date = useFallbackDate? $('#datetimepicker').val():$('#date').val();
               var reminder = $('#reminder').val();
               var reminder_type = $('#reminderType').val();
 
@@ -525,9 +553,9 @@
     }
 
     .badge-purple {
-    background-color: var(--purple);
-    color: white;
-    }
+      background-color: var(--purple);
+      color: white;
+      }
 
     .badge-success {
     background-color: var(--green);

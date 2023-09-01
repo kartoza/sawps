@@ -38,7 +38,7 @@
     <div class="container">
       
       <div class="border p-3 mb-3" style="border-radius: 6px;">
-        <h3>Current 2FA Method</h3>
+        <h4 class="page-title sawps-text-menu mb-3">Current 2FA Method</h4>
           <div class="col-md-3 " style="padding-left: 0%;">
             <select id="filterSelect" class="form-control custom-select" style="width:100%;">
             <option value="">Authenticator App</option>
@@ -46,11 +46,11 @@
         </div>
       </div>
 
-      <div class="container">
+      <div class="">
         <div class="row">
           <div class="col-auto ml-auto">
-            <button class="btn btn-custom" data-toggle="modal" data-target="#myModal">
-                <i class="fas fa-plus"></i> Add Device
+            <button class="sawps-font-button green-button mt-0" data-toggle="modal" data-target="#myModal">
+                <i class="fas fa-plus"></i> ADD DEVICE
               </button>
           </div>
         </div>
@@ -128,11 +128,11 @@
   
     
 
-      <h3>2FA Devices</h3>
+    <h4 class="page-title sawps-text-menu mb-3">2FA Devices</h4>
       <table class="table table-striped" id="totp_devices">
         <thead style="background-color: var(--green);">
           <tr>
-            <th scope="col">Device Name</th>
+            <th scope="col" style="color: #FFFFFF;">Device Name</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -148,32 +148,34 @@
       </table>
 
       <div class="border-top mt-3 pt-3">
-          <h4>Recovery Options</h4>
+        <h4 class="page-title sawps-text-menu mb-3">Recovery Options</h4>
           <!-- <p>Add or edit your recovery options for 2FA:</p> -->
             <div class="card mb-4">
                 <div class="card-body">
-                <h3 class="sawps-text-menu">
+                <h4 class="sawps-text-menu" style=" font-weight: normal;">
                   {% trans "Two-Factor Authentication Backup Tokens" %}
-                </h3>
+                </h4>
     
             {% if backup_tokens %}
               {% if reveal_tokens %}
-                <ul>
+                <ul id="backupTokensList" style="display: none;">
                   {% for token in backup_tokens %}
                     <li>{{ token.token }}</li>
                   {% endfor %}
                 </ul>
-              {% else %}
-                {% trans 'Backup tokens have been generated, but are not revealed here for security reasons. Press the button below to generate new ones.' %}
+              
+                <div id="securityMessage" style="display: none;">
+                  {% trans 'Backup tokens have been generated, but are not revealed here for security reasons. Press the button below to generate new ones.' %}
+                </div>
               {% endif %}
             {% else %}
               {% trans 'No tokens. Press the button below to generate some.' %}
             {% endif %}
     
-            <form method="post">
+            <form id="generateTokensForm" method="post">
               {% csrf_token %}
-              <button type="submit" class="btn btn-custom">
-                {% trans 'Generate backup tokens' %}
+              <button type="submit" class="sawps-font-button green-button mt-0">
+                {% trans 'GENERATE BACKUP TOKENS' %}
               </button>
             </form>
           </div>
@@ -184,6 +186,23 @@
   </div>
   
 <script>
+
+  if(localStorage.getItem('reveal') === 'true')
+  {
+    document.getElementById("backupTokensList").style.display = 'block'
+    localStorage.setItem('reveal',false)
+  }else {
+    document.getElementById("securityMessage").style.display = 'block'
+  }
+
+    document.getElementById("generateTokensForm").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+
+        localStorage.setItem('reveal', true)
+            
+        event.target.submit();
+    });
+
     function extractBaseUrl(url) {
         // Find the index of the first forward slash after the initial //
         const slashIndex = url.indexOf('/', url.indexOf('//') + 2);
@@ -359,6 +378,7 @@
     box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
     border-color: var(--green);
   }
+  
   </style>
 </section>
 

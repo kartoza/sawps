@@ -12,8 +12,7 @@ interface FrontPageSpecies {
     species_name: string;
     icon?: string;
     total_population: number;
-    population_growth: number;
-    population_loss: number;
+    total_area: number;
     colour: string;
 }
 
@@ -36,17 +35,17 @@ const OverviewCardsHolder:FC<IOverviewCardsHolder> = ()=>{
     useEffect(() => {
         fetchSpeciesList()
     }, [])
-
+    // 6 charts: xl, 3 charts: md, 2 charts: sm, 1 charts: xs
     return(
-        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}  data-testid='landing-page-overview-cards-holder' className='landing-page-overview-cards-holder-flex'>        
+        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}  data-testid='landing-page-overview-cards-holder' className='landing-page-overview-cards-holder-flex'>        
             {species.map((species,index)=>{
                 let chartColors = {
                     'line': species.colour,
                     'area': alpha(species.colour, 0.3)
                 }
-                return <Grid item key={index}>
+                return <Grid item xs={4} xl={2} key={index}>
                     <SpeciesCard key={index} species_id={species.id} species_name={species.species_name} pic={species.icon} population={species.total_population.toString()}
-                        growth={species.population_growth.toString()} loss={species.population_loss.toString()} chartColors={chartColors} index={index}
+                        total_area={species.total_area} chartColors={chartColors} index={index}
                     />
                 </Grid>
             })}
