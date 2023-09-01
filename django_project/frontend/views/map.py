@@ -10,10 +10,12 @@ def redirect_to_data(request):
     redirect_url = f"{reverse('map')}?tab={tab_number}"
     return HttpResponseRedirect(redirect_url)
 
+
 def redirect_to_metrics(request):
     tab_number = 2
     redirect_url = f"{reverse('map')}?tab={tab_number}"
     return HttpResponseRedirect(redirect_url)
+
 
 def redirect_to_upload(request):
     tab_number = 3
