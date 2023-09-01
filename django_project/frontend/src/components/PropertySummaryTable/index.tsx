@@ -14,7 +14,7 @@ interface PropertySummaryTableInterface {
 }
 
 export default function PropertySummaryTable(props: PropertySummaryTableInterface) {
-    const localStorageItem = localStorage.getItem('description');
+    const localStorageItem = localStorage.getItem('description') ? localStorage.getItem('description') : '';
     var descriptionParts = localStorageItem ? localStorageItem.split(': ') : [];
 
     if(localStorageItem.includes('<hr/>')){
