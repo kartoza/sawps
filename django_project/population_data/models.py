@@ -86,6 +86,12 @@ class AnnualPopulation(AnnualPopulationAbstract):
     population_estimate_certainty = models.IntegerField(
         null=True, blank=True
     )
+    population_estimate_category_other = models.TextField(
+        null=True, blank=True
+    )
+    survey_method_other = models.TextField(
+        null=True, blank=True
+    )
 
     def __str__(self):
         return "{} {}".format(
