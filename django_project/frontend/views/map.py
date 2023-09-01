@@ -1,6 +1,24 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .base_view import RegisteredOrganisationBaseView
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+
+def redirect_to_data(request):
+    tab_number = 1
+    redirect_url = f"{reverse('map')}?tab={tab_number}"
+    return HttpResponseRedirect(redirect_url)
+
+def redirect_to_metrics(request):
+    tab_number = 2
+    redirect_url = f"{reverse('map')}?tab={tab_number}"
+    return HttpResponseRedirect(redirect_url)
+
+def redirect_to_upload(request):
+    tab_number = 3
+    redirect_url = f"{reverse('map')}?tab={tab_number}"
+    return HttpResponseRedirect(redirect_url)
 
 
 class MapView(LoginRequiredMixin, RegisteredOrganisationBaseView):
