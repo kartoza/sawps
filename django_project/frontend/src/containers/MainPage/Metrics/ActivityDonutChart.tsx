@@ -114,7 +114,9 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                                         </Box>
                                         <Box className="chart-img chart-img-container">
                                             <Box className="icon-image">
-                                                <img src={item?.graph_icon} alt='Icon image' />
+                                            {item?.graph_icon ?
+                                                <img src={item?.graph_icon} />
+                                                : <Typography>{item.species_name}</Typography>}
                                             </Box>
                                             <Typography className="charttext">{item?.total}</Typography>
                                         </Box>
