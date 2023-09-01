@@ -1,6 +1,12 @@
 .species-chart-container{
+    position: relative;
     width:100%;
     height:100%;
+
+    & > canvas {
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 .species-chart-skeleton {
