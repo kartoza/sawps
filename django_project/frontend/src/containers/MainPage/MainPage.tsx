@@ -24,7 +24,8 @@ import {
 import {
     setSelectedParcels,
     resetSelectedProperty,
-    setMapSelectionMode
+    setMapSelectionMode,
+    resetMapState
 } from '../../reducers/MapState';
 import DataList from './Data';
 import Metrics from './Metrics';
@@ -65,6 +66,10 @@ function MainPage() {
 
   useEffect(() => {
     if (location.search !== `?tab=${selectedTab}`) {
+      if (selectedTab !== 0 && selectedTab !== 3) {
+        // dispatch to reset map state in data or metrics tab
+        dispatch(resetMapState())
+      }
       // Update URL when tab is changed and only if it's not already set
       navigate(`?tab=${selectedTab}`);
     }
