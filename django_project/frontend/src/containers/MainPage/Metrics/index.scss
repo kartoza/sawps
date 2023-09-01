@@ -1,7 +1,7 @@
 .overflow-auto-chart {
     overflow: auto;
     width: calc(100vw - 440px);
-    max-height: calc(100vh - 130px);
+    max-height: calc(100vh - 207px);
 }
 
 .card-chart {
@@ -289,4 +289,15 @@
 .info-message {
     text-align: left;
     font-weight: bold;
+}
+
+.downlodBtnbox {
+    width: 100%;
+    padding-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    margin: 0;
+    padding-right: 55px;
 }

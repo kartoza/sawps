@@ -103,7 +103,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                     ],
                 };
                 return (
-                    <><Box className="white-chart chartFullWidth leftBoxRound">
+                    <Box className="white-chart chartFullWidth leftBoxRound">
                         <Typography>{chartHeading}</Typography>
                         {loading ? <Loading /> :
                             <Box className="BoxChartType">
@@ -123,11 +123,9 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                                     </Box>}
                             </Box>
                         }
-                        </Box>
-                    </>
+                    </Box>
                 );
             })}
-
         </Grid>
     );
 };
