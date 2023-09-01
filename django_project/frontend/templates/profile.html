@@ -40,25 +40,24 @@
                 <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value={{object.email}}>
                 <small id="email-error" class="form-text text-danger"></small>
               </div>
-              <div class="form-group mt-3">
-                <small id="data-privacy" class="form-text text-muted">How would you like your data to be used see the SANBI data sharing agreement. 
-                  Switching the toggle will be taken as full agreement to the terms of the option chosen</small>
-              </div>
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="onlySANBI" disabled>
+              <div class="custom-control custom-switch form-group">
+                <input type="checkbox" class="custom-control-input" name="onlySANBI" id="onlySANBI" {% if object.user_profile.use_of_data_by_sanbi_only %}checked{% endif %}>
                 <label class="custom-control-label text-muted small" for="onlySANBI">Use of data by SANBI only</label>
-              </div>
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="hostingDataSANBI" disabled>
-                <label class="custom-control-label text-muted small" for="hostingDataSANBI">Hosting / serving the data through SANBI platforms and portals</label>
-              </div>
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther" disabled>
-                <label class="custom-control-label text-muted small" for="hostingDataSANBIOther">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the datas</label>
               </div>              
-              <!-- <div class="form-group">
-                <small id="data-privacy" class="form-text text-muted">Select user lists  you need to receive communications from</small>
-              </div> -->
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" name="hostingDataSANBI" id="hostingDataSANBI" {% if object.user_profile.hosting_through_sanbi_platforms %}checked{% endif %}>
+                <label class="custom-control-label text-muted small" for="hostingDataSANBI">Hosting / serving the data through SANBI platforms and portals</label>
+              </div>              
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" name="hostingDataSANBIOther" id="hostingDataSANBIOther" {% if object.user_profile.allowing_sanbi_to_expose_data %}checked{% endif %}>
+                <label class="custom-control-label text-muted small" for="hostingDataSANBIOther">Hosting through SANBI and allowing SANBI to publish the data to other portals, as well as to actively curate the data.</label>
+              </div>              
+  
+              <div id="toggleMessage" style="display: none;" class="text-warning-custom mt-3">
+                Making changes here will not affect data that you have previously published and agreed to share under a different regime.
+              </div>
+
+              <div class="form-group"></div>
               <button type="submit" class="account-button" id="submit-button">Update</button>
             </form>
           </div>
@@ -66,6 +65,26 @@
   </div>
 
   <script>
+
+  const toggleMessage = document.getElementById("toggleMessage");
+  const switches = document.querySelectorAll(".custom-switch .custom-control-input");
+
+  function handleToggleMessage() {
+    let isAnySwitchToggled = false;
+    switches.forEach((switchElement) => {
+      if (switchElement.checked) {
+        isAnySwitchToggled = true;
+      }else {
+        isAnySwitchToggled = true;
+      }
+    });
+
+    toggleMessage.style.display = isAnySwitchToggled ? "block" : "none";
+  }
+
+  switches.forEach((switchElement) => {
+    switchElement.addEventListener("change", handleToggleMessage);
+  });
 
     $(document).ready(function() {
         setTimeout(function() {
@@ -133,6 +152,29 @@
 
     .end-0 {
         right: 0;
+    }
+    /* .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+      background-color: var(--green) !important;
+    } */
+    .form-control:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
+    }
+
+    /* Override default focus styles for the switches */
+    .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
+      border-color: var(--green); /* Set the border color to green */
+      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25); /* Set the box shadow with green color */
+    }
+    
+    /* Style checked switches with green color */
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+      background-color: var(--green); /* Set the background color to green */
+      border-color: var(--green); /* Set the border color to green */
+    }
+
+    .text-warning-custom {
+      color: var(--green); /* Change this to your desired color */
     }
   </style>
 
