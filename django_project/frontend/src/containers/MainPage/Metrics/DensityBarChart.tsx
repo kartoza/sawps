@@ -91,8 +91,8 @@ const DensityBarChart = () => {
             chartComponent={
                 <Bar data={data} options={options} height={225} width={1000} />
             }
-            title={'Species Population Density per property'}
-            xLabel={'Year'}
+            title={'Species population density per property'}
+            xLabel={'Properties'}
             />
         )
 };

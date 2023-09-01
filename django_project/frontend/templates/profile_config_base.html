@@ -16,6 +16,7 @@
               <a class="nav-link {% if request.path|slice:":15" == '/organisations/' %}active{% endif %}" href="/organisations/{{ user }}/">
                 ORGANISATIONS
               </a>
+              <a class="nav-link {% if request.path|slice:":21" == '/accounts/two-factor/' %}active{% endif %}" href="/accounts/two-factor/two_factor/backup_tokens/">2FA</a>
           </nav>
       
       
@@ -48,8 +49,8 @@
               </svg>Upload profile picture
             </span>
           </p>
-          <a href="{% url 'account_change_password' %}"><button class="sawps-small-font-button green-button mt-0" data-toggle="modal" data-target="#updatePasswordModal">Update Password</button></a>
-          <a href="{% url 'two-factor-setup' %}"><button class="sawps-small-font-button purple-button my-2">Set up two-factor authentication</button></a>
+          <a href="{% url 'account_change_password' %}"><button class="sawps-font-button green-button mt-0" data-toggle="modal" data-target="#updatePasswordModal">Update Password</button></a>
+          <a href="{% url 'two-factor-setup' %}"><button class="sawps-font-button purple-button my-2">Set up two-factor authentication</button></a>
         </div>
       </div>
       {% endif %}

@@ -21,7 +21,9 @@ class TestProfileView(TestCase):
         self.client = Client()
         # Create a test user
         self.test_user = get_user_model().objects.create_user(
-            username='testuser', password='testpassword'
+            username='testuser',
+            password='testpassword',
+            email='test@gmail.com'
         )
 
     def test_profile_create(self):
@@ -49,6 +51,9 @@ class TestProfileView(TestCase):
         profile.__dict__.update(profile_picture)
         profile.first_name = 'j'
         profile.last_name = 'jj'
+        profile.use_of_data_by_sanbi_only = True
+        profile.hosting_through_sanbi_platforms = True
+        profile.allowing_sanbi_to_expose_data = True
         profile.save()
 
         user.email = 't@t.com'
@@ -58,6 +63,9 @@ class TestProfileView(TestCase):
         self.assertIsNotNone(profile.first_name)
         self.assertIsNotNone(profile.last_name)
         self.assertIsNotNone(user.email)
+        self.assertEqual(True,profile.use_of_data_by_sanbi_only)
+        self.assertEqual(True,profile.hosting_through_sanbi_platforms)
+        self.assertEqual(True,profile.allowing_sanbi_to_expose_data)
 
     def test_profile_delete(self):
         """
@@ -94,13 +102,11 @@ class TestProfileView(TestCase):
         """
         Test update profile from the form page
         """
-        user = get_user_model().objects.create(
-            is_staff=False,
-            is_active=True,
-            is_superuser=False,
-            username='test',
-            email='test@test.com',
+        device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
         )
+        device.save()
         title = userTitleFactory.create(
             id=1,
             name = 'test',
@@ -109,42 +115,35 @@ class TestProfileView(TestCase):
             id=1,
             name = 'test',
         )
-        device = TOTPDevice(
-            user=self.test_user,
-            name='device_name'
-        )
-        device.save()
-        # user.first_name = 'Fan'
-        # user.last_name = 'Fan'
-        # user.email = user.email
-        # user.save()
-        UserProfile.objects.create(
-            user=user,
-            title_id=title,
-            user_role_type_id=role
-        )
         resp = self.client.login(username='testuser', password='testpassword')
         self.assertTrue(resp)
 
         post_dict = {
             'first-name': 'Fan',
             'last-name': 'Fan',
-            'email': user.email,
+            'email': self.test_user.email,
             'organization': 'Kartoza',
             'profile_picture': '/profile/pic/path',
             'title': '1',
-            'role': '1'
+            'role': '1',
+            'onlySANBI': 'on',
+            'hostingDataSANBI': 'on',
+            'hostingDataSANBIOther': 'on'
         }
 
         response = self.client.post(
             '/profile/{}/'.format(self.test_user.username), post_dict
         )
         self.assertEqual(response.status_code, 302)
-        updated_user = get_user_model().objects.get(id=user.id)
-        self.assertEqual(updated_user.first_name, '')
+        updated_user = get_user_model().objects.get(id=self.test_user.id)
+        self.assertEqual(updated_user.first_name, 'Fan')
+        self.assertEqual(updated_user.last_name, 'Fan')
         self.assertIsNotNone(updated_user.user_profile.picture)
-        self.assertEqual(user.user_profile.title_id.name, title.name)
-        self.assertEqual(user.user_profile.user_role_type_id.name, role.name)
+        self.assertEqual(updated_user.user_profile.title_id.name, title.name)
+        self.assertEqual(updated_user.user_profile.user_role_type_id.name, role.name)
+        self.assertEqual(updated_user.user_profile.use_of_data_by_sanbi_only, True)
+        self.assertEqual(updated_user.user_profile.hosting_through_sanbi_platforms, True)
+        self.assertEqual(updated_user.user_profile.allowing_sanbi_to_expose_data, True)
 
     def test_404(self):
         """

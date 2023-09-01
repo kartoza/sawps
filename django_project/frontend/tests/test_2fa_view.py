@@ -73,6 +73,20 @@ class TOTPDeviceViewTests(TestCase):
         # Check that a new device is created
         self.assertEqual(TOTPDevice.objects.count(), 2)
 
+    def test_add_totp_device_with_get(self):
+        # Log in the user
+        self.client.login(username='testuser', password='testpassword')
+
+        # Send a POST request to the view with device_name in the data
+        data = {'device_name': 'New Device'}
+        response = self.client.get(reverse('add_totp_devices'), data=data)
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check there should only be one device
+        self.assertEqual(TOTPDevice.objects.count(), 1)
+
     def test_delete_totp_device(self):
         # Log in the user
         self.client.login(username='testuser', password='testpassword')

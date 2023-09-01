@@ -72,7 +72,9 @@ const AgeGroupBarChart = (props: any) => {
                             <Box className="barchart-head-left"></Box>
                             <Box className="barchart-head-right">
                                 <Typography>{name}</Typography>
+                                {icon &&
                                 <img src={icon} alt='Icon image' />
+                                }
                             </Box>
                         </Box>
                         <Box className="barChartBox">
