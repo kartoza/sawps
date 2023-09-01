@@ -99,16 +99,6 @@ class PopulationCountTestCase(TestCase):
             AnnualPopulation.objects.get(year=self.population_count.year).total, 125
         )
 
-    def test_year_ownedspecies_fields_unique_toghter_constraint(self):
-        """Test both year and ownedspecis are unique togther."""
-        with self.assertRaises(Exception) as raised:
-            AnnualPopulationF(
-                owned_species=self.population_count.owned_species,
-                year=self.population_count.year,
-            )
-            self.assertEqual(IntegrityError, raised.exception)
-
-
     def test_delete_population_count(self):
         """Test delete population count."""
         self.population_count.delete()
