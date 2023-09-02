@@ -82,6 +82,9 @@ class UserProfile(models.Model):
         blank=True
     )
     received_notif = models.BooleanField(default=False)
+    use_of_data_by_sanbi_only = models.BooleanField(default=False)
+    hosting_through_sanbi_platforms = models.BooleanField(default=False)
+    allowing_sanbi_to_expose_data = models.BooleanField(default=False)
 
     def delete(self, *args, **kwargs):
         self.user.delete()

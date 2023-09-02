@@ -124,7 +124,7 @@ const Metrics = () => {
                     {totalCoutData.length > 0 && activityData.length > 0 ?
                         <Card className="card-chart">
                             <Grid container className="boxChart-lion" spacing={2}>
-                                <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
+                                <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total count per activity"} showPercentage={false} />
                                 <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
                             </Grid>
                         </Card> : null}

@@ -12,8 +12,7 @@ interface FrontPageSpecies {
     species_name: string;
     icon?: string;
     total_population: number;
-    population_growth: number;
-    population_loss: number;
+    total_area: number;
     species_colour: string;
 }
 
@@ -58,8 +57,7 @@ const FirstPageCharts:FC<IOverviewCardsHolder> = ()=>{
                             species_name={species.species_name}
                             pic={species.icon}
                             population={species.total_population.toString()}
-                            growth={species.population_growth.toString()}
-                            loss={species.population_loss.toString()}
+                            total_area={species.total_area}
                             chartColors={chartColors}
                             index={index}
                         />
