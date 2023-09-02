@@ -63,7 +63,7 @@ class RegisteredOrganisationBaseView(TemplateView):
         user = self.request.user
         user_profile = user.user_profile
         current_organisation = (
-            user_profile.current_organisation 
+            user_profile.current_organisation
             if user_profile else None
         )
         return current_organisation
