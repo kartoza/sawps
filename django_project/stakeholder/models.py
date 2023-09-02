@@ -48,64 +48,6 @@ class UserTitle(models.Model):
         db_table = "user_title"
 
 
-class UserProfile(models.Model):
-    """Extend User model with one-to-one mapping."""
-
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE,
-        unique=True,
-        related_name='user_profile'
-    )
-    title_id = models.ForeignKey(
-        UserTitle,
-        on_delete=models.DO_NOTHING,
-        null=True,
-        blank=True,
-        default=None
-    )
-    cell_number = models.CharField(
-        max_length=15,
-        default='',
-        null=True,
-        blank=True
-    )
-    user_role_type_id = models.ForeignKey(
-        UserRoleType,
-        on_delete=models.DO_NOTHING,
-        null=True,
-        blank=True,
-        default=None
-    )
-    picture = models.ImageField(
-        upload_to='profile_pictures',
-        null=True,
-        blank=True
-    )
-    received_notif = models.BooleanField(default=False)
-    use_of_data_by_sanbi_only = models.BooleanField(default=False)
-    hosting_through_sanbi_platforms = models.BooleanField(default=False)
-    allowing_sanbi_to_expose_data = models.BooleanField(default=False)
-
-    def delete(self, *args, **kwargs):
-        self.user.delete()
-        return super(self.__class__, self).delete(*args, **kwargs)
-
-    def __str__(self):
-        return self.user.username
-
-    def picture_url(self):
-        if self.picture.url:
-            return '{media}/{url}'.format(
-                    media=settings.MEDIA_ROOT,
-                    url=self.picture,
-            )
-
-    class Meta:
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
-        db_table = "user_profile"
-
-
 class UserLogin(models.Model):
     """User login model."""
 
@@ -149,6 +91,70 @@ class Organisation(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UserProfile(models.Model):
+    """Extend User model with one-to-one mapping."""
+
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE,
+        unique=True,
+        related_name='user_profile'
+    )
+    title_id = models.ForeignKey(
+        UserTitle,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        default=None
+    )
+    cell_number = models.CharField(
+        max_length=15,
+        default='',
+        null=True,
+        blank=True
+    )
+    user_role_type_id = models.ForeignKey(
+        UserRoleType,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        default=None
+    )
+    picture = models.ImageField(
+        upload_to='profile_pictures',
+        null=True,
+        blank=True
+    )
+    received_notif = models.BooleanField(default=False)
+    use_of_data_by_sanbi_only = models.BooleanField(default=False)
+    hosting_through_sanbi_platforms = models.BooleanField(default=False)
+    allowing_sanbi_to_expose_data = models.BooleanField(default=False)
+    current_organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    
+
+    def delete(self, *args, **kwargs):
+        self.user.delete()
+        return super(self.__class__, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.user.username
+
+    def picture_url(self):
+        if self.picture.url:
+            return '{media}/{url}'.format(
+                    media=settings.MEDIA_ROOT,
+                    url=self.picture,
+            )
+
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+        db_table = "user_profile"
 
 
 class OrganisationInvites(models.Model):
