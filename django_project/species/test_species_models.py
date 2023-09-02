@@ -115,9 +115,19 @@ class TaxonTestCase(TestCase):
         self.assertEqual(taxon_1[0]['total_population'], 0)
         self.assertEqual(taxon_1[0]['species_name'], taxon.scientific_name)
         user_1 = User.objects.create_user(username='testuser_taxon_1', password='12345')
-        owned_species_1 = OwnedSpeciesFactory(taxon=taxon, user=user_1, property=property_1)
+        owned_species_1 = OwnedSpeciesFactory(
+            taxon=taxon,
+            user=user_1,
+            property=property_1,
+            area_available_to_species=2
+        )
         user_2 = User.objects.create_user(username='testuser_taxon_2', password='12345')
-        owned_species_2 = OwnedSpeciesFactory(taxon=taxon, user=user_2, property=property_2)
+        owned_species_2 = OwnedSpeciesFactory(
+            taxon=taxon,
+            user=user_2,
+            property=property_2,
+            area_available_to_species=1
+        )
         # create two years of data
         AnnualPopulationF(owned_species=owned_species_1, year=2021, total=30,
                           adult_male=10, adult_female=10)
@@ -133,6 +143,7 @@ class TaxonTestCase(TestCase):
         taxon_1 = [d for d in response.data if d['id'] == taxon.id]
         self.assertTrue(taxon_1)
         self.assertEqual(taxon_1[0]['total_population'], 57)
+        self.assertEqual(taxon_1[0]['total_area'], 3)
 
     def test_create_taxon(self):
         """Test create taxon."""

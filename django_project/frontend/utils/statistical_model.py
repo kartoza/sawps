@@ -37,12 +37,12 @@ def plumber_health_check(max_retry=5):
         try:
             req = requests.get(request_url)
             if req.status_code != 200:
-                time.sleep(1)
+                time.sleep(2)
             else:
                 break
         except Exception as ex:  # noqa
             logger.error(ex)
-            time.sleep(1)
+            time.sleep(2)
         retry += 1
     if retry < max_retry:
         logger.info('Plumber API is up and running!')
@@ -73,8 +73,8 @@ def spawn_r_plumber():
                 stdout=fd,
                 stderr=fd
             )
-        # sleep for 2 seconds to wait the API is up
-        time.sleep(2)
+        # sleep for 10 seconds to wait the API is up
+        time.sleep(10)
         # we can also use polling to echo endpoint for health check
         plumber_health_check()
         # write process pid to /tmp/

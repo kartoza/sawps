@@ -66,6 +66,20 @@ class ProfileView(RegisteredOrganisationBaseView):
         profile_picture = request.FILES.get('profile-picture', None)
         title = request.POST.get('title', None)
         role = request.POST.get('role', None)
+        use_of_data = request.POST.get(
+            'onlySANBI', None
+        )
+        hosting = request.POST.get(
+            'hostingDataSANBI', None
+        )
+        data_exposure = request.POST.get(
+            'hostingDataSANBIOther', None
+        )
+
+        # Convert 'on' to True and 'off' to False
+        use_of_data = use_of_data == 'on'
+        hosting = hosting == 'on'
+        data_exposure = data_exposure == 'on'
 
         if not UserProfile.objects.filter(user=user).exists():
             UserProfile.objects.create(
@@ -80,6 +94,18 @@ class ProfileView(RegisteredOrganisationBaseView):
             user.email = email
         if profile_picture is not None:
             user.user_profile.picture = profile_picture
+        if use_of_data is not None:
+            user.user_profile.use_of_data_by_sanbi_only = (
+                use_of_data
+            )
+        if hosting is not None:
+            user.user_profile.hosting_through_sanbi_platforms = (
+                hosting
+            )
+        if data_exposure is not None:
+            user.user_profile.allowing_sanbi_to_expose_data = (
+                data_exposure
+            )
         if title is not None:
             title = UserTitle.objects.get(id=title)
             user.user_profile.title_id = title
