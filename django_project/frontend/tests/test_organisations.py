@@ -11,6 +11,9 @@ class OrganisationsViewTest(TestCase):
             username='testuser',
             password='testpassword'
         )
+        userProfileFactory.create(
+            user=self.user
+        )
         device = TOTPDevice(
             user=self.user,
             name='device_name'
