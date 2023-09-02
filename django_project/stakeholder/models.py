@@ -135,7 +135,7 @@ class UserProfile(models.Model):
         on_delete=models.SET_NULL,
         null=True, blank=True
     )
-    
+
 
     def delete(self, *args, **kwargs):
         self.user.delete()
