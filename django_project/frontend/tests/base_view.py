@@ -52,7 +52,15 @@ class RegisteredBaseViewTestBase(TestCase):
         )
         self.user_profile = UserProfile.objects.create(
             user=self.user_1,
-            received_notif=False
+            received_notif=False,
+            current_organisation=self.organisation_1
+        )
+        self.superuser.user_profile = UserProfile.objects.create(
+            user=self.superuser,
+            current_organisation=self.organisation_1
+        )
+        self.user_2.user_profile = UserProfile.objects.create(
+            user=self.user_2
         )
 
     def process_session(self, request):
