@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from frontend.views.organisations import OrganisationsView
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from stakeholder.factories import userProfileFactory
 
 class OrganisationsViewTest(TestCase):
     def setUp(self):
