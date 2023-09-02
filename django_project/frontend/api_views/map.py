@@ -36,7 +36,7 @@ from frontend.serializers.property import (
     PropertySerializer
 )
 from frontend.utils.organisation import (
-    CURRENT_ORGANISATION_ID_KEY
+    get_current_organisation_id
 )
 
 User = get_user_model()
@@ -131,9 +131,12 @@ class PropertiesLayerMVTTiles(APIView):
         return sql, query_values
 
     def get(self, *args, **kwargs):
+        current_organisation_id = get_current_organisation_id(
+            self.request.user
+        ) or 0
         sql, query_values = (
             self.generate_query_for_map(
-                self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0),
+                current_organisation_id,
                 kwargs.get('z'),
                 kwargs.get('x'),
                 kwargs.get('y')
@@ -254,11 +257,14 @@ class FindPropertyByCoord(APIView):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
         point = Point(float(lng), float(lat), srid=4326)
+        current_organisation_id = get_current_organisation_id(
+            self.request.user
+        ) or 0
         properties = Property.objects.filter(
             geometry__contains=point
         ).filter(
             organisation_id=(
-                self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0)
+                current_organisation_id
             )
         )
         property = properties.order_by('id').first()
