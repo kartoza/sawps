@@ -102,8 +102,8 @@ class RegisteredOrganisationBaseView(TemplateView):
         return 0, ''
 
 
-    def get_organisation_list(self):
-        user = self.request.user
+    def get_organisation_list(self,request):
+        user = request.user
         user_profile = user.user_profile
         if user.is_superuser:
             organisations = (
@@ -139,6 +139,6 @@ class RegisteredOrganisationBaseView(TemplateView):
             current_organisation if current_organisation else '-'
         )
         ctx['current_organisation_id'] = current_organisation_id
-        ctx['organisations'] = self.get_organisation_list()
+        ctx['organisations'] = self.get_organisation_list(self.request)
         get_user_notifications(self.request)
         return ctx
