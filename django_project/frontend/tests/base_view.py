@@ -99,8 +99,8 @@ class RegisteredBaseViewTestBase(TestCase):
         context = view.get_context_data()
         self.assertIn('current_organisation_id', context)
         self.assertIn('organisations', context)
-        self.assertEqual(len(context['organisations']), 1)
-        self.assertNotEqual(context['organisations'][0]['id'],
+        self.assertEqual(len(context['organisations']), 2)
+        self.assertNotEqual(context['organisations'][1]['id'],
                             context['current_organisation_id'])
 
     def do_test_user_without_organisation(self):
