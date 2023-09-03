@@ -130,7 +130,7 @@ class CreateNewProperty(APIView):
         parcels = request.data.get('parcels')
         geom = self.get_geometry(parcels)
         current_organisation_id = get_current_organisation_id(
-            self.request.user
+            request.user
         ) or 0
         organisation_id = current_organisation_id
         if not organisation_id:
@@ -198,9 +198,9 @@ class PropertyList(APIView):
     """Get properties that current user owns."""
     permission_classes = [IsAuthenticated]
 
-    def get(self, *args, **kwargs):
+    def get(self,request, *args, **kwargs):
         current_organisation_id = get_current_organisation_id(
-            self.request.user
+            request.user
         ) or 0
         organisation_id = current_organisation_id
         properties = Property.objects.filter(
@@ -210,6 +210,9 @@ class PropertyList(APIView):
             status=200,
             data=PropertySerializer(properties, many=True).data
         )
+
+    def dispatch(self, request, *args, **kwargs):
+        return self.get(request)
 
 
 class UpdatePropertyInformation(APIView):
