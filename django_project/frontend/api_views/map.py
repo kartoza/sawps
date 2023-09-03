@@ -253,24 +253,25 @@ class FindPropertyByCoord(APIView):
     """Find property that contains coordinate."""
     permission_classes = [IsAuthenticated]
 
-    def get(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
         point = Point(float(lng), float(lat), srid=4326)
         current_organisation_id = get_current_organisation_id(
-            self.request.user
+            request.user
         ) or 0
         properties = Property.objects.filter(
             geometry__contains=point
         ).filter(
-            organisation_id=(
-                current_organisation_id
-            )
+            organisation_id=current_organisation_id
         )
         property = properties.order_by('id').first()
         if not property:
             return Response(status=404)
         return Response(status=200, data=PropertySerializer(property).data)
+    
+    def dispatch(self, request, *args, **kwargs):
+        return self.get(request)
 
 
 class MapAuthenticate(APIView):
