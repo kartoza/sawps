@@ -269,7 +269,7 @@ class FindPropertyByCoord(APIView):
         if not property:
             return Response(status=404)
         return Response(status=200, data=PropertySerializer(property).data)
-    
+
     def dispatch(self, request, *args, **kwargs):
         return self.get(request)
 
