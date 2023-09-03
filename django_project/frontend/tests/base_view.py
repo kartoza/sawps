@@ -4,6 +4,7 @@ from django.test import (
 )
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
+from frontend.views.base_view import RegisteredOrganisationBaseView
 from django.contrib.auth.models import AnonymousUser
 from frontend.tests.model_factories import UserF
 from stakeholder.factories import (
@@ -114,4 +115,20 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertEqual(len(context['organisations']), 0)
         self.assertIn('current_organisation_id', context)
         self.assertEqual(context['current_organisation_id'], 0)
+
+    def do_test_get_current_organisation_with_profile(self):
+
+        # Create a request
+        request = self.factory.get(reverse(self.view_name))
+
+        # Attach the user to the request
+        request.user = self.user_1
+
+        # Create an instance of the view and call the method
+        view = RegisteredOrganisationBaseView()
+        view.request = request
+
+        # Test that the method returns the correct current organisation
+        current_organisation = view.get_current_organisation()
+        self.assertIsNotNone(current_organisation)
 
