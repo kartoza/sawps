@@ -198,7 +198,7 @@ class PropertyList(APIView):
     """Get properties that current user owns."""
     permission_classes = [IsAuthenticated]
 
-    def get(self,request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         current_organisation_id = get_current_organisation_id(
             request.user
         ) or 0
