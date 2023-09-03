@@ -102,7 +102,7 @@ class RegisteredOrganisationBaseView(TemplateView):
         return 0, ''
 
 
-    def get_organisation_list(self,request):
+    def get_organisation_list(self, request):
         user = request.user
         user_profile = user.user_profile
         if user.is_superuser:
