@@ -10,6 +10,9 @@ from .models import (
     AnnualPopulationPerActivity,
     CountMethod,
     OpenCloseSystem,
+    SamplingEffortCoverage,
+    PopulationStatus,
+    PopulationEstimateCategory
 )
 
 
@@ -104,3 +107,48 @@ class AnnualPopulationPerActivitySerializer(serializers.ModelSerializer):
 
     def get_activity_type_recruitment(self, obj):
         return obj.activity_type.recruitment if obj.activity_type else None
+
+
+class SamplingEffortCoverageSerializer(serializers.ModelSerializer):
+    """SamplingEffortCoverage Serializer"""
+
+    def __init__(self, *args, **kwargs):
+        remove_fields = kwargs.pop('remove_fields', None)
+        super().__init__(*args, **kwargs)
+        if remove_fields:
+            for field_name in remove_fields:
+                self.fields.pop(field_name)
+
+    class Meta:
+        model = SamplingEffortCoverage
+        fields = '__all__'
+
+
+class PopulationStatusSerializer(serializers.ModelSerializer):
+    """PopulationStatus Serializer"""
+
+    def __init__(self, *args, **kwargs):
+        remove_fields = kwargs.pop('remove_fields', None)
+        super().__init__(*args, **kwargs)
+        if remove_fields:
+            for field_name in remove_fields:
+                self.fields.pop(field_name)
+
+    class Meta:
+        model = PopulationStatus
+        fields = '__all__'
+
+
+class PopulationEstimateCategorySerializer(serializers.ModelSerializer):
+    """PopulationEstimateCategory Serializer"""
+
+    def __init__(self, *args, **kwargs):
+        remove_fields = kwargs.pop('remove_fields', None)
+        super().__init__(*args, **kwargs)
+        if remove_fields:
+            for field_name in remove_fields:
+                self.fields.pop(field_name)
+
+    class Meta:
+        model = PopulationEstimateCategory
+        fields = '__all__'

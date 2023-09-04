@@ -83,10 +83,7 @@ class TestPopulationAPIViews(TestCase):
                 'group': 1,
                 'open_close_id': 1,
                 'area_available_to_species': 5.5,
-                'count_method_id': 1,
                 'survey_method_id': 1,
-                'sampling_effort': 1.25,
-                'sampling_size_unit_id': 1,
                 'area_covered': 1.2,
                 'note': 'This is notes'
             },
@@ -196,10 +193,7 @@ class TestPopulationAPIViews(TestCase):
                 'group': 1,
                 'open_close_id': 1,
                 'area_available_to_species': 5.5,
-                'count_method_id': 1,
                 'survey_method_id': 1,
-                'sampling_effort': 1.25,
-                'sampling_size_unit_id': 1,
                 'area_covered': 1.2,
                 'note': 'This is notes'
             },
