@@ -86,6 +86,12 @@ class AnnualPopulation(AnnualPopulationAbstract):
     population_estimate_certainty = models.IntegerField(
         null=True, blank=True
     )
+    population_estimate_category_other = models.TextField(
+        null=True, blank=True
+    )
+    survey_method_other = models.TextField(
+        null=True, blank=True
+    )
 
     def __str__(self):
         return "{} {}".format(
@@ -194,6 +200,9 @@ class PopulationStatus(models.Model):
         verbose_name_plural = "Population Status"
         db_table = "population_status"
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class PopulationEstimateCategory(models.Model):
     """Population Estimate Category model.
@@ -212,6 +221,9 @@ class PopulationEstimateCategory(models.Model):
         verbose_name_plural = "Population Estimate Categories"
         db_table = "population_estimate_category"
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class SamplingEffortCoverage(models.Model):
     """Sampling Effort Coverage model.
@@ -229,3 +241,6 @@ class SamplingEffortCoverage(models.Model):
         verbose_name = "Sampling Effort Coverage"
         verbose_name_plural = "Sampling Effort Coverages"
         db_table = "sampling_effort_coverage"
+
+    def __str__(self) -> str:
+        return self.name

@@ -149,11 +149,16 @@ class TestMapAPIViews(TestCase):
         self.assertEqual(response.data['cname'], self.holding_1.cname)
 
     def test_find_property_by_coord(self):
+        UserProfile.objects.create(
+            user=self.user_1,
+            current_organisation=self.organisation_1
+        )
         # insert property
         property = PropertyFactory.create(
             geometry=self.holding_1.geom,
             name='Property A',
-            created_by=self.user_1
+            created_by=self.user_1,
+            organisation=self.organisation_1
         )
         lat = -26.71998940486352
         lng = 27.763781680455708
@@ -161,7 +166,7 @@ class TestMapAPIViews(TestCase):
             reverse('find-property') + (
                 f'/?lat={lat}&lng={lng}'
             ),
-            organisation_id=property.organisation.id
+            organisation_id=self.organisation_1.id
         )
         # should find 1
         request.user = self.user_1
@@ -176,6 +181,7 @@ class TestMapAPIViews(TestCase):
             ),
             organisation_id=self.organisation_1.id
         )
+        property.organisation.id=55
         request.user = self.user_1
         # should find 0
         response = view(request)

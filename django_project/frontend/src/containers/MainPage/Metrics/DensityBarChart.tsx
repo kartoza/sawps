@@ -4,8 +4,6 @@ import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
-import { useAppSelector } from "../../../app/hooks";
-import { RootState } from "../../../app/store";
 import "./index.scss";
 import {ChartCard} from "./ChartCard";
 
@@ -13,16 +11,29 @@ import {ChartCard} from "./ChartCard";
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
+interface DensityData {
+    density: {
+      property_name: string;
+      total: number;
+      density: number;
+    };
+  }
+
+  interface DensityBarChartProps {
+    selectedSpecies: string;
+    propertyId: string;
+    startYear: number;
+    endYear: number;
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
+    densityData: DensityData[];
+    setDensityData: (data: DensityData[]) => void;
+  }
+
 const FETCH_SPECIES_DENSITY = '/api/species-population-total-density/'
 
-
-const DensityBarChart = () => {
-    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
-    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
-    const [loading, setLoading] = useState(false)
-    const [densityData, setDesityData] = useState([])
+const DensityBarChart = (props:DensityBarChartProps) => {
+    const {selectedSpecies, propertyId, startYear, endYear, loading, setLoading ,densityData, setDensityData} = props
     const labels = [];
     const density = [];
 
@@ -31,7 +42,7 @@ const DensityBarChart = () => {
         axios.get(`${FETCH_SPECIES_DENSITY}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
-                setDesityData(response.data)
+                setDensityData(response.data)
             }
         }).catch((error) => {
             setLoading(false)
