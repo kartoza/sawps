@@ -112,13 +112,6 @@ class AnnualPopulationPerActivitySerializer(serializers.ModelSerializer):
 class SamplingEffortCoverageSerializer(serializers.ModelSerializer):
     """SamplingEffortCoverage Serializer"""
 
-    def __init__(self, *args, **kwargs):
-        remove_fields = kwargs.pop('remove_fields', None)
-        super().__init__(*args, **kwargs)
-        if remove_fields:
-            for field_name in remove_fields:
-                self.fields.pop(field_name)
-
     class Meta:
         model = SamplingEffortCoverage
         fields = '__all__'
@@ -127,13 +120,6 @@ class SamplingEffortCoverageSerializer(serializers.ModelSerializer):
 class PopulationStatusSerializer(serializers.ModelSerializer):
     """PopulationStatus Serializer"""
 
-    def __init__(self, *args, **kwargs):
-        remove_fields = kwargs.pop('remove_fields', None)
-        super().__init__(*args, **kwargs)
-        if remove_fields:
-            for field_name in remove_fields:
-                self.fields.pop(field_name)
-
     class Meta:
         model = PopulationStatus
         fields = '__all__'
@@ -141,13 +127,6 @@ class PopulationStatusSerializer(serializers.ModelSerializer):
 
 class PopulationEstimateCategorySerializer(serializers.ModelSerializer):
     """PopulationEstimateCategory Serializer"""
-
-    def __init__(self, *args, **kwargs):
-        remove_fields = kwargs.pop('remove_fields', None)
-        super().__init__(*args, **kwargs)
-        if remove_fields:
-            for field_name in remove_fields:
-                self.fields.pop(field_name)
 
     class Meta:
         model = PopulationEstimateCategory
