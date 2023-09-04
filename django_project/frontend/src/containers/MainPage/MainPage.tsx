@@ -43,7 +43,6 @@ function MainPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams()
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const [rightSideBarMode, setRightSideBarMode] = useState(RightSideBarMode.None) // 0: upload data, 1: property summary, 2: filtered properties summary
   const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
@@ -53,22 +52,38 @@ function MainPage() {
   const initialSelectedTab = initialTabParam !== null ? parseInt(initialTabParam) : 0;
   const [selectedTab, setSelectedTab] = useState(initialSelectedTab);
 
+  const tabNameToValue: { [key: string]: number } = {
+    'map': 0,
+    'data': 1,
+    'metrics': 2,
+    'upload': 3,
+  };
+
   useEffect(() => {
     const tabParam = new URLSearchParams(location.search).get('tab');
     if (tabParam !== null) {
-      const tab = parseInt(tabParam);
-      if (tab >= 0 && tab <= 3) {
-        setSelectedTab(tab); // Set the selected tab based on URL parameter
+      const tabName = Object.keys(tabNameToValue).find(key => tabNameToValue[key] === parseInt(tabParam));
+      if (tabName) {
+        setSelectedTab(tabNameToValue[tabName]); // Set the selected tab based on URL parameter
       }
     }
   }, [location.search]);
-
+  
   useEffect(() => {
-    if (location.search !== `?tab=${selectedTab}`) {
-      // Update URL when tab is changed and only if it's not already set
-      navigate(`?tab=${selectedTab}`);
+    const tabNames = ['map', 'data', 'metrics', 'upload'];
+    const selectedTabName = tabNames[selectedTab];
+    const newPath = `/${selectedTabName}`;
+  
+    if (location.pathname !== newPath) {
+      navigate(newPath); // Update the URL with the tab name
     }
-  }, [selectedTab, navigate,location.search]);
+  
+    // Replace the tab parameter in the URL
+    const newUrl = window.location.href.replace(/\?tab=\d/, newPath);
+    window.history.replaceState(null, '', newUrl);
+  }, [selectedTab, navigate, location.pathname]);
+  
+  
 
   useEffect(() => {
     if (rightSideBarMode === RightSideBarMode.None) {
@@ -104,21 +119,26 @@ function MainPage() {
             <Grid container className="Content" flexDirection={'column'}>
               <Grid item>
                 <Box className="TabHeaders">
-                  <Tabs value={selectedTab}
-                      onChange={(event: React.SyntheticEvent, newValue: number) => {
-                        setSelectedTab(newValue)
-                        if (newValue === 3) {
-                          setRightSideBarMode(RightSideBarMode.Upload)
-                          dispatch(setUploadState(UploadMode.SelectProperty))
-                        } else {
-                          setRightSideBarMode(RightSideBarMode.None)
-                        }
-                      }} aria-label="Main Page Tabs"
-                  >
-                      <Tab key={0} label={'MAP'} {...a11yProps(0)} />
-                      <Tab key={1} label={'DATA'} {...a11yProps(1)} />
-                      <Tab key={2} label={'METRICS'} {...a11yProps(2)} />
-                      <Tab key={3} label={'DATA UPLOAD'} {...a11yProps(3)} />
+                <Tabs
+                  value={selectedTab}
+                  onChange={(event: React.SyntheticEvent, newValue: number) => {
+                    const tabNames = ['map', 'data', 'metrics', 'upload'];
+                    const selectedTabName = tabNames[newValue];
+                    setSelectedTab(newValue);
+                    if (selectedTabName === 'upload') {
+                      setRightSideBarMode(RightSideBarMode.Upload);
+                      dispatch(setUploadState(UploadMode.SelectProperty));
+                    } else {
+                      setRightSideBarMode(RightSideBarMode.None);
+                    }
+                    navigate(`/${selectedTabName}`); // Update the URL with the tab name
+                  }}
+                  aria-label="Main Page Tabs"
+                >
+                    <Tab key={0} label={'MAP'} {...a11yProps(0)} />
+                    <Tab key={1} label={'DATA'} {...a11yProps(1)} />
+                    <Tab key={2} label={'METRICS'} {...a11yProps(2)} />
+                    <Tab key={3} label={'DATA UPLOAD'} {...a11yProps(3)} />
                   </Tabs>
                </Box>
               </Grid>
