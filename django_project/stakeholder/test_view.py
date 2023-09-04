@@ -164,7 +164,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -191,7 +190,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         request = self.factory.post(url, data)
 
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -212,7 +210,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -237,7 +234,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -263,7 +259,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = delete_reminder_and_notification(request)
 
@@ -383,7 +378,6 @@ class TestAddReminderAndScheduleTask(TestCase):
         self.factory = RequestFactory()
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         view = RemindersView()
 
@@ -440,7 +434,6 @@ class TestRemindersView(TestCase):
         self.factory = RequestFactory()
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         view = RemindersView()
 
@@ -641,7 +634,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -658,7 +650,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -674,7 +665,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -693,7 +683,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -736,7 +725,6 @@ class GetReminderOrNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_reminder_or_notification(request)
 
@@ -751,7 +739,6 @@ class GetReminderOrNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_reminder_or_notification(request)
 
@@ -803,7 +790,6 @@ class GetOrganisationRemindersTest(TestCase):
         }
         request = self.factory.get(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_organisation_reminders(request)
 
