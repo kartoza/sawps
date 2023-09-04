@@ -28,7 +28,7 @@
     gap: 30px;
 
     .chart-left {
-        width: 790px;
+        width: 100%; // was 900px
     }
 
     .chart-right {
@@ -40,7 +40,7 @@
         box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
         padding: 15px;
         margin-bottom: 20px;
-        width: 750px;
+        width: 100%; // was 900px
         margin-right: 20px;
 
         .white-chart-heading {
@@ -191,6 +191,7 @@
   .row {
     display: flex;
   }
+
 
   
   .overflow-auto-chart {
@@ -354,8 +355,9 @@
   .chart-container-donught {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    margin: 0 20px; /* Add margin between charts if desired */
+    align-items: left;
+    margin: 0 20px;
+    width: "100%"
   }
   
   /* Styles for the icon container */
@@ -382,13 +384,13 @@
 
 .chart-row-donut {
     display: flex;
-    justify-content: center;
-    gap: 20px; /* Adjust the gap as needed */
-    margin-left: 110px;
+    justify-content: left;
+    gap: 70px;
+    margin-left: 10px;
 }
 
 .chart-title {
     margin-top: 10px;
-    margin-left: 0px; /* Adjust the margin as needed */
-    font-weight: bold; /* Optionally add font-weight or other styles */
+    margin-left: 0px;
+    font-weight: bold;
 }
