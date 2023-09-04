@@ -85,50 +85,56 @@ const DonutChart = () => {
         };
 
         const options = {
-            cutout: "50%", // Reduce the cutout size
+            cutout: "48%",
             plugins: {
                 legend: {
-                    position: 'right' as 'right',
+                    position: "right" as "right",
                     display: true,
                     labels: {
-                        boxWidth: 12, // Adjust the legend item size
-                        padding: 10, // Adjust the padding
+                        boxWidth: 30,
+                        boxHeight: 30,
+                        padding: 12,
+                        font: {
+                            size: 16,
+                            weight: "bold" as "bold"
+                        }
                     },
                 },
-                datalabels: { // Add datalabels plugin for labeling data
-                    color: '#fff', // Label color
+                datalabels: {
+                    color: "#fff",
                     formatter: (value: number) => {
-                        return `${value.toFixed(2)}%`; // Format label value as a percentage
+                        return `${value.toFixed(2)}%`;
                     },
+                    font: {
+                        size: 20
+                    }
                 },
-                font: {
-                    size: 8,
-                    weight: 'bold' as 'bold',
+                title: {
+                    display: true,
+                    text: species.species_name,
+                    align: 'start' as 'start',
+                    font: {
+                        size: 20,
+                        weight: "bold" as "bold"
+                    }
                 },
             },
-            title: {
-                display: true,
-                text: 'speciesName',
-                font: {
-                    size: 14,
-                    weight: 'bold',
-                },
-            },
-            
         };
+        
 
         return (
-            <div className="chart-container-donught" key={index}>
-                <div className="donut-chart" 
+            <div className="" style={{ marginLeft: "10px" }} key={index}>
+                <div className="" 
                 // style={{ 
                 //     backgroundImage: 'url("http://localhost:9000/static/201859c0c5a44a3b690ae8035d3fa696.png")',
                 //     backgroundRepeat: "no-repeat"}}
                     >
-                    <div className="chart-title">{species.species_name}</div>
+                    <div style={{ marginLeft: "-20px" }}>
                     <Doughnut data={chartData} options={options} 
-                    // height={300} 
-                    width={400} 
+                    // height={500} 
+                    width={500}
                     />
+                    </div>
                 </div>
             </div>
         );
@@ -148,8 +154,8 @@ const DonutChart = () => {
         <div>
             {!loading ? (
                 pairs.length > 0 ? (
-                    <Box className="chart-wrapper">
-                        <Typography variant="h6" gutterBottom style={{ textAlign: "left" }}>
+                    <Box className="">
+                        <Typography variant="h6" gutterBottom style={{ textAlign: "left" ,marginTop:"30px"}}>
                             Activity count as % of the total population
                         </Typography>
                         {pairs}
