@@ -12,8 +12,7 @@ interface ISpeciesCardProps{
     pic:string,
     species_id: number,
     species_name?:string,
-    growth:string,
-    loss:string,
+    total_area?: number,
     chartColors:IColors,
     index?:number,
     population?:string
@@ -29,8 +28,7 @@ const SpeciesCard:FC<ISpeciesCardProps> =(props)=>{
                 </div>
                 <div className='species-card-text-container'>
                     <p className='species-card-text' data-testid='species-card-population'>Total Population : {props.population}</p>
-                    <p className='species-card-text' data-testid='species-card-growth'>Population Growth : {props.growth}</p>
-                    <p className='species-card-text' data-testid='species-card-loss'>Population Loss : {props.loss}</p>
+                    <p className='species-card-text' data-testid='species-card-total-area'>Total Area : {+props.total_area.toFixed(2)}</p>
                 </div>
                 <div className='ChartHolder'>
                     <SpeciesChart species_id={props.species_id} species_name={props.species_name} lineColor={props.chartColors.line} areaFillColor={props.chartColors.area}  index={props.index}/>
