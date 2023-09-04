@@ -106,13 +106,21 @@ const PerPropertyTypeDonutChart = () => {
               size: 20,
               weight: "bold" as "bold",
             },
+            title: {
+              display: true,
+              text: speciesName,
+              align: 'start' as 'start',
+              font: {
+                  size: 20,
+                  weight: "bold" as "bold"
+              }
+          },
           },
         };
   
         return (
           <div className="chart-container-donught" key={index}>
             <div className="donut-chart">
-              <div className="chart-title" style={{ fontSize: '20px' }}>{speciesName}</div>
               <Doughnut data={chartData} options={options} width={400} />
             </div>
           </div>
@@ -134,7 +142,7 @@ const PerPropertyTypeDonutChart = () => {
       <div>
         {!loading ? (
           pairs.length > 0 ? (
-            <Box className="chart-wrapper">
+            <Box className="">
               <Typography variant="h6" gutterBottom style={{ textAlign: "left" }}>
                 Total count as % of the total population per property type
               </Typography>
