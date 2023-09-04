@@ -84,10 +84,6 @@ class RegisteredOrganisationBaseView(TemplateView):
             organisation = (
                 Organisation.objects.all().order_by('name').first()
             )
-            if user_profile.current_organization:
-                organisations = organisations.exclude(
-                    id=user_profile.current_organisation.id
-                )
         else:
             organisation_user = OrganisationUser.objects.filter(
                 user=user
@@ -113,9 +109,10 @@ class RegisteredOrganisationBaseView(TemplateView):
             organisations = (
                 Organisation.objects.all().order_by('name')
             )
-            organisations = organisations.exclude(
-                id=user_profile.current_organisation.id
-            )
+            if user_profile.current_organisation:
+                organisations = organisations.exclude(
+                    id=user_profile.current_organisation.id
+                )
         else:
             user_organisations = OrganisationUser.objects.filter(
                 user=user
