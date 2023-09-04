@@ -259,7 +259,7 @@ class FindPropertyByCoord(APIView):
         point = Point(float(lng), float(lat), srid=4326)
         current_organisation_id = get_current_organisation_id(
             request.user
-        ) or 0
+        )
         properties = Property.objects.filter(
             geometry__contains=point
         ).filter(
