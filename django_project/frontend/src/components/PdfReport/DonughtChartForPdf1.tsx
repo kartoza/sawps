@@ -78,38 +78,42 @@ const PerProvinceDonutChart = () => {
       const options = {
         cutout: "50%",
         plugins: {
-          legend: {
-            position: "right" as "right",
-            display: true,
-            labels: {
-              boxWidth: 30,
-              boxHeight: 30,
-              padding: 12,
-              font : {
-                size: 20
-              }
+            legend: {
+                position: "right" as "right",
+                display: true,
+                labels: {
+                    boxWidth: 30,
+                    boxHeight: 30,
+                    padding: 12,
+                    font: {
+                        size: 20
+                    }
+                },
             },
-          },
-          datalabels: {
-            color: "#fff",
-            formatter: (value: number) => {
-              return `${value.toFixed(2)}%`;
+            datalabels: {
+                color: "#fff",
+                formatter: (value: number) => {
+                    return `${value.toFixed(2)}%`;
+                },
+                font: {
+                    size: 20
+                }
             },
-            font : {
-              size: 20
-            }
-          },
-          font: {
-            size: 20,
-            weight: "bold" as "bold",
-          },
+            title: {
+                display: true,
+                text: speciesName,
+                align: 'start' as 'start',
+                font: {
+                    size: 20,
+                    weight: "bold" as "bold"
+                }
+            },
         },
-      };
+    };
 
       return (
         <div className="chart-container-donught" key={index}>
           <div className="donut-chart">
-            <div className="chart-title" style={{ fontSize: '20px' }}>{speciesName}</div>
             <Doughnut data={chartData} options={options} width={400} />
           </div>
         </div>
@@ -131,10 +135,12 @@ const PerProvinceDonutChart = () => {
     <div>
       {!loading ? (
         pairs.length > 0 ? (
-          <Box className="chart-wrapper">
+
+          <Box className="">
             <Typography variant="h6" gutterBottom style={{ textAlign: "left" }}>
               Total count as % of the total population per province
             </Typography>
+
             {pairs}
           </Box>
         ) : null
