@@ -139,7 +139,7 @@ const PyramidChartForPdf = () => {
     const generatedCharts = speciesWithCurrentYearValues.map((species, index) => {
         const chartComponent = (
             <Box>
-                <Typography style={{ marginRight: '10px' }}>
+                <Typography style={{ marginRight: '10px', fontSize: 20 }}>
                     {species.species_name}
                     <img src={species.Icon} alt="species Icon" 
                     style={{ maxWidth: '60px', maxHeight: '60px' ,marginLeft: '262px'}} />
@@ -160,7 +160,11 @@ const PyramidChartForPdf = () => {
                             y: {
                                 stacked: true,
                                 ticks: {
-                                    display: true
+                                    display: true,
+                                    font: {
+                                        size: 20,
+                                        weight: "bold" as "bold"
+                                    }
                                 },
                                 grid: {
                                     display: false
@@ -173,9 +177,13 @@ const PyramidChartForPdf = () => {
                                 position: 'bottom',
                                 align: 'center',
                                 labels: {
-                                    usePointStyle: true // Show only legend titles, not the select boxes
+                                    usePointStyle: true,// Show only legend titles, not the select boxes
+                                    font: {
+                                        size: 20,
+                                        weight: "bold" as "bold"
+                                    }
                                 }
-                            }
+                            },
                         }
                     }} 
                 />
