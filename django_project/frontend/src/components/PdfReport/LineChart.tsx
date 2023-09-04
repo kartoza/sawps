@@ -66,7 +66,7 @@ const LineChartForPdf = () => {
     // Generate multiple line charts per species
     const generatedCharts = speciesWithChartData.map((specie, index) => (
         <Box key={index} style={{ width: '50%', padding: '10px' }}>
-            <Typography style={{ marginRight: '10px' }}>{specie.species_name}</Typography>
+            <Typography style={{ marginRight: '10px', fontSize: 20 }}>{specie.species_name}</Typography>
             {(
                 <img
                 src={specie.icon}
@@ -85,18 +85,30 @@ const LineChartForPdf = () => {
                         },
                         legend: {
                             display: false 
-                        }
+                        },
                     },
                     scales: {
                         x: {
                             grid: {
                                 display: true
-                            }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 20,
+                                    weight: "bold" as "bold"
+                                }
+                            },
                         },
                         y: {
                             grid: {
                                 display: true
-                            }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 20,
+                                    weight: "bold" as "bold"
+                                }
+                            },
                         }
                     },
                 }}
