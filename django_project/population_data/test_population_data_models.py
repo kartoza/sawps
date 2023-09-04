@@ -11,6 +11,7 @@ from population_data.factories import (
     OpenCloseSystemF,
     PopulationEstimateCategoryF,
     PopulationStatusF,
+    SamplingEffortCoverageF
 )
 from population_data.models import (
     AnnualPopulation,
@@ -20,9 +21,10 @@ from population_data.models import (
     OpenCloseSystem,
     PopulationEstimateCategory,
     PopulationStatus,
+    SamplingEffortCoverage
 )
 from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
-from species.models import OwnedSpecies, Taxon
+from species.models import Taxon
 
 
 class CountMethodTestCase(TestCase):
@@ -241,6 +243,7 @@ class TestPopulationEstimateCategory(TestCase):
     def test_create_population_estimate(self):
         """test create population estimate category."""
         self.assertEqual(self.population_estimate_category.name, 'name')
+        self.assertEqual(str(self.population_estimate_category), 'name')
         self.assertEqual(PopulationEstimateCategory.objects.count(), 1)
 
     def test_update_population_estimate(self):
@@ -281,6 +284,7 @@ class TestPopulationSatatus(TestCase):
     def test_create_population_status(self):
         """test create population status."""
         self.assertEqual(self.population_status.name, 'name')
+        self.assertEqual(str(self.population_status), 'name')
         self.assertEqual(PopulationStatus.objects.count(), 1)
 
     def test_update_population_status(self):
@@ -305,3 +309,42 @@ class TestPopulationSatatus(TestCase):
 
         with self.assertRaises(Exception) as raised:
             PopulationStatusF(name='name')
+
+
+class TestSamplingEffortCoverage(TestCase):
+    """Test for sampling effort coverage model."""
+
+    def setUp(self) -> None:
+        """setup test data."""
+        self.coverage = SamplingEffortCoverageF(
+            name='name'
+            )
+
+    def test_create_sampling_effort_cov(self):
+        """test create sampling effort coverage."""
+        self.assertEqual(self.coverage.name, 'name')
+        self.assertEqual(str(self.coverage), 'name')
+        self.assertEqual(SamplingEffortCoverage.objects.count(), 1)
+
+    def test_update_sampling_effort_cov(self):
+        """test update sampling effort coverage."""
+        self.coverage.name = 'Test1'
+        self.coverage.save()
+        self.assertEqual(
+            self.coverage.name,
+            'Test1'
+        )
+
+    def test_delete_sampling_effort_cov(self):
+        """test delete sampling effort coverage."""
+        self.coverage.delete()
+        self.assertEqual(SamplingEffortCoverage.objects.count(), 0)
+
+    def test_sampling_effort_cov_name_constraint(self):
+        """Test sampling effort coverage name contraint."""
+        another = SamplingEffortCoverageF(name='Coverage2')
+        self.assertEqual(SamplingEffortCoverage.objects.count(), 2)
+        self.assertNotEqual(self.coverage.name, another.name)
+
+        with self.assertRaises(Exception) as raised:
+            SamplingEffortCoverageF(name='name')
