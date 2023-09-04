@@ -16,7 +16,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({ loading, chartComponent, t
                 <Box className="white-chart">
                     <Typography>{title}</Typography>
                     {chartComponent}
-                    <Typography>{xLabel}</Typography>
+                    <Typography fontSize="small">{xLabel}</Typography>
                 </Box>
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />

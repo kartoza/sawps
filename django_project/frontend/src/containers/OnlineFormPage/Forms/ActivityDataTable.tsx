@@ -37,7 +37,7 @@ export default function ActivityDataTable(props: ActivityDataTableInterface) {
             _columns = [
                 {
                     field: 'activity_type_name',
-                    headerName: 'Activity',
+                    headerName: 'Event',
                     flex: 1,
                 },
                 {
@@ -49,13 +49,18 @@ export default function ActivityDataTable(props: ActivityDataTableInterface) {
                     field: 'reintroduction_source',
                     headerName: 'Source',
                     flex: 1,
+                },
+                {
+                    field: 'permit',
+                    headerName: 'Permit',
+                    flex: 1,
                 }
             ]
         } else {
             _columns = [
                 {
                     field: 'activity_type_name',
-                    headerName: 'Activity',
+                    headerName: 'Event',
                     flex: 1,
                 },
                 {
@@ -68,6 +73,11 @@ export default function ActivityDataTable(props: ActivityDataTableInterface) {
                     headerName: 'Destination',
                     flex: 1,
                 },
+                {
+                    field: 'permit',
+                    headerName: 'Permit',
+                    flex: 1,
+                }
             ]
         }
         _columns.push({

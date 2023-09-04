@@ -126,6 +126,13 @@ export const MapStateSlice = createSlice({
         },
         setInitialMapTheme: (state, action: PayloadAction<MapTheme>) => {
             state.theme = action.payload
+        },
+        resetMapState: (state, action: PayloadAction<null>) => {
+            state.isMapReady = false
+            state.selectionMode = DEFAULT_SELECTION_MODE
+            state.selectedParcels = []
+            state.selectedProperty = createNewProperty()
+            state.mapEvents = []
         }
     }
 })
@@ -143,7 +150,8 @@ export const {
     triggerMapEvent,
     onMapEventProcessed,
     toggleMapTheme,
-    setInitialMapTheme
+    setInitialMapTheme,
+    resetMapState
 } = MapStateSlice.actions
 
 export default MapStateSlice.reducer;
