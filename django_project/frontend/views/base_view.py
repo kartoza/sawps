@@ -69,8 +69,8 @@ class RegisteredOrganisationBaseView(TemplateView):
         return current_organisation
 
 
-    def get_or_set_current_organisation(self):
-        user = self.request.user
+    def get_or_set_current_organisation(self, request):
+        user = request.user
 
         user_profile = user.user_profile
         current_organisation = user_profile.current_organisation
@@ -132,7 +132,7 @@ class RegisteredOrganisationBaseView(TemplateView):
         if not self.request.user.is_authenticated:
             return ctx
         current_organisation_id, current_organisation = (
-            self.get_or_set_current_organisation()
+            self.get_or_set_current_organisation(self.request)
         )
         # fetch organisation list
         ctx['current_organisation'] = (
