@@ -7,10 +7,6 @@ from django.test import (
 from datetime import datetime
 from django.utils import timezone
 from stakeholder.factories import userProfileFactory
-# from frontend.utils.organisation import (
-#     CURRENT_ORGANISATION_ID_KEY,
-#     get_current_organisation_id
-# )
 from stakeholder.views import (
     adjust_date_to_server_time,
     convert_date_to_local_time,
