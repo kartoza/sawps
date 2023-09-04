@@ -43,7 +43,6 @@ function MainPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  // const [searchParams, setSearchParams] = useSearchParams()
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const [rightSideBarMode, setRightSideBarMode] = useState(RightSideBarMode.None) // 0: upload data, 1: property summary, 2: filtered properties summary
   const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
