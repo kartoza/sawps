@@ -6,8 +6,6 @@ import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
 import Loading from "../../../components/Loading";
-import { useAppSelector } from "../../../app/hooks";
-import { RootState } from "../../../app/store";
 import "./index.scss";
 import Card from "@mui/material/Card";
 import {ChartCard} from "./ChartCard";
@@ -18,12 +16,8 @@ Chart.register(ChartDataLabels);
 
 const FETCH_SPECIES_AREA_AVAILABLE = '/api/total-area-available-to-species/'
 
-const PropertyAvailableBarChart = () => {
-    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
-    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
-    const [loading, setLoading] = useState(false)
+const PropertyAvailableBarChart = (props:any) => {
+    const {selectedSpecies, propertyId, startYear, endYear, loading, setLoading} = props
     const [propertyAreaAvailableData, setPropertyAreaAvailableData] = useState([])
     const labels = [];
     const  totalArea= [];
