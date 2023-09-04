@@ -62,9 +62,6 @@ class NationalStatisticsView(APIView):
         total property area available for
         owned species (national).
         """
-        # organisation_id = request.session.get(
-        #     'current_organisation_id'
-        # )
 
         national_properties = Property.objects.filter()
 
