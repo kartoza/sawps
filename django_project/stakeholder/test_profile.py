@@ -172,6 +172,9 @@ class TestProfileView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_context_data(self):
+        userProfileFactory.create(
+            user=self.test_user
+        )
         device = TOTPDevice(
             user=self.test_user,
             name='device_name'

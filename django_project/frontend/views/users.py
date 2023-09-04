@@ -15,7 +15,7 @@ from django.http import JsonResponse
 
 from django.views.generic import TemplateView
 from frontend.utils.organisation import (
-    CURRENT_ORGANISATION_ID_KEY,
+    get_current_organisation_id
 )
 from django.core.paginator import (
     Paginator,
@@ -183,9 +183,9 @@ class OrganisationUsersView(
             # add invitation to model
             is_new_invitation = self.is_new_invitation(
                 email,
-                request.session[CURRENT_ORGANISATION_ID_KEY]
+                get_current_organisation_id(request.user)
             )
-            org_id = request.session[CURRENT_ORGANISATION_ID_KEY]
+            org_id = get_current_organisation_id(request.user)
             if not is_new_invitation:
                 if role == 'manager':
                     create_invite = OrganisationInvites(
@@ -284,15 +284,16 @@ class OrganisationUsersView(
 
     def get_organisation_users(self, request):
         organisation_user_list = OrganisationUser.objects.filter(
-            organisation_id=request.session[CURRENT_ORGANISATION_ID_KEY])
+            organisation_id=get_current_organisation_id(request.user))
         organisation_users = []
 
         for user in organisation_user_list:
             # get role from organisation invites
             role = OrganisationInvites.objects.filter(
                 email=user.user.email,
-                organisation_id=request.session[
-                    CURRENT_ORGANISATION_ID_KEY]
+                organisation_id=(
+                    get_current_organisation_id(request.user)
+                )
             ).first()
             if role:
                 object_to_save = {
@@ -338,7 +339,7 @@ class OrganisationUsersView(
 
     def get_organisation_invites(self, request):
         organisation_invites = OrganisationInvites.objects.filter(
-            organisation_id=request.session[CURRENT_ORGANISATION_ID_KEY])
+            organisation_id=get_current_organisation_id(request.user))
         paginated_organisation_invites = []
 
         for invite in organisation_invites:
@@ -383,5 +384,5 @@ class OrganisationUsersView(
         ctx['invites'] = self.get_organisation_invites(self.request)
         ctx['role'] = self.get_role(
             self.request.user,
-            self.request.session[CURRENT_ORGANISATION_ID_KEY])
+            get_current_organisation_id(self.request.user))
         return ctx

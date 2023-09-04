@@ -433,6 +433,7 @@ export default function Map() {
 
   /* render selected+unselected parcel */
   useEffect(() => {
+    if (!isMapReady) return;
     let _mapObj: maplibregl.Map = map.current
     let _has_removed = false
     for (let i = 0; i < selectedParcels.length; ++i) {
@@ -450,7 +451,7 @@ export default function Map() {
     if (_has_removed) {
       dispatch(selectedParcelsOnRenderFinished())
     }
-  }, [selectedParcels])
+  }, [selectedParcels, isMapReady])
 
   /* Render/Respond to mapEvents */
   useEffect(() => {

@@ -4,6 +4,7 @@ from django.test import (
 )
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
+from frontend.views.base_view import RegisteredOrganisationBaseView
 from django.contrib.auth.models import AnonymousUser
 from frontend.tests.model_factories import UserF
 from stakeholder.factories import (
@@ -52,7 +53,15 @@ class RegisteredBaseViewTestBase(TestCase):
         )
         self.user_profile = UserProfile.objects.create(
             user=self.user_1,
-            received_notif=False
+            received_notif=False,
+            current_organisation=self.organisation_1
+        )
+        self.superuser.user_profile = UserProfile.objects.create(
+            user=self.superuser,
+            current_organisation=self.organisation_1
+        )
+        self.user_2.user_profile = UserProfile.objects.create(
+            user=self.user_2
         )
 
     def process_session(self, request):
@@ -91,8 +100,8 @@ class RegisteredBaseViewTestBase(TestCase):
         context = view.get_context_data()
         self.assertIn('current_organisation_id', context)
         self.assertIn('organisations', context)
-        self.assertEqual(len(context['organisations']), 1)
-        self.assertNotEqual(context['organisations'][0]['id'],
+        self.assertEqual(len(context['organisations']), 2)
+        self.assertNotEqual(context['organisations'][1]['id'],
                             context['current_organisation_id'])
 
     def do_test_user_without_organisation(self):
@@ -106,4 +115,20 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertEqual(len(context['organisations']), 0)
         self.assertIn('current_organisation_id', context)
         self.assertEqual(context['current_organisation_id'], 0)
+
+    def do_test_get_current_organisation_with_profile(self):
+
+        # Create a request
+        request = self.factory.get(reverse(self.view_name))
+
+        # Attach the user to the request
+        request.user = self.user_1
+
+        # Create an instance of the view and call the method
+        view = RegisteredOrganisationBaseView()
+        view.request = request
+
+        # Test that the method returns the correct current organisation
+        current_organisation = view.get_current_organisation()
+        self.assertIsNotNone(current_organisation)
 

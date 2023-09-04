@@ -5,8 +5,6 @@ import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import axios from "axios";
 import Loading from "../../../components/Loading";
-import { useAppSelector } from "../../../app/hooks";
-import { RootState } from "../../../app/store";
 import "./index.scss";
 import Card from "@mui/material/Card";
 import {ChartCard} from "./ChartCard";
@@ -15,25 +13,25 @@ Chart.register(CategoryScale);
 
 const FETCH_PROPERTY_POPULATION_SPECIES = '/api/species-population-count/'
 
-interface PopulationCount {
-    year: number;
-    year_total: number;
-}
-
 interface Species {
     species_name: string;
     species_colour: string;
-    annualpopulation_count: PopulationCount[];
+    annualpopulation_count: { year: number; year_total: number }[];
 }
 
-const SpeciesLineChart = () => {
-    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
-    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
-    const [loading, setLoading] = useState(false)
-    const [speciesData, setSpeciesData] = useState<Species[]>([])
+interface SpeciesLineChartProps {
+    selectedSpecies: string;
+    propertyId: string;
+    startYear: number;
+    endYear: number;
+    loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    speciesData: Species[];
+    setSpeciesData: React.Dispatch<React.SetStateAction<Species[]>>;
+}
 
+const SpeciesLineChart = (props:SpeciesLineChartProps) => {
+    const {selectedSpecies, propertyId, startYear, endYear, loading, setLoading, speciesData, setSpeciesData} = props
     const yearsData = Array.from(new Set(speciesData.flatMap(species => species.annualpopulation_count.map(entry => entry.year))));
     yearsData.sort((a, b) => a - b);
     const speciesPopulation = {
