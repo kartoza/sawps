@@ -5,8 +5,8 @@ import DonutChart from "./DonughtChartForPdf";
 
 const ThirdPageCharts = () => {
   return (
-      <div className="main-chart">
-        <div className="chart-left">
+      <div className="">
+        <div className="">
           <PopulationCategoryChart />
           <DonutChart />
         </div>
