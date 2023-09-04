@@ -100,14 +100,14 @@ const PopulationCategoryChart = () => {
             if (hasNonZeroValues || nextHasNonZeroValues) {
                 return (
                     <Box key={index} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Box style={{ width: '48%', marginRight: '2%' }}>
+                        <Box style={{ width: '98%', marginRight: '2%' }}>
                             <Box style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                <Typography>{specieName}</Typography>
+                                <Typography style={{ fontSize: 20 }}>{specieName}</Typography>
                                 {specie && (
                                     <img
                                         src={specie.icon}
                                         alt={`${specieName} Icon`}
-                                        style={{ maxWidth: '60px', maxHeight: '60px', marginLeft: '235px' }}
+                                        style={{ maxWidth: '60px', maxHeight: '60px', marginLeft: '400px' }}
                                     />
                                 )}
                             </Box>
@@ -131,14 +131,32 @@ const PopulationCategoryChart = () => {
                                         legend: {
                                             display: false,
                                         },
+                                        // title: {
+                                        //     display: true,
+                                        //     text: specieName,
+                                        //     align: 'start' as 'start',
+                                        //     font: {
+                                        //         size: 24,
+                                        //         weight: "bold" as "bold"
+                                        //     }
+                                        // },
                                     },
                                     scales: {
                                         x: {
                                             beginAtZero: true,
+                                            ticks: {font: {
+                                                size: 20,
+                                                weight: "bold" as "bold",
+                                              },
+                                            }
                                         },
                                         y: {
                                             beginAtZero: true,
                                             ticks: {
+                                                font: {
+                                                    size: 20,
+                                                    weight: "bold" as "bold",
+                                                  },
                                                 stepSize: 50,
                                             },
                                         },
@@ -146,14 +164,14 @@ const PopulationCategoryChart = () => {
                                 }}
                             />
                         </Box>
-                        <Box style={{ width: '48%', marginLeft: '2%' }}>
+                        <Box style={{ width: '98%', marginLeft: '2%' }}>
                             <Box style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                <Typography>{nextSpecieName}</Typography>
+                                <Typography style={{ fontSize: 20 }}>{nextSpecieName}</Typography>
                                 {nextSpecie && (
                                     <img
                                         src={nextSpecie.icon}
                                         alt={`${nextSpecieName} Icon`}
-                                        style={{ maxWidth: '60px', maxHeight: '60px', marginLeft: '235px' }}
+                                        style={{ maxWidth: '60px', maxHeight: '60px', marginLeft: '400px'}}
                                     />
                                 )}
                             </Box>
@@ -173,18 +191,39 @@ const PopulationCategoryChart = () => {
                                     plugins: {
                                         datalabels: {
                                             display: false,
+                                            font : {
+                                                size: 20
+                                              }
                                         },
                                         legend: {
                                             display: false,
                                         },
+                                        // title: {
+                                        //     display: true,
+                                        //     text: nextSpecieName,
+                                        //     align: 'start' as 'start',
+                                        //     font: {
+                                        //         size: 24,
+                                        //         weight: "bold" as "bold"
+                                        //     }
+                                        // },
                                     },
                                     scales: {
                                         x: {
                                             beginAtZero: true,
+                                            ticks: {font: {
+                                                size: 20,
+                                                weight: "bold" as "bold",
+                                              },
+                                            }
                                         },
                                         y: {
                                             beginAtZero: true,
                                             ticks: {
+                                                font: {
+                                                    size: 20,
+                                                    weight: "bold" as "bold",
+                                                  },
                                                 stepSize: 50,
                                             },
                                         },
@@ -210,7 +249,7 @@ const PopulationCategoryChart = () => {
             {loading ? (
                 <Loading />
             ) : generatedCharts.length > 0 ? (
-                <Box className="white-chart">
+                <Box className="">
                     {hasNonZeroCharts && (
                         <Typography variant="h6" gutterBottom style={{ textAlign: "left" }}>
                             Number of properties per population category
