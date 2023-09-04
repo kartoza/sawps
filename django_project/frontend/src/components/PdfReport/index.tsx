@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     height: "80%",
     display: "flex",
     flexDirection: "row",
-    marginLeft: 160,
+    marginLeft: 90,
     marginTop: 10,
   },
   mapImage: {
@@ -207,6 +207,7 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
           )}
 
           
+
           {/* Content for page 1 */}
           {pageIndex === 1 && (
             <View>
