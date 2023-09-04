@@ -81,6 +81,7 @@ from frontend.api_views.national_statistic import (
     NationalStatisticsView,
     NationalSpeciesView
 )
+from .views.organisations import OrganisationsView
 
 urlpatterns = [
     re_path(
@@ -230,6 +231,11 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
     path('users/', OrganisationUsersView.as_view(), name='Users'),
+    path(
+        'organisations/<str:slug>/',
+        OrganisationsView.as_view(),
+        name='organisations'
+    ),
     path('contact/', ContactUsView.as_view(), name='contact'),
     path('data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(

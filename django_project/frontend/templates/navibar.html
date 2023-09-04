@@ -114,22 +114,11 @@
                 {% else %}
                 <span class="dropdown-item font-weight-bolder clickable " onclick="redirectToDesiredPage()">{{ current_organisation }}</span>
                 {% endif %}
-                <hr class="divider" />
-               
-                {% if organisations %}
-                <a class="dropdown-item toggle-dropdown-icon" href="#" role="button" id="switchOrganisationDropdown" aria-haspopup="true" aria-expanded="false">
-                    Switch Organisation <span class="dropdown-icon">&#9656;</span>
-                </a>
-                {% for organisation in organisations %}
-                <a class="dropdown-item organisation-item" key="{{ organisation.id }}" href="{% url 'switch-organisation' organisation.id %}?next={{ request.get_full_path|urlencode }}" style="display: none;">{{ organisation.name }}</a>
-                {% endfor %}
-                    
-                
-                <hr class="divider" />
                 {% endif %}
 
-                {% endif %}
+                
                 {% if user.is_superuser %}
+                <hr class="divider" />
                 <a class="dropdown-item" href="/admin/">Django Admin</a>
                 {% endif %}
             </div>
