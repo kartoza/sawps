@@ -63,7 +63,12 @@ from .views.about import AboutView
 from .views.contact import ContactUsView
 from .views.help import HelpView
 from .views.home import HomeView
-from .views.map import MapView
+from .views.map import (
+    MapView,
+    redirect_to_data,
+    redirect_to_metrics,
+    redirect_to_upload
+)
 from .views.online_form import OnlineFormView
 from .views.switch_organisation import switch_organisation
 from .views.totp_device import (
@@ -201,6 +206,21 @@ urlpatterns = [
         name='switch-organisation'
     ),
     path('map/', MapView.as_view(), name='map'),
+    path(
+        'data/',
+        redirect_to_data,
+        name='data'
+    ),
+    path(
+        'metrics/',
+        redirect_to_metrics,
+        name='metrics'
+    ),
+    path(
+        'upload/',
+        redirect_to_upload,
+        name='upload'
+    ),
     path(
         'upload-data/<int:property_id>/',
         OnlineFormView.as_view(),

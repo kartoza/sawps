@@ -17,12 +17,8 @@ Chart.register(ChartDataLabels);
 
 const FETCH_SPECIES_DENSITY = '/api/total-area-per-property-type/'
 
-const PropertyTypeBarChart = () => {
-    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
-    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
-    const [loading, setLoading] = useState(false)
+const PropertyTypeBarChart = (props:any) => {
+    const {selectedSpecies, propertyId, startYear, endYear, loading, setLoading} = props
     const [propertyTypeData, setPropertyTypeData] = useState([])
     const labels = [];
     const  totalArea= [];
