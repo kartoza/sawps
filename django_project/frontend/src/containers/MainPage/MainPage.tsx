@@ -24,7 +24,8 @@ import {
 import {
     setSelectedParcels,
     resetSelectedProperty,
-    setMapSelectionMode
+    setMapSelectionMode,
+    resetMapState
 } from '../../reducers/MapState';
 import DataList from './Data';
 import Metrics from './Metrics';
@@ -73,7 +74,10 @@ function MainPage() {
     const tabNames = ['map', 'data', 'metrics', 'upload'];
     const selectedTabName = tabNames[selectedTab];
     const newPath = `/${selectedTabName}`;
-  
+    if (selectedTab !== 0 && selectedTab !== 3) {
+      // dispatch to reset map state in data or metrics tab
+      dispatch(resetMapState())
+    }
     if (location.pathname !== newPath) {
       navigate(newPath); // Update the URL with the tab name
     }
