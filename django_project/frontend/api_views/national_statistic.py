@@ -63,7 +63,7 @@ class NationalStatisticsView(APIView):
         owned species (national).
         """
 
-        national_properties = Property.objects.filter()
+        national_properties = Property.objects.all()
 
         # Count the number of matching properties
         total_property_count = national_properties.count()
