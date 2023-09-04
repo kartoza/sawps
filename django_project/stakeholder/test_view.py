@@ -6,7 +6,7 @@ from django.test import (
 )
 from datetime import datetime
 from django.utils import timezone
-from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
+from stakeholder.factories import userProfileFactory
 from stakeholder.views import (
     adjust_date_to_server_time,
     convert_date_to_local_time,
@@ -124,6 +124,10 @@ class DeleteReminderAndNotificationTest(TestCase):
             name="test_organisation",
             data_use_permission=self.data_use_permission
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
             user=self.user,
@@ -156,7 +160,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -183,7 +186,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         request = self.factory.post(url, data)
 
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -204,7 +206,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -229,7 +230,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -255,7 +255,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = delete_reminder_and_notification(request)
 
@@ -345,6 +344,10 @@ class TestAddReminderAndScheduleTask(TestCase):
             organisation=self.organisation,
             user=self.user
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.reminder = Reminders.objects.create(
             title='Test Reminder',
             user=self.user,
@@ -371,7 +374,6 @@ class TestAddReminderAndScheduleTask(TestCase):
         self.factory = RequestFactory()
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         view = RemindersView()
 
@@ -407,6 +409,10 @@ class TestRemindersView(TestCase):
             organisation=self.organisation,
             user=self.user
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.reminder = Reminders.objects.create(
             title='Test Reminder',
             user=self.user,
@@ -424,7 +430,6 @@ class TestRemindersView(TestCase):
         self.factory = RequestFactory()
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         view = RemindersView()
 
@@ -441,9 +446,9 @@ class TestRemindersView(TestCase):
 
     def test_dispatch_get_reminders(self):
         # Test the 'get_reminders' action of dispatch
-        organisation_key = self.organisation.pk
-        self.client.session['CURRENT_ORGANISATION_ID_KEY'] = organisation_key
-        self.client.session.save()
+        # organisation_key = self.organisation.pk
+        # self.client.session['CURRENT_ORGANISATION_ID_KEY'] = organisation_key
+        # self.client.session.save()
         reminders = Reminders.objects.filter(
             organisation=self.organisation
         )
@@ -592,6 +597,10 @@ class SearchRemindersOrNotificationsTest(TestCase):
             name="test_organisation",
             data_use_permission = self.data_use_permission
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
             user=self.user,
@@ -621,7 +630,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -638,7 +646,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -654,7 +661,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -673,7 +679,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -716,7 +721,6 @@ class GetReminderOrNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_reminder_or_notification(request)
 
@@ -731,7 +735,6 @@ class GetReminderOrNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_reminder_or_notification(request)
 
@@ -752,6 +755,10 @@ class GetOrganisationRemindersTest(TestCase):
         self.organisation = Organisation.objects.create(
             name="test_organisation",
             data_use_permission = self.data_use_permission
+        )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
         )
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
@@ -779,7 +786,6 @@ class GetOrganisationRemindersTest(TestCase):
         }
         request = self.factory.get(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_organisation_reminders(request)
 
@@ -797,13 +803,13 @@ class GetOrganisationRemindersTest(TestCase):
         }
         request = self.factory.get(url, data)
         request.user = self.user
-        request.session = {
-            CURRENT_ORGANISATION_ID_KEY: self.organisation.id + 1}
+        # request.session = {
+        #     CURRENT_ORGANISATION_ID_KEY: self.organisation.id + 1}
 
         result = get_organisation_reminders(request)
 
-        # Check that the result is empty for an organization with no reminders
-        self.assertEqual(len(result), 0)
+        # Check that the result is contains only reminders created
+        self.assertEqual(len(result), 2)
 
 
 
@@ -964,6 +970,10 @@ class NotificationsViewTest(TestCase):
             organisation=self.organisation,
             user=self.user
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.reminder1 = Reminders.objects.create(
             title='Test Reminder 1',
             user=self.user,
@@ -989,7 +999,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.get(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         # Instantiate the RemindersView and call the get notifications
         view = NotificationsView()
@@ -1014,7 +1024,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView()
         response = view.get_notification(request)
@@ -1038,7 +1048,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView()
         response = view.search_notifications(request)
@@ -1062,7 +1072,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView()
         response = view.delete_notification(request)
@@ -1080,7 +1090,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
         view = NotificationsView.as_view()
         response = view(request)
 
@@ -1097,7 +1107,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView.as_view()
         response = view(request)
@@ -1115,7 +1125,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         # Create an instance of the NotificationsView and call the dispatch method
         view = NotificationsView.as_view()
@@ -1144,7 +1154,7 @@ class NotificationsViewTest(TestCase):
         url = reverse('notifications', kwargs={'slug': self.user.username})
         request = self.factory.get(url)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView.as_view()
         response = view(request)

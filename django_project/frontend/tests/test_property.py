@@ -14,7 +14,8 @@ from property.factories import (
 )
 from stakeholder.factories import (
     organisationFactory,
-    organisationUserFactory
+    organisationUserFactory,
+    userProfileFactory
 )
 from frontend.models.parcels import (
     Erf,
@@ -91,6 +92,10 @@ class TestPropertyAPIViews(TestCase):
             format='json'
         )
         # without adding to organisation, should return 403
+        self.user_1.user_profile = userProfileFactory.create(
+            user=self.user_1,
+            current_organisation=self.organisation
+        )
         request.user = self.user_1
         view = CreateNewProperty.as_view()
         response = view(request)
@@ -150,6 +155,10 @@ class TestPropertyAPIViews(TestCase):
         )
         request = self.factory.get(
             reverse('property-list')
+        )
+        self.user_2.user_profile = userProfileFactory.create(
+            user=self.user_2,
+            current_organisation=self.organisation
         )
         request.user = self.user_2
         view = PropertyList.as_view()
@@ -213,6 +222,10 @@ class TestPropertyAPIViews(TestCase):
         request = self.factory.post(
             reverse('property-create'), data=data,
             format='json'
+        )
+        self.user_1.user_profile = userProfileFactory.create(
+            user=self.user_1,
+            current_organisation=self.organisation
         )
         request.user = self.user_1
         organisationUserFactory.create(

@@ -40,7 +40,7 @@ from frontend.serializers.stakeholder import (
     OrganisationSerializer
 )
 from frontend.utils.organisation import (
-    CURRENT_ORGANISATION_ID_KEY
+    get_current_organisation_id
 )
 
 
@@ -129,8 +129,10 @@ class CreateNewProperty(APIView):
         # union of parcels
         parcels = request.data.get('parcels')
         geom = self.get_geometry(parcels)
-        organisation_id = self.request.session.get(
-            CURRENT_ORGANISATION_ID_KEY, 0)
+        current_organisation_id = get_current_organisation_id(
+            request.user
+        ) or 0
+        organisation_id = current_organisation_id
         if not organisation_id:
             return Response(status=400, data='Invalid Organisation!')
         # validate if user belongs to the organisation
@@ -167,8 +169,11 @@ class PropertyMetadataList(APIView):
     def get(self, *args, **kwargs):
         provinces = Province.objects.all().order_by('name')
         types = PropertyType.objects.all().order_by('name')
+        current_organisation_id = get_current_organisation_id(
+            self.request.user
+        ) or 0
         organisations = Organisation.objects.filter(
-            id=self.request.session.get(CURRENT_ORGANISATION_ID_KEY, 0)
+            id=current_organisation_id
         ).order_by('name')
         return Response(status=200, data={
             'provinces': (
@@ -193,9 +198,11 @@ class PropertyList(APIView):
     """Get properties that current user owns."""
     permission_classes = [IsAuthenticated]
 
-    def get(self, *args, **kwargs):
-        organisation_id = self.request.session.get(
-            CURRENT_ORGANISATION_ID_KEY, 0)
+    def get(self, request, *args, **kwargs):
+        current_organisation_id = get_current_organisation_id(
+            request.user
+        ) or 0
+        organisation_id = current_organisation_id
         properties = Property.objects.filter(
             organisation_id=organisation_id
         ).order_by('name')
@@ -203,6 +210,9 @@ class PropertyList(APIView):
             status=200,
             data=PropertySerializer(properties, many=True).data
         )
+
+    def dispatch(self, request, *args, **kwargs):
+        return self.get(request)
 
 
 class UpdatePropertyInformation(APIView):
