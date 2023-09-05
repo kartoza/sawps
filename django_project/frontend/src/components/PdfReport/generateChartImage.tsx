@@ -8,6 +8,7 @@ import { Button } from "@mui/material";
 import FirstPageCharts from "./FirstPageContent";
 import SecondPageCharts from "./SecondPageContainer";
 import ThirdPageCharts from "./ThirdPageContainer";
+
 import html2canvas from "html2canvas";
 
 Chart.register(LinearScale);
@@ -52,7 +53,6 @@ const GenerateChartImages: React.FC = () => {
   
     // Only fetch and generate charts if charts are not loaded yet
     if (charts.length === 0) {
-      // Simulating fetching of charts data (e.g., from an API) with a delay
       setTimeout(async () => {
         setLoadingCharts(true);
   
@@ -60,15 +60,6 @@ const GenerateChartImages: React.FC = () => {
         const first_page_canvas = await html2canvas(firstPageRefs.current);
         const second_page_canvas = await html2canvas(secondPageRefs.current);
         const third_page_canvas = await html2canvas(thirdPageRefs.current);
-  
-        // convert the canvas to base64 strings
-        // const first_page_charts = first_page_canvas.toDataURL('image/png');
-        // const second_page_charts = second_page_canvas.toDataURL('image/png');
-        // const third_page_charts = third_page_canvas.toDataURL('image/png');
-
-  
-        // Save base64 strings in an array
-        // const base64StringsArray = [first_page_charts, second_page_charts, third_page_charts];
 
         // Convert the canvas to base64 strings
         const base64StringsArray = [];
@@ -95,7 +86,7 @@ const GenerateChartImages: React.FC = () => {
         setShowChartsDiv(false);
         set3rdPageShowChartsDiv(false)
         setLoadingCharts(false);
-      }, 3000); // Simulated 3 seconds delay
+      }, 3000);
     } else {
       set3rdPageShowChartsDiv(false)
       setShowChartsDiv(false); // Hide the div if charts are already loaded
@@ -191,9 +182,9 @@ const GenerateChartImages: React.FC = () => {
 
           .export-button-container {
             position: fixed;
-            bottom: 20px; /* Adjust the value as needed */
-            right: 20px; /* Adjust the value as needed */
-            z-index: 1001; /* Above the modal */
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
           }
 
           .modal-buttons button {
@@ -216,6 +207,7 @@ const GenerateChartImages: React.FC = () => {
             align-items: flex-start;
             gap: 10px;
             max-height: 60vh;
+
             overflow-y: auto;
           }
 

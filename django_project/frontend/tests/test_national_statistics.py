@@ -6,7 +6,6 @@ from rest_framework import status
 from unittest.mock import patch
 from activity.models import ActivityType
 from population_data.models import AnnualPopulationPerActivity
-from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
 from frontend.api_views.map import User
 from stakeholder.factories import organisationFactory
 from species.models import OwnedSpecies, Taxon
@@ -31,13 +30,38 @@ class NationalSpeciesViewTest(APITestCase):
     def setUp(self):
         self.url = reverse('species_list_national')
 
+    def test_get_species_list_via_view(self):
+
+        taxon_rank1 = TaxonRank.objects.create(name="Species")
+        Taxon.objects.create(
+            common_name_varbatim='Species 1',
+             icon='images/tiger.png',
+            taxon_rank=taxon_rank1
+        )
+
+        view = NationalSpeciesView()
+
+        results = view.get_species_list()
+
+        self.assertEqual(len(results),1)
+
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list(self, mock_get_species_list):
         # Create mock Taxon objects
-        taxon1 = Taxon(common_name_varbatim='Species 1')
+        Taxon.objects.create(
+            common_name_varbatim='Species 5',
+             icon='images/tiger.png',
+            taxon_rank=taxon_rank1
+        )
+        taxon1 = Taxon(
+            common_name_varbatim='Species 1',
+             icon='images/tiger.png',
+            taxon_rank=taxon_rank1
+        )
         taxon2 = Taxon(
-          common_name_varbatim='Species 2',
-          icon='images/tiger.png'
+            common_name_varbatim='Species 2',
+            icon='images/tiger.png',
+            taxon_rank=taxon_rank2
         )
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
@@ -67,7 +91,6 @@ class NationalSpeciesViewTest(APITestCase):
         icon_url_1 = serializer1.get_species_icon(taxon2)
         expected_url_1 = '/media/images/tiger.png'
         self.assertEqual(icon_url_1, expected_url_1)
-        # self.assertEqual(response.data, serializer.data)
 
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list_empty(self, mock_get_species_list):
