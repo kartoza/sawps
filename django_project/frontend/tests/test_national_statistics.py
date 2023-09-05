@@ -8,7 +8,7 @@ from activity.models import ActivityType
 from population_data.models import AnnualPopulationPerActivity
 from frontend.api_views.map import User
 from stakeholder.factories import organisationFactory
-from species.models import OwnedSpecies, Taxon
+from species.models import OwnedSpecies, Taxon, TaxonRank
 from frontend.serializers.national_statistics import (
     SpeciesListSerializer,
     NationalStatisticsSerializer
