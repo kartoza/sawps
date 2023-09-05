@@ -14,7 +14,7 @@
                         <p class="modal-header-text">If you require the addition of your organisation to the SAWPS platform, please fill in the form.</p>
                         <form id="organisationForm">
                             <div class="form-group">
-                                <label for="organisationName" class="form-label text-black">Organization Name:</label>
+                                <label for="organisationName" class="form-label text-black">Organisation Name:</label>
                                 <input type="text" class="form-control" id="organisationName" placeholder="KNP, SANParks" required>
                             </div>
                             <div class="form-group">
@@ -23,7 +23,7 @@
                             </div>
                            
                         </form>
-                        <button type="button" class="btn btn-secondary" id="inviteBtn" style="background-color: var(--green);" onclick="sendRequest()">SEND</button>
+                        <button type="button" class="sawps-font-button green-button mt-0" id="inviteBtn" style="font-weight: bold;" onclick="sendRequest()">Send</button>
                     </div>
                 </div>
             </div>
@@ -106,14 +106,10 @@
                 </span>
 
                 <a class="dropdown-item" href="/profile">My Profile</a>
-                <hr class="divider" />
                 {% if '/accounts/two-factor/two_factor/setup' not in request.path and  '/accounts/two-factor/two_factor/backup_tokens' not in request.path %}
+                <hr class="divider" />
                 <span class="dropdown-header">Active Organisation</span>
-                {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
-                <button class="btn btn-success btn-sm badge-btn center-button" type="button" data-toggle="modal" data-target="#organisationModal">REQUEST ORGANISATION</button>
-                {% else %}
                 <span class="dropdown-item font-weight-bolder clickable " onclick="redirectToDesiredPage()">{{ current_organisation }}</span>
-                {% endif %}
                 {% endif %}
 
                 
