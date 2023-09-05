@@ -4,8 +4,6 @@ import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
-import { useAppSelector } from "../../../app/hooks";
-import { RootState } from "../../../app/store";
 import "./index.scss";
 import {ChartCard} from "./ChartCard";
 
@@ -16,15 +14,8 @@ Chart.register(ChartDataLabels);
 
 const FETCH_SPECIES_DENSITY = '/api/properties-per-population-category/'
 
-const PopulationCategoryChart = () => {
-    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
-    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
-    const [loading, setLoading] = useState(false)
-    const [populationData, setPopulationData] = useState([])
-
-
+const PopulationCategoryChart = (props:any) => {
+    const {selectedSpecies, propertyId, startYear, endYear, loading, setLoading ,populationData, setPopulationData} = props
     const fetchpopulationCategoryData = () => {
         setLoading(true)
         axios.get(`${FETCH_SPECIES_DENSITY}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {

@@ -10,20 +10,23 @@ from frontend.models.upload import DraftSpeciesUpload
 from frontend.utils.statistical_model import (
     clear_statistical_model_output_cache
 )
-from occurrence.models import SamplingSizeUnit, SurveyMethod
+from occurrence.models import SurveyMethod
 from occurrence.serializers import (
-    SamplingSizeUnitMetadataSerializer,
     SurveyMethodSerializer,
 )
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
-    CountMethod,
     OpenCloseSystem,
+    SamplingEffortCoverage,
+    PopulationStatus,
+    PopulationEstimateCategory
 )
 from population_data.serializers import (
-    CountMethodSerializer,
-    OpenCloseSystemSerializer
+    OpenCloseSystemSerializer,
+    SamplingEffortCoverageSerializer,
+    PopulationStatusSerializer,
+    PopulationEstimateCategorySerializer
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -46,13 +49,18 @@ class PopulationMetadataList(APIView):
         ).order_by('scientific_name')
         open_close_systems = OpenCloseSystem.objects.all().order_by("name")
         survey_methods = SurveyMethod.objects.all().order_by("name")
-        sampling_size_units = SamplingSizeUnit.objects.all().order_by("unit")
-        count_methods = CountMethod.objects.all().order_by("name")
         intake_events = ActivityType.objects.filter(
             recruitment=True).order_by("name")
         offtake_events = ActivityType.objects.filter(
             Q(recruitment=False) | Q(recruitment__isnull=True)
         ).order_by("name")
+        sampling_effort_coverages = (
+            SamplingEffortCoverage.objects.all().order_by("name")
+        )
+        population_statuses = PopulationStatus.objects.all().order_by("name")
+        population_estimate_categories = (
+            PopulationEstimateCategory.objects.all().order_by("name")
+        )
         return Response(
             status=200,
             data={
@@ -63,17 +71,27 @@ class PopulationMetadataList(APIView):
                 "survey_methods": (
                     SurveyMethodSerializer(survey_methods, many=True).data
                 ),
-                "sampling_size_units": (SamplingSizeUnitMetadataSerializer(
-                    sampling_size_units, many=True).data
-                                        ),
-                "count_methods": CountMethodSerializer(
-                    count_methods, many=True).data,
                 "intake_events": (
                     ActivityTypeSerializer(intake_events, many=True).data
                 ),
                 "offtake_events": (
                     ActivityTypeSerializer(offtake_events, many=True).data
                 ),
+                "sampling_effort_coverages": (
+                    SamplingEffortCoverageSerializer(
+                        sampling_effort_coverages, many=True
+                    ).data
+                ),
+                "population_statuses": (
+                    PopulationStatusSerializer(
+                        population_statuses, many=True
+                    ).data
+                ),
+                "population_estimate_categories": (
+                    PopulationEstimateCategorySerializer(
+                        population_estimate_categories, many=True
+                    ).data
+                )
             },
         )
 
@@ -132,15 +150,6 @@ class UploadPopulationAPIVIew(APIView):
         survey_method = get_object_or_404(
             SurveyMethod, id=annual_population.get("survey_method_id", 0)
         )
-        # get count_method
-        count_method = get_object_or_404(
-            CountMethod, id=annual_population.get("count_method_id", 0)
-        )
-        # get sampling_size_unit
-        sampling_size_unit = get_object_or_404(
-            SamplingSizeUnit, id=annual_population.get(
-                "sampling_size_unit_id", 0)
-        )
         # get open_close_system
         open_close_system = get_object_or_404(
             OpenCloseSystem, id=annual_population.get("open_close_id")
@@ -149,6 +158,27 @@ class UploadPopulationAPIVIew(APIView):
         area_available_to_species = annual_population.get(
             "area_available_to_species", 0
         )
+        sampling_effort_coverage = None
+        sampling_effort_coverage_id = annual_population.get(
+            "sampling_effort_coverage_id", None)
+        if sampling_effort_coverage_id:
+            sampling_effort_coverage = get_object_or_404(
+                SamplingEffortCoverage, id=sampling_effort_coverage_id
+            )
+        population_status = None
+        population_status_id = annual_population.get(
+            "population_status_id", None)
+        if population_status_id:
+            population_status = get_object_or_404(
+                PopulationStatus, id=population_status_id
+            )
+        population_estimate_category = None
+        population_estimate_category_id = annual_population.get(
+            "population_estimate_category_id", None)
+        if population_estimate_category_id:
+            population_estimate_category = get_object_or_404(
+                PopulationEstimateCategory, id=population_estimate_category_id
+            )
         # get or create owned species
         owned_species, is_new = OwnedSpecies.objects.get_or_create(
             taxon=taxon,
@@ -170,13 +200,9 @@ class UploadPopulationAPIVIew(APIView):
             adult_female=annual_population.get("adult_female", 0),
             juvenile_male=annual_population.get("juvenile_male", 0),
             juvenile_female=annual_population.get("juvenile_female", 0),
-            # area_covered=annual_population.get("area_covered", 0),
-            # sampling_effort=annual_population.get("sampling_effort", 0),
             group=annual_population.get("group", 0),
             note=annual_population.get("note", None),
             survey_method=survey_method,
-            count_method=count_method,
-            sampling_size_unit=sampling_size_unit,
             open_close_system=open_close_system,
             sub_adult_male=annual_population.get("sub_adult_male", 0),
             sub_adult_female=annual_population.get("sub_adult_female", 0),
@@ -186,6 +212,21 @@ class UploadPopulationAPIVIew(APIView):
             juvenile_total=(annual_population.get("juvenile_male", 0) +
                             annual_population.get("juvenile_female", 0)
                             ),
+            population_estimate_certainty=annual_population.get(
+                "population_estimate_certainty", None),
+            upper_confidence_level=annual_population.get(
+                "upper_confidence_level", None),
+            lower_confidence_level=annual_population.get(
+                "lower_confidence_level", None),
+            certainty_of_bounds=annual_population.get(
+                "certainty_of_bounds", None),
+            population_estimate_category_other=annual_population.get(
+                "population_estimate_category_other", None),
+            survey_method_other=annual_population.get(
+                "survey_method_other", None),
+            population_status=population_status,
+            population_estimate_category=population_estimate_category,
+            sampling_effort_coverage=sampling_effort_coverage
         )
         # add annual population per activity - intake
         for intake_population in intake_populations:

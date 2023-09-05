@@ -10,6 +10,9 @@ from .models import (
     AnnualPopulationPerActivity,
     CountMethod,
     OpenCloseSystem,
+    SamplingEffortCoverage,
+    PopulationStatus,
+    PopulationEstimateCategory
 )
 
 
@@ -104,3 +107,27 @@ class AnnualPopulationPerActivitySerializer(serializers.ModelSerializer):
 
     def get_activity_type_recruitment(self, obj):
         return obj.activity_type.recruitment if obj.activity_type else None
+
+
+class SamplingEffortCoverageSerializer(serializers.ModelSerializer):
+    """SamplingEffortCoverage Serializer"""
+
+    class Meta:
+        model = SamplingEffortCoverage
+        fields = '__all__'
+
+
+class PopulationStatusSerializer(serializers.ModelSerializer):
+    """PopulationStatus Serializer"""
+
+    class Meta:
+        model = PopulationStatus
+        fields = '__all__'
+
+
+class PopulationEstimateCategorySerializer(serializers.ModelSerializer):
+    """PopulationEstimateCategory Serializer"""
+
+    class Meta:
+        model = PopulationEstimateCategory
+        fields = '__all__'

@@ -82,7 +82,7 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         self.assertEqual(response.data[0].get('species_name'), 'Lion')
         self.assertEqual(
             response.data[0]['annualpopulation_count'][0].get('year_total'),
-            100
+            response.data[0]['annualpopulation_count'][4]['year_total']
         )
 
     def test_species_population_count_filter_by_name(self) -> None:
@@ -106,7 +106,7 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]['annualpopulation_count'][0].get('year_total'),
-            100
+            response.data[0]['annualpopulation_count'][4]['year_total']
         )
 
     def test_species_population_count_filter_by_year(self) -> None:

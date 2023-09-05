@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}Organisations{% endblock %}
+
+
+{% block content %}
+<section>
+  <div class="container py-5">
+    <div class="row">
+      {% include "profile_config_base.html" %}
+    </div>
+
+    
+  
+    <div class="container">
+      <h4 class="page-title sawps-text-menu mb-3 text-center">My Organisations</h4>
+      <!-- reminders table -->
+      <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
+        <table id="organisations" class="table table-bordereless" cellspacing="0" width="100%" style="border: none;">
+            
+            <tbody>
+              <tr>
+                <td>
+                    <button class="sawps-font-button green-button mt-0">Active</button>
+                </td>
+                <td class="clickable">{{current_organisation}}</td>
+              </tr>
+              {% for organisation in organisations %}
+                  <tr>
+                      <td>
+                          <button class="account-button" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
+                      </td>
+                      <td>{{ organisation.name }}</td>
+                  </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+        </div>  
+
+        <div class="row justify-content-end">
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-end" id="pagination">
+               <!-- javascript code will add dynamic pagination buttons here-->
+            </ul>
+          </nav>
+        </div>
+
+      </div> 
+    </div>
+
+    
+  
+<script>
+
+    // navigate to organisation users page
+    var tableBody = document.getElementById('organisations');
+      tableBody.addEventListener('click', function(event) {
+        var target = event.target;
+        if (target.classList.contains('clickable')) {
+          window.location.href = '/users/'
+        }
+      })
+
+  
+    function switchOrganisation(buttonElement){
+      var organisationId = buttonElement.getAttribute('data-organisation-id');
+      var url = `/switch-organisation/${organisationId}/?next=${encodeURIComponent(window.location.href)}`;
+      window.location.href = url;
+
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+    var table = document.getElementById('organisations');
+    var pagination = document.getElementById('pagination');
+    var rowsPerPage = 5;
+    var currentPage = 1; // Initialize current page to 1
+
+
+    function showPage(pageNumber) {
+      var startIndex = (pageNumber - 1) * rowsPerPage;
+      var endIndex = startIndex + rowsPerPage;
+
+      for (var i = 0; i < table.rows.length; i++) {
+        if (i >= startIndex && i < endIndex) {
+          table.rows[i].style.display = 'table-row';
+        } else {
+          table.rows[i].style.display = 'none';
+        }
+      }
+      currentPage = pageNumber; // Update current page
+      updatePaginationButtons();
+    }
+
+    function updatePaginationButtons() {
+      // Remove active class from all buttons
+      var buttons = pagination.querySelectorAll('.pagination-button');
+      buttons.forEach(function (button) {
+        button.classList.remove('active');
+      });
+
+      // Add active class to the current page button
+      var currentPageButton = pagination.querySelector(`.pagination-button[data-page="${currentPage}"]`);
+      if (currentPageButton) {
+        currentPageButton.classList.add('active');
+      }
+    }
+
+    function createPaginationButtons() {
+      for (var i = 1; i <= totalPages; i++) {
+        var pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.setAttribute('data-page', i); // Store page number in data attribute
+        pageButton.className = 'pagination-button';
+        pageButton.addEventListener('click', function () {
+          showPage(parseInt(this.textContent));
+        });
+        pagination.appendChild(pageButton);
+      }
+    }
+
+    var totalPages = Math.ceil(table.rows.length / rowsPerPage);
+    createPaginationButtons(); // Create buttons first
+    showPage(currentPage); // Display the first page
+  });
+
+
+  </script>
+
+  <style>
+    .pagination-button {
+      margin: 2px;
+      border: none; /* Remove borders */
+      background-color: transparent; /* Remove background color */
+      color: #333; /* Set text color */
+      cursor: pointer; /* Add cursor style */
+    }
+
+    .pagination-button.active {
+      font-weight: bold; /* Highlight active page */
+    }
+    .sawps-text-menu {
+      font-weight: normal; /* Remove bold styling */
+    }
+  </style>
+</section>
+
+{% endblock %}
+
+
