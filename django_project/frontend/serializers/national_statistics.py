@@ -36,9 +36,6 @@ class SpeciesListSerializer(serializers.ModelSerializer):
         """
         return obj.common_name_varbatim
 
-    def get_species_icon(self, obj: Taxon) -> str:
-        return obj.icon.url
-
     def get_species_colour(self, obj: Taxon) -> str:
         """Get the color of the species.
         Params:
