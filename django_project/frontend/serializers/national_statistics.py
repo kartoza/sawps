@@ -12,6 +12,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
     """
     species_name = serializers.SerializerMethodField()
     species_colour = serializers.SerializerMethodField()
+    icon = serializers.ImageField(use_url=True)
     annualpopulation_count = serializers.SerializerMethodField()
     total_population = serializers.SerializerMethodField()
     total_area = serializers.SerializerMethodField()
@@ -22,6 +23,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
             "id",
             "species_name",
             "species_colour",
+            "icon",
             "annualpopulation_count",
             "total_population",
             "total_area"
@@ -33,6 +35,9 @@ class SpeciesListSerializer(serializers.ModelSerializer):
             obj (Taxon): The Taxon instance representing the species.
         """
         return obj.common_name_varbatim
+
+    def get_species_icon(self, obj: Taxon) -> str:
+        return obj.icon.url
 
     def get_species_colour(self, obj: Taxon) -> str:
         """Get the color of the species.
