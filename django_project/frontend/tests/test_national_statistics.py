@@ -49,6 +49,8 @@ class NationalSpeciesViewTest(APITestCase):
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list(self, mock_get_species_list):
         # Create mock Taxon objects
+        taxon_rank1 = TaxonRank.objects.create(name="Species")
+        taxon_rank2 = TaxonRank.objects.create(name="Genus")
         Taxon.objects.create(
             common_name_varbatim='Species 5',
              icon='images/tiger.png',
