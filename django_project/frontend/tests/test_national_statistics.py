@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from unittest.mock import patch
-from species.models import Taxon
+from species.models import Taxon, TaxonRank
 from frontend.serializers.national_statistics import (
     SpeciesListSerializer,
     NationalStatisticsSerializer
@@ -10,16 +10,50 @@ from frontend.serializers.national_statistics import (
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.templatetags.static import static
+from frontend.api_views.national_statistic import (
+    NationalSpeciesView
+)
 
 class NationalSpeciesViewTest(APITestCase):
     def setUp(self):
         self.url = reverse('species_list_national')
 
+    def test_get_species_list_via_view(self):
+
+        taxon_rank1 = TaxonRank.objects.create(name="Species")
+        Taxon.objects.create(
+            common_name_varbatim='Species 1',
+             icon='images/tiger.png',
+            taxon_rank=taxon_rank1
+        )
+
+        view = NationalSpeciesView()
+
+        results = view.get_species_list()
+
+        self.assertEqual(len(results),1)
+
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list(self, mock_get_species_list):
         # Create mock Taxon objects
-        taxon1 = Taxon(common_name_varbatim='Species 1')
-        taxon2 = Taxon(common_name_varbatim='Species 2')
+        taxon_rank1 = TaxonRank.objects.create(name="Species")
+        taxon_rank2 = TaxonRank.objects.create(name="Genus")
+        Taxon.objects.create(
+            common_name_varbatim='Species 5',
+             icon='images/tiger.png',
+            taxon_rank=taxon_rank1
+        )
+        taxon1 = Taxon(
+            common_name_varbatim='Species 1',
+             icon='images/tiger.png',
+            taxon_rank=taxon_rank1
+        )
+        taxon2 = Taxon(
+            common_name_varbatim='Species 2',
+            icon='images/tiger.png',
+            taxon_rank=taxon_rank2
+        )
         test_user = get_user_model().objects.create_user(
             username='testuser', password='testpassword'
         )
@@ -43,7 +77,13 @@ class NationalSpeciesViewTest(APITestCase):
         self.assertEqual(len(response.data), 2)
 
         serializer = SpeciesListSerializer([taxon1, taxon2], many=True)
-        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.data,serializer.data)
+        # Create a serializer instance for each taxon object
+        serializer1 = SpeciesListSerializer(taxon2)
+        
+        icon_url_1 = serializer1.get_species_icon(taxon2)
+        expected_url_1 = '/media/images/tiger.png'
+        self.assertEqual(icon_url_1, expected_url_1)
 
     @patch('frontend.api_views.national_statistic.NationalSpeciesView.get_species_list')
     def test_get_species_list_empty(self, mock_get_species_list):
