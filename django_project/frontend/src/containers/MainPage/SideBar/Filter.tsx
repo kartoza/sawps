@@ -86,7 +86,7 @@ function Filter() {
         },
         {
             "id": 5,
-            "name": "Ecosystem type",
+            "name": "Biome type",
             "isSelected": false
         }
     ])
