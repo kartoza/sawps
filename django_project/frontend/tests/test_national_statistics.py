@@ -199,7 +199,6 @@ class NationalPropertiesViewTest(TestCase):
         }
 
         session = self.client.session
-        session[CURRENT_ORGANISATION_ID_KEY] = self.organisation.id
         session.save()
         url = self.url
         response = self.client.get(url, **self.auth_headers)
@@ -259,7 +258,6 @@ class NationalActivityCountViewTestCase(TestCase):
         }
 
         session = self.client.session
-        session[CURRENT_ORGANISATION_ID_KEY] = self.organisation.id
         session.save()
         url = self.url
         response = self.client.get(url, **self.auth_headers)
