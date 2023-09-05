@@ -22,7 +22,8 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from property.models import Property, PropertyType, Province
 from frontend.api_views.national_statistic import (
     NationalPropertiesView,
-    NationalActivityCountView
+    NationalActivityCountView,
+    NationalSpeciesView
 )
 from rest_framework.response import Response
 
