@@ -3,7 +3,6 @@ import base64
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
-from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
 from property.factories import PropertyFactory
 from rest_framework import status
 from species.factories import (
@@ -13,6 +12,7 @@ from species.factories import (
 )
 from species.models import TaxonRank
 from stakeholder.factories import organisationFactory, organisationUserFactory
+from stakeholder.models import UserProfile
 
 
 class BaseTestCase(TestCase):
@@ -42,6 +42,11 @@ class BaseTestCase(TestCase):
             organisation=self.organisation_1
         )
 
+        UserProfile.objects.create(
+            user=self.user,
+            current_organisation=self.organisation_1
+        )
+
         self.property = PropertyFactory.create(
             organisation=self.organisation_1, name="PropertyA"
         )
@@ -57,7 +62,6 @@ class BaseTestCase(TestCase):
         self.client = Client()
 
         session = self.client.session
-        session[CURRENT_ORGANISATION_ID_KEY] = self.organisation_1.id
         session.save()
 
 
