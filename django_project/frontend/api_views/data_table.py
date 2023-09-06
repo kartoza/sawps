@@ -9,6 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from species.models import OwnedSpecies
+from frontend.utils.organisation import (
+    get_current_organisation_id
+)
 
 
 class DataTableAPIView(APIView):
@@ -16,7 +19,7 @@ class DataTableAPIView(APIView):
     filter_class = OwnedSpeciesFilter
 
     def get_queryset(self):
-        organisation_id = self.request.session.get('current_organisation_id')
+        organisation_id = get_current_organisation_id(self.request.user)
         queryset = OwnedSpecies.objects.select_related('property').filter(
             property__organisation_id=organisation_id
         )
