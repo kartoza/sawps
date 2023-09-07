@@ -12,7 +12,7 @@
     <div class="container">
         <div class="row">
             <div class="col-auto ml-auto mb-3">
-              <button class="sawps-font-button green-button mt-0" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn">
+              <button class="sawps-font-button green-button mt-0 button" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn" style="font-weight: bold; min-height: fit-content;">
                 <i class="fas fa-plus"></i> ADD REMINDER
               </button>
             </div>
@@ -65,9 +65,9 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="account-button" id="editReminderBtn" style="display: none;">Save</button>
-                        <button type="button" class="account-button" id="addReminderBtn">Add</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="sawps-font-button orange-button mt-0" id="editReminderBtn" style="display: none;">Save</button>
+                        <button type="button" class="sawps-font-button orange-button mt-0" style="font-weight: bold;" id="addReminderBtn">Add</button>
+                        <button type="button" class="sawps-font-button gray-button mt-0" style="font-weight: bold; height: fit-content;" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -121,15 +121,18 @@
               <td class="clickable-row clickable" data-href="{{ reminder.id }}">{{ reminder.reminder }}</td>
               <td class="clickable-row clickable" data-href="{{ reminder.id }}">
                 {% if reminder.status == 'Active' %}
-                  <span class="badge badge-success">Active</span>
+                  <span class="badge badge-success" style="width: 57px;">ACTIVE</span>
                 {% elif reminder.status == 'Draft' %}
-                  <span class="badge badge-warning">Draft</span>
+                  <span class="badge badge-warning" style="width: 57px;">DRAFT</span>
                 {% elif reminder.status == 'Passed' %}
-                  <span class="badge badge-purple">Passed</span>
+                  <span class="badge badge-purple" style="width: 57px;">PASSED</span>
                 {% endif %}
               </td>
               <td>
-                <i class="fas fa-trash-alt trash-icon" data-object-id="{{ reminder.id }}"></i>
+                <div>
+                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ reminder.id }}"></i>
+              </div>
+                
               </td>
             </tr>
           {% endfor %}
@@ -194,6 +197,8 @@
 
   <script>
 
+    // var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
     const datetimePickerInput = document.getElementById('datetimepicker');
     var useFallbackDate = false
 
@@ -209,7 +214,7 @@
         flatpickr(datetimePickerInput, {
           enableTime: true,
           dateFormat: "Y-m-dTH:i",
-          minuteIncrement: 1, // Allow selection in 1 minute intervals
+          minuteIncrement: 1,
           allowInput: true, // Enable manual input
         });
 
@@ -218,9 +223,7 @@
       }
 
       function convertToLocalDateTime(datetimeStr) {
-        // create a date formate to add to datetime local input field
         const datetime = new Date(datetimeStr);
-
         const year = datetime.getFullYear();
         const month = String(datetime.getMonth() + 1).padStart(2, '0');
         const day = String(datetime.getDate()).padStart(2, '0');
@@ -229,6 +232,39 @@
 
         // Combine the components into the desired format
         return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+
+      function convertDateToISO(dateString) {
+        const parts = dateString.split(' ');
+
+        if (parts.length === 3) {
+          // Extract date, time, and AM/PM components
+          const datePart = parts[0];
+          const timePart = parts[1];
+          const ampm = parts[2];
+
+          // Split the time part into hours and minutes
+          const timeParts = timePart.split(':');
+          const hours = parseInt(timeParts[0]);
+          const minutes = parseInt(timeParts[1]);
+
+          // Adjust hours if it's PM
+          if (ampm === 'PM' && hours !== 12) {
+            hours += 12;
+          }
+
+          // Pad single-digit hours and minutes with leading zeros
+          const formattedHours = hours.toString().padStart(2, '0');
+          const formattedMinutes = minutes.toString().padStart(2, '0');
+
+          // Construct the ISO 8601 date string
+          const isoDate = `${datePart}T${formattedHours}:${formattedMinutes}`;
+
+          return isoDate;
+        }
+
+        // Return null if the input format is invalid
+        return null;
       }
 
       // UPDATING ROWS PER PAGE
@@ -290,8 +326,6 @@
                 'csrfmiddlewaretoken': '{{ csrf_token }}'
               },
               success: function(response) {
-              // Handle the success response
-              // console.log(response);
               reminder = response.data[0]
               const localDatetimeStr = convertToLocalDateTime(reminder.date);
 
@@ -327,7 +361,8 @@
                 // Get the values from the modal
                 var title = $('#myModal #title').val();
                 var date = useFallbackDate? $('#myModal #datetimepicker').val():$('#myModal #date').val();
-                // var date = $('#myModal #date').val();
+                if(useFallbackDate)
+                  date=convertDateToISO(date)
                 var time = $('#myModal #time').val();
                 var type = $('#myModal #reminderType').val();
                 var reminder = $('#myModal #reminder').val();
@@ -459,11 +494,11 @@
                           
           // Condition for the status column
           if (data[i].status === 'Active') {
-            row += '<td class="clickable-row clickable" data-href="' + data[i].pk + '"><span class="badge badge-success">Active</span></td>';
+            row += '<td class="clickable-row clickable" data-href="' + data[i].pk + '"><span class="badge badge-success" style="width: 57px;">ACTIVE</span></td>';
           } else if (data[i].status === 'Draft') {
-            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-warning">Draft</span></td>';
+            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-warning" style="width: 57px;">DRAFT</span></td>';
           } else if (data[i].status === 'Passed') {
-            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-purple">Passed</span></td>';
+            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-purple" style="width: 57px;">PASSED</span></td>';
           } else {
             row += '<td></td>';
           }

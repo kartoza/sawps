@@ -13,22 +13,33 @@
     
   
     <div class="container">
-      <h4 class="page-title sawps-text-menu mb-3 text-center">My Organisations</h4>
+      <div class="row">
+        <h4 class="page-title sawps-text-menu mb-3">My Organisations</h4>
+        {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
+        <div class="col-auto ml-auto mb-3">
+          <button class="sawps-font-button green-button mt-0 button" style="font-weight: bold; align-items: flex-end;" type="button" data-toggle="modal" data-target="#organisationModal">
+            <i class="fas fa-plus"></i> Request Organisation
+          </button>
+        </div>
+        {% endif %}
+      </div>
       <!-- reminders table -->
       <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
         <table id="organisations" class="table table-bordereless" cellspacing="0" width="100%" style="border: none;">
             
             <tbody>
+              {% if organisations|length > 0 %}
               <tr>
                 <td>
-                    <button class="sawps-font-button green-button mt-0">Active</button>
+                    <button class="sawps-font-button green-button mt-0" style="width: 137px; font-weight: bold;">Active</button>
                 </td>
                 <td class="clickable">{{current_organisation}}</td>
               </tr>
+              {% endif %}
               {% for organisation in organisations %}
                   <tr>
                       <td>
-                          <button class="account-button" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
+                          <button class="sawps-font-button orange-button mt-0 button" style="width: 137px; font-weight: bold;" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
                       </td>
                       <td>{{ organisation.name }}</td>
                   </tr>
@@ -130,17 +141,17 @@
   <style>
     .pagination-button {
       margin: 2px;
-      border: none; /* Remove borders */
-      background-color: transparent; /* Remove background color */
-      color: #333; /* Set text color */
-      cursor: pointer; /* Add cursor style */
+      border: none;
+      background-color: transparent;
+      color:var(--black-gray);
+      cursor: pointer;
     }
 
     .pagination-button.active {
-      font-weight: bold; /* Highlight active page */
+      font-weight: bold;
     }
     .sawps-text-menu {
-      font-weight: normal; /* Remove bold styling */
+      font-weight: normal;
     }
   </style>
 </section>
