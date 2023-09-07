@@ -388,4 +388,3 @@ class NationalActivityCountPerPropertyView(APIView):
         """
         queryset = self.get_activity_count()
         return Response(queryset)
-
