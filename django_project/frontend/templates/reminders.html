@@ -298,8 +298,8 @@
               // Populate the modal with the retrieved data
               $('#myModal #title').val(reminder.title);
               if(useFallbackDate)
-                $('#myModal #date').val(localDatetimeStr);
-              else $('#myModal #datetimepicker').val(localDatetimeStr);
+                $('#myModal #datetimepicker').val(reminder.date);
+              else $('#myModal #date').val(localDatetimeStr);
 
               if (reminder.type == 'Everyone')
                 $('#myModal #reminderType').val('all');
@@ -517,6 +517,7 @@
     function clearFormFields() {
         document.getElementById('title').value = '';
         document.getElementById('date').value = '';
+        document.getElementById('datetimepicker').value = '';
         document.getElementById('reminder').value = '';
         document.getElementById('reminderType').value = 'personal';
         document.getElementById('status').value = 'active';
