@@ -68,11 +68,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   ThirdPagechartImage: {
-    width: "80%",
-    height: "60%",
+    width: "70%",
+    height: "70%",
     display: "flex",
     flexDirection: "row",
-    marginLeft: 50,
+    marginLeft: 90,
+    marginTop: 4,
+  },
+  FourthPagechartImage: {
+    width: "80%",
+    height: "80%",
+    display: "flex",
+    flexDirection: "row",
+    marginLeft: 90,
     marginTop: 10,
   },
   mapImage: {
@@ -216,7 +224,7 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
             </View>
           )}
 
-          {/* Content for page 2 */}
+          {/* Content for page 3 */}
           {pageIndex === 2 && (
             <View>
               {/* Header */}
@@ -229,6 +237,22 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
               </View>
               {/* Chart Image */}
               <Image style={styles.ThirdPagechartImage} src={chartBase64} />
+            </View>
+          )}
+
+          {/* Content for page 4 */}
+          {pageIndex === 3 && (
+            <View>
+              {/* Header */}
+              <View style={styles.other_pages_header}>
+                <Image style={styles.logo} src={logoImage} />
+                <View>
+                  <Text style={styles.headerText}>Wildlife Population System</Text>
+                  <Text style={styles.headerText}>National Summary Report</Text>
+                </View>
+              </View>
+              {/* Chart Image */}
+              <Image style={styles.FourthPagechartImage} src={chartBase64} />
             </View>
           )}
   

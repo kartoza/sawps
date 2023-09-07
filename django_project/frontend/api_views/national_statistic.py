@@ -1,4 +1,8 @@
 from typing import List
+from activity.models import ActivityType
+from population_data.models import AnnualPopulationPerActivity
+from frontend.utils.metrics import calculate_population_categories
+from frontend.filters.metrics import PropertyFilter
 from property.models import Property
 from frontend.serializers.national_statistics import (
     NationalStatisticsSerializer,
@@ -12,6 +16,8 @@ from species.models import (
     Taxon
 )
 from django.db.models import Sum
+from django.db.models.query import QuerySet
+from django.db.models.functions import Coalesce
 
 
 class NationalSpeciesView(APIView):
@@ -99,3 +105,121 @@ class NationalStatisticsView(APIView):
         statistics = self.get_statistics(self.request)
         serializer = NationalStatisticsSerializer(statistics)
         return Response(serializer.data)
+
+
+class NationalPropertiesView(APIView):
+    """
+    An API view to retrieve
+    the statistics for the national report.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_properties_per_population_category(self) -> QuerySet[Property]:
+        """
+        Get the filtered queryset
+        of properties owned by the organization.
+        """
+        queryset = Property.objects.filter()
+        filtered_queryset = PropertyFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset
+
+    def get(self, *args, **kwargs) -> Response:
+        """
+        Handle GET request to
+        retrieve population categories for properties.
+        """
+        queryset = self.get_properties_per_population_category()
+        return Response(calculate_population_categories(queryset))
+
+
+class NationalActivityCountView(APIView):
+    """
+    API to retrieve activity count as % of the
+    the total population for each species
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_activity_count(self) -> QuerySet[Property]:
+        """
+        Get activity count of the total
+        population as percentage
+        """
+        properties = Property.objects.filter()
+
+        # Retrieve species on each property
+        species_per_property = OwnedSpecies.objects.filter(
+            property__in=properties
+        ).values('taxon', 'property')
+
+        # Retrieve activity types
+        activity_types = ActivityType.objects.all()
+
+        # Retrieve population count
+        # for each species and activity type
+        population_counts = []
+        for species in species_per_property:
+            for activity_type in activity_types:
+                population_count = AnnualPopulationPerActivity.objects.filter(
+                    owned_species__taxon=species['taxon'],
+                    activity_type=activity_type
+                ).aggregate(
+                    population_count=Coalesce(Sum('total'), 0)
+                )['population_count']
+
+                population_counts.append({
+                    'species': species['taxon'],
+                    'activity_type': activity_type.name,
+                    'population_count': population_count
+                })
+
+        # Calculate the total population count per species
+        total_population_per_species = {}
+        for item in population_counts:
+            species = item['species']
+            population_count = item['population_count']
+            if species in total_population_per_species:
+                total_population_per_species[species] += population_count
+            else:
+                total_population_per_species[species] = population_count
+
+        # Calculate the percentage of each species for each activity type
+        result = {}
+        for item in population_counts:
+            species = item['species']
+            activity_type = item['activity_type']
+            population_count = item['population_count']
+            total_population = total_population_per_species[species]
+            percentage = (
+                population_count / total_population
+            ) * 100 if total_population != 0 else 0
+
+
+            taxa = OwnedSpecies.objects.filter(id=species).first()
+            if taxa:
+                taxon = taxa.taxon
+                common_name = taxon.common_name_varbatim
+                icon_url = taxon.icon.url if taxon.icon else None
+
+            else:
+                common_name = 'None'
+                icon_url = None
+            if species not in result:
+                result[species] = {
+                    'species_name': common_name,
+                    'icon': icon_url
+                }
+            result[species][activity_type] = f'{percentage:.2f}%'
+
+        return result
+
+    def get(self, *args, **kwargs) -> Response:
+        """
+        Handle GET request to
+        retrieve population categories for properties.
+        """
+        queryset = self.get_activity_count()
+        return Response(queryset)

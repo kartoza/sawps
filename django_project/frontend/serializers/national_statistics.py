@@ -36,15 +36,19 @@ class SpeciesListSerializer(serializers.ModelSerializer):
         """
         return obj.common_name_varbatim
 
-    def get_species_icon(self, obj: Taxon) -> str:
-        return obj.icon.url
-
     def get_species_colour(self, obj: Taxon) -> str:
         """Get the color of the species.
         Params:
             obj (Taxon): The Taxon instance representing the species.
         """
         return obj.colour
+
+    def get_species_icon(self, obj: Taxon) -> str:
+        """Get the icon of the species.
+        Params:
+            obj (Taxon): The Taxon instance representing the species.
+        """
+        return obj.icon.url
 
     def get_annualpopulation_count(self, obj: Taxon) -> List[dict]:
         """Get the population count per year for the species.

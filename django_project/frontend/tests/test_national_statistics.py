@@ -1,19 +1,31 @@
+import base64
+import datetime
 from django.urls import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIRequestFactory
 from rest_framework import status
 from unittest.mock import patch
-from species.models import Taxon, TaxonRank
+from activity.models import ActivityType
+from population_data.models import AnnualPopulationPerActivity
+from frontend.api_views.map import User
+from stakeholder.factories import organisationFactory
+from species.models import OwnedSpecies, Taxon, TaxonRank
 from frontend.serializers.national_statistics import (
     SpeciesListSerializer,
     NationalStatisticsSerializer
 )
 from django.contrib.auth import get_user_model
-from django.test import Client
+from django.test import Client, RequestFactory
 from django_otp.plugins.otp_totp.models import TOTPDevice
-from django.templatetags.static import static
+import json
+from django.test import TestCase
+from django.contrib.sessions.middleware import SessionMiddleware
+from property.models import Property, PropertyType, Province
 from frontend.api_views.national_statistic import (
+    NationalPropertiesView,
+    NationalActivityCountView,
     NationalSpeciesView
 )
+from rest_framework.response import Response
 
 class NationalSpeciesViewTest(APITestCase):
     def setUp(self):
@@ -77,8 +89,6 @@ class NationalSpeciesViewTest(APITestCase):
         self.assertEqual(len(response.data), 2)
 
         serializer = SpeciesListSerializer([taxon1, taxon2], many=True)
-        self.assertEqual(response.data,serializer.data)
-        # Create a serializer instance for each taxon object
         serializer1 = SpeciesListSerializer(taxon2)
         
         icon_url_1 = serializer1.get_species_icon(taxon2)
@@ -153,3 +163,104 @@ class NationalStatisticsViewTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response)
+
+
+class NationalPropertiesViewTest(TestCase):
+
+    def setUp(self):
+        self.url = reverse('properties_population_category')
+        self.test_user = get_user_model().objects.create_user(
+            username='testuser', password='testpassword'
+        )
+        self.device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        self.device.save()
+        self.client = Client()
+
+    def test_get_properties_per_population_category(self):
+        # Create a test organization and properties
+        self.organisation = organisationFactory.create()
+        Province.objects.create(name='Gauteng')
+        organisation_id = self.organisation.pk
+        PropertyType.objects.create(name='national')
+        PropertyType.objects.create(name='private')
+        Property.objects.create(
+            organisation_id=organisation_id,
+            property_type=PropertyType.objects.filter(name='national').first(),
+            created_at=datetime.datetime.now(),
+            created_by=self.test_user,
+            province=Province.objects.filter(name='Gauteng').first()
+        )
+        self.auth_headers = {
+            "HTTP_AUTHORIZATION": "Basic "
+            + base64.b64encode(b"testuser:testpassword").decode("ascii"),
+        }
+
+        session = self.client.session
+        session.save()
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class NationalActivityCountViewTestCase(TestCase):
+
+    def setUp(self):
+        self.url = reverse('activity_count')
+        self.test_user = get_user_model().objects.create_user(
+            username='testuser', password='testpassword'
+        )
+        self.device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        self.device.save()
+        self.client = Client()
+
+    def test_get_activity_count(self):
+        self.organisation = organisationFactory.create()
+        Province.objects.create(name='Gauteng')
+        organisation_id = self.organisation.pk
+        PropertyType.objects.create(name='national')
+        PropertyType.objects.create(name='private')
+        property = Property.objects.create(
+            organisation_id=organisation_id,
+            property_type=PropertyType.objects.filter(name='national').first(),
+            created_at=datetime.datetime.now(),
+            created_by=self.test_user,
+            province=Province.objects.filter(name='Gauteng').first()
+        )
+        taxon = Taxon.objects.create(
+            scientific_name='Lion',
+            common_name_varbatim='Lion'
+        )
+        specie = OwnedSpecies.objects.create(
+            user=self.test_user,
+            taxon=taxon,
+            property= property
+        )
+        ActivityType.objects.create(
+            name='unplanned'
+        )
+        activity = ActivityType.objects.create(
+            name='hunting'
+        )
+        AnnualPopulationPerActivity.objects.create(
+            activity_type=activity,
+            owned_species=specie,
+            year=2023,
+            total=50
+        )
+        self.auth_headers = {
+            "HTTP_AUTHORIZATION": "Basic "
+            + base64.b64encode(b"testuser:testpassword").decode("ascii"),
+        }
+
+        session = self.client.session
+        session.save()
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+

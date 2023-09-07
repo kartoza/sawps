@@ -79,7 +79,9 @@ from .views.totp_device import (
 from .views.users import OrganisationUsersView
 from frontend.api_views.national_statistic import (
     NationalStatisticsView,
-    NationalSpeciesView
+    NationalSpeciesView,
+    NationalPropertiesView,
+    NationalActivityCountView
 )
 from .views.organisations import OrganisationsView
 
@@ -312,5 +314,15 @@ urlpatterns = [
         'api/statistics/',
         NationalStatisticsView.as_view(),
         name='statistics_national'
+    ),
+    path(
+        'api/properties_population_category/',
+        NationalPropertiesView.as_view(),
+        name='properties_population_category'
+    ),
+    path(
+        'api/activity_count_percentage/',
+        NationalActivityCountView.as_view(),
+        name='activity_count'
     ),
 ]
