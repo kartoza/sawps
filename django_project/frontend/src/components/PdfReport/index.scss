@@ -3,12 +3,12 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-end;
-    min-height: 100vh; /* Ensures the container takes at least the full viewport height */
+    min-height: 100vh;
   }
   
   .ButtonContainer {
-    margin-top: auto; /* Pushes the button to the bottom of the container */
-    margin-right: 20px; /* Adjust this value to control the horizontal position */
+    margin-top: auto;
+    margin-right: 20px;
     justify-content: flex-end;
   }
   
@@ -158,7 +158,7 @@
 .report-charts {
     height: 100%;
     margin-bottom: 50px;
-    height: 800px; /* Set the desired height */
+    height: 800px;
     width: 1200px;
   }
   
@@ -172,14 +172,14 @@
   }
   
   th {
-    font-weight: normal; /* Remove bold for headers */
+    font-weight: normal;
     font-size: 25px;
   
   }
   
   td {
     text-align: center;
-    font-weight: bold; /* Add bold for rows */
+    font-weight: bold;
     font-size: 25px;
   }
   
@@ -193,7 +193,6 @@
   }
 
 
-  
   .overflow-auto-chart {
     overflow: auto;
     width: calc(100vw - 440px);
@@ -348,7 +347,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Adjust this value as needed */
+    height: 100vh;
   }
   
   /* Styles for each individual chart container */
@@ -362,14 +361,13 @@
   
   /* Styles for the icon container */
   .icon-container-donught {
-    // margin-top: 10px; /* Add space between chart and icon */
+    // margin-top: 10px;
     position: relative;
     display: flex;
     top: -250px;
     left: 85px;
   }
   
-  /* In your CSS file */
 .chart-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -379,7 +377,7 @@
 .chart-pair {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 20px; /* Adjust this value to control the vertical spacing */
+    margin-bottom: 20px;
 }
 
 .chart-row-donut {

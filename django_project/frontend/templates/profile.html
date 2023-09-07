@@ -19,7 +19,7 @@
                 <input type="text" class="form-control" id="first-name" name="first-name" aria-describedby="firstNameHelp" value={{object.first_name}}>
               </div>
               <div class="form-group">
-                <label for="last-name">Last Name</label>
+                <label for="last-name">Last name</label>
                 <input type="text" class="form-control" name="last-name" aria-describedby="lastNameHelp" value={{object.last_name}}>
               </div>
               <div class="form-group">
@@ -40,7 +40,7 @@
                 <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value={{object.email}}>
                 <small id="email-error" class="form-text text-danger"></small>
               </div>
-              <div class="custom-control custom-switch form-group">
+              <div class="custom-control custom-switch">
                 <input type="checkbox" class="custom-control-input" name="onlySANBI" id="onlySANBI" {% if object.user_profile.use_of_data_by_sanbi_only %}checked{% endif %}>
                 <label class="custom-control-label text-muted small" for="onlySANBI">Use of data by SANBI only</label>
               </div>              
@@ -58,7 +58,7 @@
               </div>
 
               <div class="form-group"></div>
-              <button type="submit" class="account-button" id="submit-button">Update</button>
+              <button type="submit" class="sawps-font-button orange-button mt-0 button" id="submit-button" style="font-weight: bold;">Update</button>
             </form>
           </div>
         </div>

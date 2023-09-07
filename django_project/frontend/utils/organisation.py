@@ -9,6 +9,7 @@ CURRENT_ORGANISATION_KEY = 'current_organisation'
 def get_current_organisation_id(user):
     try:
         user_profile = user.user_profile
-        return user_profile.current_organisation.id
+        if user_profile.current_organisation:
+            return user_profile.current_organisation.id
     except UserProfile.DoesNotExist:
         return None

@@ -11,9 +11,12 @@ from frontend.serializers.national_statistics import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from species.models import OwnedSpecies, Taxon
-from django.db.models.query import QuerySet
+from species.models import (
+    OwnedSpecies,
+    Taxon
+)
 from django.db.models import Sum
+from django.db.models.query import QuerySet
 from django.db.models.functions import Coalesce
 
 
@@ -65,8 +68,7 @@ class NationalStatisticsView(APIView):
         total property area available for
         owned species (national).
         """
-
-        national_properties = Property.objects.filter()
+        national_properties = Property.objects.all()
 
         # Count the number of matching properties
         total_property_count = national_properties.count()
@@ -386,3 +388,4 @@ class NationalActivityCountPerPropertyView(APIView):
         """
         queryset = self.get_activity_count()
         return Response(queryset)
+

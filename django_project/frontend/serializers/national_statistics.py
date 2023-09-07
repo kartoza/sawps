@@ -50,7 +50,6 @@ class SpeciesListSerializer(serializers.ModelSerializer):
         """
         return obj.icon.url
 
-
     def get_annualpopulation_count(self, obj: Taxon) -> List[dict]:
         """Get the population count per year for the species.
         Params:
