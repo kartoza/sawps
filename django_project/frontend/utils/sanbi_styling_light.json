@@ -514,7 +514,7 @@
       "layout": {"visibility": "visible"},
       "paint": {
         "fill-color": "rgba(229, 206, 179, 1)",
-        "fill-opacity": 0.2,
+        "fill-opacity": 0.5,
         "fill-antialias": false
       }
     },
@@ -899,7 +899,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 212, 204, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(255, 249, 240, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_5",
@@ -910,7 +910,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 203, 184, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(254, 238, 216, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_4",
@@ -921,7 +921,7 @@
       "maxzoom": 24,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 195, 176, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(254, 228, 206, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_3",
@@ -965,7 +965,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 212, 204, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(255, 249, 240, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_midscale_5",
@@ -976,7 +976,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 203, 184, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(254, 238, 216, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_midscale_4",
@@ -987,7 +987,7 @@
       "maxzoom": 14,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 195, 176, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(254, 228, 206, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_midscale_3",
@@ -1031,7 +1031,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 2"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 212, 204, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(255, 249, 240, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_small_scale_5",
@@ -1042,7 +1042,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area 1"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 203, 184, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(254, 238, 216, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_small_scale_4",
@@ -1053,7 +1053,7 @@
       "maxzoom": 10,
       "filter": ["all", ["==", "sensfeat", "Ecological Support Area"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(217, 195, 176, 1)", "fill-opacity": 0.4}
+      "paint": {"fill-color": "rgba(254, 228, 206, 1)", "fill-opacity": 0.4}
     },
     {
       "id": "cba_2019_small_scale_3",
@@ -1689,7 +1689,7 @@
       "type": "symbol",
       "source": "sanbi",
       "source-layer": "place_name_smallest_scale",
-      "minzoom": 5,
+      "minzoom": 6,
       "maxzoom": 7,
       "layout": {
         "text-field": "{name}",
@@ -1760,6 +1760,80 @@
         "text-size": 16,
         "text-font": ["Open Sans Bold"],
         "text-transform": "uppercase"
+      },
+      "paint": {
+        "text-color": "rgba(35, 35, 35, 1)",
+        "text-halo-color": "rgba(191, 191, 191, 1)",
+        "text-halo-width": 0.75
+      }
+    },
+    {
+      "id": "label_provinces_WC",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": ["all", ["==", "adm1_en", "Western Cape"]],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase",
+        "text-padding": 2,
+        "text-offset": [-2, 2.5]
+      },
+      "paint": {
+        "text-color": "rgba(35, 35, 35, 1)",
+        "text-halo-color": "rgba(191, 191, 191, 1)",
+        "text-halo-width": 0.75
+      }
+    },
+    {
+      "id": "label_provinces_MP",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": ["all", ["==", "adm1_en", "Mpumalanga"]],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase",
+        "text-offset": [0.5, 2]
+      },
+      "paint": {
+        "text-color": "rgba(35, 35, 35, 1)",
+        "text-halo-color": "rgba(191, 191, 191, 1)",
+        "text-halo-width": 0.75
+      }
+    },
+    {
+      "id": "label_provinces_most",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": [
+        "all",
+        ["!=", "adm1_en", "Western Cape"],
+        ["!=", "adm1_en", "Mpumalanga"]
+      ],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase",
+        "text-padding": 2
       },
       "paint": {
         "text-color": "rgba(35, 35, 35, 1)",
