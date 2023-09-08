@@ -212,7 +212,8 @@ class PropertyList(APIView):
         )
 
     def dispatch(self, request, *args, **kwargs):
-        return self.get(request)
+        response = super().dispatch(request, *args, **kwargs)
+        return response
 
 
 class UpdatePropertyInformation(APIView):
