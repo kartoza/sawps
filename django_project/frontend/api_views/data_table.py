@@ -1,18 +1,15 @@
-# -*- coding: utf-8 -*-
-
-
 """API Views related to data table.
 """
+from django.db.models.query import QuerySet
 from frontend.filters.data_table import DataContributorsFilter
-from frontend.utils.data_table import data_table_reports
 from frontend.static_mapping import DATA_CONTRIBUTORS
+from frontend.utils.data_table import data_table_reports
+from frontend.utils.organisation import get_current_organisation_id
+from property.models import Property
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models.query import QuerySet
-from property.models import Property
 from stakeholder.models import UserProfile
-
 
 
 class DataTableAPIView(APIView):
@@ -25,7 +22,7 @@ class DataTableAPIView(APIView):
         """
         Get the filtered queryset based on user filters.
         """
-        organisation_id = self.request.session.get('current_organisation_id')
+        organisation_id = get_current_organisation_id(self.request.user)
         queryset = Property.objects.filter(
             organisation_id=organisation_id,
             ownedspecies__taxon__taxon_rank__name = "Species"
