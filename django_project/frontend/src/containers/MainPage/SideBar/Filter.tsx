@@ -25,7 +25,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import CloseIcon from '@mui/icons-material/Close';
 import Loading from '../../../components/Loading';
 import SpeciesLayer from '../../../models/SpeciesLayer';
-import { selectedPropertyId, setEndYear, setSpeciesFilter, setStartYear, toggleSpecies } from '../../../reducers/SpeciesFilter';
+import { selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import PropertyInterface from '../../../models/Property';
 
@@ -42,22 +42,12 @@ function Filter() {
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-    const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
+    const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
-
-    const marks = [
-        {
-            value: startYear,
-            label: `${startYear}`,
-        },
-        {
-            value: endYear,
-            label: `${endYear}`,
-        },
-    ];
+    const [selectedInfo, setSelectedInfo] = useState<string>('');
 
     const [filterlList, setFilterList] = useState([
         {
@@ -90,6 +80,13 @@ function Filter() {
             "isSelected": false
         }
     ])
+
+    const informationList = [
+        "Property report",
+        "Sampling report",
+        "Activity report",
+        "Species population report",
+    ]
 
     const handleSpectialFilterOption = (each: string, event: any) => {
         event.stopPropagation();
@@ -155,19 +152,31 @@ function Filter() {
     }, [])
 
     const handleDeleteSpecies = (valueToDelete: string) => {
-        const updatedSelectedSpecies = selectedSpecies.filter((item) => item !== valueToDelete);
-        setSelectedSpecies(updatedSelectedSpecies);
+        if (selectedSpecies === valueToDelete) {
+            setSelectedSpecies("");
+        }
     }
     const handleSelectedSpecies = (value: string) => () => {
-        const updatedSelectedSpecies = selectedSpecies.includes(value)
-            ? selectedSpecies.filter((item) => item !== value)
-            : [...selectedSpecies, value];
-        setSelectedSpecies(updatedSelectedSpecies);
+        setSelectedSpecies(value);
     };
 
     useEffect(() => {
-        dispatch(toggleSpecies(selectedSpecies.length > 0 ? selectedSpecies.join(',') : ''));
+        dispatch(toggleSpecies(selectedSpecies));
     }, [selectedSpecies])
+
+    const handleDeleteInfo = (valueToDelete: string) => {
+        if (selectedInfo === valueToDelete) {
+            setSelectedInfo("");
+        }
+    }
+    const handleSelectedInfo = (value: string) => () => {
+        setSelectedInfo(value);
+    };
+
+    useEffect(() => {
+        dispatch(setSelectedInfoList (selectedInfo));
+    }, [selectedInfo])
+
 
     const handleDeleteProperty = (idToDelete: number) => () => {
         const updatedSelectedProperty = selectedProperty.filter((id) => id !== idToDelete);
@@ -186,7 +195,6 @@ function Filter() {
     };
 
     useEffect(() => {
-
         dispatch(selectedPropertyId(selectedProperty.length > 0 ? selectedProperty.join(',') : ''));
     }, [selectedProperty])
 
@@ -225,6 +233,49 @@ function Filter() {
                 />
             </Box>
             <Box className='sidebarBox'>
+                <Box className='sidebarBoxHeading'>
+                    <img src="/static/images/InfoIcon.png" alt='Info image' />
+                    <Typography color='#75B37A' fontSize='medium'>Report Type</Typography>
+                </Box>
+                <List className='ListItem' component="nav" aria-label="">
+                    {loading ? <Loading /> :
+                        <Accordion>
+                            <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                                {selectedInfo.length > 0 ? (
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            <Chip
+                                                key={selectedInfo}
+                                                label={selectedInfo}
+                                                onDelete={() => handleDeleteInfo(selectedInfo)}
+                                                deleteIcon={<CloseIcon />}
+                                                sx={{ margin: 0.5 }}
+                                            />
+                                    </Box>
+                                ) : (
+                                    <Typography>Select</Typography>
+                                )}
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Box className="selectBox">
+                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                        {informationList.map((info: any, index) => (
+                                            <FormControlLabel
+                                                key={index}
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedInfo.includes(info)}
+                                                        onChange={handleSelectedInfo(info)}
+                                                    />
+                                                }
+                                                label={info}
+                                            />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </AccordionDetails>
+                        </Accordion>
+                    }
+                </List>
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/propertyIcon.png" alt='Property image' />
                     <Typography color='#75B37A' fontSize='medium'>Property</Typography>
@@ -283,15 +334,13 @@ function Filter() {
                             <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                 {selectedSpecies.length > 0 ? (
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {selectedSpecies.map((value) => (
-                                            <Chip
-                                                key={value}
-                                                label={value}
-                                                onDelete={() => handleDeleteSpecies(value)}
-                                                deleteIcon={<CloseIcon />}
-                                                sx={{ margin: 0.5 }}
-                                            />
-                                        ))}
+                                        <Chip
+                                            key={selectedSpecies}
+                                            label={selectedSpecies}
+                                            onDelete={() => handleDeleteSpecies(selectedSpecies)}
+                                            deleteIcon={<CloseIcon />}
+                                            sx={{ margin: 0.5 }}
+                                        />
                                     </Box>
                                 ) : (
                                     <Typography>Select</Typography>
@@ -329,7 +378,7 @@ function Filter() {
                         valueLabelDisplay="auto"
                         min={yearRangeStart}
                         max={yearRangeEnd}
-                        marks={marks}
+                        style={{ color: 'black' }}
                     />
                 </Box>
 

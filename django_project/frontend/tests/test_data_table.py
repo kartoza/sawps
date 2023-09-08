@@ -3,6 +3,7 @@ from django.test import Client
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
+from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.auth.models import User
 from species.models import TaxonRank
 from species.factories import (
@@ -10,8 +11,10 @@ from species.factories import (
 )
 from stakeholder.factories import (
     organisationFactory,
-    organisationUserFactory
+    organisationUserFactory,
+    userRoleTypeFactory,
 )
+from stakeholder.models import UserProfile
 from property.factories import PropertyFactory
 from stakeholder.models import UserProfile
 
@@ -47,6 +50,14 @@ class OwnedSpeciesTestCase(TestCase):
             organisation=self.organisation_1,
             name='PropertyA'
         )
+        self.role_organisation_manager = userRoleTypeFactory.create(
+            name='Organisation manager',
+        )
+        self.user_profile = UserProfile.objects.create(
+            user=user,
+            user_role_type_id=self.role_organisation_manager
+        )
+
         self.owned_species = OwnedSpeciesFactory.create_batch(
             5, taxon=self.taxon, user=user, property=self.property)
         self.url = reverse('data-table')
@@ -59,49 +70,92 @@ class OwnedSpeciesTestCase(TestCase):
         session = self.client.session
         session.save()
 
-
-    def test_list_owned_species(self):
-        url = self.url
-        response = self.client.get(url, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 5)
-
-    def test_filter_by_species_name(self):
-        owned_species = OwnedSpeciesFactory(taxon__common_name_varbatim='SpeciesA')
+    def test_data_table_filter_by_species_name(self) -> None:
+        """Test data table filter by species name"""
         url = self.url
         data = {'species': 'SpeciesA'}
+        breakpoint()
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreater(len(response.data), 0)
         self.assertEqual(
-            response.data[0]['taxon']['common_name_varbatim'],
-            owned_species.taxon.common_name_varbatim
+            response.data[0]["Property_report"][0]["common_name"],
+            "SpeciesA"
         )
 
-
-    def test_filter_by_name_month_and_property(self):
+    def test_filter_by_property(self) -> None:
+        """Test data table filter by property"""
         data = {
             'species': self.taxon.common_name_varbatim,
-            'property': self.property.name,
+            'property': self.property.id,
             'start_year': self.owned_species[0].annualpopulation_set.first().year,
             'end_year': self.owned_species[0].annualpopulation_set.first().year,
         }
         response = self.client.get(self.url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreater(len(response.data), 0)
         self.assertEqual(
-            response.data[0]['property']['name'],
-            self.owned_species[0].property.name
+            response.data[0]["Property_report"][0]["property_name"],
+            "PropertyA"
         )
         
-
-    def test_filter_by_annualpopulation_category(self):
+    def test_filter_by_year_and_report(self) -> None:
+        """Test data table filter by year and report"""
+        year = self.owned_species[1].annualpopulation_set.first().year
         data = {
-            'total': self.owned_species[0].annualpopulation_set.first().total,
+            "start_year": year,
+            "end_year":year,
+            "reports": "Species_population_report"
         }
-        response = self.client.get(self.url, data, **self.auth_headers)
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['annualpopulation']['total'],
-            self.owned_species[0].annualpopulation_set.first().total
+            response.data[0]["Species_population_report"][0]["year"],
+            year
         )
+
+    def test_national_user_role(self):
+        # Create a user with the "National user" role
+        user_national = User.objects.create_user(
+            username='national_user',
+            password='national_pass'
+        )
+        self.role_national_user = userRoleTypeFactory.create(
+            name='National user',
+        )
+        self.user_profile_national = UserProfile.objects.create(
+            user=user_national,
+            user_role_type_id=self.role_national_user
+        )
+        self.auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'national_user:national_pass').decode('ascii'),
+        }
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, "")
+
+    def test_regional_user_role(self):
+        # Create a user with the "Regional user" role
+        
+        # Create a user with the "Regional user" role
+        user_regional = User.objects.create_user(
+            username='regional_user',
+            password='regional_pass'
+        )
+        self.role_regional_user = userRoleTypeFactory.create(
+            name='Regional user',
+        )
+        self.user_profile_regional = UserProfile.objects.create(
+            user=user_regional,
+            user_role_type_id=self.role_regional_user
+        )
+
+        self.auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'regional_user:regional_pass').decode('ascii'),
+        }
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, "")

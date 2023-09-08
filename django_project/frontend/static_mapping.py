@@ -8,3 +8,10 @@ ACTIVITY_COLORS_DICT = {
         }
 
 YEAR_DATA_LIMIT = 10
+
+DATA_CONTRIBUTORS = [
+    "Site administrator",
+    "Statisticion",
+    "Organisation member",
+    "Organisation manager",
+]
