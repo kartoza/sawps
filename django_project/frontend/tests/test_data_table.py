@@ -1,21 +1,18 @@
 import base64
-from django.test import Client
-from django.test import TestCase
-from django.urls import reverse
-from rest_framework import status
-from django_otp.plugins.otp_totp.models import TOTPDevice
+
 from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from django.urls import reverse
+from django_otp.plugins.otp_totp.models import TOTPDevice
+from property.factories import PropertyFactory
+from rest_framework import status
+from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
 from species.models import TaxonRank
-from species.factories import (
-    OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory,
-)
 from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
     userRoleTypeFactory,
 )
-from stakeholder.models import UserProfile
-from property.factories import PropertyFactory
 from stakeholder.models import UserProfile
 
 
@@ -42,26 +39,23 @@ class OwnedSpeciesTestCase(TestCase):
             user=user,
             organisation=self.organisation_1
         )
+        self.role_organisation_manager = userRoleTypeFactory.create(
+            name='Organisation manager',
+        )
         UserProfile.objects.create(
             user=user,
-            current_organisation=self.organisation_1
+            current_organisation=self.organisation_1,
+            user_role_type_id=self.role_organisation_manager
         )
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
             name='PropertyA'
         )
-        self.role_organisation_manager = userRoleTypeFactory.create(
-            name='Organisation manager',
-        )
-        self.user_profile = UserProfile.objects.create(
-            user=user,
-            user_role_type_id=self.role_organisation_manager
-        )
 
         self.owned_species = OwnedSpeciesFactory.create_batch(
             5, taxon=self.taxon, user=user, property=self.property)
         self.url = reverse('data-table')
-        
+
         self.auth_headers = {
             'HTTP_AUTHORIZATION': 'Basic ' +
             base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
@@ -74,7 +68,6 @@ class OwnedSpeciesTestCase(TestCase):
         """Test data table filter by species name"""
         url = self.url
         data = {'species': 'SpeciesA'}
-        breakpoint()
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
@@ -96,7 +89,7 @@ class OwnedSpeciesTestCase(TestCase):
             response.data[0]["Property_report"][0]["property_name"],
             "PropertyA"
         )
-        
+
     def test_filter_by_year_and_report(self) -> None:
         """Test data table filter by year and report"""
         year = self.owned_species[1].annualpopulation_set.first().year
@@ -137,7 +130,7 @@ class OwnedSpeciesTestCase(TestCase):
 
     def test_regional_user_role(self):
         # Create a user with the "Regional user" role
-        
+
         # Create a user with the "Regional user" role
         user_regional = User.objects.create_user(
             username='regional_user',
