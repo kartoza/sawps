@@ -1,28 +1,29 @@
 """Admin page for Context Layer models."""
-from django.contrib import admin, messages
-from django.urls import path
-from django.http import HttpResponseRedirect, HttpResponse
-from django.forms import ModelForm
-from django.forms.widgets import TextInput
-from django.utils.html import format_html
-from django.core.management import call_command
 from celery.result import AsyncResult
 from core.celery import app
 from core.settings.utils import absolute_path
+from django.contrib import admin, messages
+from django.core.management import call_command
+from django.forms import ModelForm
+from django.forms.widgets import TextInput
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import path
+from django.utils.html import format_html
 from frontend.models import (
-    ContextLayer,
-    ContextLayerTilingTask,
     BoundaryFile,
     BoundarySearchRequest,
+    ContextLayer,
     ContextLayerLegend,
+    ContextLayerTilingTask,
     DraftSpeciesUpload,
     StatisticalModel,
-    StatisticalModelOutput
+    StatisticalModelOutput,
 )
+from frontend.models.spatial import SpatialDataModel, SpatialDataValueModel
 from frontend.tasks import (
-    generate_vector_tiles_task,
     clear_older_vector_tiles,
-    start_plumber_process
+    generate_vector_tiles_task,
+    start_plumber_process,
 )
 
 
@@ -217,7 +218,7 @@ class StatisticalModelAdmin(admin.ModelAdmin):
             template_file = absolute_path(
                 'frontend', 'utils', 'data_sample.csv'
             )
-            with open(template_file, 'r') as f:
+            with open(template_file) as f:
                 response = HttpResponse(
                     f.read(), content_type='text/csv'
                 )
@@ -235,3 +236,5 @@ admin.site.register(BoundaryFile, BoundaryFileAdmin)
 admin.site.register(BoundarySearchRequest, BoundarySearchRequestAdmin)
 admin.site.register(DraftSpeciesUpload, DraftSpeciesUploadAdmin)
 admin.site.register(StatisticalModel, StatisticalModelAdmin)
+admin.site.register(SpatialDataModel)
+admin.site.register(SpatialDataValueModel)
