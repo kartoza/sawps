@@ -181,13 +181,17 @@
   
 <script>
 
-  if(localStorage.getItem('reveal') === 'true')
-  {
-    document.getElementById("backupTokensList").style.display = 'block'
-    localStorage.setItem('reveal',false)
-  }else {
-    document.getElementById("securityMessage").style.display = 'block'
-  }
+  try{
+      if(localStorage.getItem('reveal') === 'true')
+      {
+        document.getElementById("backupTokensList").style.display = 'block'
+        localStorage.setItem('reveal',false)
+      }else {
+        document.getElementById("securityMessage").style.display = 'block'
+      }
+    } catch(exception){
+      // ignore exception
+    }
 
     document.getElementById("generateTokensForm").addEventListener("submit", function (event) {
         event.preventDefault(); // Prevent the form from submitting normally
