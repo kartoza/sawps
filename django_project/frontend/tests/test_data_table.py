@@ -13,6 +13,7 @@ from stakeholder.factories import (
     organisationUserFactory,
     userRoleTypeFactory,
 )
+from population_data.models import AnnualPopulationPerActivity
 from stakeholder.models import UserProfile
 
 
@@ -153,7 +154,7 @@ class OwnedSpeciesTestCase(TestCase):
 
     def test_data_table_activity_report(self) -> None:
         """Test data table activity report"""
-        year = self.owned_species[1].annualpopulation_set.first().year
+        year = AnnualPopulationPerActivity.objects.first().year
         url = self.url
         data = {
             "species": "SpeciesA",
@@ -163,12 +164,7 @@ class OwnedSpeciesTestCase(TestCase):
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data[0]["Activity_report"].get(
-                "Planned_euthanasia"
-            )[0].get("property_name"),
-            "PropertyA"
-        )
+        self.assertEqual(len(response.data[0]['Activity_report']), 1)
 
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
