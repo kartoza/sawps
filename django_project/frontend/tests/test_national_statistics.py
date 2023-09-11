@@ -263,6 +263,20 @@ class NationalActivityCountViewTestCase(TestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # Get the data from the response
+        data = response.data
+
+        # returned queryset
+        self.assertIn(3, data)
+
+        inner_data = data[3]
+
+
+        self.assertEqual(inner_data['species_name'], 'Lion')
+        self.assertIsNone(inner_data['icon'])  # Check for None value
+        self.assertEqual(inner_data['unplanned'], '0.00%')
+        self.assertEqual(inner_data['hunting'], '100.00%')
+
 
 
 class NationalActivityCountPerProvinceViewTestCase(TestCase):
@@ -324,6 +338,23 @@ class NationalActivityCountPerProvinceViewTestCase(TestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # Get the data from the response
+        data = response.data
+
+        # Define the expected result dictionary
+        expected_result = {
+            'Lion': {
+                'Gauteng': {
+                    'total_area': 0.0,
+                    'species_area': 0.0,
+                    'percentage': '0.00%',
+                }
+            }
+        }
+
+        self.assertEqual(data, expected_result)
+
+
 
 class NationalActivityCountPerPropertyTypeViewTestCase(TestCase):
 
@@ -383,3 +414,13 @@ class NationalActivityCountPerPropertyTypeViewTestCase(TestCase):
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Get the data from the response
+        data = response.data
+
+        # Define the expected result dictionary
+        expected_result = {
+            'Lion': {'national': {'total_area': 0.0, 'species_area': 0.0, 'percentage': '0.00%'}}
+        }
+
+        self.assertEqual(data, expected_result)
