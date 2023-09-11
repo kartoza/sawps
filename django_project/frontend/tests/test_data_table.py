@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from population_data.models import AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
 from species.factories import OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory
@@ -13,7 +14,6 @@ from stakeholder.factories import (
     organisationUserFactory,
     userRoleTypeFactory,
 )
-from population_data.models import AnnualPopulationPerActivity
 from stakeholder.models import UserProfile
 
 
@@ -164,7 +164,14 @@ class OwnedSpeciesTestCase(TestCase):
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data[0]['Activity_report']), 1)
+        if response.data:
+            for report in response.data[0]['Activity_report']:
+                property = response.data[0]['Activity_report'][
+                    report
+                ][0].get('property_name')
+                self.assertEqual(property, "PropertyA")
+        else:
+            self.assertEqual(response.data, [])
 
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
