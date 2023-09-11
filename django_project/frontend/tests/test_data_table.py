@@ -153,9 +153,12 @@ class OwnedSpeciesTestCase(TestCase):
 
     def test_data_table_activity_report(self) -> None:
         """Test data table activity report"""
+        year = self.owned_species[1].annualpopulation_set.first().year
         url = self.url
         data = {
             "species": "SpeciesA",
+            "start_year": year,
+            "end_year":year,
             "reports": "Activity_report",
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -169,9 +172,12 @@ class OwnedSpeciesTestCase(TestCase):
 
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
+        year = self.owned_species[1].annualpopulation_set.first().year
         url = self.url
         data = {
             "species": "SpeciesA",
+            "start_year": year,
+            "end_year":year,
             "reports": "Sampling_report",
         }
         response = self.client.get(url, data, **self.auth_headers)
