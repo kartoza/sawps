@@ -1,18 +1,13 @@
-# -*- coding: utf-8 -*-
-
-
 """Serializers for population data package.
 """
 from rest_framework import serializers
 
 from .models import (
-    AnnualPopulation,
-    AnnualPopulationPerActivity,
     CountMethod,
     OpenCloseSystem,
-    SamplingEffortCoverage,
+    PopulationEstimateCategory,
     PopulationStatus,
-    PopulationEstimateCategory
+    SamplingEffortCoverage,
 )
 
 
