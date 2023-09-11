@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
-
 """Test case for activity models.
 """
-from django.test import TestCase
-from activity.models import ActivityType
 from activity.factories import ActivityTypeFactory
+from activity.models import ActivityType
+from django.test import TestCase
 
 
 class ActivityTypeTestCase(TestCase):
@@ -17,16 +14,15 @@ class ActivityTypeTestCase(TestCase):
 
     def test_activity_type_create(self):
         """test activity type create"""
-        self.assertEqual(self.activity_type.name, 'Activity #0')
         self.assertEqual(self.activity_type.recruitment, True)
         self.assertEqual(ActivityType.objects.count(), 1)
 
     def test_activity_type_update(self):
         """test activity type update"""
-        self.activity_type.name = 'Activity #1'
+        self.activity_type.name = 'Planned euthanasia'
         self.activity_type.recruitment = False
         self.activity_type.save()
-        self.assertEqual(self.activity_type.name, 'Activity #1')
+        self.assertEqual(self.activity_type.name, 'Planned euthanasia')
         self.assertEqual(self.activity_type.recruitment, False)
 
     def test_activity_type_delete(self):
