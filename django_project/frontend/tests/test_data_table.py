@@ -106,8 +106,8 @@ class OwnedSpeciesTestCase(TestCase):
             year
         )
 
-    def test_national_user_role(self):
-        # Create a user with the "National user" role
+    def test_national_user_role(self) -> None:
+        """Test data table filter by national user"""
         user_national = User.objects.create_user(
             username='national_user',
             password='national_pass'
@@ -128,10 +128,8 @@ class OwnedSpeciesTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, "")
 
-    def test_regional_user_role(self):
-        # Create a user with the "Regional user" role
-
-        # Create a user with the "Regional user" role
+    def test_regional_user_role(self) -> None:
+        """Test data table filter by regional user"""
         user_regional = User.objects.create_user(
             username='regional_user',
             password='regional_pass'
@@ -162,7 +160,6 @@ class OwnedSpeciesTestCase(TestCase):
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        breakpoint()
         self.assertEqual(
             response.data[0]["Activity_report"].get(
                 "Planned_euthanasia"
