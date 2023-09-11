@@ -397,8 +397,8 @@ class TestAddReminderAndScheduleTask(TestCase):
 
         data = {
             'action': 'add_reminder',
-            'title': 'Test Reminder',
-            'reminder': 'Test Reminder Note',
+            'title': 'Test Reminder2',
+            'reminder': 'Test Reminder Note2',
             'date': date_str,
             'timezone': 'Africa/Johannesburg',
             'reminder_type': 'everyone',
@@ -413,8 +413,17 @@ class TestAddReminderAndScheduleTask(TestCase):
 
         response = view.add_reminder_and_schedule_task(request)
 
-        # Check the response status code and content
+        # Check the response status code
         self.assertEqual(response.status_code, 200)
+        # Check that the reminder was added to the database
+        reminders = Reminders.objects.filter(user=self.user)
+        self.assertEqual(reminders.count(), 3)
+        reminder = Reminders.objects.filter(
+            user=self.user,
+            title='Test Reminder2'
+        ).first()
+        self.assertEqual(reminder.title, 'Test Reminder2')
+        self.assertEqual(reminder.reminder, 'Test Reminder Note2')
 
 
 
