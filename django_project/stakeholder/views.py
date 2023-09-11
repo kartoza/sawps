@@ -480,6 +480,7 @@ class RemindersView(RegisteredOrganisationBaseView):
             reminder.save()
 
             reminders = get_organisation_reminders(request)
+            reminders = convert_reminder_dates(reminders)
             serialized_reminders = ReminderSerializer(reminders, many=True)
 
             return JsonResponse({'data': serialized_reminders.data})
