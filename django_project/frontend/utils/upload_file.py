@@ -37,6 +37,14 @@ from frontend.models.boundary_search import (
 from frontend.utils.parcel import find_parcel_base
 
 
+PARCEL_SERIALIZER_MAP = {
+    Erf: ErfParcelSerializer,
+    Holding: HoldingParcelSerializer,
+    FarmPortion: FarmPortionParcelSerializer,
+    ParentFarm: ParentFarmParcelSerializer
+}
+
+
 def _store_zip_memory_to_temp_file(file_obj: InMemoryUploadedFile):
     tmp_path = os.path.join(settings.MEDIA_ROOT, 'tmp')
     if not os.path.exists(tmp_path):
@@ -184,58 +192,21 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 if isinstance(geom, Polygon):
                     geom = MultiPolygon([geom], srid=4326)
                 search_geom = geom.transform(3857, clone=True)
-                # find from Erf table
-                parcels, keys, used_parcels = find_parcel_base(
-                    Erf,
-                    ErfParcelSerializer,
-                    search_geom,
-                    parcel_keys
-                )
-                if keys:
-                    parcel_keys.extend(keys)
-                if parcels:
-                    results.extend(parcels)
-                if used_parcels:
-                    unavailable_parcels.extend(used_parcels)
-                # find from Holding table
-                parcels, keys, used_parcels = find_parcel_base(
-                    Holding,
-                    HoldingParcelSerializer,
-                    search_geom,
-                    parcel_keys
-                )
-                if keys:
-                    parcel_keys.extend(keys)
-                if parcels:
-                    results.extend(parcels)
-                if used_parcels:
-                    unavailable_parcels.extend(used_parcels)
-                # find from FarmPortion table
-                parcels, keys, used_parcels = find_parcel_base(
-                    FarmPortion,
-                    FarmPortionParcelSerializer,
-                    search_geom,
-                    parcel_keys
-                )
-                if keys:
-                    parcel_keys.extend(keys)
-                if parcels:
-                    results.extend(parcels)
-                if used_parcels:
-                    unavailable_parcels.extend(used_parcels)
-                # find from ParentFarm table
-                parcels, keys, used_parcels = find_parcel_base(
-                    ParentFarm,
-                    ParentFarmParcelSerializer,
-                    search_geom,
-                    parcel_keys
-                )
-                if keys:
-                    parcel_keys.extend(keys)
-                if parcels:
-                    results.extend(parcels)
-                if used_parcels:
-                    unavailable_parcels.extend(used_parcels)
+                # iterate from map
+                for parcel_class, parcel_serializer in\
+                    PARCEL_SERIALIZER_MAP.items():
+                    parcels, keys, used_parcels = find_parcel_base(
+                        parcel_class,
+                        parcel_serializer,
+                        search_geom,
+                        parcel_keys
+                    )
+                    if keys:
+                        parcel_keys.extend(keys)
+                    if parcels:
+                        results.extend(parcels)
+                    if used_parcels:
+                        unavailable_parcels.extend(used_parcels)
                 # add to union geom
                 if union_geom:
                     union_geom = union_geom.union(geom)

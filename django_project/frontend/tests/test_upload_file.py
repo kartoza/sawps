@@ -5,6 +5,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.settings.utils import absolute_path
+from property.factories import ParcelFactory
 from frontend.models.parcels import (
     Holding
 )
@@ -62,3 +63,19 @@ class TestUploadFileUtils(TestCase):
         )
         self.assertEqual(len(search_request.parcels), 1)
         self.assertEqual(len(search_request.used_parcels), 0)
+        # add parcel property with holding_1
+        ParcelFactory.create(
+            sg_number=self.holding_1.cname
+        )
+        search_request = BoundarySearchRequest.objects.create(
+            type='File',
+            session=session,
+            request_by=self.user_1
+        )
+        search_parcels_by_boundary_files(search_request)
+        search_request = BoundarySearchRequest.objects.get(
+            id=search_request.id
+        )
+        self.assertEqual(len(search_request.parcels), 0)
+        self.assertEqual(len(search_request.used_parcels), 1)
+        
