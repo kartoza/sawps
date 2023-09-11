@@ -281,9 +281,9 @@ class NationalActivityCountViewTestCase(TestCase):
         data = response.data
 
         # returned queryset
-        self.assertIn(3, data)
+        self.assertIn(33, data)
 
-        inner_data = data[3]
+        inner_data = data[33]
 
 
         self.assertEqual(inner_data['species_name'], 'Lion')
