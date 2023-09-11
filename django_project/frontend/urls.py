@@ -67,7 +67,8 @@ from .views.map import (
     MapView,
     redirect_to_data,
     redirect_to_metrics,
-    redirect_to_upload
+    redirect_to_upload,
+    redirect_to_explore
 )
 from .views.online_form import OnlineFormView
 from .views.switch_organisation import switch_organisation
@@ -223,6 +224,11 @@ urlpatterns = [
         'upload/',
         redirect_to_upload,
         name='upload'
+    ),
+    path(
+        'explore/',
+        redirect_to_explore,
+        name='explore'
     ),
     path(
         'upload-data/<int:property_id>/',
