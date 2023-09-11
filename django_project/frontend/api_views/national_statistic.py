@@ -242,9 +242,6 @@ class NationalActivityCountPerProvinceView(APIView):
             'taxon', 'property__province'
         )
 
-        # Step 2: Get all provinces
-        # provinces = Province.objects.all()
-
         # Step 3 and 4: Calculate percentages and build the object array
         result = {}
 
@@ -325,9 +322,6 @@ class NationalActivityCountPerPropertyView(APIView):
             'property__province',
             'property__property_type'
         )
-
-        # Step 2: Get all provinces
-        # provinces = Province.objects.all()
 
         # Step 3 and 4: Calculate percentages
         # and build the object array
