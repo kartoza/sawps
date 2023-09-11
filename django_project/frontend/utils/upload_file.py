@@ -165,6 +165,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     current_progress = 0
     results = []
     parcel_keys = []
+    unavailable_parcels = []
     union_geom: GEOSGeometry = None
     for boundary_file in files:
         file_path = boundary_file.file.path
@@ -183,9 +184,8 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 if isinstance(geom, Polygon):
                     geom = MultiPolygon([geom], srid=4326)
                 search_geom = geom.transform(3857, clone=True)
-                search_geom = search_geom.buffer(2)
                 # find from Erf table
-                parcels, keys = find_parcel_base(
+                parcels, keys, used_parcels = find_parcel_base(
                     Erf,
                     ErfParcelSerializer,
                     search_geom,
@@ -195,8 +195,10 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     parcel_keys.extend(keys)
                 if parcels:
                     results.extend(parcels)
+                if used_parcels:
+                    unavailable_parcels.extend(used_parcels)
                 # find from Holding table
-                parcels, keys = find_parcel_base(
+                parcels, keys, used_parcels = find_parcel_base(
                     Holding,
                     HoldingParcelSerializer,
                     search_geom,
@@ -206,8 +208,10 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     parcel_keys.extend(keys)
                 if parcels:
                     results.extend(parcels)
+                if used_parcels:
+                    unavailable_parcels.extend(used_parcels)
                 # find from FarmPortion table
-                parcels, keys = find_parcel_base(
+                parcels, keys, used_parcels = find_parcel_base(
                     FarmPortion,
                     FarmPortionParcelSerializer,
                     search_geom,
@@ -217,8 +221,10 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     parcel_keys.extend(keys)
                 if parcels:
                     results.extend(parcels)
+                if used_parcels:
+                    unavailable_parcels.extend(used_parcels)
                 # find from ParentFarm table
-                parcels, keys = find_parcel_base(
+                parcels, keys, used_parcels = find_parcel_base(
                     ParentFarm,
                     ParentFarmParcelSerializer,
                     search_geom,
@@ -228,6 +234,8 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     parcel_keys.extend(keys)
                 if parcels:
                     results.extend(parcels)
+                if used_parcels:
+                    unavailable_parcels.extend(used_parcels)
                 # add to union geom
                 if union_geom:
                     union_geom = union_geom.union(geom)
@@ -240,5 +248,6 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     request.progress = 100
     request.parcels = results
     request.geometry = union_geom
+    request.used_parcels = unavailable_parcels
     request.status = DONE
     request.save()

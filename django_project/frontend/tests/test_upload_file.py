@@ -61,3 +61,4 @@ class TestUploadFileUtils(TestCase):
             id=search_request.id
         )
         self.assertEqual(len(search_request.parcels), 1)
+        self.assertEqual(len(search_request.used_parcels), 0)

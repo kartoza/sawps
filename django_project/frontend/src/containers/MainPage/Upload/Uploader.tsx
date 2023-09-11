@@ -24,6 +24,7 @@ import './index.scss';
 interface UploaderInterface {
     open: boolean;
     onClose: () => void;
+    onErrorMessage: (error: string) => void;
 }
 
 const ALLOWABLE_FILE_TYPES = [
@@ -215,6 +216,19 @@ export default function Uploader(props: UploaderInterface) {
                     let _parcels = response.data['parcels'] as ParcelInterface[]
                     dispatch(setSelectedParcels(_parcels))
                     dispatch(toggleParcelSelectionMode(uploadMode))
+                    if (response.data['used_parcels'].length > 0 && props.onErrorMessage) {
+                        let _sliced = response.data['used_parcels'].slice(0, 3)
+                        let _usedParcels = _sliced.join(', ')
+                        if (response.data['used_parcels'].length > 3) {
+                            _usedParcels += ` and ${(response.data['used_parcels'].length - 3)} more`
+                        }
+                        setIsError(true)
+                        let _error = `Error! Parcel ${_usedParcels} has been already used by other property!`
+                        if (response.data['used_parcels'].length > 1) {
+                            _error = `Error! Parcels ${_usedParcels} have been already used by other property!`
+                        }
+                        props.onErrorMessage(_error)
+                    }
                     // trigger map zoom to bbox
                     let _bbox = response.data['bbox']
                     if (_bbox && _bbox.length === 4) {

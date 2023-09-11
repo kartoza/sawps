@@ -172,6 +172,7 @@ class BoundaryFileSearchStatus(APIView):
             data={
                 'status': search_request.status,
                 'parcels': search_request.parcels,
+                'used_parcels': search_request.used_parcels,
                 'bbox': (
                     list(search_request.geometry.extent) if
                     search_request.geometry else []
