@@ -22,6 +22,11 @@ def redirect_to_upload(request):
     redirect_url = f"{reverse('map')}?tab={tab_number}"
     return HttpResponseRedirect(redirect_url)
 
+def redirect_to_explore(request):
+    tab_number = 0
+    redirect_url = f"{reverse('map')}?tab={tab_number}"
+    return HttpResponseRedirect(redirect_url)
+
 
 class MapView(LoginRequiredMixin, RegisteredOrganisationBaseView):
     """
