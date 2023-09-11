@@ -152,3 +152,34 @@ class OwnedSpeciesTestCase(TestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, "")
+
+    def test_data_table_activity_report(self) -> None:
+        """Test data table activity report"""
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "reports": "Activity_report",
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        breakpoint()
+        self.assertEqual(
+            response.data[0]["Activity_report"].get(
+                "Planned_euthanasia"
+            )[0].get("property_name"),
+            "PropertyA"
+        )
+
+    def test_data_table_sampling_report(self) -> None:
+        """Test data table sampling report"""
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "reports": "Sampling_report",
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]["Sampling_report"][0]["common_name"],
+            "SpeciesA"
+        )
