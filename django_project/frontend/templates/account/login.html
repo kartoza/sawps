@@ -30,7 +30,7 @@
                     <form class="login" method="POST" action="{% url 'account_login' %}">{% csrf_token %}
                         {% for field in form %}
                         {% if field.name == 'remember' %}
-                        <div class="form-check" style="margin-left: 0px; margin-bottom: 7px;">
+                        <div class="form-check" style="margin-left: 35px; margin-bottom: 7px;">
                             {{ field.label }}
                             {{ field }}
                         </div>
