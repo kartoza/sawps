@@ -31,7 +31,7 @@
               {% if organisations|length > 0 %}
               <tr>
                 <td>
-                    <button class="sawps-font-button green-button mt-0" style="width: 137px; font-weight: bold;">Active</button>
+                    <button class="sawps-font-button green-button mt-0" style="width: 140px; font-weight: bold;">Active</button>
                 </td>
                 <td class="clickable">{{current_organisation}}</td>
               </tr>
@@ -39,7 +39,7 @@
               {% for organisation in organisations %}
                   <tr>
                       <td>
-                          <button class="sawps-font-button orange-button mt-0 button" style="width: 137px; font-weight: bold;" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
+                          <button class="sawps-font-button orange-button mt-0 button" style="width: 140px; font-weight: bold;" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
                       </td>
                       <td>{{ organisation.name }}</td>
                   </tr>
