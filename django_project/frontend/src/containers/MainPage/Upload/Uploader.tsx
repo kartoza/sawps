@@ -223,9 +223,9 @@ export default function Uploader(props: UploaderInterface) {
                             _usedParcels += ` and ${(response.data['used_parcels'].length - 3)} more`
                         }
                         setIsError(true)
-                        let _error = `Error! Parcel ${_usedParcels} has been already used by other property!`
+                        let _error = `Error! Parcel ${_usedParcels} has already been used by another property.`
                         if (response.data['used_parcels'].length > 1) {
-                            _error = `Error! Parcels ${_usedParcels} have been already used by other property!`
+                            _error = `Error! Parcels ${_usedParcels} have already been used by another property.`
                         }
                         props.onErrorMessage(_error)
                     }
