@@ -13,7 +13,6 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
         queryset (QuerySet): The initial queryset to generate reports from.
         request: The HTTP request object.
     """
-
     reports_list = request.GET.get("reports")
     reports = []
 
@@ -76,7 +75,7 @@ def species_report(queryset: QuerySet, request) -> List:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    Species_population_reports = []
+    species_population_reports = []
     filters = {}
     start_year = request.GET.get("start_year")
     if start_year:
@@ -101,11 +100,11 @@ def species_report(queryset: QuerySet, request) -> List:
             "sub_adult_female"
         )
 
-        Species_population_reports.extend([
+        species_population_reports.extend([
             {**common_data, **data} for data in species_population_data
         ])
 
-    return Species_population_reports
+    return species_population_reports
 
 
 def property_report(queryset: QuerySet, request) -> List:
@@ -115,7 +114,7 @@ def property_report(queryset: QuerySet, request) -> List:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    Property_reports = []
+    property_reports = []
     filters = {}
     start_year = request.GET.get("start_year")
     if start_year:
@@ -137,7 +136,7 @@ def property_report(queryset: QuerySet, request) -> List:
                 "area_available_to_species"
             )
 
-        Property_reports.extend([
+        property_reports.extend([
             {
                 "property_name": common_data["property_name"],
                 "scientific_name": common_data["scientific_name"],
@@ -155,7 +154,7 @@ def property_report(queryset: QuerySet, request) -> List:
             for area_available in area_available_values
         ])
 
-    return Property_reports
+    return property_reports
 
 
 def sampling_report(queryset: QuerySet, request) -> List:
@@ -165,7 +164,7 @@ def sampling_report(queryset: QuerySet, request) -> List:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    Sampling_reports = []
+    sampling_reports = []
     filters = {}
     start_year = request.GET.get("start_year")
     if start_year:
@@ -190,11 +189,11 @@ def sampling_report(queryset: QuerySet, request) -> List:
             "population_estimate_certainty",
         )
 
-        Sampling_reports.extend([
+        sampling_reports.extend([
             {**common_data, **data} for data in sampling_reports_data
         ])
 
-    return Sampling_reports
+    return sampling_reports
 
 
 def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
@@ -229,7 +228,7 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         ],
     }
 
-    Activity_reports = {
+    activity_reports = {
         activity: [] for activity in activity_types
     }
     for property in queryset:
@@ -260,10 +259,10 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
                     else activity_name
                 )
 
-                Activity_reports[activity_name].extend([
+                activity_reports[activity_name].extend([
                     {**common_data, **data} for data in activity_data
                 ])
 
-    Activity_reports = {k: v for k, v in Activity_reports.items() if v}
+    activity_reports = {k: v for k, v in activity_reports.items() if v}
 
-    return Activity_reports
+    return activity_reports
