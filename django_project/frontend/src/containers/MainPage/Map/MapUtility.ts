@@ -121,7 +121,7 @@ export const findParcelLayer = (contextLayers: ContextLayerInterface[]): Context
  * @returns 
  */
 export const findAreaLayers = (contextLayers: ContextLayerInterface[]): string[] => {
-    const areaLayers = ['ecosystem type', 'critical biodiversity areas', 'protected areas']
+    const areaLayers = ['biome type', 'critical biodiversity areas', 'protected areas']
     let _layers = contextLayers.reduce((acc, element) => {
         if (element.isSelected && areaLayers.includes(element.name.toLowerCase())) {
             acc.push(...element.layer_names)
@@ -206,7 +206,7 @@ export const searchProperty = (lngLat: maplibregl.LngLat, callback: (parcel: Pro
 }
 
 const FEATURE_NAME_MAPPING:{ [id: string] : string; } = {
-    'ecosystems': 'biome_18',
+    'ecosystems': 'name_18',
     'biodiversity': 'sensfeat',
     'protected': 'site_type',
     'erf': 'cname',

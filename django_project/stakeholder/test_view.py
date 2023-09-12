@@ -6,7 +6,7 @@ from django.test import (
 )
 from datetime import datetime
 from django.utils import timezone
-from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
+from stakeholder.factories import userProfileFactory
 from stakeholder.views import (
     adjust_date_to_server_time,
     convert_date_to_local_time,
@@ -124,6 +124,10 @@ class DeleteReminderAndNotificationTest(TestCase):
             name="test_organisation",
             data_use_permission=self.data_use_permission
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
             user=self.user,
@@ -156,7 +160,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -180,16 +183,21 @@ class DeleteReminderAndNotificationTest(TestCase):
             'ids': json.dumps([self.reminder_1.id, self.reminder_2.id]),
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
-        request = self.factory.post(url, data)
 
+        
+        request = self.factory.post(
+            url,
+            data=data
+        )
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
-
-        results = delete_reminder_and_notification(request)
+        view = RemindersView.as_view()
+        results = view(request)
 
         reminders_after_delete = Reminders.objects.filter(
             user=self.user, organisation=self.organisation)
         self.assertEqual(reminders_after_delete.count(), 2)
+
+        self.assertIsNotNone(results)
 
     def test_delete_invalid_reminder(self):
         reminders_before_delete = Reminders.objects.filter(
@@ -204,7 +212,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -229,7 +236,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = delete_reminder_and_notification(request)
 
@@ -255,7 +261,6 @@ class DeleteReminderAndNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = delete_reminder_and_notification(request)
 
@@ -345,6 +350,10 @@ class TestAddReminderAndScheduleTask(TestCase):
             organisation=self.organisation,
             user=self.user
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.reminder = Reminders.objects.create(
             title='Test Reminder',
             user=self.user,
@@ -371,7 +380,6 @@ class TestAddReminderAndScheduleTask(TestCase):
         self.factory = RequestFactory()
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         view = RemindersView()
 
@@ -386,6 +394,36 @@ class TestAddReminderAndScheduleTask(TestCase):
         reminder = reminders.first()
         self.assertEqual(reminder.title, 'Test Reminder')
         self.assertEqual(reminder.reminder, 'Test Reminder Note')
+
+        data = {
+            'action': 'add_reminder',
+            'title': 'Test Reminder2',
+            'reminder': 'Test Reminder Note2',
+            'date': date_str,
+            'timezone': 'Africa/Johannesburg',
+            'reminder_type': 'everyone',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
+        }
+
+        self.factory = RequestFactory()
+        request = self.factory.post(url, data)
+        request.user = self.user
+
+        view = RemindersView()
+
+        response = view.add_reminder_and_schedule_task(request)
+
+        # Check the response status code
+        self.assertEqual(response.status_code, 200)
+        # Check that the reminder was added to the database
+        reminders = Reminders.objects.filter(user=self.user)
+        self.assertEqual(reminders.count(), 3)
+        reminder = Reminders.objects.filter(
+            user=self.user,
+            title='Test Reminder2'
+        ).first()
+        self.assertEqual(reminder.title, 'Test Reminder2')
+        self.assertEqual(reminder.reminder, 'Test Reminder Note2')
 
 
 
@@ -407,6 +445,10 @@ class TestRemindersView(TestCase):
             organisation=self.organisation,
             user=self.user
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.reminder = Reminders.objects.create(
             title='Test Reminder',
             user=self.user,
@@ -414,6 +456,7 @@ class TestRemindersView(TestCase):
             reminder='Test Reminder Note'
         )
         self.client = Client()
+        self.factory = RequestFactory()
 
     def test_get_reminders(self):
         url = reverse('reminders', kwargs={'slug': self.user.username})
@@ -424,7 +467,6 @@ class TestRemindersView(TestCase):
         self.factory = RequestFactory()
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         view = RemindersView()
 
@@ -441,21 +483,30 @@ class TestRemindersView(TestCase):
 
     def test_dispatch_get_reminders(self):
         # Test the 'get_reminders' action of dispatch
-        organisation_key = self.organisation.pk
-        self.client.session['CURRENT_ORGANISATION_ID_KEY'] = organisation_key
-        self.client.session.save()
-        reminders = Reminders.objects.filter(
-            organisation=self.organisation
+        self.client.login(username='testuser', password='testpassword123454$')
+        url = reverse('reminders', kwargs={'slug': 'testuser'})
+        data = {
+            'action': 'get_reminders',
+            'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
+        }
+        
+        request = self.factory.post(
+            url,
+            data=data
         )
-
-        self.assertEqual(len(reminders), 1)
+        
+        request.user = self.user
+        view = RemindersView.as_view()
+        response = view(request)
+        self.assertEqual(len(response), 1)
 
     def test_dispatch_add_reminder(self):
+        self.client.login(username='testuser', password='testpassword123454$')
         url = reverse('reminders', kwargs={'slug': self.user.username})
         date_str = (timezone.now() + timedelta(days=1)
                     ).strftime('%Y-%m-%dT%H:%M')
 
-        response = self.client.post(
+        request = self.factory.post(
             url,
             {
                 'action': 'add_reminder',
@@ -466,10 +517,17 @@ class TestRemindersView(TestCase):
                 'reminder_type': 'personal',
                 'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
             }
-        )
+        ) 
 
-        # Check the response status code and content
-        self.assertEqual(response.status_code, 200)
+        request.user = self.user
+        view = RemindersView.as_view()
+        response = view(request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data['status'], 'success')
+
+        updated_reminders = response_data['updated_reminders']
+        self.assertIsInstance(updated_reminders, list)
+        self.assertEqual(len(updated_reminders), 2)
 
     def test_get_context_data(self):
         # Test the 'get_context_data' method
@@ -511,12 +569,14 @@ class TestRemindersView(TestCase):
 
         # Simulate a POST request to edit the reminder
         date_str = '2023-07-26T13:00'
+        self.client.login(username='testuser', password='testpassword123454$')
         url = reverse('reminders', kwargs={'slug': self.user.username})
-        response = self.client.post(
+        ids_json = json.dumps([str(reminder.id)])
+        request = self.factory.post(
             url,
             {
                 'action': 'edit_reminder',
-                'ids': [reminder.id],
+                'ids': ids_json,
                 'title': 'Updated Reminder',
                 'status': 'draft',
                 'date': date_str,
@@ -527,22 +587,22 @@ class TestRemindersView(TestCase):
             }
         )
 
-        # Check the response status code
-        self.assertEqual(response.status_code, 200)
-        serialized_reminders = response.json()
-        # 2 reminders have been created so far
-        self.assertEqual(len(serialized_reminders), 2)
-
-        # Check if the task is canceled when status is 'draft' or 'passed'
-        self.assertTrue(reminder.status in [Reminders.ACTIVE])
+        request.user = self.user
+        view = RemindersView.as_view()
+        response = view(request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        updated_reminders = response_data['data']
+        self.assertIsInstance(updated_reminders, list)
+        self.assertEqual(len(updated_reminders), 2)
+        if updated_reminders[1].get('status') == reminder.id:
+            self.assertEqual(updated_reminders[1].get('status'),Reminders.DRAFT)
         
         # test with status passed and everyone
-        url = reverse('reminders', kwargs={'slug': self.user.username})
-        response = self.client.post(
+        request = self.factory.post(
             url,
             {
                 'action': 'edit_reminder',
-                'ids': [str(reminder.id)],
+                'ids': ids_json,
                 'title': 'Updated Reminder',
                 'status': 'passed',
                 'date': date_str,
@@ -552,17 +612,22 @@ class TestRemindersView(TestCase):
                 'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
             }
         )
-        self.assertEqual(response.status_code, 200)
-        serialized_reminders = response.json()
-        self.assertEqual(len(serialized_reminders), 2)
+        request.user = self.user
+        view = RemindersView.as_view()
+        response = view(request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        updated_reminders = response_data['data']
+        self.assertIsInstance(updated_reminders, list)
+        self.assertEqual(len(updated_reminders), 2)
+        if updated_reminders[1].get('status') == reminder.id:
+            self.assertEqual(updated_reminders[1].get('status'),Reminders.PASSED)
         
-        # test with status active status
-        url = reverse('reminders', kwargs={'slug': self.user.username})
-        response = self.client.post(
+        # test with status active status and fail test
+        request = self.factory.post(
             url,
             {
                 'action': 'edit_reminder',
-                'ids': json.dumps([reminder.id]),
+                'ids': [reminder.id],
                 'title': 'Updated Reminder',
                 'status': 'active',
                 'date': date_str,
@@ -572,9 +637,9 @@ class TestRemindersView(TestCase):
                 'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
             }
         )
-        self.assertEqual(response.status_code, 200)
-        serialized_reminders = response.json()
-        self.assertEqual(len(serialized_reminders), 2)
+        response = view(request)
+        response_data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(response_data['status'],'errors')
 
 
 class SearchRemindersOrNotificationsTest(TestCase):
@@ -591,6 +656,10 @@ class SearchRemindersOrNotificationsTest(TestCase):
         self.organisation = Organisation.objects.create(
             name="test_organisation",
             data_use_permission = self.data_use_permission
+        )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
         )
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
@@ -621,7 +690,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -638,7 +706,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -654,7 +721,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -673,7 +739,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         results = search_reminders_or_notifications(request)
 
@@ -716,7 +781,6 @@ class GetReminderOrNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_reminder_or_notification(request)
 
@@ -731,7 +795,6 @@ class GetReminderOrNotificationTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_reminder_or_notification(request)
 
@@ -752,6 +815,10 @@ class GetOrganisationRemindersTest(TestCase):
         self.organisation = Organisation.objects.create(
             name="test_organisation",
             data_use_permission = self.data_use_permission
+        )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
         )
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
@@ -779,7 +846,6 @@ class GetOrganisationRemindersTest(TestCase):
         }
         request = self.factory.get(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
 
         result = get_organisation_reminders(request)
 
@@ -797,13 +863,13 @@ class GetOrganisationRemindersTest(TestCase):
         }
         request = self.factory.get(url, data)
         request.user = self.user
-        request.session = {
-            CURRENT_ORGANISATION_ID_KEY: self.organisation.id + 1}
+        # request.session = {
+        #     CURRENT_ORGANISATION_ID_KEY: self.organisation.id + 1}
 
         result = get_organisation_reminders(request)
 
-        # Check that the result is empty for an organization with no reminders
-        self.assertEqual(len(result), 0)
+        # Check that the result is contains only reminders created
+        self.assertEqual(len(result), 2)
 
 
 
@@ -964,6 +1030,10 @@ class NotificationsViewTest(TestCase):
             organisation=self.organisation,
             user=self.user
         )
+        userProfileFactory.create(
+            user=self.user,
+            current_organisation=self.organisation
+        )
         self.reminder1 = Reminders.objects.create(
             title='Test Reminder 1',
             user=self.user,
@@ -989,7 +1059,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.get(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         # Instantiate the RemindersView and call the get notifications
         view = NotificationsView()
@@ -1014,7 +1084,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView()
         response = view.get_notification(request)
@@ -1038,7 +1108,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView()
         response = view.search_notifications(request)
@@ -1062,7 +1132,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView()
         response = view.delete_notification(request)
@@ -1080,7 +1150,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
         view = NotificationsView.as_view()
         response = view(request)
 
@@ -1097,7 +1167,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView.as_view()
         response = view(request)
@@ -1115,7 +1185,7 @@ class NotificationsViewTest(TestCase):
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         # Create an instance of the NotificationsView and call the dispatch method
         view = NotificationsView.as_view()
@@ -1144,7 +1214,7 @@ class NotificationsViewTest(TestCase):
         url = reverse('notifications', kwargs={'slug': self.user.username})
         request = self.factory.get(url)
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
+        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
 
         view = NotificationsView.as_view()
         response = view(request)

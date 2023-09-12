@@ -6,6 +6,8 @@ import { Button } from "@mui/material";
 
 // import chart componenents to be rendered here
 import FirstPageCharts from "./FirstPageContent";
+import SecondPageCharts from "./SecondPageContainer";
+import ThirdPageCharts from "./ThirdPageContainer";
 
 import html2canvas from "html2canvas";
 
@@ -15,6 +17,8 @@ const GenerateChartImages: React.FC = () => {
 
   // define refs to capture charts
   const firstPageRefs = useRef(null);
+  const secondPageRefs = useRef(null);
+  const thirdPageRefs = useRef(null);
 
   // define variables to save charts base64 strings
   const [charts, setCharts] = useState([]);
@@ -23,6 +27,16 @@ const GenerateChartImages: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [showChartsDiv, setShowChartsDiv] = useState(false); 
   const [loadingCharts, setLoadingCharts] = useState(true); 
+
+  const [show3rdPageChartsDiv, set3rdPageShowChartsDiv] = useState(true);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+          set3rdPageShowChartsDiv(false);
+        }, 5000); // Set the duration in milliseconds
+
+        return () => clearTimeout(timeout); // Clear the timeout when the component unmounts
+    }, []);
 
   useEffect(() => {
 
@@ -34,31 +48,47 @@ const GenerateChartImages: React.FC = () => {
 
   const openModal = async () => {
     setShowChartsDiv(true);
+    set3rdPageShowChartsDiv(true)
     setIsModalOpen(true);
   
     // Only fetch and generate charts if charts are not loaded yet
     if (charts.length === 0) {
-      // Simulating fetching of charts data (e.g., from an API) with a delay
       setTimeout(async () => {
         setLoadingCharts(true);
   
         // retrieve the charts refs as canvas
         const first_page_canvas = await html2canvas(firstPageRefs.current);
-  
-        // convert the canvas to base64 strings
-        const first_page_charts = first_page_canvas.toDataURL('image/png');
-  
-        // Save base64 strings in an array
-        const base64StringsArray = [first_page_charts];
+        const second_page_canvas = await html2canvas(secondPageRefs.current);
+        const third_page_canvas = await html2canvas(thirdPageRefs.current);
+
+        // Convert the canvas to base64 strings
+        const base64StringsArray = [];
+
+        if (first_page_canvas.toDataURL) {
+            const first_page_charts = first_page_canvas.toDataURL('image/png');
+            base64StringsArray.push(first_page_charts);
+        }
+
+        if (second_page_canvas.toDataURL) {
+            const second_page_charts = second_page_canvas.toDataURL('image/png');
+            base64StringsArray.push(second_page_charts);
+        }
+
+        if (third_page_canvas.toDataURL) {
+            const third_page_charts = third_page_canvas.toDataURL('image/png');
+            base64StringsArray.push(third_page_charts);
+        }
   
         // Update the state with the entire array of base64 strings
         setCharts(base64StringsArray);
   
         // Hide the div after generating charts
         setShowChartsDiv(false);
+        set3rdPageShowChartsDiv(false)
         setLoadingCharts(false);
-      }, 3000); // Simulated 3 seconds delay
+      }, 3000);
     } else {
+      set3rdPageShowChartsDiv(false)
       setShowChartsDiv(false); // Hide the div if charts are already loaded
     }
   };
@@ -74,6 +104,14 @@ const GenerateChartImages: React.FC = () => {
       {/* first page charts */}
       <div ref={firstPageRefs} style={{ display: showChartsDiv ? 'block' : 'none' }}>
         <FirstPageCharts />
+      </div>
+      {/* second page charts */}
+      <div ref={secondPageRefs} style={{ display: showChartsDiv ? 'block' : 'none' }}>
+          <SecondPageCharts />
+      </div>
+      {/* third page charts */}
+      <div ref={thirdPageRefs} style={{ display: show3rdPageChartsDiv ? 'block' : 'none' }}>
+          <ThirdPageCharts />
       </div>
 
       <div className="export-button-container">
@@ -144,9 +182,9 @@ const GenerateChartImages: React.FC = () => {
 
           .export-button-container {
             position: fixed;
-            bottom: 20px; /* Adjust the value as needed */
-            right: 20px; /* Adjust the value as needed */
-            z-index: 1001; /* Above the modal */
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
           }
 
           .modal-buttons button {
@@ -159,6 +197,7 @@ const GenerateChartImages: React.FC = () => {
             max-width: 600px;
             margin: 100px auto;
             padding: 20px;
+            max-height: none;
           }
 
           .charts-container {
@@ -167,7 +206,8 @@ const GenerateChartImages: React.FC = () => {
             justify-content: space-between;
             align-items: flex-start;
             gap: 10px;
-            max-height: 50vh;
+            max-height: 60vh;
+
             overflow-y: auto;
           }
 

@@ -14,7 +14,7 @@ from stakeholder.tasks import send_reminder_emails
 from django.utils import timezone
 from datetime import datetime
 from frontend.utils.organisation import (
-    CURRENT_ORGANISATION_ID_KEY,
+    get_current_organisation_id
 )
 from django.http import JsonResponse
 from django.core.paginator import (
@@ -153,19 +153,19 @@ def search_reminders_or_notifications(request):
         if filter == 'title':
             reminders = Reminders.objects.filter(
                 Q(user=request.user),
-                Q(organisation=request.session[CURRENT_ORGANISATION_ID_KEY]),
+                Q(organisation=get_current_organisation_id(request.user)),
                 Q(title__icontains=search_query)
             )
         else:
             reminders = Reminders.objects.filter(
                 Q(user=request.user),
-                Q(organisation=request.session[CURRENT_ORGANISATION_ID_KEY]),
+                Q(organisation=get_current_organisation_id(request.user)),
                 Q(reminder__icontains=search_query)
             )
     else:
         reminders = Reminders.objects.filter(
             Q(user=request.user),
-            Q(organisation=request.session[CURRENT_ORGANISATION_ID_KEY]),
+            Q(organisation=get_current_organisation_id(request.user)),
             Q(title__icontains=search_query) | Q(
                 reminder__icontains=search_query)
         )
@@ -182,7 +182,7 @@ def search_reminders_or_notifications(request):
 def delete_reminder_and_notification(request):
     data = json.loads(request.POST.get('ids'))
     notifications_page = request.POST.get('notifications_page')
-    organisation = request.session[CURRENT_ORGANISATION_ID_KEY]
+    organisation = get_current_organisation_id(request.user)
     try:
         for element in data:
             if isinstance(element, str) and element.isdigit():
@@ -221,7 +221,7 @@ def get_reminder_or_notification(request):
             if isinstance(element, str) and element.isdigit():
                 reminder = Reminders.objects.filter(
                     user=request.user,
-                    organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
+                    organisation=get_current_organisation_id(request.user),
                     id=int(element)
                 )
                 reminder[0].date = convert_date_to_local_time(
@@ -253,7 +253,7 @@ def get_organisation_reminders(request):
 
     reminders = Reminders.objects.filter(
         user=request.user,
-        organisation=request.session[CURRENT_ORGANISATION_ID_KEY]
+        organisation=get_current_organisation_id(request.user)
     )
 
     return reminders
@@ -332,7 +332,7 @@ class RemindersView(RegisteredOrganisationBaseView):
                 reminder_type = Reminders.EVERYONE
             try:
                 organisation = Organisation.objects.get(
-                    id=request.session[CURRENT_ORGANISATION_ID_KEY]
+                    id=get_current_organisation_id(request.user)
                 )
                 # Save the reminder to the database
                 reminder = Reminders.objects.create(
@@ -458,7 +458,7 @@ class RemindersView(RegisteredOrganisationBaseView):
 
 
         try:
-            org = request.session[CURRENT_ORGANISATION_ID_KEY],
+            org = get_current_organisation_id(request.user),
             for element in data:
                 if isinstance(element, str) and element.isdigit():
                     reminder = Reminders.objects.get(
@@ -480,6 +480,7 @@ class RemindersView(RegisteredOrganisationBaseView):
             reminder.save()
 
             reminders = get_organisation_reminders(request)
+            reminders = convert_reminder_dates(reminders)
             serialized_reminders = ReminderSerializer(reminders, many=True)
 
             return JsonResponse({'data': serialized_reminders.data})
@@ -524,7 +525,7 @@ class NotificationsView(RegisteredOrganisationBaseView):
     def get_notifications(self, request):
         notifications = Reminders.objects.filter(
             user=request.user,
-            organisation_id=request.session[CURRENT_ORGANISATION_ID_KEY],
+            organisation_id=get_current_organisation_id(request.user),
             status=Reminders.PASSED,
             email_sent=True
         )

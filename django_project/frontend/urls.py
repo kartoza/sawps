@@ -63,7 +63,12 @@ from .views.about import AboutView
 from .views.contact import ContactUsView
 from .views.help import HelpView
 from .views.home import HomeView
-from .views.map import MapView
+from .views.map import (
+    MapView,
+    redirect_to_data,
+    redirect_to_metrics,
+    redirect_to_upload
+)
 from .views.online_form import OnlineFormView
 from .views.switch_organisation import switch_organisation
 from .views.totp_device import (
@@ -74,8 +79,11 @@ from .views.totp_device import (
 from .views.users import OrganisationUsersView
 from frontend.api_views.national_statistic import (
     NationalStatisticsView,
-    NationalSpeciesView
+    NationalSpeciesView,
+    NationalPropertiesView,
+    NationalActivityCountView
 )
+from .views.organisations import OrganisationsView
 
 urlpatterns = [
     re_path(
@@ -202,6 +210,21 @@ urlpatterns = [
     ),
     path('map/', MapView.as_view(), name='map'),
     path(
+        'data/',
+        redirect_to_data,
+        name='data'
+    ),
+    path(
+        'metrics/',
+        redirect_to_metrics,
+        name='metrics'
+    ),
+    path(
+        'upload/',
+        redirect_to_upload,
+        name='upload'
+    ),
+    path(
         'upload-data/<int:property_id>/',
         OnlineFormView.as_view(),
         name='online-form'
@@ -210,6 +233,11 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
     path('users/', OrganisationUsersView.as_view(), name='Users'),
+    path(
+        'organisations/<str:slug>/',
+        OrganisationsView.as_view(),
+        name='organisations'
+    ),
     path('contact/', ContactUsView.as_view(), name='contact'),
     path('data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
@@ -286,5 +314,15 @@ urlpatterns = [
         'api/statistics/',
         NationalStatisticsView.as_view(),
         name='statistics_national'
+    ),
+    path(
+        'api/properties_population_category/',
+        NationalPropertiesView.as_view(),
+        name='properties_population_category'
+    ),
+    path(
+        'api/activity_count_percentage/',
+        NationalActivityCountView.as_view(),
+        name='activity_count'
     ),
 ]

@@ -59,12 +59,28 @@ const styles = StyleSheet.create({
     marginLeft: 125,
     marginRight: -90
   },
-  line_chartImage: {
+  SecondPagechartImage: {
     width: "100%",
     height: "70%",
     display: "flex",
     flexDirection: "row",
     marginLeft: 70,
+    marginTop: 10,
+  },
+  ThirdPagechartImage: {
+    width: "70%",
+    height: "70%",
+    display: "flex",
+    flexDirection: "row",
+    marginLeft: 90,
+    marginTop: 4,
+  },
+  FourthPagechartImage: {
+    width: "80%",
+    height: "80%",
+    display: "flex",
+    flexDirection: "row",
+    marginLeft: 90,
     marginTop: 10,
   },
   mapImage: {
@@ -192,8 +208,8 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
 
           
 
-          {/* Content for Other Pages (index not 0) */}
-          {pageIndex !== 0 && (
+          {/* Content for page 1 */}
+          {pageIndex === 1 && (
             <View>
               {/* Header */}
               <View style={styles.other_pages_header}>
@@ -204,7 +220,39 @@ const CreatePDFContent: React.FC<ChartExportPDFProps> = ({ chartBase64Array }) =
                 </View>
               </View>
               {/* Chart Image */}
-              <Image style={styles.line_chartImage} src={chartBase64} />
+              <Image style={styles.SecondPagechartImage} src={chartBase64} />
+            </View>
+          )}
+
+          {/* Content for page 3 */}
+          {pageIndex === 2 && (
+            <View>
+              {/* Header */}
+              <View style={styles.other_pages_header}>
+                <Image style={styles.logo} src={logoImage} />
+                <View>
+                  <Text style={styles.headerText}>Wildlife Population System</Text>
+                  <Text style={styles.headerText}>National Summary Report</Text>
+                </View>
+              </View>
+              {/* Chart Image */}
+              <Image style={styles.ThirdPagechartImage} src={chartBase64} />
+            </View>
+          )}
+
+          {/* Content for page 4 */}
+          {pageIndex === 3 && (
+            <View>
+              {/* Header */}
+              <View style={styles.other_pages_header}>
+                <Image style={styles.logo} src={logoImage} />
+                <View>
+                  <Text style={styles.headerText}>Wildlife Population System</Text>
+                  <Text style={styles.headerText}>National Summary Report</Text>
+                </View>
+              </View>
+              {/* Chart Image */}
+              <Image style={styles.FourthPagechartImage} src={chartBase64} />
             </View>
           )}
   

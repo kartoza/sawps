@@ -10,6 +10,7 @@ from population_data.models import (
     OpenCloseSystem,
     PopulationEstimateCategory,
     PopulationStatus,
+    SamplingEffortCoverage
 )
 
 
@@ -103,3 +104,12 @@ class PopulationEstimateCategoryF(factory.django.DjangoModelFactory):
         """meta"""
 
         model = PopulationEstimateCategory
+
+
+class SamplingEffortCoverageF(factory.django.DjangoModelFactory):
+    """SamplingEffortCoverage factory."""
+
+    class Meta:
+        """meta"""
+
+        model = SamplingEffortCoverage
