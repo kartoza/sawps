@@ -2,45 +2,25 @@
 
 """
 import django_filters
-from django.db.models import Q
-from species.models import OwnedSpecies
+from django.db.models.query import QuerySet
+from property.models import Property
 
 
-class OwnedSpeciesFilter(django_filters.FilterSet):
-    species = django_filters.CharFilter(method ='filter_species')
+class DataContributorsFilter(django_filters.FilterSet):
     property = django_filters.CharFilter(method ='filter_property')
-    month = django_filters.CharFilter(method = 'filter_month')
-    activity_type = django_filters.CharFilter(method = 'filter_activity_type')
-    population_category = django_filters.CharFilter(
-        method = 'filter_population_category'
-    )
 
     class Meta:
-        model = OwnedSpecies
-        fields = ['species', 'property', 'month']
+        model = Property
+        fields = ['property']
 
-    def filter_species(self, queryset, name, value):
-        species_list = value.split(',')
-        return queryset.filter(taxon__common_name_varbatim__in=species_list)
-
-    def filter_property(self, queryset, name, value):
+    def filter_property(self, queryset: QuerySet, name: str, value: str) \
+        -> QuerySet:
+        """
+        Filter queryset by given property
+        Params:
+            queryset (QuerySet): The queryset to be filtered.
+            name (str): The name of the property to filter by.
+            value (str): A comma-separated list of property IDs.
+        """
         property_list = value.split(',')
-        return queryset.filter(property__name__in=property_list)
-
-    def filter_population_category(self, queryset, name, value):
-        population_category = value.split(',')
-        ranges = [range.split('-') for range in population_category]
-        query = Q()
-        for range_values in ranges:
-            query |= Q(
-                annualpopulation__total__range=(
-                    range_values[0], range_values[1]
-                )
-            )
-        return queryset.filter(query)
-
-    def filter_activity_type(self, queryset, name, value):
-        activity_type = value.split(',')
-        return queryset.filter(
-            annualpopulationperactivity__activity_type__name__in=activity_type
-        )
+        return queryset.filter(id__in=property_list)
