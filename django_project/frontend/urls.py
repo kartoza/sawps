@@ -241,7 +241,7 @@ urlpatterns = [
         name='organisations'
     ),
     path('contact/', ContactUsView.as_view(), name='contact'),
-    path('data-table/', DataTableAPIView.as_view(), name='data-table'),
+    path('api/data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
         'api/species-population-count/',
         SpeciesPopuationCountPerYearAPIView.as_view(),
