@@ -19,7 +19,7 @@ The profile picture popup appears when the Upload profile picture link is clicke
 
 ![Profile picture popup](img/profile-pick-upload.png)
 
-1. Pop-up title - showing what the popup is for
+1. Popup title - showing what the popup is for
 2. Upload file button - goes to the system file browser for the user to select an image for the profile picture. 
 3. Upload button - uploads the image to the platform associated with that user. 
 
