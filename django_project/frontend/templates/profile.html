@@ -10,10 +10,12 @@
   <div class="row">
     {% include "profile_config_base.html" %}
 
-      <div class="col-lg-8">
-          <div class="profile-form">
-              <form method="post" action="{% url 'profile' object.username %}">
-              {% csrf_token %}
+    <div class="col-lg-8">
+      <div class="profile-form">
+        <form method="post" action="{% url 'profile' object.username %}">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
               <div class="form-group">
                 <label for="first-name">First name</label>
                 <input type="text" class="form-control" id="first-name" name="first-name" aria-describedby="firstNameHelp" value={{object.first_name}}>
@@ -22,6 +24,8 @@
                 <label for="last-name">Last name</label>
                 <input type="text" class="form-control" name="last-name" aria-describedby="lastNameHelp" value={{object.last_name}}>
               </div>
+            </div>
+            <div class="col-md-6">
               <div class="form-group">
                 <label for="title">Title</label>
                 <select class="form-control" name="title" id="title">
@@ -33,35 +37,23 @@
                     {% endif %}
                   {% endfor %}
                 </select>
-                
               </div>
               <div class="form-group">
                 <label for="email">Email address</label>
                 <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value={{object.email}}>
                 <small id="email-error" class="form-text text-danger"></small>
               </div>
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" name="onlySANBI" id="onlySANBI" {% if object.user_profile.use_of_data_by_sanbi_only %}checked{% endif %}>
-                <label class="custom-control-label text-muted small" for="onlySANBI">Use of data by SANBI only.</label>
-              </div>              
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" name="hostingDataSANBI" id="hostingDataSANBI" {% if object.user_profile.hosting_through_sanbi_platforms %}checked{% endif %}>
-                <label class="custom-control-label text-muted small" for="hostingDataSANBI">Hosting / serving the data through SANBI platforms and portals.</label>
-              </div>              
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" name="hostingDataSANBIOther" id="hostingDataSANBIOther" {% if object.user_profile.allowing_sanbi_to_expose_data %}checked{% endif %}>
-                <label class="custom-control-label text-muted small" for="hostingDataSANBIOther">Hosting through SANBI and allowing SANBI to publish the data to other portals, as well as to actively curate the data.</label>
-              </div>              
-  
-              <div id="toggleMessage" style="display: none;" class="text-warning-custom mt-3">
-                Making changes here will not affect data that you have previously published and agreed to share under a different regime.
-              </div>
-
-              <div class="form-group"></div>
-              <button type="submit" class="sawps-font-button orange-button mt-0 button" id="submit-button" style="font-weight: bold;">Update</button>
-            </form>
+            </div>
           </div>
-        </div>
+          <div class="row" style="margin-right: 0px;">
+            <div class="col-md-6 offset-md-10">
+              <button type="submit" class="sawps-font-button orange-button mt-0 button" id="submit-button" style="font-weight: bold;">Update</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
   </div>
 
   <script>
@@ -153,9 +145,7 @@
     .end-0 {
         right: 0;
     }
-    /* .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
-      background-color: var(--green) !important;
-    } */
+
     .form-control:focus {
       border-color: var(--green);
       box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
@@ -163,18 +153,18 @@
 
     /* Override default focus styles for the switches */
     .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
-      border-color: var(--green); /* Set the border color to green */
-      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25); /* Set the box shadow with green color */
+      border-color: var(--green);
+      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
     }
     
     /* Style checked switches with green color */
     .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
-      background-color: var(--green); /* Set the background color to green */
-      border-color: var(--green); /* Set the border color to green */
+      background-color: var(--green); 
+      border-color: var(--green); 
     }
 
     .text-warning-custom {
-      color: var(--green); /* Change this to your desired color */
+      color: var(--green);
     }
   </style>
 
