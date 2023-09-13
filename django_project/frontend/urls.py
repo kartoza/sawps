@@ -81,7 +81,9 @@ from frontend.api_views.national_statistic import (
     NationalStatisticsView,
     NationalSpeciesView,
     NationalPropertiesView,
-    NationalActivityCountView
+    NationalActivityCountView,
+    NationalActivityCountPerProvinceView,
+    NationalActivityCountPerPropertyView
 )
 from .views.organisations import OrganisationsView
 
@@ -325,4 +327,14 @@ urlpatterns = [
         NationalActivityCountView.as_view(),
         name='activity_count'
     ),
+    path(
+        'api/activity_count_per_province/',
+        NationalActivityCountPerProvinceView.as_view(),
+        name='activity_count_per_province'
+    ),
+    path(
+        'api/activity_count_per_property/',
+        NationalActivityCountPerPropertyView.as_view(),
+        name='activity_count_per_property'
+    )
 ]

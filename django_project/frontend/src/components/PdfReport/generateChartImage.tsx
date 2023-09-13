@@ -8,6 +8,8 @@ import { Button } from "@mui/material";
 import FirstPageCharts from "./FirstPageContent";
 import SecondPageCharts from "./SecondPageContainer";
 import ThirdPageCharts from "./ThirdPageContainer";
+import FourthPageCharts from "./FourthPageContainer";
+
 
 import html2canvas from "html2canvas";
 
@@ -19,6 +21,7 @@ const GenerateChartImages: React.FC = () => {
   const firstPageRefs = useRef(null);
   const secondPageRefs = useRef(null);
   const thirdPageRefs = useRef(null);
+  const fourthPageRefs = useRef(null);
 
   // define variables to save charts base64 strings
   const [charts, setCharts] = useState([]);
@@ -60,6 +63,10 @@ const GenerateChartImages: React.FC = () => {
         const first_page_canvas = await html2canvas(firstPageRefs.current);
         const second_page_canvas = await html2canvas(secondPageRefs.current);
         const third_page_canvas = await html2canvas(thirdPageRefs.current);
+        const fourth_page_canvas = await html2canvas(fourthPageRefs.current);
+  
+        // Save base64 strings in an array
+        // const base64StringsArray = [first_page_charts, second_page_charts, third_page_charts];
 
         // Convert the canvas to base64 strings
         const base64StringsArray = [];
@@ -77,6 +84,11 @@ const GenerateChartImages: React.FC = () => {
         if (third_page_canvas.toDataURL) {
             const third_page_charts = third_page_canvas.toDataURL('image/png');
             base64StringsArray.push(third_page_charts);
+        }
+
+        if (fourth_page_canvas.toDataURL) {
+          const fourth_page_charts = fourth_page_canvas.toDataURL('image/png');
+          base64StringsArray.push(fourth_page_charts);
         }
   
         // Update the state with the entire array of base64 strings
@@ -113,6 +125,10 @@ const GenerateChartImages: React.FC = () => {
       <div ref={thirdPageRefs} style={{ display: show3rdPageChartsDiv ? 'block' : 'none' }}>
           <ThirdPageCharts />
       </div>
+      {/* third page charts */}
+      <div ref={fourthPageRefs} style={{ display: show3rdPageChartsDiv ? 'block' : 'none' }}>
+          <FourthPageCharts />
+      </div>
 
       <div className="export-button-container">
         <Button onClick={openModal} variant="contained" color="primary">
@@ -134,7 +150,7 @@ const GenerateChartImages: React.FC = () => {
                       key={index}
                       src={chart}
                       alt={`Chart ${index}`}
-                      style={{  ...(index === 0 ? { width: '100%', height: 'auto'} : {}) }}
+                      style={{  ...(index === 0 || index === 2 || index === 3 ? { width: '100%', height: 'auto'} : {}) }}
                   />
               ))}
               </div>
@@ -207,7 +223,6 @@ const GenerateChartImages: React.FC = () => {
             align-items: flex-start;
             gap: 10px;
             max-height: 60vh;
-
             overflow-y: auto;
           }
 
