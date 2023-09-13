@@ -71,6 +71,11 @@
             <a class="nav-link navbar-text" href="/map">MAP</a>
         </li>
         {% endif %}
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link navbar-text" href="/upload">UPLOAD DATA</a>
+        </li>
+        {% endif %}
         <li class="nav-item">
             <a class="nav-link navbar-text" href="/help">HELP</a>
         </li>
