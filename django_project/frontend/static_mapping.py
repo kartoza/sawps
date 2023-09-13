@@ -17,6 +17,6 @@ DATA_CONTRIBUTORS = [
 ]
 
 DATA_CONSUMERS = [
-    "National data consumers",
-    "Regional data consumers"
+    "National data consumer",
+    "Regional data consumer"
 ]

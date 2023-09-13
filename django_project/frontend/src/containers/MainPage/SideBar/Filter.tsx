@@ -85,7 +85,7 @@ function Filter() {
         "Property report",
         "Sampling report",
         "Activity report",
-        "Species population report",
+        "Species report",
     ]
 
     const handleSpectialFilterOption = (each: string, event: any) => {

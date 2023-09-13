@@ -218,31 +218,59 @@ class NationalUserTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 4)
 
-    def test_regional_data_consumer(self) -> None:
-        """Test data table filter by regional data consumer"""
-        user_regional = User.objects.create_user(
-            username='regional_user',
-            password='regional_pass'
+
+class RegionalUserTestCase(TestCase):
+    def setUp(self) -> None:
+        """Setup test case"""
+        taxon_rank = TaxonRank.objects.filter(
+            name='Species'
+        ).first()
+        if not taxon_rank:
+            taxon_rank = TaxonRankFactory.create(
+                name='Species'
+            )
+        self.taxon = TaxonFactory.create(
+            taxon_rank=taxon_rank,
+            common_name_varbatim='SpeciesA'
         )
-        self.role_regional_user = userRoleTypeFactory.create(
-            name='Regional data consumer',
+        user = User.objects.create_user(
+                username='testuserd',
+                password='testpasswordd'
+            )
+        self.organisation_1 = organisationFactory.create()
+        # add user 1 to organisation 1 and 3
+        organisationUserFactory.create(
+            user=user,
+            organisation=self.organisation_1
         )
-        self.user_profile_regional = UserProfile.objects.create(
-            user=user_regional,
-            user_role_type_id=self.role_regional_user
+        self.role_organisation_manager = userRoleTypeFactory.create(
+            name="Regional data consumer",
         )
-        organisation_1 = organisationFactory.create()
-        property = PropertyFactory.create(
-            organisation=organisation_1,
-            name='PropertyB'
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=self.organisation_1,
+            user_role_type_id=self.role_organisation_manager
         )
-        owned_species = OwnedSpeciesFactory.create_batch(
-            5, taxon=self.taxon, user=user_regional, property=property)
+        self.property = PropertyFactory.create(
+            organisation=self.organisation_1,
+            name='PropertyA'
+        )
+
+        self.owned_species = OwnedSpeciesFactory.create_batch(
+            5, taxon=self.taxon, user=user, property=self.property)
+        self.url = reverse('data-table')
 
         self.auth_headers = {
             'HTTP_AUTHORIZATION': 'Basic ' +
-            base64.b64encode(b'regional_user:regional_pass').decode('ascii'),
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
         }
+        self.client = Client()
+        session = self.client.session
+        session.save()
+
+
+    def test_regional_data_consumer(self) -> None:
+        """Test data table filter by regional data consumer"""
         data = {
             "reports": "Activity_report,Species_report,Property_report"
         }
