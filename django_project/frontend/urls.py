@@ -67,7 +67,8 @@ from .views.map import (
     MapView,
     redirect_to_data,
     redirect_to_metrics,
-    redirect_to_upload
+    redirect_to_upload,
+    redirect_to_explore
 )
 from .views.online_form import OnlineFormView
 from .views.switch_organisation import switch_organisation
@@ -81,7 +82,9 @@ from frontend.api_views.national_statistic import (
     NationalStatisticsView,
     NationalSpeciesView,
     NationalPropertiesView,
-    NationalActivityCountView
+    NationalActivityCountView,
+    NationalActivityCountPerProvinceView,
+    NationalActivityCountPerPropertyView
 )
 from .views.organisations import OrganisationsView
 
@@ -225,6 +228,11 @@ urlpatterns = [
         name='upload'
     ),
     path(
+        'explore/',
+        redirect_to_explore,
+        name='explore'
+    ),
+    path(
         'upload-data/<int:property_id>/',
         OnlineFormView.as_view(),
         name='online-form'
@@ -239,7 +247,7 @@ urlpatterns = [
         name='organisations'
     ),
     path('contact/', ContactUsView.as_view(), name='contact'),
-    path('data-table/', DataTableAPIView.as_view(), name='data-table'),
+    path('api/data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
         'api/species-population-count/',
         SpeciesPopuationCountPerYearAPIView.as_view(),
@@ -325,4 +333,14 @@ urlpatterns = [
         NationalActivityCountView.as_view(),
         name='activity_count'
     ),
+    path(
+        'api/activity_count_per_province/',
+        NationalActivityCountPerProvinceView.as_view(),
+        name='activity_count_per_province'
+    ),
+    path(
+        'api/activity_count_per_property/',
+        NationalActivityCountPerPropertyView.as_view(),
+        name='activity_count_per_property'
+    )
 ]
