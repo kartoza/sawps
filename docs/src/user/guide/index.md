@@ -6,8 +6,6 @@ To switch to dark mode, simply go to your map and click on the little sun icon w
 
 ![Dark Mode 1](img/dark-mode-1.png)
 
-![test](img/print-3.png)
-
 This will switch your map from light mode to dark mode.
 ![Dark Mode 2](img/dark-mode-2.png)
 

@@ -17,7 +17,7 @@ The Profile tab is the first tab on the profile configuration page. The page con
 ## Profile picture popup
 The profile picture popup appears when the Upload profile picture link is clicked in the profile tab of the profile configuration page. 
 
-![Profile picture popup](img/profile-pick-upload.png)
+![Profile picture popup](img/profile-picture-upload.png)
 
 1. Popup title - showing what the popup is for
 2. Upload file button - goes to the system file browser for the user to select an image for the profile picture. 
