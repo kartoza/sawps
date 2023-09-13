@@ -5,8 +5,8 @@
     "maputnik:license": "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
     "maputnik:renderer": "mbgljs",
     "openmaptiles:version": "3.x",
-    "sanbi:version": "1",
-    "sanbi:theme": "light"
+    "sanbi:version": "2",
+    "sanbi:theme": "dark"
   },
   "center": [25.86, -28.52],
   "zoom": 5,
@@ -23,9 +23,9 @@
       "tiles": [
         "http://aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg"
       ],
-      "minZoom": 5,
+      "minzoom": 5,
       "maxzoom": 24,
-      "layout": { "visibility": "none" }
+      "layout": {"visibility": "none"}
     }
   },
   "sprite": "",
@@ -34,13 +34,10 @@
     {
       "id": "background",
       "type": "background",
-      "minZoom": 5,
+      "minzoom": 5,
       "maxzoom": 24,
       "layout": {"visibility": "visible"},
-      "paint": {
-        "background-color": "rgba(248, 248, 248, 1)",
-        "background-opacity": 1
-      }
+      "paint": {"background-color": "rgba(0, 0, 0, 1)", "background-opacity": 1}
     },
     {
       "id": "sadc_countries",
@@ -58,17 +55,17 @@
         ["==", "iso_a2", "LS"]
       ],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(240, 240, 240, 1)"}
+      "paint": {"fill-color": "rgba(10, 10, 10, 1)"}
     },
     {
       "id": "sadc_zaf",
       "type": "fill",
       "source": "sanbi",
       "source-layer": "world",
-      "maxzoom": 7,
+      "maxzoom": 7.01,
       "filter": ["any", ["==", "iso_a2", "ZA"]],
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(255, 255, 255, 1)"}
+      "paint": {"fill-color": "rgba(40, 40, 41, 1)"}
     },
     {
       "id": "sadc_countries_outline",
@@ -87,7 +84,7 @@
         ["==", "iso_a2", "ZA"]
       ],
       "layout": {"visibility": "visible"},
-      "paint": {"line-color": "rgba(0, 0, 0, 1)", "line-width": 0.5}
+      "paint": {"line-color": "rgba(153, 153, 153, 1)", "line-width": 1}
     },
     {
       "id": "zaf_fill_highlight",
@@ -204,14 +201,14 @@
       "source": "sanbi",
       "source-layer": "major_rivers2018",
       "minzoom": 5,
-      "maxzoom": 12,
+      "maxzoom": 7.01,
       "layout": {
         "visibility": "visible",
         "line-join": "round",
         "line-cap": "round"
       },
       "paint": {
-        "line-color": "rgba(22, 107, 155, 1)",
+        "line-color": "rgba(27, 88, 123, 1)",
         "line-width": {"stops": [[5.25, 0], [12, 5]]}
       }
     },
@@ -221,9 +218,9 @@
       "source": "sanbi",
       "source-layer": "major_dws_dams_50k",
       "minzoom": 5,
-      "maxzoom": 10,
+      "maxzoom": 7.01,
       "layout": {"visibility": "visible"},
-      "paint": {"fill-color": "rgba(22, 107, 155, 1)"}
+      "paint": {"fill-color": "rgba(27, 88, 123, 1)"}
     },
     {
       "id": "roads_midscale_primary_ca",
@@ -231,7 +228,7 @@
       "source": "sanbi",
       "source-layer": "midscale_zaf_roads",
       "minzoom": 7,
-      "maxzoom": 14,
+      "maxzoom": 7.01,
       "filter": ["all", ["==", "highway", "primary"]],
       "layout": {
         "visibility": "visible",
@@ -249,7 +246,7 @@
       "source": "sanbi",
       "source-layer": "midscale_zaf_roads",
       "minzoom": 7,
-      "maxzoom": 14,
+      "maxzoom": 7.01,
       "filter": ["all", ["==", "highway", "primary"]],
       "layout": {
         "visibility": "visible",
@@ -262,92 +259,12 @@
       }
     },
     {
-      "id": "roads_midscale_trunk_casing",
-      "type": "line",
-      "source": "sanbi",
-      "source-layer": "midscale_zaf_roads",
-      "minzoom": 12,
-      "maxzoom": 14,
-      "filter": ["all", ["==", "highway", "trunk"]],
-      "layout": {
-        "visibility": "visible",
-        "line-cap": "round",
-        "line-join": "round"
-      },
-      "paint": {
-        "line-color": "rgba(116, 116, 116, 1)",
-        "line-width": {"stops": [[12, 2], [14, 3]]}
-      }
-    },
-    {
-      "id": "roads_midscale_trunk_inner",
-      "type": "line",
-      "source": "sanbi",
-      "source-layer": "midscale_zaf_roads",
-      "minzoom": 12,
-      "maxzoom": 14,
-      "filter": ["all", ["==", "highway", "trunk"]],
-      "layout": {
-        "visibility": "visible",
-        "line-cap": "round",
-        "line-join": "round"
-      },
-      "paint": {
-        "line-color": "rgba(98, 98, 98, 1)",
-        "line-width": {"stops": [[12, 1], [14, 2]]}
-      }
-    },
-    {
-      "id": "roads_midscale_mway_hway_casing",
-      "type": "line",
-      "source": "sanbi",
-      "source-layer": "midscale_zaf_roads",
-      "minzoom": 12,
-      "maxzoom": 14,
-      "filter": [
-        "any",
-        ["==", "highway", "highway"],
-        ["==", "highway", "motorway"]
-      ],
-      "layout": {
-        "visibility": "visible",
-        "line-cap": "round",
-        "line-join": "round"
-      },
-      "paint": {
-        "line-color": "rgba(98, 98, 98, 1)",
-        "line-width": {"stops": [[12, 4], [14, 5]]}
-      }
-    },
-    {
-      "id": "roads_midscale_mway_hway_inner",
-      "type": "line",
-      "source": "sanbi",
-      "source-layer": "midscale_zaf_roads",
-      "minzoom": 12,
-      "maxzoom": 14,
-      "filter": [
-        "any",
-        ["==", "highway", "highway"],
-        ["==", "highway", "motorway"]
-      ],
-      "layout": {
-        "visibility": "visible",
-        "line-cap": "round",
-        "line-join": "round"
-      },
-      "paint": {
-        "line-color": "rgba(0, 0, 0, 1)",
-        "line-width": {"stops": [[12, 3], [14, 4]]}
-      }
-    },
-    {
       "id": "roads_highways_casing",
       "type": "line",
       "source": "sanbi",
       "source-layer": "zaf_highways",
       "minzoom": 5,
-      "maxzoom": 12,
+      "maxzoom": 7.01,
       "filter": ["all"],
       "layout": {
         "visibility": "visible",
@@ -365,7 +282,7 @@
       "source": "sanbi",
       "source-layer": "zaf_highways",
       "minzoom": 5,
-      "maxzoom": 12,
+      "maxzoom": 7.01,
       "filter": ["all"],
       "layout": {
         "visibility": "visible",
@@ -387,8 +304,8 @@
       "layout": {"visibility": "visible"},
       "paint": {
         "line-opacity": 1,
-        "line-width": {"stops": [[4, 0], [20, 8]]},
-        "line-color": "rgba(0, 0, 0, 1)"
+        "line-width": {"stops": [[4, 0], [20, 10]]},
+        "line-color": "rgba(153, 153, 153, 1)"
       }
     },
     {
@@ -544,7 +461,7 @@
       "type": "symbol",
       "source": "sanbi",
       "source-layer": "place_name_smallest_scale",
-      "minzoom": 5,
+      "minzoom": 6,
       "maxzoom": 7,
       "layout": {
         "text-field": "{name}",
@@ -555,9 +472,9 @@
         "text-size": 16
       },
       "paint": {
-        "text-color": "rgba(35, 35, 35, 1)",
-        "text-halo-color": "rgba(191, 191, 191, 1)",
-        "text-halo-width": 0.75
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
       }
     },
     {
@@ -566,7 +483,7 @@
       "source": "sanbi",
       "source-layer": "place_name_midscale",
       "minzoom": 7,
-      "maxzoom": 10,
+      "maxzoom": 7.01,
       "layout": {
         "text-field": "{name}",
         "visibility": "visible",
@@ -576,9 +493,81 @@
         "text-transform": "uppercase"
       },
       "paint": {
-        "text-color": "rgba(35, 35, 35, 1)",
-        "text-halo-color": "rgba(191, 191, 191, 1)",
-        "text-halo-width": 0.75
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "label_provinces_WC",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": ["all", ["==", "adm1_en", "Western Cape"]],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase",
+        "text-offset": [-2, 2.5]
+      },
+      "paint": {
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "label_provinces_MP",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": ["all", ["==", "adm1_en", "Mpumalanga"]],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase",
+        "text-offset": [0.5, 2]
+      },
+      "paint": {
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "label_provinces_most",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": [
+        "all",
+        ["!=", "adm1_en", "Western Cape"],
+        ["!=", "adm1_en", "Mpumalanga"]
+      ],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase"
+      },
+      "paint": {
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
       }
     }
   ],

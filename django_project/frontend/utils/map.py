@@ -22,11 +22,11 @@ def get_map_template_style(request, theme_choice: int = 0, token: str = None):
         )
         if "Decision Maker" in user_role:
             style_file_path = absolute_path(
-                'frontend', 'utils', 'country_level_light_v1.json'
+                'frontend', 'utils', 'country_level_light_v2.json'
             )
             if theme_choice == 1:
                 style_file_path = absolute_path(
-                    'frontend', 'utils', 'country_level_dark_v1.json'
+                    'frontend', 'utils', 'country_level_dark_v2.json'
                 )
             load_normal_map = False
     if load_normal_map:
