@@ -52,9 +52,10 @@ function MainPage() {
   const initialTabParam = new URLSearchParams(location.search).get('tab');
   const initialSelectedTab = initialTabParam !== null ? parseInt(initialTabParam) : 0;
   const [selectedTab, setSelectedTab] = useState(initialSelectedTab);
+  const isUploadUrl = location.pathname === '/upload';
 
   const tabNameToValue: { [key: string]: number } = {
-    'map': 0,
+    'explore': 0,
     'data': 1,
     'metrics': 2,
     'upload': 3,
@@ -71,7 +72,7 @@ function MainPage() {
   }, [location.search]);
   
   useEffect(() => {
-    const tabNames = ['map', 'data', 'metrics', 'upload'];
+    const tabNames = ['explore', 'data', 'metrics', 'upload'];
     const selectedTabName = tabNames[selectedTab];
     const newPath = `/${selectedTabName}`;
     if (selectedTab !== 0 && selectedTab !== 3) {
@@ -82,10 +83,16 @@ function MainPage() {
       navigate(newPath); // Update the URL with the tab name
     }
   
+    if (isUploadUrl) {
+      setRightSideBarMode(RightSideBarMode.Upload);
+      dispatch(setUploadState(UploadMode.SelectProperty));
+      return; //hide all tabs
+    }
+  
     // Replace the tab parameter in the URL
     const newUrl = window.location.href.replace(/\?tab=\d/, newPath);
     window.history.replaceState(null, '', newUrl);
-  }, [selectedTab, navigate, location.pathname]);
+  }, [selectedTab, navigate, location.pathname, isUploadUrl]);
   
   
 
@@ -122,29 +129,32 @@ function MainPage() {
           <Grid item flex={1} className="grayBg customWidth">
             <Grid container className="Content" flexDirection={'column'}>
               <Grid item>
-                <Box className="TabHeaders">
-                <Tabs
-                  value={selectedTab}
-                  onChange={(event: React.SyntheticEvent, newValue: number) => {
-                    const tabNames = ['map', 'data', 'metrics', 'upload'];
-                    const selectedTabName = tabNames[newValue];
-                    setSelectedTab(newValue);
-                    if (selectedTabName === 'upload') {
-                      setRightSideBarMode(RightSideBarMode.Upload);
-                      dispatch(setUploadState(UploadMode.SelectProperty));
-                    } else {
-                      setRightSideBarMode(RightSideBarMode.None);
-                    }
-                    navigate(`/${selectedTabName}`); // Update the URL with the tab name
-                  }}
-                  aria-label="Main Page Tabs"
-                >
-                    <Tab key={0} label={'MAP'} {...a11yProps(0)} />
+              <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {rightSideBarMode === RightSideBarMode.Upload || isUploadUrl ? null : (
+                  <Tabs
+                    value={selectedTab}
+                    onChange={(event: React.SyntheticEvent, newValue: number) => {
+                      const tabNames = ['explore', 'data', 'metrics', 'upload'];
+                      const selectedTabName = tabNames[newValue];
+                      setSelectedTab(newValue);
+                      if (selectedTabName === 'upload') {
+                        setRightSideBarMode(RightSideBarMode.Upload);
+                        dispatch(setUploadState(UploadMode.SelectProperty));
+                      } else {
+                        setRightSideBarMode(RightSideBarMode.None);
+                      }
+                      navigate(`/${selectedTabName}`);
+                    }}
+                    aria-label="Main Page Tabs"
+                  >
+                    <Tab key={0} label={'EXPLORE'} {...a11yProps(0)} />
                     <Tab key={1} label={'DATA'} {...a11yProps(1)} />
                     <Tab key={2} label={'METRICS'} {...a11yProps(2)} />
-                    <Tab key={3} label={'DATA UPLOAD'} {...a11yProps(3)} />
                   </Tabs>
-               </Box>
+                )}
+                <div style={{ flex: 1 }}></div>
+              </Box>
+
               </Grid>
               <Grid item className="TabPanels">
                 <TabPanel key={0} value={selectedTab} index={-1} indexList={[0, 3]} noPadding>

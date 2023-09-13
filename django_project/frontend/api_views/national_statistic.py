@@ -68,7 +68,6 @@ class NationalStatisticsView(APIView):
         total property area available for
         owned species (national).
         """
-
         national_properties = Property.objects.all()
 
         # Count the number of matching properties
@@ -213,6 +212,166 @@ class NationalActivityCountView(APIView):
                     'icon': icon_url
                 }
             result[species][activity_type] = f'{percentage:.2f}%'
+
+        return result
+
+    def get(self, *args, **kwargs) -> Response:
+        """
+        Handle GET request to
+        retrieve population categories for properties.
+        """
+        queryset = self.get_activity_count()
+        return Response(queryset)
+
+
+class NationalActivityCountPerProvinceView(APIView):
+    """
+    API to retrieve activity count as % of the
+    the total population for per province
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_activity_count(self) -> QuerySet[Property]:
+        """
+        Get activity count of the total
+        population as percentage
+        """
+        # Step 1: Get all owned species and filter them
+        owned_species = OwnedSpecies.objects.select_related(
+            'taxon', 'property__province'
+        )
+
+        # Step 3 and 4: Calculate percentages and build the object array
+        result = {}
+
+        # Calculate total area for each species in each province
+        for species in owned_species:
+            species_name = species.taxon.common_name_varbatim
+            province_name = species.property.province.name
+            area_available = species.area_available_to_species
+
+            if species_name not in result:
+                result[species_name] = {}
+
+            if province_name not in result[species_name]:
+                result[species_name][province_name] = {
+                    'total_area': 0,
+                    'species_area': 0
+                }
+
+            area = area_available
+            result[species_name][province_name]['total_area'] += area_available
+            result[species_name][province_name]['species_area'] += area
+
+
+        # Calculate total area for each province and each species
+        province_totals = {}
+
+        for species_name, province_data in result.items():
+            for province_name, area_data in province_data.items():
+                province_total = area_data['total_area']
+                species_area = area_data['species_area']
+
+                if province_name not in province_totals:
+                    province_totals[province_name] = 0
+
+                province_totals[province_name] += province_total
+
+        # Calculate and update percentages for
+        # each species in each province
+        for species_name, province_data in result.items():
+            for province_name, area_data in province_data.items():
+                species_area = area_data['species_area']
+                province_total = province_totals[province_name]
+
+                percentage = (
+                    species_area / province_total
+                ) * 100 if province_total != 0 else 0
+                result[species_name][province_name]['percentage'] = \
+                    f'{percentage:.2f}%'
+
+        return result
+
+
+    def get(self, *args, **kwargs) -> Response:
+        """
+        Handle GET request to
+        retrieve population categories for properties.
+        """
+        queryset = self.get_activity_count()
+        return Response(queryset)
+
+
+class NationalActivityCountPerPropertyView(APIView):
+    """
+    API to retrieve activity count as % of the
+    the total population per property type
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_activity_count(self) -> QuerySet[Property]:
+        """
+        Get activity count of the total
+        population as percentage
+        """
+        # Step 1: Get all owned species and filter them
+        owned_species = OwnedSpecies.objects.select_related(
+            'taxon',
+            'property__province',
+            'property__property_type'
+        )
+
+        # Step 3 and 4: Calculate percentages
+        # and build the object array
+        result = {}
+
+        # Calculate total area for each species
+        # in each province and property type
+        for species in owned_species:
+            species_name = species.taxon.common_name_varbatim
+            property_type_name = species.property.property_type.name
+            area_available = species.area_available_to_species
+
+            if species_name not in result:
+                result[species_name] = {}
+
+            if property_type_name not in result[species_name]:
+                result[species_name][property_type_name] = {
+                    'total_area': 0,
+                    'species_area': 0
+                }
+
+            area = area_available
+            result[species_name][property_type_name]['total_area'] += area
+            result[species_name][property_type_name]['species_area'] += area
+
+        # Calculate total area for each property type and each species
+        property_type_totals = {}
+
+        for species_name, property_type_data in result.items():
+            for property_type_name, area_data in property_type_data.items():
+                property_type_total = area_data['total_area']
+                species_area = area_data['species_area']
+
+                if property_type_name not in property_type_totals:
+                    property_type_totals[property_type_name] = 0
+
+                property_type_totals[property_type_name] += property_type_total
+
+        # Calculate and update percentages
+        # for each species in each property type
+        for species_name, property_type_data in result.items():
+            for property_type_name, area_data in property_type_data.items():
+                species_area = area_data['species_area']
+                property_type_total = property_type_totals[property_type_name]
+
+                percentage = (
+                    species_area / property_type_total
+                ) * 100 if property_type_total != 0 else 0
+                a = f'{percentage:.2f}%'
+                result[species_name][property_type_name]['percentage'] = a
 
         return result
 

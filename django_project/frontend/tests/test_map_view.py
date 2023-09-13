@@ -35,3 +35,8 @@ class RedirectViewTests(TestCase):
         self.assertIsInstance(response, HttpResponseRedirect)
         self.assertEqual(response['location'], f"{reverse('map')}?tab=3")
 
+    def test_redirect_to_explore(self):
+        response = self.client.get(reverse('explore'))
+        self.assertIsInstance(response, HttpResponseRedirect)
+        self.assertEqual(response['location'], f"{reverse('map')}?tab=0")
+

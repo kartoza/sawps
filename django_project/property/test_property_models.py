@@ -129,8 +129,8 @@ class ParcelTestCase(TestCase):
     """Parcel test case."""
     @classmethod
     def setUpTestData(cls):
-        cls.parcel = ParcelFactory()
-    
+        cls.parcel = ParcelFactory(sg_number='SG_0')
+
     def test_create_parcel(self):
         """Test create parcel."""
         self.assertTrue(isinstance(self.parcel, Parcel))
@@ -138,7 +138,6 @@ class ParcelTestCase(TestCase):
         self.assertEqual(self.parcel.sg_number, 'SG_0')
         self.assertEqual(self.parcel.farm_number, 0)
 
-    
     def test_update_parcel(self):
         """Test update parcel."""
         self.parcel.sg_number = 'SG_1'
@@ -150,7 +149,7 @@ class ParcelTestCase(TestCase):
         with self.assertRaises(Exception) as raised:
             ParcelFactory(sg_number='SG_1')
             self.assertEqual(IntegrityError, type(raised.exception))
-    
+
     def test_delete_parcel(self):
         """Test delete parcel."""
         self.parcel.delete()

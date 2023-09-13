@@ -204,6 +204,20 @@ class NationalPropertiesViewTest(TestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # Get the data from the response
+        data = response.data
+
+        expected_result = {
+            '1-10': 0,
+            '11-20': 0,
+            '21-50': 0,
+            '51-100': 0,
+            '101-200': 0,
+            '>200': 1
+        }
+
+        self.assertEqual(data, expected_result)
+
 class NationalActivityCountViewTestCase(TestCase):
 
     def setUp(self):
@@ -263,4 +277,156 @@ class NationalActivityCountViewTestCase(TestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # Get the data from the response
+        data = response.data
+        
+        # Ensure that the queryset is not empty
+        self.assertGreater(len(data), 0)
 
+
+
+class NationalActivityCountPerProvinceViewTestCase(TestCase):
+
+    def setUp(self):
+        self.url = reverse('activity_count_per_province')
+        self.test_user = get_user_model().objects.create_user(
+            username='testuser', password='testpassword'
+        )
+        self.device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        self.device.save()
+        self.client = Client()
+
+    def test_get_activity_count(self):
+        self.organisation = organisationFactory.create()
+        Province.objects.create(name='Gauteng')
+        organisation_id = self.organisation.pk
+        PropertyType.objects.create(name='national')
+        PropertyType.objects.create(name='private')
+        property = Property.objects.create(
+            organisation_id=organisation_id,
+            property_type=PropertyType.objects.filter(name='national').first(),
+            created_at=datetime.datetime.now(),
+            created_by=self.test_user,
+            province=Province.objects.filter(name='Gauteng').first()
+        )
+        taxon = Taxon.objects.create(
+            scientific_name='Lion',
+            common_name_varbatim='Lion'
+        )
+        specie = OwnedSpecies.objects.create(
+            user=self.test_user,
+            taxon=taxon,
+            property= property
+        )
+        ActivityType.objects.create(
+            name='unplanned'
+        )
+        activity = ActivityType.objects.create(
+            name='hunting'
+        )
+        AnnualPopulationPerActivity.objects.create(
+            activity_type=activity,
+            owned_species=specie,
+            year=2023,
+            total=50
+        )
+        self.auth_headers = {
+            "HTTP_AUTHORIZATION": "Basic "
+            + base64.b64encode(b"testuser:testpassword").decode("ascii"),
+        }
+
+        session = self.client.session
+        session.save()
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Get the data from the response
+        data = response.data
+
+        # Define the expected result dictionary
+        expected_result = {
+            'Lion': {
+                'Gauteng': {
+                    'total_area': 0.0,
+                    'species_area': 0.0,
+                    'percentage': '0.00%',
+                }
+            }
+        }
+
+        self.assertEqual(data, expected_result)
+
+
+
+class NationalActivityCountPerPropertyTypeViewTestCase(TestCase):
+
+    def setUp(self):
+        self.url = reverse('activity_count_per_property')
+        self.test_user = get_user_model().objects.create_user(
+            username='testuser', password='testpassword'
+        )
+        self.device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        self.device.save()
+        self.client = Client()
+
+    def test_get_activity_count(self):
+        self.organisation = organisationFactory.create()
+        Province.objects.create(name='Gauteng')
+        organisation_id = self.organisation.pk
+        PropertyType.objects.create(name='national')
+        PropertyType.objects.create(name='private')
+        property = Property.objects.create(
+            organisation_id=organisation_id,
+            property_type=PropertyType.objects.filter(name='national').first(),
+            created_at=datetime.datetime.now(),
+            created_by=self.test_user,
+            province=Province.objects.filter(name='Gauteng').first()
+        )
+        taxon = Taxon.objects.create(
+            scientific_name='Lion',
+            common_name_varbatim='Lion'
+        )
+        specie = OwnedSpecies.objects.create(
+            user=self.test_user,
+            taxon=taxon,
+            property= property
+        )
+        ActivityType.objects.create(
+            name='unplanned'
+        )
+        activity = ActivityType.objects.create(
+            name='hunting'
+        )
+        AnnualPopulationPerActivity.objects.create(
+            activity_type=activity,
+            owned_species=specie,
+            year=2023,
+            total=50
+        )
+        self.auth_headers = {
+            "HTTP_AUTHORIZATION": "Basic "
+            + base64.b64encode(b"testuser:testpassword").decode("ascii"),
+        }
+
+        session = self.client.session
+        session.save()
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Get the data from the response
+        data = response.data
+
+        # Define the expected result dictionary
+        expected_result = {
+            'Lion': {'national': {'total_area': 0.0, 'species_area': 0.0, 'percentage': '0.00%'}}
+        }
+
+        self.assertEqual(data, expected_result)
