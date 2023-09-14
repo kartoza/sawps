@@ -48,6 +48,7 @@ function Filter() {
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string>('');
+    const [userRole, setUserRole] = useState<string>('');
 
     const [filterlList, setFilterList] = useState([
         {
@@ -83,10 +84,15 @@ function Filter() {
 
     const informationList = [
         "Property report",
-        "Sampling report",
+        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "":"Sampling Report",
         "Activity report",
         "Species report",
-    ]
+    ].filter(item => item !== "")
+
+    useEffect(() => {
+        const storedUserRole = localStorage.getItem('user_role');
+        setUserRole(storedUserRole);
+    }, []);
 
     const handleSpectialFilterOption = (each: string, event: any) => {
         event.stopPropagation();
@@ -174,7 +180,7 @@ function Filter() {
     };
 
     useEffect(() => {
-        dispatch(setSelectedInfoList (selectedInfo));
+        dispatch(setSelectedInfoList(selectedInfo));
     }, [selectedInfo])
 
 
@@ -243,13 +249,13 @@ function Filter() {
                             <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                 {selectedInfo.length > 0 ? (
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                            <Chip
-                                                key={selectedInfo}
-                                                label={selectedInfo}
-                                                onDelete={() => handleDeleteInfo(selectedInfo)}
-                                                deleteIcon={<CloseIcon />}
-                                                sx={{ margin: 0.5 }}
-                                            />
+                                        <Chip
+                                            key={selectedInfo}
+                                            label={selectedInfo}
+                                            onDelete={() => handleDeleteInfo(selectedInfo)}
+                                            deleteIcon={<CloseIcon />}
+                                            sx={{ margin: 0.5 }}
+                                        />
                                     </Box>
                                 ) : (
                                     <Typography>Select</Typography>
@@ -276,54 +282,58 @@ function Filter() {
                         </Accordion>
                     }
                 </List>
-                <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/propertyIcon.png" alt='Property image' />
-                    <Typography color='#75B37A' fontSize='medium'>Property</Typography>
-                </Box>
-                <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
-                        <Accordion>
-                            <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                {selectedProperty.length > 0 ? (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {selectedProperty.map((id) => {
-                                            const property = propertyList.find((item) => item.id === id);
-                                            return (
-                                                <Chip
-                                                    key={id}
-                                                    label={property ? property.name : ''}
-                                                    onDelete={handleDeleteProperty(id)}
-                                                    deleteIcon={<CloseIcon />}
-                                                    sx={{ margin: 0.5 }}
-                                                />
-                                            );
-                                        })}
-                                    </Box>
-                                ) : (
-                                    <Typography>Select</Typography>
-                                )}
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Box className="selectBox">
-                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        {propertyList.map((property: any) => (
-                                            <FormControlLabel
-                                                key={property.name}
-                                                control={
-                                                    <Checkbox
-                                                        checked={selectedProperty.includes(property.id)}
-                                                        onChange={handleSelectedProperty(property.id)}
+                {userRole != "National data consumer" &&
+                    <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/propertyIcon.png" alt='Property image' />
+                            <Typography color='#75B37A' fontSize='medium'>Property</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading ? <Loading /> :
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                                        {selectedProperty.length > 0 ? (
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                {selectedProperty.map((id) => {
+                                                    const property = propertyList.find((item) => item.id === id);
+                                                    return (
+                                                        <Chip
+                                                            key={id}
+                                                            label={property ? property.name : ''}
+                                                            onDelete={handleDeleteProperty(id)}
+                                                            deleteIcon={<CloseIcon />}
+                                                            sx={{ margin: 0.5 }}
+                                                        />
+                                                    );
+                                                })}
+                                            </Box>
+                                        ) : (
+                                            <Typography>Select</Typography>
+                                        )}
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Box className="selectBox">
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                {propertyList.map((property: any) => (
+                                                    <FormControlLabel
+                                                        key={property.name}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedProperty.includes(property.id)}
+                                                                onChange={handleSelectedProperty(property.id)}
+                                                            />
+                                                        }
+                                                        label={property.name}
                                                     />
-                                                }
-                                                label={property.name}
-                                            />
-                                        ))}
-                                    </Box>
-                                </Box>
-                            </AccordionDetails>
-                        </Accordion>
-                    }
-                </List>
+                                                ))}
+                                            </Box>
+                                        </Box>
+                                    </AccordionDetails>
+                                </Accordion>
+                            }
+                        </List>
+                    </Box>
+                }
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/species/elephant.png" alt='species image' />
                     <Typography color='#75B37A' fontSize='medium'>Species</Typography>
