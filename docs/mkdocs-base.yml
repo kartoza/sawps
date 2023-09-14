@@ -46,7 +46,8 @@ nav:
                   - Guide:
                           - user/guide/index.md
                   - Manual :
-                          - user/manual/index.md
+                          - Introduction: user/manual/index.md
+                          - Profile Page: user/manual/profile-page.md
         - Administrators:
                 - administrator/index.md
                 - Guide:
