@@ -29,13 +29,6 @@ class ProvinceSerializer(NameObjectBaseSerializer):
 
 class PropertySerializer(serializers.ModelSerializer):
     """Property Serializer."""
-    def __init__(self, *args, **kwargs):
-        remove_fields = kwargs.pop('remove_fields', None)
-        super(PropertySerializer, self).__init__(*args, **kwargs)
-
-        if remove_fields:
-            for field_name in remove_fields:
-                self.fields.pop(field_name)
 
     owner = serializers.SerializerMethodField()
     owner_email = serializers.SerializerMethodField()

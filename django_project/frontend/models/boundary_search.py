@@ -90,7 +90,13 @@ class BoundarySearchRequest(BaseTaskRequest, gis_models.Model):
     )
 
     parcels = models.JSONField(
-        default=[],
+        default=list,
+        null=True,
+        blank=True
+    )
+
+    used_parcels = models.JSONField(
+        default=list,
         null=True,
         blank=True
     )

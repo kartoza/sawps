@@ -236,7 +236,7 @@
       }
 
       function convertDateToISO(dateString) {
-        const parts = dateString.split(' ');
+        var parts = dateString.split(' ');
 
         if (parts.length === 3) {
           // Extract date, time, and AM/PM components
@@ -264,8 +264,8 @@
           return isoDate;
         }
 
-        // Return null if the input format is invalid
-        return null;
+        // return the passed date if conversion fails
+        return dateString;
       }
 
       // UPDATING ROWS PER PAGE
@@ -328,12 +328,12 @@
               },
               success: function(response) {
               reminder = response.data[0]
-              const localDatetimeStr = convertToLocalDateTime(reminder.date);
+              var localDatetimeStr = convertToLocalDateTime(reminder.date);
 
               // Populate the modal with the retrieved data
               $('#myModal #title').val(reminder.title);
               if(useFallbackDate){
-                const edit_date = convertDateToISO(reminder.date)
+                var edit_date = convertDateToISO(reminder.date)
                 $('#myModal #datetimepicker').val(edit_date);
               }
               else $('#myModal #date').val(localDatetimeStr);

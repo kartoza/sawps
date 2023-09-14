@@ -1,17 +1,29 @@
-# -*- coding: utf-8 -*-
-
-
 """Test factories for activity package.
 """
+import random
+
 import factory
 from activity.models import ActivityType
 
+activity_list = [
+    "Planned translocation", "Planned euthanasia", "Planned hunt/cull",
+    "Unplanned/illegal hunting", "Unplanned/natural deaths",
+]
+
 
 class ActivityTypeFactory(factory.django.DjangoModelFactory):
-    """factory class for activity type models"""
+    """Factory class for activity type models."""
 
     class Meta:
         model = ActivityType
 
-    name = factory.Sequence(lambda n: f'Activity #{n}')
+    name = factory.LazyFunction(lambda: generate_unique_name(activity_list))
     recruitment = True
+
+
+def generate_unique_name(activity_list) -> str:
+    """Return activity name"""
+    while True:
+        name = random.choice(activity_list)
+        if not ActivityType.objects.filter(name=name).exists():
+            return name
