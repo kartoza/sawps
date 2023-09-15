@@ -29,81 +29,21 @@ The documentation is organised in the following structure:
 ```
 src
 ├── about
-│   ├── code-of-conduct.md
-│   ├── contributing.md
-│   ├── funders.md
-│   ├── index.md
-│   └── license.md
 ├── administrator
 │   ├── guide
-│   │   └── index.md
-│   ├── index.md
 │   └── manual
-│       ├── img
-│       │   └── naming-convention.README
-│       └── index.md
 ├── developer
-│   ├── api
-│   │   ├── guide
-│   │   │   └── index.md
-│   │   ├── index.md
-│   │   └── manual
-│   │       └── index.md
 │   ├── documentation
-│   │   ├── img
-│   │   │   └── naming-convention.README
-│   │   └── index.md
 │   ├── guide
-│   │   ├── architecture.md
-│   │   ├── building.md
-│   │   ├── cloning.md
-│   │   ├── configuration.md
-│   │   ├── design.md
-│   │   ├── ide-setup.md
-│   │   ├── index.md
-│   │   ├── prerequisites.md
-│   │   ├── templates
-│   │   │   ├── commit-message-convention.md
-│   │   │   └── pull-request-template.md
-│   │   └── workflows.md
-│   ├── index.md
 │   └── manual
-│       ├── activity.md
-│       ├── core.md
-│       ├── fixtures.md
-│       ├── frontend.md
-│       ├── index.md
-│       ├── notification.md
-│       ├── occurrence.md
-│       ├── population_data.md
-│       ├── property.md
-│       ├── regulator_permit.md
-│       ├── sawps.md
-│       ├── species.md
-│       └── stakeholder.md
 ├── devops
 │   ├── guide
-│   │   └── index.md
-│   ├── img
-│   │   └── naming-convention.README
-│   ├── index.md
 │   └── manual
-│       └── index.md
-├── img
-│   └── naming-convention.README
-├── index.md
 └── user
+    ├── api
     ├── guide
-    │   ├── data-upload.md
-    │   ├── img
-    │   │   └── naming_convention.readme
-    │   ├── index.md
-    │   └── instructions.md
-    ├── index.md
     ├── manual
-    │   └── index.md
     └── quickstart
-        └── index.md
 ```
 
 ## File naming conventions
@@ -116,7 +56,7 @@ Please follow these conventions when writing your documentation:
 4. Place your content into the appropriate place as outlined in the structure above.
 5. Each file should only contain one level-one heading e.g. ``# Page title``
 6. Headings and subheadings should be written as a terse phrase starting with a capital letter and subsequent words in lower case unless they are proper nouns. Do not place a colon after the heading.
-7. Use unicode number markers to reference numbers in images e.g. 1️⃣, 2️⃣, 3️⃣, 4️⃣, 5️⃣, 6️⃣, 7️⃣, 8️⃣
+7. Use unicode number markers to reference numbers in images e.g. 1️⃣, 2️⃣, 3️⃣, 4️⃣, 5️⃣, 6️⃣, 7️⃣, 8️⃣, 9️⃣, 🔟
 8. Every heading / subheading should have a single line underneath it summarising the content that will follow. This sentence will be used in the help center in the application to give the user a reference point for the text that will follow. It also makes the help text more consistent and readable.
 9. For every section that contains images, the first image will be used as the thumbnail if the heading is referenced from the application.
 
