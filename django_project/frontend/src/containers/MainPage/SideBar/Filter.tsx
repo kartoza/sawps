@@ -52,6 +52,7 @@ function Filter() {
     const [userRole, setUserRole] = useState<string>('');
     const [organisationList, setOrganisationList] = useState([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
+    const [tab, setTab] = useState<string>('')
 
     const [filterlList, setFilterList] = useState([
         {
@@ -96,6 +97,11 @@ function Filter() {
         const storedUserRole = localStorage.getItem('user_role');
         setUserRole(storedUserRole);
     }, []);
+
+    useEffect(() => {
+        const pathname = window.location.pathname.replace(/\//g, '');
+        setTab(pathname)
+    }, [window.location.pathname])
 
     const handleSpectialFilterOption = (each: string, event: any) => {
         event.stopPropagation();
@@ -327,49 +333,53 @@ function Filter() {
                     </List>
                 </Box>
                 }
-                <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/InfoIcon.png" alt='Info image' />
-                    <Typography color='#75B37A' fontSize='medium'>Report Type</Typography>
-                </Box>
-                <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
-                        <Accordion>
-                            <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                {selectedInfo.length > 0 ? (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        <Chip
-                                            key={selectedInfo}
-                                            label={selectedInfo}
-                                            onDelete={() => handleDeleteInfo(selectedInfo)}
-                                            deleteIcon={<CloseIcon />}
-                                            sx={{ margin: 0.5 }}
-                                        />
-                                    </Box>
-                                ) : (
-                                    <Typography>Select</Typography>
-                                )}
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Box className="selectBox">
-                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        {informationList.map((info: any, index) => (
-                                            <FormControlLabel
-                                                key={index}
-                                                control={
-                                                    <Checkbox
-                                                        checked={selectedInfo.includes(info)}
-                                                        onChange={handleSelectedInfo(info)}
+                {tab === 'data' &&
+                    <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/InfoIcon.png" alt='Info image' />
+                            <Typography color='#75B37A' fontSize='medium'>Report Type</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading ? <Loading /> :
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                                        {selectedInfo.length > 0 ? (
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                <Chip
+                                                    key={selectedInfo}
+                                                    label={selectedInfo}
+                                                    onDelete={() => handleDeleteInfo(selectedInfo)}
+                                                    deleteIcon={<CloseIcon />}
+                                                    sx={{ margin: 0.5 }}
+                                                />
+                                            </Box>
+                                        ) : (
+                                            <Typography>Select</Typography>
+                                        )}
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Box className="selectBox">
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                {informationList.map((info: any, index) => (
+                                                    <FormControlLabel
+                                                        key={index}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedInfo.includes(info)}
+                                                                onChange={handleSelectedInfo(info)}
+                                                            />
+                                                        }
+                                                        label={info}
                                                     />
-                                                }
-                                                label={info}
-                                            />
-                                        ))}
-                                    </Box>
-                                </Box>
-                            </AccordionDetails>
-                        </Accordion>
-                    }
-                </List>
+                                                ))}
+                                            </Box>
+                                        </Box>
+                                    </AccordionDetails>
+                                </Accordion>
+                            }
+                        </List>
+                    </Box>
+                }
                 {userRole != "National data consumer" &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
