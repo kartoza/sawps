@@ -42,7 +42,7 @@
               </svg>Upload profile picture
             </span>
           </p>
-          <a href="{% url 'account_change_password' %}"><button class="sawps-font-button green-button mt-0 button" style="font-weight: bold;" data-toggle="modal" data-target="#updatePasswordModal">Update Password</button></a>
+          <a href="{% url 'account_change_password' %}"><button class="sawps-font-button green-button mt-0" style="font-weight: bold;" data-toggle="modal" data-target="#updatePasswordModal">Update Password</button></a>
         </div>
       </div>
       {% endif %}
@@ -55,7 +55,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="uploadPictureModalLabel">Upload profile picture</h5>
-            <hr class="default-separator">
+            <hr class="default-separator" style="margin-bottom: 0%;">
           </div>
           <div class="modal-body">
             <form method = "post" enctype="multipart/form-data" action="{%  url 'profile' user.username %}">
@@ -80,9 +80,9 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="deleteModalLabel" style="color: var(--red)">Delete Confirmation</h5>
-            <hr class="default-separator" style="border-color: var(--red)">
+            <hr class="default-separator" style="border-color: var(--red); margin-bottom: 0%;">
           </div>
-          <div class="modal-body">
+          <div class="modal-body" style="margin-bottom: 5%;">
             Are you sure you want to delete this?
           </div>
           <div class="modal-footer">

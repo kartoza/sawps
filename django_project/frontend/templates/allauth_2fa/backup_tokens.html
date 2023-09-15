@@ -15,7 +15,8 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
               <div class="modal-header">
-                  <h5 class="modal-title" id="confirmRemoveModalLabel" style="color: var(--green);">Confirmation</h5>
+                  <h5 class="modal-title" id="confirmRemoveModalLabel" style="color: var(--red);">Delete Confirmation</h5>
+                  <hr class="default-separator" style="border-color: var(--red); margin-bottom: 0%;">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                   </button>
@@ -37,7 +38,7 @@
 
     <div class="container">
       
-      <div class="border p-3 mb-3" style="border-radius: 6px;">
+      <div class="p-3 mb-3" style="margin-left: -20px;">
         <h4 class="page-title sawps-text-menu mb-3">Current 2FA Method</h4>
           <div class="col-md-3 " style="padding-left: 0%;">
             <select id="filterSelect" class="form-control custom-select" style="width:100%;">
@@ -52,6 +53,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="myModalLabel">Add new device</h5>
+                    <hr class="default-separator" style="margin-bottom: 0%;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -65,8 +67,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="sawps-font-button red-button mt-0" id="addReminderBtn" style="font-weight: bold;">Add</button>
-                    <button type="button" class="sawps-font-button gray-button mt-0" data-dismiss="modal" style="font-weight: bold;">Cancel</button>
+                    <button type="button" class="sawps-font-button green-button mt-0" id="addReminderBtn" style="font-weight: bold;">Add</button>
+                    <button type="button" class="sawps-font-button red-button mt-0" data-dismiss="modal" style="font-weight: bold;">Cancel</button>
                 </div>
             </div>
         </div>
@@ -78,6 +80,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="qrCodeModalLabel">QR Code Image</h5>
+                    <hr class="default-separator" style="margin-bottom: 0%;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -92,7 +95,7 @@
                     
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeModal" style="font-weight: bold;">Close</button>
+                    <button type="button" class="sawps-font-button red-button mt-0" data-dismiss="modal" id="closeModal" style="font-weight: bold;">Close</button>
                 </div>
             </div>
         </div>
@@ -181,17 +184,13 @@
   
 <script>
 
-  try{
-      if(localStorage.getItem('reveal') === 'true')
-      {
-        document.getElementById("backupTokensList").style.display = 'block'
-        localStorage.setItem('reveal',false)
-      }else {
-        document.getElementById("securityMessage").style.display = 'block'
-      }
-    } catch(exception){
-      // ignore exception
-    }
+  if(localStorage.getItem('reveal') === 'true')
+  {
+    document.getElementById("backupTokensList").style.display = 'block'
+    localStorage.setItem('reveal',false)
+  }else {
+    document.getElementById("securityMessage").style.display = 'block'
+  }
 
     document.getElementById("generateTokensForm").addEventListener("submit", function (event) {
         event.preventDefault(); // Prevent the form from submitting normally
