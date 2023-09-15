@@ -18,8 +18,11 @@ class TaxonListAPIView(APIView):
 
         organisation = self.request.GET.get("organisation")
         if organisation:
+            _organisation = organisation.split(",")
             taxon = Taxon.objects.filter(
-                ownedspecies__property__organisation_id__in=organisation,
+                ownedspecies__property__organisation_id__in=(
+                    [int(id) for id in _organisation]
+                ),
                 ownedspecies__taxon__taxon_rank__name = "Species"
             )
         else:

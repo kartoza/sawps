@@ -191,8 +191,11 @@ class PropertyList(APIView):
 
         organisation = request.GET.get("organisation")
         if organisation:
+            _organisation = organisation.split(",")
             properties = Property.objects.filter(
-                organisation_id__in=organisation,
+                organisation_id__in=(
+                    [int(id) for id in _organisation]
+                ),
             )
         else:
             properties = Property.objects.filter(
