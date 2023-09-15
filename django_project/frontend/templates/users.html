@@ -12,7 +12,7 @@
           <h3 class="page-title sawps-text-menu mb-3" style="color: var(--green)">{{ current_organisation }}</h3>
           <div class="col-auto ml-auto">
             {% if role.name == 'Admin' or role.name == 'Super User' or user.is_superuser %}
-              <button class="sawps-font-button green-button mt-0 button" type="button" data-toggle="modal" data-target="#myModal" style="font-weight: bold; min-height: fit-content;">
+              <button class="sawps-font-button green-button mt-0" type="button" data-toggle="modal" data-target="#myModal" style="font-weight: bold; min-height: fit-content;">
                 <i class="fas fa-plus"></i> Add People
               </button>
             {% endif %}
@@ -34,7 +34,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="myModalLabel" style="color: var(--green)">Invite people to {{ current_organisation }}</h5>
-                  <hr class="default-separator">
+                  <hr class="default-separator" style="margin-bottom: 0%;">
                 </div>
                 <div class="modal-body">
                   <div class="form-group">
