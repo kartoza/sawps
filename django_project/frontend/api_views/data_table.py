@@ -4,7 +4,6 @@ from django.db.models.query import QuerySet
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
 from frontend.static_mapping import (
-    DATA_CONSUMERS,
     DATA_CONTRIBUTORS,
     DATA_SCIENTISTS
 )
@@ -19,7 +18,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from species.models import Taxon
 from stakeholder.models import UserProfile
-from stakeholder.models import Organisation
 
 
 class DataTableAPIView(APIView):
@@ -70,7 +68,7 @@ class DataTableAPIView(APIView):
             user__id=id
         ).user_role_type_id.name
         queryset = self.get_queryset(user_role)
-        
+
         if user_role in (DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             return Response(data_table_reports(queryset, request))
 

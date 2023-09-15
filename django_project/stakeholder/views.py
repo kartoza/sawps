@@ -637,10 +637,12 @@ class OrganisationAPIView(APIView):
     def get(self, request, *args, **kwargs):
         organisation_id = get_current_organisation_id(request.user)
         organisation = Organisation.objects.get(id=organisation_id)
-        if organisation.national == True:
+        if organisation.national:
             queryset = Organisation.objects.all()
         else:
-            queryset = Organisation.objects.filter(province=organisation.province)
+            queryset = Organisation.objects.filter(
+                province=organisation.province
+            )
         return Response(
             status=200,
             data=OrganisationSerializer(queryset, many=True).data
