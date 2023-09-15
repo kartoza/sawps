@@ -1,13 +1,4 @@
-# SANBI SAWPS Quickstart
-
-## Accessing the Platform
-<!-- Add ink to production version of platform when available -->
-
-Navigate to the [Home Page](https://sawps.sta.do.kartoza.com/) of the site, where you will be greeted by the landing page.
-
-![Landing Page](./img/landing-page.png)
-
-## Registration and Logging In
+# Registration and Logging In
 <!-- How to Register and then Login -->
 
 Navigate to the `REGISTER` button on the home page and fill in your details in the space provided.
@@ -39,3 +30,9 @@ The next step is to request to be added to the ‘Organisation’ in which you b
 ![Registering 7](./img/registering-7.jpg)
 
 ![Registering 8](./img/registering-8.jpg)
+
+## How do I register when added by an Organisation?
+
+Follow the link emailed to you by clicking on the `REGISTER` button. This will redirect you to the SAWPS site.
+
+![Registering 9](img/registering-9.jpg)
