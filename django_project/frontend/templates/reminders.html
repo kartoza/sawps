@@ -239,14 +239,14 @@
 
         if (parts.length === 3) {
           // Extract date, time, and AM/PM components
-          const datePart = parts[0];
-          const timePart = parts[1];
-          const ampm = parts[2];
+          var datePart = parts[0];
+          var timePart = parts[1];
+          var ampm = parts[2];
 
           // Split the time part into hours and minutes
-          const timeParts = timePart.split(':');
-          const hours = parseInt(timeParts[0]);
-          const minutes = parseInt(timeParts[1]);
+          var timeParts = timePart.split(':');
+          var hours = parseInt(timeParts[0]);
+          var minutes = parseInt(timeParts[1]);
 
           // Adjust hours if it's PM
           if (ampm === 'PM' && hours !== 12) {
@@ -254,8 +254,8 @@
           }
 
           // Pad single-digit hours and minutes with leading zeros
-          const formattedHours = hours.toString().padStart(2, '0');
-          const formattedMinutes = minutes.toString().padStart(2, '0');
+          var formattedHours = hours.toString().padStart(2, '0');
+          var formattedMinutes = minutes.toString().padStart(2, '0');
 
           // Construct the ISO 8601 date string
           const isoDate = `${datePart}T${formattedHours}:${formattedMinutes}`;
