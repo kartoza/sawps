@@ -1,28 +1,22 @@
 {% load static %}
-<div class="col">
+  <div class="col">
         <h3 class="page-title sawps-text-menu mb-3">Profile Configuration</h3>
-        
         <hr class="default-separator">
-          <nav class="nav nav-pills nav-justified flex-wrap mb-4" id="scrollable-tabs">
-              <a class="nav-link {% if request.path|slice:":9" == '/profile/' %}active{% endif %}" href="/profile/{{ user }}">PROFILE</a>
-              <a class="nav-link {% if request.path|slice:":11" == '/reminders/' %}active{% endif %}" href="/reminders/{{ user }}/">
-                  REMINDERS
-              </a>
-              <a class="nav-link {% if request.path|slice:":15" == '/notifications/' %}active{% endif %}" href="/notifications/{{ user }}/">
-                  NOTIFICATIONS
-                  <div class="notification-badge" id="notificationBell" style="display: none;"> </div> 
-              </a>
-              <a class="nav-link {% if request.path|slice:":21" == '/accounts/two-factor/' %}active{% endif %}" href="/accounts/two-factor/two_factor/backup_tokens/">2FA</a>
-              <a class="nav-link {% if request.path|slice:":15" == '/organisations/' %}active{% endif %}" href="/organisations/{{ user }}/">
-                ORGANISATIONS
-              </a>
-          </nav>
-      
-      
-        
-        
-        
-      </div>
+        <div class="scrollmenu" style="margin-bottom: 1%; margin-top: -1%;">
+          <a class="nav-link {% if request.path|slice:":9" == '/profile/' %}active{% endif %}" href="/profile/{{ user }}">PROFILE</a>
+          <a class="nav-link {% if request.path|slice:":11" == '/reminders/' %}active{% endif %}" href="/reminders/{{ user }}/">
+            REMINDERS
+          </a>
+          <a class="nav-link {% if request.path|slice:":15" == '/notifications/' %}active{% endif %}" href="/notifications/{{ user }}/">
+            NOTIFICATIONS
+            <div class="notification-badge" id="notificationBell" style="display: none;"> </div> 
+          </a>
+          <a class="nav-link {% if request.path|slice:":21" == '/accounts/two-factor/' %}active{% endif %}" href="/accounts/two-factor/two_factor/backup_tokens/">TWO FACTOR AUTHENTICATION</a>
+          <a class="nav-link {% if request.path|slice:":15" == '/organisations/' %}active{% endif %}" href="/organisations/{{ user }}/">
+            ORGANISATIONS
+          </a>
+        </div>    
+  </div>
     </div>
     <div class="row">
       {% if request.path == '/profile/'|add:user.username|add:'/' %}
@@ -109,10 +103,10 @@
       }
 
       .notification-badge {
-        position: relative;
-        top: -35px;
-        right: -10px;
-        left: 155px;
+        position: absolute;
+        top: 35%;
+        left: 94%;
+        transform: translate(-50%, -50%);
         background-color: var(--orange);
         color: white;
         font-size: 12px;
@@ -124,22 +118,38 @@
         align-items: center;
       }
 
-      #scrollable-tabs {
-        overflow-x: auto;   /* Enable horizontal scrolling */
-        white-space: nowrap; /* Prevent line breaks for tab links */
+      a.nav-link {
+        position: relative;
       }
 
-      #scrollable-tabs .nav-link {
-        min-width: 120px; /* Set a minimum width for each tab */
-        text-align: center; /* Center-align tab content */
+      /* Display the badge when the parent link is active */
+      a.nav-link.active .notification-badge {
+        display: block;
       }
 
-    /* Media query for responsiveness */
-    @media (max-width: 768px) {
-      #scrollable-tabs .nav-link {
-          min-width: auto; /* Allow tabs to shrink based on content */
+
+      div.scrollmenu {
+        overflow: auto;
+        white-space: nowrap;
       }
-    }
+
+      div.scrollmenu .nav-link.active {
+        background-color: var(--white);
+        border-bottom: 2px solid var(--green);
+      }
+
+      div.scrollmenu a {
+        display: inline-block;
+        color: var(--green);
+        text-align: center;
+        padding: 20px;
+        margin-bottom: 20px;
+        margin-left: 50px;
+        text-decoration: none;
+      }
+
+      
+
 
     </style>
 
