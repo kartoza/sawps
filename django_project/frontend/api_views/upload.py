@@ -15,6 +15,7 @@ from frontend.models.boundary_search import (
     GEOJSON,
     GEOPACKAGE,
     SHAPEFILE,
+    KML,
     BoundarySearchRequest
 )
 from frontend.utils.upload_file import (
@@ -40,6 +41,8 @@ class BoundaryFileUpload(APIView):
             return SHAPEFILE
         elif filename.lower().endswith('.gpkg'):
             return GEOPACKAGE
+        elif filename.lower().endswith('.kml'):
+            return KML
         return ''
 
     def validate_shapefile_zip(self, file_obj: any) -> str:

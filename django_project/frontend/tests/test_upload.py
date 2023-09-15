@@ -60,6 +60,26 @@ class TestUploadAPIViews(TestCase):
             meta_id='layer-id',
             session=session
         ).exists())
+        file = SimpleUploadedFile(
+            'admin.kml',
+            b'file_content',
+            content_type='application/vnd.google-earth.kml+xml')
+        session = str(uuid.uuid4())
+        request = self.factory.post(
+            reverse('boundary-file-upload'), {
+                'session': session,
+                'meta_id': 'layer-id',
+                'file': file
+            }
+        )
+        request.user = UserF.create()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        self.assertTrue(BoundaryFile.objects.filter(
+            name='admin.kml',
+            meta_id='layer-id',
+            session=session
+        ).exists())
 
     def test_file_remove(self):
         # create obj

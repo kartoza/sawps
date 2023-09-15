@@ -15,3 +15,8 @@ DATA_CONTRIBUTORS = [
     "Organisation member",
     "Organisation manager",
 ]
+
+DATA_CONSUMERS = [
+    "National data consumer",
+    "Regional data consumer"
+]
