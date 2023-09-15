@@ -3,7 +3,11 @@
 from django.db.models.query import QuerySet
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
-from frontend.static_mapping import DATA_CONSUMERS, DATA_CONTRIBUTORS
+from frontend.static_mapping import (
+    DATA_CONSUMERS,
+    DATA_CONTRIBUTORS,
+    DATA_SCIENTISTS
+)
 from frontend.utils.data_table import (
     data_table_reports,
     national_level_user_table
@@ -15,6 +19,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from species.models import Taxon
 from stakeholder.models import UserProfile
+from stakeholder.models import Organisation
 
 
 class DataTableAPIView(APIView):
@@ -28,13 +33,20 @@ class DataTableAPIView(APIView):
         Get the filtered queryset based on user filters.
         """
         organisation_id = get_current_organisation_id(self.request.user)
-        if user_role in DATA_CONTRIBUTORS:
+        if user_role in (DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             filter = DataContributorsFilter
-            queryset = Property.objects.filter(
-                organisation_id=organisation_id,
-                ownedspecies__taxon__taxon_rank__name = "Species"
-            ).order_by("name")
-
+            organisation = self.request.GET.get("organisation")
+            if organisation and user_role in DATA_SCIENTISTS:
+                ids = organisation.split(",")
+                queryset = Property.objects.filter(
+                    organisation_id__in=ids,
+                    ownedspecies__taxon__taxon_rank__name = "Species"
+                )
+            else:
+                queryset = Property.objects.filter(
+                    organisation_id=organisation_id,
+                    ownedspecies__taxon__taxon_rank__name = "Species"
+                ).order_by("name")
         else:
             filter = BaseMetricsFilter
             queryset = Taxon.objects.filter(
@@ -58,10 +70,11 @@ class DataTableAPIView(APIView):
             user__id=id
         ).user_role_type_id.name
         queryset = self.get_queryset(user_role)
-        if user_role in DATA_CONTRIBUTORS:
+        
+        if user_role in (DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             return Response(data_table_reports(queryset, request))
 
-        elif user_role in DATA_CONSUMERS:
+        else:
             return Response(
                 national_level_user_table(queryset, request, user_role)
             )

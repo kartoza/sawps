@@ -26,10 +26,15 @@ import json
 from django.db.models import Q
 from core.celery import app
 from frontend.views.base_view import RegisteredOrganisationBaseView
-from frontend.serializers.stakeholder import ReminderSerializer
+from frontend.serializers.stakeholder import (
+    ReminderSerializer,
+    OrganisationSerializer
+)
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 logger = logging.getLogger(__name__)
 
 
@@ -623,3 +628,20 @@ class NotificationsView(RegisteredOrganisationBaseView):
         context['notifications'] = self.get_notifications(self.request)
 
         return context
+
+
+class OrganisationAPIView(APIView):
+    """Get organisation"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        organisation_id = get_current_organisation_id(request.user)
+        organisation = Organisation.objects.get(id=organisation_id)
+        if organisation.national == True:
+            queryset = Organisation.objects.all()
+        else:
+            queryset = Organisation.objects.filter(province=organisation.province)
+        return Response(
+            status=200,
+            data=OrganisationSerializer(queryset, many=True).data
+        )

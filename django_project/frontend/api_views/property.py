@@ -203,9 +203,19 @@ class PropertyList(APIView):
             request.user
         ) or 0
         organisation_id = current_organisation_id
-        properties = Property.objects.filter(
-            organisation_id=organisation_id
-        ).order_by('name')
+
+        organisation = self.request.GET.get("organisation") 
+        if organisation:
+            ids = organisation.split(",")
+            properties = Property.objects.filter(
+                organisation_id__in=ids,
+                ownedspecies__taxon__taxon_rank__name = "Species"
+            )
+        else:
+            properties = Property.objects.filter(
+                organisation_id=organisation_id
+            ).order_by('name')
+
         return Response(
             status=200,
             data=PropertySerializer(properties, many=True).data

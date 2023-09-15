@@ -10,8 +10,6 @@ ACTIVITY_COLORS_DICT = {
 YEAR_DATA_LIMIT = 10
 
 DATA_CONTRIBUTORS = [
-    "Site administrator",
-    "Statisticion",
     "Organisation member",
     "Organisation manager",
 ]
@@ -19,4 +17,9 @@ DATA_CONTRIBUTORS = [
 DATA_CONSUMERS = [
     "National data consumer",
     "Regional data consumer"
+]
+
+DATA_SCIENTISTS = [
+    "National data scientist",
+    "Regional data scientist"
 ]

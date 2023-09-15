@@ -281,3 +281,67 @@ class RegionalUserTestCase(TestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
+
+
+
+class DataScientistTestCase(TestCase):
+    def setUp(self) -> None:
+        """Setup test case"""
+        taxon_rank = TaxonRank.objects.filter(
+            name='Species'
+        ).first()
+        if not taxon_rank:
+            taxon_rank = TaxonRankFactory.create(
+                name='Species'
+            )
+        self.taxon = TaxonFactory.create(
+            taxon_rank=taxon_rank,
+            common_name_varbatim='SpeciesA'
+        )
+        user = User.objects.create_user(
+                username='testuserd',
+                password='testpasswordd'
+            )
+        self.organisation_1 = organisationFactory.create(national=True)
+
+        organisationUserFactory.create(
+            user=user,
+            organisation=self.organisation_1
+        )
+        self.role_organisation_manager = userRoleTypeFactory.create(
+            name="Regional data scientist",
+        )
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=self.organisation_1,
+            user_role_type_id=self.role_organisation_manager
+        )
+        self.property = PropertyFactory.create(
+            organisation=self.organisation_1,
+            name='PropertyA'
+        )
+
+        self.owned_species = OwnedSpeciesFactory.create_batch(
+            5, taxon=self.taxon, user=user, property=self.property)
+        self.url = reverse('data-table')
+
+        self.auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        self.client = Client()
+        session = self.client.session
+        session.save()
+
+
+    def test_regional_data_consumer(self) -> None:
+        """Test data table filter by regional data consumer"""
+        data = {
+            "reports": (
+                "Activity_report,Species_population_report,Property_report"
+            )
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
