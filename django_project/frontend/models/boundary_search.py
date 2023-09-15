@@ -12,6 +12,7 @@ from frontend.models.base_task import BaseTaskRequest
 GEOJSON = 'GEOJSON'
 SHAPEFILE = 'SHAPEFILE'
 GEOPACKAGE = 'GEOPACKAGE'
+KML = 'KML'
 
 
 class BoundaryFile(models.Model):
@@ -20,7 +21,8 @@ class BoundaryFile(models.Model):
     FILE_TYPE_CHOICES = (
         (GEOJSON, GEOJSON),
         (SHAPEFILE, SHAPEFILE),
-        (GEOPACKAGE, GEOPACKAGE)
+        (GEOPACKAGE, GEOPACKAGE),
+        (KML, KML)
     )
 
     session = models.CharField(
