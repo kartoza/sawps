@@ -1,12 +1,11 @@
-from rest_framework.views import APIView
+from frontend.utils.organisation import get_current_organisation_id
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
 
 from .models import Taxon
-from .serializers import TaxonSerializer, FrontPageTaxonSerializer
-from frontend.utils.organisation import (
-    get_current_organisation_id
-)
+from .serializers import FrontPageTaxonSerializer, TaxonSerializer
+
 # Create your views here.
 
 
@@ -17,16 +16,15 @@ class TaxonListAPIView(APIView):
     def get(self, request):
         organisation_id = get_current_organisation_id(self.request.user)
 
-        organisation = self.request.GET.get("organisation") 
+        organisation = self.request.GET.get("organisation")
         if organisation:
-            ids = organisation.split(",")
             taxon = Taxon.objects.filter(
-                organisation_id__in=ids,
+                ownedspecies__property__organisation_id__in=organisation,
                 ownedspecies__taxon__taxon_rank__name = "Species"
             )
         else:
             taxon = Taxon.objects.filter(
-                organisation_id=organisation_id,
+                ownedspecies__property__organisation_id=organisation_id,
                 taxon_rank__name="Species"
             )
 

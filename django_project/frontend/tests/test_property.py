@@ -1,36 +1,30 @@
+import base64
 import json
-from django.contrib.gis.geos import GEOSGeometry
-from django.test import TestCase
-from django.urls import reverse
+
 from core.settings.utils import absolute_path
-from property.models import (
-    PropertyType,
-    Property,
-    Parcel
+from django.contrib.auth.models import User
+from django.contrib.gis.geos import GEOSGeometry
+from django.test import Client, TestCase
+from django.urls import reverse
+from frontend.api_views.property import (
+    CreateNewProperty,
+    PropertyDetail,
+    PropertyList,
+    PropertyMetadataList,
+    UpdatePropertyBoundaries,
+    UpdatePropertyInformation,
 )
-from property.factories import (
-    ProvinceFactory,
-    PropertyFactory
-)
+from frontend.models.parcels import Erf, Holding
+from frontend.tests.model_factories import UserF
+from frontend.tests.request_factories import OrganisationAPIRequestFactory
+from property.factories import PropertyFactory, ProvinceFactory
+from property.models import Parcel, Property, PropertyType
 from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
-    userProfileFactory
+    userProfileFactory,
 )
-from frontend.models.parcels import (
-    Erf,
-    Holding
-)
-from frontend.tests.model_factories import UserF
-from frontend.api_views.property import (
-    CreateNewProperty,
-    PropertyMetadataList,
-    PropertyList,
-    UpdatePropertyInformation,
-    UpdatePropertyBoundaries,
-    PropertyDetail
-)
-from frontend.tests.request_factories import OrganisationAPIRequestFactory
+from stakeholder.models import UserProfile
 
 
 class TestPropertyAPIViews(TestCase):
@@ -168,6 +162,38 @@ class TestPropertyAPIViews(TestCase):
         _property = response.data[0]
         self.assertEqual(_property['id'], property.id)
         self.assertEqual(_property['name'], property.name)
+
+    def test_get_property_list_for_organisations(self):
+        """Taxon list API test for organisations."""
+        organisation = organisationFactory.create(national=True)
+
+        user = User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd'
+        )
+
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=organisation,
+        )
+
+        property = PropertyFactory.create(
+            organisation=organisation,
+            name='PropertyA'
+        )
+
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+
+        url = reverse("property-list")
+        client = Client()
+        data = {"organisation":organisation.id}
+        response = client.get(url, data, **auth_headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], "PropertyA")
 
     def test_update_property(self):
         property_type = PropertyType.objects.all().first()
