@@ -1,8 +1,13 @@
-# Screen by screen explanation of
-Welcome to the SAWPS manual. This is a page by page guide of the site. Every button, every link and every part of the site is labeled and described in this section. For workflows and how to work with the site please see the user guide. 
+# User manual
 
-## Widgets
+Welcome to the SAWPS user manual. This section of the documentation describes every page in the application and what the various components of that page do. The manual is intended to function as a reference for the application. For narrative / workflow based tutorials, you may prefer to work through our [user guide](../guide/index.md). Here is a brief overview of the content provided here:
 
-## Buttons
-
-## All UI features
+<!-- Descriptions need to be added -->
+* **[The Profile Page:](./profile-page.md)**
+* **[Two Factor Authentication:](./2fa.md)**
+* **[Forgot Password:](./forgot-password.md)**
+* **[Notifications:](./notifications.md)**
+* **[Reminders:](./reminders.md)**
+* **[Organisation Page:](./organisation.md)**
+* **[Request An Organisation:](./request-organisation.md)**
+* **[Map:](./map.md)**
