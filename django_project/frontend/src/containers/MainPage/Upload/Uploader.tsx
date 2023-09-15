@@ -33,7 +33,9 @@ const ALLOWABLE_FILE_TYPES = [
     'application/zip',
     'application/json',
     'application/x-zip-compressed',
-    '.gpkg'
+    'application/vnd.google-earth.kml+xml',
+    '.gpkg',
+    '.kml'
 ]
 
 const UPLOAD_FILE_URL = '/api/upload/boundary-file/'
@@ -84,7 +86,7 @@ const CustomInput = (props: IInputProps) => {
             </label>
         </Grid>
         <Grid item className='CenterItem'>
-            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported formats: zip, json, geojson, gpkg (CRS 4326)</Typography>
+            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported formats: zip, json, geojson, gpkg, kml (CRS 4326)</Typography>
         </Grid>
     </Grid>
       
@@ -182,9 +184,15 @@ export default function Uploader(props: UploaderInterface) {
         if (status === 'error_upload') {
             setTimeout(() => {
                 file.remove()
-                let response = JSON.parse(xhr.response)
+                let  error = ''
+                try {
+                    let response = JSON.parse(xhr.response)
+                    error = response.detail
+                } catch (error) {
+                    error = 'There is unexpected error during upload! Please try again later'
+                }
+                setAlertMessage(error)
                 setIsError(true)
-                setAlertMessage(response.detail)
             }, 300)
         }
     }

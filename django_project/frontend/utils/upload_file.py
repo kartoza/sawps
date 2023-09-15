@@ -44,6 +44,8 @@ PARCEL_SERIALIZER_MAP = {
     ParentFarm: ParentFarmParcelSerializer
 }
 
+fiona.drvsupport.supported_drivers['KML'] = 'ro'
+
 
 def _store_zip_memory_to_temp_file(file_obj: InMemoryUploadedFile):
     tmp_path = os.path.join(settings.MEDIA_ROOT, 'tmp')
