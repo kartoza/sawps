@@ -124,7 +124,9 @@ function MainPage() {
       <div className="MainPage">
         <Grid container flexDirection={'row'}>
           <Grid item>
-            { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} />}
+            { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} additionalProps={{
+              'selectedMainTabIdx': selectedTab
+            }} />}
           </Grid>
           <Grid item flex={1} className="grayBg customWidth">
             <Grid container className="Content" flexDirection={'column'}>

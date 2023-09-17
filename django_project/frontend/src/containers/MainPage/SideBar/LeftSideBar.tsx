@@ -5,18 +5,19 @@ import './index.scss';
 
 interface LeftSideBarInterface {
     element?: React.ElementType,
-    additionalClasses?: string
+    additionalClasses?: string,
+    additionalProps?: any
 }
 
-const LeftSideBarContent = (Component: React.ElementType) => {
-    return <Component />
+const LeftSideBarContent = (Component: React.ElementType, givenProps?: any) => {
+    return <Component {...givenProps} />
 }
 
 function LeftSideBar(props: LeftSideBarInterface) {
     return (
         <Box className={`LeftSideBar ${props.additionalClasses ? props.additionalClasses : ''}`}>
             { props.element ?
-                LeftSideBarContent(props.element) : <Skeleton />
+                LeftSideBarContent(props.element, props.additionalProps) : <Skeleton />
             }
         </Box>
     )
