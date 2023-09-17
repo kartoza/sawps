@@ -27,6 +27,7 @@ export interface FormMetadata {
     sampling_effort_coverages: CommonUploadMetadata[];
     population_statuses: CommonUploadMetadata[];
     population_estimate_categories: CommonUploadMetadata[];
+    certainties: CommonUploadMetadata[];
 }
 
 interface FormWizardInterface {
@@ -250,7 +251,7 @@ function FormWizard(props: FormWizardInterface) {
                             taxonMetadataList={props.metadata.taxons}
                             surveyMethodMetadataList={props.metadata.survey_methods} openCloseMetadataList={props.metadata.open_close_systems}
                             sampling_effort_coverages={props.metadata.sampling_effort_coverages} population_statuses={props.metadata.population_statuses}
-                            population_estimate_categories={props.metadata.population_estimate_categories}
+                            population_estimate_categories={props.metadata.population_estimate_categories} certainties={props.metadata.certainties}
                             handleSaveDraft={handleSaveDraft} />
                     </TabPanel>
                     <TabPanel key={1} value={activeStep} index={1} noPadding>

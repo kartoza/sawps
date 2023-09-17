@@ -192,6 +192,7 @@ class TestCertainty(TestCase):
         self.assertEqual(self.Certainty.name, 'name')
         self.assertEqual(self.Certainty.description, 'text')
         self.assertEqual(Certainty.objects.count(), 1)
+        self.assertEqual(str(self.Certainty), self.Certainty.name)
 
     def test_update_Certainty(self):
         """test update certainty."""

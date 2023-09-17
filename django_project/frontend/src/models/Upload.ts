@@ -33,6 +33,7 @@ export interface AnnualPopulationInterface {
     population_estimate_category_name?: string;
     population_estimate_category_other?: string;
     survey_method_other?: string;
+    population_estimate_certainty_name?: string;
 }
 
 
@@ -120,7 +121,8 @@ const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
         survey_method_id: 0,
         note: '',
         population_estimate_certainty: 0,
-        population_estimate_category_id: 0
+        population_estimate_category_id: 0,
+        population_estimate_certainty_name: ''
     }
 }
 

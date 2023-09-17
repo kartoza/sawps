@@ -165,6 +165,9 @@ class Certainty(models.Model):
         verbose_name_plural = "Certainties"
         db_table = "certainty"
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class OpenCloseSystem(models.Model):
     """Open Close System model.
