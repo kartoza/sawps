@@ -298,7 +298,7 @@ function Filter() {
     }
 
     const searchProperty = React.useMemo(
-        () => 
+        () =>
             debounce(
                 (
                     request: { input: string },
@@ -352,6 +352,20 @@ function Filter() {
 
     const handleExpandReport = () => {
         setExpandReport(!expandReport)
+    const handleSelectAllProperty = () => {
+        const propeertyId = propertyList.map(property => property.id)
+        setSelectedProperty(propeertyId)
+        if (selectedProperty.length === propertyList.length) {
+            setSelectedProperty([]);
+        }
+    }
+
+    const handleSelectAllOrganisation = () => {
+        const organisationId = organisationList.map(data => data.id)
+        setSelectedProperty(organisationId)
+        if (selectedOrganisation.length === organisationList.length) {
+            setSelectedProperty([]);
+        }
     }
 
     return (
@@ -365,7 +379,7 @@ function Filter() {
                     onClose={() => setSearchOpen(false)}
                     options={searchResults}
                     getOptionLabel={(option) => option.fclass ? `${option.name} (${option.fclass})` : option.name}
-                    renderInput={(params) => 
+                    renderInput={(params) =>
                         <TextField
                             variant="outlined"
                             placeholder="Keyword"
@@ -431,6 +445,17 @@ function Filter() {
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Box className="selectBox">
+                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedOrganisation.length === organisationList.length}
+                                                        onChange={handleSelectAllOrganisation}
+                                                    />
+                                                }
+                                                label="Select All"
+                                            />
+                                        </Box>
                                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                             {organisationList.map((data: any) => (
                                                 <FormControlLabel
@@ -530,6 +555,17 @@ function Filter() {
                                     </AccordionSummary>
                                     <AccordionDetails>
                                         <Box className="selectBox">
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedProperty.length === propertyList.length}
+                                                            onChange={handleSelectAllProperty}
+                                                        />
+                                                    }
+                                                    label="Select All"
+                                                />
+                                            </Box>
                                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                                 {propertyList.map((property: any) => (
                                                     <FormControlLabel
@@ -671,6 +707,7 @@ function Filter() {
             </Box>
         </Box >
     )
+}
 }
 
 export default Filter;
