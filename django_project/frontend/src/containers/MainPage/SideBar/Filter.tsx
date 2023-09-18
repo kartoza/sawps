@@ -9,6 +9,7 @@ import {
     AccordionDetails,
     Chip,
     FormControlLabel,
+    Radio,
 } from '@mui/material';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -53,6 +54,8 @@ function Filter() {
     const [organisationList, setOrganisationList] = useState([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
+    const [expandSpecies, setExapandSpecies] = useState<boolean>(false);
+    const [expandReport, setExpandReport] = useState<boolean>(false);
 
     const [filterlList, setFilterList] = useState([
         {
@@ -190,6 +193,9 @@ function Filter() {
 
     useEffect(() => {
         dispatch(toggleSpecies(selectedSpecies));
+        if(selectedSpecies.length > 0) {
+            setExapandSpecies(false)
+        }
     }, [selectedSpecies])
 
     const handleDeleteInfo = (valueToDelete: string) => {
@@ -203,6 +209,9 @@ function Filter() {
 
     useEffect(() => {
         dispatch(setSelectedInfoList(selectedInfo));
+        if(selectedInfo.length > 0) {
+            setExpandReport(false)
+        }
     }, [selectedInfo])
 
 
@@ -264,6 +273,14 @@ function Filter() {
         } else {
             dispatch(setEndYear(newValue));
         }
+    }
+
+    const handleExpandSpecies = () => {
+        setExapandSpecies(!expandSpecies)
+    }
+
+    const handleExpandReport = () => {
+        setExpandReport(!expandReport)
     }
 
     return (
@@ -364,7 +381,7 @@ function Filter() {
                                                     <FormControlLabel
                                                         key={index}
                                                         control={
-                                                            <Checkbox
+                                                            <Radio
                                                                 checked={selectedInfo.includes(info)}
                                                                 onChange={handleSelectedInfo(info)}
                                                             />
@@ -438,7 +455,7 @@ function Filter() {
                 </Box>
                 <List className='ListItem' component="nav" aria-label="">
                     {loading ? <Loading /> :
-                        <Accordion>
+                        <Accordion expanded={expandSpecies} onChange={handleExpandSpecies}>
                             <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                 {selectedSpecies.length > 0 ? (
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -461,7 +478,7 @@ function Filter() {
                                             <FormControlLabel
                                                 key={species.common_name_varbatim}
                                                 control={
-                                                    <Checkbox
+                                                    <Radio
                                                         checked={selectedSpecies.includes(species.common_name_varbatim)}
                                                         onChange={handleSelectedSpecies(species.common_name_varbatim)}
                                                     />
