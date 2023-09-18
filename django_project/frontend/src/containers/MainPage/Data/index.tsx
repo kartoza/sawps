@@ -47,6 +47,7 @@ const DataList = () => {
     const activityReportdataList = activity.map((data, index) => ({ ...data, id: index }));
     const reportList = (userRole ==="Organisation member" || userRole ==="Organisation manager") ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
+    const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const color = {
         "Property_report": '#9F89BF',
         "Sampling_report": "#FF5252",
@@ -67,7 +68,7 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -81,7 +82,7 @@ const DataList = () => {
     useEffect(() => {
         setColumns([])
         fetchDataList();
-    }, [startYear, endYear, selectedSpecies, selectedInfo, propertyId])
+    }, [startYear, endYear, selectedSpecies, selectedInfo, propertyId,organisationId])
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
             target: { value },

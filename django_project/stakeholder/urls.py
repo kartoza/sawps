@@ -5,7 +5,8 @@ from stakeholder.views import (
     ProfileView,
     RemindersView,
     NotificationsView,
-    check_email_exists
+    check_email_exists,
+    OrganisationAPIView,
 )
 
 # views urls
@@ -43,4 +44,9 @@ urlpatterns = [  # '',
         check_email_exists,
         name='check_email_exists'
     ),
+    path(
+        'api/organisation/',
+        OrganisationAPIView.as_view(),
+        name='organisation'
+    )
 ]

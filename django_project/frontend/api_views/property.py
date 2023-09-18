@@ -1,47 +1,32 @@
-# -*- coding: utf-8 -*-
-
 """API Views related to property.
 """
 from datetime import datetime
-from django.shortcuts import get_object_or_404
-from django.core.exceptions import ValidationError
-from django.contrib.gis.geos import (
-    GEOSGeometry, Polygon, MultiPolygon
-)
-from django.contrib.gis.db.models import Union
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+
 from area import area
-from property.models import (
-    PropertyType,
-    Province,
-    Property,
-    ParcelType,
-    Parcel
-)
-from stakeholder.models import (
-    Organisation,
-    OrganisationUser
-)
-from frontend.models.parcels import (
-    Erf,
-    Holding,
-    FarmPortion,
-    ParentFarm
-)
+from django.contrib.gis.db.models import Union
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from frontend.models.parcels import Erf, FarmPortion, Holding, ParentFarm
 from frontend.serializers.property import (
+    PropertyDetailSerializer,
+    PropertySerializer,
     PropertyTypeSerializer,
     ProvinceSerializer,
-    PropertySerializer,
-    PropertyDetailSerializer
 )
-from frontend.serializers.stakeholder import (
-    OrganisationSerializer
+from frontend.serializers.stakeholder import OrganisationSerializer
+from frontend.utils.organisation import get_current_organisation_id
+from property.models import (
+    Parcel,
+    ParcelType,
+    Property,
+    PropertyType,
+    Province
 )
-from frontend.utils.organisation import (
-    get_current_organisation_id
-)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from stakeholder.models import Organisation, OrganisationUser
 
 
 class CreateNewProperty(APIView):
@@ -203,9 +188,20 @@ class PropertyList(APIView):
             request.user
         ) or 0
         organisation_id = current_organisation_id
-        properties = Property.objects.filter(
-            organisation_id=organisation_id
-        ).order_by('name')
+
+        organisation = request.GET.get("organisation")
+        if organisation:
+            _organisation = organisation.split(",")
+            properties = Property.objects.filter(
+                organisation_id__in=(
+                    [int(id) for id in _organisation]
+                ),
+            )
+        else:
+            properties = Property.objects.filter(
+                organisation_id=organisation_id
+            ).order_by('name')
+
         return Response(
             status=200,
             data=PropertySerializer(properties, many=True).data
