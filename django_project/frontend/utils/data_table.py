@@ -28,7 +28,7 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
             "Activity_report": activity_report,
             "Property_report": property_report,
             "Sampling_report": sampling_report,
-            "Species_population_report": species_report,
+            "Species_report": species_report,
         }
 
         for report_name in reports_list:
@@ -81,7 +81,7 @@ def species_report(queryset: QuerySet, request) -> List:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    species_population_reports = []
+    species_reports = []
     filters = {}
     start_year = request.GET.get("start_year")
     if start_year:
@@ -106,11 +106,11 @@ def species_report(queryset: QuerySet, request) -> List:
             "sub_adult_female"
         )
 
-        species_population_reports.extend([
+        species_reports.extend([
             {**common_data, **data} for data in species_population_data
         ])
 
-    return species_population_reports
+    return species_reports
 
 
 def property_report(queryset: QuerySet, request) -> List:

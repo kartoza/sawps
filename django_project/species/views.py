@@ -15,7 +15,6 @@ class TaxonListAPIView(APIView):
 
     def get(self, request):
         organisation_id = get_current_organisation_id(self.request.user)
-
         organisation = self.request.GET.get("organisation")
         if organisation:
             _organisation = organisation.split(",")
@@ -24,12 +23,12 @@ class TaxonListAPIView(APIView):
                     [int(id) for id in _organisation]
                 ),
                 ownedspecies__taxon__taxon_rank__name = "Species"
-            )
+            ).distinct()
         else:
             taxon = Taxon.objects.filter(
                 ownedspecies__property__organisation_id=organisation_id,
                 taxon_rank__name="Species"
-            )
+            ).distinct()
 
         return Response(
             status=200,
