@@ -48,6 +48,7 @@ from frontend.api_views.property import (
     PropertyMetadataList,
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
+    PropertySearch
 )
 from frontend.api_views.statistical import SpeciesNationalTrend
 from frontend.api_views.upload import (
@@ -145,6 +146,11 @@ urlpatterns = [
         r'^api/property/detail/update/?$',
         UpdatePropertyInformation.as_view(),
         name='property-update-detail'
+    ),
+    re_path(
+        r'^api/property/search/?$',
+        PropertySearch.as_view(),
+        name='property-search'
     ),
     re_path(
         r'^api/property/boundaries/update/?$',

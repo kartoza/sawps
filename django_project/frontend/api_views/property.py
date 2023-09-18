@@ -3,6 +3,7 @@
 """API Views related to property.
 """
 from datetime import datetime
+from itertools import chain
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from django.contrib.gis.geos import (
@@ -30,14 +31,19 @@ from frontend.models.parcels import (
     FarmPortion,
     ParentFarm
 )
+from frontend.models.road import Road
 from frontend.serializers.property import (
     PropertyTypeSerializer,
     ProvinceSerializer,
     PropertySerializer,
-    PropertyDetailSerializer
+    PropertyDetailSerializer,
+    PropertySearchSerializer
 )
 from frontend.serializers.stakeholder import (
     OrganisationSerializer
+)
+from frontend.serializers.road import (
+    RoadSearchSerializer
 )
 from frontend.utils.organisation import (
     get_current_organisation_id
@@ -270,4 +276,37 @@ class PropertyDetail(APIView):
         return Response(
             status=200,
             data=PropertyDetailSerializer(property).data
+        )
+
+
+class PropertySearch(APIView):
+    """Search property and roads."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        search_text = self.request.GET.get('search_text', '')
+        # filter property from current organisation
+        current_organisation_id = get_current_organisation_id(
+            self.request.user
+        ) or 0
+        properties = Property.objects.filter(
+            name__istartswith=search_text,
+            organisation_id=current_organisation_id
+        ).order_by('name')[:10]
+        properties_search_results = PropertySearchSerializer(
+            properties,
+            many=True
+        ).data
+        roads = Road.objects.filter(
+            name__istartswith=search_text
+        ).order_by('name')[:10]
+        roads_search_results = RoadSearchSerializer(
+            roads,
+            many=True
+        ).data
+        results = list(chain(properties_search_results, roads_search_results))
+        results.sort(key=lambda x: x['name'])
+        return Response(
+            status=200,
+            data=results
         )

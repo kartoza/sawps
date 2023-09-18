@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {v4 as uuidv4} from 'uuid';
 import axios from "axios";
 import {
     Box,
@@ -16,6 +17,8 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import Autocomplete from '@mui/material/Autocomplete';
+import { debounce } from '@mui/material/utils';
 import SearchIcon from '@mui/icons-material/Search';
 import { RootState } from '../../../app/store';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
@@ -28,11 +31,21 @@ import SpeciesLayer from '../../../models/SpeciesLayer';
 import { selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import PropertyInterface from '../../../models/Property';
+import { MapEvents } from '../../../models/Map';
+import { triggerMapEvent } from '../../../reducers/MapState';
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
 const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
+const SEARCH_PROPERTY_URL = '/api/property/search'
+
+interface SearchPropertyResult {
+    name: string;
+    bbox: any;
+    id: string;
+    type: string;
+}
 
 
 function Filter() {
@@ -49,6 +62,9 @@ function Filter() {
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string>('');
     const [userRole, setUserRole] = useState<string>('');
+    const [searchOpen, setSearchOpen] = useState(false)
+    const [searchInputValue, setSearchInputValue] = useState('')
+    const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
 
     const [filterlList, setFilterList] = useState([
         {
@@ -223,19 +239,100 @@ function Filter() {
             dispatch(setEndYear(newValue));
         }
     }
+
+    const searchProperty = React.useMemo(
+        () => 
+            debounce(
+                (
+                    request: { input: string },
+                    callback: (results?: any) => void,
+                ) => {
+                    let _queryParam = `search_text=${request.input}`
+                    axios.get(`${SEARCH_PROPERTY_URL}?${_queryParam}`).then(
+                        response => {
+                            callback(response)
+                        }
+                    ).catch(error => {
+                        console.log('Failed search property ', error)
+                        callback(null)
+                    })
+                },
+                400,
+            ),
+        [],
+    )
+
+    useEffect(() => {
+        let active = true;
+        if (searchInputValue.length <= 1) {
+            setSearchResults([])
+            return undefined;
+        }
+        searchProperty({input: searchInputValue}, (results: any) => {
+            if (active) {
+                if (results) {
+                    setSearchResults(results.data as SearchPropertyResult[])
+                } else {
+                    setSearchResults([])
+                }
+            }
+        })
+        return () => {
+            active = false
+        };
+    }, [searchInputValue, searchProperty])
+
+    useEffect(() => {
+        setSearchOpen(searchInputValue.length > 1)
+        if (searchInputValue.length <= 1) {
+            setSearchResults([])
+        }
+    }, [searchInputValue])
+
     return (
         <Box>
             <Box className='searchBar'>
-                <TextField
-                    variant="outlined"
-                    placeholder="Keyword"
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
+                <Autocomplete
+                    disablePortal={false}
+                    id="search-property-autocomplete"
+                    open={searchOpen}
+                    onOpen={() => setSearchOpen(searchInputValue.length > 1)}
+                    onClose={() => setSearchOpen(false)}
+                    options={searchResults}
+                    getOptionLabel={(option) => option.name}
+                    renderInput={(params) => 
+                        <TextField
+                            variant="outlined"
+                            placeholder="Keyword"
+                            {...params}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    }
+                    onChange={(event, newValue) => {
+                        if (newValue && newValue.bbox && newValue.bbox.length === 4) {
+                            // trigger zoom to property
+                            let _bbox = newValue.bbox.map(String)
+                            dispatch(triggerMapEvent({
+                                'id': uuidv4(),
+                                'name': MapEvents.ZOOM_INTO_PROPERTY,
+                                'date': Date.now(),
+                                'payload': _bbox
+                            }))
+                            setSearchInputValue('')
+                        }
                     }}
+                    onInputChange={(event, newInputValue) => {
+                        setSearchInputValue(newInputValue)
+                    }}
+                    filterOptions={(x) => x}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
             </Box>
             <Box className='sidebarBox'>
