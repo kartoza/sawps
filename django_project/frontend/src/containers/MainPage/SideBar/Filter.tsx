@@ -45,6 +45,7 @@ interface SearchPropertyResult {
     bbox: any;
     id: string;
     type: string;
+    fclass?: string;
 }
 
 
@@ -299,7 +300,7 @@ function Filter() {
                     onOpen={() => setSearchOpen(searchInputValue.length > 1)}
                     onClose={() => setSearchOpen(false)}
                     options={searchResults}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option.fclass ? `${option.name} (${option.fclass})` : option.name}
                     renderInput={(params) => 
                         <TextField
                             variant="outlined"

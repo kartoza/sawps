@@ -21,6 +21,12 @@ from frontend.models.parcels import (
     Erf,
     Holding
 )
+from frontend.models.places import (
+    PlaceNameSmallScale,
+    PlaceNameMidScale,
+    PlaceNameLargerScale,
+    PlaceNameLargestScale
+)
 from frontend.tests.model_factories import UserF
 from frontend.api_views.property import (
     CreateNewProperty,
@@ -28,7 +34,8 @@ from frontend.api_views.property import (
     PropertyList,
     UpdatePropertyInformation,
     UpdatePropertyBoundaries,
-    PropertyDetail
+    PropertyDetail,
+    PropertySearch
 )
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
 
@@ -259,3 +266,45 @@ class TestPropertyAPIViews(TestCase):
             Parcel.objects.filter(property_id=property_id).count(),
             1
         )
+
+    def test_search_property(self):
+        # insert place names
+        place_1 = PlaceNameSmallScale.objects.create(
+            geom=self.holding_1.geom.centroid,
+            fclass='suburb',
+            name='Seaview'
+        )
+        place_2 = PlaceNameMidScale.objects.create(
+            geom=self.holding_1.geom.centroid,
+            fclass='suburb',
+            name='Seaview'
+        )
+        place_3 = PlaceNameLargerScale.objects.create(
+            geom=self.holding_1.geom.centroid,
+            fclass='hamlet',
+            name='Sea Glade'
+        )
+        place_4 = PlaceNameLargestScale.objects.create(
+            geom=self.holding_1.geom.centroid,
+            fclass='town',
+            name='SeaCow Lake'
+        )
+        # insert property
+        property = PropertyFactory.create(
+            geometry=self.holding_1.geom,
+            name='Seafields',
+            created_by=self.user_2,
+            organisation=self.organisation
+        )
+        request = self.factory.get(
+            reverse('property-search') + f'?search_text=sea'
+        )
+        self.user_2.user_profile = userProfileFactory.create(
+            user=self.user_2,
+            current_organisation=self.organisation
+        )
+        request.user = self.user_2
+        view = PropertySearch.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 4)
