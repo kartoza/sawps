@@ -5,18 +5,18 @@
     align-items: flex-end;
     min-height: 100vh;
   }
-  
+
   .ButtonContainer {
     margin-top: auto;
     margin-right: 20px;
     justify-content: flex-end;
   }
-  
+
 
 .overflow-auto-chart {
     overflow: auto;
     width: calc(100vw - 440px);
-    max-height: calc(100vh - 130px);
+    max-height: calc(100vh - 200px);
 }
 
 .main-chart {
@@ -161,43 +161,37 @@
     height: 800px;
     width: 1200px;
   }
-  
+
   .map-only {
     height: 100%;
     width: 100%;
   }
-  
+
   .map-population-overview {
     display: flex;
   }
-  
+
   th {
     font-weight: normal;
     font-size: 25px;
-  
+
   }
-  
+
   td {
     text-align: center;
     font-weight: bold;
     font-size: 25px;
   }
-  
+
   table {
     width: 600px;
     height: 70px;
   }
-  
+
   .row {
     display: flex;
   }
 
-
-  .overflow-auto-chart {
-    overflow: auto;
-    width: calc(100vw - 440px);
-    max-height: calc(100vh - 130px);
-}
 
 .main-chart {
     width: 100%;
@@ -349,7 +343,7 @@
     align-items: center;
     height: 100vh;
   }
-  
+
   /* Styles for each individual chart container */
   .chart-container-donught {
     display: flex;
@@ -358,7 +352,7 @@
     margin: 0 20px;
     width: "100%"
   }
-  
+
   /* Styles for the icon container */
   .icon-container-donught {
     // margin-top: 10px;
@@ -367,7 +361,7 @@
     top: -250px;
     left: 85px;
   }
-  
+
 .chart-wrapper {
     display: flex;
     flex-wrap: wrap;
