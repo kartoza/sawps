@@ -59,22 +59,15 @@ function Filter() {
 
     const [filterlList, setFilterList] = useState([
         {
-            "id": 1,
-            "name": "Population Category",
-            "isSelected": false,
-            "filterData": ['0-10', '11-20', '21-50', '50-100', '101-200', '>200']
-        },
-        {
-            "id": 2,
-            "name": "Protected Area",
-            "isSelected": false,
-            "filterData": ['National Park', 'Heritage sight', 'Nature Reserve']
-        },
-        {
             "id": 3,
             "name": "Activity",
             "isSelected": false,
             "filterData": ['Hunting', 'Poaching', 'Import', 'Export', 'Translocation', 'Contraseption']
+        },
+        {
+            "id": 5,
+            "name": "Biome type",
+            "isSelected": false
         },
         {
             "id": 4,
@@ -83,16 +76,23 @@ function Filter() {
             "filterData": ['Critical biodiversity area ', 'Critical biodiversity area 1', 'Critical biodiversity area 2', 'Ecological support area', 'Ecological support area 1']
         },
         {
-            "id": 5,
-            "name": "Biome type",
-            "isSelected": false
+            "id": 2,
+            "name": "Protected Area",
+            "isSelected": false,
+            "filterData": ['National Park', 'Heritage sight', 'Nature Reserve']
+        },
+        {
+            "id": 1,
+            "name": "Population Category",
+            "isSelected": false,
+            "filterData": ['0-10', '11-20', '21-50', '50-100', '101-200', '>200']
         }
     ])
 
     const informationList = [
+        "Activity report",
         "Property report",
         userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling Report",
-        "Activity report",
         "Species report",
     ].filter(item => item !== "")
 

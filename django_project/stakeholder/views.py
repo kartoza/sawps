@@ -638,11 +638,11 @@ class OrganisationAPIView(APIView):
         organisation_id = get_current_organisation_id(request.user)
         organisation = Organisation.objects.get(id=organisation_id)
         if organisation.national:
-            queryset = Organisation.objects.all()
+            queryset = Organisation.objects.all().order_by("name")
         else:
             queryset = Organisation.objects.filter(
                 province=organisation.province
-            )
+            ).order_by("name")
         return Response(
             status=200,
             data=OrganisationSerializer(queryset, many=True).data
