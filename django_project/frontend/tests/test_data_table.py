@@ -101,13 +101,13 @@ class OwnedSpeciesTestCase(TestCase):
         data = {
             "start_year": year,
             "end_year":year,
-            "reports": "Species_population_report"
+            "reports": "Species_report"
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]["Species_population_report"][0]["year"],
+            response.data[0]["Species_report"][0]["year"],
             year
         )
 
@@ -338,7 +338,7 @@ class DataScientistTestCase(TestCase):
         """Test data table filter by regional data consumer"""
         data = {
             "reports": (
-                "Activity_report,Species_population_report,Property_report"
+                "Activity_report,Species_report,Property_report"
             )
         }
         url = self.url
