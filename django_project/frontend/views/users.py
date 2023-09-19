@@ -324,7 +324,7 @@ class OrganisationUsersView(
         users_page = request.GET.get('users_page', 1)
 
         # Get the rows per page value from the query parameters
-        rows_per_page = request.GET.get('users_per_page', 5)
+        rows_per_page = request.GET.get('users_per_page', 7)
 
         paginator = Paginator(organisation_users, rows_per_page)
 

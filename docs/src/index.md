@@ -3,7 +3,7 @@
 <!-- Project Strapline, maybe turn into a paragraph -->
 Welcome to SANBI WPS. The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
 
-![Landing Page](./img/intro.png)
+![Landing Page](./img/landing-page.png)
 
 ## Introduction to and AIM of the SAWPS
 <!-- Add some introductory paragraphs regarding the project ~ 2 or 3 paragraphs -->

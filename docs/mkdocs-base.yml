@@ -46,11 +46,21 @@ nav:
                   - Quickstart: user/quickstart/index.md
                   - Guide:
                           - user/guide/index.md
+                          - Registering: user/guide/registering.md
+                          - Help And Contact: user/guide/help.md
+                          - Map: user/guide/map.md
+                          - Profile Page: user/guide/profile-page.md
+                          - Organisations: user/guide/organisations.md
                   - Manual :
-                          - Introduction: user/manual/index.md
                           - user/manual/index.md
                           - Profile Page: user/manual/profile-page.md
-                          - Site Pages: user/manual/site-pages.md
+                          - Two Factor Authentication: user/manual/2fa.md
+                          - Forgot Password: user/manual/forgot-password.md
+                          - Notifications: user/manual/notifications.md
+                          - Reminders: user/manual/reminders.md
+                          - Organisation Page: user/manual/organisation.md
+                          - Request An Organisation: user/manual/request-organisation.md
+                          - Map: user/manual/map.md
         - Administrators:
                 - administrator/index.md
                 - Guide:

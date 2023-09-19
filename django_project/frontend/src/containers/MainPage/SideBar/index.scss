@@ -39,6 +39,18 @@
         height: 0px;
         background: #fff;
     }
+
+    .TabHeaders {
+        &.Single {
+            .MuiTabs-flexContainer {
+                justify-content: center;
+            }
+            .MuiTabs-indicator {
+                width: 100% !important;
+                left: 0px !important;
+            }
+        }
+    }
 }
 
 .RightSideBar {

@@ -8,6 +8,7 @@ from .models import (
     PopulationEstimateCategory,
     PopulationStatus,
     SamplingEffortCoverage,
+    Certainty
 )
 
 
@@ -49,3 +50,19 @@ class PopulationEstimateCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PopulationEstimateCategory
         fields = '__all__'
+
+
+class CertaintySerializer(serializers.ModelSerializer):
+    """Certainty Serializer"""
+    id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    def get_id(self, obj: Certainty):
+        return int(obj.name)
+
+    def get_name(self, obj: Certainty):
+        return obj.description
+
+    class Meta:
+        model = Certainty
+        fields = ['id', 'name']

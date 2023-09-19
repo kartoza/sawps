@@ -123,7 +123,7 @@
     <div class="row">
       <h4 class="page-title sawps-text-menu mb-3" style="margin-left: 1.5%;">2FA Devices</h4>
       <div class="col-auto ml-auto mb-3">
-        <button class="sawps-font-button green-button mt-0 button" data-toggle="modal" data-target="#myModal" style="font-weight: bold; min-height: fit-content;">
+        <button class="sawps-font-button green-button mt-0" data-toggle="modal" data-target="#myModal" style="font-weight: bold; min-height: fit-content;">
             <i class="fas fa-plus"></i> ADD DEVICE
           </button>
       </div>
@@ -171,7 +171,7 @@
     
             <form id="generateTokensForm" method="post">
               {% csrf_token %}
-              <button type="submit" class="sawps-font-button green-button mt-0 button" style="font-weight: bold; min-height: fit-content;">
+              <button type="submit" class="sawps-font-button green-button mt-0" style="font-weight: bold; min-height: fit-content;">
                 {% trans 'GENERATE BACKUP TOKENS' %}
               </button>
             </form>

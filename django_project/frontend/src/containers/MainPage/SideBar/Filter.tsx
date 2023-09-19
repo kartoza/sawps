@@ -28,7 +28,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import CloseIcon from '@mui/icons-material/Close';
 import Loading from '../../../components/Loading';
 import SpeciesLayer from '../../../models/SpeciesLayer';
-import { selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies } from '../../../reducers/SpeciesFilter';
+import { selectedOrganisationId, selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import PropertyInterface from '../../../models/Property';
 import { MapEvents } from '../../../models/Map';
@@ -39,6 +39,7 @@ const yearRangeEnd = new Date().getFullYear();
 const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const SEARCH_PROPERTY_URL = '/api/property/search'
+const FETCH_ORGANISATION_LIST_URL = '/api/organisation/'
 
 interface SearchPropertyResult {
     name: string;
@@ -47,7 +48,6 @@ interface SearchPropertyResult {
     type: string;
     fclass?: string;
 }
-
 
 function Filter() {
     const dispatch = useAppDispatch()
@@ -66,6 +66,9 @@ function Filter() {
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchInputValue, setSearchInputValue] = useState('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
+    const [organisationList, setOrganisationList] = useState([]);
+    const [selectedOrganisation, setSelectedOrganisation] = useState([]);
+    const [tab, setTab] = useState<string>('')
 
     const [filterlList, setFilterList] = useState([
         {
@@ -101,7 +104,7 @@ function Filter() {
 
     const informationList = [
         "Property report",
-        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "":"Sampling Report",
+        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling Report",
         "Activity report",
         "Species report",
     ].filter(item => item !== "")
@@ -110,6 +113,11 @@ function Filter() {
         const storedUserRole = localStorage.getItem('user_role');
         setUserRole(storedUserRole);
     }, []);
+
+    useEffect(() => {
+        const pathname = window.location.pathname.replace(/\//g, '');
+        setTab(pathname)
+    }, [window.location.pathname])
 
     const handleSpectialFilterOption = (each: string, event: any) => {
         event.stopPropagation();
@@ -168,10 +176,23 @@ function Filter() {
             console.log(error)
         })
     }
+    const fetchOrganisationList = () => {
+        setLoading(true)
+        axios.get(FETCH_ORGANISATION_LIST_URL).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setOrganisationList(response.data)
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
 
     useEffect(() => {
         fetchSpeciesList();
         fetchPropertyList();
+        fetchOrganisationList();
     }, [])
 
     const handleDeleteSpecies = (valueToDelete: string) => {
@@ -220,6 +241,26 @@ function Filter() {
     useEffect(() => {
         dispatch(selectedPropertyId(selectedProperty.length > 0 ? selectedProperty.join(',') : ''));
     }, [selectedProperty])
+
+    const handleDeleteOrganisation = (idToDelete: number) => () => {
+        const updatedSelectedOrganisation = selectedOrganisation.filter((id) => id !== idToDelete);
+        setSelectedOrganisation(updatedSelectedOrganisation);
+    };
+
+    const handleSelectedOrganisation = (id: number) => () => {
+        const organisationExists = selectedOrganisation.includes(id);
+        if (organisationExists) {
+            const updatedSelectedOrganisation = selectedOrganisation.filter((item) => item !== id);
+            setSelectedOrganisation(updatedSelectedOrganisation);
+        } else {
+            const updatedSelectedOrganisation = [...selectedOrganisation, id];
+            setSelectedOrganisation(updatedSelectedOrganisation);
+        }
+    };
+
+    useEffect(() => {
+        dispatch(selectedOrganisationId(selectedOrganisation.length > 0 ? selectedOrganisation.join(',') : ''));
+    }, [selectedOrganisation])
 
     const handleStartYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
@@ -337,49 +378,104 @@ function Filter() {
                 />
             </Box>
             <Box className='sidebarBox'>
-                <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/InfoIcon.png" alt='Info image' />
-                    <Typography color='#75B37A' fontSize='medium'>Report Type</Typography>
-                </Box>
-                <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
-                        <Accordion>
-                            <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                {selectedInfo.length > 0 ? (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        <Chip
-                                            key={selectedInfo}
-                                            label={selectedInfo}
-                                            onDelete={() => handleDeleteInfo(selectedInfo)}
-                                            deleteIcon={<CloseIcon />}
-                                            sx={{ margin: 0.5 }}
-                                        />
-                                    </Box>
-                                ) : (
-                                    <Typography>Select</Typography>
-                                )}
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Box className="selectBox">
-                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        {informationList.map((info: any, index) => (
-                                            <FormControlLabel
-                                                key={index}
-                                                control={
-                                                    <Checkbox
-                                                        checked={selectedInfo.includes(info)}
-                                                        onChange={handleSelectedInfo(info)}
+                {(userRole === "National data scientist" || userRole === "Regional data scientist") && <Box>
+                    <Box className='sidebarBoxHeading'>
+                        <img src="/static/images/organisation.png" alt='Property image' />
+                        <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
+                    </Box>
+                    <List className='ListItem' component="nav" aria-label="">
+                        {loading ? <Loading /> :
+                            <Accordion>
+                                <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                                    {selectedOrganisation.length > 0 ? (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            {selectedOrganisation.map((id) => {
+                                                const organisation = organisationList.find((item) => item.id === id);
+                                                return (
+                                                    <Chip
+                                                        key={id}
+                                                        label={organisation ? organisation.name : ''}
+                                                        onDelete={handleDeleteOrganisation(id)}
+                                                        deleteIcon={<CloseIcon />}
+                                                        sx={{ margin: 0.5 }}
                                                     />
-                                                }
-                                                label={info}
-                                            />
-                                        ))}
+                                                );
+                                            })}
+                                        </Box>
+                                    ) : (
+                                        <Typography>Select</Typography>
+                                    )}
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Box className="selectBox">
+                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                            {organisationList.map((data: any) => (
+                                                <FormControlLabel
+                                                    key={data.name}
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedOrganisation.includes(data.id)}
+                                                            onChange={handleSelectedOrganisation(data.id)}
+                                                        />
+                                                    }
+                                                    label={data.name}
+                                                />
+                                            ))}
+                                        </Box>
                                     </Box>
-                                </Box>
-                            </AccordionDetails>
-                        </Accordion>
-                    }
-                </List>
+                                </AccordionDetails>
+                            </Accordion>
+                        }
+                    </List>
+                </Box>
+                }
+                {tab === 'data' &&
+                    <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/InfoIcon.png" alt='Info image' />
+                            <Typography color='#75B37A' fontSize='medium'>Report Type</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading ? <Loading /> :
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                                        {selectedInfo.length > 0 ? (
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                <Chip
+                                                    key={selectedInfo}
+                                                    label={selectedInfo}
+                                                    onDelete={() => handleDeleteInfo(selectedInfo)}
+                                                    deleteIcon={<CloseIcon />}
+                                                    sx={{ margin: 0.5 }}
+                                                />
+                                            </Box>
+                                        ) : (
+                                            <Typography>Select</Typography>
+                                        )}
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Box className="selectBox">
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                {informationList.map((info: any, index) => (
+                                                    <FormControlLabel
+                                                        key={index}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedInfo.includes(info)}
+                                                                onChange={handleSelectedInfo(info)}
+                                                            />
+                                                        }
+                                                        label={info}
+                                                    />
+                                                ))}
+                                            </Box>
+                                        </Box>
+                                    </AccordionDetails>
+                                </Accordion>
+                            }
+                        </List>
+                    </Box>
+                }
                 {userRole != "National data consumer" &&
                     <Box>
                         <Box className='sidebarBoxHeading'>

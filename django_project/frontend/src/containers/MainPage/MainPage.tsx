@@ -55,7 +55,7 @@ function MainPage() {
   const isUploadUrl = location.pathname === '/upload';
 
   const tabNameToValue: { [key: string]: number } = {
-    'explore': 0,
+    'map': 0,
     'data': 1,
     'metrics': 2,
     'upload': 3,
@@ -72,7 +72,7 @@ function MainPage() {
   }, [location.search]);
   
   useEffect(() => {
-    const tabNames = ['explore', 'data', 'metrics', 'upload'];
+    const tabNames = ['map', 'data', 'metrics', 'upload'];
     const selectedTabName = tabNames[selectedTab];
     const newPath = `/${selectedTabName}`;
     if (selectedTab !== 0 && selectedTab !== 3) {
@@ -124,7 +124,9 @@ function MainPage() {
       <div className="MainPage">
         <Grid container flexDirection={'row'}>
           <Grid item>
-            { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} />}
+            { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} additionalProps={{
+              'selectedMainTabIdx': selectedTab
+            }} />}
           </Grid>
           <Grid item flex={1} className="grayBg customWidth">
             <Grid container className="Content" flexDirection={'column'}>
@@ -134,7 +136,7 @@ function MainPage() {
                   <Tabs
                     value={selectedTab}
                     onChange={(event: React.SyntheticEvent, newValue: number) => {
-                      const tabNames = ['explore', 'data', 'metrics', 'upload'];
+                      const tabNames = ['map', 'data', 'metrics', 'upload'];
                       const selectedTabName = tabNames[newValue];
                       setSelectedTab(newValue);
                       if (selectedTabName === 'upload') {
@@ -147,7 +149,7 @@ function MainPage() {
                     }}
                     aria-label="Main Page Tabs"
                   >
-                    <Tab key={0} label={'EXPLORE'} {...a11yProps(0)} />
+                    <Tab key={0} label={'MAP'} {...a11yProps(0)} />
                     <Tab key={1} label={'DATA'} {...a11yProps(1)} />
                     <Tab key={2} label={'METRICS'} {...a11yProps(2)} />
                   </Tabs>

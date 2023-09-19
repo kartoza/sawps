@@ -109,7 +109,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                             <Box className="BoxChartType">
                                 {item.activities.length > 0 &&
                                     <Box key={index} className="species-donut-chart-container chartHalf">
-                                        <Box className="charBox">
+                                        <Box>
                                             <Box className="chart-container"><Doughnut data={speciesDonutData} options={donutOptions} height={186} /></Box>
                                         </Box>
                                         <Box className="chart-img">
