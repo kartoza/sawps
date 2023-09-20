@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
 import {
     Box,
@@ -11,6 +11,7 @@ import {
     Chip,
     FormControlLabel,
     Radio,
+    InputBase,
 } from '@mui/material';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -72,7 +73,8 @@ function Filter() {
     const [tab, setTab] = useState<string>('')
     const [expandSpecies, setExapandSpecies] = useState<boolean>(false);
     const [expandReport, setExpandReport] = useState<boolean>(false);
-
+    const [searchSpeciesList, setSearchSpeciesList] = useState([])
+    const [searchSpecies, setSearchedSpecies] = useState('')
     const [filterlList, setFilterList] = useState([
         {
             "id": 3,
@@ -209,7 +211,7 @@ function Filter() {
 
     useEffect(() => {
         dispatch(toggleSpecies(selectedSpecies));
-        if(selectedSpecies.length > 0) {
+        if (selectedSpecies.length > 0) {
             setExapandSpecies(false)
         }
     }, [selectedSpecies])
@@ -225,7 +227,7 @@ function Filter() {
 
     useEffect(() => {
         dispatch(setSelectedInfoList(selectedInfo));
-        if(selectedInfo.length > 0) {
+        if (selectedInfo.length > 0) {
             setExpandReport(false)
         }
     }, [selectedInfo])
@@ -325,7 +327,7 @@ function Filter() {
             setSearchResults([])
             return undefined;
         }
-        searchProperty({input: searchInputValue}, (results: any) => {
+        searchProperty({ input: searchInputValue }, (results: any) => {
             if (active) {
                 if (results) {
                     setSearchResults(results.data as SearchPropertyResult[])
@@ -369,6 +371,11 @@ function Filter() {
         }
     }
 
+    const handleSpeciesSearch = (value: any) => {
+        setSearchedSpecies(value)
+        const searchedSpecies = SpeciesFilterList.filter((item) => item.common_name_varbatim.toLowerCase().includes(value.toLowerCase()))
+        setSearchSpeciesList(searchedSpecies)
+    }
     return (
         <Box>
             <Box className='searchBar'>
@@ -607,24 +614,43 @@ function Filter() {
                                         />
                                     </Box>
                                 ) : (
-                                    <Typography>Select</Typography>
+                                    <InputBase
+                                        sx={{ ml: 1, flex: 1 }}
+                                        placeholder="Search Species"
+                                        inputProps={{ 'aria-label': 'Search Species' }}
+                                        onChange={(e) => handleSpeciesSearch(e.target.value)}
+                                    />
                                 )}
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Box className="selectBox">
                                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        {SpeciesFilterList.map((species: any) => (
-                                            <FormControlLabel
-                                                key={species.common_name_varbatim}
-                                                control={
-                                                    <Radio
-                                                        checked={selectedSpecies.includes(species.common_name_varbatim)}
-                                                        onChange={handleSelectedSpecies(species.common_name_varbatim)}
+                                        {searchSpecies != '' ?
+                                            searchSpeciesList.length > 0 ?
+                                                searchSpeciesList.map((species: any) => (
+                                                    <FormControlLabel
+                                                        key={species.common_name_varbatim}
+                                                        control={
+                                                            <Radio
+                                                                checked={selectedSpecies.includes(species.common_name_varbatim)}
+                                                                onChange={handleSelectedSpecies(species.common_name_varbatim)}
+                                                            />
+                                                        }
+                                                        label={species.common_name_varbatim}
                                                     />
-                                                }
-                                                label={species.common_name_varbatim}
-                                            />
-                                        ))}
+                                                )) :
+                                                <Typography>No Result found</Typography> : SpeciesFilterList.map((species: any) => (
+                                                    <FormControlLabel
+                                                        key={species.common_name_varbatim}
+                                                        control={
+                                                            <Radio
+                                                                checked={selectedSpecies.includes(species.common_name_varbatim)}
+                                                                onChange={handleSelectedSpecies(species.common_name_varbatim)}
+                                                            />
+                                                        }
+                                                        label={species.common_name_varbatim}
+                                                    />
+                                                ))}
                                     </Box>
                                 </Box>
                             </AccordionDetails>
