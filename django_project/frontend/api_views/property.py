@@ -211,7 +211,7 @@ class PropertyList(APIView):
                 organisation_id__in=(
                     [int(id) for id in _organisation]
                 ),
-            )
+            ).order_by("name")
         else:
             properties = Property.objects.filter(
                 organisation_id=organisation_id
