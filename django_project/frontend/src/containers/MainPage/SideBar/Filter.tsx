@@ -258,8 +258,11 @@ function Filter() {
     const handleStartYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
         setLocalStartYear(newValue);
-        if (newValue < yearRangeStart && newValue > yearRangeEnd) {
-            dispatch(setStartYear(yearRangeStart));
+        if (newValue < yearRangeStart || newValue > yearRangeEnd) {
+            setTimeout(() => {
+                setLocalStartYear(yearRangeStart)
+                dispatch(setStartYear(yearRangeStart));
+            }, 3000);
         } else {
             dispatch(setStartYear(newValue));
         }
@@ -268,8 +271,11 @@ function Filter() {
     const handleEndYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
         setLocalEndYear(newValue);
-        if (newValue < yearRangeStart && newValue > yearRangeEnd) {
-            dispatch(setEndYear(yearRangeEnd));
+        if (newValue > yearRangeEnd || newValue < yearRangeStart) {
+            setTimeout(() => {
+                setLocalEndYear(yearRangeEnd);
+                dispatch(setEndYear(yearRangeEnd));
+            }, 3000);
         } else {
             dispatch(setEndYear(newValue));
         }
@@ -301,7 +307,7 @@ function Filter() {
             <Box className='sidebarBox'>
                 {(userRole === "National data scientist" || userRole === "Regional data scientist") && <Box>
                     <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/organisation.png" alt='Property image' />
+                        <img src="/static/images/organisation.png" alt='organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
                     </Box>
                     <List className='ListItem' component="nav" aria-label="">
