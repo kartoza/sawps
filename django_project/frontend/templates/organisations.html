@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="myModalLabel" style="color: var(--green)"></h5>
+              <h5 class="modal-title" id="addUserModalTitle" style="color: var(--green)"></h5>
               <hr class="default-separator" style="margin-bottom: 0%;">
             </div>
             <div class="modal-body">
@@ -446,15 +446,15 @@
 
 
     // invite member
-
+    var organisationName= '';
     $(document).ready(function () {
       // Add a click event listener to the "Add User" button
       $('.sawps-font-button.green-button').click(function () {
           // Retrieve the organization ID and name from the data attributes and save
           var organisationId = $(this).data('organisation-id');
-          var organisationName = $(this).data('organisation-name');
+          organisationName = $(this).data('organisation-name');
 
-          $('#myModalLabel').text('Invite people to ' + organisationName);
+          $('#addUserModalTitle').text('Invite people to ' + organisationName);
           $('#organisationIdInput').val(organisationId);
       });
     });
@@ -469,6 +469,7 @@
         var emailInput = document.querySelector('.email-input');
         var emailError = document.querySelector('.invalid-feedback');
         var organisationId = document.querySelector('#organisationIdInput').value;
+        const test = organisationName
 
         if (!emailInput.checkValidity()) {
           emailError.style.display = 'block';
@@ -490,12 +491,17 @@
             'csrfmiddlewaretoken': '{{ csrf_token }}'
           },
           success: function(response) {
+            
+
 
             if (response.status === 'invitation already sent') {
               $('#errorMessageModal').modal('show');
             } else {
               $('#successMessageModal').modal('show');
             }
+
+            $('#addUserModalTitle').text('Invite people to ' + test);
+            $('#organisationIdInput').val(organisationId);
           },
           error: function(xhr, status, error) {
             console.error(error);
