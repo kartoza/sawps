@@ -40,12 +40,12 @@
 
 .downlodBtn {
     width: 100%;
-    margin-bottom: 20px;
     display: flex;
     gap: 15px;
     justify-content: flex-end;
     margin-top: 20px;
     padding: 0 20px;
+    padding-right: 0;
 }
 
 .dataTable {
@@ -87,8 +87,8 @@
     min-height: calc(100vh - 260px);
 }
 .dataTable-auto .MuiDataGrid-virtualScroller{
-    max-height: 270px;
+    max-height: 304px;
 }
 .dataTable-auto .MuiDataGrid-root{
-   margin-bottom: 30px;
+   margin-bottom: 0px;
 }

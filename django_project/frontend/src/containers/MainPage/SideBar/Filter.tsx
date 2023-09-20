@@ -418,7 +418,7 @@ function Filter() {
             <Box className='sidebarBox'>
                 {(userRole === "National data scientist" || userRole === "Regional data scientist") && <Box>
                     <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/organisation.png" alt='organisation image' />
+                        <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
                     </Box>
                     <List className='ListItem' component="nav" aria-label="">
@@ -481,7 +481,7 @@ function Filter() {
                 {tab === 'data' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/InfoIcon.png" alt='Info image' />
+                            <img src="/static/images/iconamoon.svg" alt='Info image' />
                             <Typography color='#75B37A' fontSize='medium'>Report Type</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
@@ -528,7 +528,7 @@ function Filter() {
                 {userRole != "National data consumer" &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/propertyIcon.png" alt='Property image' />
+                            <img src="/static/images/property.svg" alt='Property image' />
                             <Typography color='#75B37A' fontSize='medium'>Property</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
@@ -589,7 +589,7 @@ function Filter() {
                     </Box>
                 }
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/species/elephant.png" alt='species image' />
+                    <img src="/static/images/species/elephant.svg" alt='species image' />
                     <Typography color='#75B37A' fontSize='medium'>Species</Typography>
                 </Box>
                 <List className='ListItem' component="nav" aria-label="">
@@ -632,7 +632,7 @@ function Filter() {
                     }
                 </List>
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/watchIcon.png" alt='watch image' />
+                    <img src="/static/images/watch.svg" alt='watch image' />
                     <Typography color='#75B37A' fontSize='medium'>Year</Typography>
                 </Box>
                 <Box className='sliderYear'>
@@ -658,7 +658,7 @@ function Filter() {
                 </Box>
 
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/FilterIcon.png" alt='Filter image' />
+                    <img src="/static/images/FilterIcon.svg" alt='Filter image' />
                     <Typography color='#75B37A' fontSize='medium'>Spatial filters</Typography>
                 </Box>
                 <Box>
