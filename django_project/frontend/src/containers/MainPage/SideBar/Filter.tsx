@@ -352,6 +352,7 @@ function Filter() {
 
     const handleExpandReport = () => {
         setExpandReport(!expandReport)
+    }
     const handleSelectAllProperty = () => {
         const propeertyId = propertyList.map(property => property.id)
         setSelectedProperty(propeertyId)
@@ -485,7 +486,7 @@ function Filter() {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading ? <Loading /> :
-                                <Accordion>
+                                <Accordion expanded={expandReport} onChange={handleExpandReport}>
                                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                         {selectedInfo.length > 0 ? (
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -708,6 +709,6 @@ function Filter() {
         </Box >
     )
 }
-}
+
 
 export default Filter;
