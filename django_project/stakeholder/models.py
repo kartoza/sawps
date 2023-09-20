@@ -83,6 +83,15 @@ class Organisation(models.Model):
         null=True,
         blank=True
     )
+    use_of_data_by_sanbi_only = models.BooleanField(
+        default=False
+    )
+    hosting_through_sanbi_platforms = models.BooleanField(
+        default=False
+    )
+    allowing_sanbi_to_expose_data = models.BooleanField(
+        default=False
+    )
 
     class Meta:
         verbose_name = 'Organisation'
@@ -127,9 +136,6 @@ class UserProfile(models.Model):
         blank=True
     )
     received_notif = models.BooleanField(default=False)
-    use_of_data_by_sanbi_only = models.BooleanField(default=False)
-    hosting_through_sanbi_platforms = models.BooleanField(default=False)
-    allowing_sanbi_to_expose_data = models.BooleanField(default=False)
     current_organisation = models.ForeignKey(
         Organisation,
         on_delete=models.SET_NULL,
