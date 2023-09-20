@@ -75,6 +75,11 @@
             box-shadow: 0px 2px 4px #858585;
         }
     }
+    .MuiAutocomplete-root {
+        .MuiInputBase-root {
+            padding-right: 9px !important;
+        }
+    }
 }
 .sidebarBox {
     padding: 0px 16px;

@@ -1,7 +1,9 @@
 """API Views related to property.
 """
 from datetime import datetime
-
+from itertools import chain
+from django.db.models.functions import Concat
+from django.db.models import F, Value, CharField
 from area import area
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
@@ -13,6 +15,13 @@ from frontend.serializers.property import (
     PropertySerializer,
     PropertyTypeSerializer,
     ProvinceSerializer,
+    PropertySearchSerializer
+)
+from frontend.serializers.places import (
+    PlaceLargerScaleSearchSerializer,
+    PlaceLargestScaleSearchSerializer,
+    PlaceMidScaleSearchSerializer,
+    PlaceSmallScaleSearchSerializer
 )
 from frontend.serializers.stakeholder import OrganisationSerializer
 from frontend.utils.organisation import get_current_organisation_id
@@ -22,6 +31,12 @@ from property.models import (
     Property,
     PropertyType,
     Province
+)
+from frontend.models.places import (
+    PlaceNameSmallScale,
+    PlaceNameMidScale,
+    PlaceNameLargerScale,
+    PlaceNameLargestScale
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -266,4 +281,60 @@ class PropertyDetail(APIView):
         return Response(
             status=200,
             data=PropertyDetailSerializer(property).data
+        )
+
+
+class PropertySearch(APIView):
+    """Search property and roads."""
+    permission_classes = [IsAuthenticated]
+    place_serializers = {
+        PlaceNameSmallScale: PlaceSmallScaleSearchSerializer,
+        PlaceNameMidScale: PlaceMidScaleSearchSerializer,
+        PlaceNameLargerScale: PlaceLargerScaleSearchSerializer,
+        PlaceNameLargestScale: PlaceLargestScaleSearchSerializer
+    }
+
+    def search_place(self, cls, serializer_cls, search_text, name_list):
+        places = cls.objects.annotate(
+            name_type=Concat(F('name'), Value('-'), F('fclass'),
+                             output_field=CharField())
+        ).filter(
+            name__istartswith=search_text
+        ).exclude(
+            name_type__in=name_list
+        ).order_by('name')[:5]
+        results = serializer_cls(places, many=True).data
+        return results, [f'{p["name"]}-{p["fclass"]}' for p in results]
+
+    def get(self, *args, **kwargs):
+        search_text = self.request.GET.get('search_text', '')
+        # filter property from current organisation
+        current_organisation_id = get_current_organisation_id(
+            self.request.user
+        ) or 0
+        properties = Property.objects.filter(
+            name__istartswith=search_text,
+            organisation_id=current_organisation_id
+        ).order_by('name')[:10]
+        properties_search_results = PropertySearchSerializer(
+            properties,
+            many=True
+        ).data
+        place_results = []
+        name_list = []
+        for place_class, place_serializer in self.place_serializers.items():
+            result, names = self.search_place(
+                place_class,
+                place_serializer,
+                search_text,
+                name_list
+            )
+            if names:
+                name_list.extend(names)
+            place_results.extend(result)
+        results = list(chain(properties_search_results, place_results))
+        results.sort(key=lambda x: x['name'])
+        return Response(
+            status=200,
+            data=results
         )
