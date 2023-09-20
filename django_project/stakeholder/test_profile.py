@@ -51,9 +51,6 @@ class TestProfileView(TestCase):
         profile.__dict__.update(profile_picture)
         profile.first_name = 'j'
         profile.last_name = 'jj'
-        profile.use_of_data_by_sanbi_only = True
-        profile.hosting_through_sanbi_platforms = True
-        profile.allowing_sanbi_to_expose_data = True
         profile.save()
 
         user.email = 't@t.com'
@@ -63,9 +60,6 @@ class TestProfileView(TestCase):
         self.assertIsNotNone(profile.first_name)
         self.assertIsNotNone(profile.last_name)
         self.assertIsNotNone(user.email)
-        self.assertEqual(True,profile.use_of_data_by_sanbi_only)
-        self.assertEqual(True,profile.hosting_through_sanbi_platforms)
-        self.assertEqual(True,profile.allowing_sanbi_to_expose_data)
 
     def test_profile_delete(self):
         """
@@ -126,9 +120,6 @@ class TestProfileView(TestCase):
             'profile_picture': '/profile/pic/path',
             'title': '1',
             'role': '1',
-            'onlySANBI': 'on',
-            'hostingDataSANBI': 'on',
-            'hostingDataSANBIOther': 'on'
         }
 
         response = self.client.post(
@@ -141,9 +132,6 @@ class TestProfileView(TestCase):
         self.assertIsNotNone(updated_user.user_profile.picture)
         self.assertEqual(updated_user.user_profile.title_id.name, title.name)
         self.assertEqual(updated_user.user_profile.user_role_type_id.name, role.name)
-        self.assertEqual(updated_user.user_profile.use_of_data_by_sanbi_only, True)
-        self.assertEqual(updated_user.user_profile.hosting_through_sanbi_platforms, True)
-        self.assertEqual(updated_user.user_profile.allowing_sanbi_to_expose_data, True)
 
     def test_404(self):
         """
