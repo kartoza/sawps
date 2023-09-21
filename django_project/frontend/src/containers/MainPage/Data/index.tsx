@@ -39,13 +39,13 @@ const DataList = () => {
     const [tableData, setTableData] = useState<any>()
     const [activityTableGrid, setActivityTable] = useState<any>()
     const [userRole, setUserRole] = useState<string>('')
-    const dataset = (userRole ==="Organisation member" || userRole ==="Organisation manager" || userRole === "National data scientist" || userRole === "Regional data scientist") ?  data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
+    const dataset = checkUserRole(userRole) ?  data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
     const activityDataSet = data ? data.filter(item => item?.Activity_report).flatMap((each) => Object.keys(each)) : [];
     const dataTableList = data ? data.map((data, index) => ({ ...data, id: index })) : [];
     const activity = dataTableList ? dataTableList.filter(item => item.Activity_report).map((item) => item.Activity_report) : [];
     const activityReportList = activity.length > 0 ? activity.flatMap((each) => Object.keys(each)) : [];
     const activityReportdataList = activity.map((data, index) => ({ ...data, id: index }));
-    const reportList = (userRole ==="Organisation member" || userRole ==="Organisation manager" || userRole === "National data scientist" || userRole === "Regional data scientist") ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
+    const reportList = checkUserRole(userRole) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
     const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const color = {
@@ -53,12 +53,17 @@ const DataList = () => {
         "Sampling_report": "#FF5252",
         "Province_report": "#FF5252",
         "Species_population_report": "#9F89BF",
-        "Activity_report": (userRole ==="Organisation member" || userRole ==="Organisation manager" || userRole === "National data scientist" || userRole === "Regional data scientist") ? "#696969": "#75B37A",
+        "Activity_report": checkUserRole(userRole) ? "#696969": "#75B37A",
         "Unplanned/natural_deaths": "#75B37A",
         "Planned_translocation": "#F9A95D",
         "Planned_hunt/cull": "#FF5252",
         "Planned_euthanasia": "#9F89BF",
         "Unplanned/illegal_hunt": "#696969",
+    }
+
+    function checkUserRole(userRole:string) {
+        const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist"];
+        return allowedRoles.includes(userRole);
     }
 
     useEffect(() => {
@@ -160,7 +165,7 @@ const DataList = () => {
                 }
             </>
         )
-        const activityDataGrid = (userRole ==="Organisation member" || userRole ==="Organisation manager" || userRole === "National data scientist" || userRole === "Regional data scientist") && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
+        const activityDataGrid = checkUserRole(userRole) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
             <>
                 <Box className="data-table" style={{ backgroundColor: color[each as keyof typeof color] }}>
                     {each.split('_')
