@@ -280,7 +280,8 @@
       });
 
       if(
-        !window.location.href.includes("two-factor-authenticate")
+        !window.location.href.includes("two-factor-authenticate") &&
+        !window.location.href.includes("accounts/two-factor/")
       ){
         var userIsAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
         if(userIsAuthenticated){
