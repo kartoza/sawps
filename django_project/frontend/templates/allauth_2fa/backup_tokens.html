@@ -39,13 +39,14 @@
     <div class="container">
       
       <div class="p-3 mb-3" style="margin-left: -20px;">
-        <h4 class="page-title sawps-text-menu mb-3">Current 2FA Method</h4>
-          <div class="col-md-3 " style="padding-left: 0%;">
-            <select id="filterSelect" class="form-control custom-select" style="width:100%;">
-            <option value="">Authenticator App</option>
-          </select>  
+        <h4 class="page-title sawps-text-menu mb-3">Two-factor authentication method</h4>
+        <div class="col-md-3" style="padding-left: 0%;">
+            <select id="filterSelect" class="form-control custom-select" style="width:100%;" disabled>
+                <option value="">Authenticator App</option>
+            </select>
         </div>
       </div>
+    
 
       <!-- save device modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -121,7 +122,7 @@
   
     
     <div class="row">
-      <h4 class="page-title sawps-text-menu mb-3" style="margin-left: 1.5%;">2FA Devices</h4>
+      <h4 class="page-title sawps-text-menu mb-3" style="margin-left: 1.5%;">Two-factor authentication devices</h4>
       <div class="col-auto ml-auto mb-3">
         <button class="sawps-font-button green-button mt-0" data-toggle="modal" data-target="#myModal" style="font-weight: bold; min-height: fit-content;">
             <i class="fas fa-plus"></i> ADD DEVICE
@@ -147,7 +148,7 @@
       </table>
 
       <div class="border-top mt-3 pt-3">
-        <h4 class="page-title sawps-text-menu mb-3">{% trans "Two-Factor Recovery Tokens" %}</h4>
+        <h4 class="page-title sawps-text-menu mb-3">{% trans "Two-factor authentication recovery tokens" %}</h4>
           <!-- <p>Add or edit your recovery options for 2FA:</p> -->
             <div class="">
                 <div class="">
@@ -184,13 +185,17 @@
   
 <script>
 
-  if(localStorage.getItem('reveal') === 'true')
-  {
-    document.getElementById("backupTokensList").style.display = 'block'
-    localStorage.setItem('reveal',false)
-  }else {
-    document.getElementById("securityMessage").style.display = 'block'
-  }
+    try{
+      if(localStorage.getItem('reveal') === 'true')
+      {
+        document.getElementById("backupTokensList").style.display = 'block'
+        localStorage.setItem('reveal',false)
+      }else {
+        document.getElementById("securityMessage").style.display = 'block'
+      }
+    } catch(exception){
+      // ignore
+    }
 
     document.getElementById("generateTokensForm").addEventListener("submit", function (event) {
         event.preventDefault(); // Prevent the form from submitting normally
@@ -287,6 +292,7 @@
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
           var row = '<tr>';
+          console.log(data[i].user)
           if(data[i].name !== '')
             row += '<td>' + data[i].name + '</td>';
           else row += '<td>' + data[i].user + '</td>';
@@ -375,6 +381,15 @@
     box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
     border-color: var(--green);
   }
+
+  /* Style the disabled select element */
+  select:disabled {
+      background-color: #f0f0f0;
+      color: #555; 
+      cursor: not-allowed;
+      pointer-events: none;
+  }
+
   
   </style>
 </section>
