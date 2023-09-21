@@ -25,7 +25,10 @@ def get_distinct_srids(table_name: str) -> List:
 
     :return: A list of distinct SRIDs.
     """
-    query = f"SELECT DISTINCT ST_SRID(geom) AS srid FROM {TABLE_SCHEMA}.{table_name};"
+    query = (
+        f"SELECT DISTINCT ST_SRID(geom) AS srid "
+        f"FROM {TABLE_SCHEMA}.{table_name};"
+    )
 
     with connection.cursor() as cursor:
         cursor.execute(query)
@@ -48,16 +51,16 @@ def columns_and_srid(table_name: AnyStr) -> Tuple[List[ColumnInfo], AnyStr]:
     """
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT 
-                col.column_name, 
-                col.data_type, 
+            SELECT
+                col.column_name,
+                col.data_type,
                 COALESCE(geom.srid::text, %s) AS srid
             FROM information_schema.columns col
-            LEFT JOIN geometry_columns geom 
-                ON col.table_schema = geom.f_table_schema 
-                AND col.table_name = geom.f_table_name 
+            LEFT JOIN geometry_columns geom
+                ON col.table_schema = geom.f_table_schema
+                AND col.table_name = geom.f_table_name
                 AND col.column_name = geom.f_geometry_column
-            WHERE col.table_schema = %s 
+            WHERE col.table_schema = %s
             AND col.table_name = %s;
         """, [NO_VALUE, TABLE_SCHEMA, table_name])
 
@@ -90,7 +93,8 @@ def extract_spatial_data_from_property_and_layer(
         context_layer: ContextLayer
 ) -> Dict:
     """
-    Intersect a target property with a given context layer to extract spatial data.
+    Intersect a target property with a given context layer to
+    extract spatial data.
 
     :param target_property: The property object that needs to be intersected.
     :type target_property: Property
