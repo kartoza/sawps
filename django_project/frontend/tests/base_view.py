@@ -145,6 +145,6 @@ class RegisteredBaseViewTestBase(TestCase):
         view.request = request
 
         # Test that the method returns the correct current organisation
-        current_organisation = view.get_or_set_current_organisation()
+        current_organisation = view.get_or_set_current_organisation(request)
         self.assertIsNotNone(current_organisation)
 
