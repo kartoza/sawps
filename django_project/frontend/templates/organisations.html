@@ -131,7 +131,7 @@
             </tr>
           </thead>
           <tbody>
-            {% if organisations|length > 0 %}
+            {% if current_organisation %}
             <tr>
               <td>
                 <button class="sawps-font-button green-button mt-0" style="width: 140px; font-weight: bold;">Active</button>
@@ -165,8 +165,10 @@
                 <div id="readMoreText{{ current_organisation_id }}" class="collapse" style="max-height: 450px; overflow-y: auto; min-width: fit-content; overflow-x: auto;">
 
                   <div class="form-group mt-3" style="margin-left: 2%;">
-                    <small id="data-privacy" class="form-text text-muted">How would you like your data to be used see the SANBI data sharing agreement.
-                      Switching the toggle will be taken as full agreement to the terms of the option chosen</small>
+                    <small id="data-privacy" class="form-text text-muted">
+                        How would you like your data to be used? See the SANBI data sharing <a href="#">agreement</a>.
+                        Switching the toggle will be taken as full agreement to the terms of the option chosen
+                    </small>
                   </div>
                   <div class="custom-control custom-switch" style="margin-left: 2%;">
                     <input type="checkbox" class="custom-control-input" id="onlySANBI{{ current_organisation_id }}">
@@ -245,8 +247,10 @@
                   
   
                   <div class="form-group mt-3" style="margin-left: 2%;">
-                    <small id="data-privacy" class="form-text text-muted">How would you like your data to be used see the SANBI data sharing agreement.
-                      Switching the toggle will be taken as full agreement to the terms of the option chosen</small>
+                    <small id="data-privacy" class="form-text text-muted">
+                        How would you like your data to be used? See the SANBI data sharing <a href="#">agreement</a>.
+                        Switching the toggle will be taken as full agreement to the terms of the option chosen
+                    </small>
                   </div>
                   <div class="custom-control custom-switch" style="margin-left: 2%;">
                     <input type="checkbox" class="custom-control-input" id="onlySANBI{{ organisation.id }}">
