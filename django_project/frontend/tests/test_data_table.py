@@ -32,7 +32,7 @@ class OwnedSpeciesTestCase(TestCase):
             )
         self.taxon = TaxonFactory.create(
             taxon_rank=taxon_rank,
-            common_name_varbatim='SpeciesA'
+            scientific_name='SpeciesA'
         )
         user = User.objects.create_user(
                 username='testuserd',
@@ -76,14 +76,14 @@ class OwnedSpeciesTestCase(TestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]["Property_report"][0]["common_name"],
+            response.data[0]["Property_report"][0]["scientific_name"],
             "SpeciesA"
         )
 
     def test_filter_by_property(self) -> None:
         """Test data table filter by property"""
         data = {
-            'species': self.taxon.common_name_varbatim,
+            'species': self.taxon.scientific_name,
             'property': self.property.id,
             'start_year': self.owned_species[0].annualpopulation_set.first().year,
             'end_year': self.owned_species[0].annualpopulation_set.first().year,
@@ -141,7 +141,7 @@ class OwnedSpeciesTestCase(TestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]["Sampling_report"][0]["common_name"],
+            response.data[0]["Sampling_report"][0]["scientific_name"],
             "SpeciesA"
         )
 
@@ -158,7 +158,7 @@ class NationalUserTestCase(TestCase):
             )
         self.taxon = TaxonFactory.create(
             taxon_rank=taxon_rank,
-            common_name_varbatim='SpeciesA'
+            scientific_name='SpeciesA'
         )
         user = User.objects.create_user(
                 username='testuserd',
@@ -234,7 +234,7 @@ class RegionalUserTestCase(TestCase):
             )
         self.taxon = TaxonFactory.create(
             taxon_rank=taxon_rank,
-            common_name_varbatim='SpeciesA'
+            scientific_name='SpeciesA'
         )
         user = User.objects.create_user(
                 username='testuserd',
@@ -296,7 +296,7 @@ class DataScientistTestCase(TestCase):
             )
         self.taxon = TaxonFactory.create(
             taxon_rank=taxon_rank,
-            common_name_varbatim='SpeciesA'
+            scientific_name='SpeciesA'
         )
         user = User.objects.create_user(
                 username='testuserd',

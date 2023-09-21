@@ -143,7 +143,7 @@ class TaxonTestCase(TestCase):
         response = client.get(self.url, data, **auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['common_name_varbatim'], "taxon_0")
+        self.assertEqual(response.data[0]['scientific_name'], "taxon_0")
 
     def test_get_taxon_frontpage_list(self):
         """Test fetch taxon list for frontpage."""

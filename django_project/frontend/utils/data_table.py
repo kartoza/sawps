@@ -58,7 +58,7 @@ def get_common_data(property: QuerySet, request) -> Dict:
     if species_list:
         species_list = species_list.split(",")
         species = property.ownedspecies_set.filter(
-            taxon__common_name_varbatim__in=species_list
+            taxon__scientific_name__in=species_list
         ).values(
             "taxon__common_name_varbatim", "taxon__scientific_name"
         )
@@ -97,8 +97,8 @@ def species_report(queryset: QuerySet, request) -> List:
         species_population_data = AnnualPopulation.objects.filter(
             **filters,
             owned_species__property__name=property.name,
-            owned_species__taxon__common_name_varbatim=(
-                common_data["common_name"]
+            owned_species__taxon__scientific_name=(
+                common_data["scientific_name"]
             )
         ).values(
             "year", "group", "total", "adult_male", "adult_female",
@@ -186,8 +186,8 @@ def sampling_report(queryset: QuerySet, request) -> List:
         sampling_reports_data = AnnualPopulation.objects.filter(
             **filters,
             owned_species__property__name=property.name,
-            owned_species__taxon__common_name_varbatim = (
-                common_data["common_name"]
+            owned_species__taxon__scientific_name = (
+                common_data["scientific_name"]
             ),
         ).values(
             "population_status", "population_estimate_category",
@@ -255,8 +255,8 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
                     *query_values
                 ).filter(
                     **filters,
-                    owned_species__taxon__common_name_varbatim=common_data[
-                        "common_name"
+                    owned_species__taxon__scientific_name=common_data[
+                        "scientific_name"
                     ],
                     owned_species__property__name=property.name,
                     activity_type__name=activity_name.replace(
