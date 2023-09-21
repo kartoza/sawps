@@ -30,6 +30,10 @@ class RegisteredBaseViewTestBase(TestCase):
             username='test_2',
             is_superuser=True
         )
+        self.superuser1 = UserF.create(
+            username='test_4',
+            is_superuser=True
+        )
         self.user_2 = UserF.create(username='test_3')
         self.organisation_1 = organisationFactory.create()
         self.organisation_2 = organisationFactory.create()
@@ -138,13 +142,38 @@ class RegisteredBaseViewTestBase(TestCase):
         request = self.factory.get(reverse(self.view_name))
 
         # Attach the user to the request
-        request.user = self.superuser
+        request.user = self.superuser1
 
         # Create an instance of the view and call the method
         view = RegisteredOrganisationBaseView()
         view.request = request
 
-        # Test that the method returns the correct current organisation
-        current_organisation = view.get_or_set_current_organisation(request)
+        # Test that the returned variables are not empty
+        current_organisation_id, current_organisation = (
+            view.get_or_set_current_organisation(request)
+        )
+        self.assertIsNotNone(current_organisation_id)
+        self.assertTrue(current_organisation_id > 0)
         self.assertIsNotNone(current_organisation)
+        self.assertFalse(current_organisation == '')
+
+        # test with user profile
+        self.superuser1.user_profile = UserProfile.objects.create(
+            user=self.superuser1
+        )
+
+        self.assertIsNone(self.superuser1.user_profile.current_organisation)
+
+        request.user = self.superuser1
+
+        # Create an instance of the view and call the method
+        view = RegisteredOrganisationBaseView()
+        view.request = request
+
+        # Test that the returned variables are not empty
+        current_organisation_id, current_organisation = (
+            view.get_or_set_current_organisation(request)
+        )
+        self.assertIsNotNone(self.superuser1.user_profile.current_organisation)
+
 
