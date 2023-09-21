@@ -132,3 +132,19 @@ class RegisteredBaseViewTestBase(TestCase):
         current_organisation = view.get_current_organisation()
         self.assertIsNotNone(current_organisation)
 
+    def do_test_get_or_set_current_organisation_with_superuser(self):
+
+        # Create a request
+        request = self.factory.get(reverse(self.view_name))
+
+        # Attach the user to the request
+        request.user = self.superuser
+
+        # Create an instance of the view and call the method
+        view = RegisteredOrganisationBaseView()
+        view.request = request
+
+        # Test that the method returns the correct current organisation
+        current_organisation = view.get_or_set_current_organisation()
+        self.assertIsNotNone(current_organisation)
+
