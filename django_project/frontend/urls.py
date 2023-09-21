@@ -87,7 +87,11 @@ from frontend.api_views.national_statistic import (
     NationalActivityCountPerProvinceView,
     NationalActivityCountPerPropertyView
 )
-from .views.organisations import OrganisationsView
+from .views.organisations import (
+    OrganisationsView,
+    organization_detail,
+    save_permissions
+)
 
 urlpatterns = [
     re_path(
@@ -348,5 +352,15 @@ urlpatterns = [
         'api/activity_count_per_property/',
         NationalActivityCountPerPropertyView.as_view(),
         name='activity_count_per_property'
-    )
+    ),
+    path(
+        'api/organization/<int:identifier>/',
+        organization_detail,
+        name='organization_detail_by_id'
+    ),
+    path(
+        'save_permissions/<int:organisation_id>/',
+        save_permissions,
+        name='save_permissions'
+    ),
 ]

@@ -3,15 +3,15 @@
         <h3 class="page-title sawps-text-menu mb-3">Profile Configuration</h3>
         <hr class="default-separator">
         <div class="scrollmenu" style="margin-bottom: 1%; margin-top: -1%;">
-          <a class="nav-link {% if request.path|slice:":9" == '/profile/' %}active{% endif %}" href="/profile/{{ user }}">PROFILE</a>
-          <a class="nav-link {% if request.path|slice:":11" == '/reminders/' %}active{% endif %}" href="/reminders/{{ user }}/">
+          <a class="nav-link {% if request.path|slice:":9" == '/profile/' %}active{% endif %}" href="/profile/{{ user }}" style="margin-right: 1%;">PROFILE</a>
+          <a class="nav-link {% if request.path|slice:":11" == '/reminders/' %}active{% endif %}" href="/reminders/{{ user }}/" style="margin-right: 1%;">
             REMINDERS
           </a>
-          <a class="nav-link {% if request.path|slice:":15" == '/notifications/' %}active{% endif %}" href="/notifications/{{ user }}/">
+          <a class="nav-link {% if request.path|slice:":15" == '/notifications/' %}active{% endif %}" href="/notifications/{{ user }}/" style="margin-right: 1%;">
             NOTIFICATIONS
             <div class="notification-badge" id="notificationBell" style="display: none;"> </div> 
           </a>
-          <a class="nav-link {% if request.path|slice:":21" == '/accounts/two-factor/' %}active{% endif %}" href="/accounts/two-factor/two_factor/backup_tokens/">TWO FACTOR AUTHENTICATION</a>
+          <a class="nav-link {% if request.path|slice:":21" == '/accounts/two-factor/' %}active{% endif %}" href="/accounts/two-factor/two_factor/backup_tokens/" style="margin-right: 1%;">TWO FACTOR AUTHENTICATION</a>
           <a class="nav-link {% if request.path|slice:":15" == '/organisations/' %}active{% endif %}" href="/organisations/{{ user }}/">
             ORGANISATIONS
           </a>
@@ -144,7 +144,7 @@
         text-align: center;
         padding: 20px;
         margin-bottom: 20px;
-        margin-left: 50px;
+        margin-left: -15px;
         text-decoration: none;
       }
 
