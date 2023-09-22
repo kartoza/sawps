@@ -224,11 +224,6 @@ function Filter() {
     }, [selectedInfo])
 
 
-    const handleDeleteProperty = (idToDelete: number) => () => {
-        const updatedSelectedProperty = selectedProperty.filter((id) => id !== idToDelete);
-        setSelectedProperty(updatedSelectedProperty);
-    };
-
     const handleSelectedProperty = (id: number) => () => {
         const propertyExists = selectedProperty.includes(id);
         if (propertyExists) {
@@ -243,11 +238,6 @@ function Filter() {
     useEffect(() => {
         dispatch(selectedPropertyId(selectedProperty.length > 0 ? selectedProperty.join(',') : ''));
     }, [selectedProperty])
-
-    const handleDeleteOrganisation = (idToDelete: number) => () => {
-        const updatedSelectedOrganisation = selectedOrganisation.filter((id) => id !== idToDelete);
-        setSelectedOrganisation(updatedSelectedOrganisation);
-    };
 
     const handleSelectedOrganisation = (id: number) => () => {
         const organisationExists = selectedOrganisation.includes(id);
@@ -356,9 +346,9 @@ function Filter() {
 
     const handleSelectAllOrganisation = () => {
         const organisationId = organisationList.map(data => data.id)
-        setSelectedProperty(organisationId)
+        setSelectedOrganisation(organisationId)
         if (selectedOrganisation.length === organisationList.length) {
-            setSelectedProperty([]);
+            setSelectedOrganisation([]);
         }
     }
 
@@ -424,19 +414,8 @@ function Filter() {
                             <Accordion>
                                 <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                     {selectedOrganisation.length > 0 ? (
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                            {selectedOrganisation.map((id) => {
-                                                const organisation = organisationList.find((item) => item.id === id);
-                                                return (
-                                                    <Chip
-                                                        key={id}
-                                                        label={organisation ? organisation.name : ''}
-                                                        onDelete={handleDeleteOrganisation(id)}
-                                                        deleteIcon={<CloseIcon />}
-                                                        sx={{ margin: 0.5 }}
-                                                    />
-                                                );
-                                            })}
+                                        <Box >
+                                            {`${selectedOrganisation.length} ${selectedOrganisation.length > 1 ? 'Organisations' : 'Organisation'} Selected`}
                                         </Box>
                                     ) : (
                                         <Typography>Select</Typography>
@@ -532,19 +511,9 @@ function Filter() {
                                 <Accordion>
                                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                         {selectedProperty.length > 0 ? (
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                {selectedProperty.map((id) => {
-                                                    const property = propertyList.find((item) => item.id === id);
-                                                    return (
-                                                        <Chip
-                                                            key={id}
-                                                            label={property ? property.name : ''}
-                                                            onDelete={handleDeleteProperty(id)}
-                                                            deleteIcon={<CloseIcon />}
-                                                            sx={{ margin: 0.5 }}
-                                                        />
-                                                    );
-                                                })}
+                                            <Box>
+                                                {`${selectedProperty.length} ${selectedProperty.length > 1 ? 'Properties' : 'Property'} Selected`}
+
                                             </Box>
                                         ) : (
                                             <Typography>Select</Typography>
