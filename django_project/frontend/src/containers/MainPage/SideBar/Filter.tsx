@@ -207,6 +207,7 @@ function Filter() {
     }
     const handleSelectedSpecies = (value: string) => () => {
         setSelectedSpecies(value);
+        setSearchedSpecies("")
     };
 
     useEffect(() => {
