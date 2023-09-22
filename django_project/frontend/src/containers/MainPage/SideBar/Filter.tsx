@@ -200,13 +200,9 @@ function Filter() {
         fetchOrganisationList();
     }, [])
 
-    const handleDeleteSpecies = (valueToDelete: string) => {
-        if (selectedSpecies === valueToDelete) {
-            setSelectedSpecies("");
-        }
-    }
     const handleSelectedSpecies = (value: string) => () => {
         setSelectedSpecies(value);
+        setSearchedSpecies("")
     };
 
     useEffect(() => {
@@ -216,11 +212,6 @@ function Filter() {
         }
     }, [selectedSpecies])
 
-    const handleDeleteInfo = (valueToDelete: string) => {
-        if (selectedInfo === valueToDelete) {
-            setSelectedInfo("");
-        }
-    }
     const handleSelectedInfo = (value: string) => () => {
         setSelectedInfo(value);
     };
@@ -500,8 +491,6 @@ function Filter() {
                                                 <Chip
                                                     key={selectedInfo}
                                                     label={selectedInfo}
-                                                    onDelete={() => handleDeleteInfo(selectedInfo)}
-                                                    deleteIcon={<CloseIcon />}
                                                     sx={{ margin: 0.5 }}
                                                 />
                                             </Box>
@@ -608,8 +597,6 @@ function Filter() {
                                         <Chip
                                             key={selectedSpecies}
                                             label={selectedSpecies}
-                                            onDelete={() => handleDeleteSpecies(selectedSpecies)}
-                                            deleteIcon={<CloseIcon />}
                                             sx={{ margin: 0.5 }}
                                         />
                                     </Box>
