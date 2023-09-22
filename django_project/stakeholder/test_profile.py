@@ -31,20 +31,26 @@ class TestProfileView(TestCase):
         Tests profile creation
         """
         user = UserF.create()
-        profile = userProfileFactory.create(
-            user=user,
-            picture='profile_pictures/picture_P.jpg',
+
+        self.assertTrue(user.user_profile is not None)
+
+        profile = UserProfile.objects.get(
+            id=user.user_profile.id
         )
 
-        self.assertTrue(profile.user is not None)
-        self.assertEqual(profile.picture, 'profile_pictures/picture_P.jpg')
+        profile.picture = 'profile_pictures/picture_P.jpg'
+        profile.save()
+
+        self.assertEqual(UserProfile.objects.get(
+            id=profile.id
+        ).picture, 'profile_pictures/picture_P.jpg')
 
     def test_profile_update(self):
         """
         Tests profile update
         """
         user = UserF.create()
-        profile = userProfileFactory.create(user=user)
+        profile = user.user_profile
         profile_picture = {
             'picture': 'profile_pictures/picture_P.jpg',
         }
@@ -66,7 +72,7 @@ class TestProfileView(TestCase):
         Tests profile delete
         """
         user = UserF.create()
-        profile = userProfileFactory.create(user=user)
+        profile = user.user_profile
         profile.delete()
 
         self.assertTrue(profile.pk is None)
@@ -160,9 +166,6 @@ class TestProfileView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_context_data(self):
-        userProfileFactory.create(
-            user=self.test_user
-        )
         device = TOTPDevice(
             user=self.test_user,
             name='device_name'

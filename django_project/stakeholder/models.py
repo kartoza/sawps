@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from property.models import Province
 
@@ -142,7 +144,6 @@ class UserProfile(models.Model):
         null=True, blank=True
     )
 
-
     def delete(self, *args, **kwargs):
         self.user.delete()
         return super(self.__class__, self).delete(*args, **kwargs)
@@ -161,6 +162,29 @@ class UserProfile(models.Model):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
         db_table = "user_profile"
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """
+    When a user is created, also create a UserProfile
+    """
+    if (
+        created and
+        not UserProfile.objects.filter(user=instance).exists()
+    ):
+        UserProfile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """
+    Save the UserProfile whenever a save event occurs
+    """
+    try:
+        instance.user_profile.save()
+    except AttributeError:
+        UserProfile.objects.create(user=instance)
 
 
 class OrganisationInvites(models.Model):

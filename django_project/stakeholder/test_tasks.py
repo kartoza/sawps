@@ -36,9 +36,7 @@ class SendReminderEmailsTestCase(TestCase):
             organisation=self.organisation,
             user=self.user
         )
-        self.user_profile = UserProfile.objects.create(
-            user=self.user
-        )
+        self.user_profile = self.user.user_profile
 
         # Create a test reminder
         self.reminder = Reminders.objects.create(
