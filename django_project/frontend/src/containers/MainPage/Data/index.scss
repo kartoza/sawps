@@ -40,11 +40,12 @@
 
 .downlodBtn {
     width: 100%;
-    margin-bottom: 20px;
     display: flex;
     gap: 15px;
     justify-content: flex-end;
     margin-top: 20px;
+    padding: 0 20px;
+    padding-right: 0;
 }
 
 .dataTable {
@@ -69,4 +70,25 @@
     .MuiCheckbox-root {
         color: #000;
     }
+}
+
+.data-table {
+    width: 100%;
+    display: flex;
+    padding: 6px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    min-width: 120px;
+    color: white;
+}
+.dataTable-auto{
+    overflow: auto;
+    max-height: calc(100vh - 260px);
+    min-height: calc(100vh - 260px);
+}
+.dataTable-auto .MuiDataGrid-virtualScroller{
+    max-height: 304px;
+}
+.dataTable-auto .MuiDataGrid-root{
+   margin-bottom: 0px;
 }

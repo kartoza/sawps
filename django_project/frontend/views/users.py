@@ -14,7 +14,7 @@ from django.http import JsonResponse
 
 from django.views.generic import TemplateView
 from frontend.utils.organisation import (
-    CURRENT_ORGANISATION_ID_KEY,
+    get_current_organisation_id
 )
 from django.core.paginator import (
     Paginator,
@@ -139,8 +139,9 @@ class OrganisationUsersView(
                 ).first()
             except Organisation.DoesNotExist:
                 org = None
+                org_user = None
             except OrganisationUser.DoesNotExist:
-                continue
+                org_user = None
             if org_user:
                 if not org_user.user == self.request.user and invite:
                     data.append({
@@ -181,9 +182,9 @@ class OrganisationUsersView(
             # add invitation to model
             is_new_invitation = self.is_new_invitation(
                 email,
-                self.request.session[CURRENT_ORGANISATION_ID_KEY]
+                get_current_organisation_id(request.user)
             )
-            org_id = self.request.session[CURRENT_ORGANISATION_ID_KEY]
+            org_id = get_current_organisation_id(request.user)
             if not is_new_invitation:
                 if role == 'manager':
                     create_invite = OrganisationInvites(
@@ -234,7 +235,7 @@ class OrganisationUsersView(
                 add_user_view = AddUserToOrganisation()
                 if add_user_view.send_invitation_email(email_details):
                     create_invite.save()
-                    invites = self.get_organisation_invites()
+                    invites = self.get_organisation_invites(request)
                     serialized_invites = json.dumps(list(invites))
                     return JsonResponse(
                         {
@@ -280,17 +281,18 @@ class OrganisationUsersView(
 
 
 
-    def get_organisation_users(self):
+    def get_organisation_users(self, request):
         organisation_user_list = OrganisationUser.objects.filter(
-            organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
+            organisation_id=get_current_organisation_id(request.user))
         organisation_users = []
 
         for user in organisation_user_list:
             # get role from organisation invites
             role = OrganisationInvites.objects.filter(
                 email=user.user.email,
-                organisation_id=self.request.session[
-                    CURRENT_ORGANISATION_ID_KEY]
+                organisation_id=(
+                    get_current_organisation_id(request.user)
+                )
             ).first()
             if role:
                 object_to_save = {
@@ -301,20 +303,27 @@ class OrganisationUsersView(
                     "joined": role.joined
                 }
             else:
+                assigned_as = 'Member'
+                if hasattr(user.user, 'user_profile'):
+                    user_profile = user.user.user_profile
+                    role = str(user_profile.user_role_type_id)
+                    if role == 'Admin' or role == 'Super User':
+                        assigned_as = 'Manager'
+
                 object_to_save = {
                     "id": user.user.id,
                     "organisation_user": str(user.user),
                     "role": None,
-                    "assigned_as": role.assigned_as,
+                    "assigned_as": assigned_as,
                     "joined": False
                 }
-            if not user.user == self.request.user:
+            if not user.user == request.user:
                 organisation_users.append(object_to_save)
 
-        users_page = self.request.GET.get('users_page', 1)
+        users_page = request.GET.get('users_page', 1)
 
         # Get the rows per page value from the query parameters
-        rows_per_page = self.request.GET.get('users_per_page', 3)
+        rows_per_page = request.GET.get('users_per_page', 7)
 
         paginator = Paginator(organisation_users, rows_per_page)
 
@@ -327,9 +336,9 @@ class OrganisationUsersView(
 
         return users
 
-    def get_organisation_invites(self):
+    def get_organisation_invites(self, request):
         organisation_invites = OrganisationInvites.objects.filter(
-            organisation_id=self.request.session[CURRENT_ORGANISATION_ID_KEY])
+            organisation_id=get_current_organisation_id(request.user))
         paginated_organisation_invites = []
 
         for invite in organisation_invites:
@@ -341,10 +350,10 @@ class OrganisationUsersView(
             }
             paginated_organisation_invites.append(object_to_save)
 
-        invites_page = self.request.GET.get('invites_page', 1)
+        invites_page = request.GET.get('invites_page', 1)
 
         # Get the rows per page value from the query parameters
-        rows_per_page = self.request.GET.get('invites_per_page', 5)
+        rows_per_page = request.GET.get('invites_per_page', 5)
 
         paginator = Paginator(paginated_organisation_invites, rows_per_page)
 
@@ -370,9 +379,9 @@ class OrganisationUsersView(
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['users'] = self.get_organisation_users()
-        ctx['invites'] = self.get_organisation_invites()
+        ctx['users'] = self.get_organisation_users(self.request)
+        ctx['invites'] = self.get_organisation_invites(self.request)
         ctx['role'] = self.get_role(
             self.request.user,
-            self.request.session[CURRENT_ORGANISATION_ID_KEY])
+            get_current_organisation_id(self.request.user))
         return ctx

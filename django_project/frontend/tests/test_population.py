@@ -22,9 +22,15 @@ from species.factories import TaxonF
 
 from population_data.models import (
     AnnualPopulation,
-    AnnualPopulationPerActivity
+    AnnualPopulationPerActivity,
+    PopulationStatus,
+    PopulationEstimateCategory,
+    SamplingEffortCoverage
 )
 from species.models import OwnedSpecies
+from population_data.factories import (
+    CertaintyF
+)
 
 
 def mocked_clear_cache(self, *args, **kwargs):
@@ -49,6 +55,19 @@ class TestPopulationAPIViews(TestCase):
             user=self.user_1,
             organisation=self.organisation
         )
+        self.population_status = PopulationStatus.objects.create(
+            name='Status 1'
+        )
+        self.estimate = PopulationEstimateCategory.objects.create(
+            name='Estimate 1'
+        )
+        self.coverage = SamplingEffortCoverage.objects.create(
+            name='Coverage 1'
+        )
+        self.certainty = CertaintyF.create(
+            description='Certainty1',
+            name='1'
+        )
 
     def test_get_metadata_list(self):
         request = self.factory.get(
@@ -58,6 +77,8 @@ class TestPopulationAPIViews(TestCase):
         view = PopulationMetadataList.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
+        self.assertIn('certainties', response.data)
+        self.assertEqual(len(response.data['certainties']), 1)
 
     @mock.patch(
         'frontend.api_views.population.'
@@ -83,12 +104,12 @@ class TestPopulationAPIViews(TestCase):
                 'group': 1,
                 'open_close_id': 1,
                 'area_available_to_species': 5.5,
-                'count_method_id': 1,
                 'survey_method_id': 1,
-                'sampling_effort': 1.25,
-                'sampling_size_unit_id': 1,
                 'area_covered': 1.2,
-                'note': 'This is notes'
+                'note': 'This is notes',
+                'sampling_effort_coverage_id': self.coverage.id,
+                'population_status_id': self.population_status.id,
+                'population_estimate_category_id': self.estimate.id
             },
             'intake_populations': [{
                 'activity_type_id': 1,
@@ -196,10 +217,7 @@ class TestPopulationAPIViews(TestCase):
                 'group': 1,
                 'open_close_id': 1,
                 'area_available_to_species': 5.5,
-                'count_method_id': 1,
                 'survey_method_id': 1,
-                'sampling_effort': 1.25,
-                'sampling_size_unit_id': 1,
                 'area_covered': 1.2,
                 'note': 'This is notes'
             },

@@ -1,7 +1,8 @@
-from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
 from django.utils import timezone
+from property.models import Province
 
 
 # Role choices
@@ -63,6 +64,60 @@ class UserTitle(models.Model):
         db_table = "user_title"
 
 
+class UserLogin(models.Model):
+    """User login model."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    login_status = models.ForeignKey(
+        LoginStatus,
+        on_delete=models.DO_NOTHING
+    )
+    ip_address = models.CharField(max_length=20)
+    date_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        verbose_name = 'User login'
+        verbose_name_plural = 'User logins'
+        db_table = "user_login"
+
+
+class Organisation(models.Model):
+    """Organisation model."""
+
+    name = models.CharField(unique=True, max_length=250)
+    data_use_permission = models.ForeignKey(
+        'regulatory_permit.dataUsePermission',
+        on_delete=models.DO_NOTHING
+    )
+    national = models.BooleanField(null=True, blank=True)
+    province = models.ForeignKey(
+        Province,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True
+    )
+    use_of_data_by_sanbi_only = models.BooleanField(
+        default=False
+    )
+    hosting_through_sanbi_platforms = models.BooleanField(
+        default=False
+    )
+    allowing_sanbi_to_expose_data = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        verbose_name = 'Organisation'
+        verbose_name_plural = 'Organisations'
+        db_table = "organisation"
+
+    def __str__(self):
+        return self.name
+
+
 class UserProfile(models.Model):
     """Extend User model with one-to-one mapping."""
 
@@ -97,6 +152,12 @@ class UserProfile(models.Model):
         blank=True
     )
     received_notif = models.BooleanField(default=False)
+    current_organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+
 
     def delete(self, *args, **kwargs):
         self.user.delete()

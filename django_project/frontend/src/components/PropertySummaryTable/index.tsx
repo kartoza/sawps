@@ -14,12 +14,22 @@ interface PropertySummaryTableInterface {
 }
 
 export default function PropertySummaryTable(props: PropertySummaryTableInterface) {
-    const localStorageItem = localStorage.getItem('description');
-    const descriptionParts = localStorageItem ? localStorageItem.split(': ') : [];
+    const localStorageItem = localStorage.getItem('description') ? localStorage.getItem('description') : '';
+    var descriptionParts = localStorageItem ? localStorageItem.split(': ') : [];
+
+    if(localStorageItem.includes('<hr/>')){
+        const lines = localStorageItem.split("<hr/>");
+        for (var count=0; count < lines.length; count++){
+            if(lines[count].trim().includes('Ecosystem Type:')){
+                const content = lines[1].trim();
+                descriptionParts = content.split(": ")
+            }
+        }
+    }
 
     return (
         <TableContainer component={Paper}>
-            <Table className='PropertySiteDetailTable' aria-label="property site detail table" size='medium'>
+            <Table className='PropertySiteDetailTable' aria-label="property site detail table" size='small'>
                 <colgroup>
                     <col width="50%" />
                     <col width="50%" />

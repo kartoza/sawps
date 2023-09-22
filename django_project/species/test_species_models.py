@@ -1,25 +1,15 @@
 import base64
-import mock
-from species.models import (
-    TaxonRank,
-    Taxon,
-    OwnedSpecies,
-    TaxonSurveyMethod
-)
-from species.factories import (
-    TaxonRankFactory,
-    TaxonFactory,
-    OwnedSpeciesFactory,
-    TaxonSurveyMethodF
-)
-from population_data.factories import AnnualPopulationF
+from unittest import mock
+
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from django.test import Client, TestCase
 from django.urls import reverse
-from occurrence.models import SurveyMethod
-from rest_framework import status
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from occurrence.models import SurveyMethod
+from population_data.factories import AnnualPopulationF
+from property.factories import PropertyFactory
+from rest_framework import status
 from species.factories import (
     OwnedSpeciesFactory,
     TaxonFactory,
@@ -28,6 +18,8 @@ from species.factories import (
 )
 from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
+from stakeholder.factories import organisationFactory
+from stakeholder.models import UserProfile
 
 
 def mocked_clear_cache(self, *args, **kwargs):
@@ -89,12 +81,27 @@ class TaxonTestCase(TestCase):
         cls.url = reverse('species')
 
     def test_get_taxon_list(self):
-        """Taxon list API test"""
+        """Taxon list API test within the organisation"""
+        organisation = organisationFactory.create()
 
         user = User.objects.create_user(
             username='testuserd',
             password='testpasswordd'
         )
+
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=organisation,
+        )
+
+        property = PropertyFactory.create(
+            organisation=organisation,
+            name='PropertyA'
+        )
+
+        owned_species = OwnedSpeciesFactory.create_batch(
+            1, taxon=self.taxon, user=user, property=property)
+
         auth_headers = {
             'HTTP_AUTHORIZATION': 'Basic ' +
             base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
@@ -104,7 +111,40 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = TaxonSerializer([self.taxon], many=True).data
         self.assertEqual(expected_data, response.data)
-    
+
+    def test_get_taxon_list_for_organisations(self):
+        """Taxon list API test for organisations."""
+        organisation = organisationFactory.create(national=True)
+
+        user = User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd'
+        )
+
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=organisation,
+        )
+
+        property = PropertyFactory.create(
+            organisation=organisation,
+            name='PropertyA'
+        )
+
+        owned_species = OwnedSpeciesFactory.create_batch(
+            1, taxon=self.taxon, user=user, property=property)
+
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        client = Client()
+        data = {"organisation":organisation.id}
+        response = client.get(self.url, data, **auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['common_name_varbatim'], "taxon_0")
+
     def test_get_taxon_frontpage_list(self):
         """Test fetch taxon list for frontpage."""
         taxon = TaxonFactory.create(
@@ -114,6 +154,8 @@ class TaxonTestCase(TestCase):
             taxon_rank=self.taxonRank,
             show_on_front_page=True
         )
+        property_1 = PropertyFactory.create()
+        property_2 = PropertyFactory.create()
         client = Client()
         response = client.get(reverse('species-front-page'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -123,9 +165,19 @@ class TaxonTestCase(TestCase):
         self.assertEqual(taxon_1[0]['total_population'], 0)
         self.assertEqual(taxon_1[0]['species_name'], taxon.scientific_name)
         user_1 = User.objects.create_user(username='testuser_taxon_1', password='12345')
-        owned_species_1 = OwnedSpeciesFactory(taxon=taxon, user=user_1)
+        owned_species_1 = OwnedSpeciesFactory(
+            taxon=taxon,
+            user=user_1,
+            property=property_1,
+            area_available_to_species=2
+        )
         user_2 = User.objects.create_user(username='testuser_taxon_2', password='12345')
-        owned_species_2 = OwnedSpeciesFactory(taxon=taxon, user=user_2)
+        owned_species_2 = OwnedSpeciesFactory(
+            taxon=taxon,
+            user=user_2,
+            property=property_2,
+            area_available_to_species=1
+        )
         # create two years of data
         AnnualPopulationF(owned_species=owned_species_1, year=2021, total=30,
                           adult_male=10, adult_female=10)
@@ -141,6 +193,7 @@ class TaxonTestCase(TestCase):
         taxon_1 = [d for d in response.data if d['id'] == taxon.id]
         self.assertTrue(taxon_1)
         self.assertEqual(taxon_1[0]['total_population'], 57)
+        self.assertEqual(taxon_1[0]['total_area'], 3)
 
     def test_create_taxon(self):
         """Test create taxon."""
@@ -302,7 +355,6 @@ class TaxonSurveyMethodTestCase(TestCase):
         )
         cls.survey_method = SurveyMethod.objects.create(
             name='Unknown',
-            sort_id='1'
         )
         cls.taxon_survey_method = TaxonSurveyMethodF(
             taxon=cls.taxon,

@@ -7,12 +7,13 @@ interface LoadingInterface {
     label?: string,
     size?: number,
     color?: any,
-    style?: any
+    style?: any,
+    containerStyle?: any
 }
 
 export default function Loading(props: LoadingInterface) {
     return (
-        <div className="loading-container">
+        <div className="loading-container" style={props.containerStyle}>
             <CircularProgress size={props.size} color={props.color} style={props.style}/>
             { props.label ? <Typography sx={{ fontSize: 15 }} style={{ marginLeft: 10 }}>{ props.label }</Typography> : '' }
         </div>

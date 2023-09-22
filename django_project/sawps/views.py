@@ -13,7 +13,8 @@ from core.settings.contrib import SUPPORT_EMAIL
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
-    OrganisationUser
+    OrganisationUser,
+    UserProfile
 )
 from sawps.email_verification_token import email_verification_token
 from django.template.loader import render_to_string
@@ -39,6 +40,11 @@ class ActivateAccount(View):
         ):
             user.is_active = True
             user.save()
+
+            if not UserProfile.objects.filter(user=user).exists():
+                UserProfile.objects.create(
+                    user=user
+                )
 
             login(
                 request,
@@ -194,6 +200,14 @@ class CustomPasswordResetView(View):
 
         try:
             user = User.objects.get(email=user_email)
+            user_name = ''
+            try:
+                if user.username is not None:
+                    user_name = user.username
+                elif user.first_name is not None:
+                    user_name = user.first_name
+            except AttributeError:
+                user_name = user_email
             # Generate the reset token and UID
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
@@ -207,7 +221,7 @@ class CustomPasswordResetView(View):
                 'emails/password_reset.html',
                 {
                     'domain': Site.objects.get_current().domain,
-                    'name': user.email,
+                    'name': user_name,
                     'reset_password_link': reset_link_url,
                 },
             )

@@ -20,10 +20,12 @@ import {
 } from '../../../reducers/MapState';
 import '../../../assets/styles/RDU.styles.scss';
 import './index.scss';
+import { MapEvents } from '../../../models/Map';
 
 interface UploaderInterface {
     open: boolean;
     onClose: () => void;
+    onErrorMessage: (error: string) => void;
 }
 
 const ALLOWABLE_FILE_TYPES = [
@@ -32,7 +34,9 @@ const ALLOWABLE_FILE_TYPES = [
     'application/zip',
     'application/json',
     'application/x-zip-compressed',
-    '.gpkg'
+    'application/vnd.google-earth.kml+xml',
+    '.gpkg',
+    '.kml'
 ]
 
 const UPLOAD_FILE_URL = '/api/upload/boundary-file/'
@@ -83,7 +87,7 @@ const CustomInput = (props: IInputProps) => {
             </label>
         </Grid>
         <Grid item className='CenterItem'>
-            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported formats: zip, json, geojson, gpkg (CRS 4326)</Typography>
+            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported formats: zip, json, geojson, gpkg, kml (CRS 4326)</Typography>
         </Grid>
     </Grid>
       
@@ -181,9 +185,15 @@ export default function Uploader(props: UploaderInterface) {
         if (status === 'error_upload') {
             setTimeout(() => {
                 file.remove()
-                let response = JSON.parse(xhr.response)
+                let  error = ''
+                try {
+                    let response = JSON.parse(xhr.response)
+                    error = response.detail
+                } catch (error) {
+                    error = 'There is unexpected error during upload! Please try again later'
+                }
+                setAlertMessage(error)
                 setIsError(true)
-                setAlertMessage(response.detail)
             }, 300)
         }
     }
@@ -215,13 +225,26 @@ export default function Uploader(props: UploaderInterface) {
                     let _parcels = response.data['parcels'] as ParcelInterface[]
                     dispatch(setSelectedParcels(_parcels))
                     dispatch(toggleParcelSelectionMode(uploadMode))
+                    if (response.data['used_parcels'].length > 0 && props.onErrorMessage) {
+                        let _sliced = response.data['used_parcels'].slice(0, 3)
+                        let _usedParcels = _sliced.join(', ')
+                        if (response.data['used_parcels'].length > 3) {
+                            _usedParcels += ` and ${(response.data['used_parcels'].length - 3)} more`
+                        }
+                        setIsError(true)
+                        let _error = `Error! Parcel ${_usedParcels} has already been used by another property.`
+                        if (response.data['used_parcels'].length > 1) {
+                            _error = `Error! Parcels ${_usedParcels} have already been used by another property.`
+                        }
+                        props.onErrorMessage(_error)
+                    }
                     // trigger map zoom to bbox
                     let _bbox = response.data['bbox']
                     if (_bbox && _bbox.length === 4) {
                         let _bbox_str = _bbox.map(String)
                         dispatch(triggerMapEvent({
                             'id': uuidv4(),
-                            'name': 'BOUNDARY_FILES_UPLOADED',
+                            'name': MapEvents.BOUNDARY_FILES_UPLOADED,
                             'date': Date.now(),
                             'payload': _bbox_str
                         }))

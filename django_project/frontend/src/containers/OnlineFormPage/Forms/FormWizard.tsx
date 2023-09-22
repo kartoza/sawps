@@ -22,10 +22,12 @@ export interface FormMetadata {
     taxons: TaxonMetadata[];
     open_close_systems: CommonUploadMetadata[];
     survey_methods: CommonUploadMetadata[];
-    sampling_size_units: CommonUploadMetadata[];
-    count_methods: CommonUploadMetadata[];
     intake_events: CommonUploadMetadata[];
     offtake_events: CommonUploadMetadata[];
+    sampling_effort_coverages: CommonUploadMetadata[];
+    population_statuses: CommonUploadMetadata[];
+    population_estimate_categories: CommonUploadMetadata[];
+    certainties: CommonUploadMetadata[];
 }
 
 interface FormWizardInterface {
@@ -246,9 +248,10 @@ function FormWizard(props: FormWizardInterface) {
                 <Box className='OnlineFormWizardContent'>
                     <TabPanel key={0} value={activeStep} index={0} noPadding>
                         <SpeciesDetail initialData={data} setIsDirty={setIsDirty} handleNext={(formData)=>onFormSave(0, formData)}
-                            taxonMetadataList={props.metadata.taxons} countMethodMetadataList={props.metadata.count_methods}
+                            taxonMetadataList={props.metadata.taxons}
                             surveyMethodMetadataList={props.metadata.survey_methods} openCloseMetadataList={props.metadata.open_close_systems}
-                            samplingUnitMetadataList={props.metadata.sampling_size_units}
+                            sampling_effort_coverages={props.metadata.sampling_effort_coverages} population_statuses={props.metadata.population_statuses}
+                            population_estimate_categories={props.metadata.population_estimate_categories} certainties={props.metadata.certainties}
                             handleSaveDraft={handleSaveDraft} />
                     </TabPanel>
                     <TabPanel key={1} value={activeStep} index={1} noPadding>

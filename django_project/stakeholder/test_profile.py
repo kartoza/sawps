@@ -21,7 +21,9 @@ class TestProfileView(TestCase):
         self.client = Client()
         # Create a test user
         self.test_user = get_user_model().objects.create_user(
-            username='testuser', password='testpassword'
+            username='testuser',
+            password='testpassword',
+            email='test@gmail.com'
         )
 
     def test_profile_create(self):
@@ -94,13 +96,11 @@ class TestProfileView(TestCase):
         """
         Test update profile from the form page
         """
-        user = get_user_model().objects.create(
-            is_staff=False,
-            is_active=True,
-            is_superuser=False,
-            username='test',
-            email='test@test.com',
+        device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
         )
+        device.save()
         title = userTitleFactory.create(
             id=1,
             name = 'test',
@@ -109,42 +109,30 @@ class TestProfileView(TestCase):
             id=1,
             name = 'test',
         )
-        device = TOTPDevice(
-            user=self.test_user,
-            name='device_name'
-        )
-        device.save()
-        # user.first_name = 'Fan'
-        # user.last_name = 'Fan'
-        # user.email = user.email
-        # user.save()
-        UserProfile.objects.create(
-            user=user,
-            title=title,
-            user_role_type=role
-        )
         resp = self.client.login(username='testuser', password='testpassword')
         self.assertTrue(resp)
 
         post_dict = {
             'first-name': 'Fan',
             'last-name': 'Fan',
-            'email': user.email,
+            'email': self.test_user.email,
             'organization': 'Kartoza',
             'profile_picture': '/profile/pic/path',
             'title': '1',
-            'role': '1'
+            'role': '1',
         }
 
         response = self.client.post(
             '/profile/{}/'.format(self.test_user.username), post_dict
         )
         self.assertEqual(response.status_code, 302)
-        updated_user = get_user_model().objects.get(id=user.id)
-        self.assertEqual(updated_user.first_name, '')
+        updated_user = get_user_model().objects.get(id=self.test_user.id)
+        self.assertEqual(updated_user.first_name, 'Fan')
+        self.assertEqual(updated_user.last_name, 'Fan')
         self.assertIsNotNone(updated_user.user_profile.picture)
-        self.assertEqual(user.user_profile.title.name, title.name)
-        self.assertEqual(user.user_profile.user_role_type.name, role.name)
+
+        self.assertEqual(updated_user.user_profile.title_id.name, title.name)
+        self.assertEqual(updated_user.user_profile.user_role_type_id.name, role.name)
 
     def test_404(self):
         """
@@ -173,19 +161,22 @@ class TestProfileView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_context_data(self):
-        # Simulate a request with the authenticated user
-        user = UserF.create()
-        url = reverse('profile', kwargs={'slug': user.username})
-        client = Client()
-        request = client.get(url)
-        request.user = user
-
-        client.force_login(user)
-        response = client.get(url, follow=True)
-
-        # Check if the response is successful
+        userProfileFactory.create(
+            user=self.test_user
+        )
+        device = TOTPDevice(
+            user=self.test_user,
+            name='device_name'
+        )
+        device.save()
+        resp = self.client.login(username='testuser', password='testpassword')
+        self.assertTrue(resp)
+        response = self.client.get(
+            '/profile/{}/'.format(self.test_user.username),
+        )
         self.assertEqual(response.status_code, 200)
         context = response.context
 
-        self.assertNotIn('titles', context)
-        self.assertNotIn('roles', context)
+        self.assertIn('titles', context)
+        self.assertIn('roles', context)
+        self.assertIn('object', context)

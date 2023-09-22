@@ -10,18 +10,22 @@
   <div class="row">
     {% include "profile_config_base.html" %}
 
-      <div class="col-lg-8">
-          <div class="profile-form">
-              <form method="post" action="{% url 'profile' object.username %}">
-              {% csrf_token %}
+    <div class="col-lg-8">
+      <div class="profile-form">
+        <form method="post" action="{% url 'profile' object.username %}">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
               <div class="form-group">
                 <label for="first-name">First name</label>
                 <input type="text" class="form-control" id="first-name" name="first-name" aria-describedby="firstNameHelp" value={{object.first_name}}>
               </div>
               <div class="form-group">
-                <label for="last-name">Last Name</label>
+                <label for="last-name">Last name</label>
                 <input type="text" class="form-control" name="last-name" aria-describedby="lastNameHelp" value={{object.last_name}}>
               </div>
+            </div>
+            <div class="col-md-6">
               <div class="form-group">
                 <label for="title">Title</label>
                 <select class="form-control" name="title" id="title">
@@ -33,39 +37,46 @@
                     {% endif %}
                   {% endfor %}
                 </select>
-                
               </div>
               <div class="form-group">
                 <label for="email">Email address</label>
                 <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" value={{object.email}}>
                 <small id="email-error" class="form-text text-danger"></small>
               </div>
-              <div class="form-group mt-3">
-                <small id="data-privacy" class="form-text text-muted">How would you like your data to be used see the SANBI data sharing agreement. 
-                  Switching the toggle will be taken as full agreement to the terms of the option chosen</small>
-              </div>
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="onlySANBI" disabled>
-                <label class="custom-control-label text-muted small" for="onlySANBI">Use of data by SANBI only</label>
-              </div>
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="hostingDataSANBI" disabled>
-                <label class="custom-control-label text-muted small" for="hostingDataSANBI">Hosting / serving the data through SANBI platforms and portals</label>
-              </div>
-              <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther" disabled>
-                <label class="custom-control-label text-muted small" for="hostingDataSANBIOther">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the datas</label>
-              </div>              
-              <!-- <div class="form-group">
-                <small id="data-privacy" class="form-text text-muted">Select user lists  you need to receive communications from</small>
-              </div> -->
-              <button type="submit" class="account-button" id="submit-button">Update</button>
-            </form>
+            </div>
           </div>
-        </div>
+          <div class="row" style="margin-right: 0px;">
+            <div class="col-md-6 offset-md-10">
+              <button type="submit" class="sawps-font-button orange-button mt-0" id="submit-button" style="font-weight: bold;">Update</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
   </div>
 
   <script>
+
+  const toggleMessage = document.getElementById("toggleMessage");
+  const switches = document.querySelectorAll(".custom-switch .custom-control-input");
+
+  function handleToggleMessage() {
+    let isAnySwitchToggled = false;
+    switches.forEach((switchElement) => {
+      if (switchElement.checked) {
+        isAnySwitchToggled = true;
+      }else {
+        isAnySwitchToggled = true;
+      }
+    });
+
+    toggleMessage.style.display = isAnySwitchToggled ? "block" : "none";
+  }
+
+  switches.forEach((switchElement) => {
+    switchElement.addEventListener("change", handleToggleMessage);
+  });
 
     $(document).ready(function() {
         setTimeout(function() {
@@ -134,11 +145,30 @@
     .end-0 {
         right: 0;
     }
+
+    .form-control:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
+    }
+
+    /* Override default focus styles for the switches */
+    .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
+      border-color: var(--green);
+      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
+    }
+    
+    /* Style checked switches with green color */
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+      background-color: var(--green); 
+      border-color: var(--green); 
+    }
+
+    .text-warning-custom {
+      color: var(--green);
+    }
   </style>
 
 </section>
 
-{% endblock %}
-{% block footer %}
 {% endblock %}
 

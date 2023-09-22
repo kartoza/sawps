@@ -10,7 +10,7 @@ djangorestframework-gis==1.0
 requests==2.31.0
 
 # The uWSGI server
-uwsgi==2.0.21
+uwsgi==2.0.22
 
 # Use webpack to generate your static bundles without django's staticfiles or opaque wrappers.
 django-webpack-loader==1.8.1
@@ -40,7 +40,7 @@ django-allauth==0.54.0
 
 # for the 2fa
 django-otp==1.2.1
-django-allauth-2fa==0.10.0
+django-allauth-2fa==0.11.1
 
 # area calculation
 area==1.1.1

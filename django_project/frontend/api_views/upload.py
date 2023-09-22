@@ -15,6 +15,7 @@ from frontend.models.boundary_search import (
     GEOJSON,
     GEOPACKAGE,
     SHAPEFILE,
+    KML,
     BoundarySearchRequest
 )
 from frontend.utils.upload_file import (
@@ -40,13 +41,17 @@ class BoundaryFileUpload(APIView):
             return SHAPEFILE
         elif filename.lower().endswith('.gpkg'):
             return GEOPACKAGE
+        elif filename.lower().endswith('.kml'):
+            return KML
         return ''
 
     def validate_shapefile_zip(self, file_obj: any) -> str:
         _, error = validate_shapefile_zip(file_obj)
         if error:
             return ('Missing required file(s) inside zip file: \n- ' +
-                    '\n- '.join(error)
+                    '\n- '.join(error) +
+                    '\n Please make sure it is a valid zip file and '
+                    'the shp file is at the root directory of the zip package'
                     )
         return ''
 
@@ -172,6 +177,7 @@ class BoundaryFileSearchStatus(APIView):
             data={
                 'status': search_request.status,
                 'parcels': search_request.parcels,
+                'used_parcels': search_request.used_parcels,
                 'bbox': (
                     list(search_request.geometry.extent) if
                     search_request.geometry else []

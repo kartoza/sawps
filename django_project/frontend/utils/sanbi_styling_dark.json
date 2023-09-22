@@ -1680,7 +1680,7 @@
       "type": "symbol",
       "source": "sanbi",
       "source-layer": "place_name_smallest_scale",
-      "minzoom": 5,
+      "minzoom": 6,
       "maxzoom": 7,
       "layout": {
         "text-field": "{name}",
@@ -1751,6 +1751,78 @@
         "text-size": 16,
         "text-font": ["Open Sans Bold"],
         "text-transform": "uppercase"
+      },
+      "paint": {
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "label_provinces_most",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": [
+        "all",
+        ["!=", "adm1_en", "Western Cape"],
+        ["!=", "adm1_en", "Mpumalanga"]
+      ],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase"
+      },
+      "paint": {
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "label_provinces_MP",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": ["all", ["==", "adm1_en", "Mpumalanga"]],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase",
+        "text-offset": [0.5, 2]
+      },
+      "paint": {
+        "text-halo-color": "rgba(0, 0, 0, 1)",
+        "text-color": "rgba(240, 240, 240, 1)",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "label_provinces_WC",
+      "type": "symbol",
+      "source": "sanbi",
+      "source-layer": "province_labels",
+      "minzoom": 5,
+      "maxzoom": 6,
+      "filter": ["all", ["==", "adm1_en", "Western Cape"]],
+      "layout": {
+        "text-field": "{adm1_en}",
+        "visibility": "visible",
+        "symbol-placement": "point",
+        "text-size": 16,
+        "text-font": ["Open Sans Bold"],
+        "text-transform": "uppercase",
+        "text-offset": [-2, 2.5]
       },
       "paint": {
         "text-halo-color": "rgba(0, 0, 0, 1)",

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Checkbox, ListItemText } from "@mui/material";
+import { Box, Button, Checkbox, ListItemText, Typography } from "@mui/material";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import Loading from '../../../components/Loading';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -24,121 +24,56 @@ const MenuProps = {
     },
 };
 
-const FETCH_AVAILABLE_DATA = '/data-table/'
+const FETCH_AVAILABLE_DATA = '/api/data-table/'
 
 const DataList = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const selectedMonths = useAppSelector((state: RootState) => state.SpeciesFilter.selectedMonths)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
+    const selectedInfo = useAppSelector((state: RootState) => state.SpeciesFilter.selectedInfoList)
     const [selectedColumns, setSelectedColumns] = useState([]);
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
-    const columns: GridColDef[] = [
-        { field: 'property_name', headerName: 'Property Name', width: 150 },
-        { field: 'property_id', headerName: 'Property ID', width: 150 },
-        { field: 'owner', headerName: 'Owner', width: 150 },
-        { field: 'owner_email', headerName: 'Owner Email', width: 150 },
-        { field: 'property_type', headerName: 'Property Type', width: 150 },
-        { field: 'province', headerName: 'Province', width: 150 },
-        { field: 'size', headerName: 'Size (ha)', width: 150 },
-        { field: 'scientific_name', headerName: 'Scientific Name', width: 150 },
-        { field: 'common_name', headerName: 'Common Name', width: 150 },
-        { field: 'count_total', headerName: 'Count Total', width: 150 },
-        { field: 'count_adult_males', headerName: 'Count Adult Males', width: 150 },
-        { field: 'count_adult_females', headerName: 'Count Adult Females', width: 150 },
-        { field: 'count_subadult_total', headerName: 'Count Subadult Total', width: 150 },
-        { field: 'count_subadult_male', headerName: 'Count Subadult Male', width: 150 },
-        { field: 'count_subadult_female', headerName: 'Count Subadult Female', width: 150 },
-        { field: 'count_juvenile_total', headerName: 'Count Juvenile Total', width: 150 },
-        { field: 'count_juvenile_male', headerName: 'Count Juvenile Male', width: 150 },
-        { field: 'count_juvenile_female', headerName: 'Count Juvenile Female', width: 150 },
-        { field: 'groups', headerName: 'Groups', width: 150 },
-        { field: 'open_closed_system', headerName: 'Open/Closed System', width: 150 },
-        { field: 'area_available_ha', headerName: 'Area Available (ha)', width: 150 },
-        { field: 'ar_name', headerName: 'Ar Name', width: 150 },
-        { field: 'count_method', headerName: 'Count Method', width: 150 },
-        { field: 'survey_method', headerName: 'Survey Method', width: 150 },
-        { field: 'sampling_effort_coverage', headerName: 'Sampling Effort Coverage', width: 150 },
-        { field: 'sampling_notes', headerName: 'Sampling Notes', width: 150 },
-        { field: 'count_year', headerName: 'Count Year', width: 150 },
-        { field: 'presence_only', headerName: 'Presence Only', width: 150 },
-        { field: 'reintroduction_total', headerName: '(Re)Introduction Total', width: 150 },
-        { field: 'reintroduction_adult_males', headerName: '(Re)Introduction Adult Males', width: 150 },
-        { field: 'reintroduction_adult_females', headerName: '(Re)Introduction Adult Females', width: 150 },
-        { field: 'reintroduction_male_juveniles', headerName: '(Re)Introduction Male Juveniles', width: 150 },
-        { field: 'reintroduction_female_juveniles', headerName: '(Re)Introduction Female Juveniles', width: 150 },
-        { field: 'founder_population', headerName: 'Founder Population', width: 150 },
-        { field: 'reintroduction_source', headerName: '(Re)Introduction Source', width: 150 },
-        { field: 'intake_permit_number', headerName: 'Intake Permit Number', width: 150 },
-        { field: 'offtake_total', headerName: 'Offtake Total', width: 150 },
-        { field: 'offtake_adult_males', headerName: 'Offtake Adult Males', width: 150 },
-        { field: 'offtake_adult_females', headerName: 'Offtake Adult Females', width: 150 },
-        { field: 'offtake_male_juveniles', headerName: 'Offtake Male Juveniles', width: 150 },
-        { field: 'offtake_female_juveniles', headerName: 'Offtake Female Juveniles', width: 150 },
-        { field: 'offtake_event', headerName: 'Offtake Event', width: 150 },
-        { field: 'additional_detail', headerName: 'Additional Detail', width: 150 },
-        { field: 'translocation_destination', headerName: 'Translocation Destination', width: 150 },
-        { field: 'offtake_permit_number', headerName: 'Offtake Permit Number', width: 150 },
-        { field: 'notes', headerName: 'Notes', width: 150 },
-    ];
+    const [columns, setColumns] = useState([])
+    const [rows, setRows] = useState([])
+    const [tableData, setTableData] = useState<any>()
+    const [activityTableGrid, setActivityTable] = useState<any>()
+    const [userRole, setUserRole] = useState<string>('')
+    const dataset = checkUserRole(userRole) ?  data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
+    const activityDataSet = data ? data.filter(item => item?.Activity_report).flatMap((each) => Object.keys(each)) : [];
+    const dataTableList = data ? data.map((data, index) => ({ ...data, id: index })) : [];
+    const activity = dataTableList ? dataTableList.filter(item => item.Activity_report).map((item) => item.Activity_report) : [];
+    const activityReportList = activity.length > 0 ? activity.flatMap((each) => Object.keys(each)) : [];
+    const activityReportdataList = activity.map((data, index) => ({ ...data, id: index }));
+    const reportList = checkUserRole(userRole) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
+    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
+    const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
+    const color = {
+        "Property_report": '#9F89BF',
+        "Sampling_report": "#FF5252",
+        "Province_report": "#FF5252",
+        "Species_population_report": "#9F89BF",
+        "Activity_report": checkUserRole(userRole) ? "#696969": "#75B37A",
+        "Unplanned/natural_deaths": "#75B37A",
+        "Planned_translocation": "#F9A95D",
+        "Planned_hunt/cull": "#FF5252",
+        "Planned_euthanasia": "#9F89BF",
+        "Unplanned/illegal_hunt": "#696969",
+    }
 
-    const rows = data.map((data, index) => {
-        const { taxon, property, annualpopulation, annualpopulation_per_activity } = data;
-        return {
-            id: index + 1,
-            property_name: property?.name,
-            property_id: property?.id,
-            owner: property?.owner,
-            owner_email: property?.owner_email,
-            property_type: property?.property_type,
-            province: property?.province,
-            size: property?.size,
-            scientific_name: taxon?.scientific_name,
-            common_name: taxon?.common_name_varbatim,
-            count_total: annualpopulation?.total,
-            count_adult_males: annualpopulation?.adult_male,
-            count_adult_females: annualpopulation?.adult_female,
-            count_subadult_total: annualpopulation?.sub_adult_total,
-            count_subadult_male: annualpopulation?.sub_adult_male,
-            count_subadult_female: annualpopulation?.sub_adult_female,
-            count_juvenile_total: annualpopulation?.juvenile_total,
-            count_juvenile_male: annualpopulation?.juvenile_male,
-            count_juvenile_female: annualpopulation?.juvenile_female,
-            groups: annualpopulation?.group,
-            open_closed_system: annualpopulation?.open_close_system,
-            area_available_ha: property?.area_available,
-            ar_name: '',
-            count_method: annualpopulation?.count_method,
-            survey_method: annualpopulation?.survey_method,
-            sampling_effort_coverage: annualpopulation?.sampling_effort,
-            sampling_notes: annualpopulation?.note,
-            count_year: annualpopulation?.year,
-            presence_only: annualpopulation?.presence,
-            reintroduction_total: '',
-            reintroduction_adult_males: '',
-            reintroduction_adult_females: '',
-            reintroduction_male_juveniles: '',
-            reintroduction_female_juveniles: '',
-            founder_population: annualpopulation_per_activity?.founder_population,
-            reintroduction_source: annualpopulation_per_activity?.reintroduction_source,
-            intake_permit_number: '',
-            offtake_total: '',
-            offtake_adult_males: '',
-            offtake_adult_females: '',
-            offtake_male_juveniles: '',
-            offtake_female_juveniles: '',
-            offtake_event: '',
-            additional_detail: '',
-            translocation_destination: '',
-            offtake_permit_number: '',
-            notes: '',
-        };
-    });
+    function checkUserRole(userRole:string) {
+        const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist"];
+        return allowedRoles.includes(userRole);
+    }
+
+    useEffect(() => {
+        const storedUserRole = localStorage.getItem('user_role');
+        setUserRole(storedUserRole);
+    }, []);
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?month=${selectedMonths}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -150,8 +85,9 @@ const DataList = () => {
     }
 
     useEffect(() => {
+        setColumns([])
         fetchDataList();
-    }, [selectedMonths, startYear, endYear, selectedSpecies])
+    }, [startYear, endYear, selectedSpecies, selectedInfo, propertyId,organisationId])
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
             target: { value },
@@ -162,7 +98,8 @@ const DataList = () => {
     };
 
     const filteredColumns = columns.filter((column) =>
-        selectedColumns.includes(column.headerName)
+        selectedColumns.length > 0 ?
+            selectedColumns.includes(column.headerName) : []
     );
 
     const handleExportCsv = (): void => {
@@ -183,8 +120,112 @@ const DataList = () => {
         saveAs(blob, 'data.xlsx');
     };
 
+    useEffect(() => {
+        const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
+            <>
+                <Box className="data-table" style={{ backgroundColor: color[each as keyof typeof color] }}>
+                    {each.split('_')
+                        .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
+                        .join(' ')}
+                </Box>
+                {
+                    reportList.length > 0 && reportList.map((item, index) => {
+                        const cellData = item[each];
+                        if (cellData !== undefined) {
+                            const cellKeys = Object.keys(cellData[0]);
+                            const generatedColumns = cellKeys.map((key) => ({
+                                field: key,
+                                headerName: key.split('_')
+                                    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                                    .join(' '),
+                                width: 125,
+                            }));
+                            for (const value of generatedColumns) {
+                                if (filteredColumns.length === 0) {
+                                    columns.push(value);
+                                }
+                            }
+                            const cellRows = cellData.map((row: any, rowIndex: any) => ({
+                                id: rowIndex,
+                                ...row,
+                            }));
+                            return (
+                                <DataGrid
+                                    key={index}
+                                    rows={cellRows}
+                                    columns={selectedColumns.length > 0 ? filteredColumns : generatedColumns}
+                                    disableRowSelectionOnClick
+                                    components={{
+                                        Pagination: null,
+                                    }}
+                                />
+                            );
+                        }
+                    })
+                }
+            </>
+        )
+        const activityDataGrid = checkUserRole(userRole) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
+            <>
+                <Box className="data-table" style={{ backgroundColor: color[each as keyof typeof color] }}>
+                    {each.split('_')
+                        .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
+                        .join(' ')}
+                </Box>
+                {activityReportList.map((each: any) =>
+                    <>
+                        <Box className="data-table" style={{ backgroundColor: color[each as keyof typeof color] }}>
+                            {each.split('_')
+                                .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
+                                .join(' ')
+                            }
+                        </Box>
+                        {activityReportdataList.length > 0 && activityReportdataList.map((item, index) => {
+                            const cellData = item[each];
+                            if (cellData !== undefined) {
+                                const cellKeys = cellData[0] && Object.keys(cellData[0]);
+                                const generatedColumns = cellKeys.length > 0 && cellKeys.map((key) => ({
+                                    field: key,
+                                    headerName: key.split('_')
+                                        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                                        .join(' '),
+                                    width: 125,
+                                }));
+                                const cellRows = cellData.map((row: any, rowIndex: any) => ({
+                                    id: rowIndex,
+                                    ...row,
+                                }));
+                                return (
+                                    <DataGrid
+                                        key={index}
+                                        rows={cellRows}
+                                        columns={generatedColumns}
+                                        disableRowSelectionOnClick
+                                        components={{
+                                            Pagination: null,
+                                        }}
+                                    />
+                                );
+                            }
+                        })}
+                    </>
+                )}
+            </>)
+        setActivityTable(activityDataGrid)
+        const uniqueColumns = [];
+        const seenFields = new Set();
+        for (const column of columns) {
+            if (!seenFields.has(column.field)) {
+                uniqueColumns.push(column);
+                seenFields.add(column.field);
+            }
+        }
+        setColumns(uniqueColumns)
+        setTableData(dataGrid)
+    }, [data, selectedColumns])
+
     return (
-        <Box>
+        <Box style={{ paddingRight: '20px' }}>
             <Box className="bgGreen">
                 <Box className="selectBox">
                     <FormControl fullWidth>
@@ -209,18 +250,17 @@ const DataList = () => {
                 </Box>
             </Box>
             {loading ? <Loading /> :
-                <Box className="dataTable">
-                    <DataGrid
-                        rows={rows}
-                        columns={filteredColumns.length > 0 ? filteredColumns : columns}
-                        checkboxSelection={true}
-                        disableRowSelectionOnClick
-                        components={{
-                            Pagination: null,
-                        }}
-                    />
+                <Box className="dataTable-auto">
+                    <Box className="dataTable">
+                        {data.length > 0 ?
+                            <Box>{tableData}
+                                {activityTableGrid}
+                            </Box> :
+                            <Typography>
+                                No Data To Show
+                            </Typography>}
+                    </Box>
                 </Box>}
-
             <Box className="downlodBtn">
                 <Button onClick={handleExportExcel} variant="contained" color="primary">
                     Download data Report

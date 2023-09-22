@@ -6,9 +6,9 @@ import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
 import Loading from "../../../components/Loading";
-import { useAppSelector } from "../../../app/hooks";
-import { RootState } from "../../../app/store";
 import "./index.scss";
+import Card from "@mui/material/Card";
+import {ChartCard} from "./ChartCard";
 
 
 Chart.register(CategoryScale);
@@ -16,12 +16,8 @@ Chart.register(ChartDataLabels);
 
 const FETCH_SPECIES_AREA_AVAILABLE = '/api/total-area-available-to-species/'
 
-const PropertyAvailableBarChart = () => {
-    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
-    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
-    const [loading, setLoading] = useState(false)
+const PropertyAvailableBarChart = (props:any) => {
+    const {selectedSpecies, propertyId, startYear, endYear, loading, setLoading} = props
     const [propertyAreaAvailableData, setPropertyAreaAvailableData] = useState([])
     const labels = [];
     const  totalArea= [];
@@ -44,8 +40,8 @@ const PropertyAvailableBarChart = () => {
     }, [propertyId, startYear, endYear, selectedSpecies])
 
     for (const each of propertyAreaAvailableData) {
-        labels.push(each.property__name);
-        totalArea.push(each.total_species_area);
+        labels.push(each.property_name);
+        totalArea.push(each.area);
     }
 
     const data = {
@@ -85,15 +81,16 @@ const PropertyAvailableBarChart = () => {
     }
 
     return (
-        <Box>
-            {loading ? <Loading /> :
-                <Box className="white-chart" >
-                    <Typography>Total area available to species (ha)</Typography>
-                    <Bar data={data} options={options} height={225} width={1000} />
-                    <Typography>Properties</Typography>
-                </Box >}
-        </Box>
-    );
+        <ChartCard
+            loading={loading}
+            chartComponent={
+                <Bar data={data} options={options} height={225} width={1000} />
+            }
+            title={'Total area available to species (ha)'}
+            xLabel={'Properties'}
+        />
+    )
+
 };
 
 export default PropertyAvailableBarChart;

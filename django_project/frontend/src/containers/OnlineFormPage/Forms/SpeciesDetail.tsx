@@ -33,18 +33,29 @@ interface SpeciesDetailInterface {
     initialData: UploadSpeciesDetailInterface;
     taxonMetadataList: TaxonMetadata[];
     openCloseMetadataList: CommonUploadMetadata[];
-    countMethodMetadataList: CommonUploadMetadata[];
     surveyMethodMetadataList: CommonUploadMetadata[];
-    samplingUnitMetadataList: CommonUploadMetadata[];
+    sampling_effort_coverages: CommonUploadMetadata[];
+    population_statuses: CommonUploadMetadata[];
+    population_estimate_categories: CommonUploadMetadata[];
+    certainties: CommonUploadMetadata[];
     setIsDirty: (isDirty: boolean) => void;
     handleNext: (data: UploadSpeciesDetailInterface) => void;
     handleSaveDraft: (data: UploadSpeciesDetailInterface) => void;
 }
 
+const isOtherSelected = (value: string) => {
+    if (value) {
+        return value.toLowerCase().includes('other')
+    }
+    return false
+}
+
 export default function SpeciesDetail(props: SpeciesDetailInterface) {
     const { 
         initialData, taxonMetadataList, openCloseMetadataList,
-        countMethodMetadataList, surveyMethodMetadataList, samplingUnitMetadataList,
+        surveyMethodMetadataList, sampling_effort_coverages,
+        population_statuses, population_estimate_categories,
+        certainties,
         setIsDirty, handleNext, handleSaveDraft
     } = props
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
@@ -145,6 +156,9 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
 
     const updateAnnualPopulationSelectValue = (field: keyof AnnualPopulationInterface, value: number, sourceList: CommonUploadMetadata[]) => {
         let _name_field = field.replace('_id', '_name')
+        if (field === 'population_estimate_certainty') {
+            _name_field = 'population_estimate_certainty_name'
+        }
         let _selected = sourceList.find(element => element.id === value)
         if (_selected) {
             setData({
@@ -185,15 +199,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 }
             }
         }
-        if (data.annual_population.count_method_id === 0) {
-            _error_validation = {
-                ..._error_validation,
-                annual_population: {
-                    ..._error_validation.annual_population,
-                    count_method_id: true
-                }
-            }
-        }
         if (data.annual_population.survey_method_id === 0) {
             _error_validation = {
                 ..._error_validation,
@@ -202,15 +207,33 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                     survey_method_id: true
                 }
             }
+        } else if (isOtherSelected(data.annual_population.survey_method_name) &&
+            (data.annual_population.survey_method_other === null || data.annual_population.survey_method_other === '')) {
+                _error_validation = {
+                    ..._error_validation,
+                    annual_population: {
+                        ..._error_validation.annual_population,
+                        survey_method_other: true
+                    }
+                }
         }
-        if (data.annual_population.sampling_size_unit_id === 0) {
+        if (data.annual_population.population_estimate_category_id === 0) {
             _error_validation = {
                 ..._error_validation,
                 annual_population: {
                     ..._error_validation.annual_population,
-                    sampling_size_unit_id: true
+                    population_estimate_category_id: true
                 }
             }
+        } else if (isOtherSelected(data.annual_population.population_estimate_category_name) &&
+            (data.annual_population.population_estimate_category_other === null || data.annual_population.population_estimate_category_other === '')) {
+                _error_validation = {
+                    ..._error_validation,
+                    annual_population: {
+                        ..._error_validation.annual_population,
+                        population_estimate_category_other: true
+                    }
+                }
         }
         setValidation(_error_validation)
         return Object.keys(_error_validation).length === 0
@@ -316,42 +339,122 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                 </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.survey_method_id}>
-                                    <InputLabel id="survey-method-label">Survey Method</InputLabel>
-                                    <Select
-                                        labelId="survey-method-label"
-                                        id="survey-method-select"
-                                        value={data.annual_population.survey_method_id ? data.annual_population.survey_method_id.toString() : ""}
-                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('survey_method_id', parseInt(event.target.value), surveyMethodMetadataList)}
-                                        displayEmpty
-                                        label="Survey Method"
-                                    >
-                                        { surveyMethodMetadataList.map((common: CommonUploadMetadata) => {
-                                            return (
-                                                <MenuItem key={common.id} value={common.id}>
-                                                    {common.name}
-                                                </MenuItem>
-                                            )
-                                        })                                            
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6}>
+                                        <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.survey_method_id}>
+                                            <InputLabel id="survey-method-label">Survey Method</InputLabel>
+                                            <Select
+                                                labelId="survey-method-label"
+                                                id="survey-method-select"
+                                                value={data.annual_population.survey_method_id ? data.annual_population.survey_method_id.toString() : ""}
+                                                onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('survey_method_id', parseInt(event.target.value), surveyMethodMetadataList)}
+                                                displayEmpty
+                                                label="Survey Method"
+                                            >
+                                                { surveyMethodMetadataList.map((common: CommonUploadMetadata) => {
+                                                    return (
+                                                        <MenuItem key={common.id} value={common.id}>
+                                                            {common.name}
+                                                        </MenuItem>
+                                                    )
+                                                })
+                                                }
+                                            </Select>
+                                            <FormHelperText>{validation.annual_population?.survey_method_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        { isOtherSelected(data.annual_population.survey_method_name) && 
+                                            <TextField id='survey_method_other' label='If other, please explain' value={data.annual_population.survey_method_other}
+                                                variant='standard'
+                                                onChange={(e) => updateAnnualPopulation('survey_method_other', e.target.value) } fullWidth
+                                                helperText=" " />
                                         }
-                                    </Select>
-                                    <FormHelperText>{validation.annual_population?.survey_method_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
-                                </FormControl>
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
-                                        <TextField id='area_covered' required label='Sampled Area' value={data.annual_population.area_covered.toString()}
-                                            variant='standard' type='number'
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        ha
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            onChange={(e) => updateAnnualPopulation('area_covered', parseFloat(e.target.value)) } fullWidth
-                                            helperText=" " />
+                                    <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                        <InputLabel id="sampling-effort-coverage-label">Sampling Effort Coverage</InputLabel>
+                                        <Select
+                                        labelId="sampling-effort-coverage-label"
+                                        id="sampling-effort-coverage-select"
+                                        value={data.annual_population.sampling_effort_coverage_id ? data.annual_population.sampling_effort_coverage_id.toString() : ""}
+                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('sampling_effort_coverage_id', parseInt(event.target.value), sampling_effort_coverages)}
+                                        displayEmpty
+                                        label="Sampling Effort Coverage"
+                                        style={{ width: '200px' }}
+                                        >
+                                        {sampling_effort_coverages.map((common: CommonUploadMetadata) => {
+                                            return (
+                                            <MenuItem key={common.id} value={common.id}>
+                                                {common.name}
+                                            </MenuItem>
+                                            )
+                                        })}
+                                        </Select>
+                                        <FormHelperText>{' '}</FormHelperText>
+                                    </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                    <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                        <InputLabel id="population-status-label">Population Status</InputLabel>
+                                        <Select
+                                        labelId="population-status-label"
+                                        id="population-status-select"
+                                        value={data.annual_population.population_status_id ? data.annual_population.population_status_id.toString() : ""}
+                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_status_id', parseInt(event.target.value), population_statuses)}
+                                        displayEmpty
+                                        label="Population Status"
+                                        style={{ width: '200px' }}
+                                        >
+                                        {population_statuses.map((common: CommonUploadMetadata) => {
+                                            return (
+                                            <MenuItem key={common.id} value={common.id}>
+                                                {common.name}
+                                            </MenuItem>
+                                            )
+                                        })}
+                                        </Select>
+                                        <FormHelperText>{' '}</FormHelperText>
+                                    </FormControl>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item className='InputContainer'>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6}>
+                                        <FormControl variant="standard" required className='DropdownInput' fullWidth>
+                                            <InputLabel id="population-estimate-category-label">Population Estimate Category</InputLabel>
+                                            <Select
+                                                labelId="population-estimate-category-label"
+                                                id="population-estimate-category-select"
+                                                value={data.annual_population.population_estimate_category_id ? data.annual_population.population_estimate_category_id.toString() : ""}
+                                                onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_estimate_category_id', parseInt(event.target.value), population_estimate_categories)}
+                                                displayEmpty
+                                                label="Population Estimate Category"
+                                            >
+                                                { population_estimate_categories.map((common: CommonUploadMetadata) => {
+                                                    return (
+                                                        <MenuItem key={common.id} value={common.id}>
+                                                            {common.name}
+                                                        </MenuItem>
+                                                    )
+                                                })                                            
+                                                }
+                                            </Select>
+                                            <FormHelperText>{' '}</FormHelperText>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        { isOtherSelected(data.annual_population.population_estimate_category_name) && 
+                                            <TextField id='population_estimate_category_other' label='If other, please explain' value={data.annual_population.population_estimate_category_other}
+                                                variant='standard'
+                                                onChange={(e) => updateAnnualPopulation('population_estimate_category_other', e.target.value) } fullWidth
+                                                helperText={validation.annual_population?.population_estimate_category_other ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
+                                        }
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -516,6 +619,10 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                         ha
                                                     </InputAdornment>
                                                 ),
+                                                inputProps: { 
+                                                    min: 0,
+                                                    step: 0.5
+                                                }
                                             }}
                                             type='number'
                                             variant="standard"
@@ -535,55 +642,19 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                     helperText=" " />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.count_method_id}>
-                                    <InputLabel id="count-method-label">Count Method</InputLabel>
-                                    <Select
-                                        labelId="count-method-label"
-                                        id="count-method-select"
-                                        value={data.annual_population.count_method_id ? data.annual_population.count_method_id.toString() : ""}
-                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('count_method_id', parseInt(event.target.value), countMethodMetadataList)}
-                                        displayEmpty
-                                        label="Count Method"
-                                    >
-                                        { countMethodMetadataList.map((common: CommonUploadMetadata) => {
-                                            return (
-                                                <MenuItem key={common.id} value={common.id}>
-                                                    {common.name}
-                                                </MenuItem>
-                                            )
-                                        })                                            
-                                        }
-                                    </Select>
-                                    <FormHelperText>{validation.annual_population?.count_method_id ? REQUIRED_FIELD_ERROR_MESSAGE: ' '}</FormHelperText>
-                                </FormControl>
-                            </Grid>
-                            <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            id='sampling_effort'
-                                            label='Sampling Effort'
-                                            required
-                                            type='number'
-                                            variant="standard"
-                                            fullWidth
-                                            value={data.annual_population.sampling_effort.toString()}
-                                            onChange={(e) => updateAnnualPopulation('sampling_effort', parseFloat(e.target.value)) }
-                                            helperText=' '
-                                        />
-                                    </Grid>
-                                    <Grid item xs={8}>
-                                        <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.sampling_size_unit_id}>
-                                            <InputLabel id="sampling-unit-label">Sampling Unit</InputLabel>
+                                    <Grid item xs={6}>
+                                        <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.population_estimate_certainty}>
+                                            <InputLabel id="population-estimate-certainty-label">Population Estimate Certainty</InputLabel>
                                             <Select
-                                                labelId="sampling-unit-label"
-                                                id="sampling-unit-select"
-                                                value={data.annual_population.sampling_size_unit_id ? data.annual_population.sampling_size_unit_id.toString() : ""}
-                                                onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('sampling_size_unit_id', parseInt(event.target.value), countMethodMetadataList)}
+                                                labelId="population-estimate-certainty-label"
+                                                id="population-estimate-certainty-select"
+                                                value={data.annual_population.population_estimate_certainty || data.annual_population.population_estimate_certainty == 0 ? data.annual_population.population_estimate_certainty.toString() : ""}
+                                                onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_estimate_certainty', parseInt(event.target.value), certainties)}
                                                 displayEmpty
-                                                label="Sampling Unit"
+                                                label="Population Estimate Certainty"
                                             >
-                                                { samplingUnitMetadataList.map((common: CommonUploadMetadata) => {
+                                                { certainties.map((common: CommonUploadMetadata) => {
                                                     return (
                                                         <MenuItem key={common.id} value={common.id}>
                                                             {common.name}
@@ -592,8 +663,47 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 })                                            
                                                 }
                                             </Select>
-                                            <FormHelperText>{validation.annual_population?.sampling_size_unit_id ? REQUIRED_FIELD_ERROR_MESSAGE: ' '}</FormHelperText>
+                                            <FormHelperText>{validation.annual_population?.population_estimate_certainty ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
                                         </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <TextField id='certainty_of_bounds' label='Certainty of Bounds' value={data.annual_population.certainty_of_bounds ? data.annual_population.certainty_of_bounds : ''}
+                                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                                variant='standard'
+                                                onChange={(e) => updateAnnualPopulation('certainty_of_bounds', parseInt(e.target.value)) } fullWidth
+                                                helperText=" " />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item className='InputContainer'>
+                                <Grid container flexDirection={'row'} spacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField id='upper_confidence_level' label='Upper Confidence Level' value={data.annual_population.upper_confidence_level || data.annual_population.upper_confidence_level == 0 ? data.annual_population.upper_confidence_level : ''}
+                                            type='number'
+                                            variant='standard'
+                                            InputProps={{
+                                                inputProps: { 
+                                                    min: 0,
+                                                    max: 100,
+                                                    step: 0.5
+                                                }
+                                            }}
+                                            onChange={(e) => updateAnnualPopulation('upper_confidence_level', parseFloat(e.target.value)) } fullWidth
+                                            helperText=" " />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <TextField id='lower_confidence_level' label='Lower Confidence Level' value={data.annual_population.lower_confidence_level || data.annual_population.lower_confidence_level == 0 ? data.annual_population.lower_confidence_level : ''}
+                                                type='number'
+                                                variant='standard'
+                                                InputProps={{
+                                                    inputProps: { 
+                                                        min: 0,
+                                                        max: 100,
+                                                        step: 0.5
+                                                    }
+                                                }}
+                                                onChange={(e) => updateAnnualPopulation('lower_confidence_level', parseFloat(e.target.value)) } fullWidth
+                                                helperText=" " />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -610,7 +720,19 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 <Grid item>
                     <Button variant='contained' onClick={() => {
                         if (validateSpeciesDetail()) {
-                            handleNext(data)
+                            let _data = {
+                                ...data,
+                                annual_population: {...data.annual_population},
+                                intake_populations: [...data.intake_populations],
+                                offtake_populations: [...data.offtake_populations]                                
+                            }
+                            if (_data.annual_population.population_estimate_certainty_name === '') {
+                                let _selected = certainties.find(element => element.id === data.annual_population.population_estimate_certainty)
+                                if (_selected) {
+                                    _data.annual_population.population_estimate_certainty_name = _selected.name
+                                }
+                            }
+                            handleNext(_data)
                         }
                     }}>NEXT</Button>
                 </Grid>

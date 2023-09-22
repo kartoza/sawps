@@ -80,12 +80,44 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                     variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='survey-method' label='Survey Method' defaultValue={displayText(data.annual_population.survey_method_name)}
-                                    variant='standard' disabled fullWidth />
+                                <Grid container flexDirection={'row'} spacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField id='survey-method' label='Survey Method' defaultValue={displayText(data.annual_population.survey_method_name)}
+                                            variant='standard' disabled fullWidth />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        { data.annual_population.survey_method_other &&
+                                            <TextField id='survey-method-other' label='If other, please explain' defaultValue={displayText(data.annual_population.survey_method_other)}
+                                                variant='standard' disabled fullWidth />
+                                        }
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='area_covered' required label='Sampled Area' defaultValue={`${displayNumber(data.annual_population.area_covered)} ha`}
-                                    variant='standard' disabled fullWidth />
+                                <Grid container flexDirection={'row'} spacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField id='sampling-effort-coverage' label='Sampling Effort Coverage' defaultValue={displayText(data.annual_population.sampling_effort_coverage_name)}
+                                            variant='standard' disabled fullWidth />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <TextField id='population status' label='Population Status' defaultValue={displayText(data.annual_population.population_status_name)}
+                                            variant='standard' disabled fullWidth />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item className='InputContainer'>
+                                <Grid container flexDirection={'row'} spacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField id='population-estimate-category' label='Population Estimate Category' defaultValue={displayText(data.annual_population.population_estimate_category_name)}
+                                            variant='standard' disabled fullWidth />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        { data.annual_population.population_estimate_category_other &&
+                                            <TextField id='population-estimate-category-other' label='If other, please explain' defaultValue={displayText(data.annual_population.population_estimate_category_other)}
+                                                variant='standard' disabled fullWidth />
+                                        }
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <TextField id='sampling_note' label='Sampling Notes' defaultValue={displayText(data.annual_population.note)}
@@ -225,7 +257,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                         <TextField
                                             id='area_available_to_species'
                                             label='Area available to species'
-                                            required
                                             variant="standard"
                                             defaultValue={displayText(data.annual_population.area_available_to_species ? `${data.annual_population.area_available_to_species} ha` : '0 Ha')}
                                             disabled
@@ -238,26 +269,49 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                     variant='standard' disabled fullWidth />
                             </Grid>
                             <Grid item className='InputContainer'>
-                                <TextField id='count_method' label='Count Method' defaultValue={displayText(data.annual_population.count_method_name)}
-                                    variant='standard' disabled fullWidth />
+                                <Grid container flexDirection={'row'} spacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            id='population_estimate_certainty'
+                                            label='Population Estimate Certainty'
+                                            disabled
+                                            variant="standard"
+                                            fullWidth
+                                            defaultValue={data.annual_population.population_estimate_certainty_name}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            id='certainty_of_bounds'
+                                            label='Certainty of Bounds'
+                                            variant="standard"
+                                            defaultValue={displayNumber(data.annual_population.certainty_of_bounds)}
+                                            disabled
+                                        />
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
                                         <TextField
-                                            id='sampling_effort'
-                                            label='Sampling Effort'
-                                            required
-                                            type='number'
+                                            id='upper_confidence_level'
+                                            label='Upper Confidence Level'
+                                            disabled
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={displayNumber(data.annual_population.sampling_effort)}
-                                            disabled
+                                            defaultValue={displayNumber(data.annual_population.upper_confidence_level)}                                            
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <TextField id='sampling_unit' label='Sampling Unit' defaultValue={displayText(data.annual_population.sampling_size_unit_name)}
-                                            variant='standard' disabled fullWidth />
+                                        <TextField
+                                            id='lower_confidence_level'
+                                            label='Lower Confidence Level'
+                                            disabled
+                                            variant="standard"
+                                            fullWidth
+                                            defaultValue={displayNumber(data.annual_population.lower_confidence_level)}                                            
+                                        />
                                     </Grid>
                                 </Grid>
                             </Grid>

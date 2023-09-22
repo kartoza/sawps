@@ -13,7 +13,7 @@ class OrganisationSerializer(NameObjectBaseSerializer):
 
     class Meta:
         model = Organisation
-        fields = NameObjectBaseSerializer.Meta.fields
+        fields = '__all__'
 
 
 class OrganisationUsersSerializer(NameObjectBaseSerializer):

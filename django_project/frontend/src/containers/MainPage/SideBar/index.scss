@@ -37,6 +37,19 @@
         flex-wrap: nowrap;
         flex: 1 1 auto;
         height: 0px;
+        background: #fff;
+    }
+
+    .TabHeaders {
+        &.Single {
+            .MuiTabs-flexContainer {
+                justify-content: center;
+            }
+            .MuiTabs-indicator {
+                width: 100% !important;
+                left: 0px !important;
+            }
+        }
     }
 }
 
@@ -62,11 +75,16 @@
             box-shadow: 0px 2px 4px #858585;
         }
     }
+    .MuiAutocomplete-root {
+        .MuiInputBase-root {
+            padding-right: 9px !important;
+        }
+    }
 }
 .sidebarBox {
     padding: 0px 16px;
     width: 100%;
-    max-height: 77vh;
+    max-height: 69vh;
     overflow: auto;
     .sidebarBoxHeading {
         display: flex;
@@ -101,6 +119,7 @@
             min-height: 50px;
             border-radius: 5px;
             padding-left: 10px;
+            background-color: transparent !important;
             .MuiChip-root.MuiChip-filled{
                 border-radius: 4px;
                 svg{
@@ -148,9 +167,9 @@
     position: relative;
     padding-left: 10px;
     padding-right: 10px;
-    margin-top: 30px;
+    margin-top: 5px;
     .MuiSlider-marked {
-        margin-bottom: 10px;
+        margin-bottom: 0px;
         color: #282829;
     }
     .MuiSlider-markLabel{
@@ -160,4 +179,23 @@
     .MuiSlider-markLabel[data-index="1" ]{
         margin-left: -8px;
     }
+}
+.formboxInput{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+.form-inputFild{
+    width: 30%;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+.right-flids{
+    align-items: flex-end;
+}
+.formtext{
+   margin-top: 5px;
+   font-size: 14px;
 }

@@ -31,7 +31,8 @@ def find_layer_by_cname(cname: str):
 def find_parcel_base(cls, serialize_cls,
                      other: GEOSGeometry, parcel_keys=[]):
     """Base function to find parcel."""
-    parcels = cls.objects.filter(geom__within=other)
+    used_parcels = []
+    parcels = cls.objects.filter(geom__intersects=other)
     if parcel_keys:
         parcels = parcels.exclude(
             cname__in=parcel_keys
@@ -49,5 +50,5 @@ def find_parcel_base(cls, serialize_cls,
                 filtered_parcels,
                 many=True
             ).data
-            return results, cname_list
-    return [], []
+            return results, cname_list, used_parcels
+    return [], [], used_parcels

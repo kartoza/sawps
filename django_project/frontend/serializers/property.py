@@ -29,13 +29,6 @@ class ProvinceSerializer(NameObjectBaseSerializer):
 
 class PropertySerializer(serializers.ModelSerializer):
     """Property Serializer."""
-    def __init__(self, *args, **kwargs):
-        remove_fields = kwargs.pop('remove_fields', None)
-        super(PropertySerializer, self).__init__(*args, **kwargs)
-
-        if remove_fields:
-            for field_name in remove_fields:
-                self.fields.pop(field_name)
 
     owner = serializers.SerializerMethodField()
     owner_email = serializers.SerializerMethodField()
@@ -132,7 +125,7 @@ class PropertyDetailSerializer(PropertySerializer):
     def get_bbox(self, obj: Property):
         if obj.geometry is None:
             return []
-        return list(obj.geometry.extent)
+        return list(obj.geometry.envelope.extent)
 
     def get_centroid(self, obj: Property):
         if obj.geometry is None:
@@ -147,4 +140,22 @@ class PropertyDetailSerializer(PropertySerializer):
             'province', 'province_id',
             'size', 'organisation', 'organisation_id',
             'parcels', 'bbox', 'centroid'
+        ]
+
+
+class PropertySearchSerializer(PropertyDetailSerializer):
+    """Return id, name, bbox of property."""
+    id = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    def get_id(self, obj: Property):
+        return f'property-{obj.id}'
+
+    def get_type(self, obj: Property):
+        return 'property'
+
+    class Meta:
+        model = Property
+        fields = [
+            'id', 'type', 'name', 'bbox'
         ]

@@ -56,8 +56,8 @@ class SpeciesNationalTrend(APIView):
                 row.owned_species.taxon.scientific_name,
                 row.year,
                 row.total,
-                row.survey_method.name,
-                row.count_method.name,
+                row.survey_method.name if row.survey_method else '',
+                row.count_method.name if row.count_method else '',
                 'Open' if row.owned_species.property.open else 'Closed',
                 row.owned_species.property.property_type.name,
                 row.owned_species.property.property_size_ha,
@@ -70,7 +70,7 @@ class SpeciesNationalTrend(APIView):
             statistical_model_output else None
         )
         is_success, json_data = execute_statistical_model(
-            data_filepath, model=statistical_model)
+            data_filepath, species, model=statistical_model)
         # remove data_filepath
         remove_plumber_data(data_filepath)
         if is_success:

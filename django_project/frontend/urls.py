@@ -28,9 +28,12 @@ from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
     PropertiesPerPopulationCategoryAPIView,
     SpeciesPopuationCountPerYearAPIView,
-    SpeciesPopulationTotalAndDensityAPIView,
+    TotalAreaPerPropertyTypeAPIView,
+    SpeciesPopulationDensityPerPropertyAPIView,
     TotalCountPerActivityAPIView,
     TotalAreaAvailableToSpeciesAPIView,
+    PopulationPerAgeGroupAPIView,
+    TotalAreaVSAvailableAreaAPIView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -45,6 +48,7 @@ from frontend.api_views.property import (
     PropertyMetadataList,
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
+    PropertySearch
 )
 from frontend.api_views.statistical import SpeciesNationalTrend
 from frontend.api_views.upload import (
@@ -60,7 +64,13 @@ from .views.about import AboutView
 from .views.contact import ContactUsView
 from .views.help import HelpView
 from .views.home import HomeView
-from .views.map import MapView
+from .views.map import (
+    MapView,
+    redirect_to_data,
+    redirect_to_metrics,
+    redirect_to_upload,
+    redirect_to_explore
+)
 from .views.online_form import OnlineFormView
 from .views.switch_organisation import switch_organisation
 from .views.totp_device import (
@@ -69,6 +79,19 @@ from .views.totp_device import (
     view_totp_devices
 )
 from .views.users import OrganisationUsersView
+from frontend.api_views.national_statistic import (
+    NationalStatisticsView,
+    NationalSpeciesView,
+    NationalPropertiesView,
+    NationalActivityCountView,
+    NationalActivityCountPerProvinceView,
+    NationalActivityCountPerPropertyView
+)
+from .views.organisations import (
+    OrganisationsView,
+    organization_detail,
+    save_permissions
+)
 
 urlpatterns = [
     re_path(
@@ -127,6 +150,11 @@ urlpatterns = [
         r'^api/property/detail/update/?$',
         UpdatePropertyInformation.as_view(),
         name='property-update-detail'
+    ),
+    re_path(
+        r'^api/property/search/?$',
+        PropertySearch.as_view(),
+        name='property-search'
     ),
     re_path(
         r'^api/property/boundaries/update/?$',
@@ -195,6 +223,26 @@ urlpatterns = [
     ),
     path('map/', MapView.as_view(), name='map'),
     path(
+        'data/',
+        redirect_to_data,
+        name='data'
+    ),
+    path(
+        'metrics/',
+        redirect_to_metrics,
+        name='metrics'
+    ),
+    path(
+        'upload/',
+        redirect_to_upload,
+        name='upload'
+    ),
+    path(
+        'explore/',
+        redirect_to_explore,
+        name='explore'
+    ),
+    path(
         'upload-data/<int:property_id>/',
         OnlineFormView.as_view(),
         name='online-form'
@@ -203,8 +251,13 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
     path('users/', OrganisationUsersView.as_view(), name='Users'),
+    path(
+        'organisations/<str:slug>/',
+        OrganisationsView.as_view(),
+        name='organisations'
+    ),
     path('contact/', ContactUsView.as_view(), name='contact'),
-    path('data-table/', DataTableAPIView.as_view(), name='data-table'),
+    path('api/data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
         'api/species-population-count/',
         SpeciesPopuationCountPerYearAPIView.as_view(),
@@ -222,7 +275,7 @@ urlpatterns = [
     ),
     path(
         'api/species-population-total-density/',
-        SpeciesPopulationTotalAndDensityAPIView.as_view(),
+        SpeciesPopulationDensityPerPropertyAPIView.as_view(),
         name='species_population_total_density'
     ),
     path(
@@ -234,6 +287,21 @@ urlpatterns = [
         'api/total-area-available-to-species/',
         TotalAreaAvailableToSpeciesAPIView.as_view(),
         name='total_area_available_to_species'
+    ),
+    path(
+        'api/total-area-per-property-type/',
+        TotalAreaPerPropertyTypeAPIView.as_view(),
+        name='total_area_per_property_type'
+    ),
+    path(
+        'api/population-per-age-group/',
+        PopulationPerAgeGroupAPIView.as_view(),
+        name='population_per_age_group'
+    ),
+    path(
+        'api/total-area-vs-available-area/',
+        TotalAreaVSAvailableAreaAPIView.as_view(),
+        name='total_area_vs_available_area'
     ),
     path(
         'add_totp_devices/',
@@ -254,5 +322,45 @@ urlpatterns = [
         'get_user_notifications/',
         get_user_notifications,
         name='get_user_notifications'
+    ),
+    path(
+        'api/species-list/',
+        NationalSpeciesView.as_view(),
+        name='species_list_national'
+    ),
+    path(
+        'api/statistics/',
+        NationalStatisticsView.as_view(),
+        name='statistics_national'
+    ),
+    path(
+        'api/properties_population_category/',
+        NationalPropertiesView.as_view(),
+        name='properties_population_category'
+    ),
+    path(
+        'api/activity_count_percentage/',
+        NationalActivityCountView.as_view(),
+        name='activity_count'
+    ),
+    path(
+        'api/activity_count_per_province/',
+        NationalActivityCountPerProvinceView.as_view(),
+        name='activity_count_per_province'
+    ),
+    path(
+        'api/activity_count_per_property/',
+        NationalActivityCountPerPropertyView.as_view(),
+        name='activity_count_per_property'
+    ),
+    path(
+        'api/organization/<int:identifier>/',
+        organization_detail,
+        name='organization_detail_by_id'
+    ),
+    path(
+        'save_permissions/<int:organisation_id>/',
+        save_permissions,
+        name='save_permissions'
     ),
 ]

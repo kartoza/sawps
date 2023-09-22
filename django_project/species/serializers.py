@@ -1,18 +1,11 @@
 from django.db.models import Sum
 from rest_framework import serializers
-from species.models import Taxon
+from species.models import Taxon, OwnedSpecies
 from population_data.models import AnnualPopulation
 
 
 class TaxonSerializer(serializers.ModelSerializer):
     """Species serializer"""
-
-    def __init__(self, *args, **kwargs):
-        remove_fields = kwargs.pop('remove_fields', None)
-        super(TaxonSerializer, self).__init__(*args, **kwargs)
-        if remove_fields:
-            for field_name in remove_fields:
-                self.fields.pop(field_name)
 
     class Meta():
         model = Taxon
@@ -23,8 +16,7 @@ class FrontPageTaxonSerializer(serializers.ModelSerializer):
     """Display species data on FrontPage."""
     species_name = serializers.CharField(source='scientific_name')
     total_population = serializers.SerializerMethodField()
-    population_growth = serializers.SerializerMethodField()
-    population_loss = serializers.SerializerMethodField()
+    total_area = serializers.SerializerMethodField()
 
     def get_total_population(self, obj: Taxon):
         # get latest year from current species
@@ -36,17 +28,19 @@ class FrontPageTaxonSerializer(serializers.ModelSerializer):
             'owned_species__property'
         )
         data = AnnualPopulation.objects.filter(
-            id__in=latest_data_per_year
+            id__in=latest_data_per_year,
+            owned_species__taxon=obj
         ).aggregate(Sum('total'))
         return data['total__sum'] if data['total__sum'] else 0
 
-    def get_population_growth(self, obj: Taxon):
-        # TODO: calculate population growth
-        return 100
-
-    def get_population_loss(self, obj: Taxon):
-        # TODO: calculate population loss
-        return 200
+    def get_total_area(self, obj: Taxon):
+        data = OwnedSpecies.objects.filter(
+            taxon=obj
+        ).aggregate(Sum('area_available_to_species'))
+        return (
+            data['area_available_to_species__sum'] if
+            data['area_available_to_species__sum'] else 0
+        )
 
 
     class Meta:
@@ -56,7 +50,6 @@ class FrontPageTaxonSerializer(serializers.ModelSerializer):
             'species_name',
             'icon',
             'total_population',
-            'population_growth',
-            'population_loss',
+            'total_area',
             'colour'
         ]

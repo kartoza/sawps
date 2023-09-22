@@ -1,4 +1,9 @@
 import React, {ErrorInfo, ReactNode} from "react";
+import * as Sentry from "@sentry/browser";
+
+Sentry.init({
+    dsn: (window as any).SENTRY_DSN,
+});
 
 interface Props {
   children: ReactNode;
@@ -20,6 +25,12 @@ export default class ErrorBoundary extends React.Component<Props, State> {
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        Sentry.withScope(scope => {
+            // @ts-ignore
+            scope.setExtras(errorInfo);
+            Sentry.captureException(error);
+        });
+
         // You can also log the error to an error reporting service
         console.log('ERROR', error, errorInfo);
     }

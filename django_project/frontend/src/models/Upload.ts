@@ -18,15 +18,22 @@ export interface AnnualPopulationInterface {
     open_close_id: number;
     open_close_name?: string;
     area_available_to_species: number;
-    count_method_id: number;
-    count_method_name?: string;
     survey_method_id: number;
     survey_method_name?: string;
-    sampling_effort: number;
-    sampling_size_unit_id: number;
-    sampling_size_unit_name?: string;
-    area_covered: number;
     note?: string;
+    population_estimate_certainty: number;
+    upper_confidence_level?: number;
+    lower_confidence_level?: number;
+    certainty_of_bounds?: number;
+    sampling_effort_coverage_id?: number;
+    sampling_effort_coverage_name?: string;
+    population_status_id?: number;
+    population_status_name?: string;
+    population_estimate_category_id: number;
+    population_estimate_category_name?: string;
+    population_estimate_category_other?: string;
+    survey_method_other?: string;
+    population_estimate_certainty_name?: string;
 }
 
 
@@ -72,11 +79,11 @@ export interface CommonUploadMetadata {
 export interface AnnualPopulationValidation {
     open_close_id?: boolean;
     area_available_to_species?: boolean;
-    count_method_id?: boolean;
     survey_method_id?: boolean;
-    sampling_effort?: boolean;
-    sampling_size_unit_id?: boolean;
-    area_covered?: boolean;
+    population_estimate_certainty?: boolean;
+    population_estimate_category_id?: boolean;
+    population_estimate_category_other?: boolean;
+    survey_method_other?: boolean;
 }
 
 export interface AnnualPopulationPerActivityValidation {
@@ -103,14 +110,19 @@ const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
     return {
         present: true,
         total: 0,
+        adult_male: 0,
+        adult_female: 0,
+        sub_adult_male: 0,
+        sub_adult_female: 0,
+        juvenile_male: 0,
+        juvenile_female: 0,
         open_close_id: 0,
         area_available_to_species: 0,
-        count_method_id: 0,
         survey_method_id: 0,
-        sampling_effort: 0,
-        sampling_size_unit_id: 0,
-        area_covered: 0,
-        note: ''
+        note: '',
+        population_estimate_certainty: 0,
+        population_estimate_category_id: 0,
+        population_estimate_certainty_name: ''
     }
 }
 

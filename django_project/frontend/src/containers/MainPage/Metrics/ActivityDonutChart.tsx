@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import { Doughnut } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
@@ -14,7 +14,7 @@ Chart.register(ChartDataLabels);
 interface ActivityDataItem {
     total: number;
     species_name: string;
-    icon: string;
+    graph_icon: string;
     activities?: Array<{ [key: string]: number }>;
 }
 
@@ -24,13 +24,11 @@ interface ActivityDonutChartProps {
     loading: boolean;
     chartHeading: string;
     showPercentage: boolean;
+    labels: string[];
 }
 
 const ActivityDonutChart = (props: ActivityDonutChartProps) => {
-    const { activityData, activityType, loading, chartHeading, showPercentage } = props
-    const labels = Object.keys(activityType);
-
-
+    const { activityData, activityType, loading, chartHeading, showPercentage, labels } = props
     const donutOptions = {
         cutout: 50,
         maintainAspectRatio: false,
@@ -89,8 +87,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
     };
 
     return (
-
-        <Box>
+        <Grid item xs={12} md={12} xl={6} style={{ padding: 10 }}>
             {activityData?.map((item, index) => {
                 const speciesDonutData = {
                     labels: labels,
@@ -111,15 +108,15 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                         {loading ? <Loading /> :
                             <Box className="BoxChartType">
                                 {item.activities.length > 0 &&
-                                    <Box key={index} className="chartHalf">
-                                        <Box className="charBox">
-                                            <Box className="chart-container">
-                                                <Doughnut data={speciesDonutData} options={donutOptions} height={186} width={70} />
-                                            </Box>
+                                    <Box key={index} className="species-donut-chart-container chartHalf">
+                                        <Box>
+                                            <Box className="chart-container"><Doughnut data={speciesDonutData} options={donutOptions} height={186} /></Box>
                                         </Box>
                                         <Box className="chart-img">
                                             <Box className="icon-image">
-                                                <img src={item?.icon} alt='Icon image' />
+                                            {item?.graph_icon ?
+                                                <img src={item?.graph_icon} />
+                                                : <Typography>{item.species_name}</Typography>}
                                             </Box>
                                             <Typography className="charttext">{item?.total}</Typography>
                                         </Box>
@@ -129,8 +126,7 @@ const ActivityDonutChart = (props: ActivityDonutChartProps) => {
                     </Box>
                 );
             })}
-
-        </Box>
+        </Grid>
     );
 };
 

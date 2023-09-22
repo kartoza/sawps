@@ -1,5 +1,4 @@
 import logging
-from django.views.generic import DetailView
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, Http404
 import pytz
@@ -16,7 +15,7 @@ from stakeholder.tasks import send_reminder_emails
 from django.utils import timezone
 from datetime import datetime
 from frontend.utils.organisation import (
-    CURRENT_ORGANISATION_ID_KEY,
+    get_current_organisation_id
 )
 from django.http import JsonResponse
 from django.core.paginator import (
@@ -28,10 +27,15 @@ import json
 from django.db.models import Q
 from core.celery import app
 from frontend.views.base_view import RegisteredOrganisationBaseView
-from frontend.serializers.stakeholder import ReminderSerializer
+from frontend.serializers.stakeholder import (
+    ReminderSerializer,
+    OrganisationSerializer
+)
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 logger = logging.getLogger(__name__)
 
 
@@ -49,7 +53,7 @@ def check_email_exists(request):
     return JsonResponse({'exists': False})
 
 
-class ProfileView(DetailView):
+class ProfileView(RegisteredOrganisationBaseView):
     template_name = 'profile.html'
     model = get_user_model()
     slug_field = 'username'
@@ -68,6 +72,20 @@ class ProfileView(DetailView):
         profile_picture = request.FILES.get('profile-picture', None)
         title = request.POST.get('title', None)
         role = request.POST.get('role', None)
+        use_of_data = request.POST.get(
+            'onlySANBI', None
+        )
+        hosting = request.POST.get(
+            'hostingDataSANBI', None
+        )
+        data_exposure = request.POST.get(
+            'hostingDataSANBIOther', None
+        )
+
+        # Convert 'on' to True and 'off' to False
+        use_of_data = use_of_data == 'on'
+        hosting = hosting == 'on'
+        data_exposure = data_exposure == 'on'
 
         if not UserProfile.objects.filter(user=user).exists():
             UserProfile.objects.create(
@@ -85,6 +103,18 @@ class ProfileView(DetailView):
             user.email = email
         if profile_picture is not None:
             user.user_profile.picture = profile_picture
+        if use_of_data is not None:
+            user.user_profile.use_of_data_by_sanbi_only = (
+                use_of_data
+            )
+        if hosting is not None:
+            user.user_profile.hosting_through_sanbi_platforms = (
+                hosting
+            )
+        if data_exposure is not None:
+            user.user_profile.allowing_sanbi_to_expose_data = (
+                data_exposure
+            )
         if title is not None:
             title = UserTitle.objects.get(id=title)
             user.user_profile.title = title
@@ -103,9 +133,11 @@ class ProfileView(DetailView):
         return HttpResponseRedirect(request.path_info)
 
     def get_context_data(self, **kwargs):
-        context = super(ProfileView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['titles'] = UserTitle.objects.all()
         context['roles'] = UserRoleType.objects.all()
+        context['object'] = User.objects.filter(
+            pk=self.request.user.id).first()
 
         return context
 
@@ -130,19 +162,19 @@ def search_reminders_or_notifications(request):
         if filter == 'title':
             reminders = Reminders.objects.filter(
                 Q(user=request.user),
-                Q(organisation=request.session[CURRENT_ORGANISATION_ID_KEY]),
+                Q(organisation=get_current_organisation_id(request.user)),
                 Q(title__icontains=search_query)
             )
         else:
             reminders = Reminders.objects.filter(
                 Q(user=request.user),
-                Q(organisation=request.session[CURRENT_ORGANISATION_ID_KEY]),
+                Q(organisation=get_current_organisation_id(request.user)),
                 Q(reminder__icontains=search_query)
             )
     else:
         reminders = Reminders.objects.filter(
             Q(user=request.user),
-            Q(organisation=request.session[CURRENT_ORGANISATION_ID_KEY]),
+            Q(organisation=get_current_organisation_id(request.user)),
             Q(title__icontains=search_query) | Q(
                 reminder__icontains=search_query)
         )
@@ -159,7 +191,7 @@ def search_reminders_or_notifications(request):
 def delete_reminder_and_notification(request):
     data = json.loads(request.POST.get('ids'))
     notifications_page = request.POST.get('notifications_page')
-    organisation = request.session[CURRENT_ORGANISATION_ID_KEY]
+    organisation = get_current_organisation_id(request.user)
     try:
         for element in data:
             if isinstance(element, str) and element.isdigit():
@@ -198,7 +230,7 @@ def get_reminder_or_notification(request):
             if isinstance(element, str) and element.isdigit():
                 reminder = Reminders.objects.filter(
                     user=request.user,
-                    organisation=request.session[CURRENT_ORGANISATION_ID_KEY],
+                    organisation=get_current_organisation_id(request.user),
                     id=int(element)
                 )
                 reminder[0].date = convert_date_to_local_time(
@@ -230,7 +262,7 @@ def get_organisation_reminders(request):
 
     reminders = Reminders.objects.filter(
         user=request.user,
-        organisation=request.session[CURRENT_ORGANISATION_ID_KEY]
+        organisation=get_current_organisation_id(request.user)
     )
 
     return reminders
@@ -309,7 +341,7 @@ class RemindersView(RegisteredOrganisationBaseView):
                 reminder_type = Reminders.EVERYONE
             try:
                 organisation = Organisation.objects.get(
-                    id=request.session[CURRENT_ORGANISATION_ID_KEY]
+                    id=get_current_organisation_id(request.user)
                 )
                 # Save the reminder to the database
                 reminder = Reminders.objects.create(
@@ -435,7 +467,7 @@ class RemindersView(RegisteredOrganisationBaseView):
 
 
         try:
-            org = request.session[CURRENT_ORGANISATION_ID_KEY],
+            org = get_current_organisation_id(request.user),
             for element in data:
                 if isinstance(element, str) and element.isdigit():
                     reminder = Reminders.objects.get(
@@ -457,6 +489,7 @@ class RemindersView(RegisteredOrganisationBaseView):
             reminder.save()
 
             reminders = get_organisation_reminders(request)
+            reminders = convert_reminder_dates(reminders)
             serialized_reminders = ReminderSerializer(reminders, many=True)
 
             return JsonResponse({'data': serialized_reminders.data})
@@ -501,7 +534,7 @@ class NotificationsView(RegisteredOrganisationBaseView):
     def get_notifications(self, request):
         notifications = Reminders.objects.filter(
             user=request.user,
-            organisation_id=request.session[CURRENT_ORGANISATION_ID_KEY],
+            organisation_id=get_current_organisation_id(request.user),
             status=Reminders.PASSED,
             email_sent=True
         )
@@ -599,3 +632,22 @@ class NotificationsView(RegisteredOrganisationBaseView):
         context['notifications'] = self.get_notifications(self.request)
 
         return context
+
+
+class OrganisationAPIView(APIView):
+    """Get organisation"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        organisation_id = get_current_organisation_id(request.user)
+        organisation = Organisation.objects.get(id=organisation_id)
+        if organisation.national:
+            queryset = Organisation.objects.all().order_by("name")
+        else:
+            queryset = Organisation.objects.filter(
+                province=organisation.province
+            ).order_by("name")
+        return Response(
+            status=200,
+            data=OrganisationSerializer(queryset, many=True).data
+        )

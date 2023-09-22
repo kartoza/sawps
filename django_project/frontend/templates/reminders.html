@@ -4,7 +4,7 @@
 {% block head_title %}Your Profile{% endblock %}
 
 {% block content %}
-<section>
+<section style="min-height:var(--min-content-height);">
   <div class="container py-5">
   <div class="row">
     {% include "profile_config_base.html" %}
@@ -12,7 +12,7 @@
     <div class="container">
         <div class="row">
             <div class="col-auto ml-auto mb-3">
-              <button class="btn btn-custom" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn">
+              <button class="sawps-font-button green-button mt-0" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn" style="font-weight: bold; min-height: fit-content;">
                 <i class="fas fa-plus"></i> ADD REMINDER
               </button>
             </div>
@@ -25,6 +25,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="myModalLabel">Reminder Details</h5>
+                        <hr class="default-separator" style="margin-bottom: 0%;">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -38,6 +39,8 @@
                             <div class="form-group">
                                 <label for="date">Date and Time</label>
                                 <input type="datetime-local" class="form-control" id="date" name="date" required>
+                                <!-- This is the fallback date input -->
+                                <input type="text" id="datetimepicker" class="form-control" style="display: none;" required>
                             </div>
                             <div class="form-group">
                                 <label for="reminder">Reminder</label>
@@ -48,7 +51,7 @@
                                 <label for="reminderType">Reminder Type</label>
                                 <select class="form-control" id="reminderType" name="reminderType">
                                     <option value="personal" selected>Personal</option>
-                                    <option value="all">Everyone</option>
+                                    <option value="all">Whole Organisation</option>
                                 </select>
                             </div>
                             {% endif %}
@@ -63,9 +66,9 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="account-button" id="editReminderBtn" style="display: none;">Save</button>
-                        <button type="button" class="account-button" id="addReminderBtn">Add</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="sawps-font-button green-button mt-0" id="editReminderBtn" style="display: none;">Save</button>
+                        <button type="button" class="sawps-font-button green-button mt-0" style="font-weight: bold;" id="addReminderBtn">Add</button>
+                        <button type="button" class="sawps-font-button red-button mt-0" style="font-weight: bold; height: fit-content;" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -119,15 +122,18 @@
               <td class="clickable-row clickable" data-href="{{ reminder.id }}">{{ reminder.reminder }}</td>
               <td class="clickable-row clickable" data-href="{{ reminder.id }}">
                 {% if reminder.status == 'Active' %}
-                  <span class="badge badge-success">Active</span>
+                  <span class="badge badge-success" style="width: 57px;">ACTIVE</span>
                 {% elif reminder.status == 'Draft' %}
-                  <span class="badge badge-warning">Draft</span>
+                  <span class="badge badge-warning" style="width: 57px;">DRAFT</span>
                 {% elif reminder.status == 'Passed' %}
-                  <span class="badge badge-purple">Passed</span>
+                  <span class="badge badge-purple" style="width: 57px;">PASSED</span>
                 {% endif %}
               </td>
               <td>
-                <i class="fas fa-trash-alt trash-icon" data-object-id="{{ reminder.id }}"></i>
+                <div>
+                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ reminder.id }}"></i>
+              </div>
+                
               </td>
             </tr>
           {% endfor %}
@@ -192,10 +198,33 @@
 
   <script>
 
-      function convertToLocalDateTime(datetimeStr) {
-        // create a date formate to add to datetime local input field
-        const datetime = new Date(datetimeStr);
+    // var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
+    const datetimePickerInput = document.getElementById('datetimepicker');
+    var useFallbackDate = false
+
+    if (!Modernizr.inputtypes.datetime) {
+        // Hide the original datetime-local input
+        document.getElementById('date').style.display = 'none';
+
+        document.getElementById('datetimepicker').style.display = 'block';
+
+        document.getElementById('datetimepicker').style.backgroundColor = 'white';
+
+        // Initialize flatpickr on the input element
+        flatpickr(datetimePickerInput, {
+          enableTime: true,
+          dateFormat: "Y-m-dTH:i",
+          minuteIncrement: 1,
+          allowInput: true, // Enable manual input
+        });
+
+        useFallbackDate = true
+        
+      }
+
+      function convertToLocalDateTime(datetimeStr) {
+        const datetime = new Date(datetimeStr);
         const year = datetime.getFullYear();
         const month = String(datetime.getMonth() + 1).padStart(2, '0');
         const day = String(datetime.getDate()).padStart(2, '0');
@@ -204,6 +233,39 @@
 
         // Combine the components into the desired format
         return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+
+      function convertDateToISO(dateString) {
+        var parts = dateString.split(' ');
+
+        if (parts.length === 3) {
+          // Extract date, time, and AM/PM components
+          var datePart = parts[0];
+          var timePart = parts[1];
+          var ampm = parts[2];
+
+          // Split the time part into hours and minutes
+          var timeParts = timePart.split(':');
+          var hours = parseInt(timeParts[0]);
+          var minutes = parseInt(timeParts[1]);
+
+          // Adjust hours if it's PM
+          if (ampm === 'PM' && hours !== 12) {
+            hours += 12;
+          }
+
+          // Pad single-digit hours and minutes with leading zeros
+          var formattedHours = hours.toString().padStart(2, '0');
+          var formattedMinutes = minutes.toString().padStart(2, '0');
+
+          // Construct the ISO 8601 date string
+          const isoDate = `${datePart}T${formattedHours}:${formattedMinutes}`;
+
+          return isoDate;
+        }
+
+        // return the passed date if conversion fails
+        return dateString;
       }
 
       // UPDATING ROWS PER PAGE
@@ -265,14 +327,16 @@
                 'csrfmiddlewaretoken': '{{ csrf_token }}'
               },
               success: function(response) {
-              // Handle the success response
-              // console.log(response);
               reminder = response.data[0]
-              const localDatetimeStr = convertToLocalDateTime(reminder.date);
+              var localDatetimeStr = convertToLocalDateTime(reminder.date);
 
               // Populate the modal with the retrieved data
               $('#myModal #title').val(reminder.title);
-              $('#myModal #date').val(localDatetimeStr);
+              if(useFallbackDate){
+                var edit_date = convertDateToISO(reminder.date)
+                $('#myModal #datetimepicker').val(edit_date);
+              }
+              else $('#myModal #date').val(localDatetimeStr);
 
               if (reminder.type == 'Everyone')
                 $('#myModal #reminderType').val('all');
@@ -299,7 +363,7 @@
               $('#myModal #editReminderBtn').click(function() {
                 // Get the values from the modal
                 var title = $('#myModal #title').val();
-                var date = $('#myModal #date').val();
+                var date = useFallbackDate? $('#myModal #datetimepicker').val():$('#myModal #date').val();
                 var time = $('#myModal #time').val();
                 var type = $('#myModal #reminderType').val();
                 var reminder = $('#myModal #reminder').val();
@@ -371,7 +435,7 @@
 
               // Get the input values from the modal
               var title = $('#title').val();
-              var date = $('#date').val();
+              var date = useFallbackDate? $('#datetimepicker').val():$('#date').val();
               var reminder = $('#reminder').val();
               var reminder_type = $('#reminderType').val();
 
@@ -431,11 +495,11 @@
                           
           // Condition for the status column
           if (data[i].status === 'Active') {
-            row += '<td class="clickable-row clickable" data-href="' + data[i].pk + '"><span class="badge badge-success">Active</span></td>';
+            row += '<td class="clickable-row clickable" data-href="' + data[i].pk + '"><span class="badge badge-success" style="width: 57px;">ACTIVE</span></td>';
           } else if (data[i].status === 'Draft') {
-            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-warning">Draft</span></td>';
+            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-warning" style="width: 57px;">DRAFT</span></td>';
           } else if (data[i].status === 'Passed') {
-            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-purple">Passed</span></td>';
+            row += '<td class="clickable-row clickable" data-href="' + data[i].id + '"><span class="badge badge-purple" style="width: 57px;">PASSED</span></td>';
           } else {
             row += '<td></td>';
           }
@@ -489,6 +553,7 @@
     function clearFormFields() {
         document.getElementById('title').value = '';
         document.getElementById('date').value = '';
+        document.getElementById('datetimepicker').value = '';
         document.getElementById('reminder').value = '';
         document.getElementById('reminderType').value = 'personal';
         document.getElementById('status').value = 'active';
@@ -525,9 +590,9 @@
     }
 
     .badge-purple {
-    background-color: var(--purple);
-    color: white;
-    }
+      background-color: var(--purple);
+      color: white;
+      }
 
     .badge-success {
     background-color: var(--green);
@@ -594,6 +659,13 @@
     .form-control:focus {
         border-color: var(--green);;
         box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
+    }
+
+    /* Apply horizontal scroll for smaller devices */
+    @media (max-width: 768px) {
+        .my-row {
+            overflow-x: auto;
+        }
     }
 
   </style>

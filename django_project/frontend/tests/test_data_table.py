@@ -1,19 +1,24 @@
 import base64
-from django.test import Client
-from django.test import TestCase
-from django.urls import reverse
-from rest_framework import status
+
 from django.contrib.auth.models import User
-from species.models import TaxonRank
-from frontend.utils.organisation import CURRENT_ORGANISATION_ID_KEY
+from django.test import Client, TestCase
+from django.urls import reverse
+from django_otp.plugins.otp_totp.models import TOTPDevice
+from population_data.models import AnnualPopulationPerActivity
+from property.factories import PropertyFactory
+from rest_framework import status
 from species.factories import (
-    OwnedSpeciesFactory, TaxonFactory, TaxonRankFactory,
+    OwnedSpeciesFactory,
+    TaxonFactory,
+    TaxonRankFactory
 )
+from species.models import TaxonRank
 from stakeholder.factories import (
     organisationFactory,
-    organisationUserFactory
+    organisationUserFactory,
+    userRoleTypeFactory,
 )
-from property.factories import PropertyFactory
+from stakeholder.models import UserProfile
 
 
 class OwnedSpeciesTestCase(TestCase):
@@ -39,67 +44,304 @@ class OwnedSpeciesTestCase(TestCase):
             user=user,
             organisation=self.organisation_1
         )
+        self.role_organisation_manager = userRoleTypeFactory.create(
+            name='Organisation manager',
+        )
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=self.organisation_1,
+            user_role_type_id=self.role_organisation_manager
+        )
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
             name='PropertyA'
         )
+
         self.owned_species = OwnedSpeciesFactory.create_batch(
             5, taxon=self.taxon, user=user, property=self.property)
         self.url = reverse('data-table')
-        
+
         self.auth_headers = {
             'HTTP_AUTHORIZATION': 'Basic ' +
             base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
         }
         self.client = Client()
-
         session = self.client.session
-        session[CURRENT_ORGANISATION_ID_KEY] = self.organisation_1.id
         session.save()
 
-
-    def test_list_owned_species(self):
-        url = self.url
-        response = self.client.get(url, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 5)
-
-    def test_filter_by_species_name(self):
-        owned_species = OwnedSpeciesFactory(taxon__common_name_varbatim='SpeciesA')
+    def test_data_table_filter_by_species_name(self) -> None:
+        """Test data table filter by species name"""
         url = self.url
         data = {'species': 'SpeciesA'}
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreater(len(response.data), 0)
         self.assertEqual(
-            response.data[0]['taxon']['common_name_varbatim'],
-            owned_species.taxon.common_name_varbatim
+            response.data[0]["Property_report"][0]["common_name"],
+            "SpeciesA"
         )
 
-
-    def test_filter_by_name_month_and_property(self):
+    def test_filter_by_property(self) -> None:
+        """Test data table filter by property"""
         data = {
             'species': self.taxon.common_name_varbatim,
-            'property': self.property.name,
+            'property': self.property.id,
             'start_year': self.owned_species[0].annualpopulation_set.first().year,
             'end_year': self.owned_species[0].annualpopulation_set.first().year,
         }
         response = self.client.get(self.url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreater(len(response.data), 0)
         self.assertEqual(
-            response.data[0]['property']['name'],
-            self.owned_species[0].property.name
+            response.data[0]["Property_report"][0]["property_name"],
+            "PropertyA"
         )
-        
 
-    def test_filter_by_annualpopulation_category(self):
+    def test_filter_by_year_and_report(self) -> None:
+        """Test data table filter by year and report"""
+        year = self.owned_species[1].annualpopulation_set.first().year
         data = {
-            'total': self.owned_species[0].annualpopulation_set.first().total,
+            "start_year": year,
+            "end_year":year,
+            "reports": "Species_report"
         }
-        response = self.client.get(self.url, data, **self.auth_headers)
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['annualpopulation']['total'],
-            self.owned_species[0].annualpopulation_set.first().total
+            response.data[0]["Species_report"][0]["year"],
+            year
         )
+
+    def test_data_table_activity_report(self) -> None:
+        """Test data table activity report"""
+        year = AnnualPopulationPerActivity.objects.first().year
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "start_year": year,
+            "end_year":year,
+            "reports": "Activity_report",
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        if response.data:
+            self.assertEqual(next(iter(response.data[0])), "Activity_report")
+        else:
+            self.assertEqual(response.data, [])
+
+    def test_data_table_sampling_report(self) -> None:
+        """Test data table sampling report"""
+        year = self.owned_species[1].annualpopulation_set.first().year
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "start_year": year,
+            "end_year":year,
+            "reports": "Sampling_report",
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]["Sampling_report"][0]["common_name"],
+            "SpeciesA"
+        )
+
+
+class NationalUserTestCase(TestCase):
+    def setUp(self) -> None:
+        """Setup test case"""
+        taxon_rank = TaxonRank.objects.filter(
+            name='Species'
+        ).first()
+        if not taxon_rank:
+            taxon_rank = TaxonRankFactory.create(
+                name='Species'
+            )
+        self.taxon = TaxonFactory.create(
+            taxon_rank=taxon_rank,
+            common_name_varbatim='SpeciesA'
+        )
+        user = User.objects.create_user(
+                username='testuserd',
+                password='testpasswordd'
+            )
+        self.organisation_1 = organisationFactory.create()
+        # add user 1 to organisation 1 and 3
+        organisationUserFactory.create(
+            user=user,
+            organisation=self.organisation_1
+        )
+        self.role_organisation_manager = userRoleTypeFactory.create(
+            name="National data consumer",
+        )
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=self.organisation_1,
+            user_role_type_id=self.role_organisation_manager
+        )
+        self.property = PropertyFactory.create(
+            organisation=self.organisation_1,
+            name='PropertyA'
+        )
+
+        self.owned_species = OwnedSpeciesFactory.create_batch(
+            5, taxon=self.taxon, user=user, property=self.property)
+        self.url = reverse('data-table')
+
+        self.auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        self.client = Client()
+        session = self.client.session
+        session.save()
+
+    def test_national_property_report(self) -> None:
+        """Test property report for national data consumer"""
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_national_user_reports(self) -> None:
+        """Test national data consumer reports"""
+        year = self.owned_species[0].annualpopulation_set.first().year
+        property = self.owned_species[0].property.id
+        data = {
+            "species": "SpeciesA",
+            "property": property,
+            "start_year": year,
+            "end_year": year,
+            "reports": (
+                "Activity_report,Province_report,"
+                "Species_report,Property_report"
+            )
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 4)
+
+
+class RegionalUserTestCase(TestCase):
+    def setUp(self) -> None:
+        """Setup test case"""
+        taxon_rank = TaxonRank.objects.filter(
+            name='Species'
+        ).first()
+        if not taxon_rank:
+            taxon_rank = TaxonRankFactory.create(
+                name='Species'
+            )
+        self.taxon = TaxonFactory.create(
+            taxon_rank=taxon_rank,
+            common_name_varbatim='SpeciesA'
+        )
+        user = User.objects.create_user(
+                username='testuserd',
+                password='testpasswordd'
+            )
+        self.organisation_1 = organisationFactory.create()
+        # add user 1 to organisation 1 and 3
+        organisationUserFactory.create(
+            user=user,
+            organisation=self.organisation_1
+        )
+        self.role_organisation_manager = userRoleTypeFactory.create(
+            name="Regional data consumer",
+        )
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=self.organisation_1,
+            user_role_type_id=self.role_organisation_manager
+        )
+        self.property = PropertyFactory.create(
+            organisation=self.organisation_1,
+            name='PropertyA'
+        )
+
+        self.owned_species = OwnedSpeciesFactory.create_batch(
+            5, taxon=self.taxon, user=user, property=self.property)
+        self.url = reverse('data-table')
+
+        self.auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        self.client = Client()
+        session = self.client.session
+        session.save()
+
+
+    def test_regional_data_consumer(self) -> None:
+        """Test data table filter by regional data consumer"""
+        data = {
+            "reports": "Activity_report,Species_report,Property_report"
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+
+
+class DataScientistTestCase(TestCase):
+    def setUp(self) -> None:
+        """Setup test case"""
+        taxon_rank = TaxonRank.objects.filter(
+            name='Species'
+        ).first()
+        if not taxon_rank:
+            taxon_rank = TaxonRankFactory.create(
+                name='Species'
+            )
+        self.taxon = TaxonFactory.create(
+            taxon_rank=taxon_rank,
+            common_name_varbatim='SpeciesA'
+        )
+        user = User.objects.create_user(
+                username='testuserd',
+                password='testpasswordd'
+            )
+        self.organisation_1 = organisationFactory.create(national=True)
+
+        organisationUserFactory.create(
+            user=user,
+            organisation=self.organisation_1
+        )
+        self.role_organisation_manager = userRoleTypeFactory.create(
+            name="Regional data scientist",
+        )
+        UserProfile.objects.create(
+            user=user,
+            current_organisation=self.organisation_1,
+            user_role_type_id=self.role_organisation_manager
+        )
+        self.property = PropertyFactory.create(
+            organisation=self.organisation_1,
+            name='PropertyA'
+        )
+
+        self.owned_species = OwnedSpeciesFactory.create_batch(
+            5, taxon=self.taxon, user=user, property=self.property)
+        self.url = reverse('data-table')
+
+        self.auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        self.client = Client()
+        session = self.client.session
+        session.save()
+
+
+    def test_regional_data_consumer(self) -> None:
+        """Test data table filter by regional data consumer"""
+        data = {
+            "reports": (
+                "Activity_report,Species_report,Property_report"
+            )
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)

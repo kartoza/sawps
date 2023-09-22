@@ -1,11 +1,13 @@
 """View to switch organisation."""
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import (
+    HttpResponseRedirect,
+    HttpResponseForbidden
+)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from stakeholder.models import OrganisationUser, Organisation
-from frontend.utils.organisation import (
-    CURRENT_ORGANISATION_ID_KEY,
-    CURRENT_ORGANISATION_KEY
+from stakeholder.models import (
+    OrganisationUser,
+    Organisation
 )
 
 
@@ -16,7 +18,9 @@ def switch_organisation(request, organisation_id):
         Organisation,
         id=organisation_id
     )
-    # validate if user can switch org only if user is not superadmin
+
+    # Validate if the user can switch organizations
+    # only if the user is not a superadmin
     if not request.user.is_superuser:
         organisation_user = OrganisationUser.objects.filter(
             user=request.user,
@@ -24,10 +28,12 @@ def switch_organisation(request, organisation_id):
         )
         if not organisation_user.exists():
             return HttpResponseForbidden()
-    # store new organisation in the session
-    request.session[
-        CURRENT_ORGANISATION_ID_KEY] = organisation.id
-    request.session[
-        CURRENT_ORGANISATION_KEY] = organisation.name
-    next = request.GET.get('next', '/')
-    return HttpResponseRedirect(next)
+
+    # Update the current organisation in the user's profile
+    user_profile = request.user.user_profile
+    user_profile.current_organisation = organisation
+    user_profile.save()
+
+    # Redirect to the specified 'next' URL
+    next_url = request.GET.get('next', '/')
+    return HttpResponseRedirect(next_url)

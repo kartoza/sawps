@@ -9,6 +9,8 @@ export interface SpeciesFilterInterface {
   startYear: number;
   endYear: number;
   propertyId:string;
+  selectedInfoList: string;
+  organisationId:string;
 }
 
 const initialState: SpeciesFilterInterface = {
@@ -17,8 +19,10 @@ const initialState: SpeciesFilterInterface = {
   months: [],
   selectedMonths: "",
   startYear: 1960,
-  endYear: 2023,
+  endYear:new Date().getFullYear(),
   propertyId:"",
+  selectedInfoList:"",
+  organisationId:"",
 };
 
 export const SpeciesFilterSlice = createSlice({
@@ -52,8 +56,15 @@ export const SpeciesFilterSlice = createSlice({
     toggleSpecies: (state, action: PayloadAction<string>) => {
       state.selectedSpecies = action.payload;
     },
+    setSelectedInfoList: (state, action: PayloadAction<string>) => {
+      state.selectedInfoList = action.payload;
+    },
 
     selectedPropertyId: (state, action: PayloadAction<string>) => {
+      state.propertyId = action.payload;
+    },
+
+    selectedOrganisationId: (state, action: PayloadAction<string>) => {
       state.propertyId = action.payload;
     },
 
@@ -77,9 +88,11 @@ export const {
   toggleSpecies,
   setSelectedSpecies,
   selectedPropertyId,
+  selectedOrganisationId,
   setMonths,
   setStartYear,
   setEndYear,
+  setSelectedInfoList,
 } = SpeciesFilterSlice.actions;
 
 export default SpeciesFilterSlice.reducer;

@@ -28,7 +28,21 @@
                     <hr class="separator">
 
                     <form class="login" method="POST" action="{% url 'account_login' %}">{% csrf_token %}
-                        {{ form.as_p }}
+                        {% for field in form %}
+                        {% if field.name == 'remember' %}
+                        <div class="form-check" style="margin-left: 35px; margin-bottom: 7px;">
+                            {{ field.label }}
+                            {{ field }}
+                        </div>
+                        {% else %}
+                        <p>
+                            <label>
+                                {{ field.label }} 
+                            </label>
+                            {{ field }}
+                        </p>
+                        {% endif %}
+                        {% endfor %}
                         {% if redirect_field_value %}
                             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                         {% endif %}

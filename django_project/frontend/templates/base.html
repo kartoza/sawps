@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_tags %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -11,9 +12,12 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/navbar.css' %}" rel="stylesheet">
     <link href="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-...">
+    <link rel="stylesheet" href="{% static 'fontawesome-free-6.4.2-web/css/all.min.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{% static 'js/modernizr-custom.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.3/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.3/dist/flatpickr.min.js"></script>
     <!-- Include the CSS file for Select2 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     {% block extra_head %}
@@ -22,7 +26,9 @@
 <script>
   window.csrfToken = "{{ csrf_token }}";
   window.isLoggedIn = {% if user.is_authenticated %}true{% else %}false{% endif %};
+
   window.userRole = "{{ user_role }}";
+  window.SENTRY_DSN = "{% sentry_dsn %}";
 </script>
 <body>
   {% block header %}
@@ -54,10 +60,13 @@
   </style>
   <script>
 
+      var user_role = '{{ user.user_profile.user_role_type_id }}'
+      localStorage.setItem('user_role',user_role)
+
       function extractBaseUrl(url) {
         // Find the index of the first forward slash after the initial //
         const slashIndex = url.indexOf('/', url.indexOf('//') + 2);
-         
+
         // Extract the base URL
         const baseUrl = url.substring(0, slashIndex);
 
@@ -172,13 +181,13 @@
       }
 
       function getMessages(){
-        messages = localStorage.getItem('messages') 
+        messages = localStorage.getItem('messages')
         try{
           messages = JSON.parse(localStorage.getItem('messages'))
         }catch(exception){
           //ignore
         }
-          
+
         var return_obj = []
         for(var count =0; count < messages.length; count++){
           var save_obj = {
@@ -210,7 +219,7 @@
 
           hideNotifications(false)
         // });
-       
+
       }
 
       function updateHeaderNotifications(){
@@ -273,7 +282,8 @@
       });
 
       if(
-        !window.location.href.includes("two-factor-authenticate")
+        !window.location.href.includes("two-factor-authenticate") &&
+        !window.location.href.includes("accounts/two-factor/")
       ){
         var userIsAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
         if(userIsAuthenticated){
@@ -287,7 +297,7 @@
             if(isProfilePages()){
               waitUpdateProfileBellIcon(true)
             }
-              
+
             updateHeaderNotifications()
             hideNotifications(false)
           }else
@@ -297,14 +307,9 @@
         }
       }
 
-
-     
-
   </script>
-<div style="min-height:var(--min-content-height);">
 {% block content %}
 {% endblock %}
-</div>
 {% block footer %}
 <div class='footer' data-testid='footer'>
     <div class='sanbi-footer-logo-container'>

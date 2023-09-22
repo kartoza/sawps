@@ -10,6 +10,7 @@ edit_uri: "https://github.com/kartoza/sawps/blob/main/docs/"
 copyright: Kartoza and Contributors
 
 markdown_extensions:
+        - attr_list # lets us resize images see https://github.com/mkdocs/mkdocs/issues/1678#issuecomment-455500757
         - pymdownx.highlight:
                   anchor_linenums: true
         - pymdownx.inlinehilite
@@ -38,70 +39,74 @@ markdown_extensions:
 nav:
         - Home:
                   - Home: index.md
-                  - License: license.md
+                  - Code of Conduct: about/code-of-conduct.md
+                  - License: about/license.md
         - User:
-                  - Quickstart:
-                          - Installation/Getting started instructions: user/quickstart.md
-                          - Link to releases: user/releases.md
-                  - User Guide:
-                          - Tutorials:
-                                  Map: user/instructions.md
-                                  DATA UPLOAD: user/data_upload.md
-                  - User Reference Manual :
-                          - Conceptual Model: user/conceptual_model.md
-                          - Page View/ View Manual: user/view_manual.md
-                          - Permissions: user/permissions.md
-                  - API:
-                      - API Manual: user/api_manual.md
-                      - Tutorials : user/api_tutorials.md
-
-        - Admin:
-                  - Admin Guide:
-                      - Tutorials: admin/tutorials.md
-                  - Admin Reference Manual:
-                      - Conceptual Model: admin/conceptual_model.md
-                      - Page View/ View Manual: admin/view_manual.md
-                      - Screen by screen explanation of: admin/screen.md
-                      - Permissions: admin/permissions.md
+                  - user/index.md
+                  - Quickstart: user/quickstart/index.md
+                  - Guide:
+                          - user/guide/index.md
+                          - Registering: user/guide/registering.md
+                          - Help And Contact: user/guide/help.md
+                          - Map: user/guide/map.md
+                          - Profile Page: user/guide/profile-page.md
+                          - Organisations: user/guide/organisations.md
+                  - Manual :
+                          - user/manual/index.md
+                          - Profile Page: user/manual/profile-page.md
+                          - Two Factor Authentication: user/manual/2fa.md
+                          - Forgot Password: user/manual/forgot-password.md
+                          - Notifications: user/manual/notifications.md
+                          - Reminders: user/manual/reminders.md
+                          - Organisation Page: user/manual/organisation.md
+                          - Request An Organisation: user/manual/request-organisation.md
+                          - Map: user/manual/map.md
+        - Administrators:
+                - administrator/index.md
+                - Guide:
+                        - administrator/guide/index.md
+                - Manual:
+                        - administrator/manual/index.md
         - Developer:
-                  - Tutorial (Narrative): developer/narrative.md
-                  - Docs:
-                      - Code Auto docs:
-                                    - Activity: developer/code_auto_docs.md
-                                    - Core: developer/core.md
-                                    - Fixtures: developer/fixtures.md
-                                    - Frontend: developer/frontend.md
-                                    - Notification: developer/notification.md
-                                    - Occurrence: developer/occurrence.md
-                                    - Population Data: developer/population_data.md
-                                    - Property: developer/property.md
-                                    - Regulatory Permit: developer/regulator_permit.md
-                                    - SAWPS: developer/sawps.md
-                                    - Species: developer/species.md
-                                    - Stakeholder: developer/stakeholder.md
-                      - How to make docs: developer/make_docs.md
-                  - Developer Reference Manual:
-                      - mkdocs generated content: developer/code_auto_docs.md
-                      - Setting up a dev env: developer/narrative.md
-                      - Coding conventions: developer/code_conventions.md
-                      - Contribution Guidelines: developer/contribution_guidelines.md
-                      - Project SCRUM board: developer/project_scrum.md
-                      - How to test local instance: developer/test_local_instance.md
-                      - License: about/license.md
-                  - Design:
-                      - Design Sheet: developer/design.md
-                      - Wire-frame Model: developer/design.md
-                  - How to run instances: developer/run_instances.md
-                  - How to test local instance: developer/test_local.md
-                  - License: license.md
-
-
-
+                  - developer/index.md
+                  - Guide:
+                      - developer/guide/index.md
+                      - Architecture: developer/guide/architecture.md
+                      - Prerequisites: developer/guide/prerequisites.md
+                      - Design: developer/guide/design.md
+                      - IDE Setup: developer/guide/ide-setup.md
+                      - Cloning: developer/guide/cloning.md
+                      - Configuration: developer/guide/configuration.md
+                      - Building: developer/guide/building.md
+                      - Workflows: developer/guide/workflows.md
+                      - "": developer/guide/templates/pull-request-template.md
+                      - "": developer/guide/templates/commit-message-convention.md
+                  - Manual:
+                      - developer/manual/index.md
+                      - Activity: developer/manual/activity.md
+                      - Core: developer/manual/core.md
+                      - Fixtures: developer/manual/fixtures.md
+                      - Frontend: developer/manual/frontend.md
+                      - Notification: developer/manual/notification.md
+                      - Occurrence: developer/manual/occurrence.md
+                      - Population Data: developer/manual/population_data.md
+                      - Property: developer/manual/property.md
+                      - Regulatory Permit: developer/manual/regulator_permit.md
+                      - SAWPS: developer/manual/sawps.md
+                      - Species: developer/manual/species.md
+                      - Stakeholder: developer/manual/stakeholder.md
+                  - API:
+                      - developer/api/index.md
+                      - Reference: developer/api/manual/index.md
+                      - Guide: developer/api/guide/index.md
+                  - Documentation Writing: developer/documentation/index.md
+                  - License: about/license.md
         - DevOps:
-                  - DevOps: devops/index.md
+                  - devops/index.md
+                  - Guide: devops/guide/index.md
+                  - Manual: devops/manual/index.md
         - About:
                   - About: about/index.md
                   - License: about/license.md
-                  - Contributors: about/contributors.md
+                  - Contributing: about/contributing.md
                   - Funders: about/funders.md
-                  - Logos: about/logos.md
