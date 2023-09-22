@@ -11,7 +11,7 @@
         <div class="row">
           <h3 class="page-title sawps-text-menu mb-3" style="color: var(--green)">{{ current_organisation }}</h3>
           <div class="col-auto ml-auto">
-            {% if role.name == 'Admin' or role.name == 'Super User' or user.is_superuser %}
+            {% if role.name == 'Admin' or role.name == 'Super User' or user.is_superuser or role.name == 'Organisation manager' %}
               <button class="sawps-font-button green-button mt-0" type="button" data-toggle="modal" data-target="#myModal" style="font-weight: bold; min-height: fit-content;">
                 <i class="fas fa-plus"></i> Add People
               </button>

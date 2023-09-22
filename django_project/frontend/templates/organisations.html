@@ -187,7 +187,7 @@
     
                   <div class="form-group"></div>
                   <button 
-                    class="sawps-font-button orange-button mt-0" 
+                    class="sawps-font-button orange-button mt-0 update-button" 
                     id="saveButton{{ current_organisation_id }}" 
                     style="font-weight: bold; margin-left: 60%; min-width: 140px;"
                     onclick="savePermissions({{ current_organisation_id }})"
@@ -267,7 +267,7 @@
     
                   <div class="form-group"></div>
                   <button 
-                    class="sawps-font-button orange-button mt-0" 
+                    class="sawps-font-button orange-button mt-0 update-button" 
                     id="saveButton{{ organisation.id }}" 
                     style="font-weight: bold; margin-left: 60%; min-width: 140px;"
                     onclick="savePermissions({{ organisation.id }})">
@@ -298,6 +298,38 @@
     
   
 <script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+      // Get user_role from local storage and convert to lowercase
+      const userRole = (localStorage.getItem("user_role") || "").toLowerCase();
+
+      // Get the table element, the switches, and the update buttons
+      const table = document.getElementById("organisations");
+      const switches = document.querySelectorAll(".custom-control-input");
+      const updateButtons = document.querySelectorAll(".update-button");
+
+      // Define the roles that can see the "Add User" column and enable switches
+      const allowedRoles = ["admin", "super user", "organisation manager"];
+
+      if (!allowedRoles.includes(userRole)) {
+        // User role does not match, hide the "Add User" column
+        table.querySelectorAll("th")[2].style.display = "none"; // Hide the "Add User" header
+        table.querySelectorAll("td:nth-child(3)").forEach(function (cell) {
+          cell.style.display = "none"; // Hide the "Add User" column cells
+        });
+
+        // Disable the switches
+        switches.forEach(function (switchElement) {
+          switchElement.disabled = true;
+        });
+
+        // Hide the "Update" buttons
+        updateButtons.forEach(function (button) {
+          button.style.display = "none";
+        });
+      }
+    });
+
 
     var switchStates = [];
 
@@ -533,18 +565,19 @@
 
     /* Override default focus styles for the switches */
     .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
-      border-color: var(--green); /* Set the border color to green */
-      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25); /* Set the box shadow with green color */
+      border-color: var(--green);
+      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
     }
-    
+
     /* Style checked switches with green color */
-    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
-      background-color: var(--green); /* Set the background color to green */
-      border-color: var(--green); /* Set the border color to green */
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
+    .custom-switch .custom-control-input:disabled:checked ~ .custom-control-label::before {
+      background-color: var(--green);
+      border-color: var(--green);
     }
 
     .text-warning-custom {
-      color: var(--green); /* Change this to your desired color */
+      color: var(--green);
     }
   </style>
 </section>
