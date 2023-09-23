@@ -14,6 +14,7 @@ import {
     InputBase,
 } from '@mui/material';
 import List from '@mui/material/List';
+import MenuItem from '@mui/material/MenuItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -35,6 +36,7 @@ import './index.scss';
 import PropertyInterface from '../../../models/Property';
 import { MapEvents } from '../../../models/Map';
 import { triggerMapEvent } from '../../../reducers/MapState';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
@@ -50,6 +52,7 @@ interface SearchPropertyResult {
     type: string;
     fclass?: string;
 }
+
 
 function Filter() {
     const dispatch = useAppDispatch()
@@ -71,10 +74,7 @@ function Filter() {
     const [organisationList, setOrganisationList] = useState([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
-    const [expandSpecies, setExapandSpecies] = useState<boolean>(false);
-    const [expandReport, setExpandReport] = useState<boolean>(false);
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
-    const [searchSpecies, setSearchedSpecies] = useState('')
     const [filterlList, setFilterList] = useState([
         {
             "id": 3,
@@ -143,6 +143,7 @@ function Filter() {
         setFilterList(_updatedData)
     }
 
+
     const handleChange = (event: any, newValue: number | number[]) => {
         if (Array.isArray(newValue)) {
             setLocalStartYear((newValue[0]))
@@ -200,27 +201,20 @@ function Filter() {
         fetchOrganisationList();
     }, [])
 
-    const handleSelectedSpecies = (value: string) => () => {
+    const handleSelectedSpecies = (value: string) => {
         setSelectedSpecies(value);
-        setSearchedSpecies("")
     };
 
     useEffect(() => {
         dispatch(toggleSpecies(selectedSpecies));
-        if (selectedSpecies.length > 0) {
-            setExapandSpecies(false)
-        }
     }, [selectedSpecies])
 
-    const handleSelectedInfo = (value: string) => () => {
-        setSelectedInfo(value);
+    const handleSelectedInfo = (e: SelectChangeEvent) => {
+        setSelectedInfo(e.target.value);
     };
 
     useEffect(() => {
         dispatch(setSelectedInfoList(selectedInfo));
-        if (selectedInfo.length > 0) {
-            setExpandReport(false)
-        }
     }, [selectedInfo])
 
 
@@ -328,14 +322,6 @@ function Filter() {
             setSearchResults([])
         }
     }, [searchInputValue])
-
-    const handleExpandSpecies = () => {
-        setExapandSpecies(!expandSpecies)
-    }
-
-    const handleExpandReport = () => {
-        setExpandReport(!expandReport)
-    }
     const handleSelectAllProperty = () => {
         const propeertyId = propertyList.map(property => property.id)
         setSelectedProperty(propeertyId)
@@ -352,11 +338,15 @@ function Filter() {
         }
     }
 
-    const handleSpeciesSearch = (value: any) => {
-        setSearchedSpecies(value)
-        const searchedSpecies = SpeciesFilterList.filter((item) => item.scientific_name.toLowerCase().includes(value.toLowerCase()))
-        setSearchSpeciesList(searchedSpecies)
-    }
+
+    useEffect(() => {
+        const sList: any = []
+        SpeciesFilterList.map((item: any) => {
+            sList.push(item.scientific_name)
+        })
+        setSearchSpeciesList(sList)
+    }, [SpeciesFilterList])
+
     return (
         <Box>
             <Box className='searchBar'>
@@ -463,39 +453,20 @@ function Filter() {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading ? <Loading /> :
-                                <Accordion expanded={expandReport} onChange={handleExpandReport}>
-                                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                        {selectedInfo.length > 0 ? (
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                <Chip
-                                                    key={selectedInfo}
-                                                    label={selectedInfo}
-                                                    sx={{ margin: 0.5 }}
-                                                />
-                                            </Box>
-                                        ) : (
-                                            <Typography>Select</Typography>
-                                        )}
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <Box className="selectBox">
-                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                {informationList.map((info: any, index) => (
-                                                    <FormControlLabel
-                                                        key={index}
-                                                        control={
-                                                            <Radio
-                                                                checked={selectedInfo.includes(info)}
-                                                                onChange={handleSelectedInfo(info)}
-                                                            />
-                                                        }
-                                                        label={info}
-                                                    />
-                                                ))}
-                                            </Box>
-                                        </Box>
-                                    </AccordionDetails>
-                                </Accordion>
+                                (
+                                    <Select
+                                        displayEmpty
+                                        sx={{ width: '100%', textAlign: 'start' }}
+                                        value={selectedInfo}
+                                        onChange={handleSelectedInfo}
+                                        renderValue={
+                                            selectedInfo !== "" ? undefined : () => <div style={{ color: '#282829' }}>Select</div>
+                                        }
+                                    >
+                                        {informationList.map((info: any, index) => (
+                                            <MenuItem value={info} key={index}>{info}</MenuItem>
+                                        ))}
+                                    </Select>)
                             }
                         </List>
                     </Box>
@@ -559,58 +530,16 @@ function Filter() {
                 </Box>
                 <List className='ListItem' component="nav" aria-label="">
                     {loading ? <Loading /> :
-                        <Accordion expanded={expandSpecies} onChange={handleExpandSpecies}>
-                            <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                {selectedSpecies.length > 0 ? (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        <Chip
-                                            key={selectedSpecies}
-                                            label={selectedSpecies}
-                                            sx={{ margin: 0.5 }}
-                                        />
-                                    </Box>
-                                ) : (
-                                    <InputBase
-                                        sx={{ ml: 1, flex: 1 }}
-                                        placeholder="Search Species"
-                                        inputProps={{ 'aria-label': 'Search Species' }}
-                                        onChange={(e) => handleSpeciesSearch(e.target.value)}
-                                    />
-                                )}
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Box className="selectBox">
-                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        {searchSpecies != '' ?
-                                            searchSpeciesList.length > 0 ?
-                                                searchSpeciesList.map((species: any) => (
-                                                    <FormControlLabel
-                                                        key={species.scientific_name}
-                                                        control={
-                                                            <Radio
-                                                                checked={selectedSpecies.includes(species.scientific_name)}
-                                                                onChange={handleSelectedSpecies(species.scientific_name)}
-                                                            />
-                                                        }
-                                                        label={species.scientific_name}
-                                                    />
-                                                )) :
-                                                <Typography>No Result found</Typography> : SpeciesFilterList.map((species: any) => (
-                                                    <FormControlLabel
-                                                        key={species.scientific_name}
-                                                        control={
-                                                            <Radio
-                                                                checked={selectedSpecies.includes(species.scientific_name)}
-                                                                onChange={handleSelectedSpecies(species.scientific_name)}
-                                                            />
-                                                        }
-                                                        label={species.scientific_name}
-                                                    />
-                                                ))}
-                                    </Box>
-                                </Box>
-                            </AccordionDetails>
-                        </Accordion>
+                        (
+                            <Autocomplete
+                                id="combo-box-demo"
+                                disableClearable={true}
+                                options={searchSpeciesList}
+                                sx={{ width: '100%' }}
+                                onChange={(event, value) => handleSelectedSpecies(value)}
+                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                            />
+                        )
                     }
                 </List>
                 <Box className='sidebarBoxHeading'>
@@ -630,11 +559,11 @@ function Filter() {
 
                 <Box className='formboxInput'>
                     <Box className='form-inputFild'>
-                        <TextField type="number" size='small' value={localStartYear} onChange={(e) => handleStartYearChange(e.target.value)} />
+                        <TextField type="number" size='small' value={localStartYear} onChange={(e:any) => handleStartYearChange(e.target.value)} />
                         <Typography className='formtext'>From</Typography>
                     </Box>
                     <Box className='form-inputFild right-flids'>
-                        <TextField type="number" size='small' value={localEndYear} onChange={(e) => handleEndYearChange(e.target.value)} />
+                        <TextField type="number" size='small' value={localEndYear} onChange={(e:any) => handleEndYearChange(e.target.value)} />
                         <Typography className='formtext'>To</Typography>
                     </Box>
                 </Box>
