@@ -7,7 +7,6 @@ from stakeholder.models import OrganisationUser, Organisation, UserProfile
 from stakeholder.factories import (
     organisationFactory,
     userRoleTypeFactory,
-    userProfileFactory
 )
 from stakeholder.views import OrganisationAPIView
 from property.factories import (
@@ -32,9 +31,6 @@ class OrganisationsViewTest(TestCase):
         self.organisation = Organisation.objects.create(
             name="test_organisation",
             data_use_permission=self.data_use_permission
-        )
-        userProfileFactory.create(
-            user=self.user
         )
         device = TOTPDevice(
             user=self.user,
@@ -81,7 +77,7 @@ class OrganisationsViewTest(TestCase):
                 args=[self.organisation.id]
                 )
             )
-        
+
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/')
 
@@ -100,7 +96,7 @@ class TestOrganisationAPIView(TestCase):
         )
         self.organisation_2 = organisationFactory.create(national=True)
 
-        # create user 
+        # create user
         self.user_1 = UserF.create(username='test_1')
         self.user_2 = UserF.create(username='test_2')
 
@@ -111,11 +107,9 @@ class TestOrganisationAPIView(TestCase):
         user_role = userRoleTypeFactory.create(
             name='Regional data scientist'
         )
-        UserProfile.objects.create(
-            user=self.user_1,
-            current_organisation=self.organisation_1,
-            user_role_type_id=user_role
-        )
+        self.user_1.user_profile.current_organisation = self.organisation_1
+        self.user_1.user_profile.user_role_type_id = user_role
+        self.user_1.save()
 
         request = factory.get(
             reverse('organisation')
@@ -128,7 +122,7 @@ class TestOrganisationAPIView(TestCase):
         _organisation = response.data[0]
         self.assertEqual(_organisation['id'], self.organisation_1.id)
         self.assertEqual(_organisation['name'], self.organisation_1.name)
-    
+
     def test_organisation_list_for_national(self):
         """Test organisation for regional user"""
 
@@ -136,11 +130,9 @@ class TestOrganisationAPIView(TestCase):
         user_role = userRoleTypeFactory.create(
             name='National data scientist'
         )
-        UserProfile.objects.create(
-            user=self.user_1,
-            current_organisation=self.organisation_2,
-            user_role_type_id=user_role
-        )
+        self.user_1.user_profile.current_organisation = self.organisation_2
+        self.user_1.user_profile.user_role_type_id = user_role
+        self.user_1.save()
 
         request = factory.get(
             reverse('organisation')
@@ -161,9 +153,6 @@ class OrganisationTests(TestCase):
         self.user = User.objects.create_user(
             username='testuser',
             password='testpassword'
-        )
-        userProfileFactory.create(
-            user=self.user
         )
         device = TOTPDevice(
             user=self.user,
