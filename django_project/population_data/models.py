@@ -3,21 +3,6 @@
 from django.db import models
 
 
-class CountMethod(models.Model):
-    """Count method model.
-    """
-
-    name = models.CharField(max_length=200, unique=True)
-
-    def __str__(self) -> str:
-        return self.name
-
-    class Meta:
-        verbose_name = "count method"
-        verbose_name_plural = "count methods"
-        db_table = "count_method"
-
-
 class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
@@ -36,7 +21,7 @@ class AnnualPopulationAbstract(models.Model):
 
 
 class AnnualPopulation(AnnualPopulationAbstract):
-    """Population count model.
+    """Annual Population model.
     """
 
     sub_adult_total = models.IntegerField(null=True, blank=True)
@@ -46,14 +31,11 @@ class AnnualPopulation(AnnualPopulationAbstract):
     survey_method = models.ForeignKey(
         "occurrence.SurveyMethod", on_delete=models.CASCADE, null=True
     )
-    count_method = models.ForeignKey(
-        "population_data.CountMethod", on_delete=models.CASCADE, null=True
-    )
     sampling_size_unit = models.ForeignKey(
         "occurrence.SamplingSizeUnit", on_delete=models.CASCADE, null=True
     )
     certainty = models.ForeignKey(
-        "population_data.Certainty", on_delete=models.CASCADE, null=True
+        "population_data.Certainty", on_delete=models.CASCADE, null=True,
     )
     open_close_system = models.ForeignKey(
         "population_data.OpenCloseSystem", on_delete=models.CASCADE, null=True
@@ -161,8 +143,8 @@ class Certainty(models.Model):
                                    help_text="Description")
 
     class Meta:
-        verbose_name = "Certainty"
-        verbose_name_plural = "Certainties"
+        verbose_name = "Population estimate certainty"
+        verbose_name_plural = "Population estimate certainties"
         db_table = "certainty"
 
     def __str__(self) -> str:
@@ -238,6 +220,12 @@ class SamplingEffortCoverage(models.Model):
         default="",
         unique=True,
         help_text="Name"
+    )
+
+    sort_order = models.IntegerField(
+        null=True,
+        unique=True,
+        help_text="Order sampling effort coverage model."
     )
 
     class Meta:

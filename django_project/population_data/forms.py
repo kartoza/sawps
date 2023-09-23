@@ -3,7 +3,14 @@ from population_data.models import AnnualPopulation
 
 
 class AnnualPopulationForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.fields['certainty'].label = 'Population estimate certainty'
+
+
     class Meta:
+
         model = AnnualPopulation
         fields = (
             "year",
@@ -19,8 +26,6 @@ class AnnualPopulationForm(ModelForm):
             "juvenile_male",
             "juvenile_female",
             "survey_method",
-            "count_method",
-            "sampling_size_unit",
             "certainty",
             "open_close_system",
             "presence",

@@ -1,5 +1,7 @@
 import codecs
 import csv
+import logging
+import pandas as pd
 from datetime import datetime
 
 from frontend.models import UploadSpeciesCSV
@@ -8,14 +10,27 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from scripts.csv_headers import CSV_FILE_HEADERS
+from species.scripts.upload_file_scripts import COMPULSORY_FIELDS, SHEET_TITLE
 from species.tasks.upload_species import upload_species_data
+
+from species.scripts.data_upload import SpeciesCSVUpload
+
+logger = logging.getLogger('sawps')
 
 
 class SpeciesUploader(APIView):
     """API to upload csv file."""
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser,)
+
+    def check_header(self, headers):
+        for header in COMPULSORY_FIELDS:
+            if header not in headers:
+                error_message = "The '{}' field is missing. Please check " \
+                                "that all the compulsory fields are in the " \
+                                "CSV file headers.".format(header)
+                return error_message
+        return
 
     def post(self, request, *args, **kwargs):
         species_file = request.FILES['file']
@@ -34,27 +49,34 @@ class SpeciesUploader(APIView):
             token=request.POST['token'],
             property=Property.objects.get(id=request.POST['property'])
         )
-        reader = csv.DictReader(codecs.iterdecode(species_file, 'utf-8'))
-        headers = reader.fieldnames
-        # check headers
-        for header in CSV_FILE_HEADERS:
-            if header not in headers:
-                error_message = (
-                    'Header row does not follow the correct format'
-                )
-                upload_session.error_notes = error_message
-                upload_session.error_file = (
-                    upload_session.process_file
-                )
-                upload_session.canceled = True
-                upload_session.save()
-                return Response(
-                    status=400,
-                    data={
-                        'detail': 'Header row does not follow the '
-                                  'correct format.' + header
-                    }
-                )
+
+        if species_file.name.endswith('.xlsx'):
+            xl = pd.ExcelFile(species_file)
+            try:
+                dataset = xl.parse(SHEET_TITLE)
+                headers = dataset.columns.ravel()
+            except ValueError:
+                error = "The sheet named {} is not in the Excel " \
+                             "file. Please download the template to get " \
+                             "the correct file. ".format(SHEET_TITLE)
+            else:
+                error = self.check_header(headers)
+
+        else:
+            reader = csv.DictReader(codecs.iterdecode(species_file, 'utf-8'))
+            headers = reader.fieldnames
+            error = self.check_header(headers)
+
+        if error:
+            upload_session.error_notes = error
+            upload_session.error_file = species_file
+            upload_session.canceled = True
+            upload_session.save()
+            return Response(
+                status=400,
+                data={'detail': error}
+            )
+
         upload_session.process_file = species_file
         upload_session.save()
         return Response(status=204)
@@ -78,21 +100,30 @@ class SaveCsvSpecies(APIView):
                     'detail': 'There is something wrong please try again.'
                 }
             )
-        task = upload_species_data.delay(
-            upload_session.id
-        )
 
-        if task:
-            return Response(
-                status=200
-            )
+        encoding = 'utf-8-sig'
 
-        return Response(
-            status=404,
-            data={
-                'detail': 'Somthing wrong with the csv file'
-            }
-        )
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start(encoding)
+
+        # task = upload_species_data.delay(
+        #     upload_session.id
+        # )
+        #
+        # if task:
+        #     return Response(
+        #         status=200
+        #     )
+        #
+        # return Response(
+        #     status=404,
+        #     data={
+        #         'detail': 'Somthing wrong with the csv file'
+        #     }
+        # )
 
 
 class UploadSpeciesStatus(APIView):

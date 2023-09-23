@@ -10,7 +10,6 @@ from frontend.tests.model_factories import UserF
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
-    CountMethod,
     OpenCloseSystem,
 )
 from property.factories import PropertyFactory

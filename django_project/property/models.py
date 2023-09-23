@@ -42,9 +42,8 @@ class Property(models.Model):
 
     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField()
-    open = models.BooleanField(
-        null=True,
-        blank=True
+    open = models.ForeignKey(
+        "population_data.OpenCloseSystem", on_delete=models.CASCADE, null=True
     )
 
     class Meta:

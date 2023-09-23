@@ -29,7 +29,8 @@ interface UploaderInterface {
 }
 
 const ALLOWABLE_FILE_TYPES = [
-    '.csv'
+    '.csv',
+    '.xlsx'
 ]
 
 const UPLOAD_FILE_URL = '/api/upload-species/'
@@ -80,7 +81,7 @@ const CustomInput = (props: IInputProps) => {
             </label>
         </Grid>
         <Grid item className='CenterItem'>
-            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported csv format only</Typography>
+            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported formats: csv and xlsx</Typography>
         </Grid>
     </Grid>
 
