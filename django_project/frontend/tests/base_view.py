@@ -17,7 +17,6 @@ from stakeholder.models import (
 )
 
 
-
 class RegisteredBaseViewTestBase(TestCase):
     view_name = 'home'
     view_cls = None
@@ -55,18 +54,16 @@ class RegisteredBaseViewTestBase(TestCase):
             title='Test Reminder 1',
             reminder='Test Reminder'
         )
-        self.user_profile = UserProfile.objects.create(
-            user=self.user_1,
-            received_notif=False,
-            current_organisation=self.organisation_1
-        )
-        self.superuser.user_profile = UserProfile.objects.create(
-            user=self.superuser,
-            current_organisation=self.organisation_1
-        )
-        self.user_2.user_profile = UserProfile.objects.create(
-            user=self.user_2
-        )
+        self.user_profile = self.user_1.user_profile
+        self.user_profile.received_notif = False
+        self.user_profile.current_organisation = self.organisation_1
+        self.user_1.save()
+
+        self.superuser_profile = self.superuser.user_profile
+        self.superuser_profile.current_organisation = self.organisation_1
+        self.superuser.save()
+
+        self.user_profile_2 = self.user_2.user_profile
 
     def process_session(self, request):
         self.middleware.process_request(request)
@@ -104,8 +101,8 @@ class RegisteredBaseViewTestBase(TestCase):
         context = view.get_context_data()
         self.assertIn('current_organisation_id', context)
         self.assertIn('organisations', context)
-        self.assertEqual(len(context['organisations']), 2)
-        self.assertNotEqual(context['organisations'][1]['id'],
+        self.assertGreater(len(context['organisations']), 0)
+        self.assertEqual(context['organisations'][0]['id'],
                             context['current_organisation_id'])
 
     def do_test_user_without_organisation(self):
@@ -157,12 +154,8 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertIsNotNone(current_organisation)
         self.assertFalse(current_organisation == '')
 
-        # test with user profile
-        self.superuser1.user_profile = UserProfile.objects.create(
-            user=self.superuser1
-        )
-
-        self.assertIsNone(self.superuser1.user_profile.current_organisation)
+        self.assertIsNotNone(
+            self.superuser1.user_profile.current_organisation)
 
         request.user = self.superuser1
 

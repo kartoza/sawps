@@ -7,7 +7,6 @@ from stakeholder.models import OrganisationUser, Organisation, UserProfile
 from stakeholder.factories import (
     organisationFactory,
     userRoleTypeFactory,
-    userProfileFactory
 )
 from stakeholder.views import OrganisationAPIView
 from property.factories import (
@@ -108,11 +107,9 @@ class TestOrganisationAPIView(TestCase):
         user_role = userRoleTypeFactory.create(
             name='Regional data scientist'
         )
-        UserProfile.objects.create(
-            user=self.user_1,
-            current_organisation=self.organisation_1,
-            user_role_type_id=user_role
-        )
+        self.user_1.user_profile.current_organisation = self.organisation_1
+        self.user_1.user_profile.user_role_type_id = user_role
+        self.user_1.save()
 
         request = factory.get(
             reverse('organisation')
@@ -133,11 +130,9 @@ class TestOrganisationAPIView(TestCase):
         user_role = userRoleTypeFactory.create(
             name='National data scientist'
         )
-        UserProfile.objects.create(
-            user=self.user_1,
-            current_organisation=self.organisation_2,
-            user_role_type_id=user_role
-        )
+        self.user_1.user_profile.current_organisation = self.organisation_2
+        self.user_1.user_profile.user_role_type_id = user_role
+        self.user_1.save()
 
         request = factory.get(
             reverse('organisation')

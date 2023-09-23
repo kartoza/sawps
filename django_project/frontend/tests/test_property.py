@@ -7,34 +7,14 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.test import Client, TestCase
 from django.urls import reverse
 from core.settings.utils import absolute_path
-from property.models import (
-    PropertyType,
-    Property,
-    Parcel
-)
-from property.factories import (
-    ProvinceFactory,
-    PropertyFactory
-)
-from stakeholder.factories import (
-    organisationFactory,
-    organisationUserFactory,
-    userProfileFactory
-)
-from frontend.models.parcels import (
-    Erf,
-    Holding
-)
 from frontend.models.places import (
     PlaceNameSmallScale,
     PlaceNameMidScale,
     PlaceNameLargerScale,
     PlaceNameLargestScale
 )
-from frontend.tests.model_factories import UserF
 from frontend.api_views.property import (
     CreateNewProperty,
-    PropertyDetail,
     PropertyList,
     PropertyMetadataList,
     UpdatePropertyBoundaries,
@@ -114,10 +94,10 @@ class TestPropertyAPIViews(TestCase):
             format='json'
         )
         # without adding to organisation, should return 403
-        self.user_1.user_profile = userProfileFactory.create(
-            user=self.user_1,
-            current_organisation=self.organisation
-        )
+        self.user_1.user_profile = self.user_1.user_profile
+        self.user_1.user_profile.current_organisation = self.organisation
+        self.user_1.save()
+
         request.user = self.user_1
         view = CreateNewProperty.as_view()
         response = view(request)
@@ -178,10 +158,10 @@ class TestPropertyAPIViews(TestCase):
         request = self.factory.get(
             reverse('property-list')
         )
-        self.user_2.user_profile = userProfileFactory.create(
-            user=self.user_2,
-            current_organisation=self.organisation
-        )
+        self.user_2.user_profile = self.user_2.user_profile
+        self.user_2.user_profile.current_organisation = self.organisation
+        self.user_2.save()
+
         request.user = self.user_2
         view = PropertyList.as_view()
         response = view(request)
@@ -200,10 +180,8 @@ class TestPropertyAPIViews(TestCase):
             password='testpasswordd'
         )
 
-        UserProfile.objects.create(
-            user=user,
-            current_organisation=organisation,
-        )
+        user.user_profile.current_organisation = organisation
+        user.save()
 
         property = PropertyFactory.create(
             organisation=organisation,
@@ -277,10 +255,10 @@ class TestPropertyAPIViews(TestCase):
             reverse('property-create'), data=data,
             format='json'
         )
-        self.user_1.user_profile = userProfileFactory.create(
-            user=self.user_1,
-            current_organisation=self.organisation
-        )
+        self.user_1.user_profile = self.user_1.user_profile
+        self.user_1.user_profile.current_organisation = self.organisation
+        self.user_1.save()
+
         request.user = self.user_1
         organisationUserFactory.create(
             user=self.user_1,
@@ -346,10 +324,10 @@ class TestPropertyAPIViews(TestCase):
         request = self.factory.get(
             reverse('property-search') + f'?search_text=sea'
         )
-        self.user_2.user_profile = userProfileFactory.create(
-            user=self.user_2,
-            current_organisation=self.organisation
-        )
+        self.user_2.user_profile = self.user_2.user_profile
+        self.user_2.user_profile.current_organisation = self.organisation
+        self.user_2.save()
+
         request.user = self.user_2
         view = PropertySearch.as_view()
         response = view(request)
