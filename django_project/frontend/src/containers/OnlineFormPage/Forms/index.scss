@@ -138,3 +138,39 @@
         }
     }
 }
+
+
+.select-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .select-box {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .select-value {
+    margin-top: -1px;
+    white-space: nowrap;
+    position: relative;
+  }
+  
+  /* Add an underline */
+  .select-value::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 75%;
+    height: 1px;
+    background-color: gray;
+  }
+  
+  .select-box:hover .select-value {
+    color: inherit;
+    cursor: pointer;
+  }
+  
