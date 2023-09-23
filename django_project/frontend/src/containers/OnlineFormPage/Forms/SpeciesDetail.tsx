@@ -51,6 +51,10 @@ const isOtherSelected = (value: string) => {
 }
 
 export default function SpeciesDetail(props: SpeciesDetailInterface) {
+    const [isConfidenceRatingOpen, setIsConfidenceRatingOpen] = useState(false);
+    const handleOpenConfidenceRating = () => {
+        setIsConfidenceRatingOpen(true);
+    };
     const { 
         initialData, taxonMetadataList, openCloseMetadataList,
         surveyMethodMetadataList, sampling_effort_coverages,
@@ -643,28 +647,52 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
+                                    <ConfidenceRating
+                                        open={isConfidenceRatingOpen}
+                                        onClose={() => setIsConfidenceRatingOpen(false)}
+                                        onSubmit={() => setIsConfidenceRatingOpen(false)}
+                                        currentConfidence={data.annual_population.population_estimate_certainty}
+                                        onConfidenceChange={(newValue) =>
+                                            updateAnnualPopulationSelectValue(
+                                            'population_estimate_certainty',
+                                            newValue,
+                                            certainties
+                                            )
+                                        }
+                                        modalHeight="auto"
+                                    />
+
                                     <Grid item xs={6}>
-                                        <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.population_estimate_certainty}>
-                                            <InputLabel id="population-estimate-certainty-label">Population Estimate Certainty</InputLabel>
-                                            <Select
-                                                labelId="population-estimate-certainty-label"
-                                                id="population-estimate-certainty-select"
-                                                value={data.annual_population.population_estimate_certainty || data.annual_population.population_estimate_certainty == 0 ? data.annual_population.population_estimate_certainty.toString() : ""}
-                                                onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_estimate_certainty', parseInt(event.target.value), certainties)}
-                                                displayEmpty
-                                                label="Population Estimate Certainty"
+                                        <div className="select-container">
+                                            <InputLabel id="population-estimate-certainty-label">
+                                            Population Estimate Certainty*
+                                            </InputLabel>
+                                            <FormControl
+                                            variant="standard"
+                                            required
+                                            className="DropdownInput"
+                                            fullWidth
+                                            error={validation.annual_population?.population_estimate_certainty}
                                             >
-                                                { certainties.map((common: CommonUploadMetadata) => {
-                                                    return (
-                                                        <MenuItem key={common.id} value={common.id}>
-                                                            {common.name}
-                                                        </MenuItem>
-                                                    )
-                                                })                                            
-                                                }
-                                            </Select>
-                                            <FormHelperText>{validation.annual_population?.population_estimate_certainty ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
-                                        </FormControl>
+                                            <div
+                                                className="select-box"
+                                                onClick={handleOpenConfidenceRating}
+                                            >
+                                                {/* Display the selected value or placeholder */}
+                                                <div className="select-value">
+                                                {data.annual_population.population_estimate_certainty ||
+                                                data.annual_population.population_estimate_certainty == 0
+                                                    ? data.annual_population.population_estimate_certainty.toString()
+                                                    : 'Select an option'}
+                                                </div>
+                                            </div>
+                                            <FormHelperText>
+                                                {validation.annual_population?.population_estimate_certainty
+                                                ? REQUIRED_FIELD_ERROR_MESSAGE
+                                                : ' '}
+                                            </FormHelperText>
+                                            </FormControl>
+                                        </div>
                                     </Grid>
                                     <Grid item xs={6}>
                                         <TextField id='certainty_of_bounds' label='Certainty of Bounds' value={data.annual_population.certainty_of_bounds ? data.annual_population.certainty_of_bounds : ''}
