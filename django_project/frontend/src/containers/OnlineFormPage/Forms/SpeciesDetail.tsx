@@ -389,7 +389,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('sampling_effort_coverage_id', parseInt(event.target.value), sampling_effort_coverages)}
                                         displayEmpty
                                         label="Sampling Effort Coverage"
-                                        style={{ width: '200px' }}
+                                        style={{ width: '300px' }}
                                         >
                                         {sampling_effort_coverages.map((common: CommonUploadMetadata) => {
                                             return (
@@ -412,7 +412,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_status_id', parseInt(event.target.value), population_statuses)}
                                         displayEmpty
                                         label="Population Status"
-                                        style={{ width: '200px' }}
+                                        style={{ width: '300px' }}
                                         >
                                         {population_statuses.map((common: CommonUploadMetadata) => {
                                             return (
@@ -652,7 +652,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         onClose={() => setIsConfidenceRatingOpen(false)}
                                         onSubmit={() => setIsConfidenceRatingOpen(false)}
                                         currentConfidence={data.annual_population.population_estimate_certainty}
-                                        onConfidenceChange={(newValue) =>
+                                        onConfidenceChange={(newValue: number) =>
                                             updateAnnualPopulationSelectValue(
                                             'population_estimate_certainty',
                                             newValue,
