@@ -28,6 +28,7 @@ import {
     OTHER_NUMBER_FIELDS
 } from '../../../models/Upload';
 import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
+import ConfidenceRating from './ConfidenceRating';
 
 interface SpeciesDetailInterface {
     initialData: UploadSpeciesDetailInterface;
