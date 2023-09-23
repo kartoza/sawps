@@ -89,10 +89,8 @@ class TaxonTestCase(TestCase):
             password='testpasswordd'
         )
 
-        UserProfile.objects.create(
-            user=user,
-            current_organisation=organisation,
-        )
+        user.user_profile.current_organisation = organisation
+        user.save()
 
         property = PropertyFactory.create(
             organisation=organisation,
@@ -121,10 +119,8 @@ class TaxonTestCase(TestCase):
             password='testpasswordd'
         )
 
-        UserProfile.objects.create(
-            user=user,
-            current_organisation=organisation,
-        )
+        user.user_profile.current_organisation = organisation
+        user.save()
 
         property = PropertyFactory.create(
             organisation=organisation,

@@ -42,10 +42,8 @@ class BaseTestCase(TestCase):
             organisation=self.organisation_1
         )
 
-        UserProfile.objects.create(
-            user=self.user,
-            current_organisation=self.organisation_1
-        )
+        self.user.user_profile.current_organisation = self.organisation_1
+        self.user.save()
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1, name="PropertyA"

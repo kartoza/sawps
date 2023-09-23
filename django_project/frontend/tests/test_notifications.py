@@ -23,14 +23,14 @@ class GetUserNotificationsTestCase(TestCase):
     def setUp(self):
         # Create a test user
         self.user = User.objects.create_user(
-            username='testuser', 
+            username='testuser',
             password='testpassword'
         )
         # Create a test user profile
-        self.user_profile = UserProfile.objects.create(
-            user=self.user,
-            received_notif=False
-        )
+        self.user_profile = self.user.user_profile
+        self.user_profile.received_notif = False
+        self.user.save()
+
         # create organisation
         self.organisation = organisationFactory.create()
         # Create a test reminder
@@ -46,7 +46,7 @@ class GetUserNotificationsTestCase(TestCase):
         # Simulate a request to the view
         request = RequestFactory().get('get_user_notifications')
         request.user = self.user
-        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.pk} 
+        request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.pk}
 
         # Add a message storage to the request
         setattr(request, '_messages', FallbackStorage(request))

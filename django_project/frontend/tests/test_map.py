@@ -84,19 +84,18 @@ class TestMapAPIViews(TestCase):
         session_key = None
         request.session = engine.SessionStore(session_key)
         view = MapStyles.as_view()
-        response = view(request) 
+        response = view(request)
         self.assertEqual(response.status_code, 200)
-    
+
     def test_map_styles_with_theme_value_for_role(self):
         # test with user role as decision maker
         role = userRoleTypeFactory.create(
             id=1,
-            name = 'Decision Maker',
+            name='Decision Maker',
         )
-        UserProfile.objects.create(
-            user=self.user_1,
-            user_role_type_id=role
-        )
+        self.user_1.user_profile.user_role_type_id = role
+        self.user_1.save()
+
         request = self.factory.get(
             reverse('map-style')
         )
@@ -149,10 +148,9 @@ class TestMapAPIViews(TestCase):
         self.assertEqual(response.data['cname'], self.holding_1.cname)
 
     def test_find_property_by_coord(self):
-        UserProfile.objects.create(
-            user=self.user_1,
-            current_organisation=self.organisation_1
-        )
+        self.user_1.user_profile.current_organisation = self.organisation_1
+        self.user_1.save()
+
         # insert property
         property = PropertyFactory.create(
             geometry=self.holding_1.geom,

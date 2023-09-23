@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
 import {
     Box,
@@ -11,6 +11,7 @@ import {
     Chip,
     FormControlLabel,
     Radio,
+    InputBase,
 } from '@mui/material';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -72,7 +73,8 @@ function Filter() {
     const [tab, setTab] = useState<string>('')
     const [expandSpecies, setExapandSpecies] = useState<boolean>(false);
     const [expandReport, setExpandReport] = useState<boolean>(false);
-
+    const [searchSpeciesList, setSearchSpeciesList] = useState([])
+    const [searchSpecies, setSearchedSpecies] = useState('')
     const [filterlList, setFilterList] = useState([
         {
             "id": 3,
@@ -198,43 +200,29 @@ function Filter() {
         fetchOrganisationList();
     }, [])
 
-    const handleDeleteSpecies = (valueToDelete: string) => {
-        if (selectedSpecies === valueToDelete) {
-            setSelectedSpecies("");
-        }
-    }
     const handleSelectedSpecies = (value: string) => () => {
         setSelectedSpecies(value);
+        setSearchedSpecies("")
     };
 
     useEffect(() => {
         dispatch(toggleSpecies(selectedSpecies));
-        if(selectedSpecies.length > 0) {
+        if (selectedSpecies.length > 0) {
             setExapandSpecies(false)
         }
     }, [selectedSpecies])
 
-    const handleDeleteInfo = (valueToDelete: string) => {
-        if (selectedInfo === valueToDelete) {
-            setSelectedInfo("");
-        }
-    }
     const handleSelectedInfo = (value: string) => () => {
         setSelectedInfo(value);
     };
 
     useEffect(() => {
         dispatch(setSelectedInfoList(selectedInfo));
-        if(selectedInfo.length > 0) {
+        if (selectedInfo.length > 0) {
             setExpandReport(false)
         }
     }, [selectedInfo])
 
-
-    const handleDeleteProperty = (idToDelete: number) => () => {
-        const updatedSelectedProperty = selectedProperty.filter((id) => id !== idToDelete);
-        setSelectedProperty(updatedSelectedProperty);
-    };
 
     const handleSelectedProperty = (id: number) => () => {
         const propertyExists = selectedProperty.includes(id);
@@ -250,11 +238,6 @@ function Filter() {
     useEffect(() => {
         dispatch(selectedPropertyId(selectedProperty.length > 0 ? selectedProperty.join(',') : ''));
     }, [selectedProperty])
-
-    const handleDeleteOrganisation = (idToDelete: number) => () => {
-        const updatedSelectedOrganisation = selectedOrganisation.filter((id) => id !== idToDelete);
-        setSelectedOrganisation(updatedSelectedOrganisation);
-    };
 
     const handleSelectedOrganisation = (id: number) => () => {
         const organisationExists = selectedOrganisation.includes(id);
@@ -298,7 +281,7 @@ function Filter() {
     }
 
     const searchProperty = React.useMemo(
-        () => 
+        () =>
             debounce(
                 (
                     request: { input: string },
@@ -325,7 +308,7 @@ function Filter() {
             setSearchResults([])
             return undefined;
         }
-        searchProperty({input: searchInputValue}, (results: any) => {
+        searchProperty({ input: searchInputValue }, (results: any) => {
             if (active) {
                 if (results) {
                     setSearchResults(results.data as SearchPropertyResult[])
@@ -353,7 +336,27 @@ function Filter() {
     const handleExpandReport = () => {
         setExpandReport(!expandReport)
     }
+    const handleSelectAllProperty = () => {
+        const propeertyId = propertyList.map(property => property.id)
+        setSelectedProperty(propeertyId)
+        if (selectedProperty.length === propertyList.length) {
+            setSelectedProperty([]);
+        }
+    }
 
+    const handleSelectAllOrganisation = () => {
+        const organisationId = organisationList.map(data => data.id)
+        setSelectedOrganisation(organisationId)
+        if (selectedOrganisation.length === organisationList.length) {
+            setSelectedOrganisation([]);
+        }
+    }
+
+    const handleSpeciesSearch = (value: any) => {
+        setSearchedSpecies(value)
+        const searchedSpecies = SpeciesFilterList.filter((item) => item.common_name_varbatim.toLowerCase().includes(value.toLowerCase()))
+        setSearchSpeciesList(searchedSpecies)
+    }
     return (
         <Box>
             <Box className='searchBar'>
@@ -365,7 +368,7 @@ function Filter() {
                     onClose={() => setSearchOpen(false)}
                     options={searchResults}
                     getOptionLabel={(option) => option.fclass ? `${option.name} (${option.fclass})` : option.name}
-                    renderInput={(params) => 
+                    renderInput={(params) =>
                         <TextField
                             variant="outlined"
                             placeholder="Keyword"
@@ -403,7 +406,7 @@ function Filter() {
             <Box className='sidebarBox'>
                 {(userRole === "National data scientist" || userRole === "Regional data scientist") && <Box>
                     <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/organisation.png" alt='organisation image' />
+                        <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
                     </Box>
                     <List className='ListItem' component="nav" aria-label="">
@@ -411,19 +414,8 @@ function Filter() {
                             <Accordion>
                                 <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                     {selectedOrganisation.length > 0 ? (
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                            {selectedOrganisation.map((id) => {
-                                                const organisation = organisationList.find((item) => item.id === id);
-                                                return (
-                                                    <Chip
-                                                        key={id}
-                                                        label={organisation ? organisation.name : ''}
-                                                        onDelete={handleDeleteOrganisation(id)}
-                                                        deleteIcon={<CloseIcon />}
-                                                        sx={{ margin: 0.5 }}
-                                                    />
-                                                );
-                                            })}
+                                        <Box >
+                                            {`${selectedOrganisation.length} ${selectedOrganisation.length > 1 ? 'Organisations' : 'Organisation'} Selected`}
                                         </Box>
                                     ) : (
                                         <Typography>Select</Typography>
@@ -431,6 +423,17 @@ function Filter() {
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Box className="selectBox">
+                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedOrganisation.length === organisationList.length}
+                                                        onChange={handleSelectAllOrganisation}
+                                                    />
+                                                }
+                                                label="Select All"
+                                            />
+                                        </Box>
                                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                             {organisationList.map((data: any) => (
                                                 <FormControlLabel
@@ -455,20 +458,18 @@ function Filter() {
                 {tab === 'data' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/InfoIcon.png" alt='Info image' />
+                            <img src="/static/images/iconamoon.svg" alt='Info image' />
                             <Typography color='#75B37A' fontSize='medium'>Report Type</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading ? <Loading /> :
-                                <Accordion>
+                                <Accordion expanded={expandReport} onChange={handleExpandReport}>
                                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                         {selectedInfo.length > 0 ? (
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                                 <Chip
                                                     key={selectedInfo}
                                                     label={selectedInfo}
-                                                    onDelete={() => handleDeleteInfo(selectedInfo)}
-                                                    deleteIcon={<CloseIcon />}
                                                     sx={{ margin: 0.5 }}
                                                 />
                                             </Box>
@@ -502,7 +503,7 @@ function Filter() {
                 {userRole != "National data consumer" &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/propertyIcon.png" alt='Property image' />
+                            <img src="/static/images/property.svg" alt='Property image' />
                             <Typography color='#75B37A' fontSize='medium'>Property</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
@@ -510,19 +511,9 @@ function Filter() {
                                 <Accordion>
                                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                         {selectedProperty.length > 0 ? (
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                {selectedProperty.map((id) => {
-                                                    const property = propertyList.find((item) => item.id === id);
-                                                    return (
-                                                        <Chip
-                                                            key={id}
-                                                            label={property ? property.name : ''}
-                                                            onDelete={handleDeleteProperty(id)}
-                                                            deleteIcon={<CloseIcon />}
-                                                            sx={{ margin: 0.5 }}
-                                                        />
-                                                    );
-                                                })}
+                                            <Box>
+                                                {`${selectedProperty.length} ${selectedProperty.length > 1 ? 'Properties' : 'Property'} Selected`}
+
                                             </Box>
                                         ) : (
                                             <Typography>Select</Typography>
@@ -530,6 +521,17 @@ function Filter() {
                                     </AccordionSummary>
                                     <AccordionDetails>
                                         <Box className="selectBox">
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedProperty.length === propertyList.length}
+                                                            onChange={handleSelectAllProperty}
+                                                        />
+                                                    }
+                                                    label="Select All"
+                                                />
+                                            </Box>
                                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                                 {propertyList.map((property: any) => (
                                                     <FormControlLabel
@@ -552,7 +554,7 @@ function Filter() {
                     </Box>
                 }
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/species/elephant.png" alt='species image' />
+                    <img src="/static/images/species/elephant.svg" alt='species image' />
                     <Typography color='#75B37A' fontSize='medium'>Species</Typography>
                 </Box>
                 <List className='ListItem' component="nav" aria-label="">
@@ -564,30 +566,47 @@ function Filter() {
                                         <Chip
                                             key={selectedSpecies}
                                             label={selectedSpecies}
-                                            onDelete={() => handleDeleteSpecies(selectedSpecies)}
-                                            deleteIcon={<CloseIcon />}
                                             sx={{ margin: 0.5 }}
                                         />
                                     </Box>
                                 ) : (
-                                    <Typography>Select</Typography>
+                                    <InputBase
+                                        sx={{ ml: 1, flex: 1 }}
+                                        placeholder="Search Species"
+                                        inputProps={{ 'aria-label': 'Search Species' }}
+                                        onChange={(e) => handleSpeciesSearch(e.target.value)}
+                                    />
                                 )}
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Box className="selectBox">
                                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        {SpeciesFilterList.map((species: any) => (
-                                            <FormControlLabel
-                                                key={species.common_name_varbatim}
-                                                control={
-                                                    <Radio
-                                                        checked={selectedSpecies.includes(species.common_name_varbatim)}
-                                                        onChange={handleSelectedSpecies(species.common_name_varbatim)}
+                                        {searchSpecies != '' ?
+                                            searchSpeciesList.length > 0 ?
+                                                searchSpeciesList.map((species: any) => (
+                                                    <FormControlLabel
+                                                        key={species.common_name_varbatim}
+                                                        control={
+                                                            <Radio
+                                                                checked={selectedSpecies.includes(species.common_name_varbatim)}
+                                                                onChange={handleSelectedSpecies(species.common_name_varbatim)}
+                                                            />
+                                                        }
+                                                        label={species.common_name_varbatim}
                                                     />
-                                                }
-                                                label={species.common_name_varbatim}
-                                            />
-                                        ))}
+                                                )) :
+                                                <Typography>No Result found</Typography> : SpeciesFilterList.map((species: any) => (
+                                                    <FormControlLabel
+                                                        key={species.common_name_varbatim}
+                                                        control={
+                                                            <Radio
+                                                                checked={selectedSpecies.includes(species.common_name_varbatim)}
+                                                                onChange={handleSelectedSpecies(species.common_name_varbatim)}
+                                                            />
+                                                        }
+                                                        label={species.common_name_varbatim}
+                                                    />
+                                                ))}
                                     </Box>
                                 </Box>
                             </AccordionDetails>
@@ -595,7 +614,7 @@ function Filter() {
                     }
                 </List>
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/watchIcon.png" alt='watch image' />
+                    <img src="/static/images/watch.svg" alt='watch image' />
                     <Typography color='#75B37A' fontSize='medium'>Year</Typography>
                 </Box>
                 <Box className='sliderYear'>
@@ -621,7 +640,7 @@ function Filter() {
                 </Box>
 
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/FilterIcon.png" alt='Filter image' />
+                    <img src="/static/images/FilterIcon.svg" alt='Filter image' />
                     <Typography color='#75B37A' fontSize='medium'>Spatial filters</Typography>
                 </Box>
                 <Box>
@@ -672,5 +691,6 @@ function Filter() {
         </Box >
     )
 }
+
 
 export default Filter;

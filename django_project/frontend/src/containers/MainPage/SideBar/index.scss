@@ -84,7 +84,7 @@
 .sidebarBox {
     padding: 0px 16px;
     width: 100%;
-    max-height: 77vh;
+    max-height: 69vh;
     overflow: auto;
     .sidebarBoxHeading {
         display: flex;
@@ -119,6 +119,7 @@
             min-height: 50px;
             border-radius: 5px;
             padding-left: 10px;
+            background-color: transparent !important;
             .MuiChip-root.MuiChip-filled{
                 border-radius: 4px;
                 svg{
@@ -166,7 +167,7 @@
     position: relative;
     padding-left: 10px;
     padding-right: 10px;
-    margin-top: 30px;
+    margin-top: 5px;
     .MuiSlider-marked {
         margin-bottom: 0px;
         color: #282829;

@@ -61,19 +61,20 @@ class RegisteredOrganisationBaseView(TemplateView):
 
     def get_current_organisation(self):
         user = self.request.user
-        user_profile = user.user_profile
+        user_profile = getattr(user, 'user_profile', None)
         current_organisation = (
             user_profile.current_organisation
             if user_profile else None
         )
         return current_organisation
 
-
     def get_or_set_current_organisation(self, request):
         user = request.user
-
-        user_profile = user.user_profile
-        current_organisation = user_profile.current_organisation
+        user_profile = getattr(user, 'user_profile', None)
+        current_organisation = (
+            user_profile.current_organisation
+            if user_profile else None
+        )
 
         if current_organisation:
             return current_organisation.id, current_organisation.name
@@ -95,21 +96,21 @@ class RegisteredOrganisationBaseView(TemplateView):
 
         if organisation:
             # Set the current organization in the user's profile
-            user_profile.current_organisation = organisation
-            user_profile.save()
+            if user_profile:
+                user_profile.current_organisation = organisation
+                user_profile.save()
             return organisation.id, organisation.name
 
         return 0, ''
 
-
     def get_organisation_list(self, request):
         user = request.user
-        user_profile = user.user_profile
+        user_profile = getattr(user, 'user_profile', None)
         if user.is_superuser:
             organisations = (
                 Organisation.objects.all().order_by('name')
             )
-            if user_profile.current_organisation:
+            if user_profile and user_profile.current_organisation:
                 organisations = organisations.exclude(
                     id=user_profile.current_organisation.id
                 )
@@ -117,7 +118,7 @@ class RegisteredOrganisationBaseView(TemplateView):
             user_organisations = OrganisationUser.objects.filter(
                 user=user
             ).order_by('organisation_id')
-            if user_profile.current_organisation:
+            if user_profile and user_profile.current_organisation:
                 user_organisations = user_organisations.exclude(
                     id=user_profile.current_organisation.id
                 )
@@ -126,7 +127,6 @@ class RegisteredOrganisationBaseView(TemplateView):
             )
 
         return OrganisationSerializer(organisations, many=True).data
-
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

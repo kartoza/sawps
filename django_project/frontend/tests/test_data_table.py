@@ -18,7 +18,6 @@ from stakeholder.factories import (
     organisationUserFactory,
     userRoleTypeFactory,
 )
-from stakeholder.models import UserProfile
 
 
 class OwnedSpeciesTestCase(TestCase):
@@ -47,11 +46,10 @@ class OwnedSpeciesTestCase(TestCase):
         self.role_organisation_manager = userRoleTypeFactory.create(
             name='Organisation manager',
         )
-        UserProfile.objects.create(
-            user=user,
-            current_organisation=self.organisation_1,
-            user_role_type_id=self.role_organisation_manager
-        )
+        user.user_profile.current_organisation = self.organisation_1
+        user.user_profile.user_role_type_id = self.role_organisation_manager
+        user.save()
+
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
             name='PropertyA'
@@ -173,11 +171,10 @@ class NationalUserTestCase(TestCase):
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="National data consumer",
         )
-        UserProfile.objects.create(
-            user=user,
-            current_organisation=self.organisation_1,
-            user_role_type_id=self.role_organisation_manager
-        )
+        user.user_profile.current_organisation = self.organisation_1
+        user.user_profile.user_role_type_id = self.role_organisation_manager
+        user.save()
+
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
             name='PropertyA'
@@ -249,11 +246,10 @@ class RegionalUserTestCase(TestCase):
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="Regional data consumer",
         )
-        UserProfile.objects.create(
-            user=user,
-            current_organisation=self.organisation_1,
-            user_role_type_id=self.role_organisation_manager
-        )
+        user.user_profile.current_organisation = self.organisation_1
+        user.user_profile.user_role_type_id = self.role_organisation_manager
+        user.save()
+
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
             name='PropertyA'
@@ -311,11 +307,10 @@ class DataScientistTestCase(TestCase):
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="Regional data scientist",
         )
-        UserProfile.objects.create(
-            user=user,
-            current_organisation=self.organisation_1,
-            user_role_type_id=self.role_organisation_manager
-        )
+        user.user_profile.current_organisation = self.organisation_1
+        user.user_profile.user_role_type_id = self.role_organisation_manager
+        user.save()
+
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
             name='PropertyA'

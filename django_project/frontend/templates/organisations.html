@@ -4,18 +4,113 @@
 
 
 {% block content %}
-<section>
+<section style="min-height:var(--min-content-height);">
   <div class="container py-5">
-    <div class="row">
+    <div class="my-row">
       {% include "profile_config_base.html" %}
     </div>
-
-    
   
-    <div class="container">
-      <div class="row">
+    <div class="container" style="margin-left: 0.5%;">
+
+      <!-- add user modal -->
+      <div class="modal fade" id="adduser" tabindex="-1" role="dialog" aria-labelledby="adduserLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addUserModalTitle" style="color: var(--green)"></h5>
+              <hr class="default-separator" style="margin-bottom: 0%;">
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <input type="email" class="form-control email-input" name="email" aria-describedby="emailHelp" placeholder="@Email address" required>
+                <div class="invalid-feedback">
+                  Please enter a valid email address.
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inviteAs" style="display: block; text-align: center;">Invite as:</label>
+                <select class="form-control custom-select" id="inviteAs">
+                  <option value="manager">Organisation Manager</option>
+                  <option value="member">Organisation Member</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="memberRole" style="display: block; text-align: center;">Permissions:</label>
+                <select class="form-control custom-select" id="memberRole">
+                  <option value="read">Read</option>
+                  <option value="write">Write</option>
+                </select>
+              </div>
+              <input type="hidden" id="organisationIdInput" name="organisation_id">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="sawps-font-button green-button mt-0" id="inviteBtn" style="background-color: var(--green); font-weight: bold; min-width: 140px;" onclick="invitePeople()">INVITE</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message Modal -->
+      <div class="modal fade" id="errorMessageModal" tabindex="-1" role="dialog" aria-labelledby="errorMessageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-center text-danger" id="errorMessageModalLabel">
+                <i class="fas fa-exclamation-circle mr-2"></i>Error
+              </h5>
+              <hr class="default-separator" style="border-color: var(--red); margin-bottom: 0%;">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" class="text-center">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p class="text-center">Invitation already sent.</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button 
+                type="button" 
+                class="sawps-font-button red-button mt-0" 
+                style="font-weight: bold; min-width: 140px; margin-left: 70%;" 
+                data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+        <!-- Success Message Modal -->
+        <div class="modal fade" id="successMessageModal" tabindex="-1" role="dialog" aria-labelledby="successMessageModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-center" id="successMessageModalLabel">
+                  <i class="fas fa-check-circle mr-2"></i>Success
+                </h5>
+                <hr class="default-separator" style="margin-bottom: 0%;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true" class="text-center">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p class="text-center">Email invitation sent successfully.</p>
+              </div>
+              <div class="modal-footer justify-content-center">
+                <button 
+                  type="button" 
+                  class="sawps-font-button red-button mt-0" 
+                  data-dismiss="modal"
+                  style="font-weight: bold; min-width: 140px; margin-left: 70%;"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <div class="my-row">
         <h4 class="page-title sawps-text-menu mb-3">My Organisations</h4>
-        {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
+        {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser %}
         <div class="col-auto ml-auto mb-3">
           <button class="sawps-font-button green-button mt-0 button" style="font-weight: bold; align-items: flex-end;" type="button" data-toggle="modal" data-target="#organisationModal">
             <i class="fas fa-plus"></i> Request Organisation
@@ -23,46 +118,296 @@
         </div>
         {% endif %}
       </div>
+
       <!-- reminders table -->
-      <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
+      <div class="my-row" style="margin-top: 1%; margin-left: 0%; overflow-x: auto;">
         <table id="organisations" class="table table-bordereless" cellspacing="0" width="100%" style="border: none;">
-            
-            <tbody>
-              {% if organisations|length > 0 %}
-              <tr>
-                <td>
-                    <button class="sawps-font-button green-button mt-0" style="width: 140px; font-weight: bold;">Active</button>
-                </td>
-                <td class="clickable">{{current_organisation}}</td>
-              </tr>
-              {% endif %}
-              {% for organisation in organisations %}
-                  <tr>
-                      <td>
-                          <button class="sawps-font-button orange-button mt-0" style="width: 140px; font-weight: bold;" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
-                      </td>
-                      <td>{{ organisation.name }}</td>
-                  </tr>
-              {% endfor %}
+          <thead>
+            <tr>
+              <th style="width: 140px;">Active</th>
+              <th style="width: 200px;">Name</th>
+              <th style="width: 140px;">Add User</th>
+              <th style="width: 300px;">Data Use Permissions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if current_organisation %}
+            <tr>
+              <td>
+                <button class="sawps-font-button green-button mt-0" style="width: 140px; font-weight: bold;">Active</button>
+              </td>
+              <td class="clickable">{{ current_organisation }}</td>
+              <td>
+                <!-- Add User Button - Trigger Modal -->
+                <button
+                  class="sawps-font-button green-button mt-0" 
+                  type="button" 
+                  data-toggle="modal"
+                  data-target="#adduser"
+                  data-organisation-id="{{ current_organisation_id }}"
+                  data-organisation-name="{{ current_organisation }}"
+                  style="font-weight: bold; min-height: fit-content; min-width: 145px;"
+                >
+                  <i class="fas fa-plus"></i> Add User
+                </button>
+              </td>
+              <td>
+                <!-- Read More Link - Show/Hide More Text -->
+                <a 
+                  href="#" 
+                  class="read-more-link" 
+                  data-toggle="collapse" 
+                  data-target="#readMoreText{{ current_organisation_id }}" 
+                  onclick="fetchOrganizationDetails({{ current_organisation_id }})"
+                >
+                  Read more
+                </a>
+                <div id="readMoreText{{ current_organisation_id }}" class="collapse" style="max-height: 450px; overflow-y: auto; min-width: fit-content; overflow-x: auto;">
 
-            </tbody>
-          </table>
-        </div>  
+                  <div class="form-group mt-3" style="margin-left: 2%;">
+                    <small id="data-privacy" class="form-text text-muted">
+                        How would you like your data to be used?. See the SANBI data sharing <a href="#">agreement</a>.
+                        Switching the toggle will be taken as full agreement to the terms of the option chosen
+                    </small>
+                  </div>
+                  <div class="custom-control custom-switch" style="margin-left: 2%;">
+                    <input type="checkbox" class="custom-control-input" id="onlySANBI{{ current_organisation_id }}">
+                    <label class="custom-control-label text-muted small" for="onlySANBI{{ current_organisation_id }}">Use of data by SANBI only</label>
+                  </div>
+                  <div class="custom-control custom-switch" style="margin-left: 2%;">
+                    <input type="checkbox" class="custom-control-input" id="hostingDataSANBI{{ current_organisation_id }}">
+                    <label class="custom-control-label text-muted small" for="hostingDataSANBI{{ current_organisation_id }}">Hosting / serving the data through SANBI platforms and portals</label>
+                  </div>
+                  <div class="custom-control custom-switch" style="margin-left: 2%;">
+                    <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther{{ current_organisation_id }}">
+                    <label class="custom-control-label text-muted small" for="hostingDataSANBIOther{{ current_organisation_id }}">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the data</label>
+                  </div>
 
-        <div class="row justify-content-end">
-          <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-end" id="pagination">
-               <!-- javascript code will add dynamic pagination buttons here-->
-            </ul>
-          </nav>
-        </div>
+                  <div id="toggleMessage{{ current_organisation_id }}" style="display: none; margin-left: 2%;" class="text-warning-custom mt-3">
+                    Making changes here will not affect data that you have previously published and agreed to share under a different regime.
+                  </div>
+    
+                  <div class="form-group"></div>
+                  <button 
+                    class="sawps-font-button orange-button mt-0 update-button" 
+                    id="saveButton{{ current_organisation_id }}" 
+                    style="font-weight: bold; margin-left: 60%; min-width: 140px;"
+                    onclick="savePermissions({{ current_organisation_id }})"
+                  >
+                    Update
+                  </button>
 
-      </div> 
+                </div>
+              </td>
+            </tr>
+            {% endif %}
+            {% for organisation in organisations %}
+            <tr>
+              <td>
+                <button class="sawps-font-button orange-button mt-0" style="width: 140px; font-weight: bold;" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
+              </td>
+              <td>{{ organisation.name }}</td>
+              <td>
+                <!-- Add User Button - Trigger Modal -->
+                <button 
+                  class="sawps-font-button green-button mt-0" 
+                  type="button"
+                  data-toggle="modal"
+                  data-target="#adduser"
+                  data-organisation-id="{{ organisation.id }}"
+                  data-organisation-name="{{ organisation.name }}"
+                  style="font-weight: bold; min-height: fit-content; min-width: 145px;"
+                >
+                  <i class="fas fa-plus"></i> Add User
+                </button>
+              </td>
+              <td>
+                <!-- Read More Link - Show/Hide More Text -->
+                <a 
+                  href="#" 
+                  class="read-more-link" 
+                  data-toggle="collapse" 
+                  data-target="#readMoreText{{ organisation.id }}" 
+                  onclick="fetchOrganizationDetails({{ organisation.id }})"
+                >
+                  Read more
+                </a>
+
+                <div id="readMoreText{{ organisation.id }}" class="collapse" style="max-height: 450px; overflow-y: auto; min-width: fit-content; overflow-x: auto;">
+                  <div id="readMoreText{{ organisation.id }}" class="collapse">
+                    <table id="permissionsTable{{ organisation.id }}" class="table table-borderederless" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Permissions</th>
+                                <th>Read {{ organisation.data_use_permission }}</th>
+                            </tr>
+                        </thead>
+                    </table>
+                  </div>
+                  
+  
+                  <div class="form-group mt-3" style="margin-left: 2%;">
+                    <small id="data-privacy" class="form-text text-muted">
+                        How would you like your data to be used?. See the SANBI data sharing <a href="URL_HERE">agreement</a>.
+                        Switching the toggle will be taken as full agreement to the terms of the option chosen
+                    </small>
+                  </div>
+                  <div class="custom-control custom-switch" style="margin-left: 2%;">
+                    <input type="checkbox" class="custom-control-input" id="onlySANBI{{ organisation.id }}">
+                    <label class="custom-control-label text-muted small" for="onlySANBI{{ organisation.id }}">Use of data by SANBI only</label>
+                  </div>
+                  <div class="custom-control custom-switch" style="margin-left: 2%;">
+                    <input type="checkbox" class="custom-control-input" id="hostingDataSANBI{{ organisation.id }}">
+                    <label class="custom-control-label text-muted small" for="hostingDataSANBI{{ organisation.id }}">Hosting / serving the data through SANBI platforms and portals</label>
+                  </div>
+                  <div class="custom-control custom-switch" style="margin-left: 2%;">
+                    <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther{{ organisation.id }}">
+                    <label class="custom-control-label text-muted small" for="hostingDataSANBIOther{{ organisation.id }}">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the data</label>
+                  </div>
+
+                  <div id="toggleMessage{{ organisation.id }}" style="display: none; margin-left: 2%;" class="text-warning-custom mt-3">
+                    Making changes here will not affect data that you have previously published and agreed to share under a different regime.
+                  </div>
+    
+                  <div class="form-group"></div>
+                  <button 
+                    class="sawps-font-button orange-button mt-0 update-button" 
+                    id="saveButton{{ organisation.id }}" 
+                    style="font-weight: bold; margin-left: 60%; min-width: 140px;"
+                    onclick="savePermissions({{ organisation.id }})">
+                    Update
+                  </button>
+
+                </div>
+
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="row justify-content-end">
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-end" id="pagination">
+            <!-- JavaScript code will add dynamic pagination buttons here -->
+          </ul>
+        </nav>
+      </div>
     </div>
+  </div>
+
+  
 
     
   
 <script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+      // Get user_role from local storage and convert to lowercase
+      const userRole = (localStorage.getItem("user_role") || "").toLowerCase();
+
+      // Get the table element, the switches, and the update buttons
+      const table = document.getElementById("organisations");
+      const switches = document.querySelectorAll(".custom-control-input");
+      const updateButtons = document.querySelectorAll(".update-button");
+
+      // Define the roles that can see the "Add User" column and enable switches
+      const allowedRoles = ["admin", "super user", "organisation manager"];
+
+      if (!allowedRoles.includes(userRole)) {
+        // User role does not match, hide the "Add User" column
+        table.querySelectorAll("th")[2].style.display = "none"; // Hide the "Add User" header
+        table.querySelectorAll("td:nth-child(3)").forEach(function (cell) {
+          cell.style.display = "none"; // Hide the "Add User" column cells
+        });
+
+        // Disable the switches
+        switches.forEach(function (switchElement) {
+          switchElement.disabled = true;
+        });
+
+        // Hide the "Update" buttons
+        updateButtons.forEach(function (button) {
+          button.style.display = "none";
+        });
+      }
+    });
+
+
+    var switchStates = [];
+
+    function fetchOrganizationDetails(identifier) {
+      $.ajax({
+        url: `/api/organization/${identifier}/`,
+        method: 'GET',
+        success: function(data) {
+          $('#onlySANBI' + data.id).prop('checked', data.use_of_data_by_sanbi_only);
+          $('#hostingDataSANBI' + data.id).prop('checked', data.hosting_through_sanbi_platforms);
+          $('#hostingDataSANBIOther' + data.id).prop('checked', data.allowing_sanbi_to_expose_data);
+
+          // Store switch states in the dictionary
+          switchStates[data.id] = {
+            onlySANBI: data.use_of_data_by_sanbi_only,
+            hostingDataSANBI: data.hosting_through_sanbi_platforms,
+            hostingDataSANBIOther: data.allowing_sanbi_to_expose_data,
+          };
+        },
+        error: function(error) {
+          console.log('Error:', error);
+        }
+      });
+    }
+
+    function handleToggleMessage(organisationId) {
+      const switches = switchStates[organisationId];
+      const toggleMessage = document.getElementById(`toggleMessage${organisationId}`);
+      
+      if (switches) {
+        isAnySwitchToggled = true
+        toggleMessage.style.display = isAnySwitchToggled ? "block" : "none";
+      }
+    }
+
+    // Attach change event listeners to all switches
+    $('.custom-control-input').on('change', function() {
+      const checkboxId = $(this).attr('id');
+      const match = checkboxId.match(/(\d+)$/);
+      if (match) {
+        const organisationId = parseInt(match[0], 10);
+        handleToggleMessage(organisationId);
+      }
+    });
+
+
+    const initialOrganizationId = '{{ current_organisation_id }}';
+    fetchOrganizationDetails(initialOrganizationId);
+    handleToggleMessage(initialOrganizationId);
+
+    function savePermissions(organisationId) {
+      var onlySANBI = $("#onlySANBI" + organisationId).prop("checked");
+      var hostingDataSANBI = $("#hostingDataSANBI" + organisationId).prop("checked");
+      var hostingDataSANBIOther = $("#hostingDataSANBIOther" + organisationId).prop("checked");
+
+
+      $.ajax({
+          url: `/save_permissions/${organisationId}/`,
+          method: 'POST',
+          data: {
+              only_sanbi: onlySANBI,
+              hosting_data_sanbi: hostingDataSANBI,
+              hosting_data_sanbi_other: hostingDataSANBIOther,
+              csrfmiddlewaretoken: '{{ csrf_token }}',
+          },
+          success: function(response) {
+              console.log(response.message);
+              window.location.reload(); // Refresh the page
+          },
+          error: function(error) {
+              console.log('Error:', error);
+          }
+      });
+    }
 
     // navigate to organisation users page
     var tableBody = document.getElementById('organisations');
@@ -131,11 +476,75 @@
     }
 
     var totalPages = Math.ceil(table.rows.length / rowsPerPage);
-    createPaginationButtons(); // Create buttons first
-    showPage(currentPage); // Display the first page
-  });
+      createPaginationButtons(); // Create buttons first
+      showPage(currentPage); // Display the first page
+    });
 
 
+    // invite member
+    var organisationName= '';
+    $(document).ready(function () {
+      // Add a click event listener to the "Add User" button
+      $('.sawps-font-button.green-button').click(function () {
+          // Retrieve the organization ID and name from the data attributes and save
+          var organisationId = $(this).data('organisation-id');
+          organisationName = $(this).data('organisation-name');
+
+          $('#addUserModalTitle').text('Invite people to ' + organisationName);
+          $('#organisationIdInput').val(organisationId);
+      });
+    });
+
+
+    // invite
+    function invitePeople() {
+        var email = document.querySelector('.email-input').value;
+        var inviteAs = document.querySelector('#inviteAs').value;
+        var memberRole = document.querySelector('#memberRole').value;
+
+        var emailInput = document.querySelector('.email-input');
+        var emailError = document.querySelector('.invalid-feedback');
+        var organisationId = document.querySelector('#organisationIdInput').value;
+        const test = organisationName
+
+        if (!emailInput.checkValidity()) {
+          emailError.style.display = 'block';
+          return;
+        }
+        emailError.style.display = 'none';
+
+        document.querySelector('.email-input').value = '';
+
+        $.ajax({
+          type: 'POST',
+          url: '/users/',
+          data: {
+            'action': 'invite',
+            'email': email,
+            'inviteAs': inviteAs,
+            'memberRole': memberRole,
+            'current_organisation': organisationId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function(response) {
+            
+
+
+            if (response.status === 'invitation already sent') {
+              $('#errorMessageModal').modal('show');
+            } else {
+              $('#successMessageModal').modal('show');
+            }
+
+            $('#addUserModalTitle').text('Invite people to ' + test);
+            $('#organisationIdInput').val(organisationId);
+          },
+          error: function(xhr, status, error) {
+            console.error(error);
+          }
+        });
+      }
+    
   </script>
 
   <style>
@@ -152,6 +561,27 @@
     }
     .sawps-text-menu {
       font-weight: normal;
+    }
+    .form-control:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
+    }
+
+    /* Override default focus styles for the switches */
+    .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
+      border-color: var(--green);
+      box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
+    }
+
+    /* Style checked switches with green color */
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
+    .custom-switch .custom-control-input:disabled:checked ~ .custom-control-label::before {
+      background-color: var(--green);
+      border-color: var(--green);
+    }
+
+    .text-warning-custom {
+      color: var(--green);
     }
   </style>
 </section>

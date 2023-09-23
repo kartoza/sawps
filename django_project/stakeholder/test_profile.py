@@ -31,29 +31,32 @@ class TestProfileView(TestCase):
         Tests profile creation
         """
         user = UserF.create()
-        profile = userProfileFactory.create(
-            user=user,
-            picture='profile_pictures/picture_P.jpg',
+
+        self.assertTrue(user.user_profile is not None)
+
+        profile = UserProfile.objects.get(
+            id=user.user_profile.id
         )
 
-        self.assertTrue(profile.user is not None)
-        self.assertEqual(profile.picture, 'profile_pictures/picture_P.jpg')
+        profile.picture = 'profile_pictures/picture_P.jpg'
+        profile.save()
+
+        self.assertEqual(UserProfile.objects.get(
+            id=profile.id
+        ).picture, 'profile_pictures/picture_P.jpg')
 
     def test_profile_update(self):
         """
         Tests profile update
         """
         user = UserF.create()
-        profile = userProfileFactory.create(user=user)
+        profile = user.user_profile
         profile_picture = {
             'picture': 'profile_pictures/picture_P.jpg',
         }
         profile.__dict__.update(profile_picture)
         profile.first_name = 'j'
         profile.last_name = 'jj'
-        profile.use_of_data_by_sanbi_only = True
-        profile.hosting_through_sanbi_platforms = True
-        profile.allowing_sanbi_to_expose_data = True
         profile.save()
 
         user.email = 't@t.com'
@@ -63,16 +66,13 @@ class TestProfileView(TestCase):
         self.assertIsNotNone(profile.first_name)
         self.assertIsNotNone(profile.last_name)
         self.assertIsNotNone(user.email)
-        self.assertEqual(True,profile.use_of_data_by_sanbi_only)
-        self.assertEqual(True,profile.hosting_through_sanbi_platforms)
-        self.assertEqual(True,profile.allowing_sanbi_to_expose_data)
 
     def test_profile_delete(self):
         """
         Tests profile delete
         """
         user = UserF.create()
-        profile = userProfileFactory.create(user=user)
+        profile = user.user_profile
         profile.delete()
 
         self.assertTrue(profile.pk is None)
@@ -126,9 +126,6 @@ class TestProfileView(TestCase):
             'profile_picture': '/profile/pic/path',
             'title': '1',
             'role': '1',
-            'onlySANBI': 'on',
-            'hostingDataSANBI': 'on',
-            'hostingDataSANBIOther': 'on'
         }
 
         response = self.client.post(
@@ -141,9 +138,6 @@ class TestProfileView(TestCase):
         self.assertIsNotNone(updated_user.user_profile.picture)
         self.assertEqual(updated_user.user_profile.title_id.name, title.name)
         self.assertEqual(updated_user.user_profile.user_role_type_id.name, role.name)
-        self.assertEqual(updated_user.user_profile.use_of_data_by_sanbi_only, True)
-        self.assertEqual(updated_user.user_profile.hosting_through_sanbi_platforms, True)
-        self.assertEqual(updated_user.user_profile.allowing_sanbi_to_expose_data, True)
 
     def test_404(self):
         """
@@ -172,9 +166,6 @@ class TestProfileView(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_context_data(self):
-        userProfileFactory.create(
-            user=self.test_user
-        )
         device = TOTPDevice(
             user=self.test_user,
             name='device_name'
