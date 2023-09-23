@@ -458,7 +458,7 @@ function Filter() {
                 {tab === 'data' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/iconamoon.svg" alt='Info image' />
+                            <img src="/static/images/Information.svg" alt='Info image' />
                             <Typography color='#75B37A' fontSize='medium'>Report Type</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
@@ -503,7 +503,7 @@ function Filter() {
                 {userRole != "National data consumer" &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/property.svg" alt='Property image' />
+                            <img src="/static/images/Property.svg" alt='Property image' />
                             <Typography color='#75B37A' fontSize='medium'>Property</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
@@ -554,7 +554,7 @@ function Filter() {
                     </Box>
                 }
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/species/elephant.svg" alt='species image' />
+                    <img src="/static/images/species/Elephant.svg" alt='species image' />
                     <Typography color='#75B37A' fontSize='medium'>Species</Typography>
                 </Box>
                 <List className='ListItem' component="nav" aria-label="">
@@ -614,7 +614,7 @@ function Filter() {
                     }
                 </List>
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/watch.svg" alt='watch image' />
+                    <img src="/static/images/Clock.svg" alt='watch image' />
                     <Typography color='#75B37A' fontSize='medium'>Year</Typography>
                 </Box>
                 <Box className='sliderYear'>
@@ -640,7 +640,7 @@ function Filter() {
                 </Box>
 
                 <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/FilterIcon.svg" alt='Filter image' />
+                    <img src="/static/images/Layers.svg" alt='Filter image' />
                     <Typography color='#75B37A' fontSize='medium'>Spatial filters</Typography>
                 </Box>
                 <Box>
