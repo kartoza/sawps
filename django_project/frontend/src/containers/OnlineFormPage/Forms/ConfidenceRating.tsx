@@ -90,8 +90,8 @@ const ConfidenceRating: React.FC<ConfidenceRatingProps> = ({
             justifyContent: 'space-between',
           }}
         >
-          {currentConfidence === 1 && 'Very Unconfident'}
-          {currentConfidence === 10 && 'Very Confident'}
+          {currentConfidence === 1 && 'Least confident'}
+          {currentConfidence === 10 && 'Most confident'}
         </Typography>
         <Slider
           value={currentConfidence}
