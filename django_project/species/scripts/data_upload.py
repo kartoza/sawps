@@ -71,12 +71,12 @@ class SpeciesCSVUpload(object):
         self.error_list = []
         self.success_list = []
         self.property = self.upload_session.property
-
         uploaded_file = self.upload_session.process_file
         if self.upload_session.process_file.path.endswith('.xlsx'):
             excel = pd.ExcelFile(self.upload_session.process_file)
             dataframe = excel.parse(SHEET_TITLE)
-            with tempfile.NamedTemporaryFile(mode='w', delete=False) as csv_file:
+            with tempfile.NamedTemporaryFile(mode='w', delete=False) \
+                    as csv_file:
                 dataframe.to_csv(csv_file.name, index=False)
                 uploaded_file = csv_file
         try:
@@ -244,7 +244,8 @@ class SpeciesCSVUpload(object):
         """
         index = 1
         for row in self.csv_dict_reader:
-            if UploadSpeciesCSV.objects.get(id=self.upload_session.id).canceled:
+            if UploadSpeciesCSV.objects.get(
+                    id=self.upload_session.id).canceled:
                 print('Canceled')
                 return
             logger.debug(row)
@@ -355,7 +356,8 @@ class SpeciesCSVUpload(object):
                 row=row,
                 message="Property name {} doesn't match the selected "
                         "property. Please replace it wit {}".format(
-                    property, self.upload_session.property.name)
+                            self.row_value(row, PROPERTY),
+                            self.upload_session.property.name)
             )
             return
 
@@ -366,8 +368,8 @@ class SpeciesCSVUpload(object):
                 message="{} doesn't exist in the "
                         "database. Please select species available "
                         "in the dropdown only.".format(
-                    self.row_value(row, SCIENTIFIC_NAME)
-                )
+                            self.row_value(row, SCIENTIFIC_NAME)
+                        )
             )
             return
 
@@ -410,8 +412,8 @@ class SpeciesCSVUpload(object):
             self.error_file(
                 row=row,
                 message="The value of the compulsory field {} or {}"
-                        "is empty.".format(
-                    POPULATION_ESTIMATE_CATEGORY, IF_OTHER_POPULATION)
+                        "is empty.".format(POPULATION_ESTIMATE_CATEGORY,
+                                           IF_OTHER_POPULATION)
             )
             return
 
@@ -453,7 +455,7 @@ class SpeciesCSVUpload(object):
 
         # Save AnnualPopulation
         annual, annual_created = AnnualPopulation.objects.get_or_create(
-            year=int(year),
+            year=int(string_to_number(year)),
             owned_species=owned_species,
             total=int(string_to_number(count_total)),
             adult_male=int(string_to_number(
@@ -492,14 +494,20 @@ class SpeciesCSVUpload(object):
             take, in_c = AnnualPopulationPerActivity.objects.get_or_create(
                 activity_type=ActivityType.objects.get(
                     name="Translocation (Intake)"),
-                year=int(year),
+                year=int(string_to_number(year)),
                 owned_species=owned_species,
-                total=int(self.row_value(row, INTRODUCTION_TOTAL)),
-                adult_male=int(self.row_value(row, INTRODUCTION_TOTAL_MALES)),
-                adult_female=int(self.row_value(row, INTRODUCTION_TOTAL_FEMALES)),
-                juvenile_male=int(self.row_value(row, INTRODUCTION_MALE_JUV)),
-                juvenile_female=int(self.row_value(row, INTRODUCTION_FEMALE_JUV)),
-                reintroduction_source=self.row_value(row, INTRODUCTION_SOURCE),
+                total=int(string_to_number(
+                    self.row_value(row, INTRODUCTION_TOTAL))),
+                adult_male=int(string_to_number(
+                    self.row_value(row, INTRODUCTION_TOTAL_MALES))),
+                adult_female=int(string_to_number(
+                    self.row_value(row, INTRODUCTION_TOTAL_FEMALES))),
+                juvenile_male=int(string_to_number(
+                    self.row_value(row, INTRODUCTION_MALE_JUV))),
+                juvenile_female=int(string_to_number(
+                    self.row_value(row, INTRODUCTION_FEMALE_JUV))),
+                reintroduction_source=self.row_value(
+                    row, INTRODUCTION_SOURCE),
                 founder_population=string_to_boolean(
                     self.row_value(FOUNDER_POPULATION)),
                 intake_permit=self.row_value(row, INTRODUCTION_PERMIT_NUMBER)
@@ -510,19 +518,20 @@ class SpeciesCSVUpload(object):
             off, off_c = AnnualPopulationPerActivity.objects.get_or_create(
                 activity_type=ActivityType.objects.get(
                     name="Translocation (Offtake)"),
-                year=int(year),
+                year=int(string_to_number(year)),
                 owned_species=owned_species,
-                total=int(self.row_value(row, TRANS_OFFTAKE_TOTAL)),
-                adult_male=int(self.row_value(row,
-                                              TRANS_OFFTAKE_ADULTE_MALES)),
-                adult_female=int(self.row_value(row,
-                                                TRANS_OFFTAKE_ADULTE_FEMALES)),
-                juvenile_male=int(self.row_value(row,
-                                                 TRANS_OFFTAKE_MALE_JUV)),
-                juvenile_female=int(self.row_value(row,
-                                                   TRANS_OFFTAKE_FEMALE_JUV)),
-                translocation_destination=self.row_value(row,
-                                                         TRANS_DESTINATION),
+                total=int(string_to_number(
+                    self.row_value(row, TRANS_OFFTAKE_TOTAL))),
+                adult_male=int(string_to_number(
+                    self.row_value(row, TRANS_OFFTAKE_ADULTE_MALES))),
+                adult_female=int(string_to_number(
+                    self.row_value(row, TRANS_OFFTAKE_ADULTE_FEMALES))),
+                juvenile_male=int(string_to_number(
+                    self.row_value(row, TRANS_OFFTAKE_MALE_JUV))),
+                juvenile_female=int(string_to_number(
+                    self.row_value(row, TRANS_OFFTAKE_FEMALE_JUV))),
+                translocation_destination=self.row_value(
+                    row, TRANS_DESTINATION),
                 offtake_permit=self.row_value(row, TRANS_OFFTAKE_PERMIT_NUMBER)
             )
 
@@ -531,18 +540,18 @@ class SpeciesCSVUpload(object):
             h, hunt_c = AnnualPopulationPerActivity.objects.get_or_create(
                 activity_type=ActivityType.objects.get(
                     name="Planned Hunt/Cull"),
-                year=int(year),
+                year=int(string_to_number(year)),
                 owned_species=owned_species,
-                total=int(self.row_value(row, PLANNED_HUNT_TOTAL)),
-                adult_male=int(self.row_value(row,
-                                              PLANNED_HUNT_OFFTAKE_ADULT_MALES)),
-                adult_female=int(self.row_value(row,
-                                                PLANNED_HUNT_OFFTAKE_ADULT_FAMALES)),
-
-                juvenile_male=int(self.row_value(row,
-                                                 PLANNED_HUNT_OFFTAKE_MALE_JUV)),
-                juvenile_female=int(self.row_value(row,
-                                                   PLANNED_HUNT_OFFTAKE_FEMALE_JUV)),
+                total=int(string_to_number(
+                    self.row_value(row, PLANNED_HUNT_TOTAL))),
+                adult_male=int(string_to_number(
+                    self.row_value(row, PLANNED_HUNT_OFFTAKE_ADULT_MALES))),
+                adult_female=int(string_to_number(
+                    self.row_value(row, PLANNED_HUNT_OFFTAKE_ADULT_FAMALES))),
+                juvenile_male=int(string_to_number(
+                    self.row_value(row, PLANNED_HUNT_OFFTAKE_MALE_JUV))),
+                juvenile_female=int(string_to_number(
+                    self.row_value(row, PLANNED_HUNT_OFFTAKE_FEMALE_JUV))),
                 offtake_permit=self.row_value(row, PLANNED_HUNT_PERMIT_NUMBER),
             )
 
@@ -551,19 +560,20 @@ class SpeciesCSVUpload(object):
             pe, pe_c = AnnualPopulationPerActivity.objects.get_or_create(
                 activity_type=ActivityType.objects.get(
                     name="Planned Euthanasia/DCA"),
-                year=int(year),
+                year=int(string_to_number(year)),
                 owned_species=owned_species,
-                total=int(self.row_value(row, PLANNED_EUTH_TOTAL)),
-                adult_male=int(self.row_value(row,
-                                              PLANNED_EUTH_OFFTAKE_ADULT_MALES)),
-                adult_female=int(self.row_value(row,
-                                                PLANNED_EUTH_OFFTAKE_ADULT_FAMALES)),
-                juvenile_male=int(self.row_value(row,
-                                                 PLANNED_EUTH_OFFTAKE_MALE_JUV)),
-                juvenile_female=int(self.row_value(row,
-                                                   PLANNED_EUTH_OFFTAKE_FEMALE_JUV)),
-                offtake_permit=self.row_value(row,
-                                                  PLANNED_EUTH_PERMIT_NUMBER),
+                total=int(string_to_number(
+                    self.row_value(row, PLANNED_EUTH_TOTAL))),
+                adult_male=int(string_to_number(
+                    self.row_value(row, PLANNED_EUTH_OFFTAKE_ADULT_MALES))),
+                adult_female=int(string_to_number(
+                    self.row_value(row, PLANNED_EUTH_OFFTAKE_ADULT_FAMALES))),
+                juvenile_male=int(string_to_number(
+                    self.row_value(row, PLANNED_EUTH_OFFTAKE_MALE_JUV))),
+                juvenile_female=int(string_to_number(
+                    self.row_value(row, PLANNED_EUTH_OFFTAKE_FEMALE_JUV))),
+                offtake_permit=self.row_value(
+                    row, PLANNED_EUTH_PERMIT_NUMBER),
             )
 
         # Save AnnualPopulationPerActivity Unplanned/illegal hunting
@@ -571,18 +581,19 @@ class SpeciesCSVUpload(object):
             unp, unp_c = AnnualPopulationPerActivity.objects.get_or_create(
                 activity_type=ActivityType.objects.get(
                     name="Unplanned/Illegal Hunting"),
-                year=int(year),
+                year=int(string_to_number(year)),
                 owned_species=owned_species,
                 total=int(string_to_number(
-                    row["Unplanned/illegal hunting_TOTAL"])),
-                adult_male=int(self.row_value(row,
-                                              UNPLANNED_HUNT_OFFTAKE_ADULT_MALES)),
-                adult_female=int(self.row_value(row,
-                                                UNPLANNED_HUNT_OFFTAKE_ADULT_FAMALES)),
-                juvenile_male=int(self.row_value(row,
-                                                 UNPLANNED_HUNT_OFFTAKE_MALE_JUV)),
-                juvenile_female=int(self.row_value(row,
-                                                   PLANNED_EUTH_OFFTAKE_FEMALE_JUV)),
-                offtake_permit=self.row_value(row,
-                                                  UNPLANNED_HUNT_OFFTAKE_FEMALE_JUV),
+                    self.row_value(row, UNPLANNED_HUNT_TOTAL))),
+                adult_male=int(string_to_number(
+                    self.row_value(row, UNPLANNED_HUNT_OFFTAKE_ADULT_MALES))),
+                adult_female=int(string_to_number(
+                    self.row_value(row, UNPLANNED_HUNT_OFFTAKE_ADULT_FAMALES))
+                ),
+                juvenile_male=int(string_to_number(
+                    self.row_value(row, UNPLANNED_HUNT_OFFTAKE_MALE_JUV))),
+                juvenile_female=int(string_to_number(
+                    self.row_value(row, PLANNED_EUTH_OFFTAKE_FEMALE_JUV))),
+                offtake_permit=self.row_value(
+                    row, UNPLANNED_HUNT_OFFTAKE_FEMALE_JUV),
             )

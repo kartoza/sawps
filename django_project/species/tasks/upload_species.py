@@ -2,7 +2,6 @@ import logging
 
 from celery import shared_task
 from frontend.models import UploadSpeciesCSV
-
 from species.scripts.data_upload import SpeciesCSVUpload
 
 logger = logging.getLogger('sawps')
@@ -23,5 +22,3 @@ def upload_species_data(upload_session_id):
     file_upload = SpeciesCSVUpload()
     file_upload.upload_session = upload_session
     file_upload.start(encoding)
-
-

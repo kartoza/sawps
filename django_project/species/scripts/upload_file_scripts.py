@@ -43,9 +43,12 @@ TRANS_DESTINATION = "Translocation_destination"
 TRANS_OFFTAKE_PERMIT_NUMBER = "Translocation_Offtake_Permit_number"
 PLANNED_HUNT_TOTAL = "Planned hunt/culling_TOTAL"
 PLANNED_HUNT_OFFTAKE_ADULT_MALES = "Planned hunt/culling_Offtake_adult_males"
-PLANNED_HUNT_OFFTAKE_ADULT_FAMALES = "Planned hunt/culling_Offtake_adult_females"
-PLANNED_HUNT_OFFTAKE_MALE_JUV = "Planned hunt/culling_Offtake_male_juveniles"
-PLANNED_HUNT_OFFTAKE_FEMALE_JUV = "Planned hunt/culling_Offtake_female_juveniles"
+PLANNED_HUNT_OFFTAKE_ADULT_FAMALES = \
+    "Planned hunt/culling_Offtake_adult_females"
+PLANNED_HUNT_OFFTAKE_MALE_JUV = \
+    "Planned hunt/culling_Offtake_male_juveniles"
+PLANNED_HUNT_OFFTAKE_FEMALE_JUV = \
+    "Planned hunt/culling_Offtake_female_juveniles"
 PLANNED_HUNT_PERMIT_NUMBER = "Planned hunt/culling_Permit_number"
 PLANNED_EUTH_TOTAL = "Planned euthanasia_TOTAL"
 PLANNED_EUTH_OFFTAKE_ADULT_MALES = "Planned euthanasia_Offtake_adult_males"
@@ -54,10 +57,14 @@ PLANNED_EUTH_OFFTAKE_MALE_JUV = "Planned euthanasia_Offtake_male_juveniles"
 PLANNED_EUTH_OFFTAKE_FEMALE_JUV = "Planned euthanasia_Offtake_female_juveniles"
 PLANNED_EUTH_PERMIT_NUMBER = "Planned euthanasia_Permit_number"
 UNPLANNED_HUNT_TOTAL = "Unplanned/illegal hunting_TOTAL"
-UNPLANNED_HUNT_OFFTAKE_ADULT_MALES = "Unplanned/illegal hunting_Offtake_adult_males"
-UNPLANNED_HUNT_OFFTAKE_ADULT_FAMALES = "Unplanned/illegal hunting_Offtake_adult_females"
-UNPLANNED_HUNT_OFFTAKE_MALE_JUV = "Unplanned/illegal hunting_Offtake_male_juveniles"
-UNPLANNED_HUNT_OFFTAKE_FEMALE_JUV = "Unplanned/illegal hunting_Offtake_female_juveniles"
+UNPLANNED_HUNT_OFFTAKE_ADULT_MALES = \
+    "Unplanned/illegal hunting_Offtake_adult_males"
+UNPLANNED_HUNT_OFFTAKE_ADULT_FAMALES = \
+    "Unplanned/illegal hunting_Offtake_adult_females"
+UNPLANNED_HUNT_OFFTAKE_MALE_JUV = \
+    "Unplanned/illegal hunting_Offtake_male_juveniles"
+UNPLANNED_HUNT_OFFTAKE_FEMALE_JUV = \
+    "Unplanned/illegal hunting_Offtake_female_juveniles"
 
 
 COMPULSORY_FIELDS = [
@@ -74,7 +81,6 @@ COMPULSORY_FIELDS = [
     "Survey_method",
     "If_other_(survey_method)_please explain",
     "Population_estimate_certainty",
-    ]
+]
 
 SHEET_TITLE = "Dataset pilot"
-

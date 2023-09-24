@@ -5,7 +5,6 @@ from population_data.forms import AnnualPopulationForm
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
-    Certainty,
     OpenCloseSystem,
     SamplingEffortCoverage,
     PopulationStatus,
@@ -20,7 +19,6 @@ class AnnualPopulationAdmin(admin.ModelAdmin):
 admin.site.register(OpenCloseSystem)
 admin.site.register(AnnualPopulation, AnnualPopulationAdmin)
 admin.site.register(AnnualPopulationPerActivity)
-admin.site.register(Certainty)
 admin.site.register(SamplingEffortCoverage)
 admin.site.register(PopulationStatus)
 admin.site.register(PopulationEstimateCategory)

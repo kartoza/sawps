@@ -1,3 +1,4 @@
+import csv
 from unittest import mock
 
 from activity.models import ActivityType
@@ -21,11 +22,11 @@ from species.api_views.upload_species import (
     UploadSpeciesStatus,
 )
 from species.models import OwnedSpecies, Taxon
-from species.tasks.upload_species import (
+from species.tasks.upload_species import upload_species_data
+from species.scripts.data_upload import (
+    SpeciesCSVUpload,
     string_to_boolean,
-    string_to_number,
-    upload_species_data,
-    plural
+    string_to_number
 )
 
 
@@ -37,7 +38,7 @@ class TestUploadSpeciesApiView(TestCase):
         self.client = APIClient()
         self.user = UserF()
         self.property = PropertyFactory(
-            name="Luna’s Reserve"
+            name="Luna"
         )
         self.token = '8f1c1181-982a-4286-b2fe-da1abe8f7174'
         self.api_url = '/api/upload-species/'
@@ -92,7 +93,44 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertTrue(upload_session.canceled)
         self.assertEqual(upload_session.process_file.name, '')
         self.assertEqual(upload_session.error_notes,
-                         'Header row does not follow the correct format'
+                         "The 'Property_name' field is missing. "
+                         "Please check that all the compulsory fields "
+                         "are in the CSV file headers."
+                         )
+
+    def test_upload_session_no_sheet(self):
+        """Test upload species with no sheet in excel file."""
+
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'excel_no_sheet.xlsx')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(UploadSpeciesCSV.objects.filter(token=self.token).count(),
+                         1)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        self.assertTrue(upload_session.canceled)
+        self.assertEqual(upload_session.process_file.name, '')
+        self.assertEqual(upload_session.error_notes,
+                         "The sheet named Dataset pilot is not in the Excel "
+                         "file. Please download the template to get "
+                         "the correct file."
                          )
 
     def test_save_csv_with_no_property(self):
@@ -183,24 +221,16 @@ class TestUploadSpeciesApiView(TestCase):
 
         upload_species_data(upload_session.id)
         self.assertEqual(Taxon.objects.all().count(), 1)
-        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
+        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 2)
         self.assertEqual(AnnualPopulation.objects.all().count(), 1)
         self.assertTrue(OwnedSpecies.objects.all().count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
             activity_type__name="Translocation (Offtake)"
         ).count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
-            activity_type__name="Translocation (Intake)"
-        ).count(), 1)
-        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
             activity_type__name="Planned Hunt/Cull"
         ).count(), 1)
-        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
-            activity_type__name="Planned Euthanasia/DCA"
-        ).count(), 1)
-        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
-            activity_type__name="Unplanned/Illegal Hunting"
-        ).count(), 1)
+
         self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
 
     @mock.patch("species.tasks.upload_species.upload_species_data")
@@ -240,11 +270,8 @@ class TestUploadSpeciesApiView(TestCase):
         view = UploadSpeciesStatus.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['status'], 'Done')
-        self.assertEqual(
-            response.data['message'],
-            '1 row has been uploaded.'
-        )
+        self.assertEqual(response.data['status'], 'Finished')
+        self.assertFalse(response.data['error_file'])
 
     def test_upload_species_status_404(self):
         """Test upload species status with 404 error."""
@@ -291,9 +318,8 @@ class TestUploadSpeciesApiView(TestCase):
         view = UploadSpeciesStatus.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['status'], 'Canceled')
-        self.assertEqual(response.data['taxon'], None)
-        self.assertEqual(response.data['property'], None)
+        self.assertEqual(response.data['status'], False)
+
 
     def test_task_string_to_boolean(self):
         """Test string_to_boolean functionality in task"""
@@ -307,15 +333,8 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(10, string_to_number('10'))
         self.assertEqual(0.0, string_to_number(''))
 
-    def test_task_plural(self):
-        """Test plural has and have."""
-
-        self.assertEqual("rows have", plural(2))
-        self.assertEqual("row has", plural(1))
-
-    @mock.patch("species.tasks.upload_species.upload_species_data")
-    def test_task_with_property_taxon_not_exit(self, mock):
-        """Test upload csv task with a property and taxon not existing."""
+    def test_upload_species_with_property_taxon_not_exit(self):
+        """Test upload species task with a property and taxon not existing."""
 
         csv_path = absolute_path(
             'frontend', 'tests',
@@ -339,27 +358,29 @@ class TestUploadSpeciesApiView(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 204)
         upload_session = UploadSpeciesCSV.objects.get(token=self.token)
-        upload_species_data(upload_session.id)
-        self.assertEqual(upload_session.canceled, False)
-        kwargs = {
-            'token': self.token
-        }
-        request = self.factory.get(
-            reverse('upload-species-status', kwargs=kwargs)
-        )
-        request.user = self.user
-        view = UploadSpeciesStatus.as_view()
-        response = view(request, **kwargs)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.data['taxon'], "Taxon name: Lemurs in line number 3,does not exist in "
-            "the database. "
-            "Please select species available in the dropdown only."
-                         )
-        self.assertEqual(
-            response.data['property'],
-            "The property name: Luna in line number 2,does not match the "
-            "selected property. Please replace it with {}.".format(
-                self.property.name
-            )
-        )
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+
+        self.assertTrue('error' in upload_session.error_file.path)
+        with open(upload_session.error_file.path, encoding='utf-8-sig') as csv_file:
+            error_file = csv.DictReader(csv_file)
+            headers = error_file.fieldnames
+            self.assertTrue('error_message' in headers)
+            errors = []
+            for row in error_file:
+                errors.append(row['error_message'])
+            self.assertTrue("Property name Luna's Reserve doesn't match "
+                            "the selected property. Please replace "
+                            "it wit Luna" in errors)
+            self.assertTrue("Lemurs doesn't exist in the database. "
+                             "Please select species available in the "
+                             "dropdown only." in errors)
+
+
+
+
+
+

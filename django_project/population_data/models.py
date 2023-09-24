@@ -66,7 +66,7 @@ class AnnualPopulation(AnnualPopulationAbstract):
         null=True, blank=True
     )
     population_estimate_certainty = models.IntegerField(
-        null=True, blank=True
+        null=True, blank=True, choices=[(i, i) for i in range(1, 11)]
     )
     population_estimate_category_other = models.TextField(
         null=True, blank=True

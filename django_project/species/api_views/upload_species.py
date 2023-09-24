@@ -13,8 +13,6 @@ from rest_framework.views import APIView
 from species.scripts.upload_file_scripts import COMPULSORY_FIELDS, SHEET_TITLE
 from species.tasks.upload_species import upload_species_data
 
-from species.scripts.data_upload import SpeciesCSVUpload
-
 logger = logging.getLogger('sawps')
 
 
@@ -57,8 +55,8 @@ class SpeciesUploader(APIView):
                 headers = dataset.columns.ravel()
             except ValueError:
                 error = "The sheet named {} is not in the Excel " \
-                             "file. Please download the template to get " \
-                             "the correct file. ".format(SHEET_TITLE)
+                        "file. Please download the template to get " \
+                        "the correct file.".format(SHEET_TITLE)
             else:
                 error = self.check_header(headers)
 
@@ -101,29 +99,21 @@ class SaveCsvSpecies(APIView):
                 }
             )
 
-        encoding = 'utf-8-sig'
+        task = upload_species_data.delay(
+            upload_session.id
+        )
 
-        upload_session.progress = 'Processing'
-        upload_session.save()
-        file_upload = SpeciesCSVUpload()
-        file_upload.upload_session = upload_session
-        file_upload.start(encoding)
+        if task:
+            return Response(
+                status=200
+            )
 
-        # task = upload_species_data.delay(
-        #     upload_session.id
-        # )
-        #
-        # if task:
-        #     return Response(
-        #         status=200
-        #     )
-        #
-        # return Response(
-        #     status=404,
-        #     data={
-        #         'detail': 'Somthing wrong with the csv file'
-        #     }
-        # )
+        return Response(
+            status=404,
+            data={
+                'detail': 'Somthing wrong with the csv file'
+            }
+        )
 
 
 class UploadSpeciesStatus(APIView):
@@ -139,30 +129,22 @@ class UploadSpeciesStatus(APIView):
         except UploadSpeciesCSV.DoesNotExist:
             return Response(status=404)
 
-        property_message = None
-        taxon_message = None
-        if upload_species.error_notes:
-            messages = upload_species.error_notes.splitlines()
-            property_message = messages[0]
-            taxon_message = messages[1]
+        if upload_species.processed:
 
-        if upload_species.canceled or not upload_species.processed:
             return Response(
                 status=200,
                 data={
-                    'status': 'Canceled',
-                    'property': (property_message if property_message
-                                 else None),
-                    'taxon': (taxon_message if taxon_message else None)
+                    'status': upload_species.progress,
+                    'error_file': upload_species.error_file,
+                    'success': upload_species.success_file
                 }
             )
 
-        return Response(
-            status=200,
-            data={
-                'status': 'Done',
-                'message': upload_species.success_notes,
-                'property': (property_message if property_message else None),
-                'taxon': (taxon_message if taxon_message else None)
-            }
-        )
+        else:
+            return Response(
+                status=200,
+                data={
+                    'status': upload_species.canceled,
+                    'error': upload_species.error_notes,
+                }
+            )
