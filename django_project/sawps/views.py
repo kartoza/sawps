@@ -41,11 +41,6 @@ class ActivateAccount(View):
             user.is_active = True
             user.save()
 
-            if not UserProfile.objects.filter(user=user).exists():
-                UserProfile.objects.create(
-                    user=user
-                )
-
             login(
                 request,
                 user,

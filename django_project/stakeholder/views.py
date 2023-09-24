@@ -86,11 +86,6 @@ class ProfileView(RegisteredOrganisationBaseView):
         hosting = hosting == 'on'
         data_exposure = data_exposure == 'on'
 
-        if not UserProfile.objects.filter(user=user).exists():
-            UserProfile.objects.create(
-                user=user,
-            )
-
         if first_name is not None:
             user.first_name = first_name
         if last_name is not None:

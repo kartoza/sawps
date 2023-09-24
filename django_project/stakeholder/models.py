@@ -181,9 +181,11 @@ def save_user_profile(sender, instance, **kwargs):
     """
     Save the UserProfile whenever a save event occurs
     """
-    try:
+    if UserProfile.objects.filter(
+        user=instance
+    ).exists():
         instance.user_profile.save()
-    except AttributeError:
+    else:
         UserProfile.objects.create(user=instance)
 
 
