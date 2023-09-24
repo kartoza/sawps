@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect, Http404
 import pytz
 from stakeholder.models import (
     Organisation,
-    UserProfile,
     UserRoleType,
     UserTitle,
     Reminders
