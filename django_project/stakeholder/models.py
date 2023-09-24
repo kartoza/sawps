@@ -222,6 +222,10 @@ class OrganisationInvites(models.Model):
         verbose_name = 'OrganisationInvites'
         verbose_name_plural = 'OrganisationInvites'
         db_table = "OrganisationInvites"
+        permissions = [
+            ("can_invite_people_to_organisation",
+             "Can invite people to organisation"),
+        ]
 
     def __str__(self):
         return str(self.email)
