@@ -137,7 +137,7 @@ class UploadSpeciesStatus(APIView):
                 status=200,
                 data={
                     'status': upload_species.progress,
-                    'error_file': upload_species.error_file,
+                    'error_file': upload_species.error_file.path,
                     'message': upload_species.success_notes
                 }
             )
@@ -147,6 +147,6 @@ class UploadSpeciesStatus(APIView):
                 status=200,
                 data={
                     'status': upload_species.canceled,
-                    'error': upload_species.error_notes,
+                    'error': upload_species.error_notes.path,
                 }
             )

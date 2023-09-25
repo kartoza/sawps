@@ -95,20 +95,19 @@ export default function Uploader(props: UploaderInterface) {
     const [loading, setLoading] = useState(false)
     const dropZone = useRef(null)
     const [alertMessage, setAlertMessage] = useState('')
-    const [alertMessageTaxon, setAlertMessageTaxon] = useState('')
-    const [alertMessageProperty, setAlertMessageProperty] = useState('')
     const [isError, setIsError] = useState(false)
     const [savingSpeciesCSV, setSavingSpeciesCSV] = useState(false)
     const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
     const [totalFile, setTotalFile] = useState(0)
     const [closeButton, setCloseButton] = useState('CANCEL')
+    const [errorFile, setErrorFile] = useState('')
 
     useEffect(() => {
         if (open) {
             setSession(uuidv4())
             setIsError(false)
             setAlertMessage('')
-            setAlertMessageTaxon('')
+            setErrorFile('')
             setSavingSpeciesCSV(false)
             setTotalFile(0)
             setLoading(false)
@@ -193,11 +192,10 @@ export default function Uploader(props: UploaderInterface) {
                     axios.get(`${STATUS_URL}${session}/`).then((response)=>{
                     if (response.data) {
                         let status = response.data['status']
-                        if (status === 'Done'){
+                        if (status === 'Finished'){
                             setIsError(false)
                             setAlertMessage(response.data['message'])
-                            setAlertMessageTaxon(response.data['taxon'])
-                            setAlertMessageProperty(response.data['property'])
+                            setErrorFile(response.data['error_file'])
                             setTotalFile( 0)
                             setSavingSpeciesCSV(false)
                             setCloseButton('CLOSE')
@@ -205,7 +203,8 @@ export default function Uploader(props: UploaderInterface) {
                         }
                         else{
                             setIsError(true)
-                            setAlertMessage(response.data['property']+'\n'+response.data['taxon'])
+                            setAlertMessage('Please check the error in error file')
+                            setErrorFile(response.data['error_file'])
                             setTotalFile(totalFile - 1)
                             setSavingSpeciesCSV(false)
                             setCloseButton('CLOSE')
@@ -260,18 +259,14 @@ export default function Uploader(props: UploaderInterface) {
             <Grid container flexDirection={'column'} className='UploaderContent' rowSpacing={2}>
                 <Grid item>
                 { alertMessage ?
-                    <Alert style={{ width: '100%'}} severity={isError ? "error" : alertMessageTaxon ? "warning" : "success"}>
-                    <AlertTitle>{ isError ? 'Error' : <> { alertMessageTaxon ? 'Warning': 'Success' }</>}</AlertTitle>
+                    <Alert style={{ width: '100%'}} severity={isError ? "error" : errorFile ? "warning" : "success"}>
+                    <AlertTitle>{ isError ? 'Error' : <> { errorFile ? 'Warning': 'Success' }</>}</AlertTitle>
                     <p className="display-linebreak">
                         { alertMessage }
                     </p>
-                    { alertMessageProperty ?
+                    { errorFile ?
                     <p>
-                        { alertMessageProperty }
-                    </p>: null }
-                    { alertMessageTaxon ?
-                    <p>
-                        { alertMessageTaxon }
+                        { errorFile }
                     </p>: null }
                     </Alert> : null }
                     <Dropzone
