@@ -1,6 +1,6 @@
 import csv
 from unittest import mock
-
+import pandas as pd
 from activity.models import ActivityType
 from core.settings.utils import absolute_path
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -28,6 +28,7 @@ from species.scripts.data_upload import (
     string_to_boolean,
     string_to_number
 )
+from species.scripts.upload_file_scripts import SHEET_TITLE
 
 
 class TestUploadSpeciesApiView(TestCase):
@@ -374,13 +375,88 @@ class TestUploadSpeciesApiView(TestCase):
                 errors.append(row['error_message'])
             self.assertTrue("Property name Luna's Reserve doesn't match "
                             "the selected property. Please replace "
-                            "it wit Luna" in errors)
+                            "it with Luna" in errors)
             self.assertTrue("Lemurs doesn't exist in the database. "
-                             "Please select species available in the "
-                             "dropdown only." in errors)
+                            "Please select species available in the "
+                            "dropdown only." in errors)
 
+    def test_upload_excel_missing_compulsory_field(self):
+        """Test upload species with an excel file which misses
+         a compulsory field."""
 
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'excel_wrong_header.xlsx')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
 
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(UploadSpeciesCSV.objects.filter(token=self.token).count(),
+                         1)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        self.assertTrue(upload_session.canceled)
+        self.assertEqual(upload_session.process_file.name, '')
+        self.assertEqual(upload_session.error_notes,
+                         "The 'Property_name' field is missing. Please check "
+                         "that all the compulsory fields are in the "
+                         "CSV file headers."
+                         )
+
+    def test_upload_species_with_excel_property_not_exit(self):
+        """Test upload Excel file with a property not existing."""
+
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'excel_error_property.xlsx')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+        self.assertTrue('error' in upload_session.error_file.path)
+
+        xl = pd.ExcelFile(upload_session.error_file.path)
+        dataset = xl.parse(SHEET_TITLE)
+        self.assertEqual(
+            dataset.iloc[0]['error_message'],
+            "Property name Venetia Limpopo doesn't match the "
+            "selected property. Please replace it with {}".format(
+                upload_session.property.name
+            )
+        )
 
 
 

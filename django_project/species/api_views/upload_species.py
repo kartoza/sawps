@@ -13,6 +13,8 @@ from rest_framework.views import APIView
 from species.scripts.upload_file_scripts import COMPULSORY_FIELDS, SHEET_TITLE
 from species.tasks.upload_species import upload_species_data
 
+from species.scripts.data_upload import SpeciesCSVUpload
+
 logger = logging.getLogger('sawps')
 
 
@@ -136,7 +138,7 @@ class UploadSpeciesStatus(APIView):
                 data={
                     'status': upload_species.progress,
                     'error_file': upload_species.error_file,
-                    'success': upload_species.success_file
+                    'message': upload_species.success_notes
                 }
             )
 

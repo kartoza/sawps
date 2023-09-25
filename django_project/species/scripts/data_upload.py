@@ -52,10 +52,10 @@ def string_to_number(string):
 class SpeciesCSVUpload(object):
     upload_session = UploadSpeciesCSV.objects.none()
     error_list = []
-    success_list = []
+    created_list = []
+    existed_list = []
     headers = []
     total_rows = 0
-    property = None
     csv_dict_reader = None
 
     def process_started(self):
@@ -132,15 +132,6 @@ class SpeciesCSVUpload(object):
         row['error_message'] = message
         self.error_list.append(row)
 
-    def success_file(self, success_row, data_id):
-        """
-        Write to success file
-        :param success_row: success data
-        :param data_id: id of the added data
-        """
-        success_row['link'] = data_id
-        self.success_list.append(success_row)
-
     def finish(self, headers):
         """
         Finishing the csv upload process
@@ -165,6 +156,19 @@ class SpeciesCSVUpload(object):
                 path=file_path,
                 name=file_name
             )
+
+            excel_error = None
+
+            if error_file_path.endswith('.xlsx'):
+                excel_error = error_file_path
+                logger.log(
+                    level=logging.ERROR,
+                    msg=str(excel_error)
+                )
+                with tempfile.NamedTemporaryFile(mode='w', delete=False)\
+                        as csv_file:
+                    error_file_path = csv_file.name
+
             with open(error_file_path, mode='w') as csv_file:
                 writer = csv.writer(
                     csv_file, delimiter=',', quotechar='"',
@@ -178,43 +182,31 @@ class SpeciesCSVUpload(object):
                         except KeyError:
                             continue
                     writer.writerow(data_list)
+
+            if excel_error:
+                with pd.ExcelWriter(excel_error, engine='openpyxl', mode='w') as writer:
+                    work_book = writer.book
+                    try:
+                        work_book.remove(work_book[SHEET_TITLE])
+                    except:
+                        print("Worksheet does not exist")
+                    finally:
+                        dataframe = pd.read_csv(error_file_path)
+                        dataframe.to_excel(writer, sheet_name=SHEET_TITLE, index=False)
+                        # writer.close()
+
             self.upload_session.error_file.name = (
                 'species/error_{}'.format(
                     file_name
                 )
             )
 
-        # Create success file
-        # TODO : Done it simultaneously with file processing
-        if self.success_list:
-            success_headers = copy.deepcopy(headers)
-            if 'link' not in success_headers:
-                success_headers.append('link')
-            if 'error_message' in success_headers:
-                success_headers.remove('error_message')
-            success_file_path = '{path}success_{name}'.format(
-                path=file_path,
-                name=file_name
-            )
-            with open(success_file_path, mode='w') as csv_file:
-                writer = csv.writer(
-                    csv_file, delimiter=',', quotechar='"',
-                    quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(success_headers)
-                for data in self.success_list:
-                    data_list = []
-                    for key in success_headers:
-                        try:
-                            data_list.append(data[key])
-                        except KeyError:
-                            continue
-                    writer.writerow(data_list)
-            self.upload_session.success_file.name = (
-                'species/success_{}'.format(
-                    file_name
-                )
-            )
+        # Create success message
+        if len(self.created_list) > 0:
+            success_message = "{} uploaded successfully."
 
+        if success_message:
+            self.upload_session.success_notes = success_message
         self.upload_session.processed = True
         self.upload_session.progress = 'Finished'
         self.upload_session.save()
@@ -355,7 +347,7 @@ class SpeciesCSVUpload(object):
             self.error_file(
                 row=row,
                 message="Property name {} doesn't match the selected "
-                        "property. Please replace it wit {}".format(
+                        "property. Please replace it with {}".format(
                             self.row_value(row, PROPERTY),
                             self.upload_session.property.name)
             )
@@ -488,6 +480,11 @@ class SpeciesCSVUpload(object):
             population_estimate_certainty=int(string_to_number(pop_certainty)),
             population_estimate_category=population_estimate
         )
+
+        if annual_created:
+            self.created_list.append(annual.id)
+        elif annual:
+            self.existed_list.append(annual.id)
 
         # Save AnnualPopulationPerActivity translocation intake
         if self.row_value(row, INTRODUCTION_TOTAL):
