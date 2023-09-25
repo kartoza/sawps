@@ -184,15 +184,17 @@ class SpeciesCSVUpload(object):
                     writer.writerow(data_list)
 
             if excel_error:
-                with pd.ExcelWriter(excel_error, engine='openpyxl', mode='w') as writer:
+                with pd.ExcelWriter(excel_error, engine='openpyxl', mode='w')\
+                        as writer:
                     work_book = writer.book
                     try:
                         work_book.remove(work_book[SHEET_TITLE])
-                    except:
+                    except ValueError:
                         print("Worksheet does not exist")
                     finally:
                         dataframe = pd.read_csv(error_file_path)
-                        dataframe.to_excel(writer, sheet_name=SHEET_TITLE, index=False)
+                        dataframe.to_excel(writer,
+                                           sheet_name=SHEET_TITLE, index=False)
                         # writer.close()
 
             self.upload_session.error_file.name = (
@@ -210,9 +212,8 @@ class SpeciesCSVUpload(object):
 
         if len(self.existed_list) > 0 or len(self.created_list) > 0:
             success_message = "{} already exist in the database. {} " \
-                              "uploaded successfully.".format(
-                                len(self.existed_list), len(self.created_list)
-                                )
+                              "uploaded successfully.".\
+                format(len(self.existed_list), len(self.created_list))
 
         if success_message:
             self.upload_session.success_notes = success_message

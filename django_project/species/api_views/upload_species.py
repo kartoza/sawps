@@ -13,7 +13,6 @@ from rest_framework.views import APIView
 from species.scripts.upload_file_scripts import COMPULSORY_FIELDS, SHEET_TITLE
 from species.tasks.upload_species import upload_species_data
 
-from species.scripts.data_upload import SpeciesCSVUpload
 
 logger = logging.getLogger('sawps')
 
