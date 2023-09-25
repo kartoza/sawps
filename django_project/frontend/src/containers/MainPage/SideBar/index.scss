@@ -116,7 +116,7 @@
         }
         .MuiPaper-root.MuiPaper-elevation > .MuiButtonBase-root{
             border: solid 1px #696969;
-            min-height: 50px;
+            min-height: 56px;
             border-radius: 5px;
             padding-left: 10px;
             background-color: transparent !important;
@@ -129,7 +129,9 @@
         }
         * {
             color: #282829;
+            border-color: #282829 !important;
         }
+
         .ListItemButton {
             padding: 0;
             width: calc(50% - 20px);
@@ -160,6 +162,16 @@
             }
         }
     }
+}
+
+.MuiMenu-list .Mui-selected, .MuiMenu-list .Mui-selected:hover{
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+.MuiAutocomplete-option[aria-selected="true"].Mui-focused, .MuiAutocomplete-option[aria-selected="true"]{
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+.Mui-focused .MuiOutlinedInput-notchedOutline{
+    border-width: 1px !important;
 }
 
 .sliderYear{
@@ -198,4 +210,9 @@
 .formtext{
    margin-top: 5px;
    font-size: 14px;
+}
+
+.MuiInputBase-root.MuiOutlinedInput-root ::placeholder {
+    color: rgb(40, 40, 41) !important;
+    opacity: 1 !important;
 }
