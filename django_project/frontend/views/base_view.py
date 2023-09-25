@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from stakeholder.models import (
@@ -53,8 +54,7 @@ def get_user_notifications(request):
         )
 
 
-
-class RegisteredOrganisationBaseView(TemplateView):
+class RegisteredOrganisationBaseView(LoginRequiredMixin, TemplateView):
     """
     Base view to provide organisation context for logged-in users.
     """

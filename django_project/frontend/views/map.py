@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .base_view import RegisteredOrganisationBaseView
 from django.http import HttpResponseRedirect
@@ -29,7 +28,7 @@ def redirect_to_explore(request):
     return HttpResponseRedirect(redirect_url)
 
 
-class MapView(LoginRequiredMixin, RegisteredOrganisationBaseView):
+class MapView(RegisteredOrganisationBaseView):
     """
     MapView displays the map page by rendering the 'map.html' template.
     """

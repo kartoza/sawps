@@ -1,5 +1,4 @@
 from .base_view import RegisteredOrganisationBaseView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -11,7 +10,6 @@ from frontend.serializers.stakeholder import (
 )
 from django.http import JsonResponse
 from django.contrib import messages
-
 
 
 def save_permissions(request, organisation_id):
@@ -83,7 +81,6 @@ def organization_detail(request, identifier):
 
 
 class OrganisationsView(
-    LoginRequiredMixin,
     RegisteredOrganisationBaseView,
     TemplateView
 ):
