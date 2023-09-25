@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from species.scripts.upload_file_scripts import COMPULSORY_FIELDS, SHEET_TITLE
 from species.tasks.upload_species import upload_species_data
-
+from core.settings.base import MEDIA_URL
 
 logger = logging.getLogger('sawps')
 
@@ -130,13 +130,18 @@ class UploadSpeciesStatus(APIView):
         except UploadSpeciesCSV.DoesNotExist:
             return Response(status=404)
 
+        error_file = None
+        if upload_species.error_file:
+            error_file = '{}{}'.format(
+                        MEDIA_URL, upload_species.error_file.name)
+
         if upload_species.processed:
 
             return Response(
                 status=200,
                 data={
                     'status': upload_species.progress,
-                    'error_file': upload_species.error_file.path,
+                    'error_file': error_file,
                     'message': upload_species.success_notes
                 }
             )
@@ -146,6 +151,6 @@ class UploadSpeciesStatus(APIView):
                 status=200,
                 data={
                     'status': upload_species.canceled,
-                    'error': upload_species.error_notes.path,
+                    'error_file': error_file
                 }
             )

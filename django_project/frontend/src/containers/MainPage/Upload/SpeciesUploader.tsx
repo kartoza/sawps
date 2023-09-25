@@ -263,11 +263,9 @@ export default function Uploader(props: UploaderInterface) {
                     <AlertTitle>{ isError ? 'Error' : <> { errorFile ? 'Warning': 'Success' }</>}</AlertTitle>
                     <p className="display-linebreak">
                         { alertMessage }
+                        { errorFile ?
+                            <Button variant='contained' className='Download' onClick={()=>window.location.href=`${errorFile}`}>Error file</Button>: null }
                     </p>
-                    { errorFile ?
-                    <p>
-                        { errorFile }
-                    </p>: null }
                     </Alert> : null }
                     <Dropzone
                         ref={dropZone}

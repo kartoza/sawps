@@ -187,14 +187,13 @@ class SpeciesCSVUpload(object):
                 with pd.ExcelWriter(excel_error, engine='openpyxl', mode='w')\
                         as writer:
                     work_book = writer.book
-                    try:
-                        work_book.remove(work_book[SHEET_TITLE])
-                    except ValueError:
-                        print("Worksheet does not exist")
-                    finally:
-                        dataframe = pd.read_csv(error_file_path)
-                        dataframe.to_excel(writer,
-                                           sheet_name=SHEET_TITLE, index=False)
+                    # try:
+                    #     work_book.remove(work_book[SHEET_TITLE])
+                    # except ValueError:
+                    #     print("Worksheet does not exist")
+                    # finally:
+                    dataframe = pd.read_csv(error_file_path)
+                    dataframe.to_excel(writer, sheet_name=SHEET_TITLE, index=False)
                         # writer.close()
 
             self.upload_session.error_file.name = (

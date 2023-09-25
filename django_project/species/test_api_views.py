@@ -234,8 +234,7 @@ class TestUploadSpeciesApiView(TestCase):
 
         self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
 
-    @mock.patch("species.tasks.upload_species.upload_species_data")
-    def test_upload_species_status(self, mock):
+    def test_upload_species_status(self):
         """Test upload species status."""
         csv_path = absolute_path(
             'frontend', 'tests',
@@ -260,7 +259,12 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.status_code, 204)
         upload_session = UploadSpeciesCSV.objects.get(token=self.token)
 
-        upload_species_data(upload_session.id)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+
         kwargs = {
             'token': self.token
         }
