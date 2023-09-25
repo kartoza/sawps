@@ -8,7 +8,6 @@
     <style type="text/css">
         #outlook a{padding:0;}
         body{margin:0;padding:0; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;}
-        table,td{border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;}
         img{border:0;height:auto; line-height:100%; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic;}
         p{display:block;margin:0;}
     </style>
@@ -120,47 +119,16 @@
                                         font-family:Inter,Arial,sans-serif;font-weight:400;color:#000000;line-height:150%;">
                                     Dear Admin,<br><br>
                                     A user is requesting that their organisation with the details provided, be added to the SAWPS.<br><br>
-                                    <table border="0" cellpadding="0" cellspacing="0" role="none"
-                                       style="border-collapse:collapse;border-spacing:0;border:none;width:100%;">
-                                    <tbody>
-                                        <tr>
-                                            <td style="padding: 8px 0;">Details:</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 8px 0;">Name:</td>
-                                            <td>{{ name }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 8px 0;">Email address:</td>
-                                            <td>{{ email_address }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 8px 0;">Requested organisation name:</td>
-                                            <td>{{ organisation_name }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 8px 0;">Organisation role:</td>
-                                            <td>Organisation manager</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <table border="0" cellpadding="0" cellspacing="0" role="none"
-                                       style="border-collapse:collapse;border-spacing:0;border:none;width:100%;">
-                                    <tbody>
-                                        <tr>
-                                            <td style="padding: 16px 0;">User Message:</td>
-                                        </tr>
-                                        <tr>
-                                            <td>{{ request_message }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <p style="Margin:0;mso-line-height-alt:150%"><span style="font-size:12px;font-family:Inter,Arial,sans-serif;
-                                        font-weight:400;color:#000000;line-height:150%;">To ensure the user's credibility, please verify their identity either through a phone call or email correspondence. Once confirmed, add their organisation to the SAWPS using the admin page.</span></p>
-                                <p style="Margin:0;mso-line-height-alt:150%"><span style="font-size:12px;font-family:Inter,Arial,sans-serif;
-                                        font-weight:400;color:#000000;line-height:150%;">Best regards,</span></p>
-                                <p style="Margin:0;mso-line-height-alt:150%"><span style="font-size:12px;font-family:Inter,Arial,sans-serif;
-                                        font-weight:400;color:#000000;line-height:150%;">The SAWPS Team</span></p>
+                                    <strong>Details:</strong><br>
+                                    Name: {{ name }}<br>
+                                    Email address: {{ email_address }}<br>
+                                    Requested organisation name: {{ organisation_name }}<br>
+                                    Organisation role: Organisation manager<br><br>
+                                    <strong>User Message:</strong><br>
+                                    {{ request_message }}<br><br>
+                                    To ensure the user's credibility, please verify their identity either through a phone call or email correspondence. Once confirmed, add their organisation to the SAWPS using the admin page.<br><br>
+                                    Best regards,<br>
+                                    The SAWPS Team
+                                </span></p>
                             </div></td></tr></tbody></table></div></td></tr></tbody>
         </table></div></div></body></html>

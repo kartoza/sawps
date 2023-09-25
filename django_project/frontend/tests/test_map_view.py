@@ -20,13 +20,13 @@ class RedirectViewTests(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_redirect_to_data(self):
-        response = self.client.get(reverse('data'))
+    def test_redirect_to_report(self):
+        response = self.client.get(reverse('report'))
         self.assertIsInstance(response, HttpResponseRedirect)
         self.assertEqual(response['location'], f"{reverse('map')}?tab=1")
 
-    def test_redirect_to_metrics(self):
-        response = self.client.get(reverse('metrics'))
+    def test_redirect_to_charts(self):
+        response = self.client.get(reverse('charts'))
         self.assertIsInstance(response, HttpResponseRedirect)
         self.assertEqual(response['location'], f"{reverse('map')}?tab=2")
 

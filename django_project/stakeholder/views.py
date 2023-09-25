@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect, Http404
 import pytz
 from stakeholder.models import (
     Organisation,
-    UserProfile,
     UserRoleType,
     UserTitle,
     Reminders
@@ -85,11 +84,6 @@ class ProfileView(RegisteredOrganisationBaseView):
         use_of_data = use_of_data == 'on'
         hosting = hosting == 'on'
         data_exposure = data_exposure == 'on'
-
-        if not UserProfile.objects.filter(user=user).exists():
-            UserProfile.objects.create(
-                user=user,
-            )
 
         if first_name is not None:
             user.first_name = first_name
