@@ -38,6 +38,18 @@
     }
 }
 
+.sidebarBox .selectBox {
+    .MuiFormControlLabel-root {
+        align-items: flex-start;
+        span.MuiButtonBase-root{
+            padding-top: 0;
+        }
+        .MuiTypography-root{
+            text-align: left;
+        }
+    }
+}
+
 .downlodBtn {
     width: 100%;
     display: flex;
