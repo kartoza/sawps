@@ -9,7 +9,6 @@ from stakeholder.models import (
 )
 from django.contrib.auth.models import User
 from .base_view import RegisteredOrganisationBaseView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import JsonResponse
 
@@ -28,9 +27,7 @@ from django.contrib.sites.models import Site
 from urllib.parse import quote
 
 
-
 class OrganisationUsersView(
-    LoginRequiredMixin,
     RegisteredOrganisationBaseView,
     TemplateView
 ):
