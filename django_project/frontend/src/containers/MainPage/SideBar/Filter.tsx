@@ -354,7 +354,7 @@ function Filter() {
 
     const handleSpeciesSearch = (value: any) => {
         setSearchedSpecies(value)
-        const searchedSpecies = SpeciesFilterList.filter((item) => item.common_name_varbatim.toLowerCase().includes(value.toLowerCase()))
+        const searchedSpecies = SpeciesFilterList.filter((item) => item.scientific_name.toLowerCase().includes(value.toLowerCase()))
         setSearchSpeciesList(searchedSpecies)
     }
     return (
@@ -585,26 +585,26 @@ function Filter() {
                                             searchSpeciesList.length > 0 ?
                                                 searchSpeciesList.map((species: any) => (
                                                     <FormControlLabel
-                                                        key={species.common_name_varbatim}
+                                                        key={species.scientific_name}
                                                         control={
                                                             <Radio
-                                                                checked={selectedSpecies.includes(species.common_name_varbatim)}
-                                                                onChange={handleSelectedSpecies(species.common_name_varbatim)}
+                                                                checked={selectedSpecies.includes(species.scientific_name)}
+                                                                onChange={handleSelectedSpecies(species.scientific_name)}
                                                             />
                                                         }
-                                                        label={species.common_name_varbatim}
+                                                        label={species.scientific_name}
                                                     />
                                                 )) :
                                                 <Typography>No Result found</Typography> : SpeciesFilterList.map((species: any) => (
                                                     <FormControlLabel
-                                                        key={species.common_name_varbatim}
+                                                        key={species.scientific_name}
                                                         control={
                                                             <Radio
-                                                                checked={selectedSpecies.includes(species.common_name_varbatim)}
-                                                                onChange={handleSelectedSpecies(species.common_name_varbatim)}
+                                                                checked={selectedSpecies.includes(species.scientific_name)}
+                                                                onChange={handleSelectedSpecies(species.scientific_name)}
                                                             />
                                                         }
-                                                        label={species.common_name_varbatim}
+                                                        label={species.scientific_name}
                                                     />
                                                 ))}
                                     </Box>

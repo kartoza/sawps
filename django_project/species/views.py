@@ -23,12 +23,12 @@ class TaxonListAPIView(APIView):
                     [int(id) for id in _organisation]
                 ),
                 ownedspecies__taxon__taxon_rank__name = "Species"
-            ).order_by("common_name_varbatim").distinct()
+            ).order_by("scientific_name").distinct()
         else:
             taxon = Taxon.objects.filter(
                 ownedspecies__property__organisation_id=organisation_id,
                 taxon_rank__name="Species"
-            ).order_by("common_name_varbatim").distinct()
+            ).order_by("scientific_name").distinct()
 
         return Response(
             status=200,

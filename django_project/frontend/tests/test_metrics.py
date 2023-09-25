@@ -28,7 +28,8 @@ class BaseTestCase(TestCase):
             taxon_rank = TaxonRankFactory.create(name="Species")
 
         self.taxon = TaxonFactory.create(
-            taxon_rank=taxon_rank, common_name_varbatim="Lion"
+            taxon_rank=taxon_rank, common_name_varbatim="Lion",
+            scientific_name = "Penthera leo"
         )
 
         self.user = User.objects.create_user(
@@ -91,7 +92,7 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         """
         Test species population count filtered by species name.
         """
-        data = {'species': 'Lion'}
+        data = {'species': 'Penthera leo'}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
