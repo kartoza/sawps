@@ -266,11 +266,7 @@
               {% for invited in invites %}
               <tr>
                 <td>{{ invited.email }}</td>
-                {% if invited.user_role == 'Base User' %}
-                <td>Organisation Member</td>
-                {% else %}
-                <td>Organisation Manager</td>
-                {% endif %}
+                <td>Organisation {{ invited.assigned_as }}</td>
                 <td class="text-center">
                   {% if invited.joined %}
                     <span class="badge badge-success">Joined</span>
