@@ -54,9 +54,9 @@ def get_user_notifications(request):
         )
 
 
-class RegisteredOrganisationBaseView(LoginRequiredMixin, TemplateView):
+class OrganisationBaseView(TemplateView):
     """
-    Base view to provide organisation context for logged-in users.
+    Base view to provide organisation context
     """
 
     def get_current_organisation(self):
@@ -143,3 +143,10 @@ class RegisteredOrganisationBaseView(LoginRequiredMixin, TemplateView):
         ctx['organisations'] = self.get_organisation_list(self.request)
         get_user_notifications(self.request)
         return ctx
+
+
+class RegisteredOrganisationBaseView(LoginRequiredMixin, OrganisationBaseView):
+    """
+    Base view to provide organisation context for logged-in users.
+    """
+    pass

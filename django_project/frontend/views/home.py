@@ -1,7 +1,7 @@
-from .base_view import RegisteredOrganisationBaseView
+from .base_view import OrganisationBaseView
 
 
-class HomeView(RegisteredOrganisationBaseView):
+class HomeView(OrganisationBaseView):
     """
     HomeView displays the home page by rendering the 'home.html' template.
     """
