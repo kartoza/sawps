@@ -3,6 +3,13 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from sawps.models import ExtendedGroup
+from django_otp.plugins.otp_static.models import StaticDevice
+
+
+class CustomStaticDeviceAdmin(admin.ModelAdmin):
+    list_display = ('user','name','confirmed')  # Customize the columns to display
+    search_fields = ('user__username',)  # search by user's username
+
 
 # Ensure users go through the allauth workflow when logging into admin.
 admin.site.login = staff_member_required(
@@ -40,5 +47,6 @@ class GroupAdmin(BaseGroupAdmin):
     get_description.short_description = 'Description'
 
 
+admin.site.register(StaticDevice, CustomStaticDeviceAdmin)
 admin.site.unregister(Group)
 admin.site.register(Group, GroupAdmin)
