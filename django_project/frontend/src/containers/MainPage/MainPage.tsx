@@ -57,7 +57,7 @@ function MainPage() {
   const tabNameToValue: { [key: string]: number } = {
     'map': 0,
     'reports': 1,
-    'metrics': 2,
+    'charts': 2,
     'upload': 3,
   };
 
@@ -72,11 +72,11 @@ function MainPage() {
   }, [location.search]);
 
   useEffect(() => {
-    const tabNames = ['map', 'reports', 'metrics', 'upload'];
+    const tabNames = ['map', 'reports', 'charts', 'upload'];
     const selectedTabName = tabNames[selectedTab];
     const newPath = `/${selectedTabName}`;
     if (selectedTab !== 0 && selectedTab !== 3) {
-      // dispatch to reset map state in data or metrics tab
+      // dispatch to reset map state in data or charts tab
       dispatch(resetMapState())
     }
     if (location.pathname !== newPath) {
@@ -151,7 +151,7 @@ function MainPage() {
                   >
                     <Tab key={0} label={'MAP'} {...a11yProps(0)} />
                     <Tab key={1} label={'REPORTS'} {...a11yProps(1)} />
-                    <Tab key={2} label={'METRICS'} {...a11yProps(2)} />
+                    <Tab key={2} label={'CHARTS'} {...a11yProps(2)} />
                   </Tabs>
                 )}
                 <div style={{ flex: 1 }}></div>
