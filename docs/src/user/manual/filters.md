@@ -2,7 +2,7 @@
 
 ## Description
 The filter side panel allows users to refine and narrow down data based on specific criteria. There are different type of filters are available for customization.
-The filter side panel enhances the user experience by allowing them to focus on specific subsets of data based on their preferences, making it easier to analyze and work with the dataset effectively.
+The filter side panel enhances the user experience by allowing them to focus on specific subsets of data based on their preferences, making it easier to analyse and work with the dataset effectively.
 ## Filter
 ![Filter](./img/Explore_filter.png)
 
