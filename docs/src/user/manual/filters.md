@@ -26,8 +26,8 @@ The filter side panel enhances the user experience by allowing them to focus on 
 
     2. **Selecting Individual Organisations**: To filter data for specific organisations, follow these steps:
     Uncheck the "Select All" option if it is selected.
-    A list of available organizations will be displayed.
-    Check the checkboxes next to the organizations you want to include in the filter.
+    A list of available organisations will be displayed.
+    Check the checkboxes next to the organisations you want to include in the filter.
 
 
 ### 2. Report Type Filter
@@ -37,7 +37,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
     ## Report filter
     ![Report filter](./img/Report_filter.png)
 
-    1. **Report type**:The Report Type Filter is a single-select filter that allows users to filter data based on specific report types. With this filter, you can easily narrow down your dataset to view data associated with a particular report type.
+    1. **Report type**: The Report Type Filter is a single-select filter that allows users to filter data based on specific report types. With this filter, you can easily narrow down your dataset to view data associated with a particular report type.
 
 
 ### 3. Property Filter
@@ -47,9 +47,9 @@ The filter side panel enhances the user experience by allowing them to focus on 
     ## Property filter
     ![Property filter](./img/Property_filter.png)
 
-    1. **Select all**:Select all selects all the properties.
+    1. **Select all**: Select all selects all the properties.
 
-    2. **Show selected property count**:You will see the count of the property selected.
+    2. **Show selected property count**: You will see the count of the property selected.
 
 
 ### 4. Species Filter
@@ -66,16 +66,16 @@ The filter side panel enhances the user experience by allowing them to focus on 
 
 ### 5. Year Range Filter
 - **Filter Description:** This filter allows users to narrow down data based on a specified year range.
-- **Usage:** Set a range of years to view data within that timeframe. For example, selecting a range of "2010-2020" will display data recorded between 2010 and 2020.
+- **Usage:** Set a range of years to view data within that time frame. For example, selecting a range of "2010-2020" will display data recorded between 2010 and 2020.
 
     ## Year filter
     ![Year filter](./img/Year_filter.png)
 
-    1. **Year range bar**: This is the bar which is used for settign the year range.
+    1. **Year range bar**: This is the bar which is used for setting the year range.
 
-    2. **From**: Input field for the from (starting)year value.
+    2. **From**: Input field for the from (starting) year value.
 
-    3. **To**: Input field for the to (ending)year value.
+    3. **To**: Input field for the to (ending) year value.
 
 ### 6. Spatial Filter
 - **Filter Description:** This filter allows users to filter data based on spatial information.
@@ -85,7 +85,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
     ![Spatial filter](./img/Spatial_filter.png)
 
     1. **Activity dropdown**: Using this you can filter the data according to the activity types.
-    2. **Biome type dropdown**:Using this you can filter the data according to the biome types.
-    3. **Critical biodiversity type dropdown**:Using this you can filter the data according to the critical biodiversity areas.
-    4. **Protected area dropdown**:Using this you can filter the data according to the protected area types.
-    5. **Population category dropdown**:Using this you can filter the data according to the population category types.
+    2. **Biome type dropdown**: Using this you can filter the data according to the biome types.
+    3. **Critical biodiversity type dropdown**: Using this you can filter the data according to the critical biodiversity areas.
+    4. **Protected area dropdown**: Using this you can filter the data according to the protected area types.
+    5. **Population category dropdown**: Using this you can filter the data according to the population category types.

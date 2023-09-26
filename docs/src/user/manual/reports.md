@@ -1,7 +1,7 @@
 # Data Table Page Documentation
 
 ## Description
-The Data Table Page is the central hub for viewing and interacting with your data. This page offers a user-friendly interface for exploring and manipulating your dataset. You can use a variety of features to customize your data view, including filters, column search, and data export options.
+The Data Table Page is the central hub for viewing and interacting with your data. This page offers a user-friendly interface for exploring and manipulating your dataset. You can use a variety of features to customise your data view, including filters, column search, and data export options.
 
 ### Data Display
 The main area of the page displays your dataset in a tabular format. Each row represents a record, and each column represents a data attribute.
@@ -13,7 +13,7 @@ The main area of the page displays your dataset in a tabular format. Each row re
 ## Features and Functionality
 
 
-1. **Explore**:Open the explore page by clicking on the `Explore` on navbar.
+1. **Explore**: Open the explore page by clicking on the `Explore` on navbar.
 2. **Data**: Click on the `data` button to view the data.
 3. **Filters**: Utilise the filters provided on the page to refine your data view. These filters include:
     - **Organisation Filter:** Filter data by organisation.
