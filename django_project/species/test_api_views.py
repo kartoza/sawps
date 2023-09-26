@@ -462,5 +462,11 @@ class TestUploadSpeciesApiView(TestCase):
             )
         )
 
+    @mock.patch("species.tasks.upload_species.upload_species_data")
+    def test_upload_task_with_upload_session_not_existing(self, mock_app):
+        """Test upload task with upload session not existing."""
+
+        self.assertEqual(upload_species_data(1), None)
+
 
 
