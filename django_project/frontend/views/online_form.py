@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -7,7 +6,7 @@ from property.models import Property
 from stakeholder.models import OrganisationUser
 
 
-class OnlineFormView(LoginRequiredMixin, RegisteredOrganisationBaseView):
+class OnlineFormView(RegisteredOrganisationBaseView):
     """
     OnlineFormView displays the page to upload species data.
     """

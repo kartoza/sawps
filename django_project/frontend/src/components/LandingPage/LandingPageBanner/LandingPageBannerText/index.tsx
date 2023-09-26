@@ -17,7 +17,7 @@ if ((window as any).isLoggedIn) {
     BtnProps = [
         {text: "About", color: "green", url: "/about"},
         {text: "Explore", color: "orange", url: "/map"},
-        {text: "Upload your data", color: "purple", url: "/map"},
+        {text: "Upload your data", color: "purple", url: "/upload"},
     ]
 } else {
     BtnProps = [

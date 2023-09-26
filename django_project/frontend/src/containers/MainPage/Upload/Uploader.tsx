@@ -20,6 +20,7 @@ import {
 } from '../../../reducers/MapState';
 import '../../../assets/styles/RDU.styles.scss';
 import './index.scss';
+import { MapEvents } from '../../../models/Map';
 
 interface UploaderInterface {
     open: boolean;
@@ -243,7 +244,7 @@ export default function Uploader(props: UploaderInterface) {
                         let _bbox_str = _bbox.map(String)
                         dispatch(triggerMapEvent({
                             'id': uuidv4(),
-                            'name': 'BOUNDARY_FILES_UPLOADED',
+                            'name': MapEvents.BOUNDARY_FILES_UPLOADED,
                             'date': Date.now(),
                             'payload': _bbox_str
                         }))

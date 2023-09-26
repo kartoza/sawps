@@ -48,6 +48,7 @@ from frontend.api_views.property import (
     PropertyMetadataList,
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
+    PropertySearch
 )
 from frontend.api_views.statistical import SpeciesNationalTrend
 from frontend.api_views.upload import (
@@ -65,8 +66,8 @@ from .views.help import HelpView
 from .views.home import HomeView
 from .views.map import (
     MapView,
-    redirect_to_data,
-    redirect_to_metrics,
+    redirect_to_report,
+    redirect_to_charts,
     redirect_to_upload,
     redirect_to_explore
 )
@@ -86,7 +87,11 @@ from frontend.api_views.national_statistic import (
     NationalActivityCountPerProvinceView,
     NationalActivityCountPerPropertyView
 )
-from .views.organisations import OrganisationsView
+from .views.organisations import (
+    OrganisationsView,
+    organization_detail,
+    save_permissions
+)
 
 urlpatterns = [
     re_path(
@@ -145,6 +150,11 @@ urlpatterns = [
         r'^api/property/detail/update/?$',
         UpdatePropertyInformation.as_view(),
         name='property-update-detail'
+    ),
+    re_path(
+        r'^api/property/search/?$',
+        PropertySearch.as_view(),
+        name='property-search'
     ),
     re_path(
         r'^api/property/boundaries/update/?$',
@@ -213,14 +223,14 @@ urlpatterns = [
     ),
     path('map/', MapView.as_view(), name='map'),
     path(
-        'data/',
-        redirect_to_data,
-        name='data'
+        'report/',
+        redirect_to_report,
+        name='report'
     ),
     path(
-        'metrics/',
-        redirect_to_metrics,
-        name='metrics'
+        'charts/',
+        redirect_to_charts,
+        name='charts'
     ),
     path(
         'upload/',
@@ -342,5 +352,15 @@ urlpatterns = [
         'api/activity_count_per_property/',
         NationalActivityCountPerPropertyView.as_view(),
         name='activity_count_per_property'
-    )
+    ),
+    path(
+        'api/organization/<int:identifier>/',
+        organization_detail,
+        name='organization_detail_by_id'
+    ),
+    path(
+        'save_permissions/<int:organisation_id>/',
+        save_permissions,
+        name='save_permissions'
+    ),
 ]

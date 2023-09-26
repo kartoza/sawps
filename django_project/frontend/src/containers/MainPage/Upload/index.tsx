@@ -25,6 +25,7 @@ import {
 import UploadWizard from './UploadWizard';
 import PropertyInterface from '../../../models/Property';
 import { UploadMode } from '../../../models/Upload';
+import { MapEvents } from '../../../models/Map';
 import './index.scss';
 
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
@@ -72,7 +73,7 @@ function Upload() {
                         let _bbox = _property.bbox.map(String)
                         dispatch(triggerMapEvent({
                             'id': uuidv4(),
-                            'name': 'PROPERTY_SELECTED',
+                            'name': MapEvents.PROPERTY_SELECTED,
                             'date': Date.now(),
                             'payload': _bbox
                         }))

@@ -28,7 +28,7 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
             "Activity_report": activity_report,
             "Property_report": property_report,
             "Sampling_report": sampling_report,
-            "Species_population_report": species_report,
+            "Species_report": species_report,
         }
 
         for report_name in reports_list:
@@ -58,7 +58,7 @@ def get_common_data(property: QuerySet, request) -> Dict:
     if species_list:
         species_list = species_list.split(",")
         species = property.ownedspecies_set.filter(
-            taxon__common_name_varbatim__in=species_list
+            taxon__scientific_name__in=species_list
         ).values(
             "taxon__common_name_varbatim", "taxon__scientific_name"
         )
@@ -81,7 +81,7 @@ def species_report(queryset: QuerySet, request) -> List:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    species_population_reports = []
+    species_reports = []
     filters = {}
     start_year = request.GET.get("start_year")
     if start_year:
@@ -97,8 +97,8 @@ def species_report(queryset: QuerySet, request) -> List:
         species_population_data = AnnualPopulation.objects.filter(
             **filters,
             owned_species__property__name=property.name,
-            owned_species__taxon__common_name_varbatim=(
-                common_data["common_name"]
+            owned_species__taxon__scientific_name=(
+                common_data["scientific_name"]
             )
         ).values(
             "year", "group", "total", "adult_male", "adult_female",
@@ -106,11 +106,11 @@ def species_report(queryset: QuerySet, request) -> List:
             "sub_adult_female"
         )
 
-        species_population_reports.extend([
+        species_reports.extend([
             {**common_data, **data} for data in species_population_data
         ])
 
-    return species_population_reports
+    return species_reports
 
 
 def property_report(queryset: QuerySet, request) -> List:
@@ -186,8 +186,8 @@ def sampling_report(queryset: QuerySet, request) -> List:
         sampling_reports_data = AnnualPopulation.objects.filter(
             **filters,
             owned_species__property__name=property.name,
-            owned_species__taxon__common_name_varbatim = (
-                common_data["common_name"]
+            owned_species__taxon__scientific_name = (
+                common_data["scientific_name"]
             ),
         ).values(
             "population_status", "population_estimate_category",
@@ -255,8 +255,8 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
                     *query_values
                 ).filter(
                     **filters,
-                    owned_species__taxon__common_name_varbatim=common_data[
-                        "common_name"
+                    owned_species__taxon__scientific_name=common_data[
+                        "scientific_name"
                     ],
                     owned_species__property__name=property.name,
                     activity_type__name=activity_name.replace(

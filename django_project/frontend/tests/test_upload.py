@@ -3,6 +3,7 @@ import mock
 from django.test import TestCase
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
+from core.settings.utils import absolute_path
 from rest_framework.test import APIRequestFactory
 from frontend.tests.model_factories import UserF
 from frontend.models.boundary_search import (
@@ -78,6 +79,30 @@ class TestUploadAPIViews(TestCase):
         self.assertTrue(BoundaryFile.objects.filter(
             name='admin.kml',
             meta_id='layer-id',
+            session=session
+        ).exists())
+        shapefile_path = absolute_path(
+            'frontend', 'tests',
+            'shapefile', 'shapefile_1.zip')
+        with open(shapefile_path, 'rb') as infile:
+            file = SimpleUploadedFile(
+                'shapefile_1.zip',
+                infile.read(),
+                content_type='application/zip')
+            session = str(uuid.uuid4())
+            request = self.factory.post(
+                reverse('boundary-file-upload'), {
+                    'session': session,
+                    'meta_id': 'layer-id2',
+                    'file': file
+                }
+            )
+            request.user = UserF.create()
+            response = view(request)
+        self.assertEqual(response.status_code, 204)
+        self.assertTrue(BoundaryFile.objects.filter(
+            name='shapefile_1.zip',
+            meta_id='layer-id2',
             session=session
         ).exists())
 

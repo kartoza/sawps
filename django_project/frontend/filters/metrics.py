@@ -30,7 +30,7 @@ class BaseMetricsFilter(django_filters.FilterSet):
             name (str): The name of the field to be filtered (property).
         """
         species_list = value.split(',')
-        return queryset.filter(common_name_varbatim__in=species_list)
+        return queryset.filter(scientific_name__in=species_list)
 
     def filter_start_year(self, queryset: QuerySet, name: str, value: str) \
         -> QuerySet:

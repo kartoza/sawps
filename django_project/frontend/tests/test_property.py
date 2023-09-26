@@ -1,36 +1,38 @@
+import base64
 import json
+
+from core.settings.utils import absolute_path
+from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 from core.settings.utils import absolute_path
-from property.models import (
-    PropertyType,
-    Property,
-    Parcel
+from frontend.models.places import (
+    PlaceNameSmallScale,
+    PlaceNameMidScale,
+    PlaceNameLargerScale,
+    PlaceNameLargestScale
 )
-from property.factories import (
-    ProvinceFactory,
-    PropertyFactory
+from frontend.api_views.property import (
+    CreateNewProperty,
+    PropertyList,
+    PropertyMetadataList,
+    UpdatePropertyBoundaries,
+    PropertyDetail,
+    PropertySearch,
+    UpdatePropertyInformation,
 )
+from frontend.models.parcels import Erf, Holding
+from frontend.tests.model_factories import UserF
+from frontend.tests.request_factories import OrganisationAPIRequestFactory
+from property.factories import PropertyFactory, ProvinceFactory
+from property.models import Parcel, Property, PropertyType
 from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
-    userProfileFactory
+    userProfileFactory,
 )
-from frontend.models.parcels import (
-    Erf,
-    Holding
-)
-from frontend.tests.model_factories import UserF
-from frontend.api_views.property import (
-    CreateNewProperty,
-    PropertyMetadataList,
-    PropertyList,
-    UpdatePropertyInformation,
-    UpdatePropertyBoundaries,
-    PropertyDetail
-)
-from frontend.tests.request_factories import OrganisationAPIRequestFactory
+from stakeholder.models import UserProfile
 
 
 class TestPropertyAPIViews(TestCase):
@@ -92,10 +94,10 @@ class TestPropertyAPIViews(TestCase):
             format='json'
         )
         # without adding to organisation, should return 403
-        self.user_1.user_profile = userProfileFactory.create(
-            user=self.user_1,
-            current_organisation=self.organisation
-        )
+        self.user_1.user_profile = self.user_1.user_profile
+        self.user_1.user_profile.current_organisation = self.organisation
+        self.user_1.save()
+
         request.user = self.user_1
         view = CreateNewProperty.as_view()
         response = view(request)
@@ -156,10 +158,10 @@ class TestPropertyAPIViews(TestCase):
         request = self.factory.get(
             reverse('property-list')
         )
-        self.user_2.user_profile = userProfileFactory.create(
-            user=self.user_2,
-            current_organisation=self.organisation
-        )
+        self.user_2.user_profile = self.user_2.user_profile
+        self.user_2.user_profile.current_organisation = self.organisation
+        self.user_2.save()
+
         request.user = self.user_2
         view = PropertyList.as_view()
         response = view(request)
@@ -168,6 +170,36 @@ class TestPropertyAPIViews(TestCase):
         _property = response.data[0]
         self.assertEqual(_property['id'], property.id)
         self.assertEqual(_property['name'], property.name)
+
+    def test_get_property_list_for_organisations(self):
+        """Taxon list API test for organisations."""
+        organisation = organisationFactory.create(national=True)
+
+        user = User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd'
+        )
+
+        user.user_profile.current_organisation = organisation
+        user.save()
+
+        property = PropertyFactory.create(
+            organisation=organisation,
+            name='PropertyA'
+        )
+
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+
+        url = reverse("property-list")
+        client = Client()
+        data = {"organisation":organisation.id}
+        response = client.get(url, data, **auth_headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], "PropertyA")
 
     def test_update_property(self):
         property_type = PropertyType.objects.all().first()
@@ -223,10 +255,10 @@ class TestPropertyAPIViews(TestCase):
             reverse('property-create'), data=data,
             format='json'
         )
-        self.user_1.user_profile = userProfileFactory.create(
-            user=self.user_1,
-            current_organisation=self.organisation
-        )
+        self.user_1.user_profile = self.user_1.user_profile
+        self.user_1.user_profile.current_organisation = self.organisation
+        self.user_1.save()
+
         request.user = self.user_1
         organisationUserFactory.create(
             user=self.user_1,
@@ -259,3 +291,45 @@ class TestPropertyAPIViews(TestCase):
             Parcel.objects.filter(property_id=property_id).count(),
             1
         )
+
+    def test_search_property(self):
+        # insert place names
+        place_1 = PlaceNameSmallScale.objects.create(
+            geom=self.holding_1.geom.centroid,
+            fclass='suburb',
+            name='Seaview'
+        )
+        place_2 = PlaceNameMidScale.objects.create(
+            geom=self.holding_1.geom.centroid,
+            fclass='suburb',
+            name='Seaview'
+        )
+        place_3 = PlaceNameLargerScale.objects.create(
+            geom=self.holding_1.geom.centroid,
+            fclass='hamlet',
+            name='Sea Glade'
+        )
+        place_4 = PlaceNameLargestScale.objects.create(
+            geom=self.holding_1.geom.centroid,
+            fclass='town',
+            name='SeaCow Lake'
+        )
+        # insert property
+        property = PropertyFactory.create(
+            geometry=self.holding_1.geom,
+            name='Seafields',
+            created_by=self.user_2,
+            organisation=self.organisation
+        )
+        request = self.factory.get(
+            reverse('property-search') + f'?search_text=sea'
+        )
+        self.user_2.user_profile = self.user_2.user_profile
+        self.user_2.user_profile.current_organisation = self.organisation
+        self.user_2.save()
+
+        request.user = self.user_2
+        view = PropertySearch.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 4)

@@ -187,7 +187,7 @@
         }
 
         var return_obj = []
-        for(var count =0; count < messages.length; count++){
+        for(var count =0; count < messages?.length; count++){
           var save_obj = {
             url: "/notifications/" + '{{ user }}' + '/', text: messages[count]
           }
@@ -280,7 +280,8 @@
       });
 
       if(
-        !window.location.href.includes("two-factor-authenticate")
+        !window.location.href.includes("two-factor-authenticate") &&
+        !window.location.href.includes("accounts/two-factor/")
       ){
         var userIsAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
         if(userIsAuthenticated){
@@ -305,10 +306,8 @@
       }
 
   </script>
-<div style="min-height:var(--min-content-height);">
 {% block content %}
 {% endblock %}
-</div>
 {% block footer %}
 <div class='footer' data-testid='footer'>
     <div class='sanbi-footer-logo-container'>

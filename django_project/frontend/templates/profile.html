@@ -5,7 +5,7 @@
 
 
 {% block content %}
-<section>
+<section style="min-height:var(--min-content-height);">
   <div class="container py-5">
   <div class="row">
     {% include "profile_config_base.html" %}
@@ -53,7 +53,7 @@
         </form>
       </div>
     </div>
-    
+
   </div>
 
   <script>
@@ -123,12 +123,12 @@
         return
       }
 
-      
+
     }
 
     emailInput.addEventListener("input", handleEmailValidation);
 
-  
+
   </script>
 
   <style>
@@ -156,11 +156,11 @@
       border-color: var(--green);
       box-shadow: 0 0 0 0.25rem rgba(0, 128, 0, 0.25);
     }
-    
+
     /* Style checked switches with green color */
     .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
-      background-color: var(--green); 
-      border-color: var(--green); 
+      background-color: var(--green);
+      border-color: var(--green);
     }
 
     .text-warning-custom {
@@ -170,7 +170,5 @@
 
 </section>
 
-{% endblock %}
-{% block footer %}
 {% endblock %}
 

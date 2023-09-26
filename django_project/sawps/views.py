@@ -13,8 +13,7 @@ from core.settings.contrib import SUPPORT_EMAIL
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
-    OrganisationUser,
-    UserProfile
+    OrganisationUser
 )
 from sawps.email_verification_token import email_verification_token
 from django.template.loader import render_to_string
@@ -40,11 +39,6 @@ class ActivateAccount(View):
         ):
             user.is_active = True
             user.save()
-
-            if not UserProfile.objects.filter(user=user).exists():
-                UserProfile.objects.create(
-                    user=user
-                )
 
             login(
                 request,

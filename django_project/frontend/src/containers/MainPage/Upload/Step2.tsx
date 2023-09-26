@@ -16,7 +16,7 @@ import {RootState} from '../../../app/store';
 import {postData} from "../../../utils/Requests";
 import AlertMessage from '../../../components/AlertMessage';
 import PropertyInterface from '../../../models/Property';
-import { MapSelectionMode } from "../../../models/Map";
+import { MapSelectionMode, MapEvents } from "../../../models/Map";
 import SelectedParcelTable from './SelectedParcelTable';
 import ParcelInterface from '../../../models/Parcel';
 import Uploader from './Uploader';
@@ -60,7 +60,7 @@ export default function Step2(props: Step2Interface) {
                 // trigger event to refresh properties layer
                 dispatch(triggerMapEvent({
                     'id': uuidv4(),
-                    'name': 'REFRESH_PROPERTIES_LAYER',
+                    'name': MapEvents.REFRESH_PROPERTIES_LAYER,
                     'date': Date.now()
                 }))
                 // trigger to next step
@@ -94,7 +94,7 @@ export default function Step2(props: Step2Interface) {
                                 dispatch(toggleParcelSelectedState(parcel))
                                 dispatch(triggerMapEvent({
                                     'id': uuidv4(),
-                                    'name': 'HIGHLIGHT_SELECTED_PARCEL',
+                                    'name': MapEvents.HIGHLIGHT_SELECTED_PARCEL,
                                     'date': Date.now(),
                                     'payload': []
                                 }))                                
@@ -103,14 +103,14 @@ export default function Step2(props: Step2Interface) {
                                 if (parcel) {
                                     dispatch(triggerMapEvent({
                                         'id': uuidv4(),
-                                        'name': 'HIGHLIGHT_SELECTED_PARCEL',
+                                        'name': MapEvents.HIGHLIGHT_SELECTED_PARCEL,
                                         'date': Date.now(),
                                         'payload': [parcel.id, parcel.layer]
                                     }))
                                 } else {
                                     dispatch(triggerMapEvent({
                                         'id': uuidv4(),
-                                        'name': 'HIGHLIGHT_SELECTED_PARCEL',
+                                        'name': MapEvents.HIGHLIGHT_SELECTED_PARCEL,
                                         'date': Date.now(),
                                         'payload': []
                                     }))

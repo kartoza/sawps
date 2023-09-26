@@ -1,12 +1,28 @@
 import factory
-from sawps.models import UploadSession
-from stakeholder.factories import userFactory
+from django.contrib.auth.models import Group
+from sawps.models import ExtendedGroup
 
 
-class UploadSessionF(factory.django.DjangoModelFactory):
+class GroupF(factory.django.DjangoModelFactory):
     """
-    Upload session factory
+    Group model factory
     """
     class Meta:
-        model = UploadSession
-    uploader = factory.SubFactory(userFactory)
+        model = Group
+
+    name = factory.Sequence(
+        lambda n: 'Group name %d' % n
+    )
+
+
+class ExtendedGroupF(factory.django.DjangoModelFactory):
+    """
+    Extended group model factory
+    """
+    description = factory.Sequence(
+        lambda n: 'Description %d' % n
+    )
+    group = factory.SubFactory(GroupF)
+
+    class Meta:
+        model = ExtendedGroup

@@ -1,7 +1,7 @@
 from django.db.models import Sum
-from rest_framework import serializers
-from species.models import Taxon, OwnedSpecies
 from population_data.models import AnnualPopulation
+from rest_framework import serializers
+from species.models import OwnedSpecies, Taxon
 
 
 class TaxonSerializer(serializers.ModelSerializer):
@@ -9,7 +9,7 @@ class TaxonSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = Taxon
-        fields = '__all__'
+        fields = ["id", "scientific_name"]
 
 
 class FrontPageTaxonSerializer(serializers.ModelSerializer):

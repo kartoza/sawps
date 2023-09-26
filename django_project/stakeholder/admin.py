@@ -1,22 +1,40 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 from stakeholder.models import (
     UserRoleType,
     UserTitle,
     LoginStatus,
-    UserProfile,
     Organisation,
     OrganisationUser,
     OrganisationRepresentative,
     OrganisationInvites,
-    Reminders
+    Reminders,
+    UserProfile
 )
 
 
 admin.site.register(UserRoleType)
 admin.site.register(UserTitle)
 admin.site.register(LoginStatus)
-admin.site.register(UserProfile)
 admin.site.register(Organisation)
+
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name_plural = 'UserProfile'
+    list_display = (
+        "picture",
+    )
+
+
+class UserAdmin(BaseUserAdmin):
+    inlines = (UserProfileInline, )
+
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 @admin.register(OrganisationUser)

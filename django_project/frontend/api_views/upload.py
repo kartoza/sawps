@@ -49,7 +49,9 @@ class BoundaryFileUpload(APIView):
         _, error = validate_shapefile_zip(file_obj)
         if error:
             return ('Missing required file(s) inside zip file: \n- ' +
-                    '\n- '.join(error)
+                    '\n- '.join(error) +
+                    '\n Please make sure it is a valid zip file and '
+                    'the shp file is at the root directory of the zip package'
                     )
         return ''
 
