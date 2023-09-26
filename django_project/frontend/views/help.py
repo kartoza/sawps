@@ -1,7 +1,7 @@
-from .base_view import RegisteredOrganisationBaseView
+from .base_view import OrganisationBaseView
 
 
-class HelpView(RegisteredOrganisationBaseView):
+class HelpView(OrganisationBaseView):
     """
     HelpView displays the help page by rendering the 'help.html' template.
     """
