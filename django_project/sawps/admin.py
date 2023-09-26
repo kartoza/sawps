@@ -4,7 +4,6 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from sawps.models import ExtendedGroup
 from django_otp.plugins.otp_static.models import StaticDevice
-from otp_static.admin import StaticDeviceAdmin
 
 
 class CustomStaticDeviceAdmin(admin.ModelAdmin):
