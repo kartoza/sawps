@@ -24,7 +24,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
 
     1. **Selecting All Organisations**: To view data from all organisations, simply check the "Select All" option within the Organisation Filter.
 
-    2. **Selecting Individual Organisations**:To filter data for specific organizations, follow these steps:
+    2. **Selecting Individual Organisations**: To filter data for specific organisations, follow these steps:
     Uncheck the "Select All" option if it is selected.
     A list of available organizations will be displayed.
     Check the checkboxes next to the organizations you want to include in the filter.
