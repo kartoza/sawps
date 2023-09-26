@@ -16,7 +16,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
 ## Filter Types
 
 ### 1. Organisation Filter
-- **Filter Description:** This filter allows users to filter data according to the organization.
+- **Filter Description:** This filter allows users to filter data according to the organisation.
 - **Usage:** Select an organization from the dropdown menu to filter data specific to that organization.
 
     ## Organisation filter
