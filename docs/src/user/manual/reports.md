@@ -37,4 +37,4 @@ The main area of the page displays your dataset in a tabular format. Each row re
 
 
 ## Summary
-The Data Table Page is a comprehensive platform for exploring, analyzing, and interacting with your data. With filters, column search, and data export options, you have the tools necessary to customize your data view, find specific information, and export data in the format that suits your needs.
+The Data Table Page is a comprehensive platform for exploring, analysing, and interacting with your data. With filters, column search, and data export options, you have the tools necessary to customise your data view, find specific information, and export data in the format that suits your needs.
