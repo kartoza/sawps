@@ -22,7 +22,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
     ## Organisation filter
     ![Organisation filter](./img/Organisation_filter.png)
 
-    1. **Selecting All Organisations**:To view data from all organizations, simply check the "Select All" option within the Organisation Filter.
+    1. **Selecting All Organisations**: To view data from all organisations, simply check the "Select All" option within the Organisation Filter.
 
     2. **Selecting Individual Organisations**:To filter data for specific organizations, follow these steps:
     Uncheck the "Select All" option if it is selected.
