@@ -7,7 +7,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
 ![Filter](./img/Explore_filter.png)
 
 1. **Explore**: Open the explore page by clicking on `Explore` on the navigation bar.
-2. **Filter**: Open the filter side panel by clicking on the `Filter` option. Inside the side panel, you will find the all the filters. For each filter, interact with the available options or input fields to customize your filter criteria. Just click on the dropdown and select the filter.
+2. **Filter**: Open the filter side panel by clicking on the `Filter` option. Inside the side panel, you will find the all the filters. For each filter, interact with the available options or input fields to customise your filter criteria. Just click on the dropdown and select the filter.
 
 
 ## Filter side panel
