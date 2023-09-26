@@ -388,7 +388,7 @@ function Filter() {
                 />
             </Box>
             <Box className='sidebarBox'>
-                {(userRole === "National data scientist" || userRole === "Regional data scientist") && <Box>
+                {(userRole === "National data scientist" || userRole === "Regional data scientist" || userRole === "Super user") && <Box>
                     <Box className='sidebarBoxHeading'>
                         <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
