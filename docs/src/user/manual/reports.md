@@ -16,7 +16,7 @@ The main area of the page displays your dataset in a tabular format. Each row re
 1. **Explore**:Open the explore page by clicking on the `Explore` on navbar.
 2. **Data**: Click on the `data` button to view the data.
 3. **Filters**: Utilise the filters provided on the page to refine your data view. These filters include:
-    - **Organisation Filter:** Filter data by organization.
+    - **Organisation Filter:** Filter data by organisation.
     - **Report Type Filter:** Filter data by report type.
     - **Property Filter:** Filter data by property.
     - **Year Range Filter:** Filter data by a specified year range.
