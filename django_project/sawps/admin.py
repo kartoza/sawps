@@ -7,8 +7,8 @@ from django_otp.plugins.otp_static.models import StaticDevice
 
 
 class CustomStaticDeviceAdmin(admin.ModelAdmin):
-    list_display = ('user','name','confirmed')  # Customize the columns to display
-    search_fields = ('user__username',)  # search by user's username
+    list_display = ('user', 'name', 'confirmed')
+    search_fields = ('user__username',)
 
 
 # Ensure users go through the allauth workflow when logging into admin.
