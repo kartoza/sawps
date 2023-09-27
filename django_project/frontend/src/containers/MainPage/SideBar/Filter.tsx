@@ -53,6 +53,27 @@ interface SearchPropertyResult {
     fclass?: string;
 }
 
+// Define geocoding service URL and API key/token to allow searching places
+const GEOCODING_API_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
+const GEOCODING_API_KEY = 'your-geocoding-api-key';
+
+// function to perform geocoding
+const geocode = async (query: string | number | boolean) => {
+    try {
+        const response = await axios.get(`${GEOCODING_API_URL}/${encodeURIComponent(query)}.json`, {
+            params: {
+                access_token: GEOCODING_API_KEY,
+                types: 'place', // Specify the types of results you want (e.g., 'place' for locations/places)
+            },
+        });
+
+        return response.data.features;
+    } catch (error) {
+        console.error('Geocoding error:', error);
+        return [];
+    }
+};
+  
 
 function Filter() {
     const dispatch = useAppDispatch()
@@ -322,6 +343,7 @@ function Filter() {
             setSearchResults([])
         }
     }, [searchInputValue])
+
     const handleSelectAllProperty = () => {
         const propeertyId = propertyList.map(property => property.id)
         setSelectedProperty(propeertyId)
@@ -347,51 +369,116 @@ function Filter() {
         setSearchSpeciesList(sList)
     }, [SpeciesFilterList])
 
+    // Geocode function for searching properties
+    const geocodeProperty = async (query: string | number | boolean) => {
+        try {
+          const results = await geocode(query);
+      
+          if (results.length > 0) {
+            const firstResult = results[0];
+            const bbox = firstResult.bbox;
+      
+            // Trigger zoom to property
+            const payload = bbox.map(String);
+            dispatch(triggerMapEvent({
+              id: uuidv4(),
+              name: MapEvents.ZOOM_INTO_PROPERTY,
+              date: Date.now(),
+              payload,
+            }));
+      
+            setSearchInputValue('');
+          }
+        } catch (error) {
+          console.error('Geocoding property error:', error);
+        }
+      };
+
+      const handleAutocompleteChange = (event: React.ChangeEvent<{}>, newValue: SearchPropertyResult | string) => {
+        if (typeof newValue === 'string') {
+            // Likely a place name, trigger geocoding for place search
+            geocode(newValue)
+                .then((results) => {
+                    if (results.length > 0) {
+                        const firstResult = results[0];
+                        const bbox = firstResult.bbox;
+                        // Trigger zoom to place
+                        const payload = bbox.map(String);
+                        dispatch(
+                            triggerMapEvent({
+                                id: uuidv4(),
+                                name: MapEvents.ZOOM_INTO_PLACE,
+                                date: Date.now(),
+                                payload,
+                            })
+                        );
+                    }
+                })
+                .catch((error) => {
+                    console.error('Geocoding place error:', error);
+                });
+        } else {
+            // trigger geocoding for property search
+            geocodeProperty(newValue.name);
+        }
+    };
+
+    const getOptionLabel = (option: SearchPropertyResult | string) => {
+        if (typeof option === 'string') {
+            // If it's a string, return it as-is (the input value)
+            return option;
+        } else {
+            // If it's a SearchPropertyResult, return the label with fclass (if available)
+            return option.fclass ? `${option.name} (${option.fclass})` : option.name;
+        }
+    };
+    
+   
+    
+    
+      
+
     return (
         <Box>
             <Box className='searchBar'>
+                {/* Autocomplete for Property Search */}
                 <Autocomplete
-                    disablePortal={false}
-                    id="search-property-autocomplete"
-                    open={searchOpen}
-                    onOpen={() => setSearchOpen(searchInputValue.length > 1)}
-                    onClose={() => setSearchOpen(false)}
-                    options={searchResults}
-                    getOptionLabel={(option) => option.fclass ? `${option.name} (${option.fclass})` : option.name}
-                    renderInput={(params) =>
-                        <TextField
-                            variant="outlined"
-                            placeholder="Keyword"
-                            {...params}
-                            InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                id="search-property-autocomplete"
+                open={searchOpen}
+                onOpen={() => setSearchOpen(searchInputValue.length > 1)}
+                onClose={() => setSearchOpen(false)}
+                options={searchResults}
+                getOptionLabel={getOptionLabel}
+                renderInput={(params) => (
+                    <TextField
+                    variant="outlined"
+                    placeholder="Search Properties"
+                    {...params}
+                    InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                        <InputAdornment position="end">
+                            <SearchIcon />
+                        </InputAdornment>
+                        ),
+                    }}
+                    />
+                )}
+                onChange={handleAutocompleteChange}
+                onInputChange={(_, newInputValue) => {
+                    setSearchInputValue(newInputValue);
+                }}
+                filterOptions={(x) => x}
+                isOptionEqualToValue={(option, value) => {
+                    if (typeof option === 'string' || typeof value === 'string') {
+                        return option === value;
+                    } else {
+                        return option.id === value.id;
                     }
-                    onChange={(event, newValue) => {
-                        if (newValue && newValue.bbox && newValue.bbox.length === 4) {
-                            // trigger zoom to property
-                            let _bbox = newValue.bbox.map(String)
-                            dispatch(triggerMapEvent({
-                                'id': uuidv4(),
-                                'name': MapEvents.ZOOM_INTO_PROPERTY,
-                                'date': Date.now(),
-                                'payload': _bbox
-                            }))
-                            setSearchInputValue('')
-                        }
-                    }}
-                    onInputChange={(event, newInputValue) => {
-                        setSearchInputValue(newInputValue)
-                    }}
-                    filterOptions={(x) => x}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                }}
                 />
+                {/* End Autocomplete for Property Search */}
+
             </Box>
             <Box className='sidebarBox'>
                 {(userRole === "National data scientist" || userRole === "Regional data scientist") && <Box>
