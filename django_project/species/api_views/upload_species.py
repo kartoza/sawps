@@ -4,6 +4,7 @@ import logging
 import pandas as pd
 from datetime import datetime
 
+from django.utils.datastructures import MultiValueDictKeyError
 from frontend.models import UploadSpeciesCSV
 from property.models import Property
 from rest_framework.parsers import MultiPartParser
@@ -32,9 +33,10 @@ class SpeciesUploader(APIView):
         return
 
     def post(self, request, *args, **kwargs):
-        species_file = request.FILES['file']
+        try:
+            species_file = request.FILES['file']
 
-        if not species_file:
+        except MultiValueDictKeyError:
             return Response(
                 status=400,
                 data={

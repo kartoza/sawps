@@ -369,6 +369,18 @@ class TestUploadSpeciesApiView(TestCase):
         file_upload.upload_session = upload_session
         file_upload.start('utf-8-sig')
 
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('media' in response.data['error_file'])
+
         self.assertTrue('error' in upload_session.error_file.path)
         with open(upload_session.error_file.path, encoding='utf-8-sig') as csv_file:
             error_file = csv.DictReader(csv_file)
@@ -467,6 +479,21 @@ class TestUploadSpeciesApiView(TestCase):
         """Test upload task with upload session not existing."""
 
         self.assertEqual(upload_species_data(1), None)
+
+    def test_uploader_view_without_file(self):
+        """Test uploader file view with no file"""
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'File not found')
 
 
 

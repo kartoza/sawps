@@ -1,3 +1,12 @@
+# API Views
+
+::: django_project.species.api_views.upload_species
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
 # Admin
 
 ::: django_project.species.admin
@@ -51,6 +60,16 @@
 # Test Case
 
 ::: django_project.species.test_species_models
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+# Tasks
+
+::: django_project.species.tasks.upload_species
     handler: python
     options:
         docstring_style: sphinx
