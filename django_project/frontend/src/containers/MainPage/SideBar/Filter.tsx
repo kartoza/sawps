@@ -65,13 +65,13 @@ function Filter() {
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
-    const [selectedActivity, setSelectedActivity] = useState([]);
+    const [selectedActivity, setSelectedActivity] = useState<string>('');
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string>('');
     const [userRole, setUserRole] = useState<string>('');
     const [searchOpen, setSearchOpen] = useState(false)
-    const [searchInputValue, setSearchInputValue] = useState('')
+    const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
     const [organisationList, setOrganisationList] = useState([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
@@ -155,13 +155,8 @@ function Filter() {
         }
       };
     
+    const [activityList,setActivityList]= useState<string[]>(["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"])
     const [filterlList, setFilterList] = useState([
-        {
-            "id": 3,
-            "name": "Activity",
-            "isSelected": false,
-            "filterData": ["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"]
-        },
         {
             "id": 5,
             "name": "Biome type",
@@ -414,19 +409,12 @@ function Filter() {
         dispatch(selectedOrganisationId(selectedOrganisation.length > 0 ? selectedOrganisation.join(',') : ''));
     }, [selectedOrganisation])
 
-    const handleSelectedActivity = (id: string) => () => {
-        const activityExists = selectedActivity.includes(id);
-        if (activityExists) {
-            const updatedSelectedActivity = selectedActivity.filter((item) => item !== id);
-            setSelectedActivity(updatedSelectedActivity);
-        } else {
-            const updatedSelectedActivity = [...selectedActivity, id];
-            setSelectedActivity(updatedSelectedActivity);
-        }
+    const handleSelectedActivity =(value: string) => {
+        setSelectedActivity(value.replace(/ /g, '_'));
     };
 
     useEffect(() => {
-        dispatch(selectedActivityId(selectedActivity.length > 0 ? selectedActivity.join(',') : ''));
+        dispatch(selectedActivityId(selectedActivity));
     }, [selectedActivity])
 
     const handleStartYearChange = (value: string) => {
@@ -803,38 +791,18 @@ function Filter() {
                         <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
                     </Box>
                     <List className='ListItem' component="nav" aria-label="">
-                        {loading ? <Loading /> :
-                            <Accordion>
-                                <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                    {selectedActivity.length > 0 ? (
-                                        <Box>
-                                            {`${selectedActivity.length} ${selectedActivity.length > 1 ? 'Properties' : 'Property'} Selected`}
-
-                                        </Box>
-                                    ) : (
-                                        <Typography>Select</Typography>
-                                    )}
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Box className="selectBox">
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            {filterlList[0].filterData.map((activity: string, index) => (
-                                                <FormControlLabel
-                                                    key={index}
-                                                    control={
-                                                        <Checkbox
-                                                            checked={selectedActivity.includes(activity)}
-                                                            onChange={handleSelectedActivity(activity)}
-                                                        />
-                                                    }
-                                                    label={activity}
-                                                />
-                                            ))}
-                                        </Box>
-                                    </Box>
-                                </AccordionDetails>
-                            </Accordion>
-                        }
+                    {loading ? <Loading /> :
+                        (
+                            <Autocomplete
+                                id="combo-box-demo"
+                                disableClearable={true}
+                                options={activityList}
+                                sx={{ width: '100%' }}
+                                onChange={(event, value) => handleSelectedActivity(value)}
+                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                            />
+                        )
+                    }
                     </List>
                 </Box>
                 <Box className='sidebarBoxHeading'>
