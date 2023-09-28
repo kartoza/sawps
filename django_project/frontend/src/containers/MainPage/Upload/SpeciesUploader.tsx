@@ -188,9 +188,10 @@ export default function Uploader(props: UploaderInterface) {
             })
             }).then( response => {
                 if (response.ok) {
-                    wait(500).then(r =>
+                    wait(5000).then(r =>
                     axios.get(`${STATUS_URL}${session}/`).then((response)=>{
                     if (response.data) {
+                        console.log(response.data)
                         let status = response.data['status']
                         if (status === 'Finished'){
                             setIsError(false)
@@ -203,7 +204,7 @@ export default function Uploader(props: UploaderInterface) {
                         }
                         else{
                             setIsError(true)
-                            setAlertMessage('Please check the error in error file')
+                            setAlertMessage('Please check the error in error file.')
                             setErrorFile(response.data['error_file'])
                             setTotalFile(totalFile - 1)
                             setSavingSpeciesCSV(false)
