@@ -7,6 +7,8 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 from population_data.models import AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
+
+from sawps.tests.models.account_factory import GroupF
 from species.factories import (
     OwnedSpeciesFactory,
     TaxonFactory,
@@ -43,11 +45,9 @@ class OwnedSpeciesTestCase(TestCase):
             user=user,
             organisation=self.organisation_1
         )
-        self.role_organisation_manager = userRoleTypeFactory.create(
-            name='Organisation manager',
-        )
+        group = GroupF.create(name='Organisation manager')
+        user.groups.add(group)
         user.user_profile.current_organisation = self.organisation_1
-        user.user_profile.user_role_type_id = self.role_organisation_manager
         user.save()
 
         self.property = PropertyFactory.create(
@@ -327,7 +327,6 @@ class DataScientistTestCase(TestCase):
         self.client = Client()
         session = self.client.session
         session.save()
-
 
     def test_regional_data_consumer(self) -> None:
         """Test data table filter by regional data consumer"""
