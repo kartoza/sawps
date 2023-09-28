@@ -445,7 +445,7 @@ function Filter() {
                     </List>
                 </Box>
                 }
-                {tab === 'data' &&
+                {tab === 'reports' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
                             <img src="/static/images/Information.svg" alt='Info image' />
