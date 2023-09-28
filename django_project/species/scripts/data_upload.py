@@ -200,6 +200,7 @@ class SpeciesCSVUpload(object):
             )
 
         # Create success message
+        success_message = None
         if len(self.created_list) > 0 and len(self.existed_list) == 0:
             success_message = "{} uploaded successfully."
 
@@ -258,25 +259,23 @@ class SpeciesCSVUpload(object):
 
         self.finish(self.csv_dict_reader.fieldnames)
 
-    def get_property(self, row):
-        property = self.row_value(row, PROPERTY)
-        if property:
+    def get_property(self, property_name):
+        if property_name:
             try:
                 property = Property.objects.get(
-                    name=property,
+                        name=property_name,
                 )
             except Property.DoesNotExist:
                 return
 
             return property
 
-    def get_taxon(self, row):
-        scientific_name = self.row_value(row, SCIENTIFIC_NAME)
-        if scientific_name:
+    def get_taxon(self, common_name, scientific_name):
+        if common_name or scientific_name:
             try:
                 taxon = Taxon.objects.get(
                     scientific_name=scientific_name,
-                    common_name_varbatim=self.row_value(row, COMMON_NAME)
+                    common_name_varbatim=common_name
                 )
             except Taxon.DoesNotExist:
                 return None
@@ -349,7 +348,11 @@ class SpeciesCSVUpload(object):
         # check compulsory fields
         self.check_compulsory_fields(row)
 
-        property = self.get_property(row)
+        property_name = self.row_value(row, PROPERTY)
+        if not property_name:
+            return
+        property = self.get_property(property_name)
+
         if not property:
             self.error_file(
                 row=row,
@@ -360,7 +363,13 @@ class SpeciesCSVUpload(object):
             )
             return
 
-        taxon = self.get_taxon(row)
+        scientific_name = self.row_value(row, SCIENTIFIC_NAME)
+        common_name = self.row_value(row, COMMON_NAME)
+
+        if not scientific_name or not common_name:
+            return
+
+        taxon = self.get_taxon(common_name, scientific_name)
         if not taxon:
             self.error_file(
                 row=row,
@@ -374,17 +383,12 @@ class SpeciesCSVUpload(object):
 
         area_available_to_species = self.row_value(row, AREA)
         if not area_available_to_species:
-            self.error_file(
-                row=row,
-                message="The value of the compulsory field {} "
-                        "is empty.".format(AREA)
-            )
             return
 
         owned_species, cr = OwnedSpecies.objects.get_or_create(
-            taxon=self.get_taxon(row),
+            taxon=taxon,
             user=self.upload_session.uploader,
-            property=self.get_property(row),
+            property=property,
             area_available_to_species=area_available_to_species
         )
 
@@ -399,11 +403,6 @@ class SpeciesCSVUpload(object):
 
         open_close_system = self.open_close_system(row)
         if not open_close_system:
-            self.error_file(
-                row=row,
-                message="The value of the compulsory field {}"
-                        "is empty.".format(OPEN_SYS)
-            )
             return
 
         population_estimate = self.population_estimate_category(row)
@@ -418,38 +417,18 @@ class SpeciesCSVUpload(object):
 
         year = self.row_value(row, YEAR)
         if not year:
-            self.error_file(
-                row=row,
-                message="The value of the compulsory field:  {} "
-                        "is empty.".format(YEAR)
-            )
             return
 
         count_total = self.row_value(row, COUNT_TOTAL)
         if not count_total:
-            self.error_file(
-                row=row,
-                message="The value of the compulsory field:  {} "
-                        "is empty.".format(COUNT_TOTAL)
-            )
             return
 
         presence = self.row_value(row, PRESENCE)
         if not presence:
-            self.error_file(
-                row=row,
-                message="The value of the compulsory field:  {} "
-                        "is empty.".format(PRESENCE)
-            )
             return
 
         pop_certainty = self.row_value(row, POPULATION_ESTIMATE_CERTAINTY)
         if not pop_certainty:
-            self.error_file(
-                row=row,
-                message="The value of the compulsory field:  {} "
-                        "is empty.".format(POPULATION_ESTIMATE_CERTAINTY)
-            )
             return
 
         # Save AnnualPopulation
