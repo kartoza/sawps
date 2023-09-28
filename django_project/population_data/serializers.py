@@ -3,21 +3,12 @@
 from rest_framework import serializers
 
 from .models import (
-    CountMethod,
     OpenCloseSystem,
     PopulationEstimateCategory,
     PopulationStatus,
     SamplingEffortCoverage,
     Certainty
 )
-
-
-class CountMethodSerializer(serializers.ModelSerializer):
-    """Count Method Serializer"""
-
-    class Meta:
-        model = CountMethod
-        fields = '__all__'
 
 
 class OpenCloseSystemSerializer(serializers.ModelSerializer):
