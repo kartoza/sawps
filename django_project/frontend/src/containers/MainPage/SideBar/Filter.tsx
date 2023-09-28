@@ -31,7 +31,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import CloseIcon from '@mui/icons-material/Close';
 import Loading from '../../../components/Loading';
 import SpeciesLayer from '../../../models/SpeciesLayer';
-import { selectedOrganisationId, selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies } from '../../../reducers/SpeciesFilter';
+import { selectedOrganisationId, selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies, selectedActivityId } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import PropertyInterface from '../../../models/Property';
 import { MapEvents } from '../../../models/Map';
@@ -65,6 +65,7 @@ function Filter() {
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
+    const [selectedActivity, setSelectedActivity] = useState([]);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string>('');
@@ -159,7 +160,7 @@ function Filter() {
             "id": 3,
             "name": "Activity",
             "isSelected": false,
-            "filterData": ['Hunting', 'Poaching', 'Import', 'Export', 'Translocation', 'Contraseption']
+            "filterData": ["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"]
         },
         {
             "id": 5,
@@ -176,7 +177,7 @@ function Filter() {
             "id": 2,
             "name": "Protected Area",
             "isSelected": false,
-            "filterData": ['National Park', 'Heritage sight', 'Nature Reserve']
+            "filterData": ['Heritage sight', 'National Park', 'Nature Reserve']
         }
     ])
 
@@ -412,6 +413,21 @@ function Filter() {
     useEffect(() => {
         dispatch(selectedOrganisationId(selectedOrganisation.length > 0 ? selectedOrganisation.join(',') : ''));
     }, [selectedOrganisation])
+
+    const handleSelectedActivity = (id: string) => () => {
+        const activityExists = selectedActivity.includes(id);
+        if (activityExists) {
+            const updatedSelectedActivity = selectedActivity.filter((item) => item !== id);
+            setSelectedActivity(updatedSelectedActivity);
+        } else {
+            const updatedSelectedActivity = [...selectedActivity, id];
+            setSelectedActivity(updatedSelectedActivity);
+        }
+    };
+
+    useEffect(() => {
+        dispatch(selectedActivityId(selectedActivity.length > 0 ? selectedActivity.join(',') : ''));
+    }, [selectedActivity])
 
     const handleStartYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
@@ -781,6 +797,46 @@ function Filter() {
                         )
                     }
                 </List>
+                <Box>
+                    <Box className='sidebarBoxHeading'>
+                        <img src="/static/images/Activity.svg" alt='Property image' />
+                        <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
+                    </Box>
+                    <List className='ListItem' component="nav" aria-label="">
+                        {loading ? <Loading /> :
+                            <Accordion>
+                                <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                                    {selectedActivity.length > 0 ? (
+                                        <Box>
+                                            {`${selectedActivity.length} ${selectedActivity.length > 1 ? 'Properties' : 'Property'} Selected`}
+
+                                        </Box>
+                                    ) : (
+                                        <Typography>Select</Typography>
+                                    )}
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Box className="selectBox">
+                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                            {filterlList[0].filterData.map((activity: string, index) => (
+                                                <FormControlLabel
+                                                    key={index}
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedActivity.includes(activity)}
+                                                            onChange={handleSelectedActivity(activity)}
+                                                        />
+                                                    }
+                                                    label={activity}
+                                                />
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                </AccordionDetails>
+                            </Accordion>
+                        }
+                    </List>
+                </Box>
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/Clock.svg" alt='watch image' />
                     <Typography color='#75B37A' fontSize='medium'>Year</Typography>
@@ -798,11 +854,11 @@ function Filter() {
 
                 <Box className='formboxInput'>
                     <Box className='form-inputFild'>
-                        <TextField type="number" size='small' value={localStartYear} onChange={(e:any) => handleStartYearChange(e.target.value)} />
+                        <TextField type="number" size='small' value={localStartYear} onChange={(e: any) => handleStartYearChange(e.target.value)} />
                         <Typography className='formtext'>From</Typography>
                     </Box>
                     <Box className='form-inputFild right-flids'>
-                        <TextField type="number" size='small' value={localEndYear} onChange={(e:any) => handleEndYearChange(e.target.value)} />
+                        <TextField type="number" size='small' value={localEndYear} onChange={(e: any) => handleEndYearChange(e.target.value)} />
                         <Typography className='formtext'>To</Typography>
                     </Box>
                 </Box>
