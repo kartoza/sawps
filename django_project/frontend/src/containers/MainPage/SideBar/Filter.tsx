@@ -98,12 +98,6 @@ function Filter() {
             "name": "Protected Area",
             "isSelected": false,
             "filterData": ['National Park', 'Heritage sight', 'Nature Reserve']
-        },
-        {
-            "id": 1,
-            "name": "Population Category",
-            "isSelected": false,
-            "filterData": ['0-10', '11-20', '21-50', '50-100', '101-200', '>200']
         }
     ])
 
