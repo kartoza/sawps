@@ -65,7 +65,7 @@ export const SpeciesFilterSlice = createSlice({
     },
 
     selectedOrganisationId: (state, action: PayloadAction<string>) => {
-      state.propertyId = action.payload;
+      state.organisationId = action.payload;
     },
 
     setMonths: (state, action: PayloadAction<string[]>) => {
