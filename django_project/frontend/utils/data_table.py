@@ -88,6 +88,16 @@ def species_report(queryset: QuerySet, request) -> List:
         end_year = request.GET.get("end_year")
         filters["year__range"] = (start_year, end_year)
 
+    activity = request.GET.get("activity")
+    if activity:
+        activity = (
+            activity.replace("_", " ")
+            if activity != "Unplanned/illegal_hunt" else activity
+        )
+        filters[
+            "owned_species__annualpopulationperactivity__activity_type__name"
+        ] = activity
+
     for property in queryset:
         common_data = get_common_data(property, request)
 
@@ -127,12 +137,21 @@ def property_report(queryset: QuerySet, request) -> List:
         end_year = request.GET.get("end_year")
         filters["annualpopulation__year__range"] = (start_year, end_year)
 
+    activity = request.GET.get("activity")
+    if activity:
+        activity = (
+            activity.replace("_", " ")
+            if activity != "Unplanned/illegal_hunt" else activity
+        )
+        filters[
+            "annualpopulationperactivity__activity_type__name"
+        ] = activity
+
     for property in queryset:
         common_data = get_common_data(property, request)
 
         if not common_data:
             continue
-
         if filters:
             area_available_values = property.ownedspecies_set.filter(
                 **filters
@@ -177,6 +196,16 @@ def sampling_report(queryset: QuerySet, request) -> List:
         end_year = request.GET.get("end_year")
         filters["year__range"] = (start_year, end_year)
 
+    activity = request.GET.get("activity")
+    if activity:
+        activity = (
+            activity.replace("_", " ")
+            if activity != "Unplanned/illegal_hunt" else activity
+        )
+        filters[
+            "owned_species__annualpopulationperactivity__activity_type__name"
+        ] = activity
+
     for property in queryset:
         common_data = get_common_data(property, request)
 
@@ -215,10 +244,14 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         end_year = request.GET.get("end_year")
         filters["year__range"] = (start_year, end_year)
 
-    activity_types = [
-        "Planned_euthanasia", "Planned_hunt/cull", "Planned_translocation",
-        "Unplanned/natural_deaths", "Unplanned/illegal_hunt"
-    ]
+    activity = request.GET.get("activity")
+    if activity:
+        activity_types = [activity]
+    else:
+        activity_types = [
+            "Planned_euthanasia", "Planned_hunt/cull", "Planned_translocation",
+            "Unplanned/natural_deaths", "Unplanned/illegal_hunt"
+        ]
 
     activity_data_map = {
         "Unplanned/illegal_hunt": [],
@@ -336,6 +369,16 @@ def common_filters(request: HttpRequest, role: str) -> Dict:
     if property_param:
         property_list = property_param.split(",")
         filters["property__id__in"] = property_list
+
+    activity = request.GET.get("activity")
+    if activity:
+        activity = (
+            activity.replace("_", " ")
+            if activity != "Unplanned/illegal_hunt" else activity
+        )
+        filters[
+            "annualpopulationperactivity__activity_type__name"
+        ] = activity
 
     if role == "Regional data consumer":
         organisation_id = get_current_organisation_id(request.user)
