@@ -223,9 +223,9 @@ urlpatterns = [
     ),
     path('map/', MapView.as_view(), name='map'),
     path(
-        'report/',
+        'reports/',
         redirect_to_report,
-        name='report'
+        name='reports'
     ),
     path(
         'charts/',
