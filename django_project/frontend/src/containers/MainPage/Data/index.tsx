@@ -50,6 +50,7 @@ const DataList = () => {
     const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const color = {
+        "Species_report":"#F9A95D",
         "Property_report": '#9F89BF',
         "Sampling_report": "#FF5252",
         "Province_report": "#FF5252",
