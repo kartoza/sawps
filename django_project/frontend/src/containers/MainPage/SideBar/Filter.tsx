@@ -44,6 +44,7 @@ const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const SEARCH_PROPERTY_URL = '/api/property/search'
 const FETCH_ORGANISATION_LIST_URL = '/api/organisation/'
+const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
 interface SearchPropertyResult {
     name: string;
@@ -332,7 +333,7 @@ function Filter() {
         // LEVEL 3 DEBUG
         // console.log('selected properties', updatedSelectedProperty);
       
-        setSelectedPropertyLocal(updatedSelectedProperty);
+        setSelectedProperty(updatedSelectedProperty);
       
         if (updatedSelectedProperty.length === 0) {
             adjustMapToBoundingBox(boundingBox)
@@ -359,24 +360,12 @@ function Filter() {
     // Handle selecting all properties
     const handleSelectAllProperty = () => {
         if (selectedProperty.length === propertyList.length) {
-            setSelectedPropertyLocal([]);
+            setSelectedProperty([]);
             adjustMapToBoundingBox(boundingBox)
         } else {
             const propertyIds = propertyList.map((property) => property.id);
-            setSelectedPropertyLocal(propertyIds);
+            setSelectedProperty(propertyIds);
             zoomToCombinedBoundingBox(propertyIds);
-        }
-    };
-
-
-    const handleSelectedProperty = (id: number) => () => {
-        const propertyExists = selectedProperty.includes(id);
-        if (propertyExists) {
-            const updatedSelectedProperty = selectedProperty.filter((item) => item !== id);
-            setSelectedProperty(updatedSelectedProperty);
-        } else {
-            const updatedSelectedProperty = [...selectedProperty, id];
-            setSelectedProperty(updatedSelectedProperty);
         }
     };
 
@@ -473,13 +462,7 @@ function Filter() {
             setSearchResults([])
         }
     }, [searchInputValue])
-    const handleSelectAllProperty = () => {
-        const propeertyId = propertyList.map(property => property.id)
-        setSelectedProperty(propeertyId)
-        if (selectedProperty.length === propertyList.length) {
-            setSelectedProperty([]);
-        }
-    }
+    
 
     const handleSelectAllOrganisation = () => {
         const organisationId = organisationList.map(data => data.id)
