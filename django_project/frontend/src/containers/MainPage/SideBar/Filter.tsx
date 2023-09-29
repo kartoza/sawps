@@ -143,7 +143,7 @@ function Filter() {
     const informationList = [
         "Activity report",
         "Property report",
-        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling Report",
+        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling report",
         "Species report",
     ].filter(item => item !== "")
 
