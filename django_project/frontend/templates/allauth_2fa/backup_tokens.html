@@ -169,6 +169,8 @@
             {% else %}
               {% trans 'No tokens. Press the button below to generate some.' %}
             {% endif %}
+
+            <div class="mt-3 pt-3"></div>
     
             <form id="generateTokensForm" method="post">
               {% csrf_token %}
