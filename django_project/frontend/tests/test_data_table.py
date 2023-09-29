@@ -130,6 +130,25 @@ class OwnedSpeciesTestCase(TestCase):
     def test_data_table_activity_report(self) -> None:
         """Test data table activity report"""
         year = AnnualPopulationPerActivity.objects.first().year
+        value = self.owned_species[0].annualpopulationperactivity_set.first()
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "start_year": year,
+            "end_year":year,
+            "reports": "Activity_report",
+            "activity": value.activity_type.name
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        if response.data:
+            self.assertEqual(next(iter(response.data[0])), "Activity_report")
+        else:
+            self.assertEqual(response.data, [])
+
+    def test_activity_report_without_activity_filter(self) -> None:
+        """Test data table activity report without activity"""
+        year = AnnualPopulationPerActivity.objects.first().year
         url = self.url
         data = {
             "species": "SpeciesA",
@@ -147,12 +166,14 @@ class OwnedSpeciesTestCase(TestCase):
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
         year = self.owned_species[1].annualpopulation_set.first().year
+        value = self.owned_species[1].annualpopulationperactivity_set.first()
         url = self.url
         data = {
             "species": "SpeciesA",
             "start_year": year,
             "end_year":year,
             "reports": "Sampling_report",
+            "activity": value.activity_type.name
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

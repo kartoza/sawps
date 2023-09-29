@@ -152,14 +152,14 @@ def property_report(queryset: QuerySet, request) -> List:
 
         if not common_data:
             continue
-        if filters:
-            area_available_values = property.ownedspecies_set.filter(
-                **filters
-            ).values("area_available_to_species")
-        else:
-            area_available_values = property.ownedspecies_set.all().values(
-                "area_available_to_species"
-            )
+        # if filters:
+        area_available_values = property.ownedspecies_set.filter(
+            **filters
+        ).values("area_available_to_species")
+        # else:
+        #     area_available_values = property.ownedspecies_set.all().values(
+        #         "area_available_to_species"
+        #     )
 
         property_reports.extend([
             {
@@ -270,6 +270,7 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
     activity_reports = {
         activity: [] for activity in activity_types
     }
+
     for property in queryset:
         common_data = get_common_data(property, request)
 
