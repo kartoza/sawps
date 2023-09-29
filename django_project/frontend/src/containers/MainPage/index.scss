@@ -30,7 +30,7 @@ body {
     }
 }
 
-.grayBg{
+.grayBg {
     background: #f5f3f3;
     margin-left: 5px;
     .Content{
@@ -47,5 +47,32 @@ body {
     .dataTable {
         width: calc(100vw - 425px);
         overflow: auto;
+        .MuiDataGrid-columnHeaderTitle{
+            text-overflow: inherit;
+            white-space: break-spaces;
+            line-height: 17px;
+        }
+        .MuiDataGrid-columnHeader{
+            &:nth-child(9){
+                max-width: 205px !important;
+                width: 205px !important;
+            }
+            &:nth-child(10){
+                max-width: 95px !important;
+                width: 95px !important;
+            }
+        }
+        .MuiDataGrid-row{
+            .MuiDataGrid-cell{
+                &:nth-child(9){
+                    max-width: 205px !important;
+                    width: 205px !important;
+                }
+                &:nth-child(10){
+                    max-width: 95px !important;
+                    width: 95px !important;
+                }
+            }
+        }
     }
 }
