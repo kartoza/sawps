@@ -75,6 +75,45 @@ function Filter() {
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
+    const [nominatimResults, setNominatimResults] = useState([]);
+    
+    const handleInputChange = (value: string) => {
+        setSearchInputValue(value);
+    
+        // Update searchResults with the results from existing search
+        searchProperty({ input: value }, (results) => {
+          if (results) {
+            setSearchResults(results.data as SearchPropertyResult[]);
+          } else {
+            setSearchResults([]);
+          }
+        });
+        
+        // Perform Nominatim-based search and update nominatimResults
+        performNominatimSearch(value);
+    };
+    
+    const performNominatimSearch = async (value: string) => {
+        try {
+            setNominatimResults([]);
+            const encodedValue = encodeURIComponent(value);
+            const response = await axios.get(
+              `https://nominatim.openstreetmap.org/search?format=json&q=${encodedValue}&countrycodes=AFR`
+            );            
+            const updatedNominatimResults = response.data
+            .filter((result: { display_name: string | string[]; }) => result.display_name.includes("South Africa"))
+            .map((result: { place_id: any; }, index: any) => ({
+                ...result,
+                key: `nominatim_${result.place_id}`,
+            }));
+
+            setNominatimResults(updatedNominatimResults);
+
+        } catch (error) {
+          console.error('Error fetching Nominatim address suggestions:', error);
+        }
+      };
+    
     const [filterlList, setFilterList] = useState([
         {
             "id": 3,
@@ -343,45 +382,84 @@ function Filter() {
 
     return (
         <Box>
-            <Box className='searchBar'>
+            <Box className='searchBar' style={{ marginBottom: '10%' }}>
+                <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center' ,marginBottom: '5%'}}>
+                    <SearchIcon
+                        style={{
+                            color: '#70B276',
+                            marginLeft: '15px',
+                        }}
+                    />
+                    <Typography color='#75B37A' fontSize='medium' style={{ marginLeft: '8px' }}>Search address</Typography>
+                </Box>
                 <Autocomplete
                     disablePortal={false}
                     id="search-property-autocomplete"
                     open={searchOpen}
                     onOpen={() => setSearchOpen(searchInputValue.length > 1)}
                     onClose={() => setSearchOpen(false)}
-                    options={searchResults}
-                    getOptionLabel={(option) => option.fclass ? `${option.name} (${option.fclass})` : option.name}
-                    renderInput={(params) =>
+                    options={[
+                        ...searchResults.map((result) => ({
+                          ...result,
+                          key: `searchResult_${result.id}`,
+                        })),
+                        ...nominatimResults.map((result) => ({
+                          ...result,
+                          key: `nominatim_${result.place_id}`,
+                          display_name: result.display_name,
+                        })),
+                      ]}
+                    getOptionLabel={(option) => {
+                        if (option.fclass) {
+                        return `${option.name} (${option.fclass})`;
+                        } else if (option.display_name) {
+                        return option.display_name;
+                        }
+                        return ''; // Return an empty string if neither fclass nor display_name exists
+                    }}
+                    renderInput={(params) => (
                         <TextField
-                            variant="outlined"
-                            placeholder="Keyword"
-                            {...params}
-                            InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
+                        variant="outlined"
+                        placeholder="Search address"
+                        {...params}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                            <InputAdornment position="end">
+                                <SearchIcon />
+                            </InputAdornment>
+                            ),
+                        }}
                         />
-                    }
+                    )}
                     onChange={(event, newValue) => {
                         if (newValue && newValue.bbox && newValue.bbox.length === 4) {
-                            // trigger zoom to property
-                            let _bbox = newValue.bbox.map(String)
+                        // trigger zoom to property
+                        let _bbox = newValue.bbox.map(String);
+                        dispatch(triggerMapEvent({
+                            'id': uuidv4(),
+                            'name': MapEvents.ZOOM_INTO_PROPERTY,
+                            'date': Date.now(),
+                            'payload': _bbox
+                        }));
+                        setSearchInputValue('');
+                        }
+                        else if (newValue && newValue.boundingbox && newValue.boundingbox.length === 4) {
+                            console.log('bounidngbox')
+                            let _bbox = newValue.boundingbox.map(String);
                             dispatch(triggerMapEvent({
                                 'id': uuidv4(),
                                 'name': MapEvents.ZOOM_INTO_PROPERTY,
                                 'date': Date.now(),
                                 'payload': _bbox
-                            }))
-                            setSearchInputValue('')
+                            }));
+                            setSearchInputValue('');
                         }
                     }}
+
                     onInputChange={(event, newInputValue) => {
-                        setSearchInputValue(newInputValue)
+                        setSearchInputValue(newInputValue);
+                        handleInputChange(newInputValue);
                     }}
                     filterOptions={(x) => x}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
