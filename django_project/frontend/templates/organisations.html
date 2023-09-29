@@ -303,6 +303,20 @@
   
 <script>
 
+  // Function to close the "Add User" modal
+  function closeAddUserModal() {
+    $('#adduser').modal('hide');
+  }
+
+  // event listeners to success and error modals
+  $('#successMessageModal').on('hidden.bs.modal', function (e) {
+    closeAddUserModal(); // Close the "Add User" modal when success modal is hidden
+  });
+
+  $('#errorMessageModal').on('hidden.bs.modal', function (e) {
+    closeAddUserModal(); // Close the "Add User" modal when error modal is hidden
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
       // Get user_role from local storage and convert to lowercase
       const userRole = (localStorage.getItem("user_role") || "").toLowerCase();
