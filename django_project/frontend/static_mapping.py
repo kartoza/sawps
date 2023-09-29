@@ -21,5 +21,6 @@ DATA_CONSUMERS = [
 
 DATA_SCIENTISTS = [
     "National data scientist",
-    "Regional data scientist"
+    "Regional data scientist",
+    "Super user"
 ]
