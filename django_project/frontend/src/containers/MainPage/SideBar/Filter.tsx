@@ -76,6 +76,30 @@ function Filter() {
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
     const [nominatimResults, setNominatimResults] = useState([]);
+    const [filteredProperties, setFilteredProperties] = useState([])
+
+    // Function to filter properties based on selected organizations
+    const filterPropertiesByOrganisations = () => {
+        // If no organizations are selected, return all properties
+        if (selectedOrganisation.length === 0) {
+            setFilteredProperties([]);
+            adjustMapToBoundingBox(boundingBox)
+            setSelectedProperty([])
+            return;
+        }
+
+        // Filter properties that match selected organizations
+        const filtered = propertyList.filter((property) =>
+        selectedOrganisation.includes(property.organisation_id)
+        );
+
+        setFilteredProperties(filtered);
+    };
+    
+      useEffect(() => {
+        // Call the filtering function whenever selectedOrganisation changes
+        filterPropertiesByOrganisations();
+      }, [selectedOrganisation]);
     
     const handleInputChange = (value: string) => {
         setSearchInputValue(value);
@@ -546,55 +570,58 @@ function Filter() {
                 {userRole != "National data consumer" &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/Property.svg" alt='Property image' />
-                            <Typography color='#75B37A' fontSize='medium'>Property</Typography>
-                        </Box>
-                        <List className='ListItem' component="nav" aria-label="">
-                            {loading ? <Loading /> :
+                                <img src="/static/images/Property.svg" alt='Property image' />
+                                <Typography color='#75B37A' fontSize='medium'>Property</Typography>
+                            </Box>
+                            <List className='ListItem' component="nav" aria-label="">
+                                {loading ? (
+                                <Loading />
+                                ) : (
                                 <Accordion>
                                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                        {selectedProperty.length > 0 ? (
-                                            <Box>
-                                                {`${selectedProperty.length} ${selectedProperty.length > 1 ? 'Properties' : 'Property'} Selected`}
-
-                                            </Box>
-                                        ) : (
-                                            <Typography>Select</Typography>
-                                        )}
+                                    {selectedProperty.length > 0 ? (
+                                        <Box>
+                                        {`${selectedProperty.length} ${
+                                            selectedProperty.length > 1 ? 'Properties' : 'Property'
+                                        } Selected`}
+                                        </Box>
+                                    ) : (
+                                        <Typography>Select</Typography>
+                                    )}
                                     </AccordionSummary>
                                     <AccordionDetails>
-                                        <Box className="selectBox">
-                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Checkbox
-                                                            checked={selectedProperty.length === propertyList.length}
-                                                            onChange={handleSelectAllProperty}
-                                                        />
-                                                    }
-                                                    label="Select All"
-                                                />
-                                            </Box>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                {propertyList.map((property: any) => (
-                                                    <FormControlLabel
-                                                        key={property.name}
-                                                        control={
-                                                            <Checkbox
-                                                                checked={selectedProperty.includes(property.id)}
-                                                                onChange={handleSelectedProperty(property.id)}
-                                                            />
-                                                        }
-                                                        label={property.name}
-                                                    />
-                                                ))}
-                                            </Box>
+                                    <Box className="selectBox">
+                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                        <FormControlLabel
+                                            control={
+                                            <Checkbox
+                                                checked={selectedProperty.length === filteredProperties.length}
+                                                onChange={handleSelectAllProperty}
+                                            />
+                                            }
+                                            label="Select All"
+                                        />
                                         </Box>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                        {filteredProperties.map((property: any) => (
+                                            <FormControlLabel
+                                            key={property.name}
+                                            control={
+                                                <Checkbox
+                                                checked={selectedProperty.includes(property.id)}
+                                                onChange={handleSelectedProperty(property.id)}
+                                                />
+                                            }
+                                            label={property.name}
+                                            />
+                                        ))}
+                                        </Box>
+                                    </Box>
                                     </AccordionDetails>
                                 </Accordion>
-                            }
-                        </List>
-                    </Box>
+                                )}
+                            </List>
+                        </Box>
                 }
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/species/Elephant.svg" alt='species image' />
