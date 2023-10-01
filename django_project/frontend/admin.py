@@ -18,6 +18,7 @@ from frontend.models import (
     DraftSpeciesUpload,
     StatisticalModel,
     StatisticalModelOutput,
+    Layer
 )
 from frontend.models.spatial import SpatialDataModel, SpatialDataValueModel
 from frontend.tasks import (
@@ -229,6 +230,28 @@ class StatisticalModelAdmin(admin.ModelAdmin):
         return super().response_change(request, obj)
 
 
+class LayerAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'context_layer', 'spatial_filter_field'
+    )
+
+
+class SpatialDataValueModelAdmin(admin.StackedInline):
+    list_display = (
+        'spatial_data', 'layer', 'context_layer_value'
+    )
+    model = SpatialDataValueModel
+
+
+class SpatialDataModelAdmin(admin.ModelAdmin):
+    list_display = (
+        'property', 'context_layer'
+    )
+    inlines = (
+        SpatialDataValueModelAdmin,
+    )
+
+
 admin.site.register(ContextLayer, ContextLayerAdmin)
 admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
@@ -236,5 +259,5 @@ admin.site.register(BoundaryFile, BoundaryFileAdmin)
 admin.site.register(BoundarySearchRequest, BoundarySearchRequestAdmin)
 admin.site.register(DraftSpeciesUpload, DraftSpeciesUploadAdmin)
 admin.site.register(StatisticalModel, StatisticalModelAdmin)
-admin.site.register(SpatialDataModel)
-admin.site.register(SpatialDataValueModel)
+admin.site.register(SpatialDataModel, SpatialDataModelAdmin)
+admin.site.register(Layer, LayerAdmin)

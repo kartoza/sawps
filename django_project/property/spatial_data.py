@@ -1,9 +1,11 @@
 from typing import Dict, List, Tuple, AnyStr
 
 from django.db import connection
+from django.db.utils import InternalError
 
+from frontend.models.spatial import SpatialDataModel, SpatialDataValueModel
 from property.models import Property
-from frontend.models import ContextLayer
+from frontend.models import ContextLayer, Layer
 
 TABLE_SCHEMA = 'layer'
 NO_VALUE = '-'
@@ -111,7 +113,11 @@ def extract_spatial_data_from_property_and_layer(
 
     spatial_data = {}
 
-    for layer_name in context_layer.layer_names:
+    for layer in (
+            context_layer.layer_set.filter(
+                spatial_filter_field__isnull=False
+            ).exclude(spatial_filter_field='')):
+        layer_name = layer.name
         columns, srid = columns_and_srid(layer_name)
 
         if not srid:  # Table with geometry not found, continue
@@ -129,16 +135,64 @@ def extract_spatial_data_from_property_and_layer(
             WHERE p.id = %s;
         """
 
-        with connection.cursor() as cursor:
-            cursor.execute(query, [target_property.id])
-            rows = cursor.fetchall()
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(query, [target_property.id])
+                rows = cursor.fetchall()
 
-            spatial_data_values = []
+                spatial_data_values = []
 
             for row in rows:
                 row_dict = dict(zip(column_names, row))
                 spatial_data_values.append(row_dict)
 
-            spatial_data[layer_name] = spatial_data_values
+                spatial_data[layer_name] = spatial_data_values
+        except InternalError as e:
+            print(e)
 
     return spatial_data
+
+
+def save_spatial_values_from_property_layers(target_property: Property):
+    """
+    Extract spatial data from the given property for all context layers
+    and save the extracted values to SpatialDataModel.
+
+    :param target_property: The property object to be extracted
+    :type target_property: Property
+    """
+    context_layers = ContextLayer.objects.filter(
+        layer__spatial_filter_field__isnull=False
+    ).distinct()
+
+    layers = {layer.name: layer for layer in Layer.objects.all()}
+
+    for context_layer in context_layers:
+        spatial_data_by_layers = extract_spatial_data_from_property_and_layer(
+            target_property,
+            context_layer
+        )
+        if not spatial_data_by_layers:
+            continue
+
+        spatial_data_obj, _ = SpatialDataModel.objects.get_or_create(
+            property=target_property,
+            context_layer=context_layer
+        )
+
+        for layer_name, spatial_layer_data in spatial_data_by_layers.items():
+            layer = layers.get(layer_name)
+            if layer is None:
+                continue
+
+            for spatial_layer_value in spatial_layer_data:
+                filter_field = layer.spatial_filter_field
+                if filter_field not in spatial_layer_value:
+                    continue
+                SpatialDataValueModel.objects.update_or_create(
+                    layer=layer,
+                    spatial_data=spatial_data_obj,
+                    context_layer_value=(
+                        spatial_layer_value[filter_field]
+                    )
+                )
