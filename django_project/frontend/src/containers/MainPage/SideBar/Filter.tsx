@@ -80,7 +80,7 @@ function Filter() {
 
     // Function to filter properties based on selected organizations
     const filterPropertiesByOrganisations = () => {
-        // If no organizations are selected, return all properties
+        // If no organizations are selected
         if (selectedOrganisation.length === 0) {
             setFilteredProperties([]);
             adjustMapToBoundingBox(boundingBox)
