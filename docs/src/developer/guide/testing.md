@@ -1,4 +1,5 @@
 # Testing
+
 It is the act of examining software behaviour.
 
 ## Setting up a testing environment
@@ -12,16 +13,21 @@ In this project setup, we perform end-to-end testing.
 The primary framework used is [playwright](https://playwright.dev/).
 
 ### Setting up playwright
+
 To install `playwright` ensure you have [Node.js](https://nodejs.org/en) installed.
 
 Once `Node.js` is installed, use `npm` JavaScript package manager to install `playwright`.
+
 ```bash
 $ npm init playwright@latest
 ```
+
 **Note:**
+
 - By default it uses TypeScript(`*.ts`).
 
 This command will install all the required browsers and other dependencies. The [directory stucture](https://playwright.dev/docs/intro#whats-installed) will be as follows:
+
 ```bash
 playwright.config.ts
 package.json
@@ -33,23 +39,29 @@ tests-examples/
 ```
 
 ### Running tests
+
 By default, tests will run on three browsers in headless mode.
+
 ```bash
 $ npx playwright test
 ```
 
 To run it in UI mode, one can add `--ui` tag at the end.
+
 ```bash
 $ npx playwright test --ui
 ```
 
 ### Test reports
+
 To generate test reports:
+
 ```bash
 $ npx playwright show-report
 ```
 
 ### CI Github actions
+
 Use of [continuous integration and playwright](https://playwright.dev/docs/ci-intro).
 
 The CI  for this project is present in the directory `.github/workflows` in the `build-and-test.yml` file.
