@@ -404,6 +404,37 @@ function Filter() {
         setSearchSpeciesList(sList)
     }, [SpeciesFilterList])
 
+    useEffect(() => {
+        const storedUserRole = localStorage.getItem('user_role');
+        setUserRole(storedUserRole);
+      
+
+        if (
+          storedUserRole && (
+          storedUserRole.toLowerCase() === 'national data consumer' ||
+          storedUserRole.toLowerCase() === 'organisation member' ||
+          storedUserRole.toLowerCase() === 'floating user' ||
+          storedUserRole.toLowerCase() === 'unnamed user' )
+        ) {
+          const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
+
+          filterPropertiesByOrganisation(currentOrganisation);
+        }
+      }, []);
+
+    // Function to filter properties based on the current organization
+    const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
+        if (currentOrganisation) {
+            const filtered = propertyList.filter((property) =>
+                property.organisation_id === currentOrganisation
+            );
+        
+            setFilteredProperties(filtered);
+        } else {
+            setFilteredProperties([]);
+        }
+    };
+
     return (
         <Box>
             <Box className='searchBar' style={{ marginBottom: '10%' }}>
