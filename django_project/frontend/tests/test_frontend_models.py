@@ -6,7 +6,7 @@ from frontend.models import (
     FarmPortion,
     Holding,
     ParentFarm,
-    UploadSpeciesCSV,
+    UploadSpeciesCSV, Layer,
 )
 from frontend.tests.model_factories import (
     ContextLayerF,
@@ -14,7 +14,7 @@ from frontend.tests.model_factories import (
     FarmPortionF,
     HoldingF,
     ParentFarmF,
-    UploadSpeciesCSVF,
+    UploadSpeciesCSVF, LayerF, ContextLayerLegendF,
 )
 from property.factories import PropertyFactory
 
@@ -22,13 +22,41 @@ from property.factories import PropertyFactory
 class TestContextLayerModels(TestCase):
 
     def setUp(self) -> None:
-        self.layer = ContextLayerF.create()
+        self.layer = ContextLayerF.create(
+            name='context_layer_1'
+        )
 
     def test_create_context_layer(self):
         self.assertTrue(
             isinstance(self.layer, ContextLayer)
         )
+        self.assertTrue(
+            str(self.layer),
+            'context_layer_1'
+        )
         self.assertEqual(ContextLayer.objects.count(), 1)
+
+    def test_create_context_layer_legend(self):
+        legend = ContextLayerLegendF.create(
+            name='context-layer-legend-1',
+            layer=self.layer
+        )
+        self.assertTrue(
+            str(legend),
+            'context-layer-legend-1'
+        )
+
+    def test_create_layer(self):
+        layer = LayerF.create(
+            context_layer=self.layer,
+            name='layer-1'
+        )
+        self.assertTrue(
+            str(layer),
+            'layer-1'
+        )
+        self.assertGreaterEqual(
+            Layer.objects.filter(name='layer-1').count(), 1)
 
     def test_update_context_layer(self):
         self.layer.name = 'Updated Layer'

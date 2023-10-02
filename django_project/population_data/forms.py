@@ -3,7 +3,9 @@ from population_data.models import AnnualPopulation
 
 
 class AnnualPopulationForm(ModelForm):
+
     class Meta:
+
         model = AnnualPopulation
         fields = (
             "year",
@@ -19,9 +21,6 @@ class AnnualPopulationForm(ModelForm):
             "juvenile_male",
             "juvenile_female",
             "survey_method",
-            "count_method",
-            "sampling_size_unit",
-            "certainty",
             "open_close_system",
             "presence",
             "population_status",

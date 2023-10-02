@@ -128,7 +128,7 @@ const Metrics = () => {
     return (
         <Box>
             <Box className="overflow-auto-chart">
-                <Grid className="main-chart" container spacing={3} style={{ padding: 20 }} ref={contentRef}>
+                <Grid className="main-chart" style={{ padding: 20 }} ref={contentRef}>
                     <Grid item xs={12} md={12} lg={6}>
                         <SpeciesLineChart selectedSpecies={selectedSpecies} propertyId={propertyId} startYear={startYear} endYear={endYear} loading={loading} setLoading={setLoading} speciesData={speciesData} setSpeciesData={setSpeciesData} />
                         <DensityBarChart selectedSpecies={selectedSpecies} propertyId={propertyId} startYear={startYear} endYear={endYear} loading={loading} setLoading={setLoading} densityData={densityData} setDensityData={setDensityData} />

@@ -66,7 +66,7 @@ from .views.help import HelpView
 from .views.home import HomeView
 from .views.map import (
     MapView,
-    redirect_to_report,
+    redirect_to_reports,
     redirect_to_charts,
     redirect_to_upload,
     redirect_to_explore
@@ -223,9 +223,9 @@ urlpatterns = [
     ),
     path('map/', MapView.as_view(), name='map'),
     path(
-        'report/',
-        redirect_to_report,
-        name='report'
+        'reports/',
+        redirect_to_reports,
+        name='reports'
     ),
     path(
         'charts/',
