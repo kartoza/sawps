@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
-from frontend.static_mapping import NATIONAL_DATA_SCIENTIST, REGIONAL_DATA_SCIENTIST
+from frontend.static_mapping import NATIONAL_DATA_SCIENTIST, REGIONAL_DATA_SCIENTIST, REGIONAL_DATA_CONSUMER
 from population_data.models import AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
@@ -248,6 +248,10 @@ class RegionalUserTestCase(TestCase):
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="Regional data consumer",
         )
+
+        group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
+        user.groups.add(group)
+
         user.user_profile.current_organisation = self.organisation_1
         user.user_profile.user_role_type_id = self.role_organisation_manager
         user.save()

@@ -10,7 +10,7 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
-from property.models import Province
+from property.models import Province, Property
 from species.models import OwnedSpecies
 
 
@@ -48,11 +48,11 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
     return reports
 
 
-def get_common_data(property: QuerySet, request) -> Dict:
+def get_common_data(property: Property, request) -> Dict:
     """
     Retrieve common data for a property based on species selection.
     Params:
-        property (QuerySet): The property for which common data is retrieved.
+        property (Property): The property for which common data is retrieved.
         request: The HTTP request object.
     """
     species_list = request.GET.get("species")
