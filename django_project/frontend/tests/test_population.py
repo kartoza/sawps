@@ -40,7 +40,6 @@ def mocked_clear_cache(self, *args, **kwargs):
 class TestPopulationAPIViews(TestCase):
     fixtures = [
         'open_close_systems.json',
-        'count_method.json',
         'survey_methods.json',
         'sampling_size_units.json',
         'activity_type.json'

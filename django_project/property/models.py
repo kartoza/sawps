@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class PropertyType(models.Model):
@@ -42,9 +44,8 @@ class Property(models.Model):
 
     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField()
-    open = models.BooleanField(
-        null=True,
-        blank=True
+    open = models.ForeignKey(
+        "population_data.OpenCloseSystem", on_delete=models.CASCADE, null=True
     )
 
     class Meta:
@@ -54,6 +55,16 @@ class Property(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@receiver(post_save, sender=Property)
+def property_post_save(sender, instance: Property,
+                       created, *args, **kwargs):
+    from property.tasks.generate_spatial_filter import (
+        generate_spatial_filter_task
+    )
+    if created:
+        generate_spatial_filter_task.delay(instance.id)
 
 
 class ParcelType(models.Model):

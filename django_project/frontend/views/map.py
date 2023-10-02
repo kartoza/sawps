@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-def redirect_to_report(request):
+def redirect_to_reports(request):
     tab_number = 1
     redirect_url = f"{reverse('map')}?tab={tab_number}"
     return HttpResponseRedirect(redirect_url)

@@ -21,7 +21,7 @@ class RedirectViewTests(TestCase):
         self.client = Client()
 
     def test_redirect_to_report(self):
-        response = self.client.get(reverse('report'))
+        response = self.client.get(reverse('reports'))
         self.assertIsInstance(response, HttpResponseRedirect)
         self.assertEqual(response['location'], f"{reverse('map')}?tab=1")
 

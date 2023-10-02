@@ -14,6 +14,7 @@ import {
     InputBase,
 } from '@mui/material';
 import List from '@mui/material/List';
+import MenuItem from '@mui/material/MenuItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -35,6 +36,7 @@ import './index.scss';
 import PropertyInterface from '../../../models/Property';
 import { MapEvents } from '../../../models/Map';
 import { triggerMapEvent } from '../../../reducers/MapState';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
@@ -50,6 +52,7 @@ interface SearchPropertyResult {
     type: string;
     fclass?: string;
 }
+
 
 function Filter() {
     const dispatch = useAppDispatch()
@@ -71,10 +74,46 @@ function Filter() {
     const [organisationList, setOrganisationList] = useState([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
-    const [expandSpecies, setExapandSpecies] = useState<boolean>(false);
-    const [expandReport, setExpandReport] = useState<boolean>(false);
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
-    const [searchSpecies, setSearchedSpecies] = useState('')
+    const [nominatimResults, setNominatimResults] = useState([]);
+    
+    const handleInputChange = (value: string) => {
+        setSearchInputValue(value);
+    
+        // Update searchResults with the results from existing search
+        searchProperty({ input: value }, (results) => {
+          if (results) {
+            setSearchResults(results.data as SearchPropertyResult[]);
+          } else {
+            setSearchResults([]);
+          }
+        });
+        
+        // Perform Nominatim-based search and update nominatimResults
+        performNominatimSearch(value);
+    };
+    
+    const performNominatimSearch = async (value: string) => {
+        try {
+            setNominatimResults([]);
+            const encodedValue = encodeURIComponent(value);
+            const response = await axios.get(
+              `https://nominatim.openstreetmap.org/search?format=json&q=${encodedValue}&countrycodes=AFR`
+            );            
+            const updatedNominatimResults = response.data
+            .filter((result: { display_name: string | string[]; }) => result.display_name.includes("South Africa"))
+            .map((result: { place_id: any; }, index: any) => ({
+                ...result,
+                key: `nominatim_${result.place_id}`,
+            }));
+
+            setNominatimResults(updatedNominatimResults);
+
+        } catch (error) {
+          console.error('Error fetching Nominatim address suggestions:', error);
+        }
+      };
+    
     const [filterlList, setFilterList] = useState([
         {
             "id": 3,
@@ -98,19 +137,13 @@ function Filter() {
             "name": "Protected Area",
             "isSelected": false,
             "filterData": ['National Park', 'Heritage sight', 'Nature Reserve']
-        },
-        {
-            "id": 1,
-            "name": "Population Category",
-            "isSelected": false,
-            "filterData": ['0-10', '11-20', '21-50', '50-100', '101-200', '>200']
         }
     ])
 
     const informationList = [
         "Activity report",
         "Property report",
-        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling Report",
+        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling report",
         "Species report",
     ].filter(item => item !== "")
 
@@ -142,6 +175,7 @@ function Filter() {
         });
         setFilterList(_updatedData)
     }
+
 
     const handleChange = (event: any, newValue: number | number[]) => {
         if (Array.isArray(newValue)) {
@@ -200,27 +234,20 @@ function Filter() {
         fetchOrganisationList();
     }, [])
 
-    const handleSelectedSpecies = (value: string) => () => {
+    const handleSelectedSpecies = (value: string) => {
         setSelectedSpecies(value);
-        setSearchedSpecies("")
     };
 
     useEffect(() => {
         dispatch(toggleSpecies(selectedSpecies));
-        if (selectedSpecies.length > 0) {
-            setExapandSpecies(false)
-        }
     }, [selectedSpecies])
 
-    const handleSelectedInfo = (value: string) => () => {
-        setSelectedInfo(value);
+    const handleSelectedInfo = (e: SelectChangeEvent) => {
+        setSelectedInfo(e.target.value);
     };
 
     useEffect(() => {
         dispatch(setSelectedInfoList(selectedInfo));
-        if (selectedInfo.length > 0) {
-            setExpandReport(false)
-        }
     }, [selectedInfo])
 
 
@@ -328,14 +355,6 @@ function Filter() {
             setSearchResults([])
         }
     }, [searchInputValue])
-
-    const handleExpandSpecies = () => {
-        setExapandSpecies(!expandSpecies)
-    }
-
-    const handleExpandReport = () => {
-        setExpandReport(!expandReport)
-    }
     const handleSelectAllProperty = () => {
         const propeertyId = propertyList.map(property => property.id)
         setSelectedProperty(propeertyId)
@@ -352,59 +371,102 @@ function Filter() {
         }
     }
 
-    const handleSpeciesSearch = (value: any) => {
-        setSearchedSpecies(value)
-        const searchedSpecies = SpeciesFilterList.filter((item) => item.scientific_name.toLowerCase().includes(value.toLowerCase()))
-        setSearchSpeciesList(searchedSpecies)
-    }
+
+    useEffect(() => {
+        const sList: any = []
+        SpeciesFilterList.map((item: any) => {
+            sList.push(item.scientific_name)
+        })
+        setSearchSpeciesList(sList)
+    }, [SpeciesFilterList])
+
     return (
         <Box>
-            <Box className='searchBar'>
+            <Box className='searchBar' style={{ marginBottom: '10%' }}>
+                <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center' ,marginBottom: '5%'}}>
+                    <SearchIcon
+                        style={{
+                            color: '#70B276',
+                            marginLeft: '15px',
+                        }}
+                    />
+                    <Typography color='#75B37A' fontSize='medium' style={{ marginLeft: '8px' }}>Search address</Typography>
+                </Box>
                 <Autocomplete
                     disablePortal={false}
                     id="search-property-autocomplete"
                     open={searchOpen}
                     onOpen={() => setSearchOpen(searchInputValue.length > 1)}
                     onClose={() => setSearchOpen(false)}
-                    options={searchResults}
-                    getOptionLabel={(option) => option.fclass ? `${option.name} (${option.fclass})` : option.name}
-                    renderInput={(params) =>
+                    options={[
+                        ...searchResults.map((result) => ({
+                          ...result,
+                          key: `searchResult_${result.id}`,
+                        })),
+                        ...nominatimResults.map((result) => ({
+                          ...result,
+                          key: `nominatim_${result.place_id}`,
+                          display_name: result.display_name,
+                        })),
+                      ]}
+                    getOptionLabel={(option) => {
+                        if (option.fclass) {
+                        return `${option.name} (${option.fclass})`;
+                        } else if (option.display_name) {
+                        return option.display_name;
+                        }
+                        return ''; // Return an empty string if neither fclass nor display_name exists
+                    }}
+                    renderInput={(params) => (
                         <TextField
-                            variant="outlined"
-                            placeholder="Keyword"
-                            {...params}
-                            InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
+                        variant="outlined"
+                        placeholder="Search address"
+                        {...params}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                            <InputAdornment position="end">
+                                <SearchIcon />
+                            </InputAdornment>
+                            ),
+                        }}
                         />
-                    }
+                    )}
                     onChange={(event, newValue) => {
                         if (newValue && newValue.bbox && newValue.bbox.length === 4) {
-                            // trigger zoom to property
-                            let _bbox = newValue.bbox.map(String)
+                        // trigger zoom to property
+                        let _bbox = newValue.bbox.map(String);
+                        dispatch(triggerMapEvent({
+                            'id': uuidv4(),
+                            'name': MapEvents.ZOOM_INTO_PROPERTY,
+                            'date': Date.now(),
+                            'payload': _bbox
+                        }));
+                        setSearchInputValue('');
+                        }
+                        else if (newValue && newValue.boundingbox && newValue.boundingbox.length === 4) {
+                            console.log('bounidngbox')
+                            let _bbox = newValue.boundingbox.map(String);
                             dispatch(triggerMapEvent({
                                 'id': uuidv4(),
                                 'name': MapEvents.ZOOM_INTO_PROPERTY,
                                 'date': Date.now(),
                                 'payload': _bbox
-                            }))
-                            setSearchInputValue('')
+                            }));
+                            setSearchInputValue('');
                         }
                     }}
+
                     onInputChange={(event, newInputValue) => {
-                        setSearchInputValue(newInputValue)
+                        setSearchInputValue(newInputValue);
+                        handleInputChange(newInputValue);
                     }}
                     filterOptions={(x) => x}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                 />
             </Box>
             <Box className='sidebarBox'>
-                {(userRole === "National data scientist" || userRole === "Regional data scientist") && <Box>
+                {(userRole === "National data scientist" || userRole === "Regional data scientist" || userRole === "Super user") && <Box>
                     <Box className='sidebarBoxHeading'>
                         <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
@@ -455,7 +517,7 @@ function Filter() {
                     </List>
                 </Box>
                 }
-                {tab === 'data' &&
+                {tab === 'reports' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
                             <img src="/static/images/Information.svg" alt='Info image' />
@@ -463,39 +525,20 @@ function Filter() {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading ? <Loading /> :
-                                <Accordion expanded={expandReport} onChange={handleExpandReport}>
-                                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                        {selectedInfo.length > 0 ? (
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                <Chip
-                                                    key={selectedInfo}
-                                                    label={selectedInfo}
-                                                    sx={{ margin: 0.5 }}
-                                                />
-                                            </Box>
-                                        ) : (
-                                            <Typography>Select</Typography>
-                                        )}
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <Box className="selectBox">
-                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                {informationList.map((info: any, index) => (
-                                                    <FormControlLabel
-                                                        key={index}
-                                                        control={
-                                                            <Radio
-                                                                checked={selectedInfo.includes(info)}
-                                                                onChange={handleSelectedInfo(info)}
-                                                            />
-                                                        }
-                                                        label={info}
-                                                    />
-                                                ))}
-                                            </Box>
-                                        </Box>
-                                    </AccordionDetails>
-                                </Accordion>
+                                (
+                                    <Select
+                                        displayEmpty
+                                        sx={{ width: '100%', textAlign: 'start' }}
+                                        value={selectedInfo}
+                                        onChange={handleSelectedInfo}
+                                        renderValue={
+                                            selectedInfo !== "" ? undefined : () => <div style={{ color: '#282829' }}>Select</div>
+                                        }
+                                    >
+                                        {informationList.map((info: any, index) => (
+                                            <MenuItem value={info} key={index}>{info}</MenuItem>
+                                        ))}
+                                    </Select>)
                             }
                         </List>
                     </Box>
@@ -559,58 +602,16 @@ function Filter() {
                 </Box>
                 <List className='ListItem' component="nav" aria-label="">
                     {loading ? <Loading /> :
-                        <Accordion expanded={expandSpecies} onChange={handleExpandSpecies}>
-                            <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                {selectedSpecies.length > 0 ? (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        <Chip
-                                            key={selectedSpecies}
-                                            label={selectedSpecies}
-                                            sx={{ margin: 0.5 }}
-                                        />
-                                    </Box>
-                                ) : (
-                                    <InputBase
-                                        sx={{ ml: 1, flex: 1 }}
-                                        placeholder="Search Species"
-                                        inputProps={{ 'aria-label': 'Search Species' }}
-                                        onChange={(e) => handleSpeciesSearch(e.target.value)}
-                                    />
-                                )}
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Box className="selectBox">
-                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        {searchSpecies != '' ?
-                                            searchSpeciesList.length > 0 ?
-                                                searchSpeciesList.map((species: any) => (
-                                                    <FormControlLabel
-                                                        key={species.scientific_name}
-                                                        control={
-                                                            <Radio
-                                                                checked={selectedSpecies.includes(species.scientific_name)}
-                                                                onChange={handleSelectedSpecies(species.scientific_name)}
-                                                            />
-                                                        }
-                                                        label={species.scientific_name}
-                                                    />
-                                                )) :
-                                                <Typography>No Result found</Typography> : SpeciesFilterList.map((species: any) => (
-                                                    <FormControlLabel
-                                                        key={species.scientific_name}
-                                                        control={
-                                                            <Radio
-                                                                checked={selectedSpecies.includes(species.scientific_name)}
-                                                                onChange={handleSelectedSpecies(species.scientific_name)}
-                                                            />
-                                                        }
-                                                        label={species.scientific_name}
-                                                    />
-                                                ))}
-                                    </Box>
-                                </Box>
-                            </AccordionDetails>
-                        </Accordion>
+                        (
+                            <Autocomplete
+                                id="combo-box-demo"
+                                disableClearable={true}
+                                options={searchSpeciesList}
+                                sx={{ width: '100%' }}
+                                onChange={(event, value) => handleSelectedSpecies(value)}
+                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                            />
+                        )
                     }
                 </List>
                 <Box className='sidebarBoxHeading'>
@@ -630,11 +631,11 @@ function Filter() {
 
                 <Box className='formboxInput'>
                     <Box className='form-inputFild'>
-                        <TextField type="number" size='small' value={localStartYear} onChange={(e) => handleStartYearChange(e.target.value)} />
+                        <TextField type="number" size='small' value={localStartYear} onChange={(e:any) => handleStartYearChange(e.target.value)} />
                         <Typography className='formtext'>From</Typography>
                     </Box>
                     <Box className='form-inputFild right-flids'>
-                        <TextField type="number" size='small' value={localEndYear} onChange={(e) => handleEndYearChange(e.target.value)} />
+                        <TextField type="number" size='small' value={localEndYear} onChange={(e:any) => handleEndYearChange(e.target.value)} />
                         <Typography className='formtext'>To</Typography>
                     </Box>
                 </Box>
