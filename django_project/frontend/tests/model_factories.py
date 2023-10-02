@@ -2,7 +2,7 @@
 import factory
 from django.contrib.auth import get_user_model
 from frontend.models.boundary_search import BoundaryFile
-from frontend.models.context_layer import ContextLayer, Layer
+from frontend.models.context_layer import ContextLayer, Layer, ContextLayerLegend
 from frontend.models.parcels import Erf, FarmPortion, Holding, ParentFarm
 from frontend.models.statistical import (
     NATIONAL_TREND,
@@ -33,6 +33,24 @@ class ContextLayerF(factory.django.DjangoModelFactory):
 
     name = factory.Sequence(
         lambda n: f'layer-{n}'
+    )
+
+
+class ContextLayerLegendF(factory.django.DjangoModelFactory):
+    """Factory for ContextLayerLegend Model."""
+
+    class Meta:
+        """Meta class Factory for ContextLayerLegend Model."""
+        model = ContextLayerLegend
+
+    name = factory.Sequence(
+        lambda n: f'layer-{n}'
+    )
+    colour = factory.Sequence(
+        lambda n: f'colour-{n}'
+    )
+    layer = factory.SubFactory(
+        'frontend.tests.model_factories.ContextLayerF'
     )
 
 
