@@ -13,6 +13,20 @@ const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
+type AvailableColors = {
+    [key: string]: string;
+};
+
+const availableColors: AvailableColors = {
+    'Unplanned/Illegal Hunting': "#FF5252",
+    'Planned Euthanasia/DCA': "rgb(83 83 84)",
+    'Unplanned/natural deaths': "#75B37A",
+    'Planned Hunt/Cull': "#282829",
+    'Translocation (Intake)': "#FAA755",
+    'Translocation (Offtake)': "#70B276",
+    'Other': "#9D85BE",
+}
+
 const ActivityBarChart = (props: {
     property: any;
     selectedSpecies: string | string[];
@@ -23,14 +37,15 @@ const ActivityBarChart = (props: {
     const [activityData, setActivityData] = useState([]);
     const [activityMethods, setActivityMethods] = useState([]);
     const [animals, setAnimals] = useState([]);
-    const currentYear = new Date().getFullYear();
     const propertyId = props.property;
     var selectedSpecies = props.selectedSpecies;
     var startYear = props.from;
     var endYear = props.to; 
     const [noData, setNoData] = useState(false);
+    const [useMainColor, setMainColor] = useState(false);
+    const [mainColor, setColor] = useState('');
     const [speciesColors, setSpeciesColors] = useState<{ [key: string]: string }>({});
-    const activityColors = ['#FF5252', '#9D85BE', '#FAA755', '#000', '#70B276'];
+    const activityColors = ['#FF5252', '#75B37A', '#282829', '#FAA755','#70B276','#000', '#9D85BE'];
 
 
 
@@ -42,12 +57,6 @@ const ActivityBarChart = (props: {
             endYear
         ) {
           fetchActivityData();
-        }else {
-            // assign defaults
-            selectedSpecies = ['Lion', 'Cheetah', 'Elephant', 'White rhinoceros', 'Black rhinoceros', 'Leopard'];
-            startYear = currentYear - 1;
-            endYear = currentYear;
-            fetchActivityData();
         }
     }, [propertyId, selectedSpecies, startYear, endYear]); // Re-fetch when propertyId or selectedSpecies change
 
@@ -98,6 +107,7 @@ const ActivityBarChart = (props: {
             // Extract and set species colors from the API response
             const speciesColors = response.data.reduce((colors: { [x: string]: any; }, species: { species_name: string | number; colour: any; }) => {
                 colors[species.species_name] = species.colour;
+                setColor(species.colour)
                 return colors;
             }, {});
 
@@ -106,6 +116,12 @@ const ActivityBarChart = (props: {
             
             const allActivities: string[] = [...new Set(transformedData.flatMap(species => Object.keys(species).filter(key => key !== 'animal')))];
             
+
+            if(allActivities.length > 1){
+                setMainColor(false)
+            }else {
+                setMainColor(true)
+            }
             setActivityMethods(allActivities);
             setAnimals(transformedData.map(species => species.animal));
             setActivityData(transformedData);
@@ -123,7 +139,7 @@ const ActivityBarChart = (props: {
         datasets: activityMethods.map((method, index) => ({
             label: method,
             data: activityData.map((item) => item[method]),
-            backgroundColor: animals.map((animal) => speciesColors[animal]), // Use speciesColors mapping
+            backgroundColor: animals.map((animal) => useMainColor ? mainColor:speciesColors[animal]),
         })),
     };
 
@@ -154,20 +170,20 @@ const ActivityBarChart = (props: {
                                 activityColorMap[activityData] = activityColors[index % activityColors.length];
                             }
                     
-                            dataset.backgroundColor = activityColorMap[activityData];
-                            dataset.borderColor = activityColorMap[activityData];
+                            dataset.backgroundColor = useMainColor? mainColor:activityColorMap[activityData];
+                            dataset.borderColor = useMainColor? mainColor:activityColorMap[activityData];
                         });
                     
                         return datasets.map((dataset: any, index: any) => ({
                             text: dataset.label,
-                            fillStyle: activityColorMap[dataset.label], // Use activity color mapping
+                            fillStyle: useMainColor ? mainColor:activityColorMap[dataset.label],
                             hidden: !chart.isDatasetVisible(index),
                             lineCap: 'round',
                             lineDash: [] as number[],
                             lineDashOffset: 0,
                             lineJoin: 'round',
                             lineWidth: 10,
-                            strokeStyle: activityColorMap[dataset.label], // Use activity color mapping
+                            strokeStyle: useMainColor ? mainColor: activityColorMap[dataset.label],
                             pointStyle: 'rect',
                             rotation: 0,
                         }));
@@ -191,28 +207,28 @@ const ActivityBarChart = (props: {
     };
     
 
-    
-
-return (
-    <Box className="white-chart chartFullWidth leftBoxRound">
-      <Typography>Species activity data, as totals by method</Typography>
-      {propertyId && selectedSpecies.length > 0 ? (
-        loading ? (
-          <Loading />
-        ) : (
-          noData ? (
-            <Typography>No data available for current selections.</Typography>
-          ) : (
-            <Box className="BoxChartType">
-              <Bar data={barData} options={barOptions} />
-            </Box>
-          )
-        )
-      ) : (
-        <Typography>Please select a property and species.</Typography>
-      )}
-    </Box>
-);
+    return (
+        <Box className="white-chart chartFullWidth leftBoxRound">
+            {propertyId && selectedSpecies.length > 0 ? (
+                loading ? (
+                    <Loading />
+                ) : (
+                    noData ? (
+                        <Typography>No data available for current selections.</Typography>
+                    ) : (
+                        <Box>
+                            <Typography>Species activity data, as totals by method</Typography>
+                            <Box className="BoxChartType">
+                                <Bar data={barData} options={barOptions} />
+                            </Box>
+                        </Box>
+                    )
+                )
+            ) : (
+                <Typography>Please select a property and species.</Typography>
+            )}
+        </Box>
+    );
 };
 
 export default ActivityBarChart;
