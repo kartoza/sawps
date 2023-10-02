@@ -9,6 +9,9 @@ import ActivityBarChart from '../Metrics/ActivityBarChart';
 
 export default function PropertySummary() {
     const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
+    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
+    const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
 
     return (
         <Grid container flexDirection={'column'} className='PropertySummary'>
@@ -37,7 +40,12 @@ export default function PropertySummary() {
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <SpeciesSideBarLineChart property={propertyItem.id}/>
+                                <SpeciesSideBarLineChart
+                                    property={propertyItem.id}            
+                                    selectedSpecies={selectedSpecies}
+                                    from={startYear}
+                                    to={endYear}
+                                />
                             </Grid>
                             <Grid item>
                                 <Grid item className='Header'>
@@ -48,7 +56,12 @@ export default function PropertySummary() {
                                             </Grid>
                                         </Grid>
                                     </Grid>
-                                <ActivityBarChart property={propertyItem.id}/>
+                                    <ActivityBarChart
+                                        property={propertyItem.id}            
+                                        selectedSpecies={selectedSpecies}
+                                        from={startYear}
+                                        to={endYear}
+                                    />
                             </Grid>
                         </Grid>
                     </Grid>
