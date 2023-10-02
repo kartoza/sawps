@@ -19,6 +19,7 @@ from frontend.tests.model_factories import (
     LayerF,
     ContextLayerF
 )
+from property.tasks import generate_spatial_filter_task
 
 
 class TestSpatialFunctions(TestCase):
@@ -178,3 +179,13 @@ class TestSpatialFunctions(TestCase):
             layer=self.layer,
             context_layer_value='1'
         ).exists())
+
+
+class GenerateSpatialFilterTaskTest(TestCase):
+
+    @patch('property.spatial_data.save_spatial_values_from_property_layers')
+    @patch('property.tasks.generate_spatial_filter_task.delay')
+    def test_generate_spatial_filter_task(self, mock_shared_task, mock_save_spatial):
+        property_obj = PropertyFactory.create()
+        generate_spatial_filter_task(property_obj.id)
+        mock_save_spatial.assert_called_once_with(property_obj)
