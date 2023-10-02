@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
+
+from frontend.static_mapping import NATIONAL_DATA_SCIENTIST, REGIONAL_DATA_SCIENTIST
 from population_data.models import AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
@@ -45,7 +47,7 @@ class OwnedSpeciesTestCase(TestCase):
             user=user,
             organisation=self.organisation_1
         )
-        group = GroupF.create(name='Organisation manager')
+        group = GroupF.create(name=NATIONAL_DATA_SCIENTIST)
         user.groups.add(group)
         user.user_profile.current_organisation = self.organisation_1
         user.save()
@@ -159,9 +161,9 @@ class NationalUserTestCase(TestCase):
             scientific_name='SpeciesA'
         )
         user = User.objects.create_user(
-                username='testuserd',
-                password='testpasswordd'
-            )
+            username='testuserd',
+            password='testpasswordd'
+        )
         self.organisation_1 = organisationFactory.create()
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
@@ -279,7 +281,6 @@ class RegionalUserTestCase(TestCase):
         self.assertEqual(len(response.data), 3)
 
 
-
 class DataScientistTestCase(TestCase):
     def setUp(self) -> None:
         """Setup test case"""
@@ -304,6 +305,12 @@ class DataScientistTestCase(TestCase):
             user=user,
             organisation=self.organisation_1
         )
+
+        group = GroupF.create(name=REGIONAL_DATA_SCIENTIST)
+        user.groups.add(group)
+        user.user_profile.current_organisation = self.organisation_1
+        user.save()
+
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="Regional data scientist",
         )
@@ -333,7 +340,10 @@ class DataScientistTestCase(TestCase):
         data = {
             "reports": (
                 "Activity_report,Species_report,Property_report"
-            )
+            ),
+            "organisation": [
+                self.organisation_1.id
+            ]
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
