@@ -40,7 +40,7 @@ const AgeGroupBarChart = (props: any) => {
                 stacked: true,
             },
             y: {
-                display: false,
+                display: true,
                 stacked: true,
                 grid: {
                     display: false,
