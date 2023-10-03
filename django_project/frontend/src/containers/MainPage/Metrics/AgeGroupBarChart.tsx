@@ -75,7 +75,7 @@ const AgeGroupBarChart = (props: any) => {
     return (
         <Grid>
             {!loading ? (
-               <Bar data={data} options={options} height={250} width={500} />
+               <Bar data={data} options={options} height={200} width={500} />
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
             )}
