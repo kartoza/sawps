@@ -620,7 +620,13 @@ function Filter() {
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                 </Box>
-                {(userRole === "National data scientist" || userRole === "Regional data scientist" || userRole === "Super user" ||  userRole === "Site administrator") && <Box>
+                {
+                    (userRole === "National data scientist" ||
+                     userRole === "Regional data scientist" || 
+                     userRole === "Super user" ||  
+                     userRole === "Site administrator" ||
+                     userRole === "Admin"
+                    ) && <Box>
                     <Box className='sidebarBoxHeading'>
                         <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
