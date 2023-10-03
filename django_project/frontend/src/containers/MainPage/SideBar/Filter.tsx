@@ -118,9 +118,10 @@ function Filter() {
         center[1] + halfHeight,
     ];
     
+
     const handleInputChange = (value: string) => {
         setSearchInputValue(value);
-    
+
         // Update searchResults with the results from existing search
         searchProperty({ input: value }, (results) => {
           if (results) {
@@ -129,18 +130,18 @@ function Filter() {
             setSearchResults([]);
           }
         });
-        
+
         // Perform Nominatim-based search and update nominatimResults
         performNominatimSearch(value);
     };
-    
+
     const performNominatimSearch = async (value: string) => {
         try {
             setNominatimResults([]);
             const encodedValue = encodeURIComponent(value);
             const response = await axios.get(
               `https://nominatim.openstreetmap.org/search?format=json&q=${encodedValue}&countrycodes=AFR`
-            );            
+            );
             const updatedNominatimResults = response.data
             .filter((result: { display_name: string | string[]; }) => result.display_name.includes("South Africa"))
             .map((result: { place_id: any; }, index: any) => ({
@@ -154,7 +155,7 @@ function Filter() {
           console.error('Error fetching Nominatim address suggestions:', error);
         }
       };
-    
+
     const [activityList,setActivityList]= useState<string[]>(["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"])
     const [filterlList, setFilterList] = useState([
         {
@@ -410,7 +411,7 @@ function Filter() {
     }, [selectedOrganisation])
 
     const handleSelectedActivity =(value: string) => {
-        setSelectedActivity(value.replace(/ /g, '_'));
+        setSelectedActivity(value);
     };
 
     useEffect(() => {

@@ -1,3 +1,4 @@
+import urllib.parse
 from typing import Dict, List
 
 from django.db.models import Sum
@@ -90,10 +91,7 @@ def species_report(queryset: QuerySet, request) -> List:
 
     activity = request.GET.get("activity")
     if activity:
-        activity = (
-            activity.replace("_", " ")
-            if activity != "Unplanned/illegal_hunt" else activity
-        )
+        activity = urllib.parse.unquote(activity)
         filters[
             "owned_species__annualpopulationperactivity__activity_type__name"
         ] = activity
@@ -139,10 +137,7 @@ def property_report(queryset: QuerySet, request) -> List:
 
     activity = request.GET.get("activity")
     if activity:
-        activity = (
-            activity.replace("_", " ")
-            if activity != "Unplanned/illegal_hunt" else activity
-        )
+        activity = urllib.parse.unquote(activity)
         filters[
             "annualpopulationperactivity__activity_type__name"
         ] = activity
@@ -152,14 +147,10 @@ def property_report(queryset: QuerySet, request) -> List:
 
         if not common_data:
             continue
-        # if filters:
+
         area_available_values = property.ownedspecies_set.filter(
             **filters
         ).values("area_available_to_species")
-        # else:
-        #     area_available_values = property.ownedspecies_set.all().values(
-        #         "area_available_to_species"
-        #     )
 
         property_reports.extend([
             {
@@ -198,10 +189,7 @@ def sampling_report(queryset: QuerySet, request) -> List:
 
     activity = request.GET.get("activity")
     if activity:
-        activity = (
-            activity.replace("_", " ")
-            if activity != "Unplanned/illegal_hunt" else activity
-        )
+        activity = urllib.parse.unquote(activity)
         filters[
             "owned_species__annualpopulationperactivity__activity_type__name"
         ] = activity
@@ -246,22 +234,22 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
 
     activity = request.GET.get("activity")
     if activity:
-        activity_types = [activity]
+        activity_types = [urllib.parse.unquote(activity)]
     else:
         activity_types = [
-            "Planned_euthanasia", "Planned_hunt/cull", "Planned_translocation",
-            "Unplanned/natural_deaths", "Unplanned/illegal_hunt"
+            "Planned euthanasia", "Planned hunt/cull", "Planned translocation",
+            "Unplanned/natural deaths", "Unplanned/illegal hunting"
         ]
 
     activity_data_map = {
-        "Unplanned/illegal_hunt": [],
-        "Planned_euthanasia": ["intake_permit"],
-        "Planned_hunt/cull": ["intake_permit"],
-        "Planned_translocation": [
+        "Unplanned/illegal hunting": [],
+        "Planned euthanasia": ["intake_permit"],
+        "Planned hunt/cull": ["intake_permit"],
+        "Planned translocation": [
             "intake_permit", "translocation_destination",
             "offtake_permit"
         ],
-        "Unplanned/natural_deaths": [
+        "Unplanned/natural deaths": [
             "translocation_destination", "founder_population",
             "reintroduction_source"
         ],
@@ -293,10 +281,7 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
                         "scientific_name"
                     ],
                     owned_species__property__name=property.name,
-                    activity_type__name=activity_name.replace(
-                        "_", " "
-                    ) if activity_name != "Unplanned/illegal_hunt"
-                    else activity_name
+                    activity_type__name=activity_name
                 )
 
                 activity_reports[activity_name].extend([
@@ -373,10 +358,8 @@ def common_filters(request: HttpRequest, role: str) -> Dict:
 
     activity = request.GET.get("activity")
     if activity:
-        activity = (
-            activity.replace("_", " ")
-            if activity != "Unplanned/illegal_hunt" else activity
-        )
+        activity = urllib.parse.unquote(activity)
+
         filters[
             "annualpopulationperactivity__activity_type__name"
         ] = activity

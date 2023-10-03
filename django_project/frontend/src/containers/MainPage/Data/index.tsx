@@ -56,11 +56,11 @@ const DataList = () => {
         "Province_report": "#FF5252",
         "Species_population_report": "#9F89BF",
         "Activity_report": checkUserRole(userRole) ? "#696969" : "#75B37A",
-        "Unplanned/natural_deaths": "#75B37A",
-        "Planned_translocation": "#F9A95D",
-        "Planned_hunt/cull": "#FF5252",
-        "Planned_euthanasia": "#9F89BF",
-        "Unplanned/illegal_hunt": "#696969",
+        "Unplanned/natural deaths": "#75B37A",
+        "Planned translocation": "#F9A95D",
+        "Planned hunt/cull": "#FF5252",
+        "Planned euthanasia": "#9F89BF",
+        "Unplanned/illegal hunting": "#696969",
     }
 
     function checkUserRole(userRole: string) {
