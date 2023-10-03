@@ -10,4 +10,4 @@ In this section of the documentation, we aim to onboard developers onto the proc
 * **[Configuration:](./configuration.md)** This covers standard configuration tasks that need to be done once the site is brought online.
 * **[Design:](./design.md)** This section describes the visual design approach for the user interface.
 * **[Workflows:](./workflows.md)** Examples of typical workflows for adding features, fixing bugs etc.
-* **[Testing:](./testing.md)** This section focuses on setting up end to end testing for the project.
+* **[Testing:](./testing.md)** This section focuses on setting up end-to-end testing for the project.
