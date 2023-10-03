@@ -703,61 +703,61 @@ function Filter() {
                         </List>
                     </Box>
                 }
-                {(userRole != "National data consumer" || userRole != "Floating user" || userRole != "Base User" || userRole != "Regional data consumer") &&
+                {(userRole !== "National data consumer" || userRole !== "Floating user" || userRole !== "Base User" || userRole !== "Regional data consumer") &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                                <img src="/static/images/Property.svg" alt='Property image' />
-                                <Typography color='#75B37A' fontSize='medium'>Property</Typography>
-                            </Box>
-                            <List className='ListItem' component="nav" aria-label="">
-                                {loading ? (
+                            <img src="/static/images/Property.svg" alt='Property image' />
+                            <Typography color='#75B37A' fontSize='medium'>Property</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading ? (
                                 <Loading />
-                                ) : (
+                            ) : (
                                 <Accordion>
                                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                    {selectedProperty.length > 0 ? (
-                                        <Box>
-                                        {`${selectedProperty.length} ${
-                                            selectedProperty.length > 1 ? 'Properties' : 'Property'
-                                        } Selected`}
-                                        </Box>
-                                    ) : (
-                                        <Typography>Select</Typography>
-                                    )}
+                                        {selectedProperty.length > 0 ? (
+                                            <Box>
+                                                {`${selectedProperty.length} ${
+                                                    selectedProperty.length > 1 ? 'Properties' : 'Property'
+                                                } Selected`}
+                                            </Box>
+                                        ) : (
+                                            <Typography>Select</Typography>
+                                        )}
                                     </AccordionSummary>
                                     <AccordionDetails>
-                                    <Box className="selectBox">
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        <FormControlLabel
-                                            control={
-                                            <Checkbox
-                                                checked={selectedProperty.length === filteredProperties.length}
-                                                onChange={handleSelectAllProperty}
-                                            />
-                                            }
-                                            label="Select All"
-                                        />
-                                        </Box>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                        {filteredProperties.map((property: any) => (
-                                            <FormControlLabel
-                                            key={property.name}
-                                            control={
-                                                <Checkbox
-                                                checked={selectedProperty.includes(property.id)}
-                                                onChange={handleSelectedProperty(property.id)}
+                                        <Box className="selectBox">
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedProperty.length === filteredProperties.length}
+                                                            onChange={handleSelectAllProperty}
+                                                        />
+                                                    }
+                                                    label="Select All"
                                                 />
-                                            }
-                                            label={property.name}
-                                            />
-                                        ))}
+                                            </Box>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                {filteredProperties.map((property: any) => (
+                                                    <FormControlLabel
+                                                        key={property.name}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedProperty.includes(property.id)}
+                                                                onChange={handleSelectedProperty(property.id)}
+                                                            />
+                                                        }
+                                                        label={property.name}
+                                                    />
+                                                ))}
+                                            </Box>
                                         </Box>
-                                    </Box>
                                     </AccordionDetails>
                                 </Accordion>
-                                )}
-                            </List>
-                        </Box>
+                            )}
+                        </List>
+                    </Box>
                 }
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/species/Elephant.svg" alt='species image' />
