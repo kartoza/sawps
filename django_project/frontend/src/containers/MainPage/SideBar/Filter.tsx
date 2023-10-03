@@ -513,10 +513,8 @@ function Filter() {
 
         if (
           storedUserRole && (
-          storedUserRole.toLowerCase() === 'national data consumer' ||
           storedUserRole.toLowerCase() === 'organisation member' ||
-          storedUserRole.toLowerCase() === 'floating user' ||
-          storedUserRole.toLowerCase() === 'unnamed user' )
+          storedUserRole.toLowerCase() === 'organisation manager' )
         ) {
           const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
 
@@ -622,7 +620,7 @@ function Filter() {
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                 </Box>
-                {(userRole === "National data scientist" || userRole === "Regional data scientist" || userRole === "Super user") && <Box>
+                {(userRole === "National data scientist" || userRole === "Regional data scientist" || userRole === "Super user" ||  userRole === "Site administrator") && <Box>
                     <Box className='sidebarBoxHeading'>
                         <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
@@ -699,7 +697,7 @@ function Filter() {
                         </List>
                     </Box>
                 }
-                {userRole != "National data consumer" &&
+                {(userRole != "National data consumer" || userRole != "Floating user" || userRole != "Base User" || userRole != "Regional data consumer") &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
                                 <img src="/static/images/Property.svg" alt='Property image' />
