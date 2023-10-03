@@ -44,6 +44,7 @@ const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const SEARCH_PROPERTY_URL = '/api/property/search'
 const FETCH_ORGANISATION_LIST_URL = '/api/organisation/'
+const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
 interface SearchPropertyResult {
     name: string;
@@ -75,6 +76,59 @@ function Filter() {
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
+    const [nominatimResults, setNominatimResults] = useState([]);
+    // intial map state vars for zoom out
+    const center = [25.86, -28.52]; // Center point in backend
+    const width = 10;
+    const height = 10;
+
+     // Calculate the bounding box
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+    const boundingBox = [
+        center[0] - halfWidth,
+        center[1] - halfHeight,
+        center[0] + halfWidth,
+        center[1] + halfHeight,
+    ];
+    
+    const handleInputChange = (value: string) => {
+        setSearchInputValue(value);
+    
+        // Update searchResults with the results from existing search
+        searchProperty({ input: value }, (results) => {
+          if (results) {
+            setSearchResults(results.data as SearchPropertyResult[]);
+          } else {
+            setSearchResults([]);
+          }
+        });
+        
+        // Perform Nominatim-based search and update nominatimResults
+        performNominatimSearch(value);
+    };
+    
+    const performNominatimSearch = async (value: string) => {
+        try {
+            setNominatimResults([]);
+            const encodedValue = encodeURIComponent(value);
+            const response = await axios.get(
+              `https://nominatim.openstreetmap.org/search?format=json&q=${encodedValue}&countrycodes=AFR`
+            );            
+            const updatedNominatimResults = response.data
+            .filter((result: { display_name: string | string[]; }) => result.display_name.includes("South Africa"))
+            .map((result: { place_id: any; }, index: any) => ({
+                ...result,
+                key: `nominatim_${result.place_id}`,
+            }));
+
+            setNominatimResults(updatedNominatimResults);
+
+        } catch (error) {
+          console.error('Error fetching Nominatim address suggestions:', error);
+        }
+      };
+    
     const [filterlList, setFilterList] = useState([
         {
             "id": 3,
@@ -104,7 +158,7 @@ function Filter() {
     const informationList = [
         "Activity report",
         "Property report",
-        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling Report",
+        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling report",
         "Species report",
     ].filter(item => item !== "")
 
@@ -211,15 +265,107 @@ function Filter() {
         dispatch(setSelectedInfoList(selectedInfo));
     }, [selectedInfo])
 
+    const mergeBoundingBoxes = (boundingBoxes: number[][]): number[] => {
+        let minLeft: number = 180;
+        let minBottom: number = 90;
+        let maxRight: number = -180;
+        let maxTop: number = -90;
+      
+        boundingBoxes.forEach(([left, bottom, right, top]) => {
+          if (left < minLeft) minLeft = left;
+          if (bottom < minBottom) minBottom = bottom;
+          if (right > maxRight) maxRight = right;
+          if (top > maxTop) maxTop = top;
+        });
+      
+        return [minLeft, minBottom, maxRight, maxTop];
+      };
 
-    const handleSelectedProperty = (id: number) => () => {
+
+    const zoomToCombinedBoundingBox = async (propertyIds: number[]) => {
+        setLoading(true);
+      
+        try {
+          const propertyBoundingBoxes: number[][] = [];
+      
+          // Fetch and collect bounding boxes for each property
+          await Promise.all(
+            propertyIds.map(async (propertyId) => {
+              const response = await axios.get(`${FETCH_PROPERTY_DETAIL_URL}${propertyId}/`);
+              if (response.data && response.data.bbox && response.data.bbox.length === 4) {
+                propertyBoundingBoxes.push(response.data.bbox);
+              }
+            })
+          );
+      
+          if (propertyBoundingBoxes.length > 0) {
+            // Merge the collected bounding boxes
+            const combinedBoundingBox = mergeBoundingBoxes(propertyBoundingBoxes);
+      
+            // LEVEL 1 DEBUG
+            // console.log('navigation to bounding box', combinedBoundingBox);
+
+            adjustMapToBoundingBox(combinedBoundingBox)
+          } else {
+            console.error('No valid bounding boxes found for selected properties.');
+          }
+      
+          setLoading(false);
+        } catch (error) {
+          setLoading(false);
+          console.error(error);
+        }
+      };
+      
+      
+      
+      
+      const handleSelectedProperty = (id: number) => () => {
         const propertyExists = selectedProperty.includes(id);
+        let updatedSelectedProperty: number[] = [];
+      
         if (propertyExists) {
-            const updatedSelectedProperty = selectedProperty.filter((item) => item !== id);
-            setSelectedProperty(updatedSelectedProperty);
+          updatedSelectedProperty = selectedProperty.filter((item) => item !== id);
         } else {
-            const updatedSelectedProperty = [...selectedProperty, id];
-            setSelectedProperty(updatedSelectedProperty);
+          updatedSelectedProperty = [...selectedProperty, id];
+        }
+      
+        // LEVEL 3 DEBUG
+        // console.log('selected properties', updatedSelectedProperty);
+      
+        setSelectedProperty(updatedSelectedProperty);
+      
+        if (updatedSelectedProperty.length === 0) {
+            adjustMapToBoundingBox(boundingBox)
+        } else {
+          // Call zoomToCombinedBoundingBox with the updated list of selected properties
+          zoomToCombinedBoundingBox(updatedSelectedProperty);
+        }
+      };
+      
+      
+      
+      const adjustMapToBoundingBox = (boundingBox: any[]) => {
+        dispatch(
+            triggerMapEvent({
+                id: uuidv4(),
+                name: MapEvents.PROPERTY_SELECTED,
+                date: Date.now(),
+                payload: boundingBox.map(String),
+            })
+        );
+      };
+      
+
+    // Handle selecting all properties
+    const handleSelectAllProperty = () => {
+        if (selectedProperty.length === propertyList.length) {
+            setSelectedProperty([]);
+            adjustMapToBoundingBox(boundingBox)
+        } else {
+            const propertyIds = propertyList.map((property) => property.id);
+            setSelectedProperty(propertyIds);
+            zoomToCombinedBoundingBox(propertyIds);
         }
     };
 
@@ -316,13 +462,7 @@ function Filter() {
             setSearchResults([])
         }
     }, [searchInputValue])
-    const handleSelectAllProperty = () => {
-        const propeertyId = propertyList.map(property => property.id)
-        setSelectedProperty(propeertyId)
-        if (selectedProperty.length === propertyList.length) {
-            setSelectedProperty([]);
-        }
-    }
+    
 
     const handleSelectAllOrganisation = () => {
         const organisationId = organisationList.map(data => data.id)
@@ -343,52 +483,90 @@ function Filter() {
 
     return (
         <Box>
-            <Box className='searchBar'>
-                <Autocomplete
-                    disablePortal={false}
-                    id="search-property-autocomplete"
-                    open={searchOpen}
-                    onOpen={() => setSearchOpen(searchInputValue.length > 1)}
-                    onClose={() => setSearchOpen(false)}
-                    options={searchResults}
-                    getOptionLabel={(option) => option.fclass ? `${option.name} (${option.fclass})` : option.name}
-                    renderInput={(params) =>
-                        <TextField
+            <Box className='sidebarBox'>
+                <Box style={{marginTop: '5%', marginBottom: '10%'}} >
+                    <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center' ,marginBottom: '5%'}}>
+                        <SearchIcon
+                            style={{
+                                color: '#70B276',
+                                marginLeft: '15px',
+                            }}
+                        />
+                        <Typography color='#75B37A' fontSize='medium' style={{ marginLeft: '5px' }}>Search place</Typography>
+                    </Box>
+                    <Autocomplete
+                        disablePortal={false}
+                        id="search-property-autocomplete"
+                        open={searchOpen}
+                        onOpen={() => setSearchOpen(searchInputValue.length > 1)}
+                        onClose={() => setSearchOpen(false)}
+                        options={[
+                            ...searchResults.map((result) => ({
+                            ...result,
+                            key: `searchResult_${result.id}`,
+                            })),
+                            ...nominatimResults.map((result) => ({
+                            ...result,
+                            key: `nominatim_${result.place_id}`,
+                            display_name: result.display_name,
+                            })),
+                        ]}
+                        getOptionLabel={(option) => {
+                            if (option.fclass) {
+                            return `${option.name} (${option.fclass})`;
+                            } else if (option.display_name) {
+                            return option.display_name;
+                            }
+                            return ''; // Return an empty string if neither fclass nor display_name exists
+                        }}
+                        renderInput={(params) => (
+                            <TextField
                             variant="outlined"
-                            placeholder="Keyword"
+                            placeholder="Search place"
                             {...params}
                             InputProps={{
                                 ...params.InputProps,
                                 endAdornment: (
-                                    <InputAdornment position="end">
-                                        <SearchIcon />
-                                    </InputAdornment>
+                                <InputAdornment position="end">
+                                    <SearchIcon />
+                                </InputAdornment>
                                 ),
                             }}
-                        />
-                    }
-                    onChange={(event, newValue) => {
-                        if (newValue && newValue.bbox && newValue.bbox.length === 4) {
+                            />
+                        )}
+                        onChange={(event, newValue) => {
+                            if (newValue && newValue.bbox && newValue.bbox.length === 4) {
                             // trigger zoom to property
-                            let _bbox = newValue.bbox.map(String)
+                            let _bbox = newValue.bbox.map(String);
                             dispatch(triggerMapEvent({
                                 'id': uuidv4(),
                                 'name': MapEvents.ZOOM_INTO_PROPERTY,
                                 'date': Date.now(),
                                 'payload': _bbox
-                            }))
-                            setSearchInputValue('')
-                        }
-                    }}
-                    onInputChange={(event, newInputValue) => {
-                        setSearchInputValue(newInputValue)
-                    }}
-                    filterOptions={(x) => x}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                />
-            </Box>
-            <Box className='sidebarBox'>
-                {(userRole === "National data scientist" || userRole === "Regional data scientist") && <Box>
+                            }));
+                            setSearchInputValue('');
+                            }
+                            else if (newValue && newValue.boundingbox && newValue.boundingbox.length === 4) {
+                                let _bbox = newValue.boundingbox.map(String);
+                                dispatch(triggerMapEvent({
+                                    'id': uuidv4(),
+                                    'name': MapEvents.ZOOM_INTO_PROPERTY,
+                                    'date': Date.now(),
+                                    'payload': _bbox
+                                }));
+                                setSearchInputValue('');
+                            }
+                        }}
+
+                        onInputChange={(event, newInputValue) => {
+                            setSearchInputValue(newInputValue);
+                            handleInputChange(newInputValue);
+                        }}
+                        filterOptions={(x) => x}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                    />
+                </Box>
+                {(userRole === "National data scientist" || userRole === "Regional data scientist" || userRole === "Super user") && <Box>
                     <Box className='sidebarBoxHeading'>
                         <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
