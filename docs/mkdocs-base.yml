@@ -56,12 +56,12 @@ nav:
                           - User Profile:
                                 - user/manual/user-profile/index.md
                                 - Profile Page: user/manual/user-profile/profile-page.md
-                                - Two Factor Authentication: user/manual/user-profile/2fa.md
-                                - Forgot Password: user/manual/user-profile/forgot-password.md
-                                - Notifications: user/manual/user-profile/notifications.md
                                 - Reminders: user/manual/user-profile/reminders.md
+                                - Notifications: user/manual/user-profile/notifications.md
+                                - Two Factor Authentication: user/manual/user-profile/2fa.md
                                 - Organisation Page: user/manual/user-profile/organisation-page.md
                                 - Request An Organisation: user/manual/user-profile/request-organisation.md
+                          - Forgot Password: user/manual/forgot-password.md
                           - Explore:
                                 - user/manual/explore/index.md
                                 - Layers: user/manual/explore/layers.md
