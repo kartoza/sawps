@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { Line } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
@@ -47,7 +47,16 @@ const AreaAvailableLineChart = (props: any) => {
                 display: false,
             },
             legend: {
-                display: false,
+                display: true,
+                position: 'bottom' as 'bottom'
+            },
+            title: {
+                display: true,
+                text: 'Total area of property', 
+                font: {
+                    size: 16, 
+                    weight: 'bold' as 'bold', 
+                },
             },
         },
         scales: {
@@ -55,7 +64,14 @@ const AreaAvailableLineChart = (props: any) => {
                 beginAtZero: true,
                 grid: {
                     display: false,
-                }
+                },
+                title: {
+                    display: true,
+                    text: 'Year', // X-axis label
+                    font: {
+                        size: 14,
+                    },
+                },
             },
             y: {
                 beginAtZero: true,
@@ -66,46 +82,26 @@ const AreaAvailableLineChart = (props: any) => {
                     stepSize: 65,
                     max: 260,
                 },
+                title: {
+                    display: true,
+                    text: 'Area (Ha)', // Y-axis label
+                    font: {
+                        size: 14,
+                    },
+                },
             },
         },
     };
 
     return (
-        <ChartCard
-            loading={loading}
-            chartComponent={
-                <>
-                    <Box className="white-species">
-                        <Box className="white-chart-species">
-                            {message && <Typography className="info-message">{message}</Typography>}
-                            <Typography className="total-heading">Total area vs area available to species</Typography>
-                            <Box className="AreaDataValue"><Line data={AreaDataValue} options={AreaOptions} height={225} width={1000} /></Box>
-                        </Box>
-
-                        <Box className="white-species-text">
-                            <Box className="flex species-Typography">
-                                <Box
-                                    width={20}
-                                    height={20}
-                                    sx={{ backgroundColor: '#FF5252' }}
-                                />
-                                <Typography>Total area of property</Typography>
-                            </Box>
-                            <Box className="flex species-Typography">
-                                <Box
-                                    width={20}
-                                    height={20}
-                                    sx={{ backgroundColor: '#F9A95D' }}
-                                />
-                                <Typography>Area available to species</Typography>
-                            </Box>
-                        </Box>
-                    </Box>
-                </>
-            }
-            title={''}
-            xLabel={''}
-        />
+        <Grid>
+            {!loading ? (
+                <Line data={AreaDataValue} options={AreaOptions} height={200} width={650} />
+       
+            ) : (
+                <Loading containerStyle={{ minHeight: 160 }} />
+            )}
+        </Grid>
     );
 };
 
