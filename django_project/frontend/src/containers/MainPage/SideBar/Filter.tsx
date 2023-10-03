@@ -77,6 +77,31 @@ function Filter() {
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
     const [nominatimResults, setNominatimResults] = useState([]);
+    const [filteredProperties, setFilteredProperties] = useState([])
+
+    // Function to filter properties based on selected organizations
+    const filterPropertiesByOrganisations = () => {
+        // If no organizations are selected
+        if (selectedOrganisation.length === 0) {
+            setFilteredProperties([]);
+            adjustMapToBoundingBox(boundingBox)
+            setSelectedProperty([])
+            return;
+        }
+
+        // Filter properties that match selected organizations
+        const filtered = propertyList.filter((property) =>
+        selectedOrganisation.includes(property.organisation_id)
+        );
+
+        setFilteredProperties(filtered);
+    };
+    
+      useEffect(() => {
+        // Call the filtering function whenever selectedOrganisation changes
+        filterPropertiesByOrganisations();
+      }, [selectedOrganisation]);
+    
     // intial map state vars for zoom out
     const center = [25.86, -28.52]; // Center point in backend
     const width = 10;
@@ -481,6 +506,35 @@ function Filter() {
         setSearchSpeciesList(sList)
     }, [SpeciesFilterList])
 
+    useEffect(() => {
+        const storedUserRole = localStorage.getItem('user_role');
+        setUserRole(storedUserRole);
+      
+
+        if (
+          storedUserRole && (
+          storedUserRole.toLowerCase() === 'organisation member' ||
+          storedUserRole.toLowerCase() === 'organisation manager' )
+        ) {
+          const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
+
+          filterPropertiesByOrganisation(currentOrganisation);
+        }
+      }, []);
+
+    // Function to filter properties based on the current organization
+    const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
+        if (currentOrganisation) {
+            const filtered = propertyList.filter((property) =>
+                property.organisation_id === currentOrganisation
+            );
+        
+            setFilteredProperties(filtered);
+        } else {
+            setFilteredProperties([]);
+        }
+    };
+
     return (
         <Box>
             <Box className='sidebarBox'>
@@ -566,7 +620,13 @@ function Filter() {
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                 </Box>
-                {(userRole === "National data scientist" || userRole === "Regional data scientist" || userRole === "Super user") && <Box>
+                {
+                    (userRole === "National data scientist" ||
+                     userRole === "Regional data scientist" || 
+                     userRole === "Super user" ||  
+                     userRole === "Site administrator" ||
+                     userRole === "Admin"
+                    ) && <Box>
                     <Box className='sidebarBoxHeading'>
                         <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
@@ -643,20 +703,27 @@ function Filter() {
                         </List>
                     </Box>
                 }
-                {userRole != "National data consumer" &&
+                {
+                    userRole != "National data consumer" &&
+                    userRole != "Floating user" && 
+                    userRole != "Base User" && 
+                    userRole != "Regional data consumer" &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
                             <img src="/static/images/Property.svg" alt='Property image' />
                             <Typography color='#75B37A' fontSize='medium'>Property</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
-                            {loading ? <Loading /> :
+                            {loading ? (
+                                <Loading />
+                            ) : (
                                 <Accordion>
                                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                         {selectedProperty.length > 0 ? (
                                             <Box>
-                                                {`${selectedProperty.length} ${selectedProperty.length > 1 ? 'Properties' : 'Property'} Selected`}
-
+                                                {`${selectedProperty.length} ${
+                                                    selectedProperty.length > 1 ? 'Properties' : 'Property'
+                                                } Selected`}
                                             </Box>
                                         ) : (
                                             <Typography>Select</Typography>
@@ -668,7 +735,7 @@ function Filter() {
                                                 <FormControlLabel
                                                     control={
                                                         <Checkbox
-                                                            checked={selectedProperty.length === propertyList.length}
+                                                            checked={selectedProperty.length === filteredProperties.length}
                                                             onChange={handleSelectAllProperty}
                                                         />
                                                     }
@@ -676,7 +743,7 @@ function Filter() {
                                                 />
                                             </Box>
                                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                {propertyList.map((property: any) => (
+                                                {filteredProperties.map((property: any) => (
                                                     <FormControlLabel
                                                         key={property.name}
                                                         control={
@@ -692,7 +759,7 @@ function Filter() {
                                         </Box>
                                     </AccordionDetails>
                                 </Accordion>
-                            }
+                            )}
                         </List>
                     </Box>
                 }
