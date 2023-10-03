@@ -1,9 +1,10 @@
 // src/BiDirectionalChart.js
 import React from 'react';
-import { Box, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import {Bar} from 'react-chartjs-2';
 import "./index.scss";
 import {ChartCard} from "./ChartCard";
+import Loading from '../../../components/Loading';
 
 const AgeGroupBarChart = (props: any) => {
     const { loading, ageGroupData, icon, name, colour } = props
@@ -57,49 +58,28 @@ const AgeGroupBarChart = (props: any) => {
                 display: false,
             },
             legend: {
-                display: false,
-            }
+                display: true,
+                position: 'bottom' as 'bottom'
+            },
+            title: {
+                display: true,
+                text: 'Population per age group',
+                font: {
+                    size: 16, 
+                    weight: 'bold' as 'bold', 
+                },
+            },
         },
     } as const;
 
     return (
-        <ChartCard
-            loading={loading}
-            chartComponent={
-                <>
-                    {ageGroupData?.length > 0 && <Box className="white-chart1" >
-                        <Box className="barchart-head">
-                            <Box className="barchart-head-left"></Box>
-                            <Box className="barchart-head-right">
-                                <Typography>{name}</Typography>
-                                {icon &&
-                                <img src={icon} alt='Icon image' />
-                                }
-                            </Box>
-                        </Box>
-                        <Box className="barChartBox">
-                            <Box className="barchartleft">
-                                <Typography className="adult-box"> Adult</Typography>
-                                <Typography className="adult-box"> Sub-Adult</Typography>
-                                <Typography className="adult-box"> Juvenile</Typography>
-                            </Box>
-                            <Box className="barchartright">
-                                <Bar data={data} options={options} height={225} width={1000} />
-                            </Box>
-                        </Box>
-                        <Box className="chartBottom">
-                            <Box className="chartBottom-left"></Box>
-                            <Box className="flex chartBottom-right">
-                                <Typography className="femaleBox"> Female</Typography>
-                                <Typography className="femaleBox"> Male</Typography>
-                            </Box>
-                        </Box>
-                    </Box >}
-                </>
-            }
-            title={''}
-            xLabel={''}
-        />
+        <Grid>
+            {!loading ? (
+               <Bar data={data} options={options} height={250} width={500} />
+            ) : (
+                <Loading containerStyle={{ minHeight: 160 }} />
+            )}
+        </Grid>
     )
 };
 
