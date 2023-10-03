@@ -495,5 +495,38 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['detail'], 'File not found')
 
+    def test_uploader_view_with_empty_compulsory_fields(self):
+        """Test uploader file view with an empty value in
+        compulsory field."""
+
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_empty_value_of_compulsory_fields.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+        self.assertTrue('error' in upload_session.error_file.path)
+
 
 
