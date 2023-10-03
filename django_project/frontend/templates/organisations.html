@@ -436,6 +436,7 @@
     function switchOrganisation(buttonElement){
       var organisationId = buttonElement.getAttribute('data-organisation-id');
       var url = `/switch-organisation/${organisationId}/?next=${encodeURIComponent(window.location.href)}`;
+      localStorage.setItem('current_organisation',organisationId)
       window.location.href = url;
 
     }
@@ -599,6 +600,6 @@
     }
   </style>
 </section>
-<section style="margin-top: -6%;">
+<section style="margin-top: -5%;">
     {% endblock %}
 </section>
