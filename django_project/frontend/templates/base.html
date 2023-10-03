@@ -58,8 +58,14 @@
   </style>
   <script>
 
-      var user_role = '{{ user.user_profile.user_role_type_id }}'
-      localStorage.setItem('user_role',user_role)
+      try{
+        var user_role = '{{ user.user_profile.user_role_type_id }}'
+        var current_organisation = '{{ user.user_profile.current_organisation_id }}'
+        localStorage.setItem('user_role',user_role)
+        localStorage.setItem('current_organisation',current_organisation)
+      }catch (exception){
+        //ignore error
+      }
 
       function extractBaseUrl(url) {
         // Find the index of the first forward slash after the initial //
