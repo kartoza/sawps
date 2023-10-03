@@ -162,6 +162,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             "species_name",
             "graph_icon",
             "activities",
+            "colour"
         ]
 
     def get_total(self, obj) -> int:

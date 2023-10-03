@@ -18,6 +18,23 @@ class PropertyAdmin(admin.ModelAdmin):
     list_display = ('name', 'organisation', 'property_size_ha', 'province')
     search_fields = ['name', 'organisation__name', 'province__name']
 
+    @admin.action(
+        description="Generate spatial filters for selected properties"
+    )
+    def generate_spatial_filters_for_properties(self, request, queryset):
+        """Admin action to generate spatial filter data for
+            selected properties."""
+        from property.tasks.generate_spatial_filter import (
+            generate_spatial_filter_task
+        )
+        for property_obj in queryset:
+            property_obj.spatialdatamodel_set.all().delete()
+            generate_spatial_filter_task.delay(
+                property_obj.id
+            )
+
+    actions = [generate_spatial_filters_for_properties]
+
 
 class ParcelAdmin(admin.ModelAdmin):
     """Admin page for Parcel model.
