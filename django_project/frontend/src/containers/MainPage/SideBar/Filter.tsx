@@ -703,7 +703,11 @@ function Filter() {
                         </List>
                     </Box>
                 }
-                {(userRole !== "National data consumer" || userRole !== "Floating user" || userRole !== "Base User" || userRole !== "Regional data consumer") &&
+                {
+                    userRole !== "National data consumer" || 
+                    userRole !== "Floating user" || 
+                    userRole !== "Base User" || 
+                    userRole !== "Regional data consumer" &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
                             <img src="/static/images/Property.svg" alt='Property image' />
