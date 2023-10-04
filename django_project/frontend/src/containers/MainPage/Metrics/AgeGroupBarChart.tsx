@@ -18,6 +18,10 @@ const availableColors: AvailableColors = {
 const AgeGroupBarChart = (props: any) => {
     const { loading, ageGroupData } = props;
 
+    // Extract the species name
+    const species = ageGroupData.length > 0 ? ageGroupData[0].owned_species__taxon__common_name_varbatim : '';
+
+
     // Define the labels (years) dynamically from ageGroupData
     const labels = ageGroupData.map((data: any) => data.total_year);
 
@@ -101,7 +105,7 @@ const options = {
         },
         title: {
             display: true,
-            text: 'Population per age group',
+            text: `Population per age group for ${species}`,
             font: {
                 size: 16,
                 weight: 'bold' as 'bold',
