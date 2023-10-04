@@ -300,7 +300,9 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
             .filter(**filters)
             .annotate(
                 **{
-                    f"total_{field}": Sum(field) if field != 'year' else F('year')
+                    f"total_{field}": (
+                        Sum(field) if field != 'year' else F('year')
+                    )
                     for field in sum_fields
                 }
             )
