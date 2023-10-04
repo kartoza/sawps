@@ -211,9 +211,20 @@ class PropertyList(APIView):
             current_organisation_id = get_current_organisation_id(
                 request.user
             ) or 0
-            properties = Property.objects.filter(
-                organisation_id=current_organisation_id
-            ).order_by('name')
+            organisation_id = current_organisation_id 
+
+            organisation = request.GET.get("organisation")
+            if organisation:
+                _organisation = organisation.split(",")
+                properties = Property.objects.filter(
+                    organisation_id__in=(
+                        [int(id) for id in _organisation]
+                    ),
+                ).order_by("name")
+            else:
+                properties = Property.objects.filter(
+                    organisation_id=organisation_id
+                ).order_by('name')
 
         return Response(
             status=200,
