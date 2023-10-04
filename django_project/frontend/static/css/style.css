@@ -533,7 +533,6 @@ hr.default-separator {
 
   .help-texts-container {
     display: flex;
-    flex-basis: 50%;
     flex-direction: column;
     justify-content: center;
 
@@ -549,8 +548,13 @@ hr.default-separator {
     display: flex;
   }
 
+  .help-background{
+    min-height: inherit !important;
+    height: calc(100% - 184px);
+  }
+
   .help-text {
-    width: 80%;
+    width: 95%;
     text-align: justify;
   }
 
@@ -685,7 +689,7 @@ hr.default-separator {
       padding-left: 20px;
       padding-right: 20px;
       top: 50%;
-      transform: translateY(-70%);
+      transform: translateY(-63%);
     }
 
   }
@@ -816,12 +820,7 @@ hr.default-separator {
 .about-subsection-1-video-holder {
   flex-basis: 50%;
   height: 100%;
-  height: 200px
-}
-
-.about-subsection-1-video-holder iframe {
-  width: 100%;
-  height: 100%;
+  height: 480px
 }
 
 .about-subsection-1-text {

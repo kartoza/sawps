@@ -79,6 +79,7 @@ nav:
                       - Configuration: developer/guide/configuration.md
                       - Building: developer/guide/building.md
                       - Workflows: developer/guide/workflows.md
+                      - Testing: developer/guide/testing.md
                       - "": developer/guide/templates/pull-request-template.md
                       - "": developer/guide/templates/commit-message-convention.md
                   - Manual:
