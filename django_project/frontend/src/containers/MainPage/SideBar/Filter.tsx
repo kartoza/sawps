@@ -31,7 +31,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import CloseIcon from '@mui/icons-material/Close';
 import Loading from '../../../components/Loading';
 import SpeciesLayer from '../../../models/SpeciesLayer';
-import { selectedOrganisationId, selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies } from '../../../reducers/SpeciesFilter';
+import { selectedOrganisationId, selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies, selectedActivityId } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import PropertyInterface from '../../../models/Property';
 import { MapEvents } from '../../../models/Map';
@@ -65,12 +65,13 @@ function Filter() {
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
+    const [selectedActivity, setSelectedActivity] = useState<string>('');
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string>('');
     const [userRole, setUserRole] = useState<string>('');
     const [searchOpen, setSearchOpen] = useState(false)
-    const [searchInputValue, setSearchInputValue] = useState('')
+    const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
     const [organisationList, setOrganisationList] = useState([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
@@ -155,9 +156,10 @@ function Filter() {
         center[1] + halfHeight,
     ];
     
+
     const handleInputChange = (value: string) => {
         setSearchInputValue(value);
-    
+
         // Update searchResults with the results from existing search
         searchProperty({ input: value }, (results) => {
           if (results) {
@@ -166,18 +168,18 @@ function Filter() {
             setSearchResults([]);
           }
         });
-        
+
         // Perform Nominatim-based search and update nominatimResults
         performNominatimSearch(value);
     };
-    
+
     const performNominatimSearch = async (value: string) => {
         try {
             setNominatimResults([]);
             const encodedValue = encodeURIComponent(value);
             const response = await axios.get(
               `https://nominatim.openstreetmap.org/search?format=json&q=${encodedValue}&countrycodes=AFR`
-            );            
+            );
             const updatedNominatimResults = response.data
             .filter((result: { display_name: string | string[]; }) => result.display_name.includes("South Africa"))
             .map((result: { place_id: any; }, index: any) => ({
@@ -191,14 +193,9 @@ function Filter() {
           console.error('Error fetching Nominatim address suggestions:', error);
         }
       };
-    
+
+    const [activityList,setActivityList]= useState<string[]>(["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"])
     const [filterlList, setFilterList] = useState([
-        {
-            "id": 3,
-            "name": "Activity",
-            "isSelected": false,
-            "filterData": ['Hunting', 'Poaching', 'Import', 'Export', 'Translocation', 'Contraseption']
-        },
         {
             "id": 5,
             "name": "Biome type",
@@ -214,7 +211,7 @@ function Filter() {
             "id": 2,
             "name": "Protected Area",
             "isSelected": false,
-            "filterData": ['National Park', 'Heritage sight', 'Nature Reserve']
+            "filterData": ['Heritage sight', 'National Park', 'Nature Reserve']
         }
     ])
 
@@ -451,6 +448,14 @@ function Filter() {
     useEffect(() => {
         dispatch(selectedOrganisationId(selectedOrganisation.length > 0 ? selectedOrganisation.join(',') : ''));
     }, [selectedOrganisation])
+
+    const handleSelectedActivity =(value: string) => {
+        setSelectedActivity(value);
+    };
+
+    useEffect(() => {
+        dispatch(selectedActivityId(selectedActivity));
+    }, [selectedActivity])
 
     const handleStartYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
@@ -826,6 +831,26 @@ function Filter() {
                         )
                     }
                 </List>
+                <Box>
+                    <Box className='sidebarBoxHeading'>
+                        <img src="/static/images/Activity.svg" alt='Property image' />
+                        <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
+                    </Box>
+                    <List className='ListItem' component="nav" aria-label="">
+                    {loading ? <Loading /> :
+                        (
+                            <Autocomplete
+                                id="combo-box-demo"
+                                disableClearable={true}
+                                options={activityList}
+                                sx={{ width: '100%' }}
+                                onChange={(event, value) => handleSelectedActivity(value)}
+                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                            />
+                        )
+                    }
+                    </List>
+                </Box>
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/Clock.svg" alt='watch image' />
                     <Typography color='#75B37A' fontSize='medium'>Year</Typography>
@@ -843,11 +868,11 @@ function Filter() {
 
                 <Box className='formboxInput'>
                     <Box className='form-inputFild'>
-                        <TextField type="number" size='small' value={localStartYear} onChange={(e:any) => handleStartYearChange(e.target.value)} />
+                        <TextField type="number" size='small' value={localStartYear} onChange={(e: any) => handleStartYearChange(e.target.value)} />
                         <Typography className='formtext'>From</Typography>
                     </Box>
                     <Box className='form-inputFild right-flids'>
-                        <TextField type="number" size='small' value={localEndYear} onChange={(e:any) => handleEndYearChange(e.target.value)} />
+                        <TextField type="number" size='small' value={localEndYear} onChange={(e: any) => handleEndYearChange(e.target.value)} />
                         <Typography className='formtext'>To</Typography>
                     </Box>
                 </Box>
