@@ -115,6 +115,7 @@ class OwnedSpeciesTestCase(TestCase):
         """Test data table filter by year and report"""
         year = self.owned_species[1].annualpopulation_set.first().year
         data = {
+            "species": self.taxon.scientific_name,
             "start_year": year,
             "end_year":year,
             "reports": "Species_report"
