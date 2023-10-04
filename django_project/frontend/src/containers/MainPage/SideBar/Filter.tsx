@@ -559,9 +559,6 @@ function Filter() {
         ){
             setOrganisationSelection(true)
             setPropertiesSelection(true)
-        }else {
-            setOrganisationSelection(false)
-            setPropertiesSelection(false)
         }
       
 
@@ -573,11 +570,8 @@ function Filter() {
           const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
 
           filterPropertiesByOrganisation(currentOrganisation);
-          setPropertiesSelection(false)
+          setPropertiesSelection(true)
           setOrganisationSelection(false)
-        }else {
-            setPropertiesSelection(true)
-            setOrganisationSelection(true)
         }
       }, []);
 
