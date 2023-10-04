@@ -276,7 +276,8 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
             "sub_adult_male",
             "sub_adult_female",
             "juvenile_male",
-            "juvenile_female"
+            "juvenile_female",
+            "year"
         ]
 
         filters = {
@@ -296,7 +297,7 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
         age_groups_totals = AnnualPopulation.objects.values(
             "owned_species__taxon__common_name_varbatim"
         ).filter(**filters).annotate(
-            **{f"total_{field}": Sum(field) for field in sum_fields}
+            **{f"total_{field}": Sum(field) if field != 'year' else F('year') for field in sum_fields}
         )
 
         return age_groups_totals
