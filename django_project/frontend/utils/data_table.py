@@ -1,6 +1,5 @@
 import urllib.parse
 from typing import Dict, List
-from django.db.models import F
 from django.db.models import Sum
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
@@ -87,7 +86,7 @@ def species_report(queryset: QuerySet, request) -> List:
 
         species_population_data = AnnualPopulation.objects.filter(
             **filters, owned_species__property__name=property.name,
-        ).values(*selected_fields)
+        ).values(*selected_fields).distinct()
 
         species_reports.extend(species_population_data)
 
@@ -103,7 +102,7 @@ def property_report(queryset: QuerySet, request) -> List:
     """
     property_reports = []
     filters = {}
-    
+
     species_list = request.GET.get("species")
     if species_list:
         species_list = species_list.split(",")
@@ -172,7 +171,7 @@ def sampling_report(queryset: QuerySet, request) -> List:
             "survey_method",
             "sampling_effort_coverage",
             "population_estimate_certainty",
-        ]
+    ]
 
     start_year = request.GET.get("start_year")
     if start_year:
