@@ -178,8 +178,9 @@ class OwnedSpeciesTestCase(TestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]["Sampling_report"][0]["scientific_name"],
-            "SpeciesA"
+            response.data[0]["Sampling_report"][0][
+            "owned_species__taxon__scientific_name"
+        ], "SpeciesA"
         )
 
 

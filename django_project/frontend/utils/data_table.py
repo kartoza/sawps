@@ -57,6 +57,14 @@ def species_report(queryset: QuerySet, request) -> List:
     """
     species_reports = []
     filters = {}
+    selected_fields = [
+        "owned_species__property__name",
+        "owned_species__taxon__scientific_name",
+        "owned_species__taxon__common_name_varbatim",
+        "year", "group", "total", "adult_male", "adult_female",
+        "juvenile_male", "juvenile_female", "sub_adult_male",
+        "sub_adult_female",
+    ]
 
     species_list = request.GET.get("species")
     if species_list:
@@ -77,19 +85,9 @@ def species_report(queryset: QuerySet, request) -> List:
 
     for property in queryset:
 
-        species_population_data = AnnualPopulation.objects.values(
-            "owned_species__taxon__scientific_name",
-            "owned_species__taxon__common_name_varbatim",
-        ).filter(
+        species_population_data = AnnualPopulation.objects.filter(
             **filters, owned_species__property__name=property.name,
-        ).values(
-            "year", "group", "total", "adult_male", "adult_female",
-            "juvenile_male", "juvenile_female", "sub_adult_male",
-            "sub_adult_female",
-            property_name=F("owned_species__property__name"),
-            scientific_name=F("owned_species__taxon__scientific_name"),
-            common_name=F("owned_species__taxon__common_name_varbatim"),
-        )
+        ).values(*selected_fields)
 
         species_reports.extend(species_population_data)
 
@@ -111,9 +109,10 @@ def property_report(queryset: QuerySet, request) -> List:
         species_list = species_list.split(",")
         filters["taxon__scientific_name__in"] = species_list
 
-    start_year = int(request.GET.get("start_year"))
+    start_year = (request.GET.get("start_year"))
     if start_year:
         end_year = int(request.GET.get("end_year"))
+        start_year = int(request.GET.get("start_year"))
         filters["annualpopulation__year__range"] = (start_year, end_year)
 
     activity = request.GET.get("activity")
@@ -164,6 +163,17 @@ def sampling_report(queryset: QuerySet, request) -> List:
     """
     sampling_reports = []
     filters = {}
+    select_fields = [
+            "owned_species__property__name",
+            "owned_species__taxon__scientific_name",
+            "owned_species__taxon__common_name_varbatim",
+            "population_status",
+            "population_estimate_category",
+            "survey_method",
+            "sampling_effort_coverage",
+            "population_estimate_certainty",
+        ]
+
     start_year = request.GET.get("start_year")
     if start_year:
         end_year = request.GET.get("end_year")
@@ -183,20 +193,9 @@ def sampling_report(queryset: QuerySet, request) -> List:
 
     for property in queryset:
 
-        sampling_reports_data = AnnualPopulation.objects.values(
-            "owned_species__taxon__scientific_name",
-            "owned_species__taxon__common_name_varbatim",
-        ).filter(
-            **filters,
-            owned_species__property__name=property.name,
-        ).values(
-            "population_status", "population_estimate_category",
-            "survey_method", "sampling_effort_coverage",
-            "population_estimate_certainty",
-            property_name=F("owned_species__property__name"),
-            scientific_name=F("owned_species__taxon__scientific_name"),
-            common_name=F("owned_species__taxon__common_name_varbatim"),
-        )
+        sampling_reports_data = AnnualPopulation.objects.filter(
+            **filters, owned_species__property__name=property.name,
+        ).values(*select_fields)
 
         sampling_reports.extend(sampling_reports_data)
 
@@ -255,15 +254,15 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
 
             if activity_name in activity_data_map:
                 query_values = [
+                    "owned_species__property__name",
+                    "owned_species__taxon__scientific_name",
+                    "owned_species__taxon__common_name_varbatim",
                     "year", "total", "adult_male", "adult_female",
                     "juvenile_male", "juvenile_female",
                 ] + activity_data_map[activity_name]
 
                 activity_data = AnnualPopulationPerActivity.objects.values(
                     *query_values,
-                    property_name=F("owned_species__property__name"),
-                    scientific_name=F("owned_species__taxon__scientific_name"),
-                    common_name=F("owned_species__taxon__common_name_varbatim"),
                 ).filter(
                     **filters,
                     owned_species__property__name=property.name,
