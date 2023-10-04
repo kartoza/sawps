@@ -1,6 +1,8 @@
 # Registration and Logging In
 <!-- How to Register and then Login -->
 
+## How do I register on the site?
+
 Navigate to the `REGISTER` button on the home page and fill in your details in the space provided.
 
 ![Registering 1](./img/registering-1.png)
