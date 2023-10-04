@@ -1,6 +1,7 @@
 import { Grid } from '@mui/material';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
+import Loading from '../../../components/Loading';
 
 type AvailableColors = {
     [key: string]: string;
@@ -112,10 +113,14 @@ const options = {
 
 
 return (
-    <Grid style={{ overflow: 'auto'}}>
-      <Bar data={data} options={options} height={200} width={500}/>
+    <Grid>
+        {!loading ? (
+            <Bar data={data} options={options} height={200} width={500} />
+        ) : (
+            <Loading containerStyle={{ minHeight: 160 }} />
+        )}
     </Grid>
-  );
+);
 };
 
 export default AgeGroupBarChart;
