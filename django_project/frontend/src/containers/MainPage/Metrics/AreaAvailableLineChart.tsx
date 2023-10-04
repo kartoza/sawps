@@ -96,7 +96,7 @@ const AreaAvailableLineChart = (props: any) => {
     return (
         <Grid>
             {!loading ? (
-                <Line data={AreaDataValue} options={AreaOptions} height={200} width={650} />
+                <Line data={AreaDataValue} options={AreaOptions} height={200} width={530} />
        
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
