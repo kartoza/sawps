@@ -22,8 +22,8 @@ const AgeGroupBarChart = (props: any) => {
     const species = ageGroupData.length > 0 ? ageGroupData[0].owned_species__taxon__common_name_varbatim : '';
 
 
-    // Define the labels (years) dynamically from ageGroupData
-    const labels = ageGroupData.map((data: any) => data.total_year);
+    // Define the labels (years) dynamically from ageGroupData and sort them from highest to lowest
+    const labels = ageGroupData.map((data: any) => data.total_year).sort((a: number, b: number) => b - a);
 
     // Define an array to hold datasets
     const datasets = [];
@@ -33,10 +33,16 @@ const AgeGroupBarChart = (props: any) => {
         // Map the data dynamically based on the age group
         const data = ageGroupData.map((data: any) => data[`total_${ageGroup.toLowerCase().replace(' ', '_')}`]);
 
+        // Rearrange the data to match the sorted labels
+        const sortedData = labels.map((year: any) => {
+            const index = ageGroupData.findIndex((item: { total_year: any; }) => item.total_year === year);
+            return data[index];
+        });
+
         // Create the dataset object
         const dataset = {
             label: ageGroup,
-            data: data,
+            data: sortedData,
             backgroundColor: color,
         };
 
