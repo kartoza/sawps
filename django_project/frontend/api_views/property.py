@@ -200,18 +200,18 @@ class PropertyList(APIView):
 
     def get(self, request, organisation_id=None, *args, **kwargs):
         if organisation_id is not None:
-            # Fetch properties based on 
+            # Fetch properties based on
             # the organisation ID provided in the URL
             properties = Property.objects.filter(
                 organisation_id=organisation_id
             ).order_by('name')
         else:
-            # Fetch properties based on 
+            # Fetch properties based on
             # the current organisation set on the user profile
             current_organisation_id = get_current_organisation_id(
                 request.user
             ) or 0
-            organisation_id = current_organisation_id 
+            organisation_id = current_organisation_id
 
             organisation = request.GET.get("organisation")
             if organisation:
