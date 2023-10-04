@@ -79,6 +79,8 @@ function Filter() {
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
     const [nominatimResults, setNominatimResults] = useState([]);
     const [filteredProperties, setFilteredProperties] = useState([])
+    const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
+    const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
 
     // Function to filter properties based on selected organizations
     const filterPropertiesByOrganisations = () => {
@@ -95,13 +97,49 @@ function Filter() {
         selectedOrganisation.includes(property.organisation_id)
         );
 
+        console.log('filterd ',filtered)
         setFilteredProperties(filtered);
     };
     
-      useEffect(() => {
-        // Call the filtering function whenever selectedOrganisation changes
-        filterPropertiesByOrganisations();
+    useEffect(() => {
+        let fetchedProperties: any[] = [];
+
+        if(selectedOrganisation.length === 0){
+            // reset
+            if (selectedOrganisation.length === 0) {
+                setFilteredProperties([]);
+                adjustMapToBoundingBox(boundingBox)
+                setSelectedProperty([])
+                return;
+            }
+        }
+      
+        const requests = selectedOrganisation.map((orgId) => {
+            return axios.get(`${FETCH_PROPERTY_LIST_URL}${orgId ? `${orgId}` : ""}`)
+            .then((response) => response.data)
+            .catch((error) => {
+                console.log(error);
+                return []; // Return an empty array in case of an error
+            });
+        });
+        
+        // Use Promise.all to wait for all requests to complete
+        Promise.all(requests)
+            .then((results) => {
+            // Concatenate the results from all requests into a single array
+            const fetchedProperties = results.flat();
+            
+            // Set filteredProperties once all requests are done
+            setFilteredProperties(fetchedProperties);
+            setLoading(false);
+            })
+            .catch((error) => {
+            console.log(error);
+            setLoading(false);
+            });
+      
       }, [selectedOrganisation]);
+      
     
     // intial map state vars for zoom out
     const center = [25.86, -28.52]; // Center point in backend
@@ -398,6 +436,7 @@ function Filter() {
     const handleSelectedOrganisation = (id: number) => () => {
         const organisationExists = selectedOrganisation.includes(id);
         if (organisationExists) {
+            console.log('organisation selected')
             const updatedSelectedOrganisation = selectedOrganisation.filter((item) => item !== id);
             setSelectedOrganisation(updatedSelectedOrganisation);
         } else {
@@ -514,16 +553,30 @@ function Filter() {
     useEffect(() => {
         const storedUserRole = localStorage.getItem('user_role');
         setUserRole(storedUserRole);
+
+        if(
+            storedUserRole && (
+            storedUserRole.toLocaleLowerCase() === "national data scientist" ||
+            storedUserRole.toLocaleLowerCase() === "regional data scientist" || 
+            storedUserRole.toLocaleLowerCase() === "super user" ||  
+            storedUserRole.toLocaleLowerCase() === "site administrator" ||
+            storedUserRole.toLocaleLowerCase() === "admin")
+        ){
+            setOrganisationSelection(true)
+            setPropertiesSelection(true)
+        }
       
 
         if (
           storedUserRole && (
           storedUserRole.toLowerCase() === 'organisation member' ||
-          storedUserRole.toLowerCase() === 'organisation manager' )
+          storedUserRole.toLowerCase() === 'organisation manager')
         ) {
           const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
 
           filterPropertiesByOrganisation(currentOrganisation);
+          setPropertiesSelection(true)
+          setOrganisationSelection(false)
         }
       }, []);
 
@@ -626,12 +679,7 @@ function Filter() {
                     />
                 </Box>
                 {
-                    (userRole === "National data scientist" ||
-                     userRole === "Regional data scientist" || 
-                     userRole === "Super user" ||  
-                     userRole === "Site administrator" ||
-                     userRole === "Admin"
-                    ) && <Box>
+                    allowOrganisationSelection && <Box>
                     <Box className='sidebarBoxHeading'>
                         <img src="/static/images/organisation.svg" alt='Organisation image' />
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
@@ -709,10 +757,7 @@ function Filter() {
                     </Box>
                 }
                 {
-                    userRole != "National data consumer" &&
-                    userRole != "Floating user" && 
-                    userRole != "Base User" && 
-                    userRole != "Regional data consumer" &&
+                    allowPropertiesSelection &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
                             <img src="/static/images/Property.svg" alt='Property image' />
