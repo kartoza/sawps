@@ -300,41 +300,35 @@ class SpeciesCSVUpload(object):
         return None
 
     # Save Survey method
-    def survey_method(self, row):
-        if_survey = self.row_value(row, IF_OTHER_SURVEY)
-        survey = self.row_value(row, SURVEY_METHOD)
-        if survey or if_survey:
-            survey, created = SurveyMethod.objects.get_or_create(
-                name=(survey if survey else if_survey)
-            )
+    def survey_method(self, survey):
+        """Get survey method."""
+        if not survey:
+            return None
+        elif survey == IF_OTHER_SURVEY_VAL:
             return survey
-        return None
 
-    def population_estimate_category(self, row):
+        survey, created = SurveyMethod.objects.get_or_create(
+            name=survey
+        )
+        return survey
+
+    def population_estimate_category(self, pop_est):
         """ Save Population estimate category.
         """
-        if_other = self.row_value(row, IF_OTHER_POPULATION)
-        pop_est = self.row_value(row, POPULATION_ESTIMATE_CATEGORY)
-        if pop_est or if_other:
-            p, pc = PopulationEstimateCategory.objects.get_or_create(name=(
-                pop_est if
-                pop_est else if_other
-            ))
-            return p
-        return None
+        if not pop_est:
+            return None
+        elif pop_est == IF_OTHER_POPULATION_VAL:
+            return pop_est
+
+        p, pc = PopulationEstimateCategory.objects.get_or_create(
+                name=pop_est)
+        return p
 
     def check_compulsory_fields(self, row):
         """Check if compulsory fields are empty."""
 
-        excluded = [
-            SURVEY_METHOD,
-            IF_OTHER_SURVEY,
-            POPULATION_ESTIMATE_CATEGORY,
-            IF_OTHER_POPULATION
-        ]
-
         for field in COMPULSORY_FIELDS:
-            if not self.row_value(row, field) and field not in excluded:
+            if not self.row_value(row, field):
                 self.error_file(
                     row=row,
                     message="The value of the compulsory field {} "
@@ -392,28 +386,37 @@ class SpeciesCSVUpload(object):
             area_available_to_species=area_available_to_species
         )
 
-        survey_method = self.survey_method(row)
-        if not survey_method:
-            self.error_file(
-                row=row,
-                message="The value of the compulsory field {} or {}"
-                        "is empty.".format(SURVEY_METHOD, IF_OTHER_SURVEY)
-            )
-            return
+        survey = self.row_value(row, SURVEY_METHOD)
+        survey_method = self.survey_method(survey)
+        survey_other = self.row_value(row, IF_OTHER_SURVEY)
+        if survey_method == IF_OTHER_SURVEY_VAL:
+            if not survey_other:
+                self.error_file(
+                    row=row,
+                    message="The value of field {}"
+                            "is empty.".format(IF_OTHER_SURVEY)
+                )
+                return
+            survey_other = survey_other
 
         open_close_system = self.open_close_system(row)
         if not open_close_system:
             return
 
-        population_estimate = self.population_estimate_category(row)
-        if not population_estimate:
-            self.error_file(
-                row=row,
-                message="The value of the compulsory field {} or {}"
-                        "is empty.".format(POPULATION_ESTIMATE_CATEGORY,
-                                           IF_OTHER_POPULATION)
-            )
+        pop_est = self.row_value(row, POPULATION_ESTIMATE_CATEGORY)
+        if not pop_est:
             return
+        population_estimate = self.population_estimate_category(pop_est)
+        population_other = self.row_value(row, IF_OTHER_POPULATION)
+        if population_estimate == IF_OTHER_POPULATION_VAL:
+            if not population_other:
+                self.error_file(
+                    row=row,
+                    message="The value of field {}"
+                            "is empty.".format(population_other)
+                )
+                return
+            population_other = population_other
 
         year = self.row_value(row, YEAR)
         if not year:
@@ -430,6 +433,11 @@ class SpeciesCSVUpload(object):
         pop_certainty = self.row_value(row, POPULATION_ESTIMATE_CERTAINTY)
         if not pop_certainty:
             return
+
+        pop_other = self.if_other_population_estimate_category(
+            row
+        )
+
 
         # Save AnnualPopulation
         annual, annual_created = AnnualPopulation.objects.get_or_create(
@@ -464,7 +472,9 @@ class SpeciesCSVUpload(object):
                 self.row_value(row, CERTAINTY_OF_POPULATION))),
             sampling_effort_coverage=self.sampling_effort(row),
             population_estimate_certainty=int(string_to_number(pop_certainty)),
-            population_estimate_category=population_estimate
+            population_estimate_category=population_estimate,
+            survey_method_other=survey_other,
+            population_estimate_category_other=population_other
         )
 
         if annual_created:
