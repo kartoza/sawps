@@ -253,7 +253,6 @@ form {
   color: var(--white);
   width: max-content;
   padding: 20px;
-  margin-top: 10vh;
   max-width: 400px;
 }
 
@@ -981,6 +980,10 @@ hr.default-separator {
   background: url('/static/images/contact/contact.png') no-repeat;
   background-size: contain;
 }
+.contact-page{
+  width: 100%;
+  max-width: 100%;
+}
 
 @media (max-width:1900px) {
   .about-subsection-1-text p {
@@ -1041,6 +1044,30 @@ hr.default-separator {
   background-color: transparent;
   height: auto;
 }
+.contact-page{
+  position: static !important;
+}
+.contact-banner-img{
+  height: auto;
+}
+
+.contact-banner-img {
+  background-size: 520px;
+}
+.account-form{
+  margin-top: 160px;
+}
+
+}
+
+@media (max-width:992px) {
+  .account-form {
+    margin-top: 300px;
+  }
+  .contact-banner-img {
+    background-size: 300px;
+    background-position: top center;
+  }
 }
 
 @media (max-width:767px) {
@@ -1075,6 +1102,13 @@ hr.default-separator {
   .section-img {
     transform: translateY(47%);
   }
+  .account-form {
+    margin-top: 300px;
+  }
+  .contact-banner-img {
+    background-size: 300px;
+    background-position: top center;
+  }
 }
 
 @media (max-width:520px) {
@@ -1104,4 +1138,6 @@ hr.default-separator {
   .footer-nav a{
     font-size: 14px;
   }
+
+
 }
