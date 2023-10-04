@@ -201,6 +201,72 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'], "PropertyA")
 
+    def test_property_list_with_organisation_id(self):
+        organisation = organisationFactory.create(national=True)
+
+        user = User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd'
+        )
+
+        user.user_profile.current_organisation = organisation
+        user.save()
+        # Create properties related to the organisation
+        property1 = PropertyFactory.create(
+            organisation=organisation,
+            name='PropertyA'
+        )
+        property2 = PropertyFactory.create(
+            organisation=organisation,
+            name='PropertyB'
+        )
+
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+
+        url = reverse("property-list", kwargs={'organisation_id': organisation.id})
+        client = Client()
+        response = client.get(url, **auth_headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['name'], "PropertyA")
+        self.assertEqual(response.data[1]['name'], "PropertyB")
+
+    def test_property_list_without_organisation_id(self):
+        organisation = organisationFactory.create(national=True)
+
+        user = User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd'
+        )
+
+        user.user_profile.current_organisation = organisation
+        user.save()
+
+        # Create properties related to the organisation
+        property1 = PropertyFactory.create(
+            organisation=organisation,
+            name='PropertyA'
+        )
+        property2 = PropertyFactory.create(
+            organisation=organisation,
+            name='PropertyB'
+        )
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+
+        url = reverse("property-list")
+        client = Client()
+        response = client.get(url, **auth_headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['name'], "PropertyA")
+        self.assertEqual(response.data[1]['name'], "PropertyB")
+
     def test_update_property(self):
         property_type = PropertyType.objects.all().first()
         property = PropertyFactory.create(
