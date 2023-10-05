@@ -395,6 +395,12 @@ class TestUploadSpeciesApiView(TestCase):
             self.assertTrue("Lemurs doesn't exist in the database. "
                             "Please select species available in the "
                             "dropdown only." in errors)
+            self.assertTrue("The value of field "
+                            "If_other_(population_estimate_category)_please "
+                            "explain is empty." in errors)
+            self.assertTrue("The value of field "
+                            "If_other_(survey_method)_please "
+                            "explain is empty." in errors)
 
     def test_upload_excel_missing_compulsory_field(self):
         """Test upload species with an excel file which misses

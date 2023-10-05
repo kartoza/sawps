@@ -395,7 +395,7 @@ class SpeciesCSVUpload(object):
             if not survey_other:
                 self.error_file(
                     row=row,
-                    message="The value of field {}"
+                    message="The value of field {} "
                             "is empty.".format(IF_OTHER_SURVEY)
                 )
                 return
