@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import ActivityDonutChart from "./ActivityDonutChart";
 import SpeciesLineChart from "./SpeciesLineChart";
 import DensityBarChart from "./DensityBarChart";
@@ -42,6 +42,10 @@ const Metrics = () => {
     const [populationData, setPopulationData] = useState([])
     const [speciesData, setSpeciesData] = useState([])
     const contentRef = useRef(null);
+
+    // Declare errorMessage as a state variable
+    const [showChats, setShowCharts] = useState(false);
+    
     const fetchActivityPercentageData = () => {
         setLoading(true)
         axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
@@ -74,6 +78,7 @@ const Metrics = () => {
         axios.get(`${FETCH_POPULATION_AGE_GROUP}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
+                console.log('fetched data: ',response.data)
                 setAgeGroupData(response.data)
             }
         }).catch((error) => {
@@ -97,10 +102,16 @@ const Metrics = () => {
     }
 
     useEffect(() => {
-        fetchActivityPercentageData();
-        fetchActivityTotalCount();
-        fetchPopulationAgeGroupData();
-        fetchAreaAvailableLineData();
+        if(propertyId && propertyId != ''){
+            fetchActivityPercentageData();
+            fetchActivityTotalCount();
+            fetchPopulationAgeGroupData();
+            fetchAreaAvailableLineData();
+            setShowCharts(true)
+        }else {
+            setShowCharts(false);
+        }
+        
     }, [propertyId, startYear, endYear, selectedSpecies])
 
     useEffect(() => {
@@ -128,122 +139,71 @@ const Metrics = () => {
     return (
         <Box>
             <Box className="charts-container">
-                <Grid container spacing={2} ref={contentRef} >
 
-                    <Grid item xs={12} md={6}>
-                        <SpeciesLineChart 
-                            selectedSpecies={selectedSpecies} 
-                            propertyId={propertyId} 
-                            startYear={startYear} 
-                            endYear={endYear} 
-                            loading={loading} 
-                            setLoading={setLoading} 
-                            speciesData={speciesData} 
-                            setSpeciesData={setSpeciesData}
-                            />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <PropertyTypeBarChart 
-                            selectedSpecies={selectedSpecies} 
-                            propertyId={propertyId} 
-                            startYear={startYear} 
-                            endYear={endYear} 
-                            loading={loading} 
-                            setLoading={setLoading} 
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} md={6}>
-                        <DensityBarChart 
-                            selectedSpecies={selectedSpecies} 
-                            propertyId={propertyId} 
-                            startYear={startYear} 
-                            endYear={endYear} 
-                            loading={loading} 
-                            setLoading={setLoading} 
-                            densityData={densityData} 
-                            setDensityData={setDensityData} 
-                        /> 
-                    </Grid>
-
-
-
-                    <Grid item xs={12} md={6}>
-                        <PopulationCategoryChart 
-                        selectedSpecies={selectedSpecies} 
-                        propertyId={propertyId} 
-                        startYear={startYear} 
-                        endYear={endYear} 
-                        loading={loading} 
-                        setLoading={setLoading} 
-                        populationData={populationData} 
-                        setPopulationData={setPopulationData} 
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} md={6}>
-                        <PropertyAvailableBarChart 
-                            selectedSpecies={selectedSpecies} 
-                            propertyId={propertyId} 
-                            startYear={startYear} 
-                            endYear={endYear} 
-                            loading={loading} 
-                            setLoading={setLoading} 
-                        />
-                    </Grid>
-
-                   
-
-  
-                    {ageGroupData.map((data) => (
-                        <Grid container key={data.id} item xs={12} md={6}>
-                        <AgeGroupBarChart
-                            loading={loading}
-                            ageGroupData={data?.age_group}
-                            icon={data?.graph_icon}
-                            colour={data?.colour}
-                            name={data?.common_name_varbatim}
-                        />
+                {showChats ? (
+                        <Grid container spacing={2} ref={contentRef}>
+                            <Grid item xs={12} md={6}>
+                            <DensityBarChart 
+                                selectedSpecies={selectedSpecies} 
+                                propertyId={propertyId} 
+                                startYear={startYear} 
+                                endYear={endYear} 
+                                loading={loading} 
+                                setLoading={setLoading} 
+                                densityData={densityData} 
+                                setDensityData={setDensityData} 
+                            /> 
                         </Grid>
-                    ))}
 
-                    {areaData.map((data, index) => (
-                        <Grid container key={index} item xs={12} md={6}>
-                            {data?.area?.owned_species ? (
-                            <AreaAvailableLineChart
-                                loading={loading}
-                                areaData={data?.area?.owned_species}
-                                message={data?.area?.message}
-                            />
-                            ) : (
-                            null
-                            )}
-                        </Grid>
-                    ))}
+                        {ageGroupData.map((data) => (
+                            <Grid container key={data.id} item xs={12} md={6}>
+                                <AgeGroupBarChart
+                                    loading={loading}
+                                    ageGroupData={data?.age_group}
+                                    icon={data?.graph_icon}
+                                    colour={data?.colour}
+                                    name={data?.common_name_varbatim}
+                                />
+                            </Grid>
+                        ))}
 
-                    {/* donut charts TODO */}
-                     {/* <Grid item xs={12} >
-                        {totalCoutData.length > 0 && activityData.length > 0 ?
-                            <Card className="">
-                                <Grid container className="" spacing={2}>
-                                    <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
-                                    <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
-                                </Grid>
-                            </Card> : null}
-                    </Grid> */}
+                        {areaData.map((data, index) => (
+                            <Grid container key={index} item xs={12} md={6}>
+                                {data?.area?.owned_species ? (
+                                    <AreaAvailableLineChart
+                                        loading={loading}
+                                        areaData={data?.area?.owned_species}
+                                        species_name={data?.common_name_varbatim}
+                                    />
+                                ) : (
+                                    null
+                                )}
+                            </Grid>
+                        ))}
+                    </Grid>
+                ): (
+                    // Render message to user
+                    <Grid container justifyContent="center" alignItems="center">
+                        <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                            Please select a property to fetch species data for.
+                        </Typography>
+                    </Grid>
+                )}
 
-                </Grid>
                 
-            </Box>
+        </Box>
             {/* for decision makers only */}
-            {userRole === 'decision maker' && (
+            {/* {userRole === 'decision maker' && (
                 <GenerateChartImages />
+            )} */}
+            {showChats && (
+                <Box className="downlodBtnbox">
+                    <Button onClick={handleDownloadPdf} variant="contained" color="primary">
+                        Download data visualizations
+                    </Button>
+                </Box>
             )}
-            <Box className="downlodBtnbox">
-                <Button onClick={handleDownloadPdf} variant="contained" color="primary">
-                    Download data visualisations
-                </Button>
-            </Box>
+
         </Box>
     );
 };
