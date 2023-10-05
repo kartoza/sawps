@@ -402,6 +402,19 @@ class TestUploadSpeciesApiView(TestCase):
                             "If_other_(survey_method)_please "
                             "explain is empty." in errors)
 
+        self.assertTrue(AnnualPopulation.objects.filter(
+            survey_method_other="Test survey"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category_other="Decennial census"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            survey_method=None
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category=None
+        ).count(), 1)
+
     def test_upload_excel_missing_compulsory_field(self):
         """Test upload species with an excel file which misses
          a compulsory field."""
