@@ -81,5 +81,6 @@ COMPULSORY_FIELDS = [
 ]
 
 SHEET_TITLE = "Dataset pilot"
-IF_OTHER_POPULATION_VAL = "If other select"
-IF_OTHER_SURVEY_VAL = "if other survey select"
+IF_OTHER_POPULATION_VAL = "Other (please describe how the population " \
+                          "size estimate was determined)"
+IF_OTHER_SURVEY_VAL = "Other - please explain"
