@@ -7,3 +7,4 @@ Welcome to the SAWPS user guide. In this section of the documentation, we aim to
 * **[The Explore Page:](./explore.md)** This section explains how use the Explore page of the platform and the various tabs contained within the explore page.
 * **[Profile Setup:](./profile-setup.md)** Describes how to set up your user profile and to navigate the various tabs of the profile page.
 * **[Organisations:](./organisations.md)** This documentation shows you the features of the organisation page.
+* **[Upload Data:](./data-upload.md)**: This section guides you through using the data upload feature on the site.
