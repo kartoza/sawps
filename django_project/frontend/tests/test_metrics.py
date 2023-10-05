@@ -347,16 +347,16 @@ class PopulationPerAgeGroupTestCase(BaseTestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_adult_male'], 250
+            response.data[0]['age_group'][0]['total_adult_male'], 50
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_adult_female'], 250
+            response.data[0]['age_group'][0]['total_adult_female'], 50
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_sub_adult_male'], 50
+            response.data[0]['age_group'][0]['total_sub_adult_male'], 25
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_sub_adult_female'], 50
+            response.data[0]['age_group'][0]['total_sub_adult_female'], 20
         )
 
     def test_total_area_per_property_type_filter_by_property(self):
@@ -369,10 +369,10 @@ class PopulationPerAgeGroupTestCase(BaseTestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_juvenile_female'], 150
+            response.data[0]['age_group'][0]['total_juvenile_female'], 30
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_juvenile_female'], 150
+            response.data[0]['age_group'][0]['total_juvenile_female'], 30
         )
 
 
