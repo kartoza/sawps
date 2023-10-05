@@ -1,6 +1,6 @@
 from typing import List
 from frontend.static_mapping import YEAR_DATA_LIMIT
-from django.db.models import F, Q, Sum, ExpressionWrapper, IntegerField
+from django.db.models import F, Q, Sum
 from population_data.models import AnnualPopulation
 from property.models import Property
 from rest_framework import serializers
@@ -294,24 +294,18 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
             end_year = self.context['request'].GET.get("end_year")
             filters["year__range"] = (start_year, end_year)
 
-        # Create a list of annotation expressions, excluding 'year' field
-        annotations = {
-            f"total_{field}": Sum(field) if field != 'year' else F('year')
-            for field in sum_fields
-        }
-
-        if 'year' in annotations:
-            annotations['year'] = ExpressionWrapper(
-                F('year'),
-                output_field=IntegerField()
-            )
-
-        # Use the annotations in your query
         age_groups_totals = (
             AnnualPopulation.objects
             .values("owned_species__taxon__common_name_varbatim")
             .filter(**filters)
-            .annotate(**annotations)
+            .annotate(
+                **{
+                    f"total_{field}": (
+                        Sum(field) if field != 'year' else F('year')
+                    )
+                    for field in sum_fields
+                }
+            )
         )
 
         return age_groups_totals
