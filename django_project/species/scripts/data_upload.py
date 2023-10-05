@@ -502,7 +502,7 @@ class SpeciesCSVUpload(object):
                 reintroduction_source=self.row_value(
                     row, INTRODUCTION_SOURCE),
                 founder_population=string_to_boolean(
-                    self.row_value(FOUNDER_POPULATION)),
+                    self.row_value(row, FOUNDER_POPULATION)),
                 intake_permit=self.row_value(row, INTRODUCTION_PERMIT_NUMBER)
             )
 

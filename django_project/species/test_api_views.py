@@ -222,7 +222,7 @@ class TestUploadSpeciesApiView(TestCase):
 
         upload_species_data(upload_session.id)
         self.assertEqual(Taxon.objects.all().count(), 1)
-        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 2)
+        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
         self.assertEqual(AnnualPopulation.objects.all().count(), 1)
         self.assertTrue(OwnedSpecies.objects.all().count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
@@ -230,6 +230,15 @@ class TestUploadSpeciesApiView(TestCase):
         ).count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
             activity_type__name="Planned Hunt/Cull"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Translocation (Intake)"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Planned Euthanasia/DCA"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Unplanned/Illegal Hunting"
         ).count(), 1)
 
         self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
