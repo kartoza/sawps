@@ -401,6 +401,10 @@ class TestUploadSpeciesApiView(TestCase):
             self.assertTrue("The value of field "
                             "If_other_(survey_method)_please "
                             "explain is empty." in errors)
+            self.assertTrue("The value of the compulsory field "
+                            "Population_estimate_category is empty." in errors)
+            self.assertTrue("The value of the compulsory field "
+                            "presence/absence is empty." in errors)
 
         self.assertTrue(AnnualPopulation.objects.filter(
             survey_method_other="Test survey"
@@ -413,6 +417,10 @@ class TestUploadSpeciesApiView(TestCase):
         ).count(), 1)
         self.assertTrue(AnnualPopulation.objects.filter(
             population_estimate_category=None
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category__name="Ad hoc or "
+                                               "opportunistic monitoring"
         ).count(), 1)
 
     def test_upload_excel_missing_compulsory_field(self):
