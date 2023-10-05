@@ -242,7 +242,7 @@ class SpeciesPopulationDensityPerPropertySerializer(
 
     def get_organisation_name(self, obj):
         return obj.organisation.name if obj.organisation else None
-    
+
     def get_density(self, obj) -> dict:
         species_name = self.context.get("species_name")
         if not species_name:
