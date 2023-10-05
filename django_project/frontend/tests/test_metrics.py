@@ -207,6 +207,15 @@ class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
         self.assertEqual(
             response.data[0]['density'].get('density'), 0.5
         )
+        # test with no species name
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+        # test with non existent owned species
+        data = {"species": "leo"}
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
 
     def test_species_population_density_filter_by_year(self) -> None:
         """
