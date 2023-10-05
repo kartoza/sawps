@@ -26,10 +26,9 @@ Functionalities offered on the Notifications Page:
 3. Filter: The user is able to filter by title or notification. This refines the search to only return notifications containing the providing keywords specifically by the filter selected.
 4. Notification: Clicking on any notification will cause the popup modal with notification information to appear.
 5. Delete icon:
-
-   * The user can delete their notifications.
-   * Organisation Managers can delete organisation notifications.
-   * When the delete icon is clicked a popup modal is evoked prompting if the user is sure of the actions they wish to take.
+      * The user can delete their notifications.
+      * Organisation Managers can delete organisation notifications.
+      * When the delete icon is clicked a popup modal is evoked prompting if the user is sure of the actions they wish to take.
 
 6. Rows per page: The user is able to choose the number of notifications they prefer to see on a page (The minimum is 5).
 7. Pagination Link: The user is able to see the current page they're own. They are also able to navigate to previous and next pages using the nav links.

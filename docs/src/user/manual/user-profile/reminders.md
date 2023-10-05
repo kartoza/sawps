@@ -28,10 +28,9 @@ Other functionalities offered on the Reminders Page:
 4. **Filter**: The user is able to filter by title or reminder. This refines the search to only return reminders containing the providing keywords specifically by the filter selected.
 5. **Reminder**: Clicking on any reminder will cause the popup modal for editing the reminder to appear.
 6. **Delete icon**:
-
-   * The user can delete their reminders.
-   * Organisation Managers can delete organisation reminders.
-   * When the delete icon is clicked a popup modal is evoked prompting if the user is sure of the actions they wish to take.
+      * The user can delete their reminders.
+      * Organisation Managers can delete organisation reminders.
+      * When the delete icon is clicked a popup modal is evoked prompting if the user is sure of the actions they wish to take.
 
 7. **Rows per page**: The user is able to choose the number of reminders they prefer to see on a page (The minimum is 5).
 8. **Pagination Link**: The user is able to see the current page they're own. They are also able to navigate to previous and next pages using the nav links.

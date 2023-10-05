@@ -16,17 +16,18 @@ The main area of the page displays your dataset in a tabular format. Each row re
 2. **Data**: Click on the `data` button to view the data.
 3. **Filters**: Utilise the filters provided on the page to refine your data view. These filters include:
     * **Organisation Filter:** Filter data by organisation.
-       * **Report Type Filter:** Filter data by report type.
-       * **Property Filter:** Filter data by property.
-       * **Year Range Filter:** Filter data by a specified year range.
-       * **Species Filter:** Filter data by species.
-       * **Spatial Filter:** Filter data by spatial criteria.
+         * **Report Type Filter:** Filter data by report type.
+         * **Property Filter:** Filter data by property.
+         * **Year Range Filter:** Filter data by a specified year range.
+         * **Species Filter:** Filter data by species.
+         * **Spatial Filter:** Filter data by spatial criteria.
 
     * **Applying Filters:**
-       * Click on the respective filter dropdowns.
-       * Set your filter criteria.
-       * Click on the filter to update the data display based on your filter selections.
+         * Click on the respective filter dropdowns.
+         * Set your filter criteria.
+         * Click on the filter to update the data display based on your filter selections.
     * Each filter is designed to help you narrow down your dataset to view only the data that's relevant to your analysis.
+
 4. **Column Search**: You can search for specific values within columns by selecting the column. This feature is especially useful when you need to locate specific data points within a large dataset. The table will dynamically filter to display selected column.
 5. **XLSX Format:** Click the "DOWNLOAD DATA REPORT" button to download the current dataset in XLSX format.
 6. **CSV Format:** Click the "DOWNLOAD DATA CSV" button to download the current dataset in CSV format.
