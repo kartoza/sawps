@@ -70,6 +70,7 @@ const AreaAvailableLineChart = (props: any) => {
                     text: 'Year', // X-axis label
                     font: {
                         size: 14,
+                        weight: "bold" as "bold",
                     },
                 },
             },
@@ -87,6 +88,7 @@ const AreaAvailableLineChart = (props: any) => {
                     text: 'Area (Ha)', // Y-axis label
                     font: {
                         size: 14,
+                        weight: "bold" as "bold",
                     },
                 },
             },
