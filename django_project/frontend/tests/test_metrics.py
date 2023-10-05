@@ -201,7 +201,8 @@ class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
         Test species population density per property.
         """
         url = self.url
-        response = self.client.get(url, **self.auth_headers)
+        data = {"species": "Lion"}
+        response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]['density'].get('density'), 0.5
@@ -212,7 +213,7 @@ class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
         Test species population density per property filtered by year.
         """
         year = self.owned_species[1].annualpopulation_set.first().year
-        data = {'start_year': year, "end_year":year}
+        data = {'start_year': year, "end_year":year, "species": "Lion"}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
