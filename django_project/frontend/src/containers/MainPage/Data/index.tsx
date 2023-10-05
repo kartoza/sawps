@@ -4,7 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Loading from '../../../components/Loading';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -49,19 +49,21 @@ const DataList = () => {
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
     const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
-    const color = {
-        "Species_report":"#F9A95D",
-        "Property_report": '#9F89BF',
-        "Sampling_report": "#FF5252",
-        "Province_report": "#FF5252",
+    const customColorWidth =
+        {
+        "Species_report":{color:"#F9A95D",width:100},
+        "Property_report": {color:'#9F89BF',width:135},
+        "Sampling_report": {color:"#FF5252",width:167},
+        "Province_report": {color:"#FF5252",width:100},
         "Species_population_report": "#9F89BF",
-        "Activity_report": checkUserRole(userRole) ? "#696969" : "#75B37A",
-        "Unplanned/natural deaths": "#75B37A",
-        "Planned translocation": "#F9A95D",
-        "Planned hunt/cull": "#FF5252",
-        "Planned euthanasia": "#9F89BF",
-        "Unplanned/illegal hunting": "#696969",
+        "Activity_report": checkUserRole(userRole) ? {color:"#696969",width:100} : {color:"#75B37A",width:100},
+        "Unplanned/natural deaths": {color:"#75B37A",width:107},
+        "Planned translocation": {color:"#F9A95D",width:103},
+        "Planned hunt/cull": {color:"#FF5252",width:123},
+        "Planned euthanasia": {color:"#9F89BF",width:125},
+        "Unplanned/illegal hunting": {color:"#696969",width:141}
     }
+
 
     function checkUserRole(userRole: string) {
         const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"];
@@ -125,7 +127,7 @@ const DataList = () => {
     useEffect(() => {
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
             <>
-                <Box className="data-table" style={{ backgroundColor: color[each as keyof typeof color] }}>
+                <Box className="data-table" style={{ backgroundColor: (customColorWidth as any)[each]?.color }}>
                     {each.split('_')
                         .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
                         .join(' ')}
@@ -140,7 +142,8 @@ const DataList = () => {
                                 headerName: key.split('_')
                                     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
                                     .join(' '),
-                                width: 125,
+                                width: (customColorWidth as any)[each]?.width,
+                                align: 'center',
                             }));
                             for (const value of generatedColumns) {
                                 if (filteredColumns.length === 0) {
@@ -169,14 +172,14 @@ const DataList = () => {
         )
         const activityDataGrid = checkUserRole(userRole) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
             <>
-                <Box className="data-table" style={{ backgroundColor: color[each as keyof typeof color] }}>
+                <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
                     {each.split('_')
                         .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
                         .join(' ')}
                 </Box>
                 {activityReportList.map((each: any) =>
                     <>
-                        <Box className="data-table" style={{ backgroundColor: color[each as keyof typeof color] }}>
+                        <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
                             {each.split('_')
                                 .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
                                 .join(' ')
@@ -186,12 +189,13 @@ const DataList = () => {
                             const cellData = item[each];
                             if (cellData !== undefined) {
                                 const cellKeys = cellData[0] && Object.keys(cellData[0]);
-                                const generatedColumns = cellKeys.length > 0 && cellKeys.map((key) => ({
+                                const generatedColumns: GridColDef[] = cellKeys.length > 0 && cellKeys.map((key) => ({
                                     field: key,
                                     headerName: key.split('_')
                                         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
                                         .join(' '),
-                                    width: 125,
+                                    width: (customColorWidth as any)[each]?.width,
+                                    align: 'center'
                                 }));
                                 const cellRows = cellData.map((row: any, rowIndex: any) => ({
                                     id: rowIndex,
