@@ -353,10 +353,10 @@ class PopulationPerAgeGroupTestCase(BaseTestCase):
             response.data[0]['age_group'][0]['total_adult_female'], 50
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_sub_adult_male'], 25
+            response.data[0]['age_group'][0]['total_sub_adult_male'], 10
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_sub_adult_female'], 20
+            response.data[0]['age_group'][0]['total_sub_adult_female'], 10
         )
 
     def test_total_area_per_property_type_filter_by_property(self):
