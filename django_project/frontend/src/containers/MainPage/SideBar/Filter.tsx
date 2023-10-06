@@ -94,17 +94,17 @@ function Filter() {
 
         // Filter properties that match selected organizations
         const filtered = propertyList.filter((property) =>
-        selectedOrganisation.includes(property.organisation_id)
+            selectedOrganisation.includes(property.organisation_id)
         );
 
-        console.log('filterd ',filtered)
+        console.log('filterd ', filtered)
         setFilteredProperties(filtered);
     };
-    
+
     useEffect(() => {
         let fetchedProperties: any[] = [];
 
-        if(selectedOrganisation.length === 0){
+        if (selectedOrganisation.length === 0) {
             // reset
             if (selectedOrganisation.length === 0) {
                 setFilteredProperties([]);
@@ -113,40 +113,40 @@ function Filter() {
                 return;
             }
         }
-      
+
         const requests = selectedOrganisation.map((orgId) => {
             return axios.get(`${FETCH_PROPERTY_LIST_URL}${orgId ? `${orgId}` : ""}`)
-            .then((response) => response.data)
-            .catch((error) => {
-                console.log(error);
-                return []; // Return an empty array in case of an error
-            });
+                .then((response) => response.data)
+                .catch((error) => {
+                    console.log(error);
+                    return []; // Return an empty array in case of an error
+                });
         });
-        
+
         // Use Promise.all to wait for all requests to complete
         Promise.all(requests)
             .then((results) => {
-            // Concatenate the results from all requests into a single array
-            const fetchedProperties = results.flat();
-            
-            // Set filteredProperties once all requests are done
-            setFilteredProperties(fetchedProperties);
-            setLoading(false);
+                // Concatenate the results from all requests into a single array
+                const fetchedProperties = results.flat();
+
+                // Set filteredProperties once all requests are done
+                setFilteredProperties(fetchedProperties);
+                setLoading(false);
             })
             .catch((error) => {
-            console.log(error);
-            setLoading(false);
+                console.log(error);
+                setLoading(false);
             });
-      
-      }, [selectedOrganisation]);
-      
-    
+
+    }, [selectedOrganisation]);
+
+
     // intial map state vars for zoom out
     const center = [25.86, -28.52]; // Center point in backend
     const width = 10;
     const height = 10;
 
-     // Calculate the bounding box
+    // Calculate the bounding box
     const halfWidth = width / 2;
     const halfHeight = height / 2;
     const boundingBox = [
@@ -155,18 +155,18 @@ function Filter() {
         center[0] + halfWidth,
         center[1] + halfHeight,
     ];
-    
+
 
     const handleInputChange = (value: string) => {
         setSearchInputValue(value);
 
         // Update searchResults with the results from existing search
         searchProperty({ input: value }, (results) => {
-          if (results) {
-            setSearchResults(results.data as SearchPropertyResult[]);
-          } else {
-            setSearchResults([]);
-          }
+            if (results) {
+                setSearchResults(results.data as SearchPropertyResult[]);
+            } else {
+                setSearchResults([]);
+            }
         });
 
         // Perform Nominatim-based search and update nominatimResults
@@ -178,23 +178,23 @@ function Filter() {
             setNominatimResults([]);
             const encodedValue = encodeURIComponent(value);
             const response = await axios.get(
-              `https://nominatim.openstreetmap.org/search?format=json&q=${encodedValue}&countrycodes=AFR`
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodedValue}&countrycodes=AFR`
             );
             const updatedNominatimResults = response.data
-            .filter((result: { display_name: string | string[]; }) => result.display_name.includes("South Africa"))
-            .map((result: { place_id: any; }, index: any) => ({
-                ...result,
-                key: `nominatim_${result.place_id}`,
-            }));
+                .filter((result: { display_name: string | string[]; }) => result.display_name.includes("South Africa"))
+                .map((result: { place_id: any; }, index: any) => ({
+                    ...result,
+                    key: `nominatim_${result.place_id}`,
+                }));
 
             setNominatimResults(updatedNominatimResults);
 
         } catch (error) {
-          console.error('Error fetching Nominatim address suggestions:', error);
+            console.error('Error fetching Nominatim address suggestions:', error);
         }
-      };
+    };
 
-    const [activityList,setActivityList]= useState<string[]>(["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"])
+    const [activityList, setActivityList] = useState<string[]>(["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"])
     const [filterlList, setFilterList] = useState([
         {
             "id": 5,
@@ -309,16 +309,16 @@ function Filter() {
         fetchOrganisationList();
     }, [])
 
-    const handleSelectedSpecies = (value: string) => {
-        setSelectedSpecies(value);
+    const handleSelectedSpecies = (value: any) => {
+        setSelectedSpecies(selectedSpecies.includes(value) ? '' : value)
     };
 
     useEffect(() => {
         dispatch(toggleSpecies(selectedSpecies));
     }, [selectedSpecies])
 
-    const handleSelectedInfo = (e: SelectChangeEvent) => {
-        setSelectedInfo(e.target.value);
+    const handleSelectedInfo = (value:any) => {
+        setSelectedInfo(selectedInfo.includes(value) ? '' : value)
     };
 
     useEffect(() => {
@@ -330,82 +330,82 @@ function Filter() {
         let minBottom: number = 90;
         let maxRight: number = -180;
         let maxTop: number = -90;
-      
+
         boundingBoxes.forEach(([left, bottom, right, top]) => {
-          if (left < minLeft) minLeft = left;
-          if (bottom < minBottom) minBottom = bottom;
-          if (right > maxRight) maxRight = right;
-          if (top > maxTop) maxTop = top;
+            if (left < minLeft) minLeft = left;
+            if (bottom < minBottom) minBottom = bottom;
+            if (right > maxRight) maxRight = right;
+            if (top > maxTop) maxTop = top;
         });
-      
+
         return [minLeft, minBottom, maxRight, maxTop];
-      };
+    };
 
 
     const zoomToCombinedBoundingBox = async (propertyIds: number[]) => {
         setLoading(true);
-      
-        try {
-          const propertyBoundingBoxes: number[][] = [];
-      
-          // Fetch and collect bounding boxes for each property
-          await Promise.all(
-            propertyIds.map(async (propertyId) => {
-              const response = await axios.get(`${FETCH_PROPERTY_DETAIL_URL}${propertyId}/`);
-              if (response.data && response.data.bbox && response.data.bbox.length === 4) {
-                propertyBoundingBoxes.push(response.data.bbox);
-              }
-            })
-          );
-      
-          if (propertyBoundingBoxes.length > 0) {
-            // Merge the collected bounding boxes
-            const combinedBoundingBox = mergeBoundingBoxes(propertyBoundingBoxes);
-      
-            // LEVEL 1 DEBUG
-            // console.log('navigation to bounding box', combinedBoundingBox);
 
-            adjustMapToBoundingBox(combinedBoundingBox)
-          } else {
-            console.error('No valid bounding boxes found for selected properties.');
-          }
-      
-          setLoading(false);
+        try {
+            const propertyBoundingBoxes: number[][] = [];
+
+            // Fetch and collect bounding boxes for each property
+            await Promise.all(
+                propertyIds.map(async (propertyId) => {
+                    const response = await axios.get(`${FETCH_PROPERTY_DETAIL_URL}${propertyId}/`);
+                    if (response.data && response.data.bbox && response.data.bbox.length === 4) {
+                        propertyBoundingBoxes.push(response.data.bbox);
+                    }
+                })
+            );
+
+            if (propertyBoundingBoxes.length > 0) {
+                // Merge the collected bounding boxes
+                const combinedBoundingBox = mergeBoundingBoxes(propertyBoundingBoxes);
+
+                // LEVEL 1 DEBUG
+                // console.log('navigation to bounding box', combinedBoundingBox);
+
+                adjustMapToBoundingBox(combinedBoundingBox)
+            } else {
+                console.error('No valid bounding boxes found for selected properties.');
+            }
+
+            setLoading(false);
         } catch (error) {
-          setLoading(false);
-          console.error(error);
+            setLoading(false);
+            console.error(error);
         }
-      };
-      
-      
-      
-      
-      const handleSelectedProperty = (id: number) => () => {
+    };
+
+
+
+
+    const handleSelectedProperty = (id: number) => () => {
         const propertyExists = selectedProperty.includes(id);
         let updatedSelectedProperty: number[] = [];
-      
+
         if (propertyExists) {
-          updatedSelectedProperty = selectedProperty.filter((item) => item !== id);
+            updatedSelectedProperty = selectedProperty.filter((item) => item !== id);
         } else {
-          updatedSelectedProperty = [...selectedProperty, id];
+            updatedSelectedProperty = [...selectedProperty, id];
         }
-      
+
         // LEVEL 3 DEBUG
         // console.log('selected properties', updatedSelectedProperty);
-      
+
         setSelectedProperty(updatedSelectedProperty);
-      
+
         if (updatedSelectedProperty.length === 0) {
             adjustMapToBoundingBox(boundingBox)
         } else {
-          // Call zoomToCombinedBoundingBox with the updated list of selected properties
-          zoomToCombinedBoundingBox(updatedSelectedProperty);
+            // Call zoomToCombinedBoundingBox with the updated list of selected properties
+            zoomToCombinedBoundingBox(updatedSelectedProperty);
         }
-      };
-      
-      
-      
-      const adjustMapToBoundingBox = (boundingBox: any[]) => {
+    };
+
+
+
+    const adjustMapToBoundingBox = (boundingBox: any[]) => {
         dispatch(
             triggerMapEvent({
                 id: uuidv4(),
@@ -414,8 +414,8 @@ function Filter() {
                 payload: boundingBox.map(String),
             })
         );
-      };
-      
+    };
+
 
     // Handle selecting all properties
     const handleSelectAllProperty = () => {
@@ -449,8 +449,8 @@ function Filter() {
         dispatch(selectedOrganisationId(selectedOrganisation.length > 0 ? selectedOrganisation.join(',') : ''));
     }, [selectedOrganisation])
 
-    const handleSelectedActivity =(value: string) => {
-        setSelectedActivity(value);
+    const handleSelectedActivity = (value: string) => {
+        setSelectedActivity(selectedActivity.includes(value) ? '' : value)
     };
 
     useEffect(() => {
@@ -531,7 +531,7 @@ function Filter() {
             setSearchResults([])
         }
     }, [searchInputValue])
-    
+
 
     const handleSelectAllOrganisation = () => {
         const organisationId = organisationList.map(data => data.id)
@@ -554,31 +554,31 @@ function Filter() {
         const storedUserRole = localStorage.getItem('user_role');
         setUserRole(storedUserRole);
 
-        if(
+        if (
             storedUserRole && (
-            storedUserRole.toLocaleLowerCase() === "national data scientist" ||
-            storedUserRole.toLocaleLowerCase() === "regional data scientist" || 
-            storedUserRole.toLocaleLowerCase() === "super user" ||  
-            storedUserRole.toLocaleLowerCase() === "site administrator" ||
-            storedUserRole.toLocaleLowerCase() === "admin")
-        ){
+                storedUserRole.toLocaleLowerCase() === "national data scientist" ||
+                storedUserRole.toLocaleLowerCase() === "regional data scientist" ||
+                storedUserRole.toLocaleLowerCase() === "super user" ||
+                storedUserRole.toLocaleLowerCase() === "site administrator" ||
+                storedUserRole.toLocaleLowerCase() === "admin")
+        ) {
             setOrganisationSelection(true)
             setPropertiesSelection(true)
         }
-      
+
 
         if (
-          storedUserRole && (
-          storedUserRole.toLowerCase() === 'organisation member' ||
-          storedUserRole.toLowerCase() === 'organisation manager')
+            storedUserRole && (
+                storedUserRole.toLowerCase() === 'organisation member' ||
+                storedUserRole.toLowerCase() === 'organisation manager')
         ) {
-          const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
+            const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
 
-          filterPropertiesByOrganisation(currentOrganisation);
-          setPropertiesSelection(true)
-          setOrganisationSelection(false)
+            filterPropertiesByOrganisation(currentOrganisation);
+            setPropertiesSelection(true)
+            setOrganisationSelection(false)
         }
-      }, []);
+    }, []);
 
     // Function to filter properties based on the current organization
     const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
@@ -586,7 +586,7 @@ function Filter() {
             const filtered = propertyList.filter((property) =>
                 property.organisation_id === currentOrganisation
             );
-        
+
             setFilteredProperties(filtered);
         } else {
             setFilteredProperties([]);
@@ -596,8 +596,8 @@ function Filter() {
     return (
         <Box>
             <Box className='sidebarBox'>
-                <Box style={{marginTop: '5%', marginBottom: '10%'}} >
-                    <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center' ,marginBottom: '5%'}}>
+                <Box style={{ marginTop: '5%', marginBottom: '10%' }} >
+                    <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center', marginBottom: '5%' }}>
                         <SearchIcon
                             style={{
                                 color: '#70B276',
@@ -614,49 +614,49 @@ function Filter() {
                         onClose={() => setSearchOpen(false)}
                         options={[
                             ...searchResults.map((result) => ({
-                            ...result,
-                            key: `searchResult_${result.id}`,
+                                ...result,
+                                key: `searchResult_${result.id}`,
                             })),
                             ...nominatimResults.map((result) => ({
-                            ...result,
-                            key: `nominatim_${result.place_id}`,
-                            display_name: result.display_name,
+                                ...result,
+                                key: `nominatim_${result.place_id}`,
+                                display_name: result.display_name,
                             })),
                         ]}
                         getOptionLabel={(option) => {
                             if (option.fclass) {
-                            return `${option.name} (${option.fclass})`;
+                                return `${option.name} (${option.fclass})`;
                             } else if (option.display_name) {
-                            return option.display_name;
+                                return option.display_name;
                             }
                             return ''; // Return an empty string if neither fclass nor display_name exists
                         }}
                         renderInput={(params) => (
                             <TextField
-                            variant="outlined"
-                            placeholder="Search place"
-                            {...params}
-                            InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                <InputAdornment position="end">
-                                    <SearchIcon />
-                                </InputAdornment>
-                                ),
-                            }}
+                                variant="outlined"
+                                placeholder="Search place"
+                                {...params}
+                                InputProps={{
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                         )}
                         onChange={(event, newValue) => {
                             if (newValue && newValue.bbox && newValue.bbox.length === 4) {
-                            // trigger zoom to property
-                            let _bbox = newValue.bbox.map(String);
-                            dispatch(triggerMapEvent({
-                                'id': uuidv4(),
-                                'name': MapEvents.ZOOM_INTO_PROPERTY,
-                                'date': Date.now(),
-                                'payload': _bbox
-                            }));
-                            setSearchInputValue('');
+                                // trigger zoom to property
+                                let _bbox = newValue.bbox.map(String);
+                                dispatch(triggerMapEvent({
+                                    'id': uuidv4(),
+                                    'name': MapEvents.ZOOM_INTO_PROPERTY,
+                                    'date': Date.now(),
+                                    'payload': _bbox
+                                }));
+                                setSearchInputValue('');
                             }
                             else if (newValue && newValue.boundingbox && newValue.boundingbox.length === 4) {
                                 let _bbox = newValue.boundingbox.map(String);
@@ -680,55 +680,55 @@ function Filter() {
                 </Box>
                 {
                     allowOrganisationSelection && <Box>
-                    <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/organisation.svg" alt='Organisation image' />
-                        <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
-                    </Box>
-                    <List className='ListItem' component="nav" aria-label="">
-                        {loading ? <Loading /> :
-                            <Accordion>
-                                <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                    {selectedOrganisation.length > 0 ? (
-                                        <Box >
-                                            {`${selectedOrganisation.length} ${selectedOrganisation.length > 1 ? 'Organisations' : 'Organisation'} Selected`}
-                                        </Box>
-                                    ) : (
-                                        <Typography>Select</Typography>
-                                    )}
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Box className="selectBox">
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        checked={selectedOrganisation.length === organisationList.length}
-                                                        onChange={handleSelectAllOrganisation}
-                                                    />
-                                                }
-                                                label="Select All"
-                                            />
-                                        </Box>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            {organisationList.map((data: any) => (
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/organisation.svg" alt='Organisation image' />
+                            <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading ? <Loading /> :
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                                        {selectedOrganisation.length > 0 ? (
+                                            <Box >
+                                                {`${selectedOrganisation.length} ${selectedOrganisation.length > 1 ? 'Organisations' : 'Organisation'} Selected`}
+                                            </Box>
+                                        ) : (
+                                            <Typography>Select</Typography>
+                                        )}
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Box className="selectBox">
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                                 <FormControlLabel
-                                                    key={data.name}
                                                     control={
                                                         <Checkbox
-                                                            checked={selectedOrganisation.includes(data.id)}
-                                                            onChange={handleSelectedOrganisation(data.id)}
+                                                            checked={selectedOrganisation.length === organisationList.length}
+                                                            onChange={handleSelectAllOrganisation}
                                                         />
                                                     }
-                                                    label={data.name}
+                                                    label="Select All"
                                                 />
-                                            ))}
+                                            </Box>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                {organisationList.map((data: any) => (
+                                                    <FormControlLabel
+                                                        key={data.name}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedOrganisation.includes(data.id)}
+                                                                onChange={handleSelectedOrganisation(data.id)}
+                                                            />
+                                                        }
+                                                        label={data.name}
+                                                    />
+                                                ))}
+                                            </Box>
                                         </Box>
-                                    </Box>
-                                </AccordionDetails>
-                            </Accordion>
-                        }
-                    </List>
-                </Box>
+                                    </AccordionDetails>
+                                </Accordion>
+                            }
+                        </List>
+                    </Box>
                 }
                 {tab === 'reports' &&
                     <Box>
@@ -743,13 +743,12 @@ function Filter() {
                                         displayEmpty
                                         sx={{ width: '100%', textAlign: 'start' }}
                                         value={selectedInfo}
-                                        onChange={handleSelectedInfo}
                                         renderValue={
                                             selectedInfo !== "" ? undefined : () => <div style={{ color: '#282829' }}>Select</div>
                                         }
                                     >
                                         {informationList.map((info: any, index) => (
-                                            <MenuItem value={info} key={index}>{info}</MenuItem>
+                                            <MenuItem value={info} key={index} onClick={() => handleSelectedInfo(info)}>{info}</MenuItem>
                                         ))}
                                     </Select>)
                             }
@@ -771,9 +770,8 @@ function Filter() {
                                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                         {selectedProperty.length > 0 ? (
                                             <Box>
-                                                {`${selectedProperty.length} ${
-                                                    selectedProperty.length > 1 ? 'Properties' : 'Property'
-                                                } Selected`}
+                                                {`${selectedProperty.length} ${selectedProperty.length > 1 ? 'Properties' : 'Property'
+                                                    } Selected`}
                                             </Box>
                                         ) : (
                                             <Typography>Select</Typography>
@@ -824,9 +822,14 @@ function Filter() {
                                 id="combo-box-demo"
                                 disableClearable={true}
                                 options={searchSpeciesList}
+                                value={selectedSpecies}
                                 sx={{ width: '100%' }}
-                                onChange={(event, value) => handleSelectedSpecies(value)}
                                 renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                                renderOption={(props, option) => (
+                                    <li {...props} onClick={() => handleSelectedSpecies(option)}>
+                                        {option}
+                                    </li>
+                                )}
                             />
                         )
                     }
@@ -837,18 +840,23 @@ function Filter() {
                         <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
                     </Box>
                     <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
-                        (
-                            <Autocomplete
-                                id="combo-box-demo"
-                                disableClearable={true}
-                                options={activityList}
-                                sx={{ width: '100%' }}
-                                onChange={(event, value) => handleSelectedActivity(value)}
-                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
-                            />
-                        )
-                    }
+                        {loading ? <Loading /> :
+                            (
+                                <Autocomplete
+                                    id="combo-box-demo"
+                                    disableClearable={true}
+                                    options={activityList}
+                                    sx={{ width: '100%' }}
+                                    value={selectedActivity}
+                                    renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                                    renderOption={(props, option) => (
+                                        <li {...props} onClick={() => handleSelectedActivity(option)}>
+                                            {option}
+                                        </li>
+                                    )}
+                                />
+                            )
+                        }
                     </List>
                 </Box>
                 <Box className='sidebarBoxHeading'>
