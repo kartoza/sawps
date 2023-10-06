@@ -222,7 +222,7 @@ class TestUploadSpeciesApiView(TestCase):
 
         upload_species_data(upload_session.id)
         self.assertEqual(Taxon.objects.all().count(), 1)
-        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 2)
+        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
         self.assertEqual(AnnualPopulation.objects.all().count(), 1)
         self.assertTrue(OwnedSpecies.objects.all().count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
@@ -230,6 +230,15 @@ class TestUploadSpeciesApiView(TestCase):
         ).count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
             activity_type__name="Planned Hunt/Cull"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Translocation (Intake)"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Planned Euthanasia/DCA"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Unplanned/Illegal Hunting"
         ).count(), 1)
 
         self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
@@ -395,6 +404,33 @@ class TestUploadSpeciesApiView(TestCase):
             self.assertTrue("Lemurs doesn't exist in the database. "
                             "Please select species available in the "
                             "dropdown only." in errors)
+            self.assertTrue("The value of field "
+                            "If_other_(population_estimate_category)_please "
+                            "explain is empty." in errors)
+            self.assertTrue("The value of field "
+                            "If_other_(survey_method)_please "
+                            "explain is empty." in errors)
+            self.assertTrue("The value of the compulsory field "
+                            "Population_estimate_category is empty." in errors)
+            self.assertTrue("The value of the compulsory field "
+                            "presence/absence is empty." in errors)
+
+        self.assertTrue(AnnualPopulation.objects.filter(
+            survey_method_other="Test survey"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category_other="Decennial census"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            survey_method=None
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category=None
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category__name="Ad hoc or "
+                                               "opportunistic monitoring"
+        ).count(), 1)
 
     def test_upload_excel_missing_compulsory_field(self):
         """Test upload species with an excel file which misses

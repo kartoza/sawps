@@ -155,6 +155,7 @@ const Metrics = () => {
                             /> 
                         </Grid>
 
+
                         {ageGroupData.map((data) => (
                             <Grid container key={data.id} item xs={12} md={6}>
                                 <AgeGroupBarChart
