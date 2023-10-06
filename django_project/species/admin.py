@@ -43,4 +43,19 @@ class TaxonAdmin(admin.ModelAdmin):
 
 admin.site.register(TaxonRank)
 admin.site.register(Taxon, TaxonAdmin)
-admin.site.register(OwnedSpecies)
+
+
+class OwnedSpeciesAdmin(admin.ModelAdmin):
+    list_display = ('property_name', 'taxon_scientific_name')
+
+    def property_name(self, obj):
+        return obj.property.name
+
+    def taxon_scientific_name(self, obj):
+        return obj.taxon.scientific_name
+
+    property_name.admin_order_field = 'property__name'
+    taxon_scientific_name.admin_order_field = 'taxon__scientific_name'
+
+
+admin.site.register(OwnedSpecies, OwnedSpeciesAdmin)
