@@ -15,6 +15,7 @@ const availableColors: AvailableColors = {
     'Juvenile male': 'rgba(157, 133, 190, 1)', // Solid color for male
     'Juvenile female': 'rgba(157, 133, 190, 0.5)', // 50% transparency for female
 };
+
 const AgeGroupBarChart = (props: any) => {
     const { loading, ageGroupData } = props;
 
@@ -120,7 +121,6 @@ const options = {
     },
 } as const;
   
-
 
 return (
     <Grid>

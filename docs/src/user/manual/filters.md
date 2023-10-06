@@ -15,7 +15,16 @@ The filter side panel enhances the user experience by allowing them to focus on 
 
 ## Filter Types
 
-### 1. Organisation Filter
+### 1. Search place Filter
+- **Filter Description:** This filter allows users to search place.
+- **Usage:** Click on search place to search the places.
+
+    ## Search place filter
+    ![Search_place filter](./img/Search_place.png)
+
+    1. **Search place**: Click on search place to search the places and filter.
+
+### 2. Organisation Filter
 - **Filter Description:** This filter allows users to filter data according to the organisation.
 - **Usage:** Select an organisation from the dropdown menu to filter data specific to that organisation.
 
@@ -30,7 +39,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
     Check the checkboxes next to the organisations you want to include in the filter.
 
 
-### 2. Report Type Filter
+### 3. Report Type Filter
 - **Filter Description:** This filter enables users to filter data based on report types.
 - **Usage:** Choose a report type from the list to view data associated with that report type.
 
@@ -40,7 +49,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
     1. **Report type**: The Report Type Filter is a single-select filter that allows users to filter data based on specific report types. With this filter, you can easily narrow down your dataset to view data associated with a particular report type.
 
 
-### 3. Property Filter
+### 4. Property Filter
 - **Filter Description:** The property filter helps users filter data based on properties.
 - **Usage:** Select a property from the available options to view data related to that property.
 
@@ -52,7 +61,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
     2. **Show selected property count**: You will see the count of the property selected.
 
 
-### 4. Species Filter
+### 5. Species Filter
 - **Filter Description:** The species filter allows users to filter data by species.
 - **Usage:** Choose a species from the list to view data specific to that species.
 
@@ -64,7 +73,17 @@ The filter side panel enhances the user experience by allowing them to focus on 
     2. **Single-Select Functionality**: The Species Filter allows you to select only one species at a time. If you select a different species, the filter will replace the previous selection with the newly chosen species.
 
 
-### 5. Year Range Filter
+### 6. Activity Filter
+- **Filter Description:** This filter allows users to narrow down data based on a activity type.
+- **Usage:** Filter data based on a activity type.
+
+    ## Activity filter
+    ![Activity filter](./img/Activity_filter.png)
+
+    1. **Select**: Select activity type to filter the data based on the activity type.
+
+
+### 7. Year Range Filter
 - **Filter Description:** This filter allows users to narrow down data based on a specified year range.
 - **Usage:** Set a range of years to view data within that time frame. For example, selecting a range of "2010-2020" will display data recorded between 2010 and 2020.
 
@@ -77,15 +96,13 @@ The filter side panel enhances the user experience by allowing them to focus on 
 
     3. **To**: Input field for the to (ending) year value.
 
-### 6. Spatial Filter
+### 8. Spatial Filter
 - **Filter Description:** This filter allows users to filter data based on spatial information.
 - **Usage:** Specify spatial criteria to view data located within a specific geographical area.
 
     ## Spatial filter
     ![Spatial filter](./img/Spatial_filter.png)
 
-    1. **Activity dropdown**: Using this you can filter the data according to the activity types.
-    2. **Biome type dropdown**: Using this you can filter the data according to the biome types.
-    3. **Critical biodiversity type dropdown**: Using this you can filter the data according to the critical biodiversity areas.
-    4. **Protected area dropdown**: Using this you can filter the data according to the protected area types.
-    5. **Population category dropdown**: Using this you can filter the data according to the population category types.
+    1. **Biome type dropdown**: Using this you can filter the data according to the biome types.
+    2. **Critical biodiversity type dropdown**: Using this you can filter the data according to the critical biodiversity areas.
+    3. **Protected area dropdown**: Using this you can filter the data according to the protected area types.
