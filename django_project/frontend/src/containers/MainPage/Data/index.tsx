@@ -49,7 +49,6 @@ const DataList = () => {
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
     const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
-<<<<<<< HEAD
     const customColorWidth =
         {
         "Species_report":{color:"#F9A95D",width:100},
@@ -63,21 +62,7 @@ const DataList = () => {
         "Planned hunt/cull": {color:"#FF5252",width:123},
         "Planned euthanasia": {color:"#9F89BF",width:125},
         "Unplanned/illegal hunting": {color:"#696969",width:141}
-=======
-    const color = {
-        "Species_report":"#F9A95D",
-        "Property_report": '#9F89BF',
-        "Sampling_report": "#FF5252",
-        "Province_report": "#FF5252",
-        "Activity_report": checkUserRole(userRole) ? "#696969" : "#75B37A",
-        "Unplanned/natural deaths": "#75B37A",
-        "Planned translocation": "#F9A95D",
-        "Planned hunt/cull": "#FF5252",
-        "Planned euthanasia": "#9F89BF",
-        "Unplanned/illegal hunting": "#696969",
->>>>>>> 8ca16da0 (Fix repetition issue)
     }
-
 
     function checkUserRole(userRole: string) {
         const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"];
