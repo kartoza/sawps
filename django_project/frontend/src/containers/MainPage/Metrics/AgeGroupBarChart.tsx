@@ -15,7 +15,6 @@ const availableColors: AvailableColors = {
     'Juvenile male': 'rgba(157, 133, 190, 1)', // Solid color for male
     'Juvenile female': 'rgba(157, 133, 190, 0.5)', // 50% transparency for female
 };
-
 const AgeGroupBarChart = (props: any) => {
     const { loading, ageGroupData } = props;
 
@@ -26,29 +25,41 @@ const AgeGroupBarChart = (props: any) => {
     // Define the labels (years) dynamically from ageGroupData and sort them from highest to lowest
     const labels = ageGroupData.map((data: any) => data.total_year).sort((a: number, b: number) => b - a);
 
-    // Define an array to hold datasets
+    // Define age groups and their corresponding data properties
+    const ageGroups = [
+        { label: 'Adult male', dataProperty: 'total_adult_male' },
+        { label: 'Adult female', dataProperty: 'total_adult_female' },
+        { label: 'Sub-adult male', dataProperty: 'total_sub_adult_male' },
+        { label: 'Sub-adult female', dataProperty: 'total_sub_adult_female' },
+        { label: 'Juvenile male', dataProperty: 'total_juvenile_male' },
+        { label: 'Juvenile female', dataProperty: 'total_juvenile_female' },
+    ];
+
+    // Create an array to hold datasets
     const datasets = [];
 
-    // Loop through the available colors and create a dataset for each age group
-    for (const [ageGroup, color] of Object.entries(availableColors)) {
-        // Map the data dynamically based on the age group
-        const data = ageGroupData.map((data: any) => data[`total_${ageGroup.toLowerCase().replace(' ', '_')}`]);
+    // Loop through age groups
+    for (const ageGroup of ageGroups) {
+        // Map the data for the current age group
+        const data = ageGroupData.map((dataItem: any) => dataItem[ageGroup.dataProperty] || 0);
 
         // Rearrange the data to match the sorted labels
         const sortedData = labels.map((year: any) => {
-            const index = ageGroupData.findIndex((item: { total_year: any; }) => item.total_year === year);
+            const index = ageGroupData.findIndex((item: { total_year: any }) => item.total_year === year);
             return data[index];
         });
 
-        // Create the dataset object
-        const dataset = {
-            label: ageGroup,
-            data: sortedData,
-            backgroundColor: color,
-        };
+    // Create the dataset object
+    const dataset = {
+        label: ageGroup.label,
+        data: sortedData,
+        backgroundColor: availableColors[ageGroup.label],
+    };
 
-        datasets.push(dataset);
-    }
+    datasets.push(dataset);
+}
+
+
 
     const data = {
         labels: labels,
@@ -92,7 +103,7 @@ const options = {
     },
     plugins: {
         tooltip: {
-            enabled: false
+            enabled: true
         },
         datalabels: {
             display: false,
@@ -121,6 +132,7 @@ const options = {
     },
 } as const;
   
+
 
 return (
     <Grid>

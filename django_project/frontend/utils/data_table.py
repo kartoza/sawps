@@ -9,6 +9,7 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
+from population_data.serializers import OpenCloseSystemSerializer
 from property.models import Province
 from species.models import OwnedSpecies
 
@@ -165,7 +166,9 @@ def property_report(queryset: QuerySet, request) -> List:
                 "area_available_to_species": area_available[
                     "area_available_to_species"
                 ],
-                "open": property.open
+                "open": OpenCloseSystemSerializer(
+                    property.open
+                ).data['name'] if property.open else None
             }
             for area_available in area_available_values
         ])
