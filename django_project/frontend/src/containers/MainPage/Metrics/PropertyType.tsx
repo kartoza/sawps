@@ -1,18 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Box, Typography, Card, Grid } from "@mui/material";
-import { Bar } from "react-chartjs-2";
-import { CategoryScale } from "chart.js";
-import Chart from "chart.js/auto";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-import axios from "axios";
-import Loading from "../../../components/Loading";
-import { useAppSelector } from "../../../app/hooks";
-import { RootState } from "../../../app/store";
+import React, { useEffect, useState } from 'react';
+import { Grid } from "@mui/material";
+import { Bar } from 'react-chartjs-2';
 import "./index.scss";
-import { ChartCard } from "./ChartCard";
+import Loading from '../../../components/Loading';
+import axios from 'axios';
 
-Chart.register(CategoryScale);
-Chart.register(ChartDataLabels);
+
+// Define colors for each year
+const colors = ['rgba(112, 178, 118, 1)', 'rgba(250, 167, 85, 1)', 'rgba(157, 133, 190, 1)', '#FF5252', '#616161'];
 
 const FETCH_SPECIES_DENSITY = '/api/total-area-per-property-type/';
 
@@ -20,7 +15,9 @@ const PropertyTypeBarChart = (props: any) => {
     const { selectedSpecies, propertyId, startYear, endYear, loading, setLoading } = props;
     const [propertyTypeData, setPropertyTypeData] = useState([]);
     const labels: string[] = [];
+    const legend_labels: string[] = [];
     const totalArea: number[] = [];
+    const datasets: any =[];
 
     const fetchActivityPercentageData = () => {
         setLoading(true);
@@ -46,47 +43,109 @@ const PropertyTypeBarChart = (props: any) => {
         fetchActivityPercentageData();
     }, [propertyId, startYear, endYear, selectedSpecies]);
 
-    for (const each of propertyTypeData) {
-        labels.push(each.property_type__name);
-        totalArea.push(each.total_area);
-    }
+    // Extract labels and totalArea from propertyTypeData
+const backgroundColors: string[] = [];
 
-    // Assign colors based on availableColors array
-    const availableColors: string[] = [
-        "#FF5252",
-        "rgb(83 83 84)",
-        "#75B37A",
-        "#282829",
-        "#F9A95D",
-        "#000000",
-        "#70B276",
-        "#9F89BF",
-    ];
 
-    // Ensure we have enough colors for all property types
-    const backgroundColors = labels.map((_, index) => availableColors[index % availableColors.length]);
+for (const each of propertyTypeData) {
+    labels.push(each.property_type__name); // Use 'property_type__name' as label
+    legend_labels.push(each.name);
+    totalArea.push(each.total_area);
+    backgroundColors.push(colors[labels.length - 1]); // Set background color based on the index
+}
 
-    const data = {
-        labels: labels,
-        datasets: [
-            {
-                label: labels.length === 1 ? labels[0] : 'Population density (individuals/Ha)',
-                backgroundColor: backgroundColors,
-                borderColor: backgroundColors,
-                borderWidth: 1,
-                data: totalArea,
-            },
-        ],
-    };
+for(var count = 0; count < labels.length; count++){
+    datasets.push(
+        {
+            label: legend_labels[count], // Use the 'name' field as the label
+            data: [totalArea[count]], // Use 'total_area' as data
+            backgroundColor: backgroundColors[count], // Use background color based on the index
+        }
+    )
+}
 
+console.log('datasets ',datasets)
+// Create datasets
+// const datasets = labels.map((label, index) => {
+//     return {
+//         label: legend_labels[index], // Use the 'name' field as the label
+//         data: [totalArea[index]], // Use 'total_area' as data
+//         backgroundColor: backgroundColors[index], // Use background color based on the index
+//     };
+
+// });
+
+const data = {
+    labels: [''],
+    datasets: datasets,
+};
+    
     const options = {
+        indexAxis: 'x' as const,
+        scales: {
+            x: {
+                beginAtZero: false,
+                display: true,
+                stacked: false,
+                title: {
+                    display: true,
+                    text: 'Property type', // X-axis label
+                    font: {
+                        size: 14,
+                        weight: "bold" as "bold",
+                    },
+                },
+            },
+            y: {
+                display: true,
+                stacked: false,
+                grid: {
+                    display: false,
+                },
+                ticks: {
+                    color: "black",
+                },
+                title: {
+                    display: true,
+                    text: 'Area (Ha)', // Y-axis label
+                    font: {
+                        size: 14,
+                        weight: "bold" as "bold",
+                    },
+                },
+                callback: (value: string, index: number) => {
+                    return legend_labels[index];
+                },
+            },
+        },
         plugins: {
+            tooltip: {
+                enabled: true,
+                callbacks: {
+                    // Use the label callback to customize the tooltip label
+                    label: (context: { dataset: any; parsed: any; dataIndex:number; }) => {
+                        const datasetLabel = context.dataset.label || '';
+                        const value = context.parsed.y;
+                        const property = propertyTypeData[context.dataIndex];
+                        return `${datasetLabel}: ${property.name} - ${value} Ha`;
+                    },
+                },
+            },
             datalabels: {
                 display: false,
             },
             legend: {
                 display: true,
-                position: 'bottom' as 'bottom',
+                position: 'right' as 'right',
+                labels: {
+                    boxWidth: 20,
+                    boxHeight: 13,
+                    padding: 12,
+                    font : {
+                      size: 10,
+                      weight: "bold" as "bold"
+                    }
+                },
             },
             title: {
                 display: true,
@@ -97,38 +156,12 @@ const PropertyTypeBarChart = (props: any) => {
                 },
             },
         },
-        scales: {
-            x: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Property type', // X-axis label
-                    font: {
-                        size: 14,
-                    },
-                },
-            },
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 50,
-                    max: 200,
-                },
-                title: {
-                    display: true,
-                    text: 'Area (Ha)', // Y-axis label
-                    font: {
-                        size: 14,
-                    },
-                },
-            },
-        },
-    };
+    } as const;
 
     return (
         <Grid>
             {!loading ? (
-                <Bar data={data} options={options} height={400} width={1000} />
+                <Bar data={data} options={options} height={200} width={500} />
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
             )}

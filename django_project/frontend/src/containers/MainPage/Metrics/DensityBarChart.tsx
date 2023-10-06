@@ -134,7 +134,7 @@ const DensityBarChart = (props: any) => {
         },
         plugins: {
             tooltip: {
-                enabled: false,
+                enabled: true,
             },
             datalabels: {
                 display: false,

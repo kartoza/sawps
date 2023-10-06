@@ -46,6 +46,9 @@ const AreaAvailableLineChart = (props: any) => {
             },
         },
         plugins: {
+            tooltip: {
+                enabled: true,
+            },
             datalabels: {
                 display: false,
             },
