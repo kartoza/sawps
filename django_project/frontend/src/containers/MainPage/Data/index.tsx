@@ -143,7 +143,6 @@ const DataList = () => {
                                     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
                                     .join(' '),
                                 width: (customColorWidth as any)[each]?.width,
-                                align: 'center',
                             }));
                             for (const value of generatedColumns) {
                                 if (filteredColumns.length === 0) {
@@ -195,7 +194,6 @@ const DataList = () => {
                                         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
                                         .join(' '),
                                     width: (customColorWidth as any)[each]?.width,
-                                    align: 'center'
                                 }));
                                 const cellRows = cellData.map((row: any, rowIndex: any) => ({
                                     id: rowIndex,
