@@ -21,7 +21,7 @@ import {
   setInitialMapTheme
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
-import { MapSelectionMode, MapTheme } from "../../../models/Map";
+import { MapSelectionMode, MapTheme, MapEvents } from "../../../models/Map";
 import { UploadMode } from "../../../models/Upload";
 import './index.scss';
 import CustomNavControl from './NavControl';
@@ -131,7 +131,7 @@ export default function Map() {
                     let _bbox_str = _bbox.map(String)
                     dispatch(triggerMapEvent({
                         'id': uuidv4(),
-                        'name': 'BOUNDARY_FILES_UPLOADED',
+                        'name': MapEvents.BOUNDARY_FILES_UPLOADED,
                         'date': Date.now(),
                         'payload': _bbox_str
                     }))
@@ -459,7 +459,7 @@ export default function Map() {
     let _mapObj: maplibregl.Map = map.current
     for (let i=0; i < mapEvents.length; ++i) {
       let _event = mapEvents[i]
-      if (_event.name === 'REFRESH_PROPERTIES_LAYER') {
+      if (_event.name === MapEvents.REFRESH_PROPERTIES_LAYER) {
         // add query param t to properties layer to refresh it
         let _properties_source = _mapObj.getSource('properties') as any;
         let _url = _properties_source['tiles'][0]
@@ -475,16 +475,18 @@ export default function Map() {
 
         // Force a repaint, so that the map will be repainted without you having to touch the map
         _mapObj.triggerRepaint()
-      } else if (_event.name === 'PROPERTY_SELECTED' || _event.name === 'BOUNDARY_FILES_UPLOADED') {
+      } else if (_event.name === MapEvents.PROPERTY_SELECTED ||
+          _event.name === MapEvents.BOUNDARY_FILES_UPLOADED ||
+          _event.name === MapEvents.ZOOM_INTO_PROPERTY) {
         // parse bbox from payload
         if (_event.payload && _event.payload.length === 4) {
           let _bbox = _event.payload.map(Number)
           _mapObj.fitBounds([[_bbox[0], _bbox[1]], [_bbox[2], _bbox[3]]], {
-              padding: 100,
+              padding: 50,
               maxZoom: 16
           })
         }
-      } else if (_event.name === 'HIGHLIGHT_SELECTED_PARCEL') {
+      } else if (_event.name === MapEvents.HIGHLIGHT_SELECTED_PARCEL) {
         if (_event.payload && _event.payload.length === 2) {
           if (highlightedParcel.id) {
             // remove current highlight

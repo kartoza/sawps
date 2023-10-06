@@ -7,15 +7,15 @@ import Layers from './Layers';
 import './index.scss';
 import Filter from './Filter';
 
-function LayerFilterTabs() {
-    const [selectedTabSideBar, setSelectedTabSideBar] = useState(0)
+function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
+    const [selectedTabSideBar, setSelectedTabSideBar] = useState(0);
 
     return (
         <Box className='LeftSideBar'>
             <Box className='TabHeaders'>
                 <Tabs value={selectedTabSideBar}
                     onChange={(event: React.SyntheticEvent, newValue: number) => {
-                        setSelectedTabSideBar(newValue)
+                        setSelectedTabSideBar(newValue);
                     }} aria-label="Left Side Bar Tabs"
                 >
                     <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
@@ -33,7 +33,7 @@ function LayerFilterTabs() {
                 </Box>
             </Box>
         </Box>
-    )
+    );
 }
 
 export default LayerFilterTabs;

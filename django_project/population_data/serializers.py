@@ -3,20 +3,12 @@
 from rest_framework import serializers
 
 from .models import (
-    CountMethod,
     OpenCloseSystem,
     PopulationEstimateCategory,
     PopulationStatus,
     SamplingEffortCoverage,
+    Certainty
 )
-
-
-class CountMethodSerializer(serializers.ModelSerializer):
-    """Count Method Serializer"""
-
-    class Meta:
-        model = CountMethod
-        fields = '__all__'
 
 
 class OpenCloseSystemSerializer(serializers.ModelSerializer):
@@ -49,3 +41,19 @@ class PopulationEstimateCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PopulationEstimateCategory
         fields = '__all__'
+
+
+class CertaintySerializer(serializers.ModelSerializer):
+    """Certainty Serializer"""
+    id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    def get_id(self, obj: Certainty):
+        return int(obj.name)
+
+    def get_name(self, obj: Certainty):
+        return obj.description
+
+    class Meta:
+        model = Certainty
+        fields = ['id', 'name']

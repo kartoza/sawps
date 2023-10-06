@@ -1,17 +1,16 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from .base_view import RegisteredOrganisationBaseView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 
-def redirect_to_data(request):
+def redirect_to_reports(request):
     tab_number = 1
     redirect_url = f"{reverse('map')}?tab={tab_number}"
     return HttpResponseRedirect(redirect_url)
 
 
-def redirect_to_metrics(request):
+def redirect_to_charts(request):
     tab_number = 2
     redirect_url = f"{reverse('map')}?tab={tab_number}"
     return HttpResponseRedirect(redirect_url)
@@ -29,7 +28,7 @@ def redirect_to_explore(request):
     return HttpResponseRedirect(redirect_url)
 
 
-class MapView(LoginRequiredMixin, RegisteredOrganisationBaseView):
+class MapView(RegisteredOrganisationBaseView):
     """
     MapView displays the map page by rendering the 'map.html' template.
     """

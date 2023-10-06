@@ -55,9 +55,9 @@ function MainPage() {
   const isUploadUrl = location.pathname === '/upload';
 
   const tabNameToValue: { [key: string]: number } = {
-    'explore': 0,
-    'data': 1,
-    'metrics': 2,
+    'map': 0,
+    'reports': 1,
+    'charts': 2,
     'upload': 3,
   };
 
@@ -70,31 +70,31 @@ function MainPage() {
       }
     }
   }, [location.search]);
-  
+
   useEffect(() => {
-    const tabNames = ['explore', 'data', 'metrics', 'upload'];
+    const tabNames = ['map', 'reports', 'charts', 'upload'];
     const selectedTabName = tabNames[selectedTab];
     const newPath = `/${selectedTabName}`;
     if (selectedTab !== 0 && selectedTab !== 3) {
-      // dispatch to reset map state in data or metrics tab
+      // dispatch to reset map state in data or charts tab
       dispatch(resetMapState())
     }
     if (location.pathname !== newPath) {
       navigate(newPath); // Update the URL with the tab name
     }
-  
+
     if (isUploadUrl) {
       setRightSideBarMode(RightSideBarMode.Upload);
       dispatch(setUploadState(UploadMode.SelectProperty));
       return; //hide all tabs
     }
-  
+
     // Replace the tab parameter in the URL
     const newUrl = window.location.href.replace(/\?tab=\d/, newPath);
     window.history.replaceState(null, '', newUrl);
   }, [selectedTab, navigate, location.pathname, isUploadUrl]);
-  
-  
+
+
 
   useEffect(() => {
     if (rightSideBarMode === RightSideBarMode.None) {
@@ -124,7 +124,9 @@ function MainPage() {
       <div className="MainPage">
         <Grid container flexDirection={'row'}>
           <Grid item>
-            { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} />}
+            { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} additionalProps={{
+              'selectedMainTabIdx': selectedTab
+            }} />}
           </Grid>
           <Grid item flex={1} className="grayBg customWidth">
             <Grid container className="Content" flexDirection={'column'}>
@@ -134,7 +136,7 @@ function MainPage() {
                   <Tabs
                     value={selectedTab}
                     onChange={(event: React.SyntheticEvent, newValue: number) => {
-                      const tabNames = ['explore', 'data', 'metrics', 'upload'];
+                      const tabNames = ['map', 'report', 'charts', 'upload'];
                       const selectedTabName = tabNames[newValue];
                       setSelectedTab(newValue);
                       if (selectedTabName === 'upload') {
@@ -147,9 +149,9 @@ function MainPage() {
                     }}
                     aria-label="Main Page Tabs"
                   >
-                    <Tab key={0} label={'EXPLORE'} {...a11yProps(0)} />
-                    <Tab key={1} label={'DATA'} {...a11yProps(1)} />
-                    <Tab key={2} label={'METRICS'} {...a11yProps(2)} />
+                    <Tab key={0} label={'MAP'} {...a11yProps(0)} />
+                    <Tab key={1} label={'REPORTS'} {...a11yProps(1)} />
+                    <Tab key={2} label={'CHARTS'} {...a11yProps(2)} />
                   </Tabs>
                 )}
                 <div style={{ flex: 1 }}></div>

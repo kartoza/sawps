@@ -10,6 +10,7 @@ edit_uri: "https://github.com/kartoza/sawps/blob/main/docs/"
 copyright: Kartoza and Contributors
 
 markdown_extensions:
+        - attr_list # lets us resize images see https://github.com/mkdocs/mkdocs/issues/1678#issuecomment-455500757
         - pymdownx.highlight:
                   anchor_linenums: true
         - pymdownx.inlinehilite
@@ -45,8 +46,21 @@ nav:
                   - Quickstart: user/quickstart/index.md
                   - Guide:
                           - user/guide/index.md
+                          - Registering: user/guide/registering.md
+                          - Help And Contact: user/guide/help.md
+                          - Map: user/guide/map.md
+                          - Profile Page: user/guide/profile-page.md
+                          - Organisations: user/guide/organisations.md
                   - Manual :
                           - user/manual/index.md
+                          - Profile Page: user/manual/profile-page.md
+                          - Two Factor Authentication: user/manual/2fa.md
+                          - Forgot Password: user/manual/forgot-password.md
+                          - Notifications: user/manual/notifications.md
+                          - Reminders: user/manual/reminders.md
+                          - Organisation Page: user/manual/organisation.md
+                          - Request An Organisation: user/manual/request-organisation.md
+                          - Map: user/manual/map.md
         - Administrators:
                 - administrator/index.md
                 - Guide:
@@ -65,6 +79,7 @@ nav:
                       - Configuration: developer/guide/configuration.md
                       - Building: developer/guide/building.md
                       - Workflows: developer/guide/workflows.md
+                      - Testing: developer/guide/testing.md
                       - "": developer/guide/templates/pull-request-template.md
                       - "": developer/guide/templates/commit-message-convention.md
                   - Manual:

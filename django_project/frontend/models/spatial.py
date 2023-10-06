@@ -29,9 +29,15 @@ class SpatialDataValueModel(models.Model):
     )
     spatial_data = models.ForeignKey(
         SpatialDataModel,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=False
+    )
+    layer = models.ForeignKey(
+        'frontend.Layer',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=False
     )
 
     def __str__(self):

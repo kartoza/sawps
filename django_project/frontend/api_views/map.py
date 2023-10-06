@@ -271,7 +271,8 @@ class FindPropertyByCoord(APIView):
         return Response(status=200, data=PropertySerializer(property).data)
 
     def dispatch(self, request, *args, **kwargs):
-        return self.get(request)
+        response = super().dispatch(request, *args, **kwargs)
+        return response
 
 
 class MapAuthenticate(APIView):

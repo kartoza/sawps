@@ -36,14 +36,11 @@ class OrganisationUsersViewTest(TestCase):
         )
         self.role = userRoleTypeFactory.create(
             id=1,
-            name = 'Admin',
+            name='Admin',
         )
-        UserProfile.objects.create(
-            user=self.user,
-            user_role_type_id=self.role,
-            current_organisation=self.organisation
-        )
-
+        self.user.user_profile.user_role_type_id = self.role
+        self.user.user_profile.current_organisation = self.organisation
+        self.user.save()
 
     def test_delete_post_method(self):
         # url = reverse('Users')
@@ -55,14 +52,14 @@ class OrganisationUsersViewTest(TestCase):
                     'current_organisation': self.organisation.name
                 }
         )
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'success'})
 
         # Verify that the OrganisationUser has been deleted
         self.assertFalse(OrganisationUser.objects.filter(
             user=self.organisation_user.user).exists())
-        
+
         # test organisation does not exist
         response = self.client.post(
                 '/users/',
@@ -72,7 +69,7 @@ class OrganisationUsersViewTest(TestCase):
                     'current_organisation': 'fake_org'
                 }
         )
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'failed'})
 
@@ -85,7 +82,7 @@ class OrganisationUsersViewTest(TestCase):
                     'current_organisation': self.organisation.name
                 }
         )
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'failed'})
 
@@ -141,11 +138,10 @@ class OrganisationUsersViewTest(TestCase):
             password='testpassword',
             email='test33@gmail.com'
         )
-        UserProfile.objects.create(
-            user=user,
-            user_role_type_id=self.role,
-            current_organisation=self.organisation
-        )
+        user.user_profile.user_role_type_id = self.role
+        user.user_profile.current_organisation = self.organisation
+        user.save()
+
         OrganisationUser.objects.create(
             organisation=self.organisation, user=user
         )
@@ -173,7 +169,7 @@ class OrganisationUsersViewTest(TestCase):
 
         self.assertIsNotNone(response)
 
-        
+
     def test_search_user_table(self):
         # Create a request object with the required POST data
         response = self.client.post(
@@ -184,7 +180,7 @@ class OrganisationUsersViewTest(TestCase):
                 'current_organisation': self.organisation.name
             }
         )
-                   
+
         # Assert the expected outcome
         expected_data = [
             {
@@ -196,7 +192,7 @@ class OrganisationUsersViewTest(TestCase):
             }
         ]
         expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
-            
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_json)
 
@@ -209,7 +205,7 @@ class OrganisationUsersViewTest(TestCase):
                 'current_organisation': self.organisation.name
             }
         )
-                   
+
         # Assert the expected outcome
         expected_data = [
             {
@@ -221,7 +217,7 @@ class OrganisationUsersViewTest(TestCase):
             }
         ]
         expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
-            
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_json)
 
@@ -234,11 +230,11 @@ class OrganisationUsersViewTest(TestCase):
                 'current_organisation': 'fake_org'
             }
         )
-                   
+
         # Assert the expected outcome
         expected_data = []
         expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
-            
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_json)
 
@@ -270,10 +266,9 @@ class OrganisationUsersViewTest(TestCase):
             password='testpassword',
             email='test2@gmail.com'
         )
-        UserProfile.objects.create(
-            user=user,
-            user_role_type_id=self.role
-        )
+        user.user_profile.user_role_type_id = self.role
+        user.save()
+
         OrganisationUser.objects.create(
             organisation=self.organisation, user=user
         )
@@ -281,8 +276,6 @@ class OrganisationUsersViewTest(TestCase):
         response = view.get_role(user, self.organisation)
 
         self.assertEqual(str(response), 'Admin')
-        
-        
 
     def test_is_new_invitation(self):
         view = OrganisationUsersView()
@@ -325,7 +318,7 @@ class OrganisationUsersViewTest(TestCase):
             email='testadmin@example.com',
             password='testpassword'
         )
-        
+
 
         login = client.login(
             username='testadmin',
@@ -339,8 +332,8 @@ class OrganisationUsersViewTest(TestCase):
             name='device_name'
         )
         device.save()
-        
-        
+
+
         response = client.post('/users/')
 
         # Check if the response status code is OK (200)
@@ -352,4 +345,4 @@ class OrganisationUsersViewTest(TestCase):
         # no organisation users found
         self.assertEqual(context_data, None)
 
-        
+

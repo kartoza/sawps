@@ -38,28 +38,44 @@ const DataList = () => {
     const [rows, setRows] = useState([])
     const [tableData, setTableData] = useState<any>()
     const [activityTableGrid, setActivityTable] = useState<any>()
-    const dataset = data && data.length > 0 ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : [];
+    const [userRole, setUserRole] = useState<string>('')
+    const dataset = checkUserRole(userRole) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
     const activityDataSet = data ? data.filter(item => item?.Activity_report).flatMap((each) => Object.keys(each)) : [];
     const dataTableList = data ? data.map((data, index) => ({ ...data, id: index })) : [];
     const activity = dataTableList ? dataTableList.filter(item => item.Activity_report).map((item) => item.Activity_report) : [];
     const activityReportList = activity.length > 0 ? activity.flatMap((each) => Object.keys(each)) : [];
     const activityReportdataList = activity.map((data, index) => ({ ...data, id: index }));
-    const reportList = dataTableList ? dataTableList.filter(item => !item?.Activity_report) : [];
+    const reportList = checkUserRole(userRole) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
+    const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
+    const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
+    const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const color = {
+        "Species_report":"#F9A95D",
         "Property_report": '#9F89BF',
         "Sampling_report": "#FF5252",
+        "Province_report": "#FF5252",
         "Species_population_report": "#9F89BF",
-        "Activity_report": "#696969",
-        "Unplanned/natural_deaths": "#75B37A",
-        "Planned_translocation": "#F9A95D",
-        "Planned_hunt/cull": "#FF5252",
-        "Planned_euthanasia": "#9F89BF",
-        "Unplanned/illegal_hunt": "#696969",
+        "Activity_report": checkUserRole(userRole) ? "#696969" : "#75B37A",
+        "Unplanned/natural deaths": "#75B37A",
+        "Planned translocation": "#F9A95D",
+        "Planned hunt/cull": "#FF5252",
+        "Planned euthanasia": "#9F89BF",
+        "Unplanned/illegal hunting": "#696969",
     }
+
+    function checkUserRole(userRole: string) {
+        const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"];
+        return allowedRoles.includes(userRole);
+    }
+
+    useEffect(() => {
+        const storedUserRole = localStorage.getItem('user_role');
+        setUserRole(storedUserRole);
+    }, []);
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -73,7 +89,7 @@ const DataList = () => {
     useEffect(() => {
         setColumns([])
         fetchDataList();
-    }, [startYear, endYear, selectedSpecies, selectedInfo])
+    }, [startYear, endYear, selectedSpecies, selectedInfo, propertyId, organisationId, activityId])
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
             target: { value },
@@ -151,7 +167,7 @@ const DataList = () => {
                 }
             </>
         )
-        const activityDataGrid = activityDataSet.length > 0 && activityDataSet.map((each: any) =>
+        const activityDataGrid = checkUserRole(userRole) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
             <>
                 <Box className="data-table" style={{ backgroundColor: color[each as keyof typeof color] }}>
                     {each.split('_')

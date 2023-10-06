@@ -6,23 +6,11 @@ from population_data.models import (
     AnnualPopulationAbstract,
     AnnualPopulationPerActivity,
     Certainty,
-    CountMethod,
     OpenCloseSystem,
     PopulationEstimateCategory,
     PopulationStatus,
     SamplingEffortCoverage
 )
-
-
-class CountMethodFactory(factory.django.DjangoModelFactory):
-    """Count method factory."""
-
-    class Meta:
-        """meta"""
-
-        model = CountMethod
-
-    name = "count method-1"
 
 
 class AnnualPopulationAbstractFactory(factory.django.DjangoModelFactory):

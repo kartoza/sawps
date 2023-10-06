@@ -4,7 +4,7 @@
 {% block head_title %}Your Profile{% endblock %}
 
 {% block content %}
-<section>
+<section style="min-height:var(--min-content-height);">
   <div class="container py-5">
   <div class="row">
     {% include "profile_config_base.html" %}
@@ -12,7 +12,7 @@
     <div class="container">
         <div class="row">
             <div class="col-auto ml-auto mb-3">
-              <button class="sawps-font-button green-button mt-0 button" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn" style="font-weight: bold; min-height: fit-content;">
+              <button class="sawps-font-button green-button mt-0" type="button" data-toggle="modal" data-target="#myModal" id="saddReminderBtn" style="font-weight: bold; min-height: fit-content;">
                 <i class="fas fa-plus"></i> ADD REMINDER
               </button>
             </div>
@@ -25,6 +25,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="myModalLabel">Reminder Details</h5>
+                        <hr class="default-separator" style="margin-bottom: 0%;">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -65,9 +66,9 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="sawps-font-button orange-button mt-0" id="editReminderBtn" style="display: none;">Save</button>
-                        <button type="button" class="sawps-font-button orange-button mt-0" style="font-weight: bold;" id="addReminderBtn">Add</button>
-                        <button type="button" class="sawps-font-button gray-button mt-0" style="font-weight: bold; height: fit-content;" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="sawps-font-button green-button mt-0" id="editReminderBtn" style="display: none;">Save</button>
+                        <button type="button" class="sawps-font-button green-button mt-0" style="font-weight: bold;" id="addReminderBtn">Add</button>
+                        <button type="button" class="sawps-font-button red-button mt-0" style="font-weight: bold; height: fit-content;" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </div>
@@ -239,14 +240,14 @@
 
         if (parts.length === 3) {
           // Extract date, time, and AM/PM components
-          const datePart = parts[0];
-          const timePart = parts[1];
-          const ampm = parts[2];
+          var datePart = parts[0];
+          var timePart = parts[1];
+          var ampm = parts[2];
 
           // Split the time part into hours and minutes
-          const timeParts = timePart.split(':');
-          const hours = parseInt(timeParts[0]);
-          const minutes = parseInt(timeParts[1]);
+          var timeParts = timePart.split(':');
+          var hours = parseInt(timeParts[0]);
+          var minutes = parseInt(timeParts[1]);
 
           // Adjust hours if it's PM
           if (ampm === 'PM' && hours !== 12) {
@@ -254,8 +255,8 @@
           }
 
           // Pad single-digit hours and minutes with leading zeros
-          const formattedHours = hours.toString().padStart(2, '0');
-          const formattedMinutes = minutes.toString().padStart(2, '0');
+          var formattedHours = hours.toString().padStart(2, '0');
+          var formattedMinutes = minutes.toString().padStart(2, '0');
 
           // Construct the ISO 8601 date string
           const isoDate = `${datePart}T${formattedHours}:${formattedMinutes}`;
@@ -660,7 +661,16 @@
         box-shadow: 0 0 0 0.2rem rgba(0, 128, 0, 0.25);
     }
 
+    /* Apply horizontal scroll for smaller devices */
+    @media (max-width: 768px) {
+        .my-row {
+            overflow-x: auto;
+        }
+    }
+
   </style>
   
 </section>
-{% endblock %}
+<section style="margin-top: -5%;">
+    {% endblock %}
+</section>

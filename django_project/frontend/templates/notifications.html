@@ -4,7 +4,7 @@
 {% block head_title %}Your Profile{% endblock %}
 
 {% block content %}
-<section>
+<section style="min-height:var(--min-content-height);">
   <div class="container py-5">
   <div class="row">
     {% include "profile_config_base.html" %}
@@ -360,11 +360,18 @@
       cursor: pointer;
     }
 
+    /* Apply horizontal scroll for smaller devices */
+    @media (max-width: 768px) {
+        .my-row {
+            overflow-x: auto;
+        }
+    }
+
   </style>
   
 
 </section>
-
-
-{% endblock %}
+<section style="margin-top: -5%;">
+    {% endblock %}
+</section>
 

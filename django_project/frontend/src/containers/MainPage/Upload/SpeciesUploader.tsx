@@ -12,12 +12,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Dropzone, { ILayoutProps, IInputProps } from "react-dropzone-uploader";
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {RootState} from '../../../app/store';
-import ParcelInterface from '../../../models/Parcel';
-import {
-    setSelectedParcels,
-    triggerMapEvent,
-    toggleParcelSelectionMode
-} from '../../../reducers/MapState';
 import '../../../assets/styles/RDU.styles.scss';
 import './index.scss';
 import {wait} from "@testing-library/user-event/dist/utils";
@@ -29,7 +23,8 @@ interface UploaderInterface {
 }
 
 const ALLOWABLE_FILE_TYPES = [
-    '.csv'
+    '.csv',
+    '.xlsx'
 ]
 
 const UPLOAD_FILE_URL = '/api/upload-species/'
@@ -39,19 +34,12 @@ const STATUS_URL = '/api/upload-species-status/'
 const CustomInput = (props: IInputProps) => {
     const {
       className,
-      labelClassName,
-      labelWithFilesClassName,
       style,
-      labelStyle,
-      labelWithFilesStyle,
       getFilesFromEvent,
       accept,
       multiple,
       disabled,
-      content,
-      withFilesContent,
       onFiles,
-      files,
     } = props
 
     return (
@@ -80,7 +68,7 @@ const CustomInput = (props: IInputProps) => {
             </label>
         </Grid>
         <Grid item className='CenterItem'>
-            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported csv format only</Typography>
+            <Typography variant='subtitle2' sx={{fontWeight: 400}}>Supported formats: csv and xlsx</Typography>
         </Grid>
     </Grid>
 
@@ -94,20 +82,19 @@ export default function Uploader(props: UploaderInterface) {
     const [loading, setLoading] = useState(false)
     const dropZone = useRef(null)
     const [alertMessage, setAlertMessage] = useState('')
-    const [alertMessageTaxon, setAlertMessageTaxon] = useState('')
-    const [alertMessageProperty, setAlertMessageProperty] = useState('')
     const [isError, setIsError] = useState(false)
     const [savingSpeciesCSV, setSavingSpeciesCSV] = useState(false)
     const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
     const [totalFile, setTotalFile] = useState(0)
     const [closeButton, setCloseButton] = useState('CANCEL')
+    const [errorFile, setErrorFile] = useState('')
 
     useEffect(() => {
         if (open) {
             setSession(uuidv4())
             setIsError(false)
             setAlertMessage('')
-            setAlertMessageTaxon('')
+            setErrorFile('')
             setSavingSpeciesCSV(false)
             setTotalFile(0)
             setLoading(false)
@@ -173,7 +160,7 @@ export default function Uploader(props: UploaderInterface) {
         onClose();
     };
 
-    const saveBoundaryFiles = () => {
+    const saveSpeciesFiles = () => {
         setLoading(true)
         fetch(PROCESS_FILE_URL, {
             method: 'POST',
@@ -187,44 +174,46 @@ export default function Uploader(props: UploaderInterface) {
                 'property': props.property
             })
             }).then( response => {
-                if (response.ok) {
-                    wait(500).then(r =>
-                    axios.get(`${STATUS_URL}${session}/`).then((response)=>{
-                    if (response.data) {
-                        let status = response.data['status']
-                        if (status === 'Done'){
-                            setIsError(false)
-                            setAlertMessage(response.data['message'])
-                            setAlertMessageTaxon(response.data['taxon'])
-                            setAlertMessageProperty(response.data['property'])
-                            setTotalFile( 0)
-                            setSavingSpeciesCSV(false)
-                            setCloseButton('CLOSE')
-                            setLoading(false)
-                        }
-                        else{
-                            setIsError(true)
-                            setAlertMessage(response.data['property']+'\n'+response.data['taxon'])
-                            setTotalFile(totalFile - 1)
-                            setSavingSpeciesCSV(false)
-                            setCloseButton('CLOSE')
-                            setLoading(false)
-                        }
-                    }
-                    }))
-                } else {
-                    setIsError(true)
-                    setAlertMessage('There is something wrong with the data please check again')
-                }
+                setLoading(false)
+                setSavingSpeciesCSV(true)
             }).catch((error) => {
                 setLoading(false)
                 })
     }
 
+    const getStatus = () => {
+        axios.get(`${STATUS_URL}${session}/`).then((response) => {
+            if (response.data) {
+                let status = response.data['status']
+                if (status === 'Finished') {
+                    setIsError(false)
+                    setAlertMessage(response.data['message'])
+                    setErrorFile(response.data['error_file'])
+                    setTotalFile(0)
+                    setSavingSpeciesCSV(false)
+                    setCloseButton('CLOSE')
+                    setLoading(false)
+                } else {
+                    setIsError(true)
+                    setAlertMessage('Please check the error in error file.')
+                    setErrorFile(response.data['error_file'])
+                    setTotalFile(totalFile - 1)
+                    setSavingSpeciesCSV(false)
+                    setCloseButton('CLOSE')
+                    setLoading(false)
+                }
+
+            } else {
+                setIsError(true)
+                setAlertMessage('There is something wrong with the data please check again')
+            }
+        })
+    }
+
     useEffect(() => {
         if (savingSpeciesCSV) {
             const interval = setInterval(() => {
-
+                getStatus()
             }, 3000);
             return () => clearInterval(interval);
         }
@@ -259,19 +248,13 @@ export default function Uploader(props: UploaderInterface) {
             <Grid container flexDirection={'column'} className='UploaderContent' rowSpacing={2}>
                 <Grid item>
                 { alertMessage ?
-                    <Alert style={{ width: '100%'}} severity={isError ? "error" : alertMessageTaxon ? "warning" : "success"}>
-                    <AlertTitle>{ isError ? 'Error' : <> { alertMessageTaxon ? 'Warning': 'Success' }</>}</AlertTitle>
-                    <p className="display-linebreak">
-                        { alertMessage }
-                    </p>
-                    { alertMessageProperty ?
-                    <p>
-                        { alertMessageProperty }
-                    </p>: null }
-                    { alertMessageTaxon ?
-                    <p>
-                        { alertMessageTaxon }
-                    </p>: null }
+                    <Alert style={{ width: '100%'}} severity={isError ? "error" : errorFile ? "warning" : "success"}>
+                    <AlertTitle>{ isError ? 'Error' : <> { errorFile ? 'Warning': 'Success' }</>}</AlertTitle>
+                    <div className="display-linebreak">
+                        <span>{ alertMessage }</span><br/>
+                        { errorFile ?
+                            <Button variant='contained' className='ErrorFile' onClick={()=>window.location.href=`${errorFile}`}>Error file</Button>: null }
+                    </div>
                     </Alert> : null }
                     <Dropzone
                         ref={dropZone}
@@ -293,7 +276,7 @@ export default function Uploader(props: UploaderInterface) {
                             { savingSpeciesCSV ? (
                                 <Button variant='contained' disabled={true}><CircularProgress size={16} sx={{marginRight: '5px' }}/> PROCESSING FILE...</Button>
                             ) : (
-                                <Button variant='contained' disabled={loading || savingSpeciesCSV || totalFile === 0} onClick={saveBoundaryFiles}>UPLOAD FILE</Button>
+                                <Button variant='contained' disabled={loading || savingSpeciesCSV || totalFile === 0} onClick={saveSpeciesFiles}>UPLOAD FILE</Button>
                             )}
                         </Grid>
                     </Grid>

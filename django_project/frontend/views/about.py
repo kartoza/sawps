@@ -1,7 +1,7 @@
-from .base_view import RegisteredOrganisationBaseView
+from .base_view import OrganisationBaseView
 
 
-class AboutView(RegisteredOrganisationBaseView):
+class AboutView(OrganisationBaseView):
     """
     AboutView displays the about page by rendering the 'about.html' template.
     """

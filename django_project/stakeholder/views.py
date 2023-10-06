@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect, Http404
 import pytz
 from stakeholder.models import (
     Organisation,
-    UserProfile,
     UserRoleType,
     UserTitle,
     Reminders
@@ -26,10 +25,15 @@ import json
 from django.db.models import Q
 from core.celery import app
 from frontend.views.base_view import RegisteredOrganisationBaseView
-from frontend.serializers.stakeholder import ReminderSerializer
+from frontend.serializers.stakeholder import (
+    ReminderSerializer,
+    OrganisationSerializer
+)
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 logger = logging.getLogger(__name__)
 
 
@@ -80,11 +84,6 @@ class ProfileView(RegisteredOrganisationBaseView):
         use_of_data = use_of_data == 'on'
         hosting = hosting == 'on'
         data_exposure = data_exposure == 'on'
-
-        if not UserProfile.objects.filter(user=user).exists():
-            UserProfile.objects.create(
-                user=user,
-            )
 
         if first_name is not None:
             user.first_name = first_name
@@ -623,3 +622,22 @@ class NotificationsView(RegisteredOrganisationBaseView):
         context['notifications'] = self.get_notifications(self.request)
 
         return context
+
+
+class OrganisationAPIView(APIView):
+    """Get organisation"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        organisation_id = get_current_organisation_id(request.user)
+        organisation = Organisation.objects.get(id=organisation_id)
+        if organisation.national:
+            queryset = Organisation.objects.all().order_by("name")
+        else:
+            queryset = Organisation.objects.filter(
+                province=organisation.province
+            ).order_by("name")
+        return Response(
+            status=200,
+            data=OrganisationSerializer(queryset, many=True).data
+        )

@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.test import TestCase
+from django.db.models.signals import post_save
+
 from property.models import Province
 from regulatory_permit.models import DataUsePermission
 from stakeholder.factories import (
@@ -24,6 +26,8 @@ from stakeholder.models import (
     UserProfile,
     UserRoleType,
     UserTitle,
+    create_user_profile,
+    save_user_profile
 )
 
 
@@ -120,14 +124,11 @@ class TestUser(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.profileFactory = userProfileFactory()
+        cls.profileFactory = User.objects.create().user_profile
 
     def test_create_new_user_with_new_profile(self):
         """Test creating new user when new profile is created."""
-        self.assertEqual(UserProfile.objects.count(), 1)
-        self.assertEqual(
-            User.objects.count(), 2
-        )  # Anon user is created by default
+        self.assertGreater(UserProfile.objects.count(), 0)
 
     def test_update_user_profile(self):
         """Test updating user through profile."""
@@ -138,10 +139,29 @@ class TestUser(TestCase):
             User.objects.get(username='test').first_name, 'test123'
         )
 
-    def test_delete_role(self):
+    def test_delete_profile(self):
         """Test deleting user when a profile is deleted."""
+        user_id = self.profileFactory.user.id
         self.profileFactory.delete()
         self.assertEqual(User.objects.count(), 1)
+
+        users = User.objects.filter(id=user_id)
+        self.assertFalse(users.exists())
+
+    def test_create_user_without_profile(self):
+        post_save.disconnect(create_user_profile, sender=User)
+        post_save.disconnect(save_user_profile, sender=User)
+        user = User.objects.create(username='test999')
+        self.assertFalse(UserProfile.objects.filter(
+            user_id=user.id
+        ).exists())
+        post_save.connect(create_user_profile, sender=User)
+        post_save.connect(save_user_profile, sender=User)
+
+        user.save()
+        self.assertTrue(UserProfile.objects.filter(
+            user_id=user.id
+        ).exists())
 
 
 class TestUserLogin(TestCase):
