@@ -49,7 +49,7 @@ class DataTableAPIView(APIView):
             queryset = Taxon.objects.filter(
                 ownedspecies__property__organisation_id=organisation_id,
                 taxon_rank__name="Species"
-            ).distinct()
+            ).distinct().order_by("")
 
         filtered_queryset = filter(
             self.request.GET, queryset=queryset

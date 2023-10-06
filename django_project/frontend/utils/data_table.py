@@ -1,6 +1,6 @@
 import urllib.parse
 from typing import Dict, List
-
+from django.db.models import F
 from django.db.models import Sum
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
@@ -41,39 +41,11 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
                 ) if report_data else []
 
     else:
-        reports.append(
-            {"Property_report": property_report(queryset, request)}
-        )if property_report(queryset, request) else []
+        property_report_data = property_report(queryset, request)
+        if property_report_data:
+            reports.append({"Property_report": property_report_data})
 
     return reports
-
-
-def get_common_data(property: QuerySet, request) -> Dict:
-    """
-    Retrieve common data for a property based on species selection.
-    Params:
-        property (QuerySet): The property for which common data is retrieved.
-        request: The HTTP request object.
-    """
-    species_list = request.GET.get("species")
-
-    if species_list:
-        species_list = species_list.split(",")
-        species = property.ownedspecies_set.filter(
-            taxon__scientific_name__in=species_list
-        ).values(
-            "taxon__common_name_varbatim", "taxon__scientific_name"
-        )
-    else:
-        species = property.ownedspecies_set.all().values(
-            "taxon__common_name_varbatim", "taxon__scientific_name"
-        )
-
-    return {
-        "property_name": property.name,
-        "common_name": species[0]["taxon__common_name_varbatim"],
-        "scientific_name": species[0]["taxon__scientific_name"]
-    } if species else {}
 
 
 def species_report(queryset: QuerySet, request) -> List:
@@ -85,6 +57,12 @@ def species_report(queryset: QuerySet, request) -> List:
     """
     species_reports = []
     filters = {}
+
+    species_list = request.GET.get("species")
+    if species_list:
+        species_list = species_list.split(",")
+        filters["owned_species__taxon__scientific_name__in"] = species_list
+
     start_year = request.GET.get("start_year")
     if start_year:
         end_year = request.GET.get("end_year")
@@ -98,26 +76,22 @@ def species_report(queryset: QuerySet, request) -> List:
         ] = activity
 
     for property in queryset:
-        common_data = get_common_data(property, request)
 
-        if not common_data:
-            continue
-
-        species_population_data = AnnualPopulation.objects.filter(
-            **filters,
-            owned_species__property__name=property.name,
-            owned_species__taxon__scientific_name=(
-                common_data["scientific_name"]
-            )
+        species_population_data = AnnualPopulation.objects.values(
+            "owned_species__taxon__scientific_name",
+            "owned_species__taxon__common_name_varbatim",
+        ).filter(
+            **filters, owned_species__property__name=property.name,
         ).values(
             "year", "group", "total", "adult_male", "adult_female",
             "juvenile_male", "juvenile_female", "sub_adult_male",
-            "sub_adult_female"
+            "sub_adult_female",
+            property_name=F("owned_species__property__name"),
+            scientific_name=F("owned_species__taxon__scientific_name"),
+            common_name=F("owned_species__taxon__common_name_varbatim"),
         )
 
-        species_reports.extend([
-            {**common_data, **data} for data in species_population_data
-        ])
+        species_reports.extend(species_population_data)
 
     return species_reports
 
@@ -131,9 +105,15 @@ def property_report(queryset: QuerySet, request) -> List:
     """
     property_reports = []
     filters = {}
-    start_year = request.GET.get("start_year")
+    
+    species_list = request.GET.get("species")
+    if species_list:
+        species_list = species_list.split(",")
+        filters["taxon__scientific_name__in"] = species_list
+
+    start_year = int(request.GET.get("start_year"))
     if start_year:
-        end_year = request.GET.get("end_year")
+        end_year = int(request.GET.get("end_year"))
         filters["annualpopulation__year__range"] = (start_year, end_year)
 
     activity = request.GET.get("activity")
@@ -144,20 +124,19 @@ def property_report(queryset: QuerySet, request) -> List:
         ] = activity
 
     for property in queryset:
-        common_data = get_common_data(property, request)
-
-        if not common_data:
-            continue
-
         area_available_values = property.ownedspecies_set.filter(
             **filters
-        ).values("area_available_to_species")
+        ).values(
+            "area_available_to_species",
+            "taxon__scientific_name",
+            "taxon__common_name_varbatim"
+        )
 
         property_reports.extend([
             {
-                "property_name": common_data["property_name"],
-                "scientific_name": common_data["scientific_name"],
-                "common_name": common_data["common_name"],
+                "property_name": property.name,
+                "scientific_name": area_available["taxon__scientific_name"],
+                "common_name": area_available["taxon__common_name_varbatim"],
                 "owner": property.created_by.first_name,
                 "owner_email": property.owner_email,
                 "property_type": property.property_type.name,
@@ -197,27 +176,29 @@ def sampling_report(queryset: QuerySet, request) -> List:
             "owned_species__annualpopulationperactivity__activity_type__name"
         ] = activity
 
+    species_list = request.GET.get("species")
+    if species_list:
+        species_list = species_list.split(",")
+        filters["owned_species__taxon__scientific_name__in"] = species_list
+
     for property in queryset:
-        common_data = get_common_data(property, request)
 
-        if not common_data:
-            continue
-
-        sampling_reports_data = AnnualPopulation.objects.filter(
+        sampling_reports_data = AnnualPopulation.objects.values(
+            "owned_species__taxon__scientific_name",
+            "owned_species__taxon__common_name_varbatim",
+        ).filter(
             **filters,
             owned_species__property__name=property.name,
-            owned_species__taxon__scientific_name = (
-                common_data["scientific_name"]
-            ),
         ).values(
             "population_status", "population_estimate_category",
             "survey_method", "sampling_effort_coverage",
             "population_estimate_certainty",
+            property_name=F("owned_species__property__name"),
+            scientific_name=F("owned_species__taxon__scientific_name"),
+            common_name=F("owned_species__taxon__common_name_varbatim"),
         )
 
-        sampling_reports.extend([
-            {**common_data, **data} for data in sampling_reports_data
-        ])
+        sampling_reports.extend(sampling_reports_data)
 
     return sampling_reports
 
@@ -240,9 +221,15 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         activity_types = [urllib.parse.unquote(activity)]
     else:
         activity_types = [
-            "Planned euthanasia", "Planned hunt/cull", "Planned translocation",
-            "Unplanned/natural deaths", "Unplanned/illegal hunting"
+            "Planned euthanasia", "Planned hunt/cull",
+            "Planned translocation", "Unplanned/natural deaths",
+            "Unplanned/illegal hunting"
         ]
+
+    species_list = request.GET.get("species")
+    if species_list:
+        species_list = species_list.split(",")
+        filters["owned_species__taxon__scientific_name__in"] = species_list
 
     activity_data_map = {
         "Unplanned/illegal hunting": [],
@@ -263,33 +250,26 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
     }
 
     for property in queryset:
-        common_data = get_common_data(property, request)
-
-        if not common_data:
-            continue
 
         for activity_name in activity_types:
 
             if activity_name in activity_data_map:
                 query_values = [
                     "year", "total", "adult_male", "adult_female",
-                    "juvenile_male", "juvenile_female"
+                    "juvenile_male", "juvenile_female",
                 ] + activity_data_map[activity_name]
 
                 activity_data = AnnualPopulationPerActivity.objects.values(
-                    *query_values
+                    *query_values,
+                    property_name=F("owned_species__property__name"),
+                    scientific_name=F("owned_species__taxon__scientific_name"),
+                    common_name=F("owned_species__taxon__common_name_varbatim"),
                 ).filter(
                     **filters,
-                    owned_species__taxon__scientific_name=common_data[
-                        "scientific_name"
-                    ],
                     owned_species__property__name=property.name,
                     activity_type__name=activity_name
                 )
-
-                activity_reports[activity_name].extend([
-                    {**common_data, **data} for data in activity_data
-                ])
+                activity_reports[activity_name].extend(activity_data)
 
     activity_reports = {k: v for k, v in activity_reports.items() if v}
 
