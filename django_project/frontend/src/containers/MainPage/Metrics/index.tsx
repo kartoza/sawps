@@ -22,6 +22,7 @@ const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 // national metrics and download button
 import GenerateChartImages from "../../../components/PdfReport/generateChartImage";
+import { Margin } from "@mui/icons-material";
 
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -166,31 +167,42 @@ const Metrics = () => {
                                 /> 
                             </Grid>
 
-                        {ageGroupData.map((data) => (
-                            <Grid container key={data.id} item xs={12} md={6}>
-                                <AgeGroupBarChart
-                                    loading={loading}
-                                    ageGroupData={data?.age_group}
-                                    icon={data?.graph_icon}
-                                    colour={data?.colour}
-                                    name={data?.common_name_varbatim}
+                            <Grid item xs={12} md={6}>
+                                <PropertyAvailableBarChart 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading} 
                                 />
                             </Grid>
-                        ))}
 
-                        {areaData.map((data, index) => (
-                            <Grid container key={index} item xs={12} md={6}>
-                                {data?.area?.owned_species ? (
-                                    <AreaAvailableLineChart
+                            {ageGroupData.map((data) => (
+                                <Grid container key={data.id} item xs={12} md={6}>
+                                    <AgeGroupBarChart
                                         loading={loading}
-                                        areaData={data?.area?.owned_species}
-                                        species_name={data?.common_name_varbatim}
+                                        ageGroupData={data?.age_group}
+                                        icon={data?.graph_icon}
+                                        colour={data?.colour}
+                                        name={data?.common_name_varbatim}
                                     />
-                                ) : (
-                                    null
-                                )}
-                            </Grid>
-                        ))}
+                                </Grid>
+                            ))}
+
+                            {areaData.map((data, index) => (
+                                <Grid container key={index} item xs={12} md={6}>
+                                    {data?.area?.owned_species ? (
+                                        <AreaAvailableLineChart
+                                            loading={loading}
+                                            areaData={data?.area?.owned_species}
+                                            species_name={data?.common_name_varbatim}
+                                        />
+                                    ) : (
+                                        null
+                                    )}
+                                </Grid>
+                            ))}
                     </Grid>
                 ): (
                     // Render message to user
@@ -208,7 +220,7 @@ const Metrics = () => {
                 <GenerateChartImages />
             )} */}
             {showChats && (
-                <Box className="downlodBtnbox">
+                <Box className="download-btn-box" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
                     <Button onClick={handleDownloadPdf} variant="contained" color="primary">
                         Download data visualizations
                     </Button>
