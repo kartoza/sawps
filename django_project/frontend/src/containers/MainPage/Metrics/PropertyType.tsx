@@ -64,16 +64,6 @@ for(var count = 0; count < labels.length; count++){
     )
 }
 
-console.log('datasets ',datasets)
-// Create datasets
-// const datasets = labels.map((label, index) => {
-//     return {
-//         label: legend_labels[index], // Use the 'name' field as the label
-//         data: [totalArea[index]], // Use 'total_area' as data
-//         backgroundColor: backgroundColors[index], // Use background color based on the index
-//     };
-
-// });
 
 const data = {
     labels: [''],
@@ -92,7 +82,6 @@ const data = {
                     text: 'Property type', // X-axis label
                     font: {
                         size: 14,
-                        weight: "bold" as "bold",
                     },
                 },
             },
@@ -110,7 +99,6 @@ const data = {
                     text: 'Area (Ha)', // Y-axis label
                     font: {
                         size: 14,
-                        weight: "bold" as "bold",
                     },
                 },
                 callback: (value: string, index: number) => {
@@ -143,7 +131,6 @@ const data = {
                     padding: 12,
                     font : {
                       size: 10,
-                      weight: "bold" as "bold"
                     }
                 },
             },
@@ -161,7 +148,11 @@ const data = {
     return (
         <Grid>
             {!loading ? (
-                <Bar data={data} options={options} height={200} width={500} />
+                <Bar 
+                    data={data} 
+                    options={options} 
+                    height={250} width={500} 
+                />
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
             )}
