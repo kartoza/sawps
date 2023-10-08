@@ -1,5 +1,6 @@
 from collections import Counter
 from typing import Dict, List, Any
+from population_data.models import AnnualPopulation
 
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from django.db.models import QuerySet, Sum, Q
@@ -81,8 +82,9 @@ def calculate_total_area_available_to_species(
                 Q(taxon__scientific_name=species_name)
             )
         else:
-            # If species_name is not provided, fetch all species for the property
-            owned_species_query = OwnedSpecies.objects.filter(property=property)
+            owned_species_query = OwnedSpecies.objects.filter(
+                property=property
+            )
 
         for owned_species in owned_species_query:
             annual_population_data = AnnualPopulation.objects.filter(
