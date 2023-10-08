@@ -166,6 +166,17 @@ const Metrics = () => {
                                 /> 
                             </Grid>
 
+                            <Grid item xs={12} md={6}>
+                                <PropertyAvailableBarChart 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading} 
+                                />
+                            </Grid>
+
                         {ageGroupData.map((data) => (
                             <Grid container key={data.id} item xs={12} md={6}>
                                 <AgeGroupBarChart
