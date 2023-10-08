@@ -2,7 +2,7 @@ from collections import Counter
 from typing import Dict, List, Any
 from population_data.models import AnnualPopulation
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
-from django.db.models import QuerySet, Sum, Qf
+from django.db.models import QuerySet, Sum, Q
 from property.models import Property
 from species.models import OwnedSpecies
 
