@@ -18,6 +18,10 @@ from stakeholder.factories import (
     organisationUserFactory,
     userRoleTypeFactory,
 )
+from frontend.tests.model_factories import (
+    SpatialDataModelF,
+    SpatialDataModelValueF
+)
 
 
 class OwnedSpeciesTestCase(TestCase):
@@ -67,6 +71,14 @@ class OwnedSpeciesTestCase(TestCase):
         session = self.client.session
         session.save()
 
+        self.spatial_data = SpatialDataModelF.create(
+            property=self.property
+        )
+        self.spatial_data_value = SpatialDataModelValueF.create(
+            spatial_data=self.spatial_data,
+            context_layer_value='spatial filter test'
+        )
+
     def test_data_table_filter_by_species_name(self) -> None:
         """Test data table filter by species name"""
         url = self.url
@@ -85,6 +97,7 @@ class OwnedSpeciesTestCase(TestCase):
             'property': self.property.id,
             'start_year': self.owned_species[0].annualpopulation_set.first().year,
             'end_year': self.owned_species[0].annualpopulation_set.first().year,
+            'spatial_filter_values': 'spatial filter test'
         }
         response = self.client.get(self.url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+from django_otp.plugins.otp_totp.models import TOTPDevice
 from rest_framework import status
 
 from frontend.api_views.spatial_filter import SpatialLayerSerializer
@@ -27,6 +28,11 @@ class SpatialFilterListViewTestCase(TestCase):
         self.password = 'testpass'
         self.user = User.objects.create_user(
             self.username, password=self.password)
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
         self.client.login(username=self.username, password=self.password)
 
         self.layer1 = LayerF.create(layer_title="Layer 1", is_filter_layer=True)

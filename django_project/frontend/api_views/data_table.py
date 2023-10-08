@@ -34,27 +34,43 @@ class DataTableAPIView(APIView):
         """
         organisation_id = get_current_organisation_id(self.request.user)
         if user_role in (DATA_CONTRIBUTORS + DATA_SCIENTISTS):
-            filter = DataContributorsFilter
+            query_filter = DataContributorsFilter
             organisation = self.request.GET.get("organisation")
             if organisation and user_role in DATA_SCIENTISTS:
                 ids = organisation.split(",")
                 queryset = Property.objects.filter(
                     organisation_id__in=ids,
-                    ownedspecies__taxon__taxon_rank__name = "Species"
+                    ownedspecies__taxon__taxon_rank__name="Species"
                 )
             else:
                 queryset = Property.objects.filter(
                     organisation_id=organisation_id,
-                    ownedspecies__taxon__taxon_rank__name = "Species"
+                    ownedspecies__taxon__taxon_rank__name="Species"
                 ).order_by("name")
+
+            spatial_filter_values = self.request.GET.get(
+                'spatial_filter_values',
+                ''
+            ).split(',')
+
+            spatial_filter_values = list(
+                filter(None, spatial_filter_values)
+            )
+
+            if spatial_filter_values:
+                queryset = queryset.filter(
+                    spatialdatamodel__spatialdatavaluemodel__context_layer_value__in=
+                    spatial_filter_values
+                )
+
         else:
-            filter = BaseMetricsFilter
+            query_filter = BaseMetricsFilter
             queryset = Taxon.objects.filter(
                 ownedspecies__property__organisation_id=organisation_id,
                 taxon_rank__name="Species"
             ).distinct()
 
-        filtered_queryset = filter(
+        filtered_queryset = query_filter(
             self.request.GET, queryset=queryset
         ).qs
 
