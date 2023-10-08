@@ -54,6 +54,19 @@ class BaseTestCase(TestCase):
             5, taxon=self.taxon, user=self.user, property=self.property
         )
 
+        self.taxon1 = TaxonFactory.create(
+            taxon_rank=taxon_rank,
+            common_name_varbatim="Cheetah",
+            scientific_name = "test_cheetah"
+        )
+
+        self.owned_species1 = OwnedSpeciesFactory.create(
+            taxon=self.taxon1, 
+            user=self.user, 
+            property=self.property,
+            area_available_to_species=50
+        )
+
         self.auth_headers = {
             "HTTP_AUTHORIZATION": "Basic "
             + base64.b64encode(b"testuserd:testpasswordd").decode("ascii"),
@@ -284,6 +297,12 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['area'], 50.0)
+        
+        data = {'property': self.owned_species1.property_id, 'species': "test_cheetah"}
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['area'], 50.0)
+
 
     def test_total_area_available_to_species_filter_by_property(self) -> None:
         """
