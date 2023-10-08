@@ -55,7 +55,8 @@ interface SearchPropertyResult {
 }
 
 
-function Filter() {
+function Filter(props: any) {
+    const { containsCharts } = props;
     const dispatch = useAppDispatch()
     const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
@@ -436,7 +437,6 @@ function Filter() {
     const handleSelectedOrganisation = (id: number) => () => {
         const organisationExists = selectedOrganisation.includes(id);
         if (organisationExists) {
-            console.log('organisation selected')
             const updatedSelectedOrganisation = selectedOrganisation.filter((item) => item !== id);
             setSelectedOrganisation(updatedSelectedOrganisation);
         } else {
@@ -596,6 +596,7 @@ function Filter() {
     return (
         <Box>
             <Box className='sidebarBox'>
+                {!containsCharts && (
                 <Box style={{marginTop: '5%', marginBottom: '10%'}} >
                     <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center' ,marginBottom: '5%'}}>
                         <SearchIcon
@@ -678,6 +679,7 @@ function Filter() {
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                     />
                 </Box>
+                )}
                 {
                     allowOrganisationSelection && <Box>
                     <Box className='sidebarBoxHeading'>
