@@ -64,7 +64,6 @@ for(var count = 0; count < labels.length; count++){
     )
 }
 
-
 const data = {
     labels: [''],
     datasets: datasets,
@@ -82,6 +81,7 @@ const data = {
                     text: 'Property type', // X-axis label
                     font: {
                         size: 14,
+                        weight: "bold" as "bold",
                     },
                 },
             },
@@ -99,6 +99,7 @@ const data = {
                     text: 'Area (Ha)', // Y-axis label
                     font: {
                         size: 14,
+                        weight: "bold" as "bold",
                     },
                 },
                 callback: (value: string, index: number) => {
@@ -131,6 +132,7 @@ const data = {
                     padding: 12,
                     font : {
                       size: 10,
+                      weight: "bold" as "bold"
                     }
                 },
             },
@@ -148,11 +150,7 @@ const data = {
     return (
         <Grid>
             {!loading ? (
-                <Bar 
-                    data={data} 
-                    options={options} 
-                    height={250} width={500} 
-                />
+                <Bar data={data} options={options} height={200} width={500} />
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
             )}
