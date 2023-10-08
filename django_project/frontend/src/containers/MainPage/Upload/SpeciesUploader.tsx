@@ -12,12 +12,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Dropzone, { ILayoutProps, IInputProps } from "react-dropzone-uploader";
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {RootState} from '../../../app/store';
-import ParcelInterface from '../../../models/Parcel';
-import {
-    setSelectedParcels,
-    triggerMapEvent,
-    toggleParcelSelectionMode
-} from '../../../reducers/MapState';
 import '../../../assets/styles/RDU.styles.scss';
 import './index.scss';
 import {wait} from "@testing-library/user-event/dist/utils";
@@ -40,19 +34,12 @@ const STATUS_URL = '/api/upload-species-status/'
 const CustomInput = (props: IInputProps) => {
     const {
       className,
-      labelClassName,
-      labelWithFilesClassName,
       style,
-      labelStyle,
-      labelWithFilesStyle,
       getFilesFromEvent,
       accept,
       multiple,
       disabled,
-      content,
-      withFilesContent,
       onFiles,
-      files,
     } = props
 
     return (
@@ -173,7 +160,7 @@ export default function Uploader(props: UploaderInterface) {
         onClose();
     };
 
-    const saveBoundaryFiles = () => {
+    const saveSpeciesFiles = () => {
         setLoading(true)
         fetch(PROCESS_FILE_URL, {
             method: 'POST',
@@ -187,44 +174,46 @@ export default function Uploader(props: UploaderInterface) {
                 'property': props.property
             })
             }).then( response => {
-                if (response.ok) {
-                    wait(500).then(r =>
-                    axios.get(`${STATUS_URL}${session}/`).then((response)=>{
-                    if (response.data) {
-                        let status = response.data['status']
-                        if (status === 'Finished'){
-                            setIsError(false)
-                            setAlertMessage(response.data['message'])
-                            setErrorFile(response.data['error_file'])
-                            setTotalFile( 0)
-                            setSavingSpeciesCSV(false)
-                            setCloseButton('CLOSE')
-                            setLoading(false)
-                        }
-                        else{
-                            setIsError(true)
-                            setAlertMessage('Please check the error in error file')
-                            setErrorFile(response.data['error_file'])
-                            setTotalFile(totalFile - 1)
-                            setSavingSpeciesCSV(false)
-                            setCloseButton('CLOSE')
-                            setLoading(false)
-                        }
-                    }
-                    }))
-                } else {
-                    setIsError(true)
-                    setAlertMessage('There is something wrong with the data please check again')
-                }
+                setLoading(false)
+                setSavingSpeciesCSV(true)
             }).catch((error) => {
                 setLoading(false)
                 })
     }
 
+    const getStatus = () => {
+        axios.get(`${STATUS_URL}${session}/`).then((response) => {
+            if (response.data) {
+                let status = response.data['status']
+                if (status === 'Finished') {
+                    setIsError(false)
+                    setAlertMessage(response.data['message'])
+                    setErrorFile(response.data['error_file'])
+                    setTotalFile(0)
+                    setSavingSpeciesCSV(false)
+                    setCloseButton('CLOSE')
+                    setLoading(false)
+                } else {
+                    setIsError(true)
+                    setAlertMessage('Please check the error in error file.')
+                    setErrorFile(response.data['error_file'])
+                    setTotalFile(totalFile - 1)
+                    setSavingSpeciesCSV(false)
+                    setCloseButton('CLOSE')
+                    setLoading(false)
+                }
+
+            } else {
+                setIsError(true)
+                setAlertMessage('There is something wrong with the data please check again')
+            }
+        })
+    }
+
     useEffect(() => {
         if (savingSpeciesCSV) {
             const interval = setInterval(() => {
-
+                getStatus()
             }, 3000);
             return () => clearInterval(interval);
         }
@@ -261,11 +250,11 @@ export default function Uploader(props: UploaderInterface) {
                 { alertMessage ?
                     <Alert style={{ width: '100%'}} severity={isError ? "error" : errorFile ? "warning" : "success"}>
                     <AlertTitle>{ isError ? 'Error' : <> { errorFile ? 'Warning': 'Success' }</>}</AlertTitle>
-                    <p className="display-linebreak">
-                        { alertMessage }
+                    <div className="display-linebreak">
+                        <span>{ alertMessage }</span><br/>
                         { errorFile ?
-                            <Button variant='contained' className='Download' onClick={()=>window.location.href=`${errorFile}`}>Error file</Button>: null }
-                    </p>
+                            <Button variant='contained' className='ErrorFile' onClick={()=>window.location.href=`${errorFile}`}>Error file</Button>: null }
+                    </div>
                     </Alert> : null }
                     <Dropzone
                         ref={dropZone}
@@ -287,7 +276,7 @@ export default function Uploader(props: UploaderInterface) {
                             { savingSpeciesCSV ? (
                                 <Button variant='contained' disabled={true}><CircularProgress size={16} sx={{marginRight: '5px' }}/> PROCESSING FILE...</Button>
                             ) : (
-                                <Button variant='contained' disabled={loading || savingSpeciesCSV || totalFile === 0} onClick={saveBoundaryFiles}>UPLOAD FILE</Button>
+                                <Button variant='contained' disabled={loading || savingSpeciesCSV || totalFile === 0} onClick={saveSpeciesFiles}>UPLOAD FILE</Button>
                             )}
                         </Grid>
                     </Grid>

@@ -162,6 +162,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             "species_name",
             "graph_icon",
             "activities",
+            "colour"
         ]
 
     def get_total(self, obj) -> int:
@@ -224,21 +225,38 @@ class SpeciesPopulationDensityPerPropertySerializer(
     Serializer class for serializing species population total and density.
     """
     density = serializers.SerializerMethodField()
+    province_name = serializers.SerializerMethodField()
+    organisation_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
-        fields = ["density"]
+        fields = [
+            "density",
+            "province_name",
+            "organisation_name",
+            "created_at"
+        ]
+
+    def get_province_name(self, obj):
+        return obj.province.name if obj.province else None
+
+    def get_organisation_name(self, obj):
+        return obj.organisation.name if obj.organisation else None
 
     def get_density(self, obj) -> dict:
-        """ Calculate and get density of property.
-        Params: obj (Taxon): The Taxon instance.
-        """
-        owned_species = OwnedSpecies.objects.values("property__id").filter(
-            property=obj
+        species_name = self.context.get("species_name")
+        if not species_name:
+            return None
+
+        # Use species_name in calculation
+        owned_species = OwnedSpecies.objects.filter(
+            property=obj,
+            taxon__scientific_name=species_name
         ).annotate(
             total=Sum("annualpopulation__total"),
             property_in_ha=Sum("property__property_size_ha")
         ).values("property__name", "total", "property_in_ha")
+
         if owned_species.exists():
             property_in_ha = owned_species[0].get("property_in_ha")
             total = owned_species[0].get("total")
@@ -248,7 +266,8 @@ class SpeciesPopulationDensityPerPropertySerializer(
             property_name = owned_species[0].get("property__name").capitalize()
             data = {
                 "property_name": property_name,
-                "density": density
+                "density": density,
+                "species_name": species_name
             }
             return data
         else:
@@ -275,7 +294,8 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
             "sub_adult_male",
             "sub_adult_female",
             "juvenile_male",
-            "juvenile_female"
+            "juvenile_female",
+            "year"
         ]
 
         filters = {
@@ -292,10 +312,18 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
             end_year = self.context['request'].GET.get("end_year")
             filters["year__range"] = (start_year, end_year)
 
-        age_groups_totals = AnnualPopulation.objects.values(
-            "owned_species__taxon__common_name_varbatim"
-        ).filter(**filters).annotate(
-            **{f"total_{field}": Sum(field) for field in sum_fields}
+        age_groups_totals = (
+            AnnualPopulation.objects
+            .values("owned_species__taxon__common_name_varbatim")
+            .filter(**filters)
+            .annotate(
+                **{
+                    f"total_{field}": (
+                        Sum(field) if field != 'year' else F('year')
+                    )
+                    for field in sum_fields
+                }
+            )
         )
 
         return age_groups_totals

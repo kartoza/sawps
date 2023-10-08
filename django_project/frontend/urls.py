@@ -140,7 +140,7 @@ urlpatterns = [
         name='property-create'
     ),
     re_path(
-        r'^api/property/list/?$',
+        r'^api/property/list/(?P<organisation_id>\d+)?/?$',
         PropertyList.as_view(),
         name='property-list'
     ),

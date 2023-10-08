@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import React from "react";
+import { Grid } from "@mui/material";
 import { Line } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
 import Loading from "../../../components/Loading";
 import "./index.scss";
-import { ChartCard } from "./ChartCard";
 
 Chart.register(CategoryScale);
 
 const AreaAvailableLineChart = (props: any) => {
-    const { loading, areaData, message } = props
+    const { loading, areaData, species_name } = props
+
+    // Extract the species name
+    const speciesName = species_name ? species_name : '';
+
     const AreaDataValue = {
         labels: areaData.map((item: any) => item?.annualpopulation__year),
         datasets: [
@@ -43,11 +46,32 @@ const AreaAvailableLineChart = (props: any) => {
             },
         },
         plugins: {
+            tooltip: {
+                enabled: true,
+            },
             datalabels: {
                 display: false,
             },
             legend: {
-                display: false,
+                display: true,
+                position: 'bottom' as 'bottom',
+                labels: {
+                    boxWidth: 20,
+                    boxHeight: 13,
+                    padding: 12,
+                    font : {
+                      size: 12,
+                      weight: "bold" as "bold"
+                    }
+                },
+            },
+            title: {
+                display: true,
+                text: `Total area vs area available to ${speciesName}`,
+                font: {
+                    size: 16, 
+                    weight: 'bold' as 'bold', 
+                },
             },
         },
         scales: {
@@ -55,7 +79,15 @@ const AreaAvailableLineChart = (props: any) => {
                 beginAtZero: true,
                 grid: {
                     display: false,
-                }
+                },
+                title: {
+                    display: true,
+                    text: 'Year', // X-axis label
+                    font: {
+                        size: 14,
+                        weight: "bold" as "bold",
+                    },
+                },
             },
             y: {
                 beginAtZero: true,
@@ -66,46 +98,27 @@ const AreaAvailableLineChart = (props: any) => {
                     stepSize: 65,
                     max: 260,
                 },
+                title: {
+                    display: true,
+                    text: 'Area (Ha)', // Y-axis label
+                    font: {
+                        size: 14,
+                        weight: "bold" as "bold",
+                    },
+                },
             },
         },
     };
 
     return (
-        <ChartCard
-            loading={loading}
-            chartComponent={
-                <>
-                    <Box className="white-species">
-                        <Box className="white-chart-species">
-                            {message && <Typography className="info-message">{message}</Typography>}
-                            <Typography className="total-heading">Total area vs area available to species</Typography>
-                            <Box className="AreaDataValue"><Line data={AreaDataValue} options={AreaOptions} height={225} width={1000} /></Box>
-                        </Box>
-
-                        <Box className="white-species-text">
-                            <Box className="flex species-Typography">
-                                <Box
-                                    width={20}
-                                    height={20}
-                                    sx={{ backgroundColor: '#FF5252' }}
-                                />
-                                <Typography>Total area of property</Typography>
-                            </Box>
-                            <Box className="flex species-Typography">
-                                <Box
-                                    width={20}
-                                    height={20}
-                                    sx={{ backgroundColor: '#F9A95D' }}
-                                />
-                                <Typography>Area available to species</Typography>
-                            </Box>
-                        </Box>
-                    </Box>
-                </>
-            }
-            title={''}
-            xLabel={''}
-        />
+        <Grid>
+            {!loading ? (
+                <Line data={AreaDataValue} options={AreaOptions} height={200} width={490} />
+       
+            ) : (
+                <Loading containerStyle={{ minHeight: 160 }} />
+            )}
+        </Grid>
     );
 };
 
