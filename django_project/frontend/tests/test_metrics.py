@@ -60,7 +60,7 @@ class BaseTestCase(TestCase):
             taxon=self.taxon1, 
             user=self.user, 
             property=self.property,
-            area_available_to_species=50.0
+            area_available_to_species=50
         )
 
         self.owned_species = OwnedSpeciesFactory.create_batch(
@@ -298,7 +298,7 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['area'], 50.0)
         # test with species name
-        data = {'property': self.owned_species1.id, 'species': "test_cheetah"}
+        data = {'property': self.owned_species1.property_id, 'species': "test_cheetah"}
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['area'], 50.0)
