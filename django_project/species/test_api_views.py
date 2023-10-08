@@ -419,13 +419,14 @@ class TestUploadSpeciesApiView(TestCase):
             survey_method_other="Test survey"
         ).count(), 1)
         self.assertTrue(AnnualPopulation.objects.filter(
+            survey_method__name="Other - please explain",
+            survey_method_other="Test survey"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category__name="Other (please describe how the "
+                                               "population size estimate was "
+                                               "determined)",
             population_estimate_category_other="Decennial census"
-        ).count(), 1)
-        self.assertTrue(AnnualPopulation.objects.filter(
-            survey_method=None
-        ).count(), 1)
-        self.assertTrue(AnnualPopulation.objects.filter(
-            population_estimate_category=None
         ).count(), 1)
         self.assertTrue(AnnualPopulation.objects.filter(
             population_estimate_category__name="Ad hoc or "
