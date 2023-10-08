@@ -52,8 +52,9 @@ def calculate_population_categories(queryset: QuerySet) -> Dict[str, int]:
     return population_category_dict
 
 
-def calculate_total_area_available_to_species(queryset: QuerySet[Property]) \
-    -> List[Dict[str, int]]:
+def calculate_total_area_available_to_species(
+    queryset: QuerySet[Property],
+    species_name: str) -> List[Dict[str, int]]:
     """
     Calculate the total area available to species for
     each property in the queryset.
