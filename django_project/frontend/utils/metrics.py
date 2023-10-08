@@ -2,7 +2,7 @@ from collections import Counter
 from typing import Dict, List, Any
 
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
-from django.db.models import QuerySet, Sum
+from django.db.models import QuerySet, Sum, Q
 from property.models import Property
 from species.models import OwnedSpecies
 
@@ -52,8 +52,9 @@ def calculate_population_categories(queryset: QuerySet) -> Dict[str, int]:
     return population_category_dict
 
 
-def calculate_total_area_available_to_species(queryset: QuerySet[Property]) \
-    -> List[Dict[str, int]]:
+def calculate_total_area_available_to_species(
+    queryset: QuerySet[Property],
+    species_name: str) -> List[Dict[str, int]]:
     """
     Calculate the total area available to species for
     each property in the queryset.
@@ -67,19 +68,50 @@ def calculate_total_area_available_to_species(queryset: QuerySet[Property]) \
         each containing the property name and
         the total area available to species for that property.
     """
+
     properties = []
     for property in queryset:
-        property_data = OwnedSpecies.objects.values("property__name").filter(
-            property=property
-        ).annotate(
-            total_species_area=Sum("area_available_to_species")
-        ).values("property__name", "total_species_area").distinct()
+        year_to_area_mapping = {}
 
-        data = {
-            "property_name": property_data[0]["property__name"].capitalize(),
-            "area": property_data[0]["total_species_area"]
-        }
-        properties.append(data)
+        # Check if species_name is provided
+        if species_name:
+            owned_species_query = OwnedSpecies.objects.filter(
+                Q(property=property),
+                Q(taxon__common_name_varbatim=species_name) |
+                Q(taxon__scientific_name=species_name)
+            )
+        else:
+            # If species_name is not provided, fetch all species for the property
+            owned_species_query = OwnedSpecies.objects.filter(property=property)
+
+        for owned_species in owned_species_query:
+            annual_population_data = AnnualPopulation.objects.filter(
+                owned_species__property=property)
+            for annual_population in annual_population_data:
+                year = annual_population.year
+                area_available = owned_species.area_available_to_species
+                if year in year_to_area_mapping:
+                    year_to_area_mapping[year] += area_available
+                else:
+                    year_to_area_mapping[year] = area_available
+
+        for year, area_total in year_to_area_mapping.items():
+            # Check if an entry for the same year already exists
+            existing_entry = next(
+                (entry for entry in properties if entry["year"] == year), None
+            )
+            if existing_entry:
+                existing_entry["area"] += area_total
+            else:
+                data = {
+                    "species": species_name if species_name else None,
+                    "property_name": property.name.capitalize(),
+                    "year": year,
+                    "organisation_name": property.organisation.name,
+                    "province_name": property.province.name,
+                    "area": area_total
+                }
+                properties.append(data)
 
     return properties
 
