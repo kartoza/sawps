@@ -49,7 +49,7 @@ class DataTableAPIView(APIView):
             queryset = Taxon.objects.filter(
                 ownedspecies__property__organisation_id=organisation_id,
                 taxon_rank__name="Species"
-            ).distinct()
+            ).distinct().order_by("scientific_name")
 
         filtered_queryset = filter(
             self.request.GET, queryset=queryset
@@ -67,7 +67,6 @@ class DataTableAPIView(APIView):
             user__id=id
         ).user_role_type_id.name
         queryset = self.get_queryset(user_role)
-
         if user_role in (DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             return Response(data_table_reports(queryset, request))
 

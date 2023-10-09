@@ -64,7 +64,6 @@ const DataList = () => {
         "Unplanned/illegal hunting": {color:"#696969",width:141}
     }
 
-
     function checkUserRole(userRole: string) {
         const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"];
         return allowedRoles.includes(userRole);
