@@ -1,11 +1,14 @@
 from unittest.mock import patch
 
+from django.contrib.admin import AdminSite
 from django.contrib.gis.geos import GEOSGeometry
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.db import connection
 from django.db.utils import InternalError
 
 from frontend.models.spatial import SpatialDataModel
+from property.admin import PropertyAdmin
+from property.models import Property
 from property.spatial_data import (
     extract_spatial_data_from_property_and_layer,
     save_spatial_values_from_property_layers,
@@ -189,3 +192,34 @@ class GenerateSpatialFilterTaskTest(TestCase):
         property_obj = PropertyFactory.create()
         generate_spatial_filter_task(property_obj.id)
         mock_save_spatial.assert_called_once_with(property_obj)
+
+
+class GenerateSpatialFiltersTest(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.site = AdminSite()
+
+    @patch('property.tasks.generate_spatial_filter.generate_spatial_filter_task')
+    def test_generate_spatial_filters_for_properties(self, mock_task):
+        property_1 = PropertyFactory.create()
+        property_2 = PropertyFactory.create()
+
+        property_1.spatialdatamodel_set.create()
+        property_2.spatialdatamodel_set.create()
+
+        self.assertEqual(property_1.spatialdatamodel_set.count(), 1)
+        self.assertEqual(property_2.spatialdatamodel_set.count(), 1)
+
+        ma = PropertyAdmin(Property, self.site)
+        request = self.factory.get("/admin")
+        queryset = Property.objects.filter(
+            id__in=[property_1.id, property_2.id]
+        )
+
+        ma.generate_spatial_filters_for_properties(request, queryset)
+
+        self.assertEqual(property_1.spatialdatamodel_set.count(), 0)
+        self.assertEqual(property_2.spatialdatamodel_set.count(), 0)
+
+        self.assertGreaterEqual(mock_task.delay.call_count, 2)

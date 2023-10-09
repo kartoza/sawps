@@ -50,6 +50,9 @@ from frontend.api_views.property import (
     UpdatePropertyInformation,
     PropertySearch
 )
+from frontend.api_views.spatial_filter import (
+    SpatialFilterList
+)
 from frontend.api_views.statistical import SpeciesNationalTrend
 from frontend.api_views.upload import (
     BoundaryFileList,
@@ -137,7 +140,7 @@ urlpatterns = [
         name='property-create'
     ),
     re_path(
-        r'^api/property/list/?$',
+        r'^api/property/list/(?P<organisation_id>\d+)?/?$',
         PropertyList.as_view(),
         name='property-list'
     ),
@@ -362,5 +365,10 @@ urlpatterns = [
         'save_permissions/<int:organisation_id>/',
         save_permissions,
         name='save_permissions'
+    ),
+    path(
+        'api/spatial-filter-list/',
+        SpatialFilterList.as_view(),
+        name='spatial-filter-list'
     ),
 ]

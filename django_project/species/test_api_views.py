@@ -222,7 +222,7 @@ class TestUploadSpeciesApiView(TestCase):
 
         upload_species_data(upload_session.id)
         self.assertEqual(Taxon.objects.all().count(), 1)
-        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 2)
+        self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
         self.assertEqual(AnnualPopulation.objects.all().count(), 1)
         self.assertTrue(OwnedSpecies.objects.all().count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
@@ -230,6 +230,15 @@ class TestUploadSpeciesApiView(TestCase):
         ).count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
             activity_type__name="Planned Hunt/Cull"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Translocation (Intake)"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Planned Euthanasia/DCA"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            activity_type__name="Unplanned/Illegal Hunting"
         ).count(), 1)
 
         self.assertTrue(OpenCloseSystem.objects.all().count() == 1)
@@ -395,6 +404,34 @@ class TestUploadSpeciesApiView(TestCase):
             self.assertTrue("Lemurs doesn't exist in the database. "
                             "Please select species available in the "
                             "dropdown only." in errors)
+            self.assertTrue("The value of field "
+                            "If_other_(population_estimate_category)_please "
+                            "explain is empty." in errors)
+            self.assertTrue("The value of field "
+                            "If_other_(survey_method)_please "
+                            "explain is empty." in errors)
+            self.assertTrue("The value of the compulsory field "
+                            "Population_estimate_category is empty." in errors)
+            self.assertTrue("The value of the compulsory field "
+                            "presence/absence is empty." in errors)
+
+        self.assertTrue(AnnualPopulation.objects.filter(
+            survey_method_other="Test survey"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            survey_method__name="Other - please explain",
+            survey_method_other="Test survey"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category__name="Other (please describe how the "
+                                               "population size estimate was "
+                                               "determined)",
+            population_estimate_category_other="Decennial census"
+        ).count(), 1)
+        self.assertTrue(AnnualPopulation.objects.filter(
+            population_estimate_category__name="Ad hoc or "
+                                               "opportunistic monitoring"
+        ).count(), 1)
 
     def test_upload_excel_missing_compulsory_field(self):
         """Test upload species with an excel file which misses
@@ -494,6 +531,39 @@ class TestUploadSpeciesApiView(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['detail'], 'File not found')
+
+    def test_uploader_view_with_empty_compulsory_fields(self):
+        """Test uploader file view with an empty value in
+        compulsory field."""
+
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_empty_value_of_compulsory_fields.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+        self.assertTrue('error' in upload_session.error_file.path)
 
 
 

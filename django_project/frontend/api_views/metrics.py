@@ -162,8 +162,17 @@ class SpeciesPopulationDensityPerPropertyAPIView(APIView):
         Params:request (Request): The HTTP request object.
         """
         queryset = self.get_queryset()
+
+        # Extract the species_name query parameter from the URL
+        species_name = self.request.query_params.get("species", None)
+
         serializer = SpeciesPopulationDensityPerPropertySerializer(
-            queryset, many=True, context={"request": request}
+            queryset,
+            many=True,
+            context={
+                "request": request,
+                "species_name": species_name
+            }
         )
         return Response(serializer.data)
 

@@ -5,10 +5,7 @@ from typing import List
 from django.db.models.query import QuerySet
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
-from frontend.static_mapping import (
-    DATA_CONTRIBUTORS,
-    DATA_SCIENTISTS
-)
+from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS
 from frontend.utils.data_table import (
     data_table_reports,
     national_level_user_table
@@ -40,18 +37,36 @@ class DataTableAPIView(APIView):
                 queryset = Property.objects.filter(
                     organisation_id__in=ids,
                     ownedspecies__taxon__taxon_rank__name="Species"
-                )
+                ).distinct().order_by("name")
             else:
                 queryset = Property.objects.filter(
                     organisation_id=organisation_id,
                     ownedspecies__taxon__taxon_rank__name="Species"
-                ).order_by("name")
+                ).distinct().order_by("name")
+
+            spatial_filter_values = self.request.GET.get(
+                'spatial_filter_values',
+                ''
+            ).split(',')
+
+            spatial_filter_values = list(
+                filter(None, spatial_filter_values)
+            )
+
+            if spatial_filter_values:
+                queryset = queryset.filter(
+                    **({
+                        'spatialdatamodel__spatialdatavaluemodel__'
+                        'context_layer_value__in':
+                        spatial_filter_values
+                    })
+                )
         else:
             query_filter = BaseMetricsFilter
             queryset = Taxon.objects.filter(
                 ownedspecies__property__organisation_id=organisation_id,
                 taxon_rank__name="Species"
-            ).distinct()
+            ).distinct().order_by("scientific_name")
 
         filtered_queryset = query_filter(
             self.request.GET, queryset=queryset

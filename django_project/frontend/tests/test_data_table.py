@@ -22,6 +22,10 @@ from stakeholder.factories import (
     organisationUserFactory,
     userRoleTypeFactory,
 )
+from frontend.tests.model_factories import (
+    SpatialDataModelF,
+    SpatialDataModelValueF
+)
 
 
 class OwnedSpeciesTestCase(TestCase):
@@ -69,10 +73,34 @@ class OwnedSpeciesTestCase(TestCase):
         session = self.client.session
         session.save()
 
+        self.spatial_data = SpatialDataModelF.create(
+            property=self.property
+        )
+        self.spatial_data_value = SpatialDataModelValueF.create(
+            spatial_data=self.spatial_data,
+            context_layer_value='spatial filter test'
+        )
+
     def test_data_table_filter_by_species_name(self) -> None:
         """Test data table filter by species name"""
         url = self.url
-        data = {'species': 'SpeciesA'}
+        value = self.owned_species[0].annualpopulationperactivity_set.first()
+        data = {
+            'species': 'SpeciesA',
+            'activity': (value.activity_type.name)
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]["Property_report"][0]["scientific_name"],
+            "SpeciesA"
+        )
+
+    def test_data_table_filter_by_activity_type(self) -> None:
+        """Test data table filter by activity type"""
+        url = self.url
+        value = self.owned_species[0].annualpopulationperactivity_set.first()
+        data = {'activity': value.activity_type.name}
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
@@ -82,11 +110,14 @@ class OwnedSpeciesTestCase(TestCase):
 
     def test_filter_by_property(self) -> None:
         """Test data table filter by property"""
+        value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
             'species': self.taxon.scientific_name,
             'property': self.property.id,
             'start_year': self.owned_species[0].annualpopulation_set.first().year,
             'end_year': self.owned_species[0].annualpopulation_set.first().year,
+            'spatial_filter_values': 'spatial filter test',
+            'activity': value.activity_type.name
         }
         response = self.client.get(self.url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -99,6 +130,7 @@ class OwnedSpeciesTestCase(TestCase):
         """Test data table filter by year and report"""
         year = self.owned_species[1].annualpopulation_set.first().year
         data = {
+            "species": self.taxon.scientific_name,
             "start_year": year,
             "end_year":year,
             "reports": "Species_report"
@@ -113,6 +145,25 @@ class OwnedSpeciesTestCase(TestCase):
 
     def test_data_table_activity_report(self) -> None:
         """Test data table activity report"""
+        year = AnnualPopulationPerActivity.objects.first().year
+        value = self.owned_species[0].annualpopulationperactivity_set.first()
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "start_year": year,
+            "end_year":year,
+            "reports": "Activity_report",
+            "activity": value.activity_type.name
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        if response.data:
+            self.assertEqual(next(iter(response.data[0])), "Activity_report")
+        else:
+            self.assertEqual(response.data, [])
+
+    def test_activity_report_without_activity_filter(self) -> None:
+        """Test data table activity report without activity"""
         year = AnnualPopulationPerActivity.objects.first().year
         url = self.url
         data = {
@@ -131,18 +182,21 @@ class OwnedSpeciesTestCase(TestCase):
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
         year = self.owned_species[1].annualpopulation_set.first().year
+        value = self.owned_species[1].annualpopulationperactivity_set.first()
         url = self.url
         data = {
             "species": "SpeciesA",
             "start_year": year,
             "end_year":year,
             "reports": "Sampling_report",
+            "activity": value.activity_type.name
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]["Sampling_report"][0]["scientific_name"],
-            "SpeciesA"
+            response.data[0]["Sampling_report"][0][
+            "owned_species__taxon__scientific_name"
+        ], "SpeciesA"
         )
 
 
@@ -205,6 +259,7 @@ class NationalUserTestCase(TestCase):
         """Test national data consumer reports"""
         year = self.owned_species[0].annualpopulation_set.first().year
         property = self.owned_species[0].property.id
+        value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
             "species": "SpeciesA",
             "property": property,
@@ -213,7 +268,8 @@ class NationalUserTestCase(TestCase):
             "reports": (
                 "Activity_report,Province_report,"
                 "Species_report,Property_report"
-            )
+            ),
+            "activity":value.activity_type.name
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
@@ -339,17 +395,16 @@ class DataScientistTestCase(TestCase):
         session = self.client.session
         session.save()
 
-    def test_regional_data_consumer(self) -> None:
-        """Test data table filter by regional data consumer"""
+    def test_regional_data_scientist(self) -> None:
+        """Test data table filter by regional data scientist"""
+        value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
             "reports": (
-                "Activity_report,Species_report,Property_report"
+                "Species_report,Property_report"
             ),
-            "organisation": [
-                self.organisation_1.id
-            ]
+            "activity": value.activity_type.name
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
+        self.assertEqual(len(response.data), 2)
