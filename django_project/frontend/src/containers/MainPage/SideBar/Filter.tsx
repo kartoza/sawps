@@ -762,7 +762,7 @@ function Filter() {
                                                 <FormControlLabel
                                                     control={
                                                         <Checkbox
-                                                            checked={selectedProperty.length === filteredProperties.length}
+                                                            checked={selectedProperty.length === propertyList.length}
                                                             onChange={handleSelectAllProperty}
                                                         />
                                                     }
@@ -770,7 +770,7 @@ function Filter() {
                                                 />
                                             </Box>
                                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                {filteredProperties.map((property: any) => (
+                                                {propertyList.map((property: any) => (
                                                     <FormControlLabel
                                                         key={property.name}
                                                         control={

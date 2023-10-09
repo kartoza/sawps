@@ -128,6 +128,7 @@ class OwnedSpeciesTestCase(TestCase):
         """Test data table filter by year and report"""
         year = self.owned_species[1].annualpopulation_set.first().year
         data = {
+            "species": self.taxon.scientific_name,
             "start_year": year,
             "end_year":year,
             "reports": "Species_report"
@@ -191,8 +192,9 @@ class OwnedSpeciesTestCase(TestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]["Sampling_report"][0]["scientific_name"],
-            "SpeciesA"
+            response.data[0]["Sampling_report"][0][
+            "owned_species__taxon__scientific_name"
+        ], "SpeciesA"
         )
 
 
