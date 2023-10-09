@@ -139,9 +139,9 @@ const DataList = () => {
                             const cellKeys = Object.keys(cellData[0]);
                             const generatedColumns = cellKeys.map((key) => ({
                                 field: key,
-                                headerName: key.split('_')
+                                headerName: key.replace('owned','').replace('species','').replace('taxon','').replace('varbatim','').split('_')
                                     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                                    .join(' '),
+                                    .join(' ').trim(),
                                 width: (customColorWidth as any)[each]?.width,
                             }));
                             for (const value of generatedColumns) {
@@ -190,9 +190,9 @@ const DataList = () => {
                                 const cellKeys = cellData[0] && Object.keys(cellData[0]);
                                 const generatedColumns: GridColDef[] = cellKeys.length > 0 && cellKeys.map((key) => ({
                                     field: key,
-                                    headerName: key.split('_')
+                                    headerName: key.replace('owned','').replace('species','').replace('taxon','').replace('varbatim','').split('_')
                                         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                                        .join(' '),
+                                        .join(' ').trim(),
                                     width: (customColorWidth as any)[each]?.width,
                                 }));
                                 const cellRows = cellData.map((row: any, rowIndex: any) => ({
