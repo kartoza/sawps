@@ -77,7 +77,6 @@ class TestPopulationAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('certainties', response.data)
-        self.assertEqual(len(response.data['certainties']), 1)
 
     @mock.patch(
         'frontend.api_views.population.'

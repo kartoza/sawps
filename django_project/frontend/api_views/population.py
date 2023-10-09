@@ -97,11 +97,6 @@ class PopulationMetadataList(APIView):
                     PopulationEstimateCategorySerializer(
                         population_estimate_categories, many=True
                     ).data
-                ),
-                "certainties": (
-                    CertaintySerializer(
-                        certainties, many=True
-                    ).data
                 )
             },
         )
