@@ -298,10 +298,10 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['area'], 50.0)
         
-        # data = {'property': self.owned_species1.property_id, 'species': "test_cheetah"}
-        # response = self.client.get(url, data, **self.auth_headers)
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.assertEqual(response.data[0]['area'], 50.0)
+        data = {'property': self.owned_species[0].property_id, 'species': "Penthera leo"}
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['area'], 50.0)
 
 
     def test_total_area_available_to_species_filter_by_property(self) -> None:
