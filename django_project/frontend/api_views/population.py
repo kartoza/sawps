@@ -4,8 +4,7 @@ from datetime import datetime
 
 from activity.models import ActivityType
 from activity.serializers import ActivityTypeSerializer
-from django.db.models import Q, IntegerField
-from django.db.models.functions import Cast
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from frontend.models.upload import DraftSpeciesUpload
 from frontend.utils.statistical_model import (
@@ -22,14 +21,12 @@ from population_data.models import (
     SamplingEffortCoverage,
     PopulationStatus,
     PopulationEstimateCategory,
-    Certainty
 )
 from population_data.serializers import (
     OpenCloseSystemSerializer,
     SamplingEffortCoverageSerializer,
     PopulationStatusSerializer,
     PopulationEstimateCategorySerializer,
-    CertaintySerializer
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -64,9 +61,6 @@ class PopulationMetadataList(APIView):
         population_estimate_categories = (
             PopulationEstimateCategory.objects.all().order_by("name")
         )
-        certainties = Certainty.objects.annotate(
-            certainty=Cast('name', IntegerField())
-        ).all().order_by('certainty')
         return Response(
             status=200,
             data={
