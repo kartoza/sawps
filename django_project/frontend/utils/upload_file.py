@@ -88,9 +88,14 @@ def validate_shapefile_zip(layer_file_path: any):
     names = []
     with zipfile.ZipFile(layer_file_path, 'r') as zipFile:
         names = zipFile.namelist()
+    print(names)
     shp_files = [n for n in names if n.endswith('.shp') and '/' not in n]
     shx_files = [n for n in names if n.endswith('.shx') and '/' not in n]
     dbf_files = [n for n in names if n.endswith('.dbf') and '/' not in n]
+    print(is_valid)
+    print(shp_files)
+    print(layers)
+    print()
 
     if is_valid:
         for filename in layers:
