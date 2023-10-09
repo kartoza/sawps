@@ -9,7 +9,7 @@ import Filter from './Filter';
 
 function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
     const [selectedTabSideBar, setSelectedTabSideBar] = useState(0);
-    const [containsCharts, setContainsCharts] = useState(false);
+    const [showLayerFilter, setLayerFilter] = useState(false);
 
     useEffect(() => {
         // Extract the current URL
@@ -20,9 +20,9 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
             currentUrl.includes('/charts') || 
             currentUrl.includes('/?tab=2')
         ) {
-            setContainsCharts(true);
+            setLayerFilter(true);
             setSelectedTabSideBar(1);
-        }else setContainsCharts(false)
+        }else setLayerFilter(false)
 
     }, [props.selectedMainTabIdx]);
 
@@ -35,7 +35,7 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
                     }} aria-label="Left Side Bar Tabs"
                     centered={containsCharts}
                 >
-                    {!containsCharts && (
+                    {!showLayerFilter && (
                         <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
                      )} 
                 
@@ -44,7 +44,7 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
             </Box>
             <Box className='TabPanels FlexContainerFill'>
                 <Box className='LeftSideBarContent'>
-                    {!containsCharts && (
+                    {!showLayerFilter && (
                         <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
                             <Layers />
                         </TabPanel>
