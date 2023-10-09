@@ -10,7 +10,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
 ![Filter](./img/filters-1.png)
 
 1. **Explore:** Open the explore page by clicking on `Explore` on the navigation bar.
-2. **Filter:** Open the filter side panel by clicking on the `Filter` option. Inside the side panel, you will find the all the filters. For each filter, interact with the available options or input fields to customise your filter criteria. Just click on the dropdown and select the filter.
+2. **Filter:** Open the filter side panel by clicking on the `FILTERS` option. Inside the side panel, you will find the all the filters. For each filter, interact with the available options or input fields to customise your filter criteria. Just click on the dropdown and select the filter.
 
 ## Filter side panel overview
 
@@ -96,9 +96,8 @@ The filter side panel enhances the user experience by allowing them to focus on 
 
 ![Spatial filter](./img/filters-10.png)
 
-1. **Biome type dropdown:** Using this you can filter the data according to the biome types.
-2. **Critical biodiversity type dropdown** Using this you can filter the data according to the critical biodiversity areas.
-3. **Protected area dropdown:** Using this you can filter the data according to the protected area types.
+1. **Critical biodiversity type dropdown** Using this you can filter the data according to the critical biodiversity areas.
+2. **Ecosystem dropdown:** Using this you can filter the data according to the ecosystem types.
 
 ## Summary
 
