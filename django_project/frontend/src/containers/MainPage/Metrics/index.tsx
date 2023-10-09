@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import ActivityDonutChart from "./ActivityDonutChart";
 import SpeciesLineChart from "./SpeciesLineChart";
 import DensityBarChart from "./DensityBarChart";
@@ -22,6 +22,7 @@ const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 // national metrics and download button
 import GenerateChartImages from "../../../components/PdfReport/generateChartImage";
+import { Margin } from "@mui/icons-material";
 
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -42,6 +43,10 @@ const Metrics = () => {
     const [populationData, setPopulationData] = useState([])
     const [speciesData, setSpeciesData] = useState([])
     const contentRef = useRef(null);
+
+    // Declare errorMessage as a state variable
+    const [showChats, setShowCharts] = useState(false);
+    
     const fetchActivityPercentageData = () => {
         setLoading(true)
         axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
@@ -74,6 +79,7 @@ const Metrics = () => {
         axios.get(`${FETCH_POPULATION_AGE_GROUP}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
+                console.log('fetched data: ',response.data)
                 setAgeGroupData(response.data)
             }
         }).catch((error) => {
@@ -97,10 +103,16 @@ const Metrics = () => {
     }
 
     useEffect(() => {
-        fetchActivityPercentageData();
-        fetchActivityTotalCount();
-        fetchPopulationAgeGroupData();
-        fetchAreaAvailableLineData();
+        if(propertyId && propertyId != ''){
+            fetchActivityPercentageData();
+            fetchActivityTotalCount();
+            fetchPopulationAgeGroupData();
+            fetchAreaAvailableLineData();
+            setShowCharts(true)
+        }else {
+            setShowCharts(false);
+        }
+        
     }, [propertyId, startYear, endYear, selectedSpecies])
 
     useEffect(() => {
@@ -127,49 +139,94 @@ const Metrics = () => {
 
     return (
         <Box>
-            <Box className="overflow-auto-chart">
-                <Grid className="main-chart" container spacing={3} style={{ padding: 20 }} ref={contentRef}>
-                    <Grid item xs={12} md={12} lg={6}>
-                        <SpeciesLineChart selectedSpecies={selectedSpecies} propertyId={propertyId} startYear={startYear} endYear={endYear} loading={loading} setLoading={setLoading} speciesData={speciesData} setSpeciesData={setSpeciesData} />
-                        <DensityBarChart selectedSpecies={selectedSpecies} propertyId={propertyId} startYear={startYear} endYear={endYear} loading={loading} setLoading={setLoading} densityData={densityData} setDensityData={setDensityData} />
-                        <PropertyTypeBarChart selectedSpecies={selectedSpecies} propertyId={propertyId} startYear={startYear} endYear={endYear} loading={loading} setLoading={setLoading} />
-                        {areaData.map((data) =>
-                            <AreaAvailableLineChart
-                                loading={loading}
-                                areaData={data?.area?.owned_species}
-                                message={data?.area?.message}
-                            />)}
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={6}>
-                        <PopulationCategoryChart selectedSpecies={selectedSpecies} propertyId={propertyId} startYear={startYear} endYear={endYear} loading={loading} setLoading={setLoading} populationData={populationData} setPopulationData={setPopulationData} />
-                        <PropertyAvailableBarChart selectedSpecies={selectedSpecies} propertyId={propertyId} startYear={startYear} endYear={endYear} loading={loading} setLoading={setLoading} />
-                        {totalCoutData.length > 0 && activityData.length > 0 ?
-                            <Card className="card-chart">
-                                <Grid container className="boxChart-lion" spacing={2}>
-                                    <ActivityDonutChart activityData={totalCoutData} activityType={activityType} labels={totalCountLabel} loading={loading} chartHeading={"Total Count per Activity"} showPercentage={false} />
-                                    <ActivityDonutChart activityData={activityData} activityType={activityType} labels={labels} loading={loading} chartHeading={"Activity data, as % of total population"} showPercentage={true} />
+            <Box className="charts-container">
+
+                {showChats ? (
+                        <Grid container spacing={2} ref={contentRef}>
+                            <Grid item xs={12} md={6}>
+                                <PropertyTypeBarChart 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading} 
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <DensityBarChart 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading} 
+                                    densityData={densityData} 
+                                    setDensityData={setDensityData} 
+                                /> 
+                            </Grid>
+
+                            {/* <Grid item xs={12} md={6}>
+                                <PropertyAvailableBarChart 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading} 
+                                />
+                            </Grid> */}
+
+                            {ageGroupData.map((data) => (
+                                <Grid container key={data.id} item xs={12} md={6}>
+                                    <AgeGroupBarChart
+                                        loading={loading}
+                                        ageGroupData={data?.age_group}
+                                        icon={data?.graph_icon}
+                                        colour={data?.colour}
+                                        name={data?.common_name_varbatim}
+                                    />
                                 </Grid>
-                            </Card> : null}
-                        {ageGroupData.map((data) =>
-                            <AgeGroupBarChart
-                                loading={loading}
-                                ageGroupData={data?.age_group}
-                                icon={data?.graph_icon}
-                                colour={data?.colour}
-                                name={data?.common_name_varbatim}
-                            />)}
+                            ))}
+
+                            {areaData.map((data, index) => (
+                                <Grid container key={index} item xs={12} md={6}>
+                                    {data?.area?.owned_species ? (
+                                        <AreaAvailableLineChart
+                                            loading={loading}
+                                            areaData={data?.area?.owned_species}
+                                            species_name={data?.common_name_varbatim}
+                                        />
+                                    ) : (
+                                        null
+                                    )}
+                                </Grid>
+                            ))}
                     </Grid>
-                </Grid>
-            </Box>
+                ): (
+                    // Render message to user
+                    <Grid container justifyContent="center" alignItems="center">
+                        <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                            Please select a property to fetch species data for.
+                        </Typography>
+                    </Grid>
+                )}
+
+                
+        </Box>
             {/* for decision makers only */}
-            {userRole === 'decision maker' && (
+            {/* {userRole === 'decision maker' && (
                 <GenerateChartImages />
+            )} */}
+            {showChats && (
+                <Box className="download-btn-box" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
+                    <Button onClick={handleDownloadPdf} variant="contained" color="primary">
+                        Download data visualizations
+                    </Button>
+                </Box>
             )}
-            <Box className="downlodBtnbox">
-                <Button onClick={handleDownloadPdf} variant="contained" color="primary">
-                    Download data visualisations
-                </Button>
-            </Box>
+
         </Box>
     );
 };

@@ -9,7 +9,6 @@ from stakeholder.models import (
 )
 from django.contrib.auth.models import User
 from .base_view import RegisteredOrganisationBaseView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import JsonResponse
 
@@ -28,9 +27,7 @@ from django.contrib.sites.models import Site
 from urllib.parse import quote
 
 
-
 class OrganisationUsersView(
-    LoginRequiredMixin,
     RegisteredOrganisationBaseView,
     TemplateView
 ):
@@ -324,7 +321,7 @@ class OrganisationUsersView(
         users_page = request.GET.get('users_page', 1)
 
         # Get the rows per page value from the query parameters
-        rows_per_page = request.GET.get('users_per_page', 5)
+        rows_per_page = request.GET.get('users_per_page', 7)
 
         paginator = Paginator(organisation_users, rows_per_page)
 

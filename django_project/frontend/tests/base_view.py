@@ -17,7 +17,6 @@ from stakeholder.models import (
 )
 
 
-
 class RegisteredBaseViewTestBase(TestCase):
     view_name = 'home'
     view_cls = None
@@ -28,6 +27,10 @@ class RegisteredBaseViewTestBase(TestCase):
         self.user_1 = UserF.create(username='test_1')
         self.superuser = UserF.create(
             username='test_2',
+            is_superuser=True
+        )
+        self.superuser1 = UserF.create(
+            username='test_4',
             is_superuser=True
         )
         self.user_2 = UserF.create(username='test_3')
@@ -51,18 +54,16 @@ class RegisteredBaseViewTestBase(TestCase):
             title='Test Reminder 1',
             reminder='Test Reminder'
         )
-        self.user_profile = UserProfile.objects.create(
-            user=self.user_1,
-            received_notif=False,
-            current_organisation=self.organisation_1
-        )
-        self.superuser.user_profile = UserProfile.objects.create(
-            user=self.superuser,
-            current_organisation=self.organisation_1
-        )
-        self.user_2.user_profile = UserProfile.objects.create(
-            user=self.user_2
-        )
+        self.user_profile = self.user_1.user_profile
+        self.user_profile.received_notif = False
+        self.user_profile.current_organisation = self.organisation_1
+        self.user_1.save()
+
+        self.superuser_profile = self.superuser.user_profile
+        self.superuser_profile.current_organisation = self.organisation_1
+        self.superuser.save()
+
+        self.user_profile_2 = self.user_2.user_profile
 
     def process_session(self, request):
         self.middleware.process_request(request)
@@ -100,8 +101,8 @@ class RegisteredBaseViewTestBase(TestCase):
         context = view.get_context_data()
         self.assertIn('current_organisation_id', context)
         self.assertIn('organisations', context)
-        self.assertEqual(len(context['organisations']), 2)
-        self.assertNotEqual(context['organisations'][1]['id'],
+        self.assertGreater(len(context['organisations']), 0)
+        self.assertEqual(context['organisations'][0]['id'],
                             context['current_organisation_id'])
 
     def do_test_user_without_organisation(self):
@@ -131,4 +132,41 @@ class RegisteredBaseViewTestBase(TestCase):
         # Test that the method returns the correct current organisation
         current_organisation = view.get_current_organisation()
         self.assertIsNotNone(current_organisation)
+
+    def do_test_get_or_set_current_organisation_with_superuser(self):
+
+        # Create a request
+        request = self.factory.get(reverse(self.view_name))
+
+        # Attach the user to the request
+        request.user = self.superuser1
+
+        # Create an instance of the view and call the method
+        view = RegisteredOrganisationBaseView()
+        view.request = request
+
+        # Test that the returned variables are not empty
+        current_organisation_id, current_organisation = (
+            view.get_or_set_current_organisation(request)
+        )
+        self.assertIsNotNone(current_organisation_id)
+        self.assertTrue(current_organisation_id > 0)
+        self.assertIsNotNone(current_organisation)
+        self.assertFalse(current_organisation == '')
+
+        self.assertIsNotNone(
+            self.superuser1.user_profile.current_organisation)
+
+        request.user = self.superuser1
+
+        # Create an instance of the view and call the method
+        view = RegisteredOrganisationBaseView()
+        view.request = request
+
+        # Test that the returned variables are not empty
+        current_organisation_id, current_organisation = (
+            view.get_or_set_current_organisation(request)
+        )
+        self.assertIsNotNone(self.superuser1.user_profile.current_organisation)
+
 

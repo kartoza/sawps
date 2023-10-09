@@ -28,6 +28,7 @@ import {
     OTHER_NUMBER_FIELDS
 } from '../../../models/Upload';
 import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
+import ConfidenceRating from './ConfidenceRating';
 
 interface SpeciesDetailInterface {
     initialData: UploadSpeciesDetailInterface;
@@ -37,6 +38,7 @@ interface SpeciesDetailInterface {
     sampling_effort_coverages: CommonUploadMetadata[];
     population_statuses: CommonUploadMetadata[];
     population_estimate_categories: CommonUploadMetadata[];
+    certainties: CommonUploadMetadata[];
     setIsDirty: (isDirty: boolean) => void;
     handleNext: (data: UploadSpeciesDetailInterface) => void;
     handleSaveDraft: (data: UploadSpeciesDetailInterface) => void;
@@ -50,10 +52,15 @@ const isOtherSelected = (value: string) => {
 }
 
 export default function SpeciesDetail(props: SpeciesDetailInterface) {
+    const [isConfidenceRatingOpen, setIsConfidenceRatingOpen] = useState(false);
+    const handleOpenConfidenceRating = () => {
+        setIsConfidenceRatingOpen(true);
+    };
     const { 
         initialData, taxonMetadataList, openCloseMetadataList,
         surveyMethodMetadataList, sampling_effort_coverages,
         population_statuses, population_estimate_categories,
+        certainties,
         setIsDirty, handleNext, handleSaveDraft
     } = props
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
@@ -154,6 +161,9 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
 
     const updateAnnualPopulationSelectValue = (field: keyof AnnualPopulationInterface, value: number, sourceList: CommonUploadMetadata[]) => {
         let _name_field = field.replace('_id', '_name')
+        if (field === 'population_estimate_certainty') {
+            _name_field = 'population_estimate_certainty_name'
+        }
         let _selected = sourceList.find(element => element.id === value)
         if (_selected) {
             setData({
@@ -211,15 +221,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                         survey_method_other: true
                     }
                 }
-        }
-        if (data.annual_population.population_estimate_certainty === 0) {
-            _error_validation = {
-                ..._error_validation,
-                annual_population: {
-                    ..._error_validation.annual_population,
-                    population_estimate_certainty: true
-                }
-            }
         }
         if (data.annual_population.population_estimate_category_id === 0) {
             _error_validation = {
@@ -380,50 +381,50 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
-                                        <FormControl variant="standard" className='DropdownInput' fullWidth>
-                                            <InputLabel id="sampling-effort-coverage-label">Sampling Effort Coverage</InputLabel>
-                                            <Select
-                                                labelId="sampling-effort-coverage-label"
-                                                id="sampling-effort-coverage-select"
-                                                value={data.annual_population.sampling_effort_coverage_id ? data.annual_population.sampling_effort_coverage_id.toString() : ""}
-                                                onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('sampling_effort_coverage_id', parseInt(event.target.value), sampling_effort_coverages)}
-                                                displayEmpty
-                                                label="Sampling Effort Coverage"
-                                            >
-                                                { sampling_effort_coverages.map((common: CommonUploadMetadata) => {
-                                                    return (
-                                                        <MenuItem key={common.id} value={common.id}>
-                                                            {common.name}
-                                                        </MenuItem>
-                                                    )
-                                                })                                            
-                                                }
-                                            </Select>
-                                            <FormHelperText>{' '}</FormHelperText>
-                                        </FormControl>
+                                    <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                        <InputLabel id="sampling-effort-coverage-label">Sampling Effort Coverage</InputLabel>
+                                        <Select
+                                        labelId="sampling-effort-coverage-label"
+                                        id="sampling-effort-coverage-select"
+                                        value={data.annual_population.sampling_effort_coverage_id ? data.annual_population.sampling_effort_coverage_id.toString() : ""}
+                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('sampling_effort_coverage_id', parseInt(event.target.value), sampling_effort_coverages)}
+                                        displayEmpty
+                                        label="Sampling Effort Coverage"
+                                        style={{ width: '300px' }}
+                                        >
+                                        {sampling_effort_coverages.map((common: CommonUploadMetadata) => {
+                                            return (
+                                            <MenuItem key={common.id} value={common.id}>
+                                                {common.name}
+                                            </MenuItem>
+                                            )
+                                        })}
+                                        </Select>
+                                        <FormHelperText>{' '}</FormHelperText>
+                                    </FormControl>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <FormControl variant="standard" className='DropdownInput' fullWidth>
-                                            <InputLabel id="population-status-label">Population Status</InputLabel>
-                                            <Select
-                                                labelId="population-status-label"
-                                                id="population-status-select"
-                                                value={data.annual_population.population_status_id ? data.annual_population.population_status_id.toString() : ""}
-                                                onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_status_id', parseInt(event.target.value), population_statuses)}
-                                                displayEmpty
-                                                label="Population Status"
-                                            >
-                                                { population_statuses.map((common: CommonUploadMetadata) => {
-                                                    return (
-                                                        <MenuItem key={common.id} value={common.id}>
-                                                            {common.name}
-                                                        </MenuItem>
-                                                    )
-                                                })                                            
-                                                }
-                                            </Select>
-                                            <FormHelperText>{' '}</FormHelperText>
-                                        </FormControl>
+                                    <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                        <InputLabel id="population-status-label">Population Status</InputLabel>
+                                        <Select
+                                        labelId="population-status-label"
+                                        id="population-status-select"
+                                        value={data.annual_population.population_status_id ? data.annual_population.population_status_id.toString() : ""}
+                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_status_id', parseInt(event.target.value), population_statuses)}
+                                        displayEmpty
+                                        label="Population Status"
+                                        style={{ width: '300px' }}
+                                        >
+                                        {population_statuses.map((common: CommonUploadMetadata) => {
+                                            return (
+                                            <MenuItem key={common.id} value={common.id}>
+                                                {common.name}
+                                            </MenuItem>
+                                            )
+                                        })}
+                                        </Select>
+                                        <FormHelperText>{' '}</FormHelperText>
+                                    </FormControl>
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -623,6 +624,10 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                         ha
                                                     </InputAdornment>
                                                 ),
+                                                inputProps: { 
+                                                    min: 0,
+                                                    step: 0.5
+                                                }
                                             }}
                                             type='number'
                                             variant="standard"
@@ -643,13 +648,52 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
+                                    <ConfidenceRating
+                                        open={isConfidenceRatingOpen}
+                                        onClose={() => setIsConfidenceRatingOpen(false)}
+                                        onSubmit={() => setIsConfidenceRatingOpen(false)}
+                                        currentConfidence={data.annual_population.population_estimate_certainty}
+                                        onConfidenceChange={(newValue: number) =>
+                                            updateAnnualPopulationSelectValue(
+                                            'population_estimate_certainty',
+                                            newValue,
+                                            certainties
+                                            )
+                                        }
+                                        modalHeight="auto"
+                                    />
+
                                     <Grid item xs={6}>
-                                        <TextField id='population_estimate_certainty' label='Population Estimate Certainty' value={data.annual_population.population_estimate_certainty ? data.annual_population.population_estimate_certainty : ''}
-                                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                        <div className="select-container">
+                                            <InputLabel id="population-estimate-certainty-label">
+                                            Population Estimate Certainty*
+                                            </InputLabel>
+                                            <FormControl
+                                            variant="standard"
                                             required
-                                            variant='standard'
-                                            onChange={(e) => updateAnnualPopulation('population_estimate_certainty', parseInt(e.target.value)) } fullWidth
-                                            helperText={validation.annual_population?.population_estimate_certainty ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
+                                            className="DropdownInput"
+                                            fullWidth
+                                            error={validation.annual_population?.population_estimate_certainty}
+                                            >
+                                            <div
+                                                className="select-box"
+                                                onClick={handleOpenConfidenceRating}
+                                            >
+                                                {/* Display the selected value or placeholder */}
+                                                <div className="select-value">
+                                                {data.annual_population.population_estimate_certainty ||
+                                                data.annual_population.population_estimate_certainty == 0
+                                                    ? data.annual_population.population_estimate_certainty.toString()
+                                                    : 'Select an option'}
+                                                </div>
+                                            </div>
+                                            <FormHelperText>
+                                                {validation.annual_population?.population_estimate_certainty
+                                                ? REQUIRED_FIELD_ERROR_MESSAGE
+                                                : ' '}
+                                            </FormHelperText>
+                                            </FormControl>
+                                        </div>
                                     </Grid>
                                     <Grid item xs={6}>
                                         <TextField id='certainty_of_bounds' label='Certainty of Bounds' value={data.annual_population.certainty_of_bounds ? data.annual_population.certainty_of_bounds : ''}
@@ -663,16 +707,30 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
-                                        <TextField id='upper_confidence_level' label='Upper Confidence Level' value={data.annual_population.upper_confidence_level ? data.annual_population.upper_confidence_level : ''}
+                                        <TextField id='upper_confidence_level' label='Upper Confidence Level' value={data.annual_population.upper_confidence_level || data.annual_population.upper_confidence_level == 0 ? data.annual_population.upper_confidence_level : ''}
                                             type='number'
                                             variant='standard'
+                                            InputProps={{
+                                                inputProps: { 
+                                                    min: 0,
+                                                    max: 100,
+                                                    step: 0.5
+                                                }
+                                            }}
                                             onChange={(e) => updateAnnualPopulation('upper_confidence_level', parseFloat(e.target.value)) } fullWidth
                                             helperText=" " />
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <TextField id='lower_confidence_level' label='Lower Confidence Level' value={data.annual_population.lower_confidence_level ? data.annual_population.lower_confidence_level : ''}
+                                        <TextField id='lower_confidence_level' label='Lower Confidence Level' value={data.annual_population.lower_confidence_level || data.annual_population.lower_confidence_level == 0 ? data.annual_population.lower_confidence_level : ''}
                                                 type='number'
                                                 variant='standard'
+                                                InputProps={{
+                                                    inputProps: { 
+                                                        min: 0,
+                                                        max: 100,
+                                                        step: 0.5
+                                                    }
+                                                }}
                                                 onChange={(e) => updateAnnualPopulation('lower_confidence_level', parseFloat(e.target.value)) } fullWidth
                                                 helperText=" " />
                                     </Grid>
@@ -691,7 +749,19 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 <Grid item>
                     <Button variant='contained' onClick={() => {
                         if (validateSpeciesDetail()) {
-                            handleNext(data)
+                            let _data = {
+                                ...data,
+                                annual_population: {...data.annual_population},
+                                intake_populations: [...data.intake_populations],
+                                offtake_populations: [...data.offtake_populations]                                
+                            }
+                            if (_data.annual_population.population_estimate_certainty_name === '') {
+                                let _selected = certainties.find(element => element.id === data.annual_population.population_estimate_certainty)
+                                if (_selected) {
+                                    _data.annual_population.population_estimate_certainty_name = _selected.name
+                                }
+                            }
+                            handleNext(_data)
                         }
                     }}>NEXT</Button>
                 </Grid>

@@ -2,7 +2,7 @@
 import factory
 from django.contrib.auth import get_user_model
 from frontend.models.boundary_search import BoundaryFile
-from frontend.models.context_layer import ContextLayer
+from frontend.models.context_layer import ContextLayer, Layer, ContextLayerLegend
 from frontend.models.parcels import Erf, FarmPortion, Holding, ParentFarm
 from frontend.models.statistical import (
     NATIONAL_TREND,
@@ -10,6 +10,10 @@ from frontend.models.statistical import (
     StatisticalModelOutput,
 )
 from frontend.models.upload import UploadSpeciesCSV
+from frontend.models.spatial import (
+    SpatialDataModel,
+    SpatialDataValueModel
+)
 
 
 class UserF(factory.django.DjangoModelFactory):
@@ -33,6 +37,41 @@ class ContextLayerF(factory.django.DjangoModelFactory):
 
     name = factory.Sequence(
         lambda n: f'layer-{n}'
+    )
+
+
+class ContextLayerLegendF(factory.django.DjangoModelFactory):
+    """Factory for ContextLayerLegend Model."""
+
+    class Meta:
+        """Meta class Factory for ContextLayerLegend Model."""
+        model = ContextLayerLegend
+
+    name = factory.Sequence(
+        lambda n: f'layer-{n}'
+    )
+    colour = factory.Sequence(
+        lambda n: f'colour-{n}'
+    )
+    layer = factory.SubFactory(
+        'frontend.tests.model_factories.ContextLayerF'
+    )
+
+
+class LayerF(factory.django.DjangoModelFactory):
+    """Factory for Layer Model"""
+
+    class Meta:
+        model = Layer
+
+    name = factory.Sequence(
+        lambda n: f'layer-{n}'
+    )
+    spatial_filter_field = factory.Sequence(
+        lambda n: f'spatial-filter-{n}'
+    )
+    context_layer = factory.SubFactory(
+        'frontend.tests.model_factories.ContextLayerF'
     )
 
 
@@ -144,3 +183,36 @@ class UploadSpeciesCSVF(factory.django.DjangoModelFactory):
     class Meta:
         """Meta class Factory for UploadSpeciesCSV Model."""
         model = UploadSpeciesCSV
+
+
+class SpatialDataModelF(factory.django.DjangoModelFactory):
+    """Factor for SpatialData model"""
+
+    property = factory.SubFactory(
+        'property.factories.PropertyFactory'
+    )
+
+    context_layer = factory.SubFactory(
+        'frontend.tests.model_factories.ContextLayerF'
+    )
+
+    class Meta:
+        model = SpatialDataModel
+
+
+class SpatialDataModelValueF(factory.django.DjangoModelFactory):
+    """Factor for SpatialDataModelValue model"""
+    spatial_data = factory.SubFactory(
+        'frontend.tests.model_factories.SpatialDataModelF'
+    )
+
+    context_layer_value = factory.Sequence(
+        lambda n: f'context layer value {n}'
+    )
+
+    layer = factory.SubFactory(
+        'frontend.tests.model_factories.LayerF'
+    )
+
+    class Meta:
+        model = SpatialDataValueModel

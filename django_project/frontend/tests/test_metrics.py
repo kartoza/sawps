@@ -28,7 +28,8 @@ class BaseTestCase(TestCase):
             taxon_rank = TaxonRankFactory.create(name="Species")
 
         self.taxon = TaxonFactory.create(
-            taxon_rank=taxon_rank, common_name_varbatim="Lion"
+            taxon_rank=taxon_rank, common_name_varbatim="Lion",
+            scientific_name = "Penthera leo"
         )
 
         self.user = User.objects.create_user(
@@ -42,10 +43,8 @@ class BaseTestCase(TestCase):
             organisation=self.organisation_1
         )
 
-        UserProfile.objects.create(
-            user=self.user,
-            current_organisation=self.organisation_1
-        )
+        self.user.user_profile.current_organisation = self.organisation_1
+        self.user.save()
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1, name="PropertyA"
@@ -93,7 +92,7 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         """
         Test species population count filtered by species name.
         """
-        data = {'species': 'Lion'}
+        data = {'species': 'Penthera leo'}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -202,18 +201,28 @@ class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
         Test species population density per property.
         """
         url = self.url
-        response = self.client.get(url, **self.auth_headers)
+        data = {"species": "Penthera leo"}
+        response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]['density'].get('density'), 0.5
         )
+        # test with no species name
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        # test with non existent owned species
+        data = {"species": "leo"}
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
     def test_species_population_density_filter_by_year(self) -> None:
         """
         Test species population density per property filtered by year.
         """
         year = self.owned_species[1].annualpopulation_set.first().year
-        data = {'start_year': year, "end_year":year}
+        data = {'start_year': year, "end_year":year, "species": "Penthera leo"}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -348,16 +357,16 @@ class PopulationPerAgeGroupTestCase(BaseTestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_adult_male'], 250
+            response.data[0]['age_group'][0]['total_adult_male'], 50
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_adult_female'], 250
+            response.data[0]['age_group'][0]['total_adult_female'], 50
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_sub_adult_male'], 50
+            response.data[0]['age_group'][0]['total_sub_adult_male'], 10
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_sub_adult_female'], 50
+            response.data[0]['age_group'][0]['total_sub_adult_female'], 10
         )
 
     def test_total_area_per_property_type_filter_by_property(self):
@@ -370,10 +379,10 @@ class PopulationPerAgeGroupTestCase(BaseTestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_juvenile_female'], 150
+            response.data[0]['age_group'][0]['total_juvenile_female'], 30
         )
         self.assertEqual(
-            response.data[0]['age_group'][0]['total_juvenile_female'], 150
+            response.data[0]['age_group'][0]['total_juvenile_female'], 30
         )
 
 

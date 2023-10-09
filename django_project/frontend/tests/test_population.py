@@ -28,6 +28,9 @@ from population_data.models import (
     SamplingEffortCoverage
 )
 from species.models import OwnedSpecies
+from population_data.factories import (
+    CertaintyF
+)
 
 
 def mocked_clear_cache(self, *args, **kwargs):
@@ -37,7 +40,6 @@ def mocked_clear_cache(self, *args, **kwargs):
 class TestPopulationAPIViews(TestCase):
     fixtures = [
         'open_close_systems.json',
-        'count_method.json',
         'survey_methods.json',
         'sampling_size_units.json',
         'activity_type.json'
@@ -61,6 +63,10 @@ class TestPopulationAPIViews(TestCase):
         self.coverage = SamplingEffortCoverage.objects.create(
             name='Coverage 1'
         )
+        self.certainty = CertaintyF.create(
+            description='Certainty1',
+            name='1'
+        )
 
     def test_get_metadata_list(self):
         request = self.factory.get(
@@ -70,6 +76,8 @@ class TestPopulationAPIViews(TestCase):
         view = PopulationMetadataList.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
+        self.assertIn('certainties', response.data)
+        self.assertEqual(len(response.data['certainties']), 1)
 
     @mock.patch(
         'frontend.api_views.population.'

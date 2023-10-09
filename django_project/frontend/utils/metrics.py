@@ -100,7 +100,7 @@ def calculate_total_area_per_property_type(queryset: QuerySet) -> List[dict]:
         id__in=property_ids
     ).values('property_type__name').annotate(
         total_area=Sum('property_size_ha')
-    ).values('property_type__name', 'total_area')
+    ).values('property_type__name', 'created_at', 'name', 'total_area')
     return properties_type_area
 
 

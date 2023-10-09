@@ -35,7 +35,7 @@
         background: #FFF;
         padding: 15px;
         margin-bottom: 20px;
-        width: 100%;
+        width: 100% !important;
         border-radius: 4px;
 
         .white-chart-heading {
@@ -297,5 +297,34 @@
     justify-content: flex-end;
     padding-top: 20px;
     margin: 0;
-    padding-right: 55px;
+    padding-right: 33px;
 }
+
+
+
+
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50vw, 1fr)); /* Automatically adjust to fit two charts per row */
+    gap: 16px; /* Adjust the gap between charts */
+    max-width: 100%; /* Ensure the charts don't exceed the container width */
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+    padding: 16px; /* Add padding to the container */
+    // background-color: #fff; /* make background same color can increase visibility on downloaded pdf */
+    box-shadow: none;
+    border-bottom: none;
+    
+}
+
+
+.chart-row {
+    display: flex;
+    flex-wrap: wrap; /* Allow charts to wrap to the next line if there's not enough space */
+  }
+  
+  .chart-row > * {
+    flex: 1;
+    margin: 8px;
+  }
+  
+

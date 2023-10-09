@@ -58,8 +58,14 @@
   </style>
   <script>
 
-      var user_role = '{{ user.user_profile.user_role_type_id }}'
-      localStorage.setItem('user_role',user_role)
+      try{
+        var user_role = '{{ user.user_profile.user_role_type_id }}'
+        var current_organisation = '{{ user.user_profile.current_organisation_id }}'
+        localStorage.setItem('user_role',user_role)
+        localStorage.setItem('current_organisation',current_organisation)
+      }catch (exception){
+        //ignore error
+      }
 
       function extractBaseUrl(url) {
         // Find the index of the first forward slash after the initial //
@@ -187,7 +193,7 @@
         }
 
         var return_obj = []
-        for(var count =0; count < messages.length; count++){
+        for(var count =0; count < messages?.length; count++){
           var save_obj = {
             url: "/notifications/" + '{{ user }}' + '/', text: messages[count]
           }
@@ -230,7 +236,8 @@
           window.location.href.includes("profile") ||
           window.location.href.includes("reminders") ||
           window.location.href.includes("backup_tokens") ||
-          window.location.href.includes("setup")
+          window.location.href.includes("setup") ||
+          window.location.href.includes("organisations")
         )
             return true
         else return false
@@ -280,7 +287,8 @@
       });
 
       if(
-        !window.location.href.includes("two-factor-authenticate")
+        !window.location.href.includes("two-factor-authenticate") &&
+        !window.location.href.includes("accounts/two-factor/")
       ){
         var userIsAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
         if(userIsAuthenticated){
@@ -305,10 +313,8 @@
       }
 
   </script>
-<div style="min-height:var(--min-content-height);">
 {% block content %}
 {% endblock %}
-</div>
 {% block footer %}
 <div class='footer' data-testid='footer'>
     <div class='sanbi-footer-logo-container'>
@@ -321,7 +327,7 @@
         <a href='/' target='_blank'>DOCUMENTATION</a>
         <a href='/contact' target='_blank'>CONTACT</a>
   </div>
-  <div class='vendors-logos-container' data-testid='vendors-logos-container'>
+  <div class='vendors-logos-container' data-testid='vendors-logos-container' style="margin-right: 1%;">
     <img class='ids-logo' src='/static/images/footer/ids-logo.png' data-testid='ids-logo'/>
     <img class='kartoza-white-logo' src='/static/images/footer/kartoza-white-logo.png' data-testid='kartoza-logo'/>
   </div>

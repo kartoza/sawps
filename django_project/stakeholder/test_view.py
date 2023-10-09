@@ -20,7 +20,7 @@ from stakeholder.views import (
 from stakeholder.models import (
     Reminders,
     Organisation,
-    OrganisationUser
+    OrganisationUser, UserProfile
 )
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -124,10 +124,9 @@ class DeleteReminderAndNotificationTest(TestCase):
             name="test_organisation",
             data_use_permission=self.data_use_permission
         )
-        userProfileFactory.create(
-            user=self.user,
-            current_organisation=self.organisation
-        )
+        self.user.user_profile.current_organisation = self.organisation
+        self.user.save()
+
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
             user=self.user,
@@ -184,7 +183,6 @@ class DeleteReminderAndNotificationTest(TestCase):
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
 
-        
         request = self.factory.post(
             url,
             data=data
@@ -350,10 +348,10 @@ class TestAddReminderAndScheduleTask(TestCase):
             organisation=self.organisation,
             user=self.user
         )
-        userProfileFactory.create(
-            user=self.user,
-            current_organisation=self.organisation
+        self.user.user_profile.current_organisation = (
+            self.organisation
         )
+        self.user.save()
         self.reminder = Reminders.objects.create(
             title='Test Reminder',
             user=self.user,
@@ -445,10 +443,10 @@ class TestRemindersView(TestCase):
             organisation=self.organisation,
             user=self.user
         )
-        userProfileFactory.create(
-            user=self.user,
-            current_organisation=self.organisation
+        self.user.user_profile.current_organisation = (
+            self.organisation
         )
+        self.user.save()
         self.reminder = Reminders.objects.create(
             title='Test Reminder',
             user=self.user,
@@ -489,12 +487,12 @@ class TestRemindersView(TestCase):
             'action': 'get_reminders',
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
         }
-        
+
         request = self.factory.post(
             url,
             data=data
         )
-        
+
         request.user = self.user
         view = RemindersView.as_view()
         response = view(request)
@@ -517,7 +515,7 @@ class TestRemindersView(TestCase):
                 'reminder_type': 'personal',
                 'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
             }
-        ) 
+        )
 
         request.user = self.user
         view = RemindersView.as_view()
@@ -596,7 +594,7 @@ class TestRemindersView(TestCase):
         self.assertEqual(len(updated_reminders), 2)
         if updated_reminders[1].get('status') == reminder.id:
             self.assertEqual(updated_reminders[1].get('status'),Reminders.DRAFT)
-        
+
         # test with status passed and everyone
         request = self.factory.post(
             url,
@@ -621,7 +619,7 @@ class TestRemindersView(TestCase):
         self.assertEqual(len(updated_reminders), 2)
         if updated_reminders[1].get('status') == reminder.id:
             self.assertEqual(updated_reminders[1].get('status'),Reminders.PASSED)
-        
+
         # test with status active status and fail test
         request = self.factory.post(
             url,
@@ -657,10 +655,10 @@ class SearchRemindersOrNotificationsTest(TestCase):
             name="test_organisation",
             data_use_permission = self.data_use_permission
         )
-        userProfileFactory.create(
-            user=self.user,
-            current_organisation=self.organisation
+        self.user.user_profile.current_organisation = (
+            self.organisation
         )
+        self.user.save()
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
             user=self.user,
@@ -816,10 +814,10 @@ class GetOrganisationRemindersTest(TestCase):
             name="test_organisation",
             data_use_permission = self.data_use_permission
         )
-        userProfileFactory.create(
-            user=self.user,
-            current_organisation=self.organisation
+        self.user.user_profile.current_organisation = (
+            self.organisation
         )
+        self.user.save()
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
             user=self.user,
@@ -1030,10 +1028,10 @@ class NotificationsViewTest(TestCase):
             organisation=self.organisation,
             user=self.user
         )
-        userProfileFactory.create(
-            user=self.user,
-            current_organisation=self.organisation
+        self.user.user_profile.current_organisation = (
+            self.organisation
         )
+        self.user.save()
         self.reminder1 = Reminders.objects.create(
             title='Test Reminder 1',
             user=self.user,

@@ -136,7 +136,7 @@ def get_highlighted_layer(layer_name):
         "minzoom": 12,
         "layout": {"visibility": "visible", "line-join": "bevel"},
         "paint": {
-            "line-color": "#008000",
+            "line-color": "#ffffff",
             "line-width": [
                 "case",
                 [
