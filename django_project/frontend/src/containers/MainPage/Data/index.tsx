@@ -52,17 +52,17 @@ const DataList = () => {
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const customColorWidth =
         {
-        "Species_report":{color:"#F9A95D",width:100},
-        "Property_report": {color:'#9F89BF',width:135},
-        "Sampling_report": {color:"#FF5252",width:167},
+        "Species_report":{color:"#F9A95D",width:107},
+        "Property_report": {color:'#9F89BF',width:131},
+        "Sampling_report": {color:"#FF5252",width:168},
         "Province_report": {color:"#FF5252",width:100},
         "Species_population_report": "#9F89BF",
         "Activity_report": checkUserRole(userRole) ? {color:"#696969",width:100} : {color:"#75B37A",width:100},
-        "Unplanned/natural deaths": {color:"#75B37A",width:107},
-        "Planned translocation": {color:"#F9A95D",width:103},
-        "Planned hunt/cull": {color:"#FF5252",width:123},
-        "Planned euthanasia": {color:"#9F89BF",width:125},
-        "Unplanned/illegal hunting": {color:"#696969",width:141}
+        "Unplanned/natural deaths": {color:"#75B37A",width:106.5},
+        "Planned translocation": {color:"#F9A95D",width:106.5},
+        "Planned hunt/cull": {color:"#FF5252",width:130.2},
+        "Planned euthanasia": {color:"#9F89BF",width:130.2},
+        "Unplanned/illegal hunting": {color:"#696969",width:147}
     }
 
     function checkUserRole(userRole: string) {
