@@ -94,10 +94,6 @@ const AreaAvailableLineChart = (props: any) => {
                 grid: {
                     display: false,
                 },
-                ticks: {
-                    stepSize: 65,
-                    max: 260,
-                },
                 title: {
                     display: true,
                     text: 'Area (Ha)', // Y-axis label
@@ -113,7 +109,12 @@ const AreaAvailableLineChart = (props: any) => {
     return (
         <Grid>
             {!loading ? (
-                <Line data={AreaDataValue} options={AreaOptions} height={200} width={490} />
+                <Line 
+                    data={AreaDataValue} 
+                    options={AreaOptions} 
+                    height={265} 
+                    width={640} 
+                />
        
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />

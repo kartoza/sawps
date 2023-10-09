@@ -44,41 +44,30 @@ const PropertyTypeBarChart = (props: any) => {
     }, [propertyId, startYear, endYear, selectedSpecies]);
 
     // Extract labels and totalArea from propertyTypeData
-const backgroundColors: string[] = [];
+    const backgroundColors: string[] = [];
 
 
-for (const each of propertyTypeData) {
-    labels.push(each.property_type__name); // Use 'property_type__name' as label
-    legend_labels.push(each.name);
-    totalArea.push(each.total_area);
-    backgroundColors.push(colors[labels.length - 1]); // Set background color based on the index
-}
+    for (const each of propertyTypeData) {
+        labels.push(each.property_type__name); // Use 'property_type__name' as label
+        legend_labels.push(each.name);
+        totalArea.push(each.total_area);
+        backgroundColors.push(colors[labels.length - 1]); // Set background color based on the index
+    }
 
-for(var count = 0; count < labels.length; count++){
-    datasets.push(
-        {
-            label: legend_labels[count], // Use the 'name' field as the label
-            data: [totalArea[count]], // Use 'total_area' as data
-            backgroundColor: backgroundColors[count], // Use background color based on the index
-        }
-    )
-}
+    for(var count = 0; count < labels.length; count++){
+        datasets.push(
+            {
+                label: labels[count],
+                data: [totalArea[count]],
+                backgroundColor: backgroundColors[count],
+            }
+        )
+    }
 
-console.log('datasets ',datasets)
-// Create datasets
-// const datasets = labels.map((label, index) => {
-//     return {
-//         label: legend_labels[index], // Use the 'name' field as the label
-//         data: [totalArea[index]], // Use 'total_area' as data
-//         backgroundColor: backgroundColors[index], // Use background color based on the index
-//     };
-
-// });
-
-const data = {
-    labels: [''],
-    datasets: datasets,
-};
+    const data = {
+        labels: [''],
+        datasets: datasets,
+    };
     
     const options = {
         indexAxis: 'x' as const,
@@ -114,7 +103,7 @@ const data = {
                     },
                 },
                 callback: (value: string, index: number) => {
-                    return legend_labels[index];
+                    return labels[index];
                 },
             },
         },
@@ -161,7 +150,11 @@ const data = {
     return (
         <Grid>
             {!loading ? (
-                <Bar data={data} options={options} height={200} width={500} />
+                <Bar 
+                data={data} 
+                options={options} 
+                height={200} width={500} 
+            />
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
             )}

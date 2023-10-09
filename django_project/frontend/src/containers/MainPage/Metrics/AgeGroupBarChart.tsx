@@ -137,7 +137,10 @@ const options = {
 return (
     <Grid>
         {!loading ? (
-            <Bar data={data} options={options} height={200} width={500} />
+            <Bar 
+                data={data} 
+                options={options} 
+                height={265} width={640} />
         ) : (
             <Loading containerStyle={{ minHeight: 160 }} />
         )}
