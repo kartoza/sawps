@@ -33,7 +33,7 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
                     onChange={(event: React.SyntheticEvent, newValue: number) => {
                         setSelectedTabSideBar(newValue);
                     }} aria-label="Left Side Bar Tabs"
-                    centered={containsCharts}
+                    centered={showLayerFilter}
                 >
                     {!showLayerFilter && (
                         <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
