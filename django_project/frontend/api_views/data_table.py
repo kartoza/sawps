@@ -56,8 +56,11 @@ class DataTableAPIView(APIView):
 
             if spatial_filter_values:
                 queryset = queryset.filter(
-                    spatialdatamodel__spatialdatavaluemodel__context_layer_value__in=
-                    spatial_filter_values
+                    **({
+                        'spatialdatamodel__spatialdatavaluemodel__'
+                        'context_layer_value__in':
+                        spatial_filter_values
+                    })
                 )
         else:
             query_filter = BaseMetricsFilter
