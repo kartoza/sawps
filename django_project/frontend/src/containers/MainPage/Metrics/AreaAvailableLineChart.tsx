@@ -113,7 +113,7 @@ const AreaAvailableLineChart = (props: any) => {
                     data={AreaDataValue} 
                     options={AreaOptions} 
                     height={265} 
-                    width={640} 
+                    width={650} 
                 />
        
             ) : (
