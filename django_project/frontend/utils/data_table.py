@@ -10,7 +10,7 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
-from property.models import Province, Property
+from property.models import Province
 from population_data.serializers import OpenCloseSystemSerializer
 from species.models import OwnedSpecies
 
