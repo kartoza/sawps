@@ -31,6 +31,7 @@ const DataList = () => {
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const selectedInfo = useAppSelector((state: RootState) => state.SpeciesFilter.selectedInfoList)
+    const spatialFilterValues = useAppSelector((state: RootState) => state.SpeciesFilter.spatialFilterValues);
     const [selectedColumns, setSelectedColumns] = useState([]);
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
@@ -64,7 +65,6 @@ const DataList = () => {
         "Unplanned/illegal hunting": {color:"#696969",width:141}
     }
 
-
     function checkUserRole(userRole: string) {
         const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"];
         return allowedRoles.includes(userRole);
@@ -77,7 +77,7 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -91,7 +91,7 @@ const DataList = () => {
     useEffect(() => {
         setColumns([])
         fetchDataList();
-    }, [startYear, endYear, selectedSpecies, selectedInfo, propertyId, organisationId, activityId])
+    }, [startYear, endYear, selectedSpecies, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
             target: { value },
