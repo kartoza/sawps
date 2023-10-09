@@ -15,9 +15,6 @@ import {
 } from '@mui/material';
 import List from '@mui/material/List';
 import MenuItem from '@mui/material/MenuItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -27,16 +24,18 @@ import { RootState } from '../../../app/store';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
 import Slider from '@mui/material/Slider';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import CloseIcon from '@mui/icons-material/Close';
 import Loading from '../../../components/Loading';
 import SpeciesLayer from '../../../models/SpeciesLayer';
-import { selectedOrganisationId, selectedPropertyId, setEndYear, setSelectedInfoList, setSpeciesFilter, setStartYear, toggleSpecies, selectedActivityId } from '../../../reducers/SpeciesFilter';
+import {
+        selectedOrganisationId, selectedPropertyId, setEndYear,
+        setSelectedInfoList, setSpeciesFilter, setStartYear,
+        toggleSpecies, selectedActivityId, setSpatialFilterValues } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import PropertyInterface from '../../../models/Property';
 import { MapEvents } from '../../../models/Map';
 import { triggerMapEvent } from '../../../reducers/MapState';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import SpatialFilter from "./SpatialFilter";
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
@@ -100,7 +99,7 @@ function Filter() {
         console.log('filterd ',filtered)
         setFilteredProperties(filtered);
     };
-    
+
     useEffect(() => {
         let fetchedProperties: any[] = [];
 
@@ -113,7 +112,7 @@ function Filter() {
                 return;
             }
         }
-      
+
         const requests = selectedOrganisation.map((orgId) => {
             return axios.get(`${FETCH_PROPERTY_LIST_URL}${orgId ? `${orgId}` : ""}`)
             .then((response) => response.data)
@@ -122,13 +121,13 @@ function Filter() {
                 return []; // Return an empty array in case of an error
             });
         });
-        
+
         // Use Promise.all to wait for all requests to complete
         Promise.all(requests)
             .then((results) => {
             // Concatenate the results from all requests into a single array
             const fetchedProperties = results.flat();
-            
+
             // Set filteredProperties once all requests are done
             setFilteredProperties(fetchedProperties);
             setLoading(false);
@@ -137,10 +136,10 @@ function Filter() {
             console.log(error);
             setLoading(false);
             });
-      
+
       }, [selectedOrganisation]);
-      
-    
+
+
     // intial map state vars for zoom out
     const center = [25.86, -28.52]; // Center point in backend
     const width = 10;
@@ -155,7 +154,7 @@ function Filter() {
         center[0] + halfWidth,
         center[1] + halfHeight,
     ];
-    
+
 
     const handleInputChange = (value: string) => {
         setSearchInputValue(value);
@@ -231,26 +230,6 @@ function Filter() {
         const pathname = window.location.pathname.replace(/\//g, '');
         setTab(pathname)
     }, [window.location.pathname])
-
-    const handleSpectialFilterOption = (each: string, event: any) => {
-        event.stopPropagation();
-        if (selectedOptions.includes(each)) {
-            setSelectedOptions(selectedOptions.filter((selected) => selected !== each));
-        } else {
-            setSelectedOptions([...selectedOptions, each]);
-        }
-    };
-
-    const handleArrowClick = (id: number) => {
-        const _updatedData = filterlList.map((item: any) => {
-            if (id === item.id) {
-                item.isSelected = !item.isSelected
-            }
-            return item;
-        });
-        setFilterList(_updatedData)
-    }
-
 
     const handleChange = (event: any, newValue: number | number[]) => {
         if (Array.isArray(newValue)) {
@@ -330,24 +309,24 @@ function Filter() {
         let minBottom: number = 90;
         let maxRight: number = -180;
         let maxTop: number = -90;
-      
+
         boundingBoxes.forEach(([left, bottom, right, top]) => {
           if (left < minLeft) minLeft = left;
           if (bottom < minBottom) minBottom = bottom;
           if (right > maxRight) maxRight = right;
           if (top > maxTop) maxTop = top;
         });
-      
+
         return [minLeft, minBottom, maxRight, maxTop];
       };
 
 
     const zoomToCombinedBoundingBox = async (propertyIds: number[]) => {
         setLoading(true);
-      
+
         try {
           const propertyBoundingBoxes: number[][] = [];
-      
+
           // Fetch and collect bounding boxes for each property
           await Promise.all(
             propertyIds.map(async (propertyId) => {
@@ -357,11 +336,11 @@ function Filter() {
               }
             })
           );
-      
+
           if (propertyBoundingBoxes.length > 0) {
             // Merge the collected bounding boxes
             const combinedBoundingBox = mergeBoundingBoxes(propertyBoundingBoxes);
-      
+
             // LEVEL 1 DEBUG
             // console.log('navigation to bounding box', combinedBoundingBox);
 
@@ -369,32 +348,30 @@ function Filter() {
           } else {
             console.error('No valid bounding boxes found for selected properties.');
           }
-      
+
           setLoading(false);
         } catch (error) {
           setLoading(false);
           console.error(error);
         }
       };
-      
-      
-      
-      
+
+
       const handleSelectedProperty = (id: number) => () => {
         const propertyExists = selectedProperty.includes(id);
         let updatedSelectedProperty: number[] = [];
-      
+
         if (propertyExists) {
           updatedSelectedProperty = selectedProperty.filter((item) => item !== id);
         } else {
           updatedSelectedProperty = [...selectedProperty, id];
         }
-      
+
         // LEVEL 3 DEBUG
         // console.log('selected properties', updatedSelectedProperty);
-      
+
         setSelectedProperty(updatedSelectedProperty);
-      
+
         if (updatedSelectedProperty.length === 0) {
             adjustMapToBoundingBox(boundingBox)
         } else {
@@ -402,9 +379,9 @@ function Filter() {
           zoomToCombinedBoundingBox(updatedSelectedProperty);
         }
       };
-      
-      
-      
+
+
+
       const adjustMapToBoundingBox = (boundingBox: any[]) => {
         dispatch(
             triggerMapEvent({
@@ -415,7 +392,7 @@ function Filter() {
             })
         );
       };
-      
+
 
     // Handle selecting all properties
     const handleSelectAllProperty = () => {
@@ -531,7 +508,7 @@ function Filter() {
             setSearchResults([])
         }
     }, [searchInputValue])
-    
+
 
     const handleSelectAllOrganisation = () => {
         const organisationId = organisationList.map(data => data.id)
@@ -557,15 +534,15 @@ function Filter() {
         if(
             storedUserRole && (
             storedUserRole.toLocaleLowerCase() === "national data scientist" ||
-            storedUserRole.toLocaleLowerCase() === "regional data scientist" || 
-            storedUserRole.toLocaleLowerCase() === "super user" ||  
+            storedUserRole.toLocaleLowerCase() === "regional data scientist" ||
+            storedUserRole.toLocaleLowerCase() === "super user" ||
             storedUserRole.toLocaleLowerCase() === "site administrator" ||
             storedUserRole.toLocaleLowerCase() === "admin")
         ){
             setOrganisationSelection(true)
             setPropertiesSelection(true)
         }
-      
+
 
         if (
           storedUserRole && (
@@ -586,7 +563,7 @@ function Filter() {
             const filtered = propertyList.filter((property) =>
                 property.organisation_id === currentOrganisation
             );
-        
+
             setFilteredProperties(filtered);
         } else {
             setFilteredProperties([]);
@@ -785,7 +762,7 @@ function Filter() {
                                                 <FormControlLabel
                                                     control={
                                                         <Checkbox
-                                                            checked={selectedProperty.length === filteredProperties.length}
+                                                            checked={selectedProperty.length === propertyList.length}
                                                             onChange={handleSelectAllProperty}
                                                         />
                                                     }
@@ -793,7 +770,7 @@ function Filter() {
                                                 />
                                             </Box>
                                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                {filteredProperties.map((property: any) => (
+                                                {propertyList.map((property: any) => (
                                                     <FormControlLabel
                                                         key={property.name}
                                                         control={
@@ -882,48 +859,9 @@ function Filter() {
                     <Typography color='#75B37A' fontSize='medium'>Spatial filters</Typography>
                 </Box>
                 <Box>
-                    <div className='sidebarArrowsBox'>
-                        <ul>
-                            {filterlList.map((item: any) => (
-                                <li key={item.id} onClick={() => handleArrowClick(item.id)}>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        {item.isSelected ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
-                                        <span>{item.name}</span>
-                                    </div>
-                                    {item.isSelected && (
-                                        <List component="nav" aria-label="">
-                                            {loading ? (
-                                                <Loading />
-                                            ) : (
-                                                item?.filterData?.map((each: string, index: number) => {
-                                                    const filterId: string = `checkbox-list-label-${index}`;
-                                                    return (
-                                                        <ListItemButton
-                                                            key={index}
-                                                            disabled={loading}
-                                                            className='ListItemButton'
-                                                        >
-                                                            <ListItemIcon>
-                                                                <Checkbox
-                                                                    edge="start"
-                                                                    checked={selectedOptions.includes(each)}
-                                                                    tabIndex={-1}
-                                                                    disableRipple
-                                                                    inputProps={{ 'aria-labelledby': filterId }}
-                                                                    onClick={(event) => handleSpectialFilterOption(each, event)}
-                                                                />
-                                                            </ListItemIcon>
-                                                            <ListItemText id={filterId} primary={each} />
-                                                        </ListItemButton>
-                                                    );
-                                                })
-                                            )}
-                                        </List>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    <SpatialFilter loading={loading}
+                                   onSpatialFilterValuesUpdate={(spatialFilterValues: string[]) =>
+                                       dispatch(setSpatialFilterValues(spatialFilterValues))}/>
                 </Box>
             </Box>
         </Box >

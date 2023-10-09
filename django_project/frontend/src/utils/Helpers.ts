@@ -8,14 +8,14 @@ export function toSingular(str: string) {
     }
     return singularStr
   }
-  
+
   /**
    * Capitalize string
    */
   export function capitalize(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
-  
+
   /**
    * Get file type from layer_type and filename
    */
@@ -28,8 +28,10 @@ export function toSingular(str: string) {
       file_type = 'application/geopackage+sqlite3'
     else if (layer_type === 'SHAPEFILE')
       file_type = 'application/zip'
-  
+
     return file_type
   }
-  
-  
+
+export const delay = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};

@@ -18,6 +18,10 @@ from stakeholder.factories import (
     organisationUserFactory,
     userRoleTypeFactory,
 )
+from frontend.tests.model_factories import (
+    SpatialDataModelF,
+    SpatialDataModelValueF
+)
 
 
 class OwnedSpeciesTestCase(TestCase):
@@ -67,6 +71,14 @@ class OwnedSpeciesTestCase(TestCase):
         session = self.client.session
         session.save()
 
+        self.spatial_data = SpatialDataModelF.create(
+            property=self.property
+        )
+        self.spatial_data_value = SpatialDataModelValueF.create(
+            spatial_data=self.spatial_data,
+            context_layer_value='spatial filter test'
+        )
+
     def test_data_table_filter_by_species_name(self) -> None:
         """Test data table filter by species name"""
         url = self.url
@@ -102,6 +114,7 @@ class OwnedSpeciesTestCase(TestCase):
             'property': self.property.id,
             'start_year': self.owned_species[0].annualpopulation_set.first().year,
             'end_year': self.owned_species[0].annualpopulation_set.first().year,
+            'spatial_filter_values': 'spatial filter test',
             'activity': value.activity_type.name
         }
         response = self.client.get(self.url, data, **self.auth_headers)
@@ -115,6 +128,7 @@ class OwnedSpeciesTestCase(TestCase):
         """Test data table filter by year and report"""
         year = self.owned_species[1].annualpopulation_set.first().year
         data = {
+            "species": self.taxon.scientific_name,
             "start_year": year,
             "end_year":year,
             "reports": "Species_report"
@@ -178,8 +192,9 @@ class OwnedSpeciesTestCase(TestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]["Sampling_report"][0]["scientific_name"],
-            "SpeciesA"
+            response.data[0]["Sampling_report"][0][
+            "owned_species__taxon__scientific_name"
+        ], "SpeciesA"
         )
 
 

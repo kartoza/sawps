@@ -149,9 +149,7 @@ class SpeciesCSVUpload(object):
         if self.error_list:
             error_headers = copy.deepcopy(headers)
             if 'error_message' not in error_headers:
-                error_headers.append('error_message')
-            if 'link' in error_headers:
-                error_headers.remove('link')
+                error_headers.insert(0, 'error_message')
             error_file_path = '{path}error_{name}'.format(
                 path=file_path,
                 name=file_name
@@ -304,8 +302,6 @@ class SpeciesCSVUpload(object):
         """Get survey method."""
         if not survey:
             return None
-        elif survey == IF_OTHER_SURVEY_VAL:
-            return survey
 
         else:
             survey, created = SurveyMethod.objects.get_or_create(
@@ -318,8 +314,6 @@ class SpeciesCSVUpload(object):
         """
         if not pop_est:
             return None
-        elif pop_est == IF_OTHER_POPULATION_VAL:
-            return pop_est
         else:
             p, pc = PopulationEstimateCategory.objects.get_or_create(
                     name=pop_est)
@@ -391,7 +385,7 @@ class SpeciesCSVUpload(object):
         survey_method = self.survey_method(survey)
         survey_other = self.row_value(row, IF_OTHER_SURVEY)
         sur_other = None
-        if survey_method == IF_OTHER_SURVEY_VAL:
+        if survey_method.name == IF_OTHER_SURVEY_VAL:
             if not survey_other:
                 self.error_file(
                     row=row,
@@ -400,7 +394,6 @@ class SpeciesCSVUpload(object):
                 )
                 return
             sur_other = survey_other
-            survey_method = None
 
         open_close_system = self.open_close_system(row)
         if not open_close_system:
@@ -412,7 +405,7 @@ class SpeciesCSVUpload(object):
         population_estimate = self.population_estimate_category(pop_est)
         population_other = self.row_value(row, IF_OTHER_POPULATION)
         pop_other = None
-        if population_estimate == IF_OTHER_POPULATION_VAL:
+        if population_estimate.name == IF_OTHER_POPULATION_VAL:
             if not population_other:
                 self.error_file(
                     row=row,
@@ -421,7 +414,6 @@ class SpeciesCSVUpload(object):
                 )
                 return
             pop_other = population_other
-            population_estimate = None
 
         year = self.row_value(row, YEAR)
         if not year:
