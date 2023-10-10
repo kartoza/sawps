@@ -11,6 +11,7 @@ from frontend.utils.data_table import (
     national_level_user_table
 )
 from frontend.utils.organisation import get_current_organisation_id
+from frontend.utils.user_roles import get_user_roles
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -79,11 +80,7 @@ class DataTableAPIView(APIView):
         Handle GET request to retrieve data table reports.
         Params: request (Request) The HTTP request object.
         """
-        user_roles = list(
-            self.request.user.groups.all().values_list(
-                'name', flat=True
-            )
-        )
+        user_roles = get_user_roles(self.request.user)
         queryset = self.get_queryset(user_roles)
 
         if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
