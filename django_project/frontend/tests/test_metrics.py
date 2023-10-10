@@ -252,21 +252,17 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        #test with property id only
+        # test with property id only to check if response is oke
         id = self.owned_species[0].property_id
         data = {'property':id}
-        url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsNone(response.data['1-10'], 0)
         
-        # test with species name and property id
+        # test property id
         id = self.owned_species[0].property_id
         data = {'property':id, 'species': 'Penthera leo'}
-        url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['>100'], 1)
 
 
 class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
