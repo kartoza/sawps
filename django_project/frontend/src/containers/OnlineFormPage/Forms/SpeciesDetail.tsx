@@ -38,7 +38,6 @@ interface SpeciesDetailInterface {
     sampling_effort_coverages: CommonUploadMetadata[];
     population_statuses: CommonUploadMetadata[];
     population_estimate_categories: CommonUploadMetadata[];
-    certainties: CommonUploadMetadata[];
     setIsDirty: (isDirty: boolean) => void;
     handleNext: (data: UploadSpeciesDetailInterface) => void;
     handleSaveDraft: (data: UploadSpeciesDetailInterface) => void;
@@ -60,7 +59,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         initialData, taxonMetadataList, openCloseMetadataList,
         surveyMethodMetadataList, sampling_effort_coverages,
         population_statuses, population_estimate_categories,
-        certainties,
         setIsDirty, handleNext, handleSaveDraft
     } = props
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
@@ -165,6 +163,13 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             _name_field = 'population_estimate_certainty_name'
         }
         let _selected = sourceList.find(element => element.id === value)
+        if (_name_field == 'population_estimate_certainty_name') {
+            _selected = {
+                id: value,
+                name: ''
+            }
+        }
+
         if (_selected) {
             setData({
                 ...data,
@@ -657,7 +662,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             updateAnnualPopulationSelectValue(
                                             'population_estimate_certainty',
                                             newValue,
-                                            certainties
+                                            []
                                             )
                                         }
                                         modalHeight="auto"
@@ -754,12 +759,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                 annual_population: {...data.annual_population},
                                 intake_populations: [...data.intake_populations],
                                 offtake_populations: [...data.offtake_populations]                                
-                            }
-                            if (_data.annual_population.population_estimate_certainty_name === '') {
-                                let _selected = certainties.find(element => element.id === data.annual_population.population_estimate_certainty)
-                                if (_selected) {
-                                    _data.annual_population.population_estimate_certainty_name = _selected.name
-                                }
                             }
                             handleNext(_data)
                         }
