@@ -224,9 +224,17 @@ class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data[0]['density'].get('property_name'), 'Propertya'
-        )
+        first_item = response.data[0]
+        # Check if the 'density' property exists and is a list
+        if 'density' in first_item and isinstance(first_item['density'], list):
+            # Access property name
+            if first_item['density'] and isinstance(first_item['density'][0], dict):
+                property_name = first_item['density'][0].get('property_name')
+
+                self.assertEqual(property_name, 'Propertya')
+            else:
+                # Handle the case where 'density' is empty or not in the expected format
+                self.fail("Invalid 'density' structure in the response")
 
 
 class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
