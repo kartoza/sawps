@@ -54,6 +54,18 @@ class BaseTestCase(TestCase):
             5, taxon=self.taxon, user=self.user, property=self.property
         )
 
+        # create owned species without area available
+        self.taxon_test = TaxonFactory.create(
+            taxon_rank=taxon_rank, common_name_varbatim="Cheetah",
+            scientific_name = "Cheetah"
+        )
+
+        self.owned_species_test = OwnedSpeciesFactory.create(
+            taxon=self.taxon_test,
+            user=self.user,
+            property=self.property
+        )
+
         self.auth_headers = {
             "HTTP_AUTHORIZATION": "Basic "
             + base64.b64encode(b"testuserd:testpasswordd").decode("ascii"),
@@ -205,12 +217,19 @@ class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
-        # test with no species name
+        # test with no species or property
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+        
         # test with non existent owned species
         data = {"species": "leo"}
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+        # test with owned species without property area available
+        data = {"species": "Cheetah"}
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -232,9 +251,6 @@ class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
                 property_name = first_item['density'][0].get('property_name')
 
                 self.assertEqual(property_name, 'Propertya')
-            else:
-                # Handle the case where 'density' is empty or not in the expected format
-                self.fail("Invalid 'density' structure in the response")
 
 
 class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
