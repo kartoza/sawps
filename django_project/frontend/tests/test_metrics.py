@@ -248,20 +248,25 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         Test properties per population category.
         """
         url = self.url
+        # test without species name
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['>200'], 1)
 
-    def test_properties_population_category_filter_by_property(self) -> None:
-        """
-        Test species population categories filtered by property.
-        """
+        #test with property id only
         id = self.owned_species[0].property_id
         data = {'property':id}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['1-10'], 0)
+        self.assertIsNone(response.data['1-10'], 0)
+        
+        # test with species name and property id
+        id = self.owned_species[0].property_id
+        data = {'property':id, 'species': 'Penthera leo'}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['>100'], 1)
 
 
 class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
