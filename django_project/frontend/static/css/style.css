@@ -997,6 +997,21 @@ hr.default-separator {
   max-width: 100%;
 }
 
+.logoutBox{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.registerSignUp{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.registerSignUp .account-form{
+  width: 100%;
+}
+
 @media (max-width:1900px) {
   .about-subsection-1-text p {
     transform: translateY(-50%);
@@ -1075,6 +1090,12 @@ hr.default-separator {
 .account-form{
   margin-top: 160px;
 }
+.logoutBox .account-form{
+  margin-top: 0px;
+}
+.registerSignUp .account-form{
+  margin-top: 0px;
+}
 
 }
 
@@ -1085,6 +1106,15 @@ hr.default-separator {
   .contact-banner-img {
     background-size: 300px;
     background-position: top center;
+  }
+  .logoutBox .account-form{
+    margin-top: 0px;
+  }
+  .registerSignUp .account-form{
+    margin-top: 0px;
+  }
+  .registerSignUp .account-button{
+    margin-top: 20px !important;
   }
 }
 
@@ -1127,6 +1157,22 @@ hr.default-separator {
     background-size: 300px;
     background-position: top center;
   }
+  .logoutBox .account-form{
+    margin-top: 0px;
+  }
+  .registerSignUpAccount{
+    min-height: inherit !important;
+    height: auto !important;
+  }
+  .registerSignUpAccount .position-absolute{
+    position: static !important;
+  }
+  .registerSignUp .account-form{
+    margin-top: 300px;
+  }
+  .registerSignUp .signup .form-group label,  .registerSignUp .contact .form-group label {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width:520px) {
@@ -1159,5 +1205,7 @@ hr.default-separator {
   .about-subsection-1-video-holder {
     min-width: 100%;
   }
+
+
 
 }
