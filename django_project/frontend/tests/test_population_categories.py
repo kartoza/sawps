@@ -1,19 +1,100 @@
+from regulatory_permit.models import DataUsePermission
+from stakeholder.models import Organisation
+from frontend.tests.model_factories import UserF
+from property.factories import PropertyFactory
+from population_data.factories import AnnualPopulationF
 from population_data.models import AnnualPopulation
 from frontend.utils.metrics import calculate_population_categories
 import unittest
 from species.factories import (
+    OwnedSpeciesFactory,
     TaxonRankFactory
 )
-from species.models import TaxonRank
+from species.models import Taxon, TaxonRank
 from unittest.mock import patch
 from property.models import Property
 from django.db.models.query import QuerySet
+from django.test import TestCase
 
-class TestCalculatePopulationCategories(unittest.TestCase):
+class TestCalculatePopulationCategories(TestCase):
     def setUp(self):
         taxon_rank = TaxonRank.objects.filter(name="Species").first()
         if not taxon_rank:
             taxon_rank = TaxonRankFactory.create(name="Species")
+
+        self.taxon = Taxon.objects.create(
+            taxon_rank=taxon_rank, common_name_varbatim="Lion",
+            scientific_name = "Penthera leo"
+        )
+
+        self.taxon1 = Taxon.objects.create(
+            taxon_rank=taxon_rank, common_name_varbatim="Cheetah",
+            scientific_name = "Cheetah"
+        )
+
+        self.user = UserF.create()
+
+        self.data_use_permission = DataUsePermission.objects.create(
+            name="test"
+        )
+        self.organisation = Organisation.objects.create(
+            name="test_organisation",
+            data_use_permission=self.data_use_permission
+        )
+
+        self.property = PropertyFactory.create(
+            organisation=self.organisation, name="PropertyA"
+        )
+
+        self.owned_species = OwnedSpeciesFactory.create(
+             taxon=self.taxon, user=self.user, property=self.property
+        )
+
+        self.owned_species1 = OwnedSpeciesFactory.create(
+             taxon=self.taxon1, user=self.user, property=self.property
+        )
+
+        AnnualPopulationF.create(
+            year=2020,
+            owned_species=self.owned_species,
+            total=100,
+            adult_male=50,
+            adult_female=50,
+            juvenile_male=30,
+            juvenile_female=30,
+            sub_adult_total=20,
+            sub_adult_male=10,
+            sub_adult_female=10,
+            juvenile_total=40,
+        )
+
+        AnnualPopulationF.create(
+            year=2020,
+            owned_species=self.owned_species,
+            total=200,
+            adult_male=50,
+            adult_female=50,
+            juvenile_male=30,
+            juvenile_female=30,
+            sub_adult_total=20,
+            sub_adult_male=10,
+            sub_adult_female=10,
+            juvenile_total=40,
+        )
+
+        AnnualPopulationF.create(
+            year=2021,
+            owned_species=self.owned_species1,
+            total=300,
+            adult_male=50,
+            adult_female=50,
+            juvenile_male=30,
+            juvenile_female=30,
+            sub_adult_total=20,
+            sub_adult_male=10,
+            sub_adult_female=10,
+            juvenile_total=40,
+        )
 
 
     def test_empty_queryset(self):
@@ -29,7 +110,7 @@ class TestCalculatePopulationCategories(unittest.TestCase):
             Property(id=1),
             Property(id=2),
         ]
-        species_name = "Penthera leo"
+        species_name = "Pleo"
         result = calculate_population_categories(queryset, species_name)
         self.assertEqual(result, {})
 
