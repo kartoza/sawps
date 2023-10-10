@@ -12,6 +12,7 @@ import axios from "axios";
 import './index.scss';
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
+import { useGetUserInfoQuery } from "../../../services/api";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -64,6 +65,7 @@ const DataList = () => {
         "Planned euthanasia": {color:"#9F89BF",width:130.2},
         "Unplanned/illegal hunting": {color:"#696969",width:147}
     }
+    const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
     function checkUserRole(userRole: string) {
         const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"];
@@ -71,9 +73,10 @@ const DataList = () => {
     }
 
     useEffect(() => {
-        const storedUserRole = localStorage.getItem('user_role');
-        setUserRole(storedUserRole);
-    }, []);
+        if(isSuccess) {
+            setUserRole(userInfoData.user_roles[0]);
+        }
+    }, [isSuccess, userInfoData]);
 
     const fetchDataList = () => {
         setLoading(true)
@@ -135,7 +138,7 @@ const DataList = () => {
                 {
                     reportList.length > 0 && reportList.map((item, index) => {
                         const cellData = item[each];
-                        if (cellData !== undefined) {
+                        if (cellData !== undefined && cellData.length > 0) {
                             const cellKeys = Object.keys(cellData[0]);
                             const generatedColumns = cellKeys.map((key) => ({
                                 field: key,
@@ -186,7 +189,7 @@ const DataList = () => {
                         </Box>
                         {activityReportdataList.length > 0 && activityReportdataList.map((item, index) => {
                             const cellData = item[each];
-                            if (cellData !== undefined) {
+                            if (cellData !== undefined && cellData.length > 0) {
                                 const cellKeys = cellData[0] && Object.keys(cellData[0]);
                                 const generatedColumns: GridColDef[] = cellKeys.length > 0 && cellKeys.map((key) => ({
                                     field: key,

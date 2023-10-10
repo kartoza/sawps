@@ -36,6 +36,7 @@ import { MapEvents } from '../../../models/Map';
 import { triggerMapEvent } from '../../../reducers/MapState';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SpatialFilter from "./SpatialFilter";
+import {useGetUserInfoQuery} from "../../../services/api";
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
@@ -69,7 +70,7 @@ function Filter(props: any) {
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string>('');
-    const [userRole, setUserRole] = useState<string>('');
+    const [userRole, setUserRole] = useState<string | null>(null);
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
@@ -81,6 +82,7 @@ function Filter(props: any) {
     const [filteredProperties, setFilteredProperties] = useState([])
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
+    const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
     // Function to filter properties based on selected organizations
     const filterPropertiesByOrganisations = () => {
@@ -97,7 +99,6 @@ function Filter(props: any) {
         selectedOrganisation.includes(property.organisation_id)
         );
 
-        console.log('filterd ',filtered)
         setFilteredProperties(filtered);
     };
 
@@ -194,26 +195,12 @@ function Filter(props: any) {
         }
       };
 
-    const [activityList,setActivityList]= useState<string[]>(["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"])
-    const [filterlList, setFilterList] = useState([
-        {
-            "id": 5,
-            "name": "Biome type",
-            "isSelected": false
-        },
-        {
-            "id": 4,
-            "name": "Critical biodiversity areas",
-            "isSelected": false,
-            "filterData": ['Critical biodiversity area ', 'Critical biodiversity area 1', 'Critical biodiversity area 2', 'Ecological support area', 'Ecological support area 1']
-        },
-        {
-            "id": 2,
-            "name": "Protected Area",
-            "isSelected": false,
-            "filterData": ['Heritage sight', 'National Park', 'Nature Reserve']
-        }
-    ])
+    const [activityList,setActivityList]= useState<string[]>([
+        "Planned euthanasia",
+        "Planned hunt/cull",
+        "Planned translocation",
+        "Unplanned/illegal hunting",
+        "Unplanned/natural deaths"])
 
     const informationList = [
         "Activity report",
@@ -221,11 +208,6 @@ function Filter(props: any) {
         userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling report",
         "Species report",
     ].filter(item => item !== "")
-
-    useEffect(() => {
-        const storedUserRole = localStorage.getItem('user_role');
-        setUserRole(storedUserRole);
-    }, []);
 
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
@@ -282,12 +264,6 @@ function Filter(props: any) {
             console.log(error)
         })
     }
-
-    useEffect(() => {
-        fetchSpeciesList();
-        fetchPropertyList();
-        fetchOrganisationList();
-    }, [])
 
     const handleSelectedSpecies = (value: string) => {
         setSelectedSpecies(value);
@@ -527,36 +503,6 @@ function Filter(props: any) {
         setSearchSpeciesList(sList)
     }, [SpeciesFilterList])
 
-    useEffect(() => {
-        const storedUserRole = localStorage.getItem('user_role');
-        setUserRole(storedUserRole);
-
-        if(
-            storedUserRole && (
-            storedUserRole.toLocaleLowerCase() === "national data scientist" ||
-            storedUserRole.toLocaleLowerCase() === "regional data scientist" ||
-            storedUserRole.toLocaleLowerCase() === "super user" ||
-            storedUserRole.toLocaleLowerCase() === "site administrator" ||
-            storedUserRole.toLocaleLowerCase() === "admin")
-        ){
-            setOrganisationSelection(true)
-            setPropertiesSelection(true)
-        }
-
-
-        if (
-          storedUserRole && (
-          storedUserRole.toLowerCase() === 'organisation member' ||
-          storedUserRole.toLowerCase() === 'organisation manager')
-        ) {
-          const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
-
-          filterPropertiesByOrganisation(currentOrganisation);
-          setPropertiesSelection(true)
-          setOrganisationSelection(false)
-        }
-      }, []);
-
     // Function to filter properties based on the current organization
     const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
         if (currentOrganisation) {
@@ -569,6 +515,42 @@ function Filter(props: any) {
             setFilteredProperties([]);
         }
     };
+
+    useEffect(() => {
+        if (!isSuccess) return;
+
+        const userRoles = userInfoData.user_roles
+        if (userRoles.length === 0) return;
+
+        const currentUserRole = userRoles[0];
+        const currentOrganisationId = userInfoData.current_organisation_id;
+
+        if(
+            currentUserRole && (
+            currentUserRole.toLocaleLowerCase() === "national data scientist" ||
+            currentUserRole.toLocaleLowerCase() === "regional data scientist" ||
+            currentUserRole.toLocaleLowerCase() === "super user" ||
+            currentUserRole.toLocaleLowerCase() === "site administrator" ||
+            currentUserRole.toLocaleLowerCase() === "admin")
+        ){
+            setOrganisationSelection(true)
+            setPropertiesSelection(true)
+        }
+
+        if (
+            currentUserRole && (
+            currentUserRole.toLowerCase() === 'organisation member' ||
+            currentUserRole.toLowerCase() === 'organisation manager')
+        ) {
+          filterPropertiesByOrganisation(currentOrganisationId);
+          setPropertiesSelection(true)
+          setOrganisationSelection(false)
+        }
+
+        fetchSpeciesList();
+        fetchPropertyList();
+        fetchOrganisationList();
+    }, [isSuccess, userInfoData]);
 
     return (
         <Box>
