@@ -33,7 +33,7 @@ const PropertyTypeBarChart = (props: any) => {
         if (response.data) {
           const uniquePropertyTypes: Record<string, number> = {};
           const uniqueColors: Record<string, string> = {};
-
+  
           response.data.forEach((item: PropertyTypeData, index: number) => {
             if (!uniquePropertyTypes[item.property_type__name]) {
               uniquePropertyTypes[item.property_type__name] = 0;
@@ -41,14 +41,14 @@ const PropertyTypeBarChart = (props: any) => {
             }
             uniquePropertyTypes[item.property_type__name] += item.total_area;
           });
-
+  
           const newData: PropertyTypeData[] = Object.keys(uniquePropertyTypes).map((property_type__name) => ({
             property_type__name,
             name: '', 
             total_area: uniquePropertyTypes[property_type__name],
             backgroundColor: uniqueColors[property_type__name], // Assign the color
           }));
-
+  
           const sortedData = newData.sort((a, b) => a.property_type__name.localeCompare(b.property_type__name));
           setPropertyTypeData(sortedData);
         }
@@ -58,6 +58,7 @@ const PropertyTypeBarChart = (props: any) => {
         console.log(error);
       });
   };
+  
 
   useEffect(() => {
     fetchActivityPercentageData();
@@ -177,7 +178,7 @@ const PropertyTypeBarChart = (props: any) => {
         <Bar
           data={data}
           options={options}
-        //   height={265} width={500} 
+          height={265} width={500} 
         />
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
