@@ -1,4 +1,3 @@
-from collections import Counter
 from typing import Dict, List, Any
 from population_data.models import AnnualPopulation
 
@@ -11,14 +10,13 @@ from species.models import OwnedSpecies
 def calculate_population_categories(
     queryset,
     species_name: str
-    ) -> Dict[str, int]:
+) -> Dict[str, int]:
     """
-    Calculate population categories for a
-    given queryset of properties.
+    Calculate population categories for a given queryset of properties.
 
     Args:
-        queryset (QuerySet).
-        species name.
+        queryset (QuerySet): A queryset of properties.
+        species_name (str): The name of the species.
 
     Returns:
         Dict[str, int]: A dictionary containing population categories
@@ -53,7 +51,7 @@ def calculate_population_categories(
         'year'
     )
 
-     # Handle the case where annual_population_data is empty
+    # Handle the case where annual_population_data is empty
     try:
         # Calculate the minimum and maximum for category boundaries
         min_population = min(
@@ -101,6 +99,7 @@ def calculate_population_categories(
     result = {key: value for key, value in results.items()}
 
     return result
+
 
 
 def calculate_total_area_available_to_species(queryset: QuerySet[Property]) \
