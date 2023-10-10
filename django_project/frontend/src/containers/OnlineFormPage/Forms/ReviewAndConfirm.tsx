@@ -277,7 +277,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             disabled
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={data.annual_population.population_estimate_certainty_name}
+                                            defaultValue={data.annual_population.population_estimate_certainty}
                                         />
                                     </Grid>
                                     <Grid item xs={6}>

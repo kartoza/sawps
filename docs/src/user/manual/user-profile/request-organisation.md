@@ -19,7 +19,7 @@
 
 ![Request Organisation 2](./img/request-organisation-2.png)
 
-1. **Organisation Name**: In this field the user should provide the name/s of the organization they wish to have created.
+1. **Organisation Name**: In this field the user should provide the name/s of the organisation they wish to have created.
 2. **Message to Administrator**: The user requesting to have an organisation should provide a message providing a description of the organisation etc.
 3. **Send button**: When the user clicks the send button, a confirmation (example below) will be returned to the user to let them know their invitation has been sent.
 
