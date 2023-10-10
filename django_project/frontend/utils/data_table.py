@@ -148,7 +148,7 @@ def property_report(queryset: QuerySet, request) -> List:
                 "area_available_to_species": area_available[
                     "area_available_to_species"
                 ],
-                "open": OpenCloseSystemSerializer(
+                "open_close_system": OpenCloseSystemSerializer(
                     property.open
                 ).data['name'] if property.open else None
             }
