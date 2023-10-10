@@ -191,7 +191,7 @@ const DensityBarChart = (props: any) => {
                 <Bar 
                     data={{ labels: labels, datasets: datasets }} 
                     options={options} 
-                    height={200} width={500} 
+                    height={265} width={650} 
                 />
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
