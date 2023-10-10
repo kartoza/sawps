@@ -175,7 +175,7 @@ return (
             <Bar 
                 data={data} 
                 options={options} 
-                // height={265} width={670} 
+                height={200} width={500} 
             />
         ) : (
             <Loading containerStyle={{ minHeight: 160 }} />
