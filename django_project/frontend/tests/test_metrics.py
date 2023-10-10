@@ -184,7 +184,7 @@ class TotalCountPerActivityTestCase(BaseTestCase):
         self.assertEqual(len(response.data[0]['activities']), 5)
         self.assertEqual(list(response.data[0]['activities'][0].values())[0], 100)
         # test with property id
-        data = { 'property': self.property }
+        data = { 'property': self.property.id }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
