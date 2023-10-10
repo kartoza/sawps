@@ -10,9 +10,15 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
-from property.models import Province
 from population_data.serializers import OpenCloseSystemSerializer
+from property.models import Province, Property
 from species.models import OwnedSpecies
+
+ACTIVITY_REPORT = 'Activity_report'
+PROPERTY_REPORT = 'Property_report'
+SAMPLING_REPORT = 'Sampling_report'
+SPECIES_REPORT = 'Species_report'
+PROVINCE_REPORT = 'Province_report'
 
 
 def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
@@ -22,16 +28,16 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
         queryset (QuerySet): The initial queryset to generate reports from.
         request: The HTTP request object.
     """
-    reports_list = request.GET.get("reports")
+    reports_list = request.GET.get("reports", None)
     reports = []
 
     if reports_list:
         reports_list = reports_list.split(",")
         report_functions = {
-            "Activity_report": activity_report,
-            "Property_report": property_report,
-            "Sampling_report": sampling_report,
-            "Species_report": species_report,
+            ACTIVITY_REPORT: activity_report,
+            PROPERTY_REPORT: property_report,
+            SAMPLING_REPORT: sampling_report,
+            SPECIES_REPORT: species_report,
         }
 
         for report_name in reports_list:
@@ -44,7 +50,7 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
     else:
         property_report_data = property_report(queryset, request)
         if property_report_data:
-            reports.append({"Property_report": property_report_data})
+            reports.append({PROPERTY_REPORT: property_report_data})
 
     return reports
 
@@ -85,7 +91,6 @@ def species_report(queryset: QuerySet, request) -> List:
         ] = activity
 
     for property in queryset:
-
         species_population_data = AnnualPopulation.objects.filter(
             **filters, owned_species__property__name=property.name,
         ).values(*selected_fields).distinct()
@@ -168,10 +173,10 @@ def sampling_report(queryset: QuerySet, request) -> List:
             "owned_species__property__name",
             "owned_species__taxon__scientific_name",
             "owned_species__taxon__common_name_varbatim",
-            "population_status",
-            "population_estimate_category",
-            "survey_method",
-            "sampling_effort_coverage",
+            "population_status__name",
+            "population_estimate_category__name",
+            "survey_method__name",
+            "sampling_effort_coverage__name",
             "population_estimate_certainty",
     ]
 
@@ -292,14 +297,14 @@ def national_level_user_table(
     if reports_list:
         reports_list = reports_list.split(",")
         report_functions = {
-            "Property_report": national_level_property_report,
-            "Activity_report": national_level_activity_report,
-            "Species_report": national_level_species_report,
+            PROPERTY_REPORT: national_level_property_report,
+            ACTIVITY_REPORT: national_level_activity_report,
+            SPECIES_REPORT: national_level_species_report,
         }
 
         if REGIONAL_DATA_CONSUMER not in user_roles:
             report_functions[
-                "Province_report"
+                PROVINCE_REPORT
             ] = national_level_province_report
 
         for report_name in reports_list:
@@ -313,7 +318,7 @@ def national_level_user_table(
     else:
         data = national_level_property_report(queryset, request, user_roles)
         if data:
-            reports.append({"Property_report": data})
+            reports.append({PROPERTY_REPORT: data})
 
     return reports
 
@@ -328,31 +333,57 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
         user_roles : The roles of the user.
     """
     filters = {}
+    properties = Property.objects.all()
 
     start_year = request.GET.get("start_year")
     if start_year:
         end_year = request.GET.get("end_year")
-        filters["annualpopulation__year__range"] = (start_year, end_year)
+        filters["annualpopulation__year__range"] = (
+            start_year, end_year
+        )
 
     property_param = request.GET.get("property")
     if property_param:
-        property_list = property_param.split(",")
-        filters["property__id__in"] = property_list
+        properties = properties.filter(
+            id__in=property_param.split(',')
+        )
+
+    spatial_filter_values = request.GET.get(
+        'spatial_filter_values',
+        ''
+    ).split(',')
+
+    spatial_filter_values = list(
+        filter(None, spatial_filter_values)
+    )
+
+    if spatial_filter_values:
+        properties = properties.filter(
+            **({
+                'spatialdatamodel__spatialdatavaluemodel__'
+                'context_layer_value__in':
+                    spatial_filter_values
+            })
+        )
 
     activity = request.GET.get("activity")
     if activity:
-        activity = urllib.parse.unquote(activity)
-
         filters[
             "annualpopulationperactivity__activity_type__name"
-        ] = activity
+        ] = urllib.parse.unquote(activity)
 
     if REGIONAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
         ).values_list("id", flat=True)
-        filters["property__province__id__in"] = province_ids
+        properties = properties.filter(
+            province__id__in=province_ids
+        )
+
+    filters['property__id__in'] = list(
+        properties.values_list('id', flat=True)
+    )
 
     return filters
 
@@ -429,7 +460,10 @@ def national_level_property_report(
 
     for species in queryset:
         data = {
-            "common_name": species.common_name_varbatim,
+            "common_name": (
+                species.common_name_varbatim if
+                species.common_name_varbatim else '-'
+            ),
             "scientific_name": species.scientific_name,
         }
 

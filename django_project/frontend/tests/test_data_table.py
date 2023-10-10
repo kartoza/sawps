@@ -248,6 +248,14 @@ class NationalUserTestCase(TestCase):
         session = self.client.session
         session.save()
 
+        self.spatial_data = SpatialDataModelF.create(
+            property=self.property
+        )
+        self.spatial_data_value = SpatialDataModelValueF.create(
+            spatial_data=self.spatial_data,
+            context_layer_value='spatial filter test'
+        )
+
     def test_national_property_report(self) -> None:
         """Test property report for national data consumer"""
         url = self.url
@@ -269,7 +277,8 @@ class NationalUserTestCase(TestCase):
                 "Activity_report,Province_report,"
                 "Species_report,Property_report"
             ),
-            "activity":value.activity_type.name
+            "activity": value.activity_type.name,
+            'spatial_filter_values': 'spatial filter test',
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
