@@ -201,7 +201,9 @@ class PropertiesPerPopulationCategoryAPIView(APIView):
         """
         species_name = request.GET.get("species")
         queryset = self.get_queryset()
-        return Response(calculate_population_categories(queryset, species_name))
+        return Response(
+            calculate_population_categories(queryset, species_name)
+        )
 
 
 class TotalAreaAvailableToSpeciesAPIView(APIView):
