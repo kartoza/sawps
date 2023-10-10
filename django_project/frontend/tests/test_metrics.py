@@ -54,19 +54,6 @@ class BaseTestCase(TestCase):
             5, taxon=self.taxon, user=self.user, property=self.property
         )
 
-        # self.taxon1 = TaxonFactory.create(
-        #     taxon_rank=taxon_rank,
-        #     common_name_varbatim="Cheetah",
-        #     scientific_name = "test cheetah"
-        # )
-
-        # self.owned_species1 = OwnedSpeciesFactory.create(
-        #     taxon=self.taxon1, 
-        #     user=self.user, 
-        #     property=self.property,
-        #     area_available_to_species=50
-        # )
-
         self.auth_headers = {
             "HTTP_AUTHORIZATION": "Basic "
             + base64.b64encode(b"testuserd:testpasswordd").decode("ascii"),
