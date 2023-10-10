@@ -15,9 +15,15 @@ NATIONAL_DATA_CONSUMER = 'National data consume'
 REGIONAL_DATA_SCIENTIST = 'Regional data scientist'
 NATIONAL_DATA_SCIENTIST = 'National data scientist'
 
+ORGANISATION_MEMBER = 'Organisation member'
+ORGANISATION_MANAGER = 'Organisation manager'
+
+SUPER_USER = 'Super user'
+
+
 DATA_CONTRIBUTORS = [
-    "Organisation member",
-    "Organisation manager",
+    ORGANISATION_MEMBER,
+    ORGANISATION_MANAGER,
 ]
 
 DATA_CONSUMERS = [
@@ -26,7 +32,7 @@ DATA_CONSUMERS = [
 ]
 
 DATA_SCIENTISTS = [
-    "National data scientist",
-    "Regional data scientist",
-    "Super user"
+    NATIONAL_DATA_SCIENTIST,
+    REGIONAL_DATA_SCIENTIST,
+    SUPER_USER
 ]

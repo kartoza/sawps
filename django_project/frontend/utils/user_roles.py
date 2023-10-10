@@ -2,6 +2,8 @@ from typing import List
 
 from django.contrib.auth.models import User
 
+from frontend.static_mapping import SUPER_USER
+
 
 def get_user_roles(user: User) -> List[str]:
     """
@@ -17,6 +19,6 @@ def get_user_roles(user: User) -> List[str]:
         )
     )
     if user.is_superuser:
-        roles += ['Super user']
+        roles += [SUPER_USER]
 
     return roles
