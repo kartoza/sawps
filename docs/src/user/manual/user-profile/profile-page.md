@@ -27,3 +27,10 @@ The profile picture popup appears when the Upload profile picture link is clicke
 ## Update password form
 
 The update password form opens when the update password button is clicked on the profile tab in the profile configuration page.
+
+![Update Password](./img/update-password.png)
+
+1. **Current Password:** The field where the user must input their current password.
+2. **New Password:** The field where the user must input their new password.
+3. **Confirm New Password:** The field where the user must confirm their new password.
+4. **`SAVE` Button:** The button that the user must click to save their updated password.
