@@ -9,7 +9,8 @@ from species.models import OwnedSpecies
 
 def calculate_population_categories(
     queryset,
-    species_name: str
+    species_name: str,
+    categories: list = None
 ) -> Dict[str, int]:
     """
     Calculate population categories for a given queryset of properties.
