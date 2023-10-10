@@ -171,10 +171,10 @@ def sampling_report(queryset: QuerySet, request) -> List:
             "owned_species__property__name",
             "owned_species__taxon__scientific_name",
             "owned_species__taxon__common_name_varbatim",
-            "population_status",
-            "population_estimate_category",
-            "survey_method",
-            "sampling_effort_coverage",
+            "population_status__name",
+            "population_estimate_category__name",
+            "survey_method__name",
+            "sampling_effort_coverage__name",
             "population_estimate_certainty",
     ]
 
