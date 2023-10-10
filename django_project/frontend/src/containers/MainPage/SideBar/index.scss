@@ -217,3 +217,11 @@
     color: rgb(40, 40, 41) !important;
     opacity: 1 !important;
 }
+.clear-button{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+.pointer{
+    cursor: pointer;
+}
