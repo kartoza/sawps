@@ -38,9 +38,11 @@ class TestCalculatePopulationCategories(unittest.TestCase):
         # Test the calculation of population categories
         # Create mock annual population data
         annual_population_data = [
+            {'year': 2020, 'population_total': 100},
+            {'year': 2020, 'population_total': 200},
             {'year': 2021, 'population_total': 100},
-            {'year': 2022, 'population_total': 400},  # This falls into the same category as 2021
-            {'year': 2023, 'population_total': 300},  # This falls into a different category
+            {'year': 2022, 'population_total': 400},
+            {'year': 2023, 'population_total': 300},
         ]
 
         # Create a mock queryset and set its return value
