@@ -70,7 +70,6 @@ function Filter(props: any) {
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string>('');
-    const [userRole, setUserRole] = useState<string | null>(null);
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
@@ -83,6 +82,22 @@ function Filter(props: any) {
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
+
+    let informationList: string[] = []
+
+    const roleExists = (role: string) => {
+        if (!userInfoData || !userInfoData.user_roles) return false;
+        return userInfoData.user_roles.includes(role);
+    }
+
+    if (userInfoData) {
+        informationList = [
+            "Activity report",
+            "Property report",
+            roleExists("National data consumer") ? "Province report" :  roleExists("Regional data consumer") ? "" : "Sampling report",
+            "Species report",
+        ].filter(item => item !== "")
+    }
 
     // Function to filter properties based on selected organizations
     const filterPropertiesByOrganisations = () => {
@@ -201,13 +216,6 @@ function Filter(props: any) {
         "Planned translocation",
         "Unplanned/illegal hunting",
         "Unplanned/natural deaths"])
-
-    const informationList = [
-        "Activity report",
-        "Property report",
-        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling report",
-        "Species report",
-    ].filter(item => item !== "")
 
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
@@ -522,25 +530,21 @@ function Filter(props: any) {
         const userRoles = userInfoData.user_roles
         if (userRoles.length === 0) return;
 
-        const currentUserRole = userRoles[0];
         const currentOrganisationId = userInfoData.current_organisation_id;
 
+        // TODO : Update to use permissions
+        const allowedRoles = new Set(["National data scientist", "Regional data scientist", "Super user"]);
+
         if(
-            currentUserRole && (
-            currentUserRole.toLocaleLowerCase() === "national data scientist" ||
-            currentUserRole.toLocaleLowerCase() === "regional data scientist" ||
-            currentUserRole.toLocaleLowerCase() === "super user" ||
-            currentUserRole.toLocaleLowerCase() === "site administrator" ||
-            currentUserRole.toLocaleLowerCase() === "admin")
+            userRoles.some(userRole => allowedRoles.has(userRole))
         ){
             setOrganisationSelection(true)
             setPropertiesSelection(true)
         }
 
+        const organisationRoles = new Set(['Organisation member', 'Organisation manager'])
         if (
-            currentUserRole && (
-            currentUserRole.toLowerCase() === 'organisation member' ||
-            currentUserRole.toLowerCase() === 'organisation manager')
+            userRoles.some(userRole => organisationRoles.has(userRole))
         ) {
           filterPropertiesByOrganisation(currentOrganisationId);
           setPropertiesSelection(true)

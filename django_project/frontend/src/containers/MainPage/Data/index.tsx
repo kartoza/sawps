@@ -12,7 +12,7 @@ import axios from "axios";
 import './index.scss';
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
-import { useGetUserInfoQuery } from "../../../services/api";
+import {useGetUserInfoQuery, UserInfo} from "../../../services/api";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -40,43 +40,46 @@ const DataList = () => {
     const [rows, setRows] = useState([])
     const [tableData, setTableData] = useState<any>()
     const [activityTableGrid, setActivityTable] = useState<any>()
-    const [userRole, setUserRole] = useState<string>('')
-    const dataset = checkUserRole(userRole) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
     const activityDataSet = data ? data.filter(item => item?.Activity_report).flatMap((each) => Object.keys(each)) : [];
     const dataTableList = data ? data.map((data, index) => ({ ...data, id: index })) : [];
     const activity = dataTableList ? dataTableList.filter(item => item.Activity_report).map((item) => item.Activity_report) : [];
     const activityReportList = activity.length > 0 ? activity.flatMap((each) => Object.keys(each)) : [];
     const activityReportdataList = activity.map((data, index) => ({ ...data, id: index }));
-    const reportList = checkUserRole(userRole) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
     const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
-    const customColorWidth =
-        {
-        "Species_report":{color:"#F9A95D",width:107},
-        "Property_report": {color:'#9F89BF',width:131},
-        "Sampling_report": {color:"#FF5252",width:168},
-        "Province_report": {color:"#FF5252",width:100},
-        "Species_population_report": "#9F89BF",
-        "Activity_report": checkUserRole(userRole) ? {color:"#696969",width:100} : {color:"#75B37A",width:100},
-        "Unplanned/natural deaths": {color:"#75B37A",width:106.5},
-        "Planned translocation": {color:"#F9A95D",width:106.5},
-        "Planned hunt/cull": {color:"#FF5252",width:130.2},
-        "Planned euthanasia": {color:"#9F89BF",width:130.2},
-        "Unplanned/illegal hunting": {color:"#696969",width:147}
-    }
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
-    function checkUserRole(userRole: string) {
-        const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"];
-        return allowedRoles.includes(userRole);
+    let dataset: any[] = []
+    let reportList: any[] = []
+    let customColorWidth = {}
+
+    if (isSuccess) {
+        dataset = checkUserRole(userInfoData) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
+        reportList = checkUserRole(userInfoData) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
+        customColorWidth =
+            {
+                "Species_report": {color:"#F9A95D",width:107},
+                "Property_report": {color:'#9F89BF',width:131},
+                "Sampling_report": {color:"#FF5252",width:168},
+                "Province_report": {color:"#FF5252",width:100},
+                "Species_population_report": "#9F89BF",
+                "Activity_report": checkUserRole(userInfoData) ? {color:"#696969",width:100} : {color:"#75B37A",width:100},
+                "Unplanned/natural deaths": {color:"#75B37A",width:106.5},
+                "Planned translocation": {color:"#F9A95D",width:106.5},
+                "Planned hunt/cull": {color:"#FF5252",width:130.2},
+                "Planned euthanasia": {color:"#9F89BF",width:130.2},
+                "Unplanned/illegal hunting": {color:"#696969",width:147}
+            }
     }
 
-    useEffect(() => {
-        if(isSuccess) {
-            setUserRole(userInfoData.user_roles[0]);
-        }
-    }, [isSuccess, userInfoData]);
+
+    function checkUserRole(userInfo: UserInfo) {
+        if (!userInfo?.user_roles) return false;
+        // TODO : Update this to use permissions instead
+        const allowedRoles = new Set(["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"]);
+        return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
+    }
 
     const fetchDataList = () => {
         setLoading(true)
@@ -128,6 +131,7 @@ const DataList = () => {
     };
 
     useEffect(() => {
+        if (!isSuccess) return;
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
             <>
                 <Box className="data-table" style={{ backgroundColor: (customColorWidth as any)[each]?.color }}>
@@ -172,7 +176,7 @@ const DataList = () => {
                 }
             </>
         )
-        const activityDataGrid = checkUserRole(userRole) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
+        const activityDataGrid = checkUserRole(userInfoData) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
             <>
                 <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
                     {each.split('_')
@@ -230,7 +234,7 @@ const DataList = () => {
         }
         setColumns(uniqueColumns)
         setTableData(dataGrid)
-    }, [data, selectedColumns])
+    }, [data, selectedColumns, isSuccess])
 
     return (
         <Box style={{ paddingRight: '20px' }}>
