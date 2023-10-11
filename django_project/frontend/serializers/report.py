@@ -5,6 +5,7 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
+from activity.models import ActivityType
 from species.models import OwnedSpecies
 
 
@@ -180,25 +181,19 @@ class ActivityReportSerializer(
             raise ValueError("'activity_name' argument is required!")
         super().__init__(*args, **kwargs)
 
-        activity_data_map = {
-            "Unplanned/illegal hunting": [],
-            "Planned euthanasia": ["intake_permit"],
-            "Planned hunt/cull": ["intake_permit"],
-            "Planned translocation": [
-                "intake_permit", "translocation_destination",
-                "offtake_permit"
-            ],
-            "Unplanned/natural deaths": [
-                "translocation_destination", "founder_population",
-                "reintroduction_source"
-            ],
-        }
+        try:
+            activity_fields = ActivityType.objects.get(
+                name__iexact=activity_name
+            ).export_fields
+        except ActivityType.DoesNotExist:
+            activity_fields = []
+
         base_fields = [
             "property_name", "scientific_name", "common_name",
             "year", "total", "adult_male", "adult_female",
             "juvenile_male", "juvenile_female"
         ]
-        valid_fields = base_fields + activity_data_map[activity_name]
+        valid_fields = base_fields + activity_fields
         allowed = set(valid_fields)
         existing = set(self.fields.keys())
         for field_name in existing - allowed:

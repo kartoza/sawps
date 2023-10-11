@@ -20,7 +20,8 @@
     "pk": 3,
     "fields": {
         "name": "Planned Euthanasia/DCA",
-        "recruitment": null
+        "recruitment": null,
+        "export_fields": ["intake_permit"]
     }
 },
 {
@@ -28,7 +29,8 @@
     "pk": 4,
     "fields": {
         "name": "Planned Hunt/Cull",
-        "recruitment": null
+        "recruitment": null,
+        "export_fields": ["intake_permit"]
     }
 },
 {
@@ -36,7 +38,12 @@
     "pk": 5,
     "fields": {
         "name": "Translocation (Intake)",
-        "recruitment": null
+        "recruitment": null,
+        "export_fields": [
+            "intake_permit",
+            "translocation_destination",
+            "offtake_permit"
+        ]
     }
 },
     {
@@ -44,7 +51,12 @@
     "pk": 6,
     "fields": {
         "name": "Translocation (Offtake)",
-        "recruitment": null
+        "recruitment": null,
+        "export_fields": [
+            "translocation_destination",
+            "founder_population",
+            "reintroduction_source"
+        ]
     }
 }
 ]
