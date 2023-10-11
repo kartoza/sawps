@@ -1,8 +1,9 @@
 from django import template
 from django.conf import settings
 from django.contrib.auth.models import User
-
-from stakeholder.models import Organisation, OrganisationInvites
+from frontend.utils.user_roles import (
+    is_organisation_manager as is_organisation_manager_util
+)
 
 register = template.Library()
 
@@ -28,17 +29,7 @@ def is_organisation_manager(user_id: int, organisation_id: int) -> bool:
     except User.DoesNotExist:
         return False
 
-    try:
-        organisation = Organisation.objects.get(
-            id=organisation_id
-        )
-    except Organisation.DoesNotExist:
-        return False
-
     if user.is_superuser:
         return True
 
-    return OrganisationInvites.objects.filter(
-        email=user.email,
-        organisation_id=organisation.id
-    ).exists()
+    return is_organisation_manager_util(user)
