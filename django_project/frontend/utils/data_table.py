@@ -1,14 +1,21 @@
 import urllib.parse
 from typing import Dict, List
+
 from django.db.models import Sum
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
+
+from frontend.serializers.report import (
+    SpeciesReportSerializer,
+    SamplingReportSerializer,
+    PropertyReportSerializer,
+    ActivityReportSerializer
+)
 from frontend.utils.organisation import get_current_organisation_id
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
-from population_data.serializers import OpenCloseSystemSerializer
 from property.models import Province, Property
 from species.models import OwnedSpecies
 
@@ -53,6 +60,61 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
     return reports
 
 
+def get_report_filter(request, report_type):
+    default_species_field = 'owned_species__taxon__scientific_name__in'
+    filters = {}
+    species_fields = {
+        SPECIES_REPORT: default_species_field,
+        PROPERTY_REPORT: 'taxon__scientific_name__in',
+        SAMPLING_REPORT: default_species_field,
+        ACTIVITY_REPORT: default_species_field
+    }
+
+    default_year_field = 'year__range'
+    year_fields = {
+        SPECIES_REPORT: default_year_field,
+        PROPERTY_REPORT: 'annualpopulation__year__range',
+        SAMPLING_REPORT: default_year_field,
+        ACTIVITY_REPORT: default_year_field
+    }
+
+    default_activity_field = 'owned_species__annualpopulationperactivity__activity_type__name__in'
+    activity_fields = {
+        SPECIES_REPORT: default_species_field,
+        PROPERTY_REPORT: 'annualpopulationperactivity__activity_type__name__in',
+        SAMPLING_REPORT: default_activity_field,
+        ACTIVITY_REPORT: default_activity_field,
+    }
+
+    species_list = request.GET.get("species")
+    if species_list:
+        species_list = species_list.split(",")
+        filters[species_fields[report_type]] = species_list
+
+    start_year = int(request.GET.get("start_year"))
+    if start_year:
+        end_year = int(request.GET.get("end_year"))
+        filters[year_fields[report_type]] = (start_year, end_year)
+
+    activity = request.GET.get("activity")
+    if activity:
+        activity = urllib.parse.unquote(activity)
+        filters[activity_fields[report_type]] = activity
+
+    if report_type == ACTIVITY_REPORT:
+        if activity:
+            activity_types = [activity]
+        else:
+            activity_types = [
+                "Planned euthanasia", "Planned hunt/cull",
+                "Planned translocation", "Unplanned/natural deaths",
+                "Unplanned/illegal hunting"
+            ]
+        filters[activity_fields[report_type]] = activity_types
+
+    return filters
+
+
 def species_report(queryset: QuerySet, request) -> List:
     """
     Generate species reports based on the user's request.
@@ -60,40 +122,13 @@ def species_report(queryset: QuerySet, request) -> List:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    species_reports = []
-    filters = {}
-    selected_fields = [
-        "owned_species__property__name",
-        "owned_species__taxon__scientific_name",
-        "owned_species__taxon__common_name_varbatim",
-        "year", "group", "total", "adult_male", "adult_female",
-        "juvenile_male", "juvenile_female", "sub_adult_male",
-        "sub_adult_female",
-    ]
+    filters = get_report_filter(request, SPECIES_REPORT)
 
-    species_list = request.GET.get("species")
-    if species_list:
-        species_list = species_list.split(",")
-        filters["owned_species__taxon__scientific_name__in"] = species_list
-
-    start_year = request.GET.get("start_year")
-    if start_year:
-        end_year = request.GET.get("end_year")
-        filters["year__range"] = (start_year, end_year)
-
-    activity = request.GET.get("activity")
-    if activity:
-        activity = urllib.parse.unquote(activity)
-        filters[
-            "owned_species__annualpopulationperactivity__activity_type__name"
-        ] = activity
-
-    for property in queryset:
-        species_population_data = AnnualPopulation.objects.filter(
-            **filters, owned_species__property__name=property.name,
-        ).values(*selected_fields).distinct()
-
-        species_reports.extend(species_population_data)
+    species_population_data = AnnualPopulation.objects.filter(
+        owned_species__property_id__in=queryset.values_list('id', flat=True),
+        **filters
+    ).distinct()
+    species_reports = SpeciesReportSerializer(species_population_data, many=True).data
 
     return species_reports
 
@@ -105,55 +140,16 @@ def property_report(queryset: QuerySet, request) -> List:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    property_reports = []
-    filters = {}
+    filters = get_report_filter(request, PROPERTY_REPORT)
 
-    species_list = request.GET.get("species")
-    if species_list:
-        species_list = species_list.split(",")
-        filters["taxon__scientific_name__in"] = species_list
+    area_available_values = OwnedSpecies.objects.filter(
+        property__in=queryset,
+        **filters
+    )
 
-    start_year = (request.GET.get("start_year"))
-    if start_year:
-        end_year = int(request.GET.get("end_year"))
-        start_year = int(request.GET.get("start_year"))
-        filters["annualpopulation__year__range"] = (start_year, end_year)
-
-    activity = request.GET.get("activity")
-    if activity:
-        activity = urllib.parse.unquote(activity)
-        filters[
-            "annualpopulationperactivity__activity_type__name"
-        ] = activity
-
-    for property in queryset:
-        area_available_values = property.ownedspecies_set.filter(
-            **filters
-        ).values(
-            "area_available_to_species",
-            "taxon__scientific_name",
-            "taxon__common_name_varbatim"
-        )
-
-        property_reports.extend([
-            {
-                "property_name": property.name,
-                "scientific_name": area_available["taxon__scientific_name"],
-                "common_name": area_available["taxon__common_name_varbatim"],
-                "owner": property.created_by.first_name,
-                "owner_email": property.owner_email,
-                "property_type": property.property_type.name,
-                "province": property.province.name,
-                "property_size_ha": property.property_size_ha,
-                "area_available_to_species": area_available[
-                    "area_available_to_species"
-                ],
-                "open": OpenCloseSystemSerializer(
-                    property.open
-                ).data['name'] if property.open else None
-            }
-            for area_available in area_available_values
-        ])
+    property_reports = PropertyReportSerializer(
+        area_available_values, many=True
+    ).data
 
     return property_reports
 
@@ -165,43 +161,13 @@ def sampling_report(queryset: QuerySet, request) -> List:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    sampling_reports = []
-    filters = {}
-    select_fields = [
-            "owned_species__property__name",
-            "owned_species__taxon__scientific_name",
-            "owned_species__taxon__common_name_varbatim",
-            "population_status__name",
-            "population_estimate_category__name",
-            "survey_method__name",
-            "sampling_effort_coverage__name",
-            "population_estimate_certainty",
-    ]
+    filters = get_report_filter(request, SAMPLING_REPORT)
 
-    start_year = request.GET.get("start_year")
-    if start_year:
-        end_year = request.GET.get("end_year")
-        filters["year__range"] = (start_year, end_year)
-
-    activity = request.GET.get("activity")
-    if activity:
-        activity = urllib.parse.unquote(activity)
-        filters[
-            "owned_species__annualpopulationperactivity__activity_type__name"
-        ] = activity
-
-    species_list = request.GET.get("species")
-    if species_list:
-        species_list = species_list.split(",")
-        filters["owned_species__taxon__scientific_name__in"] = species_list
-
-    for property in queryset:
-
-        sampling_reports_data = AnnualPopulation.objects.filter(
-            **filters, owned_species__property__name=property.name,
-        ).values(*select_fields)
-
-        sampling_reports.extend(sampling_reports_data)
+    sampling_reports_data = AnnualPopulation.objects.filter(
+        owned_species__property__id__in=queryset.values_list('id', flat=True),
+        **filters
+    )
+    sampling_reports = SamplingReportSerializer(sampling_reports_data, many=True).data
 
     return sampling_reports
 
@@ -213,66 +179,34 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
     """
-    filters = {}
-    start_year = request.GET.get("start_year")
-    if start_year:
-        end_year = request.GET.get("end_year")
-        filters["year__range"] = (start_year, end_year)
-
-    activity = request.GET.get("activity")
-    if activity:
-        activity_types = [urllib.parse.unquote(activity)]
-    else:
-        activity_types = [
-            "Planned euthanasia", "Planned hunt/cull",
-            "Planned translocation", "Unplanned/natural deaths",
-            "Unplanned/illegal hunting"
-        ]
-
-    species_list = request.GET.get("species")
-    if species_list:
-        species_list = species_list.split(",")
-        filters["owned_species__taxon__scientific_name__in"] = species_list
-
-    activity_data_map = {
-        "Unplanned/illegal hunting": [],
-        "Planned euthanasia": ["intake_permit"],
-        "Planned hunt/cull": ["intake_permit"],
-        "Planned translocation": [
-            "intake_permit", "translocation_destination",
-            "offtake_permit"
-        ],
-        "Unplanned/natural deaths": [
-            "translocation_destination", "founder_population",
-            "reintroduction_source"
-        ],
-    }
+    filters = get_report_filter(request, ACTIVITY_REPORT)
+    activity_field = 'owned_species__annualpopulationperactivity__activity_type__name__in'
+    activity_types = filters[activity_field]
+    del filters[activity_field]
 
     activity_reports = {
         activity: [] for activity in activity_types
     }
-
-    for property in queryset:
-
-        for activity_name in activity_types:
-
-            if activity_name in activity_data_map:
-                query_values = [
-                    "owned_species__property__name",
-                    "owned_species__taxon__scientific_name",
-                    "owned_species__taxon__common_name_varbatim",
-                    "year", "total", "adult_male", "adult_female",
-                    "juvenile_male", "juvenile_female",
-                ] + activity_data_map[activity_name]
-
-                activity_data = AnnualPopulationPerActivity.objects.values(
-                    *query_values,
-                ).filter(
-                    **filters,
-                    owned_species__property__name=property.name,
-                    activity_type__name=activity_name
-                )
-                activity_reports[activity_name].extend(activity_data)
+    valid_activity_types = {
+        'Unplanned/illegal hunting',
+        'Planned euthanasia',
+        'Planned hunt/cull',
+        'Planned translocation',
+        'Unplanned/natural deaths'
+    }
+    valid_activities = set(activity_types).intersection(valid_activity_types)
+    for activity_name in valid_activities:
+        activity_data = AnnualPopulationPerActivity.objects.filter(
+            owned_species__property__in=queryset,
+            activity_type__name__iexact=activity_name,
+            **filters
+        )
+        serializer = ActivityReportSerializer(
+            activity_data,
+            many=True,
+            activity_name=activity_name
+        )
+        activity_reports[activity_name].extend(serializer.data)
 
     activity_reports = {k: v for k, v in activity_reports.items() if v}
 

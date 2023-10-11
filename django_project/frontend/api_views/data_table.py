@@ -1,6 +1,10 @@
 """API Views related to data table.
 """
 from django.db.models.query import QuerySet
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
 from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS
@@ -10,9 +14,6 @@ from frontend.utils.data_table import (
 )
 from frontend.utils.organisation import get_current_organisation_id
 from property.models import Property
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from species.models import Taxon
 from stakeholder.models import (
     UserProfile
@@ -87,7 +88,6 @@ class DataTableAPIView(APIView):
         queryset = self.get_queryset(user_role)
         if user_role in (DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             return Response(data_table_reports(queryset, request))
-
         else:
             return Response(
                 national_level_user_table(queryset, request, user_role)
