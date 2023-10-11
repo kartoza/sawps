@@ -14,6 +14,7 @@ import AreaAvailableLineChart from "./AreaAvailableLineChart";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import SpeciesCountAsPercentage from "./SpeciesCountAsPercentage";
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
@@ -203,6 +204,18 @@ const Metrics = () => {
                                     )}
                                 </Grid>
                             ))}
+
+                            <Grid item xs={12} md={6}>
+                                <SpeciesCountAsPercentage
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear}
+                                    loading={loading} 
+                                    setLoading={setLoading}
+                                    activityData={activityData}
+                                />
+                            </Grid>
                     </Grid>
                 ): (
                     // Render message to user
