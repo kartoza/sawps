@@ -7,6 +7,7 @@ from django.db.models import QuerySet, Sum, Q
 from property.models import Property
 from species.models import OwnedSpecies
 
+
 def calculate_species_count_per_province(
         queryset,
         species_name: str
@@ -50,7 +51,7 @@ def calculate_species_count_per_province(
         for (
             province_name,
             species_name, year
-        ),total in grouped_data.items():
+        ), total in grouped_data.items():
             result_data.append({
                 "province": province_name,
                 "species": species_name,
