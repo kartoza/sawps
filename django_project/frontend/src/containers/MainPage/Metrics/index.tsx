@@ -160,7 +160,7 @@ const Metrics = () => {
                                 />
                             </Grid>
 
-                            {/* <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={6}>
                                 <PropertyAvailableBarChart
                                     selectedSpecies={selectedSpecies}
                                     propertyId={propertyId}
@@ -169,7 +169,7 @@ const Metrics = () => {
                                     loading={loading}
                                     setLoading={setLoading}
                                 />
-                            </Grid> */}
+                            </Grid>
 
                             {ageGroupData.map((data) => (
                                 <Grid container key={data.id} item xs={12} md={6}>
