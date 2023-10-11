@@ -1,7 +1,7 @@
 import urllib.parse
 from typing import Dict, List
 
-from django.db.models import Sum, F
+from django.db.models import Sum
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 
@@ -82,10 +82,15 @@ def get_report_filter(request, report_type):
         ACTIVITY_REPORT: default_year_field
     }
 
-    default_activity_field = 'owned_species__annualpopulationperactivity__activity_type__name__in'
+    default_activity_field = (
+        'owned_species__annualpopulationperactivity__'
+        'activity_type__name__in'
+    )
     activity_fields = {
-        SPECIES_REPORT: default_species_field,
-        PROPERTY_REPORT: 'annualpopulationperactivity__activity_type__name__in',
+        SPECIES_REPORT: default_activity_field,
+        PROPERTY_REPORT: (
+            'annualpopulationperactivity__activity_type__name__in'
+        ),
         SAMPLING_REPORT: default_activity_field,
         ACTIVITY_REPORT: default_activity_field,
     }
@@ -95,15 +100,16 @@ def get_report_filter(request, report_type):
         species_list = species_list.split(",")
         filters[species_fields[report_type]] = species_list
 
-    start_year = int(request.GET.get("start_year"))
+    start_year = request.GET.get("start_year")
     if start_year:
+        start_year = int(start_year)
         end_year = int(request.GET.get("end_year"))
         filters[year_fields[report_type]] = (start_year, end_year)
 
     activity = request.GET.get("activity")
     if activity:
         activity = urllib.parse.unquote(activity)
-        filters[activity_fields[report_type]] = activity
+        filters[activity_fields[report_type]] = [activity]
 
     if report_type == ACTIVITY_REPORT:
         if activity:
@@ -115,7 +121,6 @@ def get_report_filter(request, report_type):
                 "Unplanned/illegal hunting"
             ]
         filters[activity_fields[report_type]] = activity_types
-
     return filters
 
 
@@ -127,13 +132,14 @@ def species_report(queryset: QuerySet, request) -> List:
         request: The HTTP request object.
     """
     filters = get_report_filter(request, SPECIES_REPORT)
-
     species_population_data = AnnualPopulation.objects.filter(
         owned_species__property_id__in=queryset.values_list('id', flat=True),
         **filters
     ).distinct()
-    species_reports = SpeciesReportSerializer(species_population_data, many=True).data
-
+    species_reports = SpeciesReportSerializer(
+        species_population_data,
+        many=True
+    ).data
     return species_reports
 
 
@@ -171,7 +177,10 @@ def sampling_report(queryset: QuerySet, request) -> List:
         owned_species__property__id__in=queryset.values_list('id', flat=True),
         **filters
     )
-    sampling_reports = SamplingReportSerializer(sampling_reports_data, many=True).data
+    sampling_reports = SamplingReportSerializer(
+        sampling_reports_data,
+        many=True
+    ).data
 
     return sampling_reports
 
@@ -184,7 +193,10 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         request: The HTTP request object.
     """
     filters = get_report_filter(request, ACTIVITY_REPORT)
-    activity_field = 'owned_species__annualpopulationperactivity__activity_type__name__in'
+    activity_field = (
+        'owned_species__annualpopulationperactivity__'
+        'activity_type__name__in'
+    )
     activity_types = filters[activity_field]
     del filters[activity_field]
 

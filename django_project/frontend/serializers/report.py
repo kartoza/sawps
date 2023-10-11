@@ -1,6 +1,5 @@
-from rest_framework import serializers
-
 from django.db.models import Sum
+from rest_framework import serializers
 
 from population_data.models import (
     AnnualPopulation,
@@ -218,6 +217,7 @@ class NationalLevelSpeciesReport(serializers.Serializer):
         del instance['taxon__common_name_varbatim']
         del instance['taxon__scientific_name']
         return instance
+
 
 class NationalLevelPropertyReport(serializers.Serializer):
 

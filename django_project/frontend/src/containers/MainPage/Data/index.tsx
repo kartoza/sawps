@@ -12,6 +12,7 @@ import axios from "axios";
 import './index.scss';
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
+import { getTitle } from "../../../utils/Helpers";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -128,9 +129,7 @@ const DataList = () => {
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
             <>
                 <Box className="data-table" style={{ backgroundColor: (customColorWidth as any)[each]?.color }}>
-                    {each.split('_')
-                        .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
-                        .join(' ')}
+                    {getTitle(each)}
                 </Box>
                 {
                     reportList.length > 0 && reportList.map((item, index) => {
@@ -139,9 +138,7 @@ const DataList = () => {
                             const cellKeys = Object.keys(cellData[0]);
                             const generatedColumns = cellKeys.map((key) => ({
                                 field: key,
-                                headerName: key.replace('owned','').replace('species','').replace('taxon','').replace('varbatim','').split('_')
-                                    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                                    .join(' ').trim(),
+                                headerName: getTitle(key),
                                 width: (customColorWidth as any)[each]?.width,
                             }));
                             for (const value of generatedColumns) {
@@ -172,17 +169,12 @@ const DataList = () => {
         const activityDataGrid = checkUserRole(userRole) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
             <>
                 <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
-                    {each.split('_')
-                        .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
-                        .join(' ')}
+                    {getTitle(each)}
                 </Box>
                 {activityReportList.map((each: any) =>
                     <>
                         <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
-                            {each.split('_')
-                                .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
-                                .join(' ')
-                            }
+                            {getTitle(each)}
                         </Box>
                         {activityReportdataList.length > 0 && activityReportdataList.map((item, index) => {
                             const cellData = item[each];
@@ -190,9 +182,7 @@ const DataList = () => {
                                 const cellKeys = cellData[0] && Object.keys(cellData[0]);
                                 const generatedColumns: GridColDef[] = cellKeys.length > 0 && cellKeys.map((key) => ({
                                     field: key,
-                                    headerName: key.replace('owned','').replace('species','').replace('taxon','').replace('varbatim','').split('_')
-                                        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                                        .join(' ').trim(),
+                                    headerName: getTitle(key),
                                     width: (customColorWidth as any)[each]?.width,
                                 }));
                                 const cellRows = cellData.map((row: any, rowIndex: any) => ({
