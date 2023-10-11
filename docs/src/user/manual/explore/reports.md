@@ -32,6 +32,14 @@ The main area of the page displays your dataset in a tabular format. Each row re
 5. **XLSX Format:** Click the "DOWNLOAD DATA REPORT" button to download the current dataset in XLSX format.
 6. **CSV Format:** Click the "DOWNLOAD DATA CSV" button to download the current dataset in CSV format.
 
+### Activity Report
+![Activity Report](./img/reports-2.png)
+
+Activity Report columns consisted of base columns and custom columns.
+1. **Base columns**: Hardcoded.
+2. **Custom columns**: Configurable from the Django admin site. 
+See Activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
+
 ### Summary
 
 The Data Table Page is a comprehensive platform for exploring, analysing, and interacting with your data. With filters, column search, and data export options, you have the tools necessary to customise your data view, find specific information, and export data in the format that suits your needs.
