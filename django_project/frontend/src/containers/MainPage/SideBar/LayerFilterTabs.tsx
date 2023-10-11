@@ -17,12 +17,14 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
 
         // Check if the URL contains a pattern that indicates the presence of charts
         if (
-            currentUrl.includes('/charts') || 
-            currentUrl.includes('/?tab=2')
+            currentUrl.includes('/charts') ||
+            currentUrl.includes('/reports') ||
+            currentUrl.includes('/?tab=2') ||
+            currentUrl.includes('/?tab=1')
         ) {
             setLayerFilter(true);
             setSelectedTabSideBar(1);
-        }else setLayerFilter(false)
+        } else setLayerFilter(false)
 
     }, [props.selectedMainTabIdx]);
 
