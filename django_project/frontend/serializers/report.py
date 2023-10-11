@@ -1,10 +1,27 @@
 from rest_framework import serializers
 
+from django.db.models import Sum
+
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
 from species.models import OwnedSpecies
+
+
+class BaseNationalReportSerializer(serializers.Serializer):
+    """
+    Base Serializer for Report.
+    """
+
+    scientific_name = serializers.SerializerMethodField()
+    common_name = serializers.SerializerMethodField()
+
+    def get_scientific_name(self, obj: AnnualPopulation) -> str:
+        return obj.owned_species.taxon.scientific_name
+
+    def get_common_name(self, obj: AnnualPopulation) -> str:
+        return obj.owned_species.taxon.common_name_varbatim
 
 
 class BaseReportSerializer(serializers.Serializer):
@@ -16,14 +33,14 @@ class BaseReportSerializer(serializers.Serializer):
     scientific_name = serializers.SerializerMethodField()
     common_name = serializers.SerializerMethodField()
 
-    def get_property_name(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.property.name
-
     def get_scientific_name(self, obj: AnnualPopulation) -> str:
         return obj.owned_species.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulation) -> str:
         return obj.owned_species.taxon.common_name_varbatim
+
+    def get_property_name(self, obj: AnnualPopulation) -> str:
+        return obj.owned_species.property.name
 
 
 class SpeciesReportSerializer(
@@ -191,3 +208,90 @@ class ActivityReportSerializer(
     class Meta:
         model = AnnualPopulationPerActivity
         fields = '__all__'
+
+
+class NationalLevelSpeciesReport(serializers.Serializer):
+
+    def to_representation(self, instance):
+        instance['common_name'] = instance['taxon__common_name_varbatim']
+        instance['scientific_name'] = instance['taxon__scientific_name']
+        del instance['taxon__common_name_varbatim']
+        del instance['taxon__scientific_name']
+        return instance
+
+class NationalLevelPropertyReport(serializers.Serializer):
+
+    def to_representation(self, instance):
+        data = {
+            "common_name": (
+                instance.common_name_varbatim if
+                instance.common_name_varbatim else '-'
+            ),
+            "scientific_name": instance.scientific_name,
+        }
+
+        property_data = OwnedSpecies.objects.values(
+            "property__property_type__name",
+        ).filter(**self.context['filters'], taxon=instance).annotate(
+            population=Sum("annualpopulation__total"),
+            area=Sum("property__property_size_ha"),
+        )
+
+        for property_entry in property_data:
+            property_name = property_entry["property__property_type__name"]
+            data[
+                f"total_population_{property_name}_property"
+            ] = property_entry["population"]
+            data[
+                f"total_area_{property_name}_property"
+            ] = property_entry["area"]
+
+        return data
+
+
+class NationalLevelActivityReport(serializers.Serializer):
+
+    def to_representation(self, instance):
+        data = {
+            "common_name": instance.common_name_varbatim,
+            "scientific_name": instance.scientific_name,
+        }
+
+        activity_data = OwnedSpecies.objects.values(
+            "annualpopulationperactivity__activity_type__name",
+        ).filter(**self.context['filters'], taxon=instance).annotate(
+            population=Sum("annualpopulationperactivity__total"),
+        )
+
+        for activity_entry in activity_data:
+            activity_name = activity_entry[
+                "annualpopulationperactivity__activity_type__name"
+            ]
+            data[
+                f"total_population_{activity_name}"
+            ] = activity_entry["population"]
+
+        return data
+
+
+class NationalLevelProvinceReport(serializers.Serializer):
+
+    def to_representation(self, instance):
+        data = {
+            "common_name": instance.common_name_varbatim,
+            "scientific_name": instance.scientific_name,
+        }
+
+        province_data = OwnedSpecies.objects.values(
+            "property__province__name",
+        ).filter(**self.context['filters'], taxon=instance).annotate(
+            population=Sum("annualpopulation__total"),
+        )
+
+        for province_entry in province_data:
+            province_name = province_entry["property__province__name"]
+            data[
+                f"total_population_{province_name}"
+            ] = province_entry["population"]
+
+        return data

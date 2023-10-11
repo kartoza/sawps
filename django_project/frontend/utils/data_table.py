@@ -1,7 +1,7 @@
 import urllib.parse
 from typing import Dict, List
 
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 
@@ -9,7 +9,11 @@ from frontend.serializers.report import (
     SpeciesReportSerializer,
     SamplingReportSerializer,
     PropertyReportSerializer,
-    ActivityReportSerializer
+    ActivityReportSerializer,
+    NationalLevelSpeciesReport,
+    NationalLevelPropertyReport,
+    NationalLevelActivityReport,
+    NationalLevelProvinceReport
 )
 from frontend.utils.organisation import get_current_organisation_id
 from population_data.models import (
@@ -336,12 +340,15 @@ def national_level_species_report(
 
     """
     filters = common_filters(request, role)
-    report_data = []
 
-    for species in queryset:
-        report_data.extend(OwnedSpecies.objects.values("taxon").filter(
-                **filters, taxon=species).annotate(
-            propert_area=Sum("property__property_size_ha"),
+    report_data = OwnedSpecies.objects.\
+        filter(**filters, taxon__in=queryset).\
+        values(
+            'taxon__common_name_varbatim',
+            'taxon__scientific_name'
+        ).\
+        annotate(
+            property_area=Sum("property__property_size_ha"),
             total_area_available=Sum("area_available_to_species"),
             adult_male_total_population=Sum(
                 "annualpopulation__adult_male"
@@ -361,19 +368,8 @@ def national_level_species_report(
             juvenile_female_total_population=Sum(
                 "annualpopulation__juvenile_female"
             ),
-        ).values(
-            "taxon__common_name_varbatim",
-            "taxon__scientific_name",
-            "propert_area",
-            "total_area_available",
-            "adult_male_total_population",
-            "adult_female_total_population",
-            "sub_adult_male_total_population",
-            "sub_adult_female_total_population",
-            "juvenile_male_total_population",
-            "juvenile_female_total_population",
-        ))
-    return report_data
+        )
+    return NationalLevelSpeciesReport(report_data, many=True).data
 
 
 def national_level_property_report(
@@ -390,36 +386,15 @@ def national_level_property_report(
 
     """
     filters = common_filters(request, role)
-    report_data = []
-
-    for species in queryset:
-        data = {
-            "common_name": (
-                species.common_name_varbatim if
-                species.common_name_varbatim else '-'
-            ),
-            "scientific_name": species.scientific_name,
+    serializer = NationalLevelPropertyReport(
+        queryset,
+        many=True,
+        context={
+            'filters': filters
         }
+    )
 
-        property_data = OwnedSpecies.objects.values(
-            "property__property_type__name",
-        ).filter(**filters, taxon=species).annotate(
-            population=Sum("annualpopulation__total"),
-            area=Sum("property__property_size_ha"),
-        )
-
-        for property_entry in property_data:
-            property_name = property_entry["property__property_type__name"]
-            data[
-                f"total_population_{property_name}_property"
-            ] = property_entry["population"]
-            data[
-                f"total_area_{property_name}_property"
-            ] = property_entry["area"]
-
-        report_data.append(data)
-
-    return report_data
+    return serializer.data
 
 
 def national_level_activity_report(
@@ -456,31 +431,14 @@ def national_level_activity_report(
         ).values_list("id", flat=True)
         filters["property__province__id__in"] = province_ids
 
-    report_data = []
-
-    for species in queryset:
-        data = {
-            "common_name": species.common_name_varbatim,
-            "scientific_name": species.scientific_name,
+    serializer = NationalLevelActivityReport(
+        queryset,
+        many=True,
+        context={
+            'filters': filters
         }
-
-        activity_data = OwnedSpecies.objects.values(
-            "annualpopulationperactivity__activity_type__name",
-        ).filter(**filters, taxon=species).annotate(
-            population=Sum("annualpopulationperactivity__total"),
-        )
-
-        for activity_entry in activity_data:
-            activity_name = activity_entry[
-                "annualpopulationperactivity__activity_type__name"
-            ]
-            data[
-                f"total_population_{activity_name}"
-            ] = activity_entry["population"]
-
-        report_data.append(data)
-
-    return report_data
+    )
+    return serializer.data
 
 
 def national_level_province_report(
@@ -497,26 +455,13 @@ def national_level_province_report(
 
     """
     filters = common_filters(request, role)
-    report_data = []
 
-    for species in queryset:
-        data = {
-            "common_name": species.common_name_varbatim,
-            "scientific_name": species.scientific_name,
+    serializer = NationalLevelProvinceReport(
+        queryset,
+        many=True,
+        context={
+            'filters': filters
         }
+    )
 
-        province_data = OwnedSpecies.objects.values(
-            "property__province__name",
-        ).filter(**filters, taxon=species).annotate(
-            population=Sum("annualpopulation__total"),
-        )
-
-        for province_entry in province_data:
-            province_name = province_entry["property__province__name"]
-            data[
-                f"total_population_{province_name}"
-            ] = province_entry["population"]
-
-        report_data.append(data)
-
-    return report_data
+    return serializer.data
