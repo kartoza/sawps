@@ -27,18 +27,19 @@ To ensure the security of your account, we recommend the following password guid
 - Use at least one number (0-9).
 - Include at least one special character (e.g., !, @, #, $, %, etc.).
 
-## Creating Your Account
+### Creating Your Account
 
 1. Fill out all the required fields in the registration form.
 2. Double-check your provided information to ensure accuracy, especially your email and password.
 3. Click the "Register" button to submit the form.
 
-## Account Confirmation
+### Account Confirmation
 
 After successfully registering, you may receive an email confirmation to verify your email address. Please follow the instructions in the email to complete the registration process.
 
-## Security and Privacy
+### Security and Privacy
 
 We take your security and privacy seriously. Your information is encrypted and stored securely, and we do not share your personal data with third parties without your consent.
 
+## Summary
 The Registration Page is your gateway to becoming a registered user, providing you with access to the platform's features and functionalities. If you encounter any issues during the registration process, please contact our support team for assistance.
