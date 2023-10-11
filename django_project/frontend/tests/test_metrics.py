@@ -63,6 +63,23 @@ class BaseTestCase(TestCase):
         session = self.client.session
         session.save()
 
+class SpeciesPopuationCountPerProvinceTestCase(BaseTestCase):
+    """
+    This is to test if the API is reachable
+    and returns a success response.
+    """
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("species_count_per_province")
+
+    def test_species_population_count_api_view(self) -> None:
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
     """
