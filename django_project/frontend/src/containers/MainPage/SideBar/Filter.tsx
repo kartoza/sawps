@@ -43,6 +43,7 @@ const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const SEARCH_PROPERTY_URL = '/api/property/search'
 const FETCH_ORGANISATION_LIST_URL = '/api/organisation/'
+const FETCH_ACTIVITY_LIST_URL = '/api/activity-type/'
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
 interface SearchPropertyResult {
@@ -74,6 +75,7 @@ function Filter(props: any) {
     const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
     const [organisationList, setOrganisationList] = useState([]);
+    const [activityList, setActivityList]= useState<string[]>([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
@@ -194,7 +196,6 @@ function Filter(props: any) {
         }
       };
 
-    const [activityList,setActivityList]= useState<string[]>(["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"])
     const [filterlList, setFilterList] = useState([
         {
             "id": 5,
@@ -283,10 +284,24 @@ function Filter(props: any) {
         })
     }
 
+    const fetchActivityList = () => {
+        setLoading(true)
+        axios.get(FETCH_ACTIVITY_LIST_URL).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setActivityList(response.data)
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
     useEffect(() => {
         fetchSpeciesList();
         fetchPropertyList();
         fetchOrganisationList();
+        fetchActivityList();
     }, [])
 
     const handleSelectedSpecies = (value: string) => {

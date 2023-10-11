@@ -5,6 +5,7 @@ from django.db.models import Sum
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 
+from activity.models import ActivityType
 from frontend.serializers.report import (
     SpeciesReportSerializer,
     SamplingReportSerializer,
@@ -115,11 +116,7 @@ def get_report_filter(request, report_type):
         if activity:
             activity_types = [activity]
         else:
-            activity_types = [
-                "Planned euthanasia", "Planned hunt/cull",
-                "Planned translocation", "Unplanned/natural deaths",
-                "Unplanned/illegal hunting"
-            ]
+            activity_types = ActivityType.get_all_activities()
         filters[activity_fields[report_type]] = activity_types
     return filters
 
@@ -203,13 +200,7 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
     activity_reports = {
         activity: [] for activity in activity_types
     }
-    valid_activity_types = {
-        'Unplanned/illegal hunting',
-        'Planned euthanasia',
-        'Planned hunt/cull',
-        'Planned translocation',
-        'Unplanned/natural deaths'
-    }
+    valid_activity_types = set(ActivityType.get_all_activities())
     valid_activities = set(activity_types).intersection(valid_activity_types)
     for activity_name in valid_activities:
         activity_data = AnnualPopulationPerActivity.objects.filter(
