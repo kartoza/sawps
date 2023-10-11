@@ -182,7 +182,9 @@ class ActivityReportSerializer(
         super().__init__(*args, **kwargs)
 
         try:
-            activity_fields = ActivityType.objects.get(name__iexact=activity_name).export_fields
+            activity_fields = ActivityType.objects.get(
+                name__iexact=activity_name
+            ).export_fields
         except ActivityType.DoesNotExist:
             activity_fields = []
 

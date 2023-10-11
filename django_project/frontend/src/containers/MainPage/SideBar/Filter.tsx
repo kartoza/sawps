@@ -289,7 +289,7 @@ function Filter(props: any) {
         axios.get(FETCH_ACTIVITY_LIST_URL).then((response) => {
             setLoading(false)
             if (response.data) {
-                setActivityList(response.data)
+                setActivityList(response.data.map((activity: any) => activity.name))
             }
         }).catch((error) => {
             setLoading(false)

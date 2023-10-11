@@ -8,11 +8,17 @@ from django.utils.html import format_html
 from activity.models import ActivityType
 from activity.forms import ActivityTypeForm
 
+
 class ActivityTypeAdmin(admin.ModelAdmin):
     """Admin page for Activity Type model
 
     """
-    list_display = ('name', 'recruitment', 'display_color', 'display_export_fields')
+    list_display = [
+        'name',
+        'recruitment',
+        'display_color',
+        'display_export_fields'
+    ]
     form = ActivityTypeForm
 
     def display_export_fields(self, obj):

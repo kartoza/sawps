@@ -15,8 +15,10 @@ class ActivityType(models.Model):
     export_fields = models.JSONField(
         default=list,
         help_text=(
-            'Fields that will be taken from Annual Population Per Activity table '
-            'when exporting Activity Report. Input as Array e.g. ["intake_permit", "translocation_destination"]'
+            'Fields that will be taken from Annual Population '
+            'Per Activity table when exporting Activity Report. '
+            'Input as Array e.g. '
+            '["intake_permit", "translocation_destination"]'
         )
     )
 
@@ -25,7 +27,9 @@ class ActivityType(models.Model):
 
     @classmethod
     def get_all_activities(cls):
-        return list(cls.objects.values_list('name', flat=True).order_by('name'))
+        return list(cls.objects.values_list(
+            'name', flat=True
+        ).order_by('name'))
 
     class Meta:
         verbose_name = 'Activity'

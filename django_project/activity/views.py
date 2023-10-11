@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from activity.models import ActivityType
 from rest_framework.response import Response
+from activity.models import ActivityType
+from activity.serializers import ActivityTypeSerializer
 
 
 class ActivityTypeAPIView(APIView):
@@ -9,8 +10,8 @@ class ActivityTypeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        queryset = ActivityType.get_all_activities()
+        queryset = ActivityType.objects.all().order_by('name')
         return Response(
             status=200,
-            data=queryset
+            data=ActivityTypeSerializer(queryset, many=True).data
         )
