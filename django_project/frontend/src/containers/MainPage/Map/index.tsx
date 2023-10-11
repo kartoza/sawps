@@ -44,6 +44,7 @@ import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
 import LoadingIndicatorControl from './LoadingIndicatorControl';
 import useThemeDetector from '../../../components/ThemeDetector';
+import {useGetUserInfoQuery} from "../../../services/api";
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_SOURCES = ['sanbi', 'properties', 'NGI Aerial Imagery']
@@ -103,6 +104,8 @@ export default function Map() {
   const mapNavControl = useRef(null)
   const isDarkTheme = useThemeDetector()
   const [highlightedParcel, setHighlightedParcel] = useState<FeatureIdentifier>(getEmptyFeature())
+
+  const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
   const onMapMouseEnter = () => {
     if (!map.current) return;
@@ -321,6 +324,7 @@ export default function Map() {
   /* Called when mapTheme is changed */
   useEffect(() => {
     if (mapTheme === MapTheme.None) return;
+    if (!isSuccess) return;
     if (map.current) {
       dispatch(setMapReady(false))
       map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}`)
@@ -351,18 +355,19 @@ export default function Map() {
       map.current.on('styledata', () => {
         dispatch(setMapReady(true))
 
-        var user_role = localStorage.getItem('user_role')
-        var enable_parcel_layers = true
-
-        if (user_role !== undefined)
-          if (user_role.toString().toLowerCase().includes('decision maker'))
-            enable_parcel_layers = false
-
-        if(enable_parcel_layers)
+        let enableParcelLayers = true;
+        if (userInfoData) {
+          for (let userRole of userInfoData.user_roles) {
+            if (userRole.toLowerCase().includes('decision maker')) {
+              enableParcelLayers = false
+            }
+          }
+        }
+        if(enableParcelLayers)
           addParcelInvisibleFillLayers(map.current)
       })
     }
-  }, [mapTheme]);
+  }, [mapTheme, isSuccess]);
 
   /* Callback when map is on click. */
   const mapOnClick = useCallback((e: any) => {
@@ -425,11 +430,12 @@ export default function Map() {
   /* OnClick event */
   useEffect(() => {
     if (!map.current) return;
+    if (!isSuccess) return;
     map.current.on('click', mapOnClick)
     return () => {
       map.current.off('click', mapOnClick)
     }
-  }, [contextLayers, selectionMode, uploadMode, selectedProperty])
+  }, [contextLayers, selectionMode, uploadMode, selectedProperty, isSuccess])
 
   /* render selected+unselected parcel */
   useEffect(() => {
