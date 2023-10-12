@@ -14,6 +14,7 @@ import {
     InputBase,
 } from '@mui/material';
 import List from '@mui/material/List';
+import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -576,7 +577,13 @@ function Filter(props: any) {
     }, [isSuccess, userInfoData]);
 
     return (
-        <Box>
+        <Box sx={{position: 'relative'}}>
+            {isLoading ?
+                <div
+                    className='sidepanel-loading-container'
+                >
+                    <CircularProgress color="inherit" />
+                </div> : null }
             <Box className='sidebarBox'>
                 {!containsCharts && (
                 <Box style={{marginTop: '5%', marginBottom: '10%'}} >
@@ -669,7 +676,7 @@ function Filter(props: any) {
                         <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
                     </Box>
                     <List className='ListItem' component="nav" aria-label="">
-                        {loading ? <Loading /> :
+                        {loading || isLoading ? <Loading /> :
                             <Accordion>
                                 <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                                     {selectedOrganisation.length > 0 ? (
