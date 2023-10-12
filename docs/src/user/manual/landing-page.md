@@ -1,4 +1,4 @@
-# Landing Page Documentation
+# Landing Page Documentation Before Login
 
 ## Description
 
@@ -52,6 +52,60 @@ In the footer of the `Landing Page`, you'll find four buttons for easy navigatio
 6. **DOCUMENTATION**: Click `DOCUMENTATION` you'll redirect to the landing page.
 
 7. **CONTACT**: If you have any questions, require assistance, or wish to provide feedback, clicking `CONTACT` will allow you to get in touch with our support team.
+
+# Landing Page Documentation After Login
+
+### Landing Page
+![Landing Page After Login](./img/landing-page-3.png)
+
+## Navigation Bar
+
+The navigation bar at the top of the `Landing Page` offers convenient access to key sections and actions within our platform. It includes the following elements:
+
+1. **About:** Click the `ABOUT` link to learn more about our platform, its mission, and the team behind it.
+
+2. **Explore:** The `EXPLORE` link takes you to the explore page, where you can delve into your datasets and perform in-depth analysis.
+
+3. **Upload Data:** Use the `UPLOAD DATA` link to add new datasets to your account, expanding your data resources.
+
+4. **Help:** Click on `HELP` for assistance and guidance on using our platform effectively.
+
+5. **Contact:** If you have questions or need support, select the `CONTACT` option to reach out to our dedicated support team.
+
+6. **My Profile:** Access your user profile by clicking on `MY PROFILE.` Here, you can customize your settings and view your user information, including your profile image.
+
+7. **Logout:** The `LOGOUT` button allows you to securely log out of your account when you're done using our platform.
+
+## Main Content
+
+In the central part of the `Landing Page`, you'll find three prominent buttons that guide you to key areas of our platform:
+
+8. **About:** The `ABOUT` button here serves as a quick link to the detailed information about our platform and its objectives.
+
+9. **Explore:** Clicking `EXPLORE` will take you directly to the explore page, where you can view, manipulate, and analyze your datasets with various tools and filters.
+
+10. **Upload Data:** Select `UPLOAD DATA` to initiate the process of adding new datasets to your account, making them accessible for further analysis.
+
+### National Population Trends
+![National Population Trends](./img/landing-page-2.png)
+
+1. **Image**: Image of the species.
+
+2. **Scientific Name**: Scientific name of the species.
+
+3. **Chart**: Chart showing the data of the species over the year.
+## Footer
+
+The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
+
+4. **Home:** The `HOME` link returns you to the main `Landing Page`, providing an easy way to start your journey within our platform.
+
+5. **Map:** By choosing `MAP,` you can access geographical data visualization and exploration features within our platform, also you can see the reports for the data.
+
+6. **Documentation:** Click `DOCUMENTATION` to access comprehensive documentation, like this page, which provides detailed information on various aspects of our platform.
+
+7. **Contact:** If you need to get in touch with us for any reason, the `CONTACT` link provides access to our support and communication channels.
+
 ## Summary
 
 Our enhanced `Landing Page` is your starting point for data exploration and interaction. With easy access to national population trends, a user-friendly interface, and convenient navigation options, you can seamlessly embark on your data journey and explore demographic insights while enjoying comprehensive support.
