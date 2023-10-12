@@ -16,6 +16,7 @@ from frontend.serializers.report import (
     NationalLevelActivityReport,
     NationalLevelProvinceReport
 )
+from frontend.static_mapping import REGIONAL_DATA_CONSUMER
 from frontend.utils.organisation import get_current_organisation_id
 from population_data.models import (
     AnnualPopulation,
@@ -221,7 +222,7 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
 
 
 def national_level_user_table(
-        queryset: QuerySet, request: HttpRequest, role: str
+        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
 ) -> List[Dict]:
     """
     Generate national-level reports for a user based on their role.
@@ -229,7 +230,7 @@ def national_level_user_table(
     Params:
         queryset : The initial queryset for data retrieval.
         request : The HTTP request object containing query parameters.
-        role : The role of the user.
+        user_roles : The roles of the user.
     """
     reports_list = request.GET.get("reports")
     reports = []
@@ -241,7 +242,7 @@ def national_level_user_table(
             SPECIES_REPORT: national_level_species_report,
         }
 
-        if role != "Regional data consumer":
+        if REGIONAL_DATA_CONSUMER not in user_roles:
             report_functions[
                 PROVINCE_REPORT
             ] = national_level_province_report
@@ -250,26 +251,26 @@ def national_level_user_table(
             if report_name in report_functions:
                 report_data = report_functions[
                     report_name
-                ](queryset, request, role)
+                ](queryset, request, user_roles)
                 if report_data:
                     reports.append({report_name: report_data})
 
     else:
-        data = national_level_property_report(queryset, request, role)
+        data = national_level_property_report(queryset, request, user_roles)
         if data:
             reports.append({PROPERTY_REPORT: data})
 
     return reports
 
 
-def common_filters(request: HttpRequest, role: str) -> Dict:
+def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     """
     Generate common filters for data retrieval based on
     the user's role and request parameters.
 
     Params:
         request : The HTTP request object containing query parameters.
-        role : The role of the user.
+        user_roles : The roles of the user.
     """
     filters = {}
     properties = Property.objects.all()
@@ -311,10 +312,8 @@ def common_filters(request: HttpRequest, role: str) -> Dict:
             "annualpopulationperactivity__activity_type__name"
         ] = urllib.parse.unquote(activity)
 
-    if role == "Regional data consumer":
-        organisation_id = get_current_organisation_id(
-            request.user
-        )
+    if REGIONAL_DATA_CONSUMER in user_roles:
+        organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
         ).values_list("id", flat=True)
@@ -330,7 +329,7 @@ def common_filters(request: HttpRequest, role: str) -> Dict:
 
 
 def national_level_species_report(
-        queryset: QuerySet, request: HttpRequest, role: str
+        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
 ) -> List[Dict]:
     """
     Generate a national-level species report based on
@@ -339,10 +338,11 @@ def national_level_species_report(
     Args:
         queryset : The initial queryset containing species data.
         request : The HTTP request object containing query parameters.
-        role : The role of the user.
+        user_roles : The roles of the user.
 
     """
-    filters = common_filters(request, role)
+    filters = common_filters(request, user_roles)
+    report_data = []
 
     report_data = OwnedSpecies.objects.\
         filter(**filters, taxon__in=queryset).\
@@ -376,7 +376,7 @@ def national_level_species_report(
 
 
 def national_level_property_report(
-        queryset: QuerySet, request: HttpRequest, role: str
+        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
 ) -> List[Dict]:
     """
     Generate a national-level property report based on
@@ -385,10 +385,10 @@ def national_level_property_report(
     Args:
         queryset : The initial queryset containing species data.
         request : The HTTP request object containing query parameters.
-        role : The role of the user.
+        user_roles : The roles of the user.
 
     """
-    filters = common_filters(request, role)
+    filters = common_filters(request, user_roles)
     serializer = NationalLevelPropertyReport(
         queryset,
         many=True,
@@ -401,7 +401,7 @@ def national_level_property_report(
 
 
 def national_level_activity_report(
-        queryset: QuerySet, request: HttpRequest, role: str
+        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
 ) -> List[Dict]:
     """
     Generate a national-level activity report based on
@@ -410,7 +410,7 @@ def national_level_activity_report(
     Args:
         queryset : The initial queryset containing species data.
         request : The HTTP request object containing query parameters.
-        role : The role of the user.
+        user_roles : The roles of the user.
 
     """
     filters = {}
@@ -427,7 +427,7 @@ def national_level_activity_report(
         property_list = property_param.split(",")
         filters["property__id__in"] = property_list
 
-    if role == "Regional data consumer":
+    if REGIONAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
@@ -445,7 +445,7 @@ def national_level_activity_report(
 
 
 def national_level_province_report(
-        queryset: QuerySet, request: HttpRequest, role: str
+        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
 ) -> List[Dict]:
     """
     Generate a national-level species report based on
@@ -454,10 +454,11 @@ def national_level_province_report(
     Args:
         queryset : The initial queryset containing species data.
         request : The HTTP request object containing query parameters.
-        role : The role of the user.
+        user_roles : The roles of the user.
 
     """
-    filters = common_filters(request, role)
+    filters = common_filters(request, user_roles)
+    report_data = []
 
     serializer = NationalLevelProvinceReport(
         queryset,

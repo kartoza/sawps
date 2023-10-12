@@ -4,9 +4,13 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
+
+from frontend.static_mapping import NATIONAL_DATA_SCIENTIST, REGIONAL_DATA_SCIENTIST, REGIONAL_DATA_CONSUMER
 from population_data.models import AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
+
+from sawps.tests.models.account_factory import GroupF
 from species.factories import (
     OwnedSpeciesFactory,
     TaxonFactory,
@@ -22,6 +26,7 @@ from frontend.tests.model_factories import (
     SpatialDataModelF,
     SpatialDataModelValueF
 )
+from stakeholder.models import OrganisationInvites, MANAGER
 
 
 class OwnedSpeciesTestCase(TestCase):
@@ -47,11 +52,9 @@ class OwnedSpeciesTestCase(TestCase):
             user=user,
             organisation=self.organisation_1
         )
-        self.role_organisation_manager = userRoleTypeFactory.create(
-            name='Organisation manager',
-        )
+        group = GroupF.create(name=NATIONAL_DATA_SCIENTIST)
+        user.groups.add(group)
         user.user_profile.current_organisation = self.organisation_1
-        user.user_profile.user_role_type_id = self.role_organisation_manager
         user.save()
 
         self.property = PropertyFactory.create(
@@ -214,20 +217,15 @@ class NationalUserTestCase(TestCase):
             scientific_name='SpeciesA'
         )
         user = User.objects.create_user(
-                username='testuserd',
-                password='testpasswordd'
-            )
+            username='testuserd',
+            password='testpasswordd'
+        )
         self.organisation_1 = organisationFactory.create()
         # add user 1 to organisation 1 and 3
-        organisationUserFactory.create(
-            user=user,
-            organisation=self.organisation_1
-        )
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="National data consumer",
         )
         user.user_profile.current_organisation = self.organisation_1
-        user.user_profile.user_role_type_id = self.role_organisation_manager
         user.save()
 
         self.property = PropertyFactory.create(
@@ -312,8 +310,16 @@ class RegionalUserTestCase(TestCase):
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="Regional data consumer",
         )
+
+        group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
+        user.groups.add(group)
+
+        OrganisationInvites.objects.create(
+            email=user.email,
+            assigned_as=MANAGER
+        )
+
         user.user_profile.current_organisation = self.organisation_1
-        user.user_profile.user_role_type_id = self.role_organisation_manager
         user.save()
 
         self.property = PropertyFactory.create(
@@ -345,7 +351,6 @@ class RegionalUserTestCase(TestCase):
         self.assertEqual(len(response.data), 3)
 
 
-
 class DataScientistTestCase(TestCase):
     def setUp(self) -> None:
         """Setup test case"""
@@ -370,6 +375,12 @@ class DataScientistTestCase(TestCase):
             user=user,
             organisation=self.organisation_1
         )
+
+        group = GroupF.create(name=REGIONAL_DATA_SCIENTIST)
+        user.groups.add(group)
+        user.user_profile.current_organisation = self.organisation_1
+        user.save()
+
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="Regional data scientist",
         )
@@ -393,7 +404,6 @@ class DataScientistTestCase(TestCase):
         self.client = Client()
         session = self.client.session
         session.save()
-
 
     def test_regional_data_scientist(self) -> None:
         """Test data table filter by regional data scientist"""

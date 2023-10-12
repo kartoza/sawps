@@ -1,5 +1,7 @@
 """API Views related to data table.
 """
+from typing import List
+
 from django.db.models.query import QuerySet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -13,11 +15,9 @@ from frontend.utils.data_table import (
     national_level_user_table
 )
 from frontend.utils.organisation import get_current_organisation_id
+from frontend.utils.user_roles import get_user_roles
 from property.models import Property
 from species.models import Taxon
-from stakeholder.models import (
-    UserProfile
-)
 
 
 class DataTableAPIView(APIView):
@@ -26,15 +26,15 @@ class DataTableAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self, user_role) -> QuerySet:
+    def get_queryset(self, user_roles: List[str]) -> QuerySet:
         """
         Get the filtered queryset based on user filters.
         """
         organisation_id = get_current_organisation_id(self.request.user)
-        if user_role in (DATA_CONTRIBUTORS + DATA_SCIENTISTS):
+        if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             query_filter = DataContributorsFilter
             organisation = self.request.GET.get("organisation")
-            if organisation and user_role in DATA_SCIENTISTS:
+            if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
                 ids = organisation.split(",")
                 queryset = Property.objects.filter(
                     organisation_id__in=ids,
@@ -81,14 +81,13 @@ class DataTableAPIView(APIView):
         Handle GET request to retrieve data table reports.
         Params: request (Request) The HTTP request object.
         """
-        id = self.request.user.id
-        user_role = UserProfile.objects.get(
-            user__id=id
-        ).user_role_type_id.name
-        queryset = self.get_queryset(user_role)
-        if user_role in (DATA_CONTRIBUTORS + DATA_SCIENTISTS):
+        user_roles = get_user_roles(self.request.user)
+        queryset = self.get_queryset(user_roles)
+
+        if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             return Response(data_table_reports(queryset, request))
         else:
             return Response(
-                national_level_user_table(queryset, request, user_role)
+                national_level_user_table(
+                    queryset, request, user_roles)
             )
