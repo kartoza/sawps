@@ -58,3 +58,23 @@ This is an example of correct **Export fields** value:
 `["translocation_destination", "founder_population"]`
 
 Any update on this table will be reflected on the [Activity Report](../../user/manual/explore/reports.md).
+
+## Group Table
+
+_![Group Table](./img/admin-6.png)_
+
+This table is used to store existing user groups, that will affect available options in the [Report](../../user/manual/explore/reports.md).
+You can assign a user to groups in the User Table.
+
+## User Table
+
+_![User Table](./img/admin-7.png)_
+
+This table is used to store existing users. Some of the fields are:
+1. **Active**: A flag to indicate active user. When a user is no longer active, unselect this instead of deleting the user.
+2. **Staff status**: A flag to indicate whether user can log into Django admin page.
+3. **Superuser status**: A flag to indicate whether user has all permissions without explicitly assigning them in **5**.
+4. **Groups**: Group that a user belong to. Double click on the available groups (left panel) to add into chosen group
+   (right panel). To remove user from a group, double click on chosen group (right panel). Group will affect user menu 
+on the frontend page, such as in [Report](../../user/manual/explore/reports.md).
+5. **User permissions**: Specific permission for users, if they are not superuser.
