@@ -8,7 +8,7 @@ from frontend.static_mapping import (
     ORGANISATION_MANAGER
 )
 from stakeholder.models import (
-    OrganisationUser, OrganisationInvites, MANAGER, UserProfile
+    OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
 )
 
 
@@ -33,26 +33,33 @@ def is_organisation_member(user: User) -> bool:
     ).exists()
 
 
-def is_organisation_manager(user: User) -> bool:
+def is_organisation_manager(
+        user: User, organisation: Organisation = None) -> bool:
     """
-    Determine if a user is a manager of the currently active organisation.
+    Determines whether a user is a manager of the currently active organisation
+    or of the organisation specified as a parameter, if provided.
 
-    :param user: The user object
-    :return: True if the user is a manager, otherwise False
+    :param user: The user object to check.
+    :param organisation: Optional organisation object to check against.
+    :return: True if the user is a manager of the organisation,
+        otherwise False.
     """
     if not UserProfile.objects.filter(
             user=user
     ).exists():
         return False
 
-    if not user.user_profile.current_organisation:
+    if not user.user_profile.current_organisation and not organisation:
         return False
 
     # TODO: Add the user object to organisation invites,
     #  because users can change their email.
     return OrganisationInvites.objects.filter(
         email=user.email,
-        organisation=user.user_profile.current_organisation,
+        organisation=(
+            organisation if organisation else
+            user.user_profile.current_organisation
+        ),
         assigned_as=MANAGER
     ).exists()
 

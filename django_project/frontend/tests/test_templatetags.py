@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from stakeholder.factories import (
     organisationFactory
 )
-from stakeholder.models import OrganisationInvites
+from stakeholder.models import OrganisationInvites, MANAGER
 from frontend.templatetags.custom_tags import is_organisation_manager
 
 
@@ -63,7 +63,10 @@ class IsOrganisationManagerTest(TestCase):
         # Adding user to organisation invites
         OrganisationInvites.objects.create(
             email=self.user.email,
-            organisation=self.organisation
+            organisation=self.organisation,
+            assigned_as=MANAGER
         )
 
-        self.assertTrue(is_organisation_manager(self.user.id, self.organisation.id))
+        self.assertTrue(
+            is_organisation_manager(
+                self.user.id, self.organisation.id))

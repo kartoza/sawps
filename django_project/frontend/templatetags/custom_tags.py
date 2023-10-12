@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from frontend.utils.user_roles import (
     is_organisation_manager as is_organisation_manager_util
 )
+from stakeholder.models import Organisation
 
 register = template.Library()
 
@@ -32,4 +33,14 @@ def is_organisation_manager(user_id: int, organisation_id: int) -> bool:
     if user.is_superuser:
         return True
 
-    return is_organisation_manager_util(user)
+    try:
+        organisation = Organisation.objects.get(
+            id=organisation_id
+        )
+    except Organisation.DoesNotExist:
+        return False
+
+    return is_organisation_manager_util(
+        user,
+        organisation
+    )

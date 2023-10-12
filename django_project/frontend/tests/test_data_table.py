@@ -26,6 +26,7 @@ from frontend.tests.model_factories import (
     SpatialDataModelF,
     SpatialDataModelValueF
 )
+from stakeholder.models import OrganisationInvites, MANAGER
 
 
 class OwnedSpeciesTestCase(TestCase):
@@ -220,15 +221,10 @@ class NationalUserTestCase(TestCase):
         )
         self.organisation_1 = organisationFactory.create()
         # add user 1 to organisation 1 and 3
-        organisationUserFactory.create(
-            user=user,
-            organisation=self.organisation_1
-        )
         self.role_organisation_manager = userRoleTypeFactory.create(
             name="National data consumer",
         )
         user.user_profile.current_organisation = self.organisation_1
-        user.user_profile.user_role_type_id = self.role_organisation_manager
         user.save()
 
         self.property = PropertyFactory.create(
@@ -317,8 +313,12 @@ class RegionalUserTestCase(TestCase):
         group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
         user.groups.add(group)
 
+        OrganisationInvites.objects.create(
+            email=user.email,
+            assigned_as=MANAGER
+        )
+
         user.user_profile.current_organisation = self.organisation_1
-        user.user_profile.user_role_type_id = self.role_organisation_manager
         user.save()
 
         self.property = PropertyFactory.create(
