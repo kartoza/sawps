@@ -13,8 +13,18 @@ type ProvinceData = {
   percentage: string;
 };
 
-
-const availableColors = ['rgba(112, 178, 118, 1)', 'rgba(250, 167, 85, 1)', 'rgba(157, 133, 190, 1)', '#FF5252', '#616161'];
+const availableColors = [
+  'rgba(112, 178, 118, 1)', 
+  'rgba(250, 167, 85, 1)', 
+  'rgba(157, 133, 190, 1)', 
+  '#FF5252', 
+  '#616161',
+  'rgba(112, 178, 118, 0.5)',
+  'rgba(250, 167, 85, 0.5)',
+  'rgba(157, 133, 190, 0.5)',
+  'rgba(255, 82, 82, 0.5)',
+  'rgba(97, 97, 97, 0.5)'
+];
 
 
 type SpeciesData = {
