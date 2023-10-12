@@ -1,5 +1,6 @@
 import base64
 import json
+import mock
 
 from core.settings.utils import absolute_path
 from django.contrib.auth.models import User
@@ -66,13 +67,14 @@ class TestPropertyAPIViews(TestCase):
                 cname='C1235DEF'
             )
 
-    def test_create_new_property(self):
+    @mock.patch('frontend.api_views.property.find_province')
+    def test_create_new_property(self, mocked_find_province):
+        mocked_find_province.return_value = self.province
         property_type = PropertyType.objects.all().first()
         data = {
             'name': 'Property A',
             'owner_email': 'test@test.com',
             'property_type_id': property_type.id,
-            'province_id': self.province.id,
             'organisation_id': self.organisation.id,
             'parcels': [
                 {
@@ -119,7 +121,7 @@ class TestPropertyAPIViews(TestCase):
         property = Property.objects.get(id=response.data['id'])
         self.assertEqual(property.name, data['name'])
         self.assertEqual(property.property_type.id, data['property_type_id'])
-        self.assertEqual(property.province.id, data['province_id'])
+        self.assertEqual(property.province.id, self.province.id)
         self.assertEqual(property.organisation.id, data['organisation_id'])
         self.assertEqual(
             Parcel.objects.filter(property=property).count(),
@@ -267,7 +269,9 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.data[0]['name'], "PropertyA")
         self.assertEqual(response.data[1]['name'], "PropertyB")
 
-    def test_update_property(self):
+    @mock.patch('frontend.api_views.property.find_province')
+    def test_update_property(self, mocked_find_province):
+        mocked_find_province.return_value = self.province
         property_type = PropertyType.objects.all().first()
         property = PropertyFactory.create(
             geometry=self.holding_1.geom,
@@ -279,7 +283,6 @@ class TestPropertyAPIViews(TestCase):
             'name': 'Property D-1',
             'owner_email': 'test@test.com',
             'property_type_id': property_type.id,
-            'province_id': self.province.id,
             'organisation_id': self.organisation.id,
             'parcels': []
         }
