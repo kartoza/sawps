@@ -39,6 +39,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SpatialFilter from "./SpatialFilter";
 import {useGetUserInfoQuery} from "../../../services/api";
 import {isMapDisplayed} from "../../../utils/Helpers";
+import Button from "@mui/material/Button";
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
@@ -253,14 +254,11 @@ function Filter(props: any) {
     }
 
     const fetchPropertyList = () => {
-        setLoading(true)
         axios.get(FETCH_PROPERTY_LIST_URL).then((response) => {
-            setLoading(false)
             if (response.data) {
                 setPropertyList(response.data as PropertyInterface[])
             }
         }).catch((error) => {
-            setLoading(false)
             console.log(error)
         })
     }
@@ -488,6 +486,18 @@ function Filter(props: any) {
         [],
     )
 
+    const clearFilter = () => {
+        setSelectedProperty([])
+        setSelectedOrganisation([])
+        setSelectedSpecies('')
+        setSelectedActivity('')
+        setSelectedInfo('')
+        setLocalStartYear(yearRangeStart)
+        setLocalEndYear(yearRangeEnd)
+        dispatch(setStartYear(yearRangeStart));
+        dispatch(setEndYear(yearRangeEnd));
+    }
+
     useEffect(() => {
         let active = true;
         if (searchInputValue.length <= 1) {
@@ -587,7 +597,10 @@ function Filter(props: any) {
                 >
                     <CircularProgress color="inherit" />
                 </div> : null }
-            <Box className='sidebarBox'>
+            <Box className='sidebarBox' style={{ marginTop: 10 }}>
+                <Box className='clear-button-container'>
+                    <Button onClick={clearFilter}>Clear All</Button>
+                </Box>
                 {isMapDisplayed() && (
                 <Box style={{marginTop: '5%', marginBottom: '10%'}} >
                     <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px'}}>
@@ -726,6 +739,7 @@ function Filter(props: any) {
                             (
                                 <Autocomplete
                                     id="combo-box-demo"
+                                    value={selectedActivity}
                                     disableClearable={true}
                                     options={activityList}
                                     sx={{ width: '100%' }}
