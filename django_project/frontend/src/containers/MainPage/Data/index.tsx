@@ -83,6 +83,7 @@ const DataList = () => {
                 "Unplanned/illegal hunting": {color:"#696969",width:147}
             }
     }
+    const [customColorWidth, setCustomColorWidth] = useState<any>(defaultColorWidth)
 
     function checkUserRole(userInfo: UserInfo) {
         if (!userInfo?.user_roles) return false;
@@ -106,9 +107,7 @@ const DataList = () => {
     }
 
     useEffect(() => {
-        const storedUserRole = localStorage.getItem('user_role');
         fetchActivityList()
-        setUserRole(storedUserRole);
     }, []);
 
     const fetchDataList = () => {

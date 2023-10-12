@@ -458,7 +458,6 @@ def national_level_province_report(
 
     """
     filters = common_filters(request, user_roles)
-    report_data = []
 
     serializer = NationalLevelProvinceReport(
         queryset,
