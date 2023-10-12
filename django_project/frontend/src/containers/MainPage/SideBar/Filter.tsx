@@ -307,7 +307,6 @@ function Filter(props: any) {
 
 
     const zoomToCombinedBoundingBox = async (propertyIds: number[]) => {
-        setLoading(true);
 
         try {
           const propertyBoundingBoxes: number[][] = [];
@@ -356,7 +355,6 @@ function Filter(props: any) {
         // console.log('selected properties', updatedSelectedProperty);
 
         setSelectedProperty(updatedSelectedProperty);
-
         if (updatedSelectedProperty.length === 0) {
             adjustMapToBoundingBox(boundingBox)
         } else {
