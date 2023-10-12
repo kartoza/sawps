@@ -81,7 +81,6 @@ function Filter(props: any) {
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
     const [nominatimResults, setNominatimResults] = useState([]);
-    const [filteredProperties, setFilteredProperties] = useState([])
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
@@ -102,30 +101,19 @@ function Filter(props: any) {
         ].filter(item => item !== "")
     }
 
-    // Function to filter properties based on selected organizations
-    const filterPropertiesByOrganisations = () => {
-        // If no organizations are selected
-        if (selectedOrganisation.length === 0) {
-            setFilteredProperties([]);
-            adjustMapToBoundingBox(boundingBox)
-            setSelectedProperty([])
-            return;
-        }
-
-        // Filter properties that match selected organizations
-        const filtered = propertyList.filter((property) =>
-        selectedOrganisation.includes(property.organisation_id)
-        );
-
-        setFilteredProperties(filtered);
-    };
-
     // Select all organisations by default
     useEffect(() => {
         if (organisationList) {
             setSelectedOrganisation(organisationList.map(organisation => organisation.id))
         }
     }, [organisationList]);
+
+    // Select all properties by default
+    useEffect(() => {
+        if (propertyList) {
+            setSelectedProperty(propertyList.map(property => property.id))
+        }
+    }, [propertyList]);
 
     useEffect(() => {
         let fetchedProperties: any[] = [];
@@ -135,7 +123,7 @@ function Filter(props: any) {
         if(selectedOrganisation.length === 0){
             // reset
             if (selectedOrganisation.length === 0) {
-                setFilteredProperties([]);
+                setPropertyList([]);
                 adjustMapToBoundingBox(boundingBox)
                 setSelectedProperty([])
                 return;
@@ -158,7 +146,7 @@ function Filter(props: any) {
             const fetchedProperties = results.flat();
 
             // Set filteredProperties once all requests are done
-            setFilteredProperties(fetchedProperties);
+            setPropertyList(fetchedProperties);
             setLoading(false);
             })
             .catch((error) => {
@@ -248,7 +236,6 @@ function Filter(props: any) {
         if (selectedOrganisation) {
             url += '?organisation=' + selectedOrganisation.join(',')
         }
-        console.log(url)
         axios.get(url).then((response) => {
             if (response.data) {
                 let _species = response.data as SpeciesLayer[]
@@ -553,9 +540,9 @@ function Filter(props: any) {
                 property.organisation_id === currentOrganisation
             );
 
-            setFilteredProperties(filtered);
+            setPropertyList(filtered);
         } else {
-            setFilteredProperties([]);
+            setPropertyList([]);
         }
     };
 
