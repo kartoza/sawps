@@ -31,4 +31,4 @@ def save_extended_group(sender, instance, created, **kwargs):
     )
 
     if not created:
-        extended_group.save()
+        instance.extended.save()

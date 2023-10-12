@@ -43,6 +43,16 @@ class TestExtendedGroup(TestCase):
             ).exists()
         )
 
+        group.extended.description = 'test'
+        group.save()
+
+        self.assertEqual(
+            ExtendedGroup.objects.get(
+                group_id=group.id
+            ).description,
+            'test'
+        )
+
 
 class GroupAdminTestCase(TestCase):
 
