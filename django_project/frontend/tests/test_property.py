@@ -28,6 +28,7 @@ from frontend.tests.model_factories import UserF
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
 from property.factories import PropertyFactory, ProvinceFactory
 from property.models import Parcel, Property, PropertyType
+from population_data.models import OpenCloseSystem
 from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
@@ -38,6 +39,7 @@ from stakeholder.models import UserProfile
 
 class TestPropertyAPIViews(TestCase):
     fixtures = [
+        'open_close_systems.json',
         'property_type.json',
         'parcel_types.json'
     ]
@@ -71,11 +73,13 @@ class TestPropertyAPIViews(TestCase):
     def test_create_new_property(self, mocked_find_province):
         mocked_find_province.return_value = self.province
         property_type = PropertyType.objects.all().first()
+        open_close_system = OpenCloseSystem.objects.all().first()
         data = {
             'name': 'Property A',
             'owner_email': 'test@test.com',
             'property_type_id': property_type.id,
             'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
             'parcels': [
                 {
                     'id': self.erf_1.id,
@@ -123,6 +127,7 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(property.property_type.id, data['property_type_id'])
         self.assertEqual(property.province.id, self.province.id)
         self.assertEqual(property.organisation.id, data['organisation_id'])
+        self.assertEqual(property.open.id, data['open_id'])
         self.assertEqual(
             Parcel.objects.filter(property=property).count(),
             2
@@ -278,12 +283,14 @@ class TestPropertyAPIViews(TestCase):
             name='Property D',
             created_by=self.user_1
         )
+        open_close_system = OpenCloseSystem.objects.first()
         data = {
             'id': property.id,
             'name': 'Property D-1',
             'owner_email': 'test@test.com',
             'property_type_id': property_type.id,
             'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
             'parcels': []
         }
         request = self.factory.post(
@@ -296,6 +303,7 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.status_code, 204)
         updated = Property.objects.get(id=property.id)
         self.assertEqual(updated.name, data['name'])
+        self.assertEqual(updated.open_id, data['open_id'])
 
     def test_update_boundaries(self):
         property_type = PropertyType.objects.all().first()
