@@ -6,19 +6,16 @@ import TabPanel, { a11yProps } from '../../../components/TabPanel';
 import Layers from './Layers';
 import './index.scss';
 import Filter from './Filter';
+import {isMapDisplayed} from "../../../utils/Helpers";
 
 function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
     const [selectedTabSideBar, setSelectedTabSideBar] = useState(0);
     const [showLayerFilter, setLayerFilter] = useState(false);
 
     useEffect(() => {
-        // Extract the current URL
-        const currentUrl = window.location.href;
-
         // Check if the URL contains a pattern that indicates the presence of charts
         if (
-          currentUrl.endsWith('/map') ||
-          currentUrl.endsWith('/map/')
+          isMapDisplayed()
         ) {
             setLayerFilter(false);
         } else setLayerFilter(true)
@@ -37,8 +34,8 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
                 >
                     {!showLayerFilter && (
                         <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
-                     )} 
-                
+                     )}
+
                     <Tab key={1} label={'FILTERS'} {...a11yProps(1)} />
                 </Tabs>
             </Box>

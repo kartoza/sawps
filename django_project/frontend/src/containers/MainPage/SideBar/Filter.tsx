@@ -38,6 +38,7 @@ import { triggerMapEvent } from '../../../reducers/MapState';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SpatialFilter from "./SpatialFilter";
 import {useGetUserInfoQuery} from "../../../services/api";
+import {isMapDisplayed} from "../../../utils/Helpers";
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
@@ -585,16 +586,15 @@ function Filter(props: any) {
                     <CircularProgress color="inherit" />
                 </div> : null }
             <Box className='sidebarBox'>
-                {!containsCharts && (
+                {isMapDisplayed() && (
                 <Box style={{marginTop: '5%', marginBottom: '10%'}} >
-                    <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center' ,marginBottom: '5%'}}>
+                    <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px'}}>
                         <SearchIcon
                             style={{
                                 color: '#70B276',
-                                marginLeft: '15px',
                             }}
                         />
-                        <Typography color='#75B37A' fontSize='medium' style={{ marginLeft: '5px' }}>Search place</Typography>
+                        <Typography color='#75B37A' fontSize='medium'>Search place</Typography>
                     </Box>
                     <Autocomplete
                         disablePortal={false}
