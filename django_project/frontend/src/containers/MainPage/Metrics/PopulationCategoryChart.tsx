@@ -104,10 +104,18 @@ const PopulationCategoryChart = (props: any) => {
         });
     }
 
-  const data = {
-    labels: labels,
-    datasets: newDatasets
-  };
+    // Sort labels in ascending order
+    labels.sort((a: any, b: any) => parseInt(a) - parseInt(b));
+
+    // Sort datasets in descending order
+    newDatasets.sort((a, b) => parseInt(b.label) - parseInt(a.label));
+
+
+
+    const data = {
+        labels: labels,
+        datasets: newDatasets
+    };
 
   const options = {
     plugins: {
