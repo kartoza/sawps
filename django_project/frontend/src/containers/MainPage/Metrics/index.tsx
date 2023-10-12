@@ -37,7 +37,6 @@ const Metrics = () => {
     const [ageGroupData, setAgeGroupData] = useState([])
     const labels = Object.keys(activityType);
     const totalCountLabel = labels.filter(item => item !== "Base population");
-    const [userRole, setUserRole] = useState('');
     const [areaData, setAreaData] = useState([])
 
     const [densityData, setDensityData] = useState([])
@@ -47,7 +46,7 @@ const Metrics = () => {
 
     // Declare errorMessage as a state variable
     const [showChats, setShowCharts] = useState(false);
-    
+
     const fetchActivityPercentageData = () => {
         setLoading(true)
         axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
@@ -113,14 +112,8 @@ const Metrics = () => {
         }else {
             setShowCharts(false);
         }
-        
-    }, [propertyId, startYear, endYear, selectedSpecies])
 
-    useEffect(() => {
-        // Fetch the user role from local storage
-        const storedUserRole = localStorage.getItem('user_role');
-        setUserRole(storedUserRole.toLocaleLowerCase());
-    }, []);
+    }, [propertyId, startYear, endYear, selectedSpecies])
     const handleDownloadPdf = async () => {
         const content = contentRef.current;
         if (!content) return;
@@ -153,7 +146,7 @@ const Metrics = () => {
                                     loading={loading} 
                                     setLoading={setLoading} 
                                     populationData={populationData} 
-                                    setPopulationData={setPopulationData} 
+                                    setPopulationData={setPopulationData}
                                 />
                             </Grid>
 
@@ -178,18 +171,18 @@ const Metrics = () => {
                                     setLoading={setLoading} 
                                     densityData={densityData} 
                                     setDensityData={setDensityData} 
-                                /> 
+                                />
                             </Grid>
 
                             
                             <Grid item xs={12} md={6}>
-                                <PropertyAvailableBarChart 
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear} 
-                                    loading={loading} 
-                                    setLoading={setLoading} 
+                                <PropertyAvailableBarChart
+                                    selectedSpecies={selectedSpecies}
+                                    propertyId={propertyId}
+                                    startYear={startYear}
+                                    endYear={endYear}
+                                    loading={loading}
+                                    setLoading={setLoading}
                                 />
                             </Grid>
 
@@ -241,7 +234,7 @@ const Metrics = () => {
                     </Grid>
                 )}
 
-                
+
         </Box>
             {/* for decision makers only */}
             {/* {userRole === 'decision maker' && (

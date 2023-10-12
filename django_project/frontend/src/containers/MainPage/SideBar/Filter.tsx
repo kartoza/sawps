@@ -36,6 +36,7 @@ import { MapEvents } from '../../../models/Map';
 import { triggerMapEvent } from '../../../reducers/MapState';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SpatialFilter from "./SpatialFilter";
+import {useGetUserInfoQuery} from "../../../services/api";
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
@@ -69,7 +70,6 @@ function Filter(props: any) {
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string>('');
-    const [userRole, setUserRole] = useState<string>('');
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
@@ -81,6 +81,23 @@ function Filter(props: any) {
     const [filteredProperties, setFilteredProperties] = useState([])
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
+    const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
+
+    let informationList: string[] = []
+
+    const roleExists = (role: string) => {
+        if (!userInfoData || !userInfoData.user_roles) return false;
+        return userInfoData.user_roles.includes(role);
+    }
+
+    if (userInfoData) {
+        informationList = [
+            "Activity report",
+            "Property report",
+            roleExists("National data consumer") ? "Province report" :  roleExists("Regional data consumer") ? "" : "Sampling report",
+            "Species report",
+        ].filter(item => item !== "")
+    }
 
     // Function to filter properties based on selected organizations
     const filterPropertiesByOrganisations = () => {
@@ -97,7 +114,6 @@ function Filter(props: any) {
         selectedOrganisation.includes(property.organisation_id)
         );
 
-        console.log('filterd ',filtered)
         setFilteredProperties(filtered);
     };
 
@@ -194,38 +210,12 @@ function Filter(props: any) {
         }
       };
 
-    const [activityList,setActivityList]= useState<string[]>(["Planned euthanasia", "Planned hunt/cull", "Planned translocation", "Unplanned/illegal hunting", "Unplanned/natural deaths"])
-    const [filterlList, setFilterList] = useState([
-        {
-            "id": 5,
-            "name": "Biome type",
-            "isSelected": false
-        },
-        {
-            "id": 4,
-            "name": "Critical biodiversity areas",
-            "isSelected": false,
-            "filterData": ['Critical biodiversity area ', 'Critical biodiversity area 1', 'Critical biodiversity area 2', 'Ecological support area', 'Ecological support area 1']
-        },
-        {
-            "id": 2,
-            "name": "Protected Area",
-            "isSelected": false,
-            "filterData": ['Heritage sight', 'National Park', 'Nature Reserve']
-        }
-    ])
-
-    const informationList = [
-        "Activity report",
-        "Property report",
-        userRole === "National data consumer" ? "Province report" : userRole === "Regional data consumer" ? "" : "Sampling report",
-        "Species report",
-    ].filter(item => item !== "")
-
-    useEffect(() => {
-        const storedUserRole = localStorage.getItem('user_role');
-        setUserRole(storedUserRole);
-    }, []);
+    const [activityList,setActivityList]= useState<string[]>([
+        "Planned euthanasia",
+        "Planned hunt/cull",
+        "Planned translocation",
+        "Unplanned/illegal hunting",
+        "Unplanned/natural deaths"])
 
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
@@ -283,12 +273,6 @@ function Filter(props: any) {
         })
     }
 
-    useEffect(() => {
-        fetchSpeciesList();
-        fetchPropertyList();
-        fetchOrganisationList();
-    }, [])
-
     const handleSelectedSpecies = (value: string) => {
         setSelectedSpecies(value);
     };
@@ -323,7 +307,6 @@ function Filter(props: any) {
 
 
     const zoomToCombinedBoundingBox = async (propertyIds: number[]) => {
-        setLoading(true);
 
         try {
           const propertyBoundingBoxes: number[][] = [];
@@ -372,7 +355,6 @@ function Filter(props: any) {
         // console.log('selected properties', updatedSelectedProperty);
 
         setSelectedProperty(updatedSelectedProperty);
-
         if (updatedSelectedProperty.length === 0) {
             adjustMapToBoundingBox(boundingBox)
         } else {
@@ -527,36 +509,6 @@ function Filter(props: any) {
         setSearchSpeciesList(sList)
     }, [SpeciesFilterList])
 
-    useEffect(() => {
-        const storedUserRole = localStorage.getItem('user_role');
-        setUserRole(storedUserRole);
-
-        if(
-            storedUserRole && (
-            storedUserRole.toLocaleLowerCase() === "national data scientist" ||
-            storedUserRole.toLocaleLowerCase() === "regional data scientist" ||
-            storedUserRole.toLocaleLowerCase() === "super user" ||
-            storedUserRole.toLocaleLowerCase() === "site administrator" ||
-            storedUserRole.toLocaleLowerCase() === "admin")
-        ){
-            setOrganisationSelection(true)
-            setPropertiesSelection(true)
-        }
-
-
-        if (
-          storedUserRole && (
-          storedUserRole.toLowerCase() === 'organisation member' ||
-          storedUserRole.toLowerCase() === 'organisation manager')
-        ) {
-          const currentOrganisation = parseInt(localStorage.getItem('current_organisation'));
-
-          filterPropertiesByOrganisation(currentOrganisation);
-          setPropertiesSelection(true)
-          setOrganisationSelection(false)
-        }
-      }, []);
-
     // Function to filter properties based on the current organization
     const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
         if (currentOrganisation) {
@@ -569,6 +521,38 @@ function Filter(props: any) {
             setFilteredProperties([]);
         }
     };
+
+    useEffect(() => {
+        if (!isSuccess) return;
+
+        const userRoles = userInfoData.user_roles
+        if (userRoles.length === 0) return;
+
+        const currentOrganisationId = userInfoData.current_organisation_id;
+
+        // TODO : Update to use permissions
+        const allowedRoles = new Set(["National data scientist", "Regional data scientist", "Super user"]);
+
+        if(
+            userRoles.some(userRole => allowedRoles.has(userRole))
+        ){
+            setOrganisationSelection(true)
+            setPropertiesSelection(true)
+        }
+
+        const organisationRoles = new Set(['Organisation member', 'Organisation manager'])
+        if (
+            userRoles.some(userRole => organisationRoles.has(userRole))
+        ) {
+          filterPropertiesByOrganisation(currentOrganisationId);
+          setPropertiesSelection(true)
+          setOrganisationSelection(false)
+        }
+
+        fetchSpeciesList();
+        fetchPropertyList();
+        fetchOrganisationList();
+    }, [isSuccess, userInfoData]);
 
     return (
         <Box>

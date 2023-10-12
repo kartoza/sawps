@@ -33,7 +33,6 @@ import ConfidenceRating from './ConfidenceRating';
 interface SpeciesDetailInterface {
     initialData: UploadSpeciesDetailInterface;
     taxonMetadataList: TaxonMetadata[];
-    openCloseMetadataList: CommonUploadMetadata[];
     surveyMethodMetadataList: CommonUploadMetadata[];
     sampling_effort_coverages: CommonUploadMetadata[];
     population_statuses: CommonUploadMetadata[];
@@ -56,7 +55,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         setIsConfidenceRatingOpen(true);
     };
     const { 
-        initialData, taxonMetadataList, openCloseMetadataList,
+        initialData, taxonMetadataList,
         surveyMethodMetadataList, sampling_effort_coverages,
         population_statuses, population_estimate_categories,
         setIsDirty, handleNext, handleSaveDraft
@@ -200,15 +199,15 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         if (data.year === 0) {
             _error_validation = {..._error_validation, year: true}
         }
-        if (data.annual_population.open_close_id === 0) {
-            _error_validation = {
-                ..._error_validation,
-                annual_population: {
-                    ..._error_validation.annual_population,
-                    open_close_id: true
-                }
-            }
-        }
+        // if (data.annual_population.open_close_id === 0) {
+        //     _error_validation = {
+        //         ..._error_validation,
+        //         annual_population: {
+        //             ..._error_validation.annual_population,
+        //             open_close_id: true
+        //         }
+        //     }
+        // }
         if (data.annual_population.survey_method_id === 0) {
             _error_validation = {
                 ..._error_validation,
@@ -324,29 +323,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         </FormControl>
                                     </Grid>
                                 </Grid>
-                            </Grid>
-                            <Grid item className='InputContainer'>
-                                <FormControl variant="standard" required className='DropdownInput' fullWidth error={validation.annual_population?.open_close_id}>
-                                    <InputLabel id="open-close-system-label">Open/Closed System</InputLabel>
-                                    <Select
-                                        labelId="open-close-system-label"
-                                        id="open-close-system-select"
-                                        value={data.annual_population.open_close_id ? data.annual_population.open_close_id.toString() : ""}
-                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('open_close_id', parseInt(event.target.value), openCloseMetadataList)}
-                                        displayEmpty
-                                        label="Open/Closed System"
-                                    >
-                                        { openCloseMetadataList.map((common: CommonUploadMetadata) => {
-                                            return (
-                                                <MenuItem key={common.id} value={common.id}>
-                                                    {common.name}
-                                                </MenuItem>
-                                            )
-                                        })                                            
-                                        }
-                                    </Select>
-                                    <FormHelperText>{validation.annual_population?.open_close_id ? REQUIRED_FIELD_ERROR_MESSAGE : ' '}</FormHelperText>
-                                </FormControl>
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container spacing={2}>
