@@ -23,34 +23,37 @@ The main area of the page displays your dataset in a tabular format. Each row re
      * **Activity Filter:** Filter data by activity type.
      * **Spatial Filter:** Filter data by spatial criteria.
 
-    * **Applying Filters:**
+     * **Applying Filters:**
          * Click on the respective filter dropdowns.
          * Set your filter criteria.
          * Click on the filter to update the data display based on your filter selections.
-    * Each filter is designed to help you narrow down your dataset to view only the data that's relevant to your analysis.
+     * Each filter is designed to help you narrow down your dataset to view only the data that's relevant to your analysis.
 
 4. **Column Search**: You can search for specific values within columns by selecting the column. This feature is especially useful when you need to locate specific data points within a large dataset. The table will dynamically filter to display selected column.
 5. **XLSX Format:** Click the "DOWNLOAD DATA REPORT" button to download the current dataset in XLSX format.
 6. **CSV Format:** Click the "DOWNLOAD DATA CSV" button to download the current dataset in CSV format.
 
-
 ### Report Type
+
 * **Activity Report:** Report on activity basis.
 * **Property Report:** Report on property basis.
 * **Species Report:** Report on species basis.
-* **Province Report:** Report on province basis. 
+* **Province Report:** Report on province basis.
 Only member of `National data consumer` group can see this report.
-* **Sampling Report:** Filter data by property. 
+* **Sampling Report:** Filter data by property.
 Member of `National data consumer` or `Regional data consumer` **CAN NOT** see this report.
 
 User group is configurable from the User Table in the [Django Admin](../../../administrator/manual/django-admin.md).
 
-### Activity Report
+#### Activity Report
+
 ![Activity Report](./img/reports-2.png)
 
 Activity Report columns consisted of base columns and custom columns.
+
 1. **Base columns**: Hardcoded.
-2. **Custom columns**: Configurable from the Django admin site by the site administrator. 
+2. **Custom columns**: Configurable from the Django admin site by the site administrator.
+
 See Activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
 
 ### Summary

@@ -93,6 +93,7 @@ nav:
                         - administrator/guide/index.md
                 - Manual:
                         - administrator/manual/index.md
+                        - Django Administration: administrator/manual/django-admin.md
         - Developer:
                   - developer/index.md
                   - Guide:
