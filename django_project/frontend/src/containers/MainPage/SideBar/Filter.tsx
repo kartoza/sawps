@@ -123,6 +123,8 @@ function Filter(props: any) {
     useEffect(() => {
         let fetchedProperties: any[] = [];
 
+        fetchSpeciesList()
+
         if(selectedOrganisation.length === 0){
             // reset
             if (selectedOrganisation.length === 0) {
@@ -235,18 +237,23 @@ function Filter(props: any) {
     };
 
     const fetchSpeciesList = () => {
-        setLoading(true)
-        axios.get(FETCH_AVAILABLE_SPECIES).then((response) => {
-            setLoading(false)
+        let url = FETCH_AVAILABLE_SPECIES;
+        if (selectedOrganisation) {
+            url += '?organisation=' + selectedOrganisation.join(',')
+        }
+        console.log(url)
+        axios.get(url).then((response) => {
             if (response.data) {
                 let _species = response.data as SpeciesLayer[]
                 _species = _species.map((species) => {
                     return species
                 })
                 dispatch(setSpeciesFilter(_species))
+                if (_species.length === 0) {
+                    setSelectedSpecies('');
+                }
             }
         }).catch((error) => {
-            setLoading(false)
             console.log(error)
         })
     }
@@ -553,6 +560,10 @@ function Filter(props: any) {
 
         const currentOrganisationId = userInfoData.current_organisation_id;
 
+        fetchSpeciesList();
+        fetchPropertyList();
+        fetchOrganisationList();
+
         // TODO : Update to use permissions
         const allowedRoles = new Set(["National data scientist", "Regional data scientist", "Super user"]);
 
@@ -561,6 +572,7 @@ function Filter(props: any) {
         ){
             setOrganisationSelection(true)
             setPropertiesSelection(true)
+            return;
         }
 
         const organisationRoles = new Set(['Organisation member', 'Organisation manager'])
@@ -571,10 +583,6 @@ function Filter(props: any) {
           setPropertiesSelection(true)
           setOrganisationSelection(false)
         }
-
-        fetchSpeciesList();
-        fetchPropertyList();
-        fetchOrganisationList();
     }, [isSuccess, userInfoData]);
 
     return (
@@ -669,58 +677,25 @@ function Filter(props: any) {
                     />
                 </Box>
                 )}
-                {
-                    allowOrganisationSelection && <Box>
-                    <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/organisation.svg" alt='Organisation image' />
-                        <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
-                    </Box>
-                    <List className='ListItem' component="nav" aria-label="">
-                        {loading || isLoading ? <Loading /> :
-                            <Accordion>
-                                <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                    {selectedOrganisation.length > 0 ? (
-                                        <Box >
-                                            {`${selectedOrganisation.length} ${selectedOrganisation.length > 1 ? 'Organisations' : 'Organisation'} Selected`}
-                                        </Box>
-                                    ) : (
-                                        <Typography>Select</Typography>
-                                    )}
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Box className="selectBox">
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        checked={selectedOrganisation.length === organisationList.length}
-                                                        onChange={handleSelectAllOrganisation}
-                                                    />
-                                                }
-                                                label="Select All"
-                                            />
-                                        </Box>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            {organisationList.map((data: any) => (
-                                                <FormControlLabel
-                                                    key={data.name}
-                                                    control={
-                                                        <Checkbox
-                                                            checked={selectedOrganisation.includes(data.id)}
-                                                            onChange={handleSelectedOrganisation(data.id)}
-                                                        />
-                                                    }
-                                                    label={data.name}
-                                                />
-                                            ))}
-                                        </Box>
-                                    </Box>
-                                </AccordionDetails>
-                            </Accordion>
-                        }
-                    </List>
+                <Box className='sidebarBoxHeading'>
+                    <img src="/static/images/species/Elephant.svg" alt='species image' />
+                    <Typography color='#75B37A' fontSize='medium'>Species</Typography>
                 </Box>
-                }
+                <List className='ListItem' component="nav" aria-label="">
+                    {loading ? <Loading /> :
+                        (
+                            <Autocomplete
+                                id="combo-box-demo"
+                                disableClearable={true}
+                                value={selectedSpecies}
+                                options={searchSpeciesList}
+                                sx={{ width: '100%' }}
+                                onChange={(event, value) => handleSelectedSpecies(value)}
+                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                            />
+                        )
+                    }
+                </List>
                 {tab === 'reports' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
@@ -743,6 +718,78 @@ function Filter(props: any) {
                                             <MenuItem value={info} key={index}>{info}</MenuItem>
                                         ))}
                                     </Select>)
+                            }
+                        </List>
+                    </Box>
+                }
+                <Box>
+                    <Box className='sidebarBoxHeading'>
+                        <img src="/static/images/Activity.svg" alt='Property image' />
+                        <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
+                    </Box>
+                    <List className='ListItem' component="nav" aria-label="">
+                        {loading ? <Loading /> :
+                            (
+                                <Autocomplete
+                                    id="combo-box-demo"
+                                    disableClearable={true}
+                                    options={activityList}
+                                    sx={{ width: '100%' }}
+                                    onChange={(event, value) => handleSelectedActivity(value)}
+                                    renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                                />
+                            )
+                        }
+                    </List>
+                </Box>
+                {
+                    allowOrganisationSelection && <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/organisation.svg" alt='Organisation image' />
+                            <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isLoading ? <Loading /> :
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                                        {selectedOrganisation.length > 0 ? (
+                                            <Box >
+                                                {`${selectedOrganisation.length} ${selectedOrganisation.length > 1 ? 'Organisations' : 'Organisation'} Selected`}
+                                            </Box>
+                                        ) : (
+                                            <Typography>Select</Typography>
+                                        )}
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Box className="selectBox">
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={selectedOrganisation.length === organisationList.length}
+                                                            onChange={handleSelectAllOrganisation}
+                                                        />
+                                                    }
+                                                    label="Select All"
+                                                />
+                                            </Box>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                {organisationList.map((data: any) => (
+                                                    <FormControlLabel
+                                                        key={data.name}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedOrganisation.includes(data.id)}
+                                                                onChange={handleSelectedOrganisation(data.id)}
+                                                            />
+                                                        }
+                                                        label={data.name}
+                                                    />
+                                                ))}
+                                            </Box>
+                                        </Box>
+                                    </AccordionDetails>
+                                </Accordion>
                             }
                         </List>
                     </Box>
@@ -804,44 +851,6 @@ function Filter(props: any) {
                         </List>
                     </Box>
                 }
-                <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/species/Elephant.svg" alt='species image' />
-                    <Typography color='#75B37A' fontSize='medium'>Species</Typography>
-                </Box>
-                <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
-                        (
-                            <Autocomplete
-                                id="combo-box-demo"
-                                disableClearable={true}
-                                options={searchSpeciesList}
-                                sx={{ width: '100%' }}
-                                onChange={(event, value) => handleSelectedSpecies(value)}
-                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
-                            />
-                        )
-                    }
-                </List>
-                <Box>
-                    <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/Activity.svg" alt='Property image' />
-                        <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
-                    </Box>
-                    <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
-                        (
-                            <Autocomplete
-                                id="combo-box-demo"
-                                disableClearable={true}
-                                options={activityList}
-                                sx={{ width: '100%' }}
-                                onChange={(event, value) => handleSelectedActivity(value)}
-                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
-                            />
-                        )
-                    }
-                    </List>
-                </Box>
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/Clock.svg" alt='watch image' />
                     <Typography color='#75B37A' fontSize='medium'>Year</Typography>
