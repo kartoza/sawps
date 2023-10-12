@@ -120,6 +120,13 @@ function Filter(props: any) {
         setFilteredProperties(filtered);
     };
 
+    // Select all organisations by default
+    useEffect(() => {
+        if (organisationList) {
+            setSelectedOrganisation(organisationList.map(organisation => organisation.id))
+        }
+    }, [organisationList]);
+
     useEffect(() => {
         let fetchedProperties: any[] = [];
 
@@ -270,7 +277,7 @@ function Filter(props: any) {
             console.log(error)
         })
     }
-    const fetchOrganisationList = () => {
+    const fetchOrganisationList = (selectAll: boolean = false) => {
         setLoading(true)
         axios.get(FETCH_ORGANISATION_LIST_URL).then((response) => {
             setLoading(false)
@@ -299,7 +306,7 @@ function Filter(props: any) {
     useEffect(() => {
         fetchSpeciesList();
         fetchPropertyList();
-        fetchOrganisationList();
+        fetchOrganisationList(true); // Select all by default
         fetchActivityList();
     }, [])
 
