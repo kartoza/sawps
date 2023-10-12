@@ -17,12 +17,11 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
 
         // Check if the URL contains a pattern that indicates the presence of charts
         if (
-            currentUrl.endsWith('/map') || currentUrl.endsWith('/map/')
+          currentUrl.endsWith('/map') ||
+          currentUrl.endsWith('/map/')
         ) {
-            setLayerFilter(true);
-        } else {
-            setLayerFilter(false)
-        }
+            setLayerFilter(false);
+        } else setLayerFilter(true)
         setSelectedTabSideBar(1);
 
     }, [props.selectedMainTabIdx]);
@@ -36,7 +35,7 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
                     }} aria-label="Left Side Bar Tabs"
                     centered={showLayerFilter}
                 >
-                    {showLayerFilter && (
+                    {!showLayerFilter && (
                         <Tab key={0} label={'LAYERS'} {...a11yProps(0)} />
                      )} 
                 
@@ -45,7 +44,7 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
             </Box>
             <Box className='TabPanels FlexContainerFill'>
                 <Box className='LeftSideBarContent'>
-                    {showLayerFilter && (
+                    {!showLayerFilter && (
                         <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
                             <Layers />
                         </TabPanel>
