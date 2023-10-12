@@ -225,7 +225,7 @@ const Metrics = () => {
                                 </Grid>
                             ))}
 
-                            <Grid item xs={12} >
+                            <Grid item xs={12} md={6}>
                                 <SpeciesCountPerProvinceChart
                                     selectedSpecies={selectedSpecies} 
                                     propertyId={propertyId} 
