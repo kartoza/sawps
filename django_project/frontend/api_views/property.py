@@ -31,7 +31,6 @@ from frontend.serializers.property import (
     PropertyDetailSerializer,
     PropertySerializer,
     PropertyTypeSerializer,
-    ProvinceSerializer,
     PropertySearchSerializer
 )
 from frontend.serializers.stakeholder import OrganisationSerializer

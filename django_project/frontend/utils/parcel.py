@@ -65,12 +65,12 @@ def find_province(geom: GEOSGeometry, default: Province):
     """
     query = (
         """
-        with input_geom as (select ST_GeomFromText(%s, 3857) as geom) 
-        select zpss.adm1_en as name, 
-        ST_AREA(ST_Intersection(ig.geom, zpss.geom)) / ST_AREA(zpss.geom) 
-        as overlap 
-        from layer.zaf_provinces_small_scale zpss 
-        inner join input_geom ig on ST_Intersects(ig.geom, zpss.geom) 
+        with input_geom as (select ST_GeomFromText(%s, 3857) as geom)
+        select zpss.adm1_en as name,
+        ST_AREA(ST_Intersection(ig.geom, zpss.geom)) / ST_AREA(zpss.geom)
+        as overlap
+        from layer.zaf_provinces_small_scale zpss
+        inner join input_geom ig on ST_Intersects(ig.geom, zpss.geom)
         order by overlap desc limit 1
         """
     )
