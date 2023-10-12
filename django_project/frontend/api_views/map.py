@@ -7,6 +7,7 @@ from typing import Tuple, List
 import requests
 import io
 import gzip
+import ast
 from django.core.cache import cache
 from django.db import connection
 from django.contrib.auth import get_user_model
@@ -42,6 +43,14 @@ from frontend.utils.organisation import (
 )
 
 User = get_user_model()
+PROVINCE_LAYER_ZOOMS = (5, 8)
+PROPERTIES_LAYER_ZOOMS = (10, 24)
+PROPERTIES_POINT_LAYER_ZOOMS = (5, 10)
+
+
+def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
+    """Return True if layer should be generated."""
+    return z >= zoom_configs[0] and z <= zoom_configs[1]
 
 
 class ContextLayerList(APIView):
@@ -96,6 +105,8 @@ class PropertiesLayerMVTTiles(APIView):
         return bytesbuffer.getvalue()
 
     def generate_tile(self, sql, query_values):
+        if sql is None:
+            return []
         tile = bytes()
         with connection.cursor() as cursor:
             raw_sql = (
@@ -106,6 +117,101 @@ class PropertiesLayerMVTTiles(APIView):
             tile = row[0]
         return tile
 
+    def get_query_condition(
+            self, organisation_id: int,
+            filter_start_year: int,
+            filter_end_year: int,
+            filter_species_name: str,
+            filter_organisation: str,
+            filter_activity: str,
+            filter_spatial: str):
+        """Generate query condition from filters."""
+        sql = 't.scientific_name=%s '
+        query_values = [filter_species_name]
+        if filter_start_year and filter_end_year:
+            sql = sql + 'AND ap.year between %s and %s '
+            query_values.append(filter_start_year)
+            query_values.append(filter_end_year)
+        if filter_organisation:
+            sql = sql + 'AND p.organisation_id IN %s '
+            query_values.append(ast.literal_eval('('+filter_organisation+')'))
+        else:
+            sql = sql + 'AND p.organisation_id=%s '
+            query_values.append(organisation_id)
+        if filter_activity:
+            sql = sql + 'AND ap.name=%s '
+            query_values.append(filter_activity)
+        # TODO: filter_spatial
+        return sql, query_values
+
+    def get_population_query(
+            self, is_province_layer: bool,
+            z: int, x: int, y: int,
+            organisation_id: int,
+            filter_start_year: int,
+            filter_end_year: int,
+            filter_species_name: str,
+            filter_organisation: str,
+            filter_activity: str,
+            filter_spatial: str):
+        where_sql, query_values = self.get_query_condition(
+            organisation_id, filter_start_year, filter_end_year,
+            filter_species_name, filter_organisation, filter_activity,
+            filter_spatial
+        )
+        additional_join=(
+            'inner join activity_activitytype aa '
+            'on aa.id=ap.activity_type_id' if filter_activity else ''
+        )
+        population_table=(
+            'annual_population_per_activity' if filter_activity else
+            'annual_population'
+        )
+        sql = ''
+        if is_province_layer:
+            sql = (
+                """
+                select prov.id as id, sum(ap.total) as count
+                from {population_table} ap
+                inner join owned_species os on os.id=ap.owned_species_id
+                inner join taxon t on os.taxon_id=t.id
+                inner join property p on os.property_id=p.id
+                inner join province prov on prov.id=p.province_id
+                {additional_join}
+                where {where_sql} group by prov.id
+                """
+            ).format(
+                additional_join=additional_join,
+                population_table=population_table,
+                where_sql=where_sql
+            )
+        else:
+            where_sql = (
+                'p.geometry && TileBBox(%s, %s, %s, 4326) AND ' + where_sql
+            )
+            sql = (
+                """
+                select p.id,
+                ST_AsMVTGeom(ST_Transform(p.geometry, 3857),
+                  TileBBox(%s, %s, %s, 3857)) as geom,
+                p.name, sum(ap.total) as count
+                from {population_table} ap
+                inner join owned_species os on os.id=ap.owned_species_id
+                inner join taxon t on os.taxon_id=t.id
+                inner join property p on os.property_id=p.id
+                {additional_join}
+                where {where_sql} group by p.id
+                """
+            ).format(
+                additional_join=additional_join,
+                population_table=population_table,
+                where_sql=where_sql
+            )
+            tilebbox_values = [z, x, y, z, x, y]
+            tilebbox_values.extend(query_values)
+            query_values = tilebbox_values
+        return sql, query_values
+
     def generate_properties_layer(
             self,
             organisation_id: int,
@@ -113,7 +219,7 @@ class PropertiesLayerMVTTiles(APIView):
             x: int,
             y: int,) -> Tuple[str, List[str]]:
         sql = (
-            'SELECT p.id, p.name, '
+            'SELECT p.id, p.name, 0 as count, '
             'ST_AsMVTGeom('
             '  ST_Transform(p.geometry, 3857), '
             '  TileBBox(%s, %s, %s, 3857)) as geom '
@@ -140,20 +246,122 @@ class PropertiesLayerMVTTiles(APIView):
         ]
         return fsql, query_values
 
+    def generate_province_layer(
+            self, organisation_id: int,
+            z: int, x: int, y: int,
+            filter_start_year: int,
+            filter_end_year: int,
+            filter_species_name: str,
+            filter_organisation: str,
+            filter_activity: str,
+            filter_spatial: str
+        ):
+        sub_sql, query_values = self.get_population_query(
+            True, z, x, y, organisation_id, filter_start_year,
+            filter_end_year, filter_species_name, filter_organisation,
+            filter_activity, filter_spatial
+        )
+        sql = (
+            """
+            select zpss.id, zpss.adm1_en, population_summary.count,
+              ST_AsMVTGeom(zpss.geom, TileBBox(%s, %s, %s, 3857)) as geom
+            from layer.zaf_provinces_small_scale zpss
+            inner join province p2 on p2.name=zpss.adm1_en
+            inner join ({sub_sql}) as population_summary
+                on p2.id=population_summary.id
+            where zpss.geom && TileBBox(%s, %s, %s, 3857)
+            """
+        ).format(sub_sql=sub_sql)
+        tilebbox_values = [z, x, y]
+        tilebbox_values.extend(query_values)
+        query_values = tilebbox_values
+        query_values.extend([z, x, y])
+        fsql = (
+            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
+            'AS data '
+            'FROM ({query}) AS q)'
+        ).format(
+            mvt_name='province_population',
+            query=sql
+        )
+        return fsql, query_values
+
+    def generate_properties_population_layer(
+            self, organisation_id: int,
+            z: int, x: int, y: int,
+            filter_start_year: int,
+            filter_end_year: int,
+            filter_species_name: str,
+            filter_organisation: str,
+            filter_activity: str,
+            filter_spatial: str
+        ):
+        sql, query_values = self.get_population_query(
+            False, z, x, y, organisation_id, filter_start_year,
+            filter_end_year, filter_species_name, filter_organisation,
+            filter_activity, filter_spatial
+        )
+        fsql = (
+            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
+            'AS data '
+            'FROM ({query}) AS q)'
+        ).format(
+            mvt_name='properties',
+            query=sql
+        )
+        return fsql, query_values
+
+    def generate_properties_points_layer():
+        pass
+
     def generate_query_for_map(
             self,
             organisation_id: int,
-            z: int,
-            x: int,
-            y: int,) -> Tuple[str, List[str]]:
+            z: int, x: int, y: int,
+            filter_start_year: int,
+            filter_end_year: int,
+            filter_species_name: str,
+            filter_organisation: str,
+            filter_activity: str,
+            filter_spatial: str) -> Tuple[str, List[str]]:
         sqls = []
         query_values = []
-        # generate properties layer
-        properties_sql, properties_val = self.generate_properties_layer(
-            organisation_id, z, x, y
-        )
-        sqls.append(properties_sql)
-        query_values.extend(properties_val)
+        if filter_species_name:
+            if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
+                # generate choropleth properties population layer
+                properties_sql, properties_val = (
+                    self.generate_properties_population_layer(
+                        organisation_id, z, x, y,
+                        filter_start_year, filter_end_year,
+                        filter_species_name, filter_organisation,
+                        filter_activity, filter_spatial
+                    )
+                )
+                sqls.append(properties_sql)
+                query_values.extend(properties_val)
+            if should_generate_layer(z, PROVINCE_LAYER_ZOOMS):
+                province_sql, province_val = (
+                    self.generate_province_layer(
+                        organisation_id, z, x, y,
+                        filter_start_year, filter_end_year,
+                        filter_species_name, filter_organisation,
+                        filter_activity, filter_spatial
+                    )
+                )
+                sqls.append(province_sql)
+                query_values.extend(province_val)
+            # TODO: check choropleth properties point layer
+        else:
+            if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
+                # generate properties layer
+                properties_sql, properties_val = (
+                    self.generate_properties_layer(organisation_id, z, x, y)
+                )
+                sqls.append(properties_sql)
+                query_values.extend(properties_val)
+            # TODO: check properties point layer
+        if len(sqls) == 0:
+            return None, None
         # construct output_sql
         output_sql = '||'.join(sqls)
         return output_sql, query_values
@@ -165,9 +373,15 @@ class PropertiesLayerMVTTiles(APIView):
         sql, query_values = (
             self.generate_query_for_map(
                 current_organisation_id,
-                kwargs.get('z'),
-                kwargs.get('x'),
-                kwargs.get('y')
+                int(kwargs.get('z')),
+                int(kwargs.get('x')),
+                int(kwargs.get('y')),
+                self.request.GET.get('start_year', None),
+                self.request.GET.get('end_year', None),
+                self.request.GET.get('species', None),
+                self.request.GET.get('organisation', None),
+                self.request.GET.get('activity', None),
+                self.request.GET.get('spatial_filter_values', None)
             )
         )
         tile = self.generate_tile(sql, query_values)

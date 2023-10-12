@@ -47,7 +47,7 @@ import useThemeDetector from '../../../components/ThemeDetector';
 import {useGetUserInfoQuery} from "../../../services/api";
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
-const MAP_SOURCES = ['sanbi', 'properties', 'NGI Aerial Imagery']
+const MAP_SOURCES = ['sanbi', 'sanbi-dynamic', 'NGI Aerial Imagery']
 const AERIAL_SOURCE_ID = 'NGI Aerial Imagery'
 
 const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
@@ -104,6 +104,14 @@ export default function Map() {
   const mapNavControl = useRef(null)
   const isDarkTheme = useThemeDetector()
   const [highlightedParcel, setHighlightedParcel] = useState<FeatureIdentifier>(getEmptyFeature())
+  // Map Properties Filters
+  const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+  const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
+  const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
+  const spatialFilterValues = useAppSelector((state: RootState) => state.SpeciesFilter.spatialFilterValues)
+  const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
+  const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
+  const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
 
   const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
@@ -467,17 +475,21 @@ export default function Map() {
       let _event = mapEvents[i]
       if (_event.name === MapEvents.REFRESH_PROPERTIES_LAYER) {
         // add query param t to properties layer to refresh it
-        let _properties_source = _mapObj.getSource('properties') as any;
-        let _url = _properties_source['tiles'][0]
+        let _sanbiDynamicSource = _mapObj.getSource('sanbi-dynamic') as any;
+        let _url = _sanbiDynamicSource['tiles'][0]
         _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}`)
+        // check if has payload of query params
+        if (_event.payload) {
+          _url = _url + `&${_event.payload[0]}`
+        }
         // Set the tile url to a cache-busting url (to circumvent browser caching behaviour):
-        _properties_source.tiles = [ _url ]
+        _sanbiDynamicSource.tiles = [ _url ]
 
         // Remove the tiles for a particular source
-        _mapObj.style.sourceCaches['properties'].clearTiles()
+        _mapObj.style.sourceCaches['sanbi-dynamic'].clearTiles()
 
         // Load the new tiles for the current viewport (map.transform -> viewport)
-        _mapObj.style.sourceCaches['properties'].update(_mapObj.transform)
+        _mapObj.style.sourceCaches['sanbi-dynamic'].update(_mapObj.transform)
 
         // Force a repaint, so that the map will be repainted without you having to touch the map
         _mapObj.triggerRepaint()
@@ -534,6 +546,32 @@ export default function Map() {
         return () => clearInterval(interval);
     }
 }, [savingBoundaryDigitise, boundaryDigitiseSession])
+
+  /* Called when filters are changed */
+  useEffect(() => {
+    if (!isMapReady) return;
+    if (contextLayers.length === 0) return;
+    if (!map.current) return;
+    if (selectedSpecies) {
+      // rebuild query parameters to enable choropleth layers
+      let _queryParams = `start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`
+      console.log('rebuild query parameters ', _queryParams)
+      dispatch(triggerMapEvent({
+        'id': uuidv4(),
+        'name': MapEvents.REFRESH_PROPERTIES_LAYER,
+        'date': Date.now(),
+        'payload': [_queryParams]
+      }))
+    } else {
+      console.log('rebuild query parameters **EMPTY**')
+      dispatch(triggerMapEvent({
+        'id': uuidv4(),
+        'name': MapEvents.REFRESH_PROPERTIES_LAYER,
+        'date': Date.now()
+      }))
+    }
+    
+}, [startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues])
 
   return (
       <div className="map-wrap">

@@ -205,6 +205,7 @@ export const searchProperty = (lngLat: maplibregl.LngLat, callback: (parcel: Pro
     })
 }
 
+// Mapping of LayerName with FeatureName to be queried and display in the popup
 const FEATURE_NAME_MAPPING:{ [id: string] : string; } = {
     'ecosystems': 'name_18',
     'biodiversity': 'sensfeat',
@@ -214,6 +215,7 @@ const FEATURE_NAME_MAPPING:{ [id: string] : string; } = {
     'holding': 'cname'
 }
 
+// Mapping of LayerName with its Label to displayed in the popup
 const GROUP_NAME_MAPPING:{ [id: string] : string; } = {
     'ecosystems': 'Ecosystem Type',
     'biodiversity': 'Critical Biodiversity Area',

@@ -86,19 +86,20 @@ def get_map_template_style(request, theme_choice: int = 0, token: str = None):
             url = url.replace('http://', schema)
         # add epoch datetime
         url = url + f'?t={int(time.time())}'
-        styles['sources']['properties'] = {
+        styles['sources']['sanbi-dynamic'] = {
             "type": "vector",
             "tiles": [url],
-            "minzoom": 12,
+            "minzoom": 5,
             "maxzoom": 24
         }
+        # TODO: move this layer to FE
         # FF5252
         styles['layers'].append({
             "id": "properties",
             "type": "fill",
-            "source": "properties",
+            "source": "sanbi-dynamic",
             "source-layer": "properties",
-            "minzoom": 12,
+            "minzoom": 10,
             "maxzoom": 24,
             "layout": {"visibility": "visible"},
             "paint": {
