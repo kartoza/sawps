@@ -137,13 +137,26 @@ const Metrics = () => {
                 {showChats ? (
                         <Grid container spacing={2} ref={contentRef}>
                             <Grid item xs={12} md={6}>
-                                <PropertyTypeBarChart
-                                    selectedSpecies={selectedSpecies}
-                                    propertyId={propertyId}
-                                    startYear={startYear}
-                                    endYear={endYear}
-                                    loading={loading}
-                                    setLoading={setLoading}
+                                <PopulationCategoryChart 
+                                selectedSpecies={selectedSpecies} 
+                                propertyId={propertyId} 
+                                startYear={startYear} 
+                                endYear={endYear} 
+                                loading={loading} 
+                                setLoading={setLoading} 
+                                populationData={populationData} 
+                                setPopulationData={setPopulationData} 
+                                />
+                            </Grid>
+                            
+                            <Grid item xs={12} md={6}>
+                                <PropertyTypeBarChart 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading} 
                                 />
                             </Grid>
 
