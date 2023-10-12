@@ -233,8 +233,7 @@ class SpeciesPopulationDensityPerPropertySerializer(
         fields = [
             "density",
             "province_name",
-            "organisation_name",
-            "created_at"
+            "organisation_name"
         ]
 
     def get_province_name(self, obj):
@@ -248,30 +247,41 @@ class SpeciesPopulationDensityPerPropertySerializer(
         if not species_name:
             return None
 
-        # Use species_name in calculation
-        owned_species = OwnedSpecies.objects.filter(
-            property=obj,
-            taxon__scientific_name=species_name
-        ).annotate(
-            total=Sum("annualpopulation__total"),
-            property_in_ha=Sum("property__property_size_ha")
-        ).values("property__name", "total", "property_in_ha")
-
-        if owned_species.exists():
-            property_in_ha = owned_species[0].get("property_in_ha")
-            total = owned_species[0].get("total")
-            density = (
-                total / property_in_ha if total and property_in_ha else None
+        owned_species_data = (
+            OwnedSpecies.objects.filter(
+                property=obj,
+                taxon__scientific_name=species_name
             )
-            property_name = owned_species[0].get("property__name").capitalize()
-            data = {
+            .values("property__name")
+            .annotate(
+                total=Sum("annualpopulation__total"),
+                property_in_ha=Sum("property__property_size_ha"),
+                year=F("annualpopulation__year"),
+            )
+        )
+
+        # Calculate density and format data
+        result_data = []
+        for data in owned_species_data:
+            total = data.get("total")
+            property_in_ha = data.get("property_in_ha")
+            year = data.get("year")
+
+            if total and property_in_ha:
+                density = total / property_in_ha
+            else:
+                density = None
+
+            property_name = data.get("property__name").capitalize()
+
+            result_data.append({
                 "property_name": property_name,
                 "density": density,
-                "species_name": species_name
-            }
-            return data
-        else:
-            return None
+                "species_name": species_name,
+                "year": year,
+            })
+
+        return result_data
 
 
 class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):

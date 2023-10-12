@@ -11,7 +11,12 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import PropertyInterface, { PropertyValidation, PropertyTypeInterface, ProvinceInterface } from '../../../models/Property';
+import PropertyInterface, {
+    PropertyValidation,
+    PropertyTypeInterface,
+    ProvinceInterface,
+    OpenCloseInterface
+} from '../../../models/Property';
 import { OrganisationInterface } from '../../../models/Stakeholder';
 import './index.scss';
 
@@ -35,6 +40,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
     const [propertyTypeList, setPropertyTypeList] = useState<PropertyTypeInterface[]>([])
     const [provinceList, setProvinceList] = useState<ProvinceInterface[]>([])
     const [organisationList, setOrganisationList] = useState<OrganisationInterface[]>([])
+    const [openCloseList, setOpenCloseList] = useState<OpenCloseInterface[]>([])
 
     const fetchMetadataList = () => {
         setLoading(true)
@@ -44,6 +50,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                 setPropertyTypeList(response.data['types'])
                 setProvinceList(response.data['provinces'])
                 setOrganisationList(response.data['organisations'])
+                setOpenCloseList(response.data['opens'])
                 let _initial_data:any = {}
                 if (response.data['organisations'].length === 1) {
                     _initial_data['organisation'] = response.data['organisations'][0]['name']
@@ -140,6 +147,36 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                             />
                         </TableCell>
                     </TableRow>
+
+                    <TableRow key='open'>
+                        <TableCell component="th" scope="row">
+                            Open/Close System
+                        </TableCell>
+                        <TableCell>
+                            <FormControl fullWidth size="small">
+                                <Select
+                                    id="open-close-system-select"
+                                    error={props.validationError?.property_type}
+                                    value={ props.property.open_id ? props.property.open_id.toString() : ''}
+                                    displayEmpty
+                                    disabled={loading || !props.enableForm}
+                                    onChange={(event: SelectChangeEvent) => {
+                                        if (props.onUpdated) {
+                                            let _selected = openCloseList.find(e => e.id === parseInt(event.target.value))
+                                            props.onUpdated({ ...props.property, open_id: _selected.id,  open: _selected.name }, {property_type:false})
+                                        }
+                                    }}
+                                >
+                                    { openCloseList.map((open: OpenCloseInterface) => {
+                                        return (
+                                            <MenuItem key={open.id} value={open.id}>{open.name}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </TableCell>
+                    </TableRow>
+
                     <TableRow key='property_type'>
                         <TableCell component="th" scope="row">
                             Property Type
