@@ -5,6 +5,8 @@
 """
 from typing import Tuple, List
 import requests
+import io
+import gzip
 from django.core.cache import cache
 from django.db import connection
 from django.contrib.auth import get_user_model
@@ -87,24 +89,24 @@ class PropertiesLayerMVTTiles(APIView):
     """Dynamic Vector Tile for properties layer."""
     permission_classes = [IsAuthenticated]
 
+    def gzip_tile(self, data):
+        bytesbuffer = io.BytesIO()
+        with gzip.GzipFile(fileobj=bytesbuffer, mode='w') as w:
+            w.write(data)
+        return bytesbuffer.getvalue()
+
     def generate_tile(self, sql, query_values):
-        rows = []
-        tile = []
+        tile = bytes()
         with connection.cursor() as cursor:
             raw_sql = (
-                'SELECT ST_AsMVT(tile.*, \'properties\', '
-                '4096, \'geom\', \'id\') '
-                'FROM ('
-                f'{sql}'
-                ') AS tile '
-            )
+                'SELECT ({sub_sqls}) AS data'
+            ).format(sub_sqls=sql)
             cursor.execute(raw_sql, query_values)
-            rows = cursor.fetchall()
-            for row in rows:
-                tile.append(bytes(row[0]))
+            row = cursor.fetchone()
+            tile = row[0]
         return tile
 
-    def generate_query_for_map(
+    def generate_properties_layer(
             self,
             organisation_id: int,
             z: int,
@@ -123,12 +125,38 @@ class PropertiesLayerMVTTiles(APIView):
             sql +
             'AND p.organisation_id=%s '
         )
+        fsql = (
+            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
+            'AS data '
+            'FROM ({query}) AS q)'
+        ).format(
+            mvt_name='properties',
+            query=sql
+        )
         query_values = [
             z, x, y,
             z, x, y,
             organisation_id
         ]
-        return sql, query_values
+        return fsql, query_values
+
+    def generate_query_for_map(
+            self,
+            organisation_id: int,
+            z: int,
+            x: int,
+            y: int,) -> Tuple[str, List[str]]:
+        sqls = []
+        query_values = []
+        # generate properties layer
+        properties_sql, properties_val = self.generate_properties_layer(
+            organisation_id, z, x, y
+        )
+        sqls.append(properties_sql)
+        query_values.extend(properties_val)
+        # construct output_sql
+        output_sql = '||'.join(sqls)
+        return output_sql, query_values
 
     def get(self, *args, **kwargs):
         current_organisation_id = get_current_organisation_id(
@@ -145,9 +173,19 @@ class PropertiesLayerMVTTiles(APIView):
         tile = self.generate_tile(sql, query_values)
         if not len(tile):
             raise Http404()
-        return HttpResponse(
-            tile,
-            content_type="application/x-protobuf")
+        tile_bytes = self.gzip_tile(tile)
+        response = HttpResponse(
+            tile_bytes,
+            status=200,
+            content_type='application/vnd.mapbox-vector-tile'
+        )
+        response['Content-Encoding'] = 'gzip'
+        response['Content-Length'] = len(tile_bytes)
+        y = kwargs.get('y')
+        response['Content-Disposition'] = (
+            f'attachment; filename={y}.pbf'
+        )
+        return response
 
 
 class AerialTile(APIView):
