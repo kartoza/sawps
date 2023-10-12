@@ -5,7 +5,7 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 from rest_framework import status
 
 
-class TestOrganisationAPIView(TestCase):
+class TestActivityAPIView(TestCase):
     fixtures = [
         'activity_type.json'
     ]
@@ -31,28 +31,32 @@ class TestOrganisationAPIView(TestCase):
                 "id": 1,
                 "name": "Other",
                 "recruitment": None,
-                "colour": None,
+                "colour": "#000000",
+                "width": 130.2,
                 "export_fields": [],
             },
             {
                 "id": 3,
                 "name": "Planned Euthanasia/DCA",
-                "recruitment": None,
-                "colour": None,
+                "recruitment": False,
+                "colour": "#9F89BF",
+                "width": 130.2,
                 "export_fields": ["intake_permit"],
             },
             {
                 "id": 4,
                 "name": "Planned Hunt/Cull",
-                "recruitment": None,
-                "colour": None,
+                "recruitment": False,
+                "colour": "#000000",
+                "width": 130.2,
                 "export_fields": ["intake_permit"],
             },
             {
                 "id": 5,
                 "name": "Translocation (Intake)",
-                "recruitment": None,
-                "colour": None,
+                "recruitment": True,
+                "colour": "#F9A95D",
+                "width": 106.5,
                 "export_fields": [
                     "intake_permit",
                     "translocation_destination",
@@ -62,8 +66,9 @@ class TestOrganisationAPIView(TestCase):
             {
                 "id": 6,
                 "name": "Translocation (Offtake)",
-                "recruitment": None,
-                "colour": None,
+                "recruitment": False,
+                "colour": "#F9A95D",
+                "width": 106.5,
                 "export_fields": [
                     "translocation_destination",
                     "founder_population",
@@ -73,9 +78,22 @@ class TestOrganisationAPIView(TestCase):
             {
                 "id": 2,
                 "name": "Unplanned/Illegal Hunting",
-                "recruitment": None,
-                "colour": None,
+                "recruitment": False,
+                "colour": "#696969",
+                "width": 130.2,
                 "export_fields": [],
+            },
+            {
+                "id": 7,
+                "name": "Unplanned/natural deaths",
+                "recruitment": None,
+                "colour": "#75B37A",
+                "width": 130.2,
+                "export_fields": [
+                    "translocation_destination",
+                    "founder_population",
+                    "reintroduction_source",
+                ],
             },
         ]
 

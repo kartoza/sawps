@@ -25,7 +25,17 @@ const MenuProps = {
     },
 };
 
+interface ActivityInterface {
+    id: number,
+    name: string,
+    recruitment: boolean,
+    colour: string,
+    width: number,
+    export_fields: string[]
+}
+
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
+const FETCH_ACTIVITY_LIST_URL = '/api/activity-type/'
 
 const DataList = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -51,7 +61,7 @@ const DataList = () => {
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
     const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
-    const customColorWidth =
+    const defaultColorWidth =
         {
         "Species_report":{color:"#F9A95D",width:107},
         "Property_report": {color:'#9F89BF',width:131},
@@ -62,17 +72,34 @@ const DataList = () => {
         "Unplanned/natural deaths": {color:"#75B37A",width:106.5},
         "Planned translocation": {color:"#F9A95D",width:106.5},
         "Planned hunt/cull": {color:"#FF5252",width:130.2},
-        "Planned euthanasia": {color:"#9F89BF",width:130.2},
+        "Planned Euthanasia": {color:"#9F89BF",width:130.2},
         "Unplanned/illegal hunting": {color:"#696969",width:147}
     }
+
+    const [customColorWidth, setCustomColorWidth] = useState<any>(defaultColorWidth)
 
     function checkUserRole(userRole: string) {
         const allowedRoles = ["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"];
         return allowedRoles.includes(userRole);
     }
 
+    const fetchActivityList = () => {
+        setLoading(true)
+        axios.get(FETCH_ACTIVITY_LIST_URL).then((response) => {
+            setLoading(false)
+            setCustomColorWidth({
+                ...customColorWidth,
+                ...Object.assign({}, ...response.data.map((x: ActivityInterface) => ({[x.name]: {color: x.colour, width: x.width}})))
+            })
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
     useEffect(() => {
         const storedUserRole = localStorage.getItem('user_role');
+        fetchActivityList()
         setUserRole(storedUserRole);
     }, []);
 

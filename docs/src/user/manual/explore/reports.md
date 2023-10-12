@@ -37,7 +37,7 @@ The main area of the page displays your dataset in a tabular format. Each row re
 
 Activity Report columns consisted of base columns and custom columns.
 1. **Base columns**: Hardcoded.
-2. **Custom columns**: Configurable from the Django admin site. 
+2. **Custom columns**: Configurable from the Django admin site by the site administrator. 
 See Activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
 
 ### Summary

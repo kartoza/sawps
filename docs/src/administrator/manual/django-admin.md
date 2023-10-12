@@ -44,8 +44,9 @@ _![Activities Table](./img/admin-5.png)_
 
 This table is used to store existing activity types e.g. `Unplanned/natural deaths`.
 
-1. **Colour**: Used as color identifier in reports and charts.
-2. **Export fields**: Used as export fields in Activity Report. The value should be an array/list, containing 
+1. **Colour**: Used as color identifier in reports and charts. The default is black (`#000000`).
+2. **Width**: Column width in the Activity Report.
+3. **Export fields**: Used as export fields in Activity Report. The value should be an array/list, containing 
 `Annual Population Per Activity` field to export. Currently available fields are:
     * founder_population
     * reintroduction_source
@@ -55,3 +56,5 @@ This table is used to store existing activity types e.g. `Unplanned/natural deat
 
 This is an example of correct **Export fields** value:
 `["translocation_destination", "founder_population"]`
+
+Any update on this table will be reflected on the [Activity Report](../../user/manual/explore/reports.md).

@@ -16,6 +16,7 @@ class ActivityTypeAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'recruitment',
+        'width',
         'display_color',
         'display_export_fields'
     ]

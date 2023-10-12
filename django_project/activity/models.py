@@ -11,7 +11,16 @@ class ActivityType(models.Model):
 
     name = models.CharField(max_length=150, unique=True)
     recruitment = models.BooleanField(null=True, blank=True)
-    colour = models.CharField(max_length=20, null=True, blank=True)
+    colour = models.CharField(
+        max_length=20,
+        default='#000000'
+    )
+    width = models.FloatField(
+        default=130.2,
+        help_text=(
+            'Column width in the Activity Report. The default is 130.2.'
+        )
+    )
     export_fields = models.JSONField(
         default=list,
         help_text=(
@@ -19,7 +28,8 @@ class ActivityType(models.Model):
             'Per Activity table when exporting Activity Report. '
             'Input as Array e.g. '
             '["intake_permit", "translocation_destination"]'
-        )
+        ),
+        blank=True
     )
 
     def __str__(self):
