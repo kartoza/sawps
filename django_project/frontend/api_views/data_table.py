@@ -3,6 +3,10 @@
 from typing import List
 
 from django.db.models.query import QuerySet
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
 from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS
@@ -13,9 +17,6 @@ from frontend.utils.data_table import (
 from frontend.utils.organisation import get_current_organisation_id
 from frontend.utils.user_roles import get_user_roles
 from property.models import Property
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from species.models import Taxon
 
 
@@ -85,7 +86,6 @@ class DataTableAPIView(APIView):
 
         if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             return Response(data_table_reports(queryset, request))
-
         else:
             return Response(
                 national_level_user_table(

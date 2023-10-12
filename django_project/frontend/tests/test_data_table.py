@@ -188,7 +188,7 @@ class OwnedSpeciesTestCase(TestCase):
         data = {
             "species": "SpeciesA",
             "start_year": year,
-            "end_year":year,
+            "end_year": year,
             "reports": "Sampling_report",
             "activity": value.activity_type.name
         }
@@ -196,8 +196,9 @@ class OwnedSpeciesTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]["Sampling_report"][0][
-            "owned_species__taxon__scientific_name"
-        ], "SpeciesA"
+                "scientific_name"
+            ],
+            "SpeciesA"
         )
 
 
