@@ -17,12 +17,12 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
 
         // Check if the URL contains a pattern that indicates the presence of charts
         if (
-            currentUrl.includes('/charts') || 
-            currentUrl.includes('/?tab=2')
+          currentUrl.endsWith('/map') ||
+          currentUrl.endsWith('/map/')
         ) {
-            setLayerFilter(true);
-            setSelectedTabSideBar(1);
-        }else setLayerFilter(false)
+            setLayerFilter(false);
+        } else setLayerFilter(true)
+        setSelectedTabSideBar(1);
 
     }, [props.selectedMainTabIdx]);
 
@@ -48,7 +48,7 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
                         <TabPanel key={0} value={selectedTabSideBar} index={0} noPadding>
                             <Layers />
                         </TabPanel>
-                    )} 
+                    )}
                     <TabPanel key={1} value={selectedTabSideBar} index={1} noPadding>
                         <Filter />
                     </TabPanel>
