@@ -44,6 +44,7 @@ const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const SEARCH_PROPERTY_URL = '/api/property/search'
 const FETCH_ORGANISATION_LIST_URL = '/api/organisation/'
+const FETCH_ACTIVITY_LIST_URL = '/api/activity-type/'
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
 interface SearchPropertyResult {
@@ -272,6 +273,26 @@ function Filter(props: any) {
             console.log(error)
         })
     }
+
+    const fetchActivityList = () => {
+        setLoading(true)
+        axios.get(FETCH_ACTIVITY_LIST_URL).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                setActivityList(response.data.map((activity: any) => activity.name))
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
+    useEffect(() => {
+        fetchSpeciesList();
+        fetchPropertyList();
+        fetchOrganisationList();
+        fetchActivityList();
+    }, [])
 
     const handleSelectedSpecies = (value: string) => {
         setSelectedSpecies(value);
