@@ -62,6 +62,7 @@ from frontend.api_views.upload import (
     BoundaryFileUpload,
 )
 from frontend.views.base_view import get_user_notifications
+from .api_views.user import UserInfoAPIView
 
 from .views.about import AboutView
 from .views.contact import ContactUsView
@@ -371,4 +372,9 @@ urlpatterns = [
         SpatialFilterList.as_view(),
         name='spatial-filter-list'
     ),
+    path(
+        'api/user-info/',
+        UserInfoAPIView.as_view(),
+        name='user-info-api'
+    )
 ]
