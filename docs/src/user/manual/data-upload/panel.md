@@ -106,3 +106,29 @@ Completing Step 2 ensures that your dataset is comprehensive and includes detail
 2. **Cencel**: You can cancel the selection of the parcel using this button.
 
 3. **Save Boundary**: Click on `SAVE BOUNDARY` button to save the boundaries. After saving the boundary you will be able to see the selected parcel id and its type.
+
+### Select parcel using the digitise button
+
+## Description
+
+The `DIGITISE` button is a powerful tool that allows you to digitise parcel boundaries. When you click the `DIGITISE` button, you'll see a set of options on the left top of the map, giving you full control over the digitisation process. These options are essential for mapping out parcel boundaries accurately.
+
+### Digitisation Options
+
+![Digitisation Options](./img/panel-6.png)
+
+1. **Digitise**: By click on `DIGITISE`  button, you'll see a set of options on the left top of the map to digitise the boundaries.
+
+2. **Polygon tool**: By clicking on the `Polygon tool Icon` you can choose a specific area on the map. This selection is used to outline the boundaries of the parcel you're digitising.
+
+3. **Delete Icon**: The `Delete Icon` is for removing or deleting any selected area that you no longer need. This option allows you to make adjustments as you digitise.
+
+4. **Save Icon**: Click the `Save Icon` to save the selected area as a digitised parcel boundary. This is a critical step to preserve the boundaries you've defined.
+
+5. **Cross Icon**: The `Cross Icon` is used to cancel or discard any digitisation progress if you need to start over or abandon the current selection.
+
+6. **Digitised parcel**: Digitised parcel is shown.
+
+7. **Save boundary**: After you've successfully digitised and outlined the parcel boundary using the above options, you can finalise the process by clicking the `SAVE BOUNDARY` button. This saves the digitised boundary and incorporates it into your property's data. 
+
+By utilising the digitisation options, you can accurately define parcel boundaries, which is essential for geospatial data and mapping applications. This tool provides you with the flexibility to create precise boundaries and make adjustments as needed during the digitisation process.
