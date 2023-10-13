@@ -276,11 +276,9 @@ export default function Map() {
 
   /* Listen to context layers change (isSelected) */
   useEffect(() => {
-    console.log('context layers change ', isMapReady)
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
     if (!map.current) return;
-    console.log('map loaded style ', map.current.isStyleLoaded())
     const _mapObj: maplibregl.Map = map.current
     const _layers = _mapObj.getStyle().layers
     for (let i=0; i < _layers.length; ++i) {
@@ -380,13 +378,11 @@ export default function Map() {
       map.current.addControl(mapNavControl.current, 'bottom-left')
       map.current.addControl(mapNavControl.current.getExportControl(), 'bottom-left')
       map.current.on('load', () => {
-        console.log('map on load')
         dispatch(setMapReady(true))
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
       })
       map.current.on('styledata', () => {
-        console.log('map on styledata ', map.current.isStyleLoaded())
         if (map.current.isStyleLoaded()) {
           dispatch(setMapReady(true))
 
@@ -577,7 +573,6 @@ export default function Map() {
 
   /* Called when filters are changed */
   useEffect(() => {
-    console.log('filters changed ', isMapReady)
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
     if (!map.current) return;
