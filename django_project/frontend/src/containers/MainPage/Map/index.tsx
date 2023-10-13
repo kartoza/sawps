@@ -55,7 +55,7 @@ const MAP_PROPERTIES_LEGENDS_URL = '/api/map/legends/properties/'
 const MAP_SOURCES = ['sanbi', 'sanbi-dynamic', 'NGI Aerial Imagery']
 const AERIAL_SOURCE_ID = 'NGI Aerial Imagery'
 
-const TIME_QUERY_PARAM_REGEX = /\?t=\d+/
+const TIME_QUERY_PARAM_REGEX = /\?t=\d+.*/
 const UPLOAD_FILE_URL = '/api/upload/boundary-file/'
 
 // @ts-ignore

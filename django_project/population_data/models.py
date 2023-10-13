@@ -95,6 +95,9 @@ class AnnualPopulation(AnnualPopulationAbstract):
                 ),
             ),
         ]
+        indexes = [
+            models.Index(fields=['owned_species_id', 'year']),
+        ]
 
 
 class AnnualPopulationPerActivity(AnnualPopulationAbstract):
@@ -129,6 +132,9 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
                         ],
                 name="unique_population_count_per_activity",
             )
+        ]
+        indexes = [
+            models.Index(fields=['owned_species_id', 'year']),
         ]
 
 

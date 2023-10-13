@@ -181,7 +181,22 @@ def get_query_condition(
     if filter_activity:
         sql = sql + 'AND aa.name=%s '
         query_values.append(filter_activity)
-    # TODO: filter_spatial
+    if filter_spatial:
+        spatial_filter_values = tuple(
+            filter(None, filter_spatial.split(','))
+        )
+        if spatial_filter_values:
+            spatial_sql = (
+                """
+                select 1 from frontend_spatialdatavaluemodel fs2
+                inner join frontend_spatialdatamodel fs3 on fs3.id = fs2.spatial_data_id
+                where fs3.property_id=p.id and fs2.context_layer_value in %s
+                """
+            )
+            sql = sql + (
+                'AND exists({spatial_sql})'
+            ).format(spatial_sql=spatial_sql)
+            query_values.append(spatial_filter_values)
     return sql, query_values
 
 
