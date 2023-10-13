@@ -132,3 +132,28 @@ The `DIGITISE` button is a powerful tool that allows you to digitise parcel boun
 7. **Save boundary**: After you've successfully digitised and outlined the parcel boundary using the above options, you can finalise the process by clicking the `SAVE BOUNDARY` button. This saves the digitised boundary and incorporates it into your property's data. 
 
 By utilising the digitisation options, you can accurately define parcel boundaries, which is essential for geospatial data and mapping applications. This tool provides you with the flexibility to create precise boundaries and make adjustments as needed during the digitisation process.
+
+### Upload parcel using the upload data button
+
+## Description
+
+The `UPLOAD` button is a pivotal element of the `DATA UPLOAD`, allowing you to upload essential data for parcel boundaries. By clicking this button, you initiate the data upload process, which includes defining parcel boundaries and saving them. Here's a step-by-step guide on how to use this feature:
+
+### Uploading Data
+
+1. **Upload**: Click the `UPLOAD` button, and a popup window will open, providing you with options for uploading data.
+
+![Upload Popup](./img/panel-7.png)
+
+The popup window includes the following components:
+
+2. **Browse**: Click the `Browse` and select the file or files you want to upload. Supported formats include zip, json, geojson, gpkg, kml (CRS 4326). These files typically contain geospatial data, and you'll use them to define parcel boundaries.
+
+3. **Upload Files**: After you've selected the appropriate files, click the `Upload Files` button to begin the data upload process. This action will upload and process the selected data.
+
+4. **Cancel**: If you decide not to proceed with the data upload, you can click the `Cancel` button to close the popup window.
+
+5. **SAVE BOUNDARY**: By clicking the `SAVE BOUNDARY` button. This action will store the boundary and incorporate it into your property's dataset.
+
+By following these steps, you can effectively upload data, define parcel boundaries, and save them within the `DATA UPLOAD`. This feature is crucial for geospatial data and mapping applications, ensuring your data is accurate and complete.
+
