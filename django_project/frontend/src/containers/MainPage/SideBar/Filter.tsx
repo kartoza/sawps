@@ -73,7 +73,7 @@ function Filter(props: any) {
     const [selectedActivity, setSelectedActivity] = useState<string>('');
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
-    const [selectedInfo, setSelectedInfo] = useState<string>('');
+    const [selectedInfo, setSelectedInfo] = useState<string>('Species report');
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])

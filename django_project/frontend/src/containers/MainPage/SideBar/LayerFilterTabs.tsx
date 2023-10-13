@@ -28,7 +28,9 @@ function LayerFilterTabs(props: { selectedMainTabIdx: number }) {
             <Box className='TabHeaders'>
                 <Tabs value={selectedTabSideBar}
                     onChange={(event: React.SyntheticEvent, newValue: number) => {
-                        setSelectedTabSideBar(newValue);
+                        if (isMapDisplayed()) {
+                            setSelectedTabSideBar(newValue);
+                        }
                     }} aria-label="Left Side Bar Tabs"
                     centered={showLayerFilter}
                 >
