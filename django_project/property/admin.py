@@ -33,7 +33,16 @@ class PropertyAdmin(admin.ModelAdmin):
                 property_obj.id
             )
 
-    actions = [generate_spatial_filters_for_properties]
+    @admin.action(
+        description="Patch centroid field in properties"
+    )
+    def run_patch_property_centroid(self, request, queryset):
+        """Admin action to patch property without centroid."""
+        from property.tasks.patch_property import generate_property_centroid
+        generate_property_centroid.delay()
+
+    actions = [generate_spatial_filters_for_properties,
+               run_patch_property_centroid]
 
 
 class ParcelAdmin(admin.ModelAdmin):

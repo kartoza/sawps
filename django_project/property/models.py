@@ -47,6 +47,7 @@ class Property(models.Model):
     open = models.ForeignKey(
         "population_data.OpenCloseSystem", on_delete=models.CASCADE, null=True
     )
+    centroid = models.PointField(srid=4326, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Property'
