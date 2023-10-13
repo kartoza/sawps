@@ -12,7 +12,7 @@ The Data Upload Page is a key component for managing and uploading your data. Th
 
 2. **Select property**: The Property Selection Dropdown is a vital tool for categorizing your data. You can choose from existing property categories to associate your data with a specific property. This helps organize and categorize your records effectively.
 
-3. **Create a new propertty**: If the property you want to associate your data with doesn't exist in the dropdown, you can create a new property. Click the "CREATE A NEW PROPERTY" button to add a new property category. You'll be prompted to enter a name and details for the new property, and it will be added to the dropdown for future use.
+3. **Create a new propertty**: If the property you want to associate your data with doesn't exist in the dropdown, you can create a new property. Click the `CREATE A NEW PROPERTY` button to add a new property category. You'll be prompted to enter a name and details for the new property, and it will be added to the dropdown for future use.
 
 ## Interactive Map
 
