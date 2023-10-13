@@ -23,6 +23,7 @@ from frontend.api_views.map import (
     MapAuthenticate,
     MapStyles,
     PropertiesLayerMVTTiles,
+    PopulationCountLegends
 )
 from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
@@ -134,6 +135,11 @@ urlpatterns = [
         r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
         PropertiesLayerMVTTiles.as_view(),
         name='properties-map-layer'
+    ),
+    re_path(
+        r'^api/map/legends/properties/?$',
+        PopulationCountLegends.as_view(),
+        name='properties-map-legends'
     ),
     re_path(
         r'^api/property/create/?$',

@@ -331,6 +331,7 @@ export default function Map() {
 
   /* Called when mapTheme is changed */
   useEffect(() => {
+    console.log('mapTheme is changed')
     if (mapTheme === MapTheme.None) return;
     if (!isSuccess) return;
     if (map.current) {
@@ -356,11 +357,13 @@ export default function Map() {
       map.current.addControl(mapNavControl.current, 'bottom-left')
       map.current.addControl(mapNavControl.current.getExportControl(), 'bottom-left')
       map.current.on('load', () => {
+        console.log('map on load')
         dispatch(setMapReady(true))
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
       })
       map.current.on('styledata', () => {
+        console.log('map on styledata')
         dispatch(setMapReady(true))
 
         let enableParcelLayers = true;

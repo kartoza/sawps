@@ -2,9 +2,11 @@ import axios from "axios";
 import ContextLayerInterface from '../../../models/ContextLayer';
 import ParcelInterface from '../../../models/Parcel';
 import PropertyInterface from "../../../models/Property";
+import { MapTheme, PopulationCountLegend } from "../../../models/Map";
 
 const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
 const SEARCH_PROPERTY_URL = '/api/map/search/property/'
+const MAP_PROPERTIES_LEGENDS_URL = '/api/map/legends/properties/'
 export const MIN_SELECT_PARCEL_ZOOM_LEVEL = 12
 export const MIN_SELECT_PROPERTY_ZOOM_LEVEL = 12
 const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
@@ -184,6 +186,18 @@ export const addLayerToMap = (layerId: string, mapObj: maplibregl.Map, layerObj:
 }
 
 /**
+ * Remove layer from map if exists
+ * @param layerId name of the layer
+ * @param mapObj map reference object
+ */
+export const removeLayerFromMap = (layerId: string, mapObj: maplibregl.Map) => {
+    let _layer = mapObj.getLayer(layerId)
+    if (typeof _layer !== 'undefined') {
+        mapObj.removeLayer(layerId)
+    }
+}
+
+/**
  * Search property by coordinate
  * Note: LngLat is in srid 4326
  * @param lngLat
@@ -330,4 +344,111 @@ export const addParcelInvisibleFillLayers = (mapObj: maplibregl.Map) => {
             'fill-opacity': 0
         }
     }, 'erf')
+}
+
+const getMapPopulationStops = (legends: PopulationCountLegend[]) => {
+    let _stops: any = []
+    for (let i=0; i<legends.length; ++i) {
+        let _stop = [
+            {
+                "zoom": 5,
+                "value": legends[i].value
+            },
+            `${legends[i].color}`
+        ]
+        _stops.push(_stop)
+    }
+    return _stops
+}
+
+/**
+ * 
+ * @param showPopulationCount 
+ * @param mapObj 
+ * @param propertiesCount 
+ * @param provinceCount 
+ */
+const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Map, currentTheme: MapTheme, propertiesCount?: PopulationCountLegend[], provinceCount?: PopulationCountLegend[]) => {
+    removePropertiesLayer(mapObj)
+    if (!showPopulationCount) {
+        addLayerToMap('properties', mapObj, {
+            "id": "properties",
+            "type": "fill",
+            "source": "sanbi-dynamic",
+            "source-layer": "properties",
+            "minzoom": 10,
+            "maxzoom": 24,
+            "layout": {"visibility": "visible"},
+            "paint": {
+                "fill-color": "rgba(255, 82, 82, 1)",
+                "fill-opacity": 0.8
+            }
+        })
+    } else {
+        // add province layer
+        let _provinceLayer = {
+            "id": "province-count",
+            "type": "fill",
+            "source": "sanbi-dynamic",
+            "minzoom": 5,
+            "maxzoom": 8,
+            "layout": {"visibility": "visible"},
+            "paint": {
+              "fill-opacity": 1,
+              "fill-color": {
+                "property": "count",
+                "type": "interval",
+                "stops": getMapPopulationStops(provinceCount),
+                "base": 1,
+                "default": "rgba(255, 255, 255, 1)"
+              },
+              "fill-outline-color": "rgba(0, 0, 0, 1)"
+            },
+            "Z": 0,
+            "filter": ["all"],
+            "source-layer": "province_population"
+        }
+        let _propertiesLayer = {
+            "id": "properties",
+            "type": "fill",
+            "source": "sanbi-dynamic",
+            "minzoom": 10,
+            "maxzoom": 24,
+            "layout": {"visibility": "visible"},
+            "paint": {
+              "fill-opacity": 1,
+              "fill-color": {
+                "property": "count",
+                "type": "interval",
+                "stops": getMapPopulationStops(propertiesCount),
+                "base": 1,
+                "default": "rgba(255, 0, 255, 1)"
+              },
+              "fill-outline-color": "rgba(0, 0, 0, 1)"
+            },
+            "Z": 0,
+            "filter": ["all"],
+            "source-layer": "properties"
+        }
+        addLayerToMap('province-count', mapObj, _provinceLayer)
+        addLayerToMap('properties', mapObj, _propertiesLayer)
+        // TODO: add label based on maptheme
+        if (currentTheme === MapTheme.Dark) {
+            
+        } else {
+
+        }
+    }
+}
+
+/**
+ * Remove layers related to properties
+ * @param mapObj 
+ */
+const removePropertiesLayer = (mapObj: maplibregl.Map) => {
+    // remove existing layer if any
+    removeLayerFromMap('properties', mapObj)
+    removeLayerFromMap('province-count', mapObj)
+    // TODO: remove properties point layer
+    // TODO: remove properties label layer
 }

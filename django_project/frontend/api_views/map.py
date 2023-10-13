@@ -7,7 +7,6 @@ from typing import Tuple, List
 import requests
 import io
 import gzip
-import ast
 from django.core.cache import cache
 from django.db import connection
 from django.contrib.auth import get_user_model
@@ -22,7 +21,11 @@ from property.models import (
 )
 from frontend.models.context_layer import ContextLayer
 from frontend.serializers.context_layer import ContextLayerSerializer
-from frontend.utils.map import get_map_template_style
+from frontend.utils.map import (
+    get_map_template_style,
+    get_population_query,
+    generate_population_count_categories
+)
 from frontend.models import (
     Erf,
     Holding,
@@ -117,101 +120,6 @@ class PropertiesLayerMVTTiles(APIView):
             tile = row[0]
         return tile
 
-    def get_query_condition(
-            self, organisation_id: int,
-            filter_start_year: int,
-            filter_end_year: int,
-            filter_species_name: str,
-            filter_organisation: str,
-            filter_activity: str,
-            filter_spatial: str):
-        """Generate query condition from filters."""
-        sql = 't.scientific_name=%s '
-        query_values = [filter_species_name]
-        if filter_start_year and filter_end_year:
-            sql = sql + 'AND ap.year between %s and %s '
-            query_values.append(filter_start_year)
-            query_values.append(filter_end_year)
-        if filter_organisation:
-            sql = sql + 'AND p.organisation_id IN %s '
-            query_values.append(ast.literal_eval('('+filter_organisation+')'))
-        else:
-            sql = sql + 'AND p.organisation_id=%s '
-            query_values.append(organisation_id)
-        if filter_activity:
-            sql = sql + 'AND ap.name=%s '
-            query_values.append(filter_activity)
-        # TODO: filter_spatial
-        return sql, query_values
-
-    def get_population_query(
-            self, is_province_layer: bool,
-            z: int, x: int, y: int,
-            organisation_id: int,
-            filter_start_year: int,
-            filter_end_year: int,
-            filter_species_name: str,
-            filter_organisation: str,
-            filter_activity: str,
-            filter_spatial: str):
-        where_sql, query_values = self.get_query_condition(
-            organisation_id, filter_start_year, filter_end_year,
-            filter_species_name, filter_organisation, filter_activity,
-            filter_spatial
-        )
-        additional_join=(
-            'inner join activity_activitytype aa '
-            'on aa.id=ap.activity_type_id' if filter_activity else ''
-        )
-        population_table=(
-            'annual_population_per_activity' if filter_activity else
-            'annual_population'
-        )
-        sql = ''
-        if is_province_layer:
-            sql = (
-                """
-                select prov.id as id, sum(ap.total) as count
-                from {population_table} ap
-                inner join owned_species os on os.id=ap.owned_species_id
-                inner join taxon t on os.taxon_id=t.id
-                inner join property p on os.property_id=p.id
-                inner join province prov on prov.id=p.province_id
-                {additional_join}
-                where {where_sql} group by prov.id
-                """
-            ).format(
-                additional_join=additional_join,
-                population_table=population_table,
-                where_sql=where_sql
-            )
-        else:
-            where_sql = (
-                'p.geometry && TileBBox(%s, %s, %s, 4326) AND ' + where_sql
-            )
-            sql = (
-                """
-                select p.id,
-                ST_AsMVTGeom(ST_Transform(p.geometry, 3857),
-                  TileBBox(%s, %s, %s, 3857)) as geom,
-                p.name, sum(ap.total) as count
-                from {population_table} ap
-                inner join owned_species os on os.id=ap.owned_species_id
-                inner join taxon t on os.taxon_id=t.id
-                inner join property p on os.property_id=p.id
-                {additional_join}
-                where {where_sql} group by p.id
-                """
-            ).format(
-                additional_join=additional_join,
-                population_table=population_table,
-                where_sql=where_sql
-            )
-            tilebbox_values = [z, x, y, z, x, y]
-            tilebbox_values.extend(query_values)
-            query_values = tilebbox_values
-        return sql, query_values
-
     def generate_properties_layer(
             self,
             organisation_id: int,
@@ -256,8 +164,8 @@ class PropertiesLayerMVTTiles(APIView):
             filter_activity: str,
             filter_spatial: str
         ):
-        sub_sql, query_values = self.get_population_query(
-            True, z, x, y, organisation_id, filter_start_year,
+        sub_sql, query_values = get_population_query(
+            True, False, z, x, y, organisation_id, filter_start_year,
             filter_end_year, filter_species_name, filter_organisation,
             filter_activity, filter_spatial
         )
@@ -296,8 +204,8 @@ class PropertiesLayerMVTTiles(APIView):
             filter_activity: str,
             filter_spatial: str
         ):
-        sql, query_values = self.get_population_query(
-            False, z, x, y, organisation_id, filter_start_year,
+        sql, query_values = get_population_query(
+            False, False, z, x, y, organisation_id, filter_start_year,
             filter_end_year, filter_species_name, filter_organisation,
             filter_activity, filter_spatial
         )
@@ -542,3 +450,40 @@ class MapAuthenticate(APIView):
             if allowed:
                 return HttpResponse('OK')
         return HttpResponseForbidden()
+
+
+class PopulationCountLegends(APIView):
+    """API to return categories/legend of population count."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        current_organisation_id = get_current_organisation_id(
+            self.request.user
+        ) or 0
+        species = self.request.GET.get('species', None)
+        if species is None:
+            return Response(status=400, data='Species filter is mandatory!')
+        province = generate_population_count_categories(
+            True,
+            current_organisation_id,
+            self.request.GET.get('start_year', None),
+            self.request.GET.get('end_year', None),
+            self.request.GET.get('species', None),
+            self.request.GET.get('organisation', None),
+            self.request.GET.get('activity', None),
+            self.request.GET.get('spatial_filter_values', None)
+        )
+        properties = generate_population_count_categories(
+            False,
+            current_organisation_id,
+            self.request.GET.get('start_year', None),
+            self.request.GET.get('end_year', None),
+            self.request.GET.get('species', None),
+            self.request.GET.get('organisation', None),
+            self.request.GET.get('activity', None),
+            self.request.GET.get('spatial_filter_values', None)
+        )
+        return Response(status=200, data={
+            'province': province,
+            'properties': properties
+        })
