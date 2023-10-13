@@ -129,7 +129,7 @@ The `DIGITISE` button is a powerful tool that allows you to digitise parcel boun
 
 6. **Digitised parcel**: Digitised parcel is shown.
 
-7. **Save boundary**: After you've successfully digitised and outlined the parcel boundary using the above options, you can finalise the process by clicking the `SAVE BOUNDARY` button. This saves the digitised boundary and incorporates it into your property's data. 
+7. **Save boundary**: After you've successfully digitised and outlined the parcel boundary using the above options, you can finalise the process by clicking the `SAVE BOUNDARY` button. This saves the digitised boundary and incorporates it into your property's data.
 
 By utilising the digitisation options, you can accurately define parcel boundaries, which is essential for geospatial data and mapping applications. This tool provides you with the flexibility to create precise boundaries and make adjustments as needed during the digitisation process.
 
@@ -157,3 +157,13 @@ The popup window includes the following components:
 
 By following these steps, you can effectively upload data, define parcel boundaries, and save them within the `DATA UPLOAD`. This feature is crucial for geospatial data and mapping applications, ensuring your data is accurate and complete.
 
+#
+### After selecting the parcel
+
+![Upload Popup](./img/panel-8.png)
+
+1. **Parcel ID**: The Parcel ID is a unique identifier for each parcel within the property.
+
+2. **Parcel Type**: Parcel Type categorizes the parcels based on their purpose or characteristics.
+
+3. **Delete icon**: This delete icon allows you to delete the perticuler parcel detail.
