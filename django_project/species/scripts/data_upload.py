@@ -207,15 +207,17 @@ class SpeciesCSVUpload(object):
         # Create success message
         success_message = None
         if self.created_list > 0 and self.existed_list == 0:
-            success_message = "{} rows uploaded successfully."
+            success_message = "{} rows uploaded successfully." \
+                              "".format(self.created_list)
 
         if self.existed_list > 0 and self.created_list == 0:
-            success_message = "{} rows already exist in the database."
+            success_message = "{} rows already exist in the database." \
+                              "".format(self.existed_list)
 
-        if self.existed_list > 0 or self.created_list > 0:
+        if self.existed_list > 0 and self.created_list > 0:
             success_message = "{} rows already exist in the database. {} " \
-                              "uploaded successfully.".\
-                format(self.existed_list, self.created_list)
+                              "row uploaded successfully." \
+                              "".format(self.existed_list, self.created_list)
 
         if success_message:
             self.upload_session.success_notes = success_message
