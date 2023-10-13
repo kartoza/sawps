@@ -71,3 +71,28 @@ The map enhances your ability to work with spatial data and provides valuable in
 By completing the `Property Information Form`, you establish a foundational record for the property in the dataset, which is essential for effective data management and analysis.
 
 This step ensures that your data is organized and ready for further processing within the data upload.
+
+#
+# Step 2
+
+## Description
+
+The second step of the data upload process on the Data upload involves working with Parcel ID and Parcel Type. This stage is crucial for adding detailed information related to parcels within the property.
+
+### Parcel Details
+
+![Parcel Details](./img/panel-4.png)
+
+1. **Parcel ID**: The Parcel ID is a unique identifier for each parcel within the property.
+
+2. **Parcel Type**: Parcel Type categorizes the parcels based on their purpose or characteristics.
+
+1. **SELECT**: The `SELECT` button allows you to choose specific parcels from the map.
+
+2. **DIGITISE**: Clicking the `DIGITISE` button initiates the process of mapping parcel boundaries. This step is essential for geospatial data.
+
+3. **UPLOAD**: The `UPLOAD` it is used for creating parcel boundaries using the supported formats: zip, json, geojson, gpkg, kml (CRS 4326).
+
+4. **SAVE PROPERTY INFORMATION**: If you need to update or modify property information, you can click the `SAVE PROPERTY INFORMATION` button to make changes to the property-level information.
+
+Completing Step 2 ensures that your dataset is comprehensive and includes detailed information about individual parcels within the property. This data is essential for various analyses and property management tasks.
