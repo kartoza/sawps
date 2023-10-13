@@ -23,7 +23,7 @@ The User Guide is a valuable resource for users seeking in-depth guidance.
 1. The User Guide will open in a new browser tab.
 2. A user can browse through the User Guide to find specific information or guidance on various topics related to the platform.
 
-# Contact Page Documentation
+## Contact Page
 
 ## Description
 
