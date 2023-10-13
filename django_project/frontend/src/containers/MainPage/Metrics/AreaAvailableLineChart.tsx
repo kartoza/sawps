@@ -61,7 +61,6 @@ const AreaAvailableLineChart = (props: any) => {
                     padding: 12,
                     font : {
                       size: 12,
-                      weight: "bold" as "bold"
                     }
                 },
             },
@@ -85,7 +84,6 @@ const AreaAvailableLineChart = (props: any) => {
                     text: 'Year', // X-axis label
                     font: {
                         size: 14,
-                        weight: "bold" as "bold",
                     },
                 },
             },
@@ -94,12 +92,15 @@ const AreaAvailableLineChart = (props: any) => {
                 grid: {
                     display: false,
                 },
+                ticks: {
+                    stepSize: 65,
+                    max: 260,
+                },
                 title: {
                     display: true,
                     text: 'Area (Ha)', // Y-axis label
                     font: {
                         size: 14,
-                        weight: "bold" as "bold",
                     },
                 },
             },
@@ -107,19 +108,17 @@ const AreaAvailableLineChart = (props: any) => {
     };
 
     return (
-        <Grid>
+        <>
             {!loading ? (
                 <Line 
                     data={AreaDataValue} 
-                    options={AreaOptions} 
-                    height={265} 
-                    width={650} 
+                    options={AreaOptions}
                 />
        
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
             )}
-        </Grid>
+        </>
     );
 };
 

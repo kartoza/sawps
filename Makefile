@@ -48,7 +48,21 @@ dev-runserver:
 	@echo "------------------------------------------------------------------"
 	@echo "Start django runserver in dev container"
 	@echo "------------------------------------------------------------------"
-	@docker-compose $(ARGS) exec -T dev bash -c "nohup python manage.py runserver 0.0.0.0:8080 &"
+	@docker-compose $(ARGS) exec -T dev bash -c "python manage.py runserver 0.0.0.0:8080"
+
+db-bash:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Entering DB Bash"
+	@echo "------------------------------------------------------------------"
+	@docker-compose exec db sh
+
+db-shell:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Entering PostgreSQL Shell"
+	@echo "------------------------------------------------------------------"
+	docker-compose exec db su - postgres -c "psql"
 
 npm-install:
 	@echo
