@@ -96,3 +96,13 @@ The second step of the data upload process on the Data upload involves working w
 4. **SAVE PROPERTY INFORMATION**: If you need to update or modify property information, you can click the `SAVE PROPERTY INFORMATION` button to make changes to the property-level information.
 
 Completing Step 2 ensures that your dataset is comprehensive and includes detailed information about individual parcels within the property. This data is essential for various analyses and property management tasks.
+
+### Select parcel using select button
+
+![Select button](./img/panel-5.png)
+
+1. **Select parcel**: Zoom in the map untill parcels are visible once you are able to see the parcels select parcels.
+
+2. **Cencel**: You can cancel the selection of the parcel using this button.
+
+3. **Save Boundary**: Click on `SAVE BOUNDARY` button to save the boundaries. After saving the boundary you will be able to see the selected parcel id and its type.
