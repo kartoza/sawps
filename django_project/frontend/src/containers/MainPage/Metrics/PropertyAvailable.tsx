@@ -36,7 +36,18 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
     const [ renderChart, setRenderChart] = useState(false);
 
     // Define colors for each year
-    const availableColors: string[] = ['rgba(112, 178, 118, 1)', 'rgba(250, 167, 85, 1)', 'rgba(157, 133, 190, 1)', '#FF5252', '#616161'];
+    const availableColors = [
+      'rgba(112, 178, 118, 1)', 
+      'rgba(250, 167, 85, 1)', 
+      'rgba(157, 133, 190, 1)', 
+      '#FF5252', 
+      '#616161',
+      'rgba(112, 178, 118, 0.5)',
+      'rgba(250, 167, 85, 0.5)',
+      'rgba(157, 133, 190, 0.5)',
+      'rgba(255, 82, 82, 0.5)',
+      'rgba(97, 97, 97, 0.5)'
+    ];
 
     const fetchAreaAvailable = () => {
         setLoading(true);
@@ -44,7 +55,6 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
             .then((response) => {
                 setLoading(false);
                 if (response.data) {
-                    console.log('rt ',response.data)
                     setPropertyAreaAvailableData(response.data);
                 }
             })
@@ -165,6 +175,8 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
   const options = {
     indexAxis: 'y' as const,
     plugins: {
+      responsive: true,
+      maintainAspectRatio: false,
       datalabels: {
         display: false,
       },
@@ -203,7 +215,7 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
         stacked: true, // Enable stacking on the x-axis
         title: {
           display: true,
-          text: 'Properties', // X-axis label
+          text: 'Area (Ha)', // X-axis label
           font: {
             size: 14,
           },
@@ -218,7 +230,7 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
         },
         title: {
           display: true,
-          text: 'Area (Ha)', // Y-axis label
+          text: 'Properties', // Y-axis label
           font: {
             size: 14,
           },
@@ -232,8 +244,7 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
             {!loading ? (
                 <Bar 
                     data={data} 
-                    options={options} 
-                    height={250} width={500} 
+                    options={options}
                 />
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />

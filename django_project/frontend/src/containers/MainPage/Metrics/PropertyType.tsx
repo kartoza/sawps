@@ -12,7 +12,18 @@ interface PropertyTypeData {
   total_area: number;
 }
 
-const colors = ['rgba(112, 178, 118, 1)', 'rgba(250, 167, 85, 1)', 'rgba(157, 133, 190, 1)', '#FF5252', '#616161'];
+const colors = [
+  'rgba(112, 178, 118, 1)', 
+  'rgba(250, 167, 85, 1)', 
+  'rgba(157, 133, 190, 1)', 
+  '#FF5252', 
+  '#616161',
+  'rgba(112, 178, 118, 0.5)',
+  'rgba(250, 167, 85, 0.5)',
+  'rgba(157, 133, 190, 0.5)',
+  'rgba(255, 82, 82, 0.5)',
+  'rgba(97, 97, 97, 0.5)'
+];
 
 const FETCH_SPECIES_DENSITY = '/api/total-area-per-property-type/';
 
@@ -33,7 +44,7 @@ const PropertyTypeBarChart = (props: any) => {
         if (response.data) {
           const uniquePropertyTypes: Record<string, number> = {};
           const uniqueColors: Record<string, string> = {};
-
+  
           response.data.forEach((item: PropertyTypeData, index: number) => {
             if (!uniquePropertyTypes[item.property_type__name]) {
               uniquePropertyTypes[item.property_type__name] = 0;
@@ -41,14 +52,14 @@ const PropertyTypeBarChart = (props: any) => {
             }
             uniquePropertyTypes[item.property_type__name] += item.total_area;
           });
-
+  
           const newData: PropertyTypeData[] = Object.keys(uniquePropertyTypes).map((property_type__name) => ({
             property_type__name,
             name: '', 
             total_area: uniquePropertyTypes[property_type__name],
             backgroundColor: uniqueColors[property_type__name], // Assign the color
           }));
-
+  
           const sortedData = newData.sort((a, b) => a.property_type__name.localeCompare(b.property_type__name));
           setPropertyTypeData(sortedData);
         }
@@ -58,6 +69,7 @@ const PropertyTypeBarChart = (props: any) => {
         console.log(error);
       });
   };
+  
 
   useEffect(() => {
     fetchActivityPercentageData();
@@ -101,7 +113,6 @@ const PropertyTypeBarChart = (props: any) => {
         text: 'Property type', // X-axis label
         font: {
           size: 14,
-          weight: "bold" as "bold",
         },
       },
       barPercentage: 1, // Set barPercentage to 1 to make bars fill the label space
@@ -121,7 +132,6 @@ const PropertyTypeBarChart = (props: any) => {
         text: 'Area (Ha)', // Y-axis label
         font: {
           size: 14,
-          weight: "bold" as "bold",
         },
       },
       callback: (value: string, index: number) => {
@@ -177,7 +187,6 @@ const PropertyTypeBarChart = (props: any) => {
         <Bar
           data={data}
           options={options}
-          height={200} width={500}
         />
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />

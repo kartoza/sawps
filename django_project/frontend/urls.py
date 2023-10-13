@@ -30,6 +30,7 @@ from frontend.api_views.metrics import (
     SpeciesPopuationCountPerYearAPIView,
     TotalAreaPerPropertyTypeAPIView,
     SpeciesPopulationDensityPerPropertyAPIView,
+    SpeciesPopulationCountPerProvinceAPIView,
     TotalCountPerActivityAPIView,
     TotalAreaAvailableToSpeciesAPIView,
     PopulationPerAgeGroupAPIView,
@@ -62,6 +63,7 @@ from frontend.api_views.upload import (
     BoundaryFileUpload,
 )
 from frontend.views.base_view import get_user_notifications
+from .api_views.user import UserInfoAPIView
 
 from .views.about import AboutView
 from .views.contact import ContactUsView
@@ -282,6 +284,11 @@ urlpatterns = [
         name='species_population_total_density'
     ),
     path(
+        'api/species-count-per-province/',
+        SpeciesPopulationCountPerProvinceAPIView.as_view(),
+        name='species_count_per_province'
+    ),
+    path(
         'api/properties-per-population-category/',
         PropertiesPerPopulationCategoryAPIView.as_view(),
         name='properties_per_population_category'
@@ -371,4 +378,9 @@ urlpatterns = [
         SpatialFilterList.as_view(),
         name='spatial-filter-list'
     ),
+    path(
+        'api/user-info/',
+        UserInfoAPIView.as_view(),
+        name='user-info-api'
+    )
 ]

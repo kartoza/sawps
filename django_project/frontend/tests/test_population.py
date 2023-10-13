@@ -80,7 +80,6 @@ class TestPopulationAPIViews(TestCase):
             list(response.data.keys()),
             [
                 'taxons',
-                'open_close_systems',
                 'survey_methods',
                 'intake_events',
                 'offtake_events',
