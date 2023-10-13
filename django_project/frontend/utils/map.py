@@ -4,6 +4,7 @@ import json
 import time
 import ast
 import math
+from enum import Enum
 from django.db import connection
 from django.contrib.sites.models import Site
 from django.conf import settings
@@ -16,6 +17,13 @@ from frontend.utils.color import linear_gradient
 # number of breaks to generate stops for color gradient of population count
 CHOROPLETH_NUMBER_OF_BREAKS = 5
 DEFAULT_BASE_COLOR = '#FF5252'
+
+
+class PopulationQueryEnum(Enum):
+    PROVINCE_LAYER = 'Province Layer'
+    PROPERTIES_LAYER = 'Properties Layer'
+    PROPERTIES_POINTS_LAYER = 'Properties Points Layer'
+    SUMMARY_COUNT = 'SUMMARY COUNT'
 
 
 def get_map_template_style(request, theme_choice: int = 0, token: str = None):
@@ -178,8 +186,7 @@ def get_query_condition(
 
 
 def get_population_query(
-        is_province_layer: bool,
-        is_summary_count: bool,
+        type: PopulationQueryEnum,
         z: int, x: int, y: int,
         organisation_id: int,
         filter_start_year: int,
@@ -203,7 +210,7 @@ def get_population_query(
         'annual_population'
     )
     sql = ''
-    if is_province_layer:
+    if type == PopulationQueryEnum.PROVINCE_LAYER:
         sql = (
             """
             select prov.id as id, sum(ap.total) as count
@@ -220,7 +227,7 @@ def get_population_query(
             population_table=population_table,
             where_sql=where_sql
         )
-    elif is_summary_count:
+    elif type == PopulationQueryEnum.SUMMARY_COUNT:
         sql = (
             """
             select p.id, p.name, sum(ap.total) as count
@@ -236,14 +243,22 @@ def get_population_query(
             population_table=population_table,
             where_sql=where_sql
         )
-    else:
-        where_sql = (
-            'p.geometry && TileBBox(%s, %s, %s, 4326) AND ' + where_sql
+    elif (
+        type == PopulationQueryEnum.PROPERTIES_LAYER or
+        type == PopulationQueryEnum.PROPERTIES_POINTS_LAYER
+    ):
+        geom_field = (
+            'centroid' if
+            type == PopulationQueryEnum.PROPERTIES_POINTS_LAYER else
+            'geometry'
         )
+        where_sql = (
+            'p.{geom_field} && TileBBox(%s, %s, %s, 4326) AND ' + where_sql
+        ).format(geom_field=geom_field)
         sql = (
             """
             select p.id,
-            ST_AsMVTGeom(ST_Transform(p.geometry, 3857),
+            ST_AsMVTGeom(ST_Transform(p.{geom_field}, 3857),
                 TileBBox(%s, %s, %s, 3857)) as geom,
             p.name, sum(ap.total) as count
             from {population_table} ap
@@ -254,6 +269,7 @@ def get_population_query(
             where {where_sql} group by p.id
             """
         ).format(
+            geom_field=geom_field,
             additional_join=additional_join,
             population_table=population_table,
             where_sql=where_sql
@@ -261,6 +277,8 @@ def get_population_query(
         tilebbox_values = [z, x, y, z, x, y]
         tilebbox_values.extend(query_values)
         query_values = tilebbox_values
+    else:
+        raise ValueError(f'Invalid PopulationQuery type: {type}')
     return sql, query_values
 
 
@@ -278,10 +296,14 @@ def get_count_summary_of_population(
     
     :return: Tuple[int, int]: A tuple of (Min, Max) population count
     """
+    type = (
+        PopulationQueryEnum.PROVINCE_LAYER if is_province_layer else
+        PopulationQueryEnum.SUMMARY_COUNT
+    )
     sub_sql, query_values = get_population_query(
-        is_province_layer, True, 0, 0, 0, organisation_id, filter_start_year,
-        filter_end_year, filter_species_name, filter_organisation,
-        filter_activity, filter_spatial
+        type, 0, 0, 0, organisation_id,
+        filter_start_year, filter_end_year, filter_species_name,
+        filter_organisation, filter_activity, filter_spatial
     )
     sql = (
         """

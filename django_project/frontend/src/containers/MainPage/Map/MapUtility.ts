@@ -384,6 +384,18 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
                 "fill-opacity": 0.8
             }
         }, 'erf-highlighted')
+        addLayerToMap('properties-points', mapObj, {
+            "id": "properties-points",
+            "type": "circle",
+            "source": "sanbi-dynamic",
+            "source-layer": "properties-points",
+            "layout": {"visibility": "visible"},
+            "paint": {
+                "circle-color": "rgba(255, 82, 82, 0.8)"
+            },
+            "minzoom": 5,
+            "maxzoom": 10
+        }, 'NGI aerial imagery')
     } else {
         // add province layer
         let _provinceLayer = {
@@ -430,17 +442,75 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             "filter": ["all"],
             "source-layer": "properties"
         }
+        let _propertiesPointsLayer = {
+            "id": "properties-points",
+            "type": "circle",
+            "source": "sanbi-dynamic",
+            "source-layer": "properties-points",
+            "layout": {"visibility": "visible"},
+            "paint": {
+                "circle-color": {
+                    "property": "count",
+                    "type": "exponential",
+                    "stops": getMapPopulationStops(propertiesCount),
+                    "base": 1,
+                    "default": "rgba(248, 0, 255, 1)"
+                }
+            },
+            "minzoom": 5,
+            "maxzoom": 10
+        }
         console.log('_provinceLayer', _provinceLayer)
         console.log('_propertiesLayer', _propertiesLayer)
+        console.log('_propertiesPointsLayer', _propertiesPointsLayer)
         addLayerToMap('province-count', mapObj, _provinceLayer, 'NGI aerial imagery')
         addLayerToMap('properties', mapObj, _propertiesLayer, 'erf-highlighted')
-        // TODO: add label based on maptheme
-        if (currentTheme === MapTheme.Dark) {
-            
-        } else {
-
-        }
+        addLayerToMap('properties-points', mapObj, _propertiesPointsLayer, 'NGI aerial imagery')
     }
+    // add label based on maptheme
+    let _propertiesLabel = {}
+    if (currentTheme === MapTheme.Dark) {
+        _propertiesLabel = {
+            "id": "properties-label",
+            "type": "symbol",
+            "source": "sanbi-dynamic",
+            "source-layer": "properties-points",
+            "minzoom": 5,
+            "maxzoom": 24,
+            "layout": {
+              "text-field": "{name}",
+              "text-font": ["Open Sans Bold"],
+              "text-size": 12,
+              "text-letter-spacing": 0.05
+            },
+            "paint": {
+              "text-halo-color": "rgba(0, 0, 0, 1)",
+              "text-color": "rgba(240, 240, 240, 1)",
+              "text-halo-width": 1
+            }
+        }
+    } else {
+        _propertiesLabel = {
+            "id": "properties-label",
+            "type": "symbol",
+            "source": "sanbi-dynamic",
+            "source-layer": "properties-points",
+            "minzoom": 8,
+            "maxzoom": 24,
+            "layout": {
+              "text-field": "{name}",
+              "text-font": ["Open Sans Bold"],
+              "text-size": 12,
+              "text-letter-spacing": 0.05
+            },
+            "paint": {
+              "text-halo-color": "rgba(191, 191, 191, 1)",
+              "text-color": "rgba(35, 35, 35, 1)",
+              "text-halo-width": 0.5
+            }
+          }
+    }
+    addLayerToMap('properties-label', mapObj, _propertiesLabel, 'erf-highlighted')
 }
 
 /**
@@ -451,6 +521,7 @@ export const removePropertiesLayer = (mapObj: maplibregl.Map) => {
     // remove existing layer if any
     removeLayerFromMap('properties', mapObj)
     removeLayerFromMap('province-count', mapObj)
-    // TODO: remove properties point layer
+    removeLayerFromMap('properties-points', mapObj)
+    removeLayerFromMap('properties-label', mapObj)
     // TODO: remove properties label layer
 }

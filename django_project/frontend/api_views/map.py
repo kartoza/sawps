@@ -24,7 +24,8 @@ from frontend.serializers.context_layer import ContextLayerSerializer
 from frontend.utils.map import (
     get_map_template_style,
     get_population_query,
-    generate_population_count_categories
+    generate_population_count_categories,
+    PopulationQueryEnum
 )
 from frontend.models import (
     Erf,
@@ -48,7 +49,7 @@ from frontend.utils.organisation import (
 User = get_user_model()
 PROVINCE_LAYER_ZOOMS = (5, 8)
 PROPERTIES_LAYER_ZOOMS = (10, 24)
-PROPERTIES_POINT_LAYER_ZOOMS = (5, 10)
+PROPERTIES_POINT_LAYER_ZOOMS = (5, 24)
 
 
 def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
@@ -122,18 +123,29 @@ class PropertiesLayerMVTTiles(APIView):
 
     def generate_properties_layer(
             self,
+            type: PopulationQueryEnum,
             organisation_id: int,
             z: int,
             x: int,
             y: int,) -> Tuple[str, List[str]]:
+        geom_field = (
+            'centroid' if
+            type == PopulationQueryEnum.PROPERTIES_POINTS_LAYER else
+            'geometry'
+        )
+        layer_name = (
+            'properties-points' if
+            type == PopulationQueryEnum.PROPERTIES_POINTS_LAYER else
+            'properties'
+        )
         sql = (
             'SELECT p.id, p.name, 0 as count, '
             'ST_AsMVTGeom('
-            '  ST_Transform(p.geometry, 3857), '
+            '  ST_Transform(p.{geom_field}, 3857), '
             '  TileBBox(%s, %s, %s, 3857)) as geom '
             'from property p '
-            'where p.geometry && TileBBox(%s, %s, %s, 4326) '
-        )
+            'where p.{geom_field} && TileBBox(%s, %s, %s, 4326) '
+        ).format(geom_field=geom_field)
         # add filter by selected organisation
         sql = (
             sql +
@@ -144,7 +156,7 @@ class PropertiesLayerMVTTiles(APIView):
             'AS data '
             'FROM ({query}) AS q)'
         ).format(
-            mvt_name='properties',
+            mvt_name=layer_name,
             query=sql
         )
         query_values = [
@@ -165,9 +177,9 @@ class PropertiesLayerMVTTiles(APIView):
             filter_spatial: str
         ):
         sub_sql, query_values = get_population_query(
-            True, False, z, x, y, organisation_id, filter_start_year,
-            filter_end_year, filter_species_name, filter_organisation,
-            filter_activity, filter_spatial
+            PopulationQueryEnum.PROVINCE_LAYER, z, x, y, organisation_id,
+            filter_start_year, filter_end_year, filter_species_name,
+            filter_organisation, filter_activity, filter_spatial
         )
         sql = (
             """
@@ -205,7 +217,8 @@ class PropertiesLayerMVTTiles(APIView):
             filter_spatial: str
         ):
         sql, query_values = get_population_query(
-            False, False, z, x, y, organisation_id, filter_start_year,
+            PopulationQueryEnum.PROPERTIES_LAYER, z, x, y,
+            organisation_id, filter_start_year,
             filter_end_year, filter_species_name, filter_organisation,
             filter_activity, filter_spatial
         )
@@ -219,8 +232,30 @@ class PropertiesLayerMVTTiles(APIView):
         )
         return fsql, query_values
 
-    def generate_properties_points_layer():
-        pass
+    def generate_properties_points_population_layer(
+            self, organisation_id: int,
+            z: int, x: int, y: int,
+            filter_start_year: int,
+            filter_end_year: int,
+            filter_species_name: str,
+            filter_organisation: str,
+            filter_activity: str,
+            filter_spatial: str):
+        sql, query_values = get_population_query(
+            PopulationQueryEnum.PROPERTIES_POINTS_LAYER, z, x, y,
+            organisation_id, filter_start_year,
+            filter_end_year, filter_species_name, filter_organisation,
+            filter_activity, filter_spatial
+        )
+        fsql = (
+            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
+            'AS data '
+            'FROM ({query}) AS q)'
+        ).format(
+            mvt_name='properties-points',
+            query=sql
+        )
+        return fsql, query_values
 
     def generate_query_for_map(
             self,
@@ -258,16 +293,37 @@ class PropertiesLayerMVTTiles(APIView):
                 )
                 sqls.append(province_sql)
                 query_values.extend(province_val)
-            # TODO: check choropleth properties point layer
+            if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
+                propertie_points_sql, properties_points_val = (
+                    self.generate_properties_points_population_layer(
+                        organisation_id, z, x, y,
+                        filter_start_year, filter_end_year,
+                        filter_species_name, filter_organisation,
+                        filter_activity, filter_spatial
+                    )
+                )
+                sqls.append(propertie_points_sql)
+                query_values.extend(properties_points_val)
         else:
             if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
                 # generate properties layer
                 properties_sql, properties_val = (
-                    self.generate_properties_layer(organisation_id, z, x, y)
+                    self.generate_properties_layer(
+                        PopulationQueryEnum.PROPERTIES_LAYER,
+                        organisation_id, z, x, y
+                    )
                 )
                 sqls.append(properties_sql)
                 query_values.extend(properties_val)
-            # TODO: check properties point layer
+            if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
+                propertie_points_sql, properties_points_val = (
+                    self.generate_properties_layer(
+                        PopulationQueryEnum.PROPERTIES_POINTS_LAYER,
+                        organisation_id, z, x, y
+                    )
+                )
+                sqls.append(propertie_points_sql)
+                query_values.extend(properties_points_val)
         if len(sqls) == 0:
             return None, None
         # construct output_sql
