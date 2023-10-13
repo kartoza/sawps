@@ -29,7 +29,7 @@ The User Guide is a valuable resource for users seeking in-depth guidance.
 
 The Contact Page serves as a means for users to get in touch with your organization or platform. Users can use this page to send messages, inquiries, or feedback. This documentation provides an overview of the fields and features available on the Contact Page.
 
-## Contact Form
+### Contact Form
 
 The Contact Page features a user-friendly contact form where users can provide their information and message. Here are the key components of the contact form:
 
