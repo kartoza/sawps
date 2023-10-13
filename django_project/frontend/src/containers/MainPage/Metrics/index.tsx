@@ -161,17 +161,6 @@ const Metrics = () => {
                                 />
                             </Grid>
 
-                            <Grid item xs={12} md={6}>
-                                <PropertyTypeBarChart 
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear} 
-                                    loading={loading} 
-                                    setLoading={setLoading} 
-                                />
-                            </Grid>
-
                            <Grid item xs={12} md={6}>
                                 <DensityBarChart 
                                     selectedSpecies={selectedSpecies} 
