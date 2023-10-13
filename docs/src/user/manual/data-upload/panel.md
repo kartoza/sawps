@@ -48,28 +48,23 @@ The Data Table Page serves as the central hub for viewing and interacting with y
 
 The Property Information Form is the initial stage of data upload. It's designed to capture essential details about the property being added to the dataset. Here's a breakdown of the form fields:
 
-1. **Property Name**: Enter the name of the property in the `Property Name` input field.
+1. **Step 1**: First step of data upload.
 
-2. **Owner Name**: The `Owner Name` field is pre-filled with the default owner name.
+2. **Property Name**: Enter the name of the property in the `Property Name` input field.
 
-3. **Owner Email**: Similar to the owner name, the `Owner Email` field is pre-filled with the default owner email.
+3. **Owner Name**: The `Owner Name` field is pre-filled with the default owner name.
 
-4. **Open/Close System**: Select the open or close system for the property from the dropdown menu. This choice reflects the accessibility status of the property.
+4. **Owner Email**: Similar to the owner name, the `Owner Email` field is pre-filled with the default owner email.
 
-5. **Property Type**: Choose the property type from the `Property Type` dropdown menu. This classification helps categorize the property.
+5. **Open/Close System**: Select the open or close system for the property from the dropdown menu. This choice reflects the accessibility status of the property.
 
-6. **Province**: Select the province or region where the property is located from the `Province` dropdown. This information is vital for geographic referencing.
+6. **Property Type**: Choose the property type from the `Property Type` dropdown menu. This classification helps categorize the property.
 
-7. **Organisation**: The `Organisation` field displays the name of the organization associated with the property.
+7. **Province**: Select the province or region where the property is located from the `Province` dropdown. This information is vital for geographic referencing.
 
-8. **SAVE PROPERTY INFORMATION**: Once you've filled in all the necessary details, click the `SAVE PROPERTY INFORMATION` button to store this information and proceed with the data upload process.
+8. **Organisation**: The `Organisation` displays the name of the organization.
 
-9. **Zoom In**: Click the plus (+) sign to zoom in on the map for a closer view of specific areas.
-
-10. **Zoom Out**: Click the minus (-) sign to zoom out and get a broader view of the map.
-
-11. **Dark/Light Mode**: Toggle between a dark and light mode by clicking on the moon and sun icons. This feature provides visual comfort based on your preference.
-12. **Print**: Click the print icon to generate a printable version of the map for your records or to share with others.
+9. **SAVE PROPERTY INFORMATION**: Once you've filled in all the necessary details, click the `SAVE PROPERTY INFORMATION` button to store this information and proceed with the data upload process.
 
 The map enhances your ability to work with spatial data and provides valuable insights into the geographical aspects of your records.
 
