@@ -5,6 +5,7 @@ import maplibregl, {Map as MapLibreMap, FeatureIdentifier} from 'maplibre-gl';
 import MapboxDraw, { constants as MapboxDrawConstant } from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import {RootState} from '../../../app/store';
+import { debounce } from '@mui/material/utils';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {
   setMapReady,
@@ -18,10 +19,11 @@ import {
   toggleParcelSelectionMode,
   triggerMapEvent,
   toggleMapTheme,
-  setInitialMapTheme
+  setInitialMapTheme,
+  setPopulationCountLegends
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
-import { MapSelectionMode, MapTheme, MapEvents } from "../../../models/Map";
+import { MapSelectionMode, MapTheme, MapEvents, PopulationCountLegend } from "../../../models/Map";
 import { UploadMode } from "../../../models/Upload";
 import './index.scss';
 import CustomNavControl from './NavControl';
@@ -38,7 +40,9 @@ import {
   findAreaLayers,
   isContextLayerSelected,
   getMapPopupDescription,
-  addParcelInvisibleFillLayers
+  addParcelInvisibleFillLayers,
+  drawPropertiesLayer,
+  removePropertiesLayer
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -47,6 +51,7 @@ import useThemeDetector from '../../../components/ThemeDetector';
 import {useGetUserInfoQuery} from "../../../services/api";
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
+const MAP_PROPERTIES_LEGENDS_URL = '/api/map/legends/properties/'
 const MAP_SOURCES = ['sanbi', 'sanbi-dynamic', 'NGI Aerial Imagery']
 const AERIAL_SOURCE_ID = 'NGI Aerial Imagery'
 
@@ -112,6 +117,8 @@ export default function Map() {
   const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
   const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
   const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
+  const provinceCounts = useAppSelector((state: RootState) => state.mapState.provinceCounts)
+  const propertiesCounts = useAppSelector((state: RootState) => state.mapState.propertiesCounts)
 
   const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
@@ -269,9 +276,11 @@ export default function Map() {
 
   /* Listen to context layers change (isSelected) */
   useEffect(() => {
+    console.log('context layers change ', isMapReady)
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
     if (!map.current) return;
+    console.log('map loaded style ', map.current.isStyleLoaded())
     const _mapObj: maplibregl.Map = map.current
     const _layers = _mapObj.getStyle().layers
     for (let i=0; i < _layers.length; ++i) {
@@ -331,15 +340,29 @@ export default function Map() {
 
   /* Called when mapTheme is changed */
   useEffect(() => {
-    console.log('mapTheme is changed')
     if (mapTheme === MapTheme.None) return;
     if (!isSuccess) return;
     if (map.current) {
+      console.log('mapTheme is changed ', map.current.isStyleLoaded())
       dispatch(setMapReady(false))
       map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}`)
       if (mapNavControl.current) {
         mapNavControl.current.updateThemeSwitcherIcon(mapTheme)
       }
+      // check if filters are applied
+      // if (selectedSpecies) {
+        // rebuild query parameters to enable choropleth layers
+        // let _queryParams = `start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`
+        // drawPropertiesLayer(true, map.current, mapTheme, propertiesCounts, provinceCounts)
+        // dispatch(triggerMapEvent({
+        //   'id': uuidv4(),
+        //   'name': MapEvents.REFRESH_PROPERTIES_LAYER,
+        //   'date': Date.now(),
+        //   'payload': [_queryParams]
+        // }))
+      // } else {
+        // drawPropertiesLayer(false, map.current, mapTheme)
+      // }
     } else {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
@@ -363,19 +386,21 @@ export default function Map() {
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
       })
       map.current.on('styledata', () => {
-        console.log('map on styledata')
-        dispatch(setMapReady(true))
+        console.log('map on styledata ', map.current.isStyleLoaded())
+        if (map.current.isStyleLoaded()) {
+          dispatch(setMapReady(true))
 
-        let enableParcelLayers = true;
-        if (userInfoData) {
-          for (let userRole of userInfoData.user_roles) {
-            if (userRole.toLowerCase().includes('decision maker')) {
-              enableParcelLayers = false
+          let enableParcelLayers = true;
+          if (userInfoData) {
+            for (let userRole of userInfoData.user_roles) {
+              if (userRole.toLowerCase().includes('decision maker')) {
+                enableParcelLayers = false
+              }
             }
           }
+          if(enableParcelLayers)
+            addParcelInvisibleFillLayers(map.current)
         }
-        if(enableParcelLayers)
-          addParcelInvisibleFillLayers(map.current)
       })
     }
   }, [mapTheme, isSuccess]);
@@ -477,7 +502,7 @@ export default function Map() {
     for (let i=0; i < mapEvents.length; ++i) {
       let _event = mapEvents[i]
       if (_event.name === MapEvents.REFRESH_PROPERTIES_LAYER) {
-        // add query param t to properties layer to refresh it
+        // add query param to properties layer to refresh it
         let _sanbiDynamicSource = _mapObj.getSource('sanbi-dynamic') as any;
         let _url = _sanbiDynamicSource['tiles'][0]
         _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}`)
@@ -548,33 +573,51 @@ export default function Map() {
         }, 3000);
         return () => clearInterval(interval);
     }
-}, [savingBoundaryDigitise, boundaryDigitiseSession])
+  }, [savingBoundaryDigitise, boundaryDigitiseSession])
 
   /* Called when filters are changed */
   useEffect(() => {
+    console.log('filters changed ', isMapReady)
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
     if (!map.current) return;
+    removePropertiesLayer(map.current)
     if (selectedSpecies) {
       // rebuild query parameters to enable choropleth layers
       let _queryParams = `start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`
       console.log('rebuild query parameters ', _queryParams)
-      dispatch(triggerMapEvent({
-        'id': uuidv4(),
-        'name': MapEvents.REFRESH_PROPERTIES_LAYER,
-        'date': Date.now(),
-        'payload': [_queryParams]
-      }))
+      fetchPopulationCounts(_queryParams)
     } else {
       console.log('rebuild query parameters **EMPTY**')
+      drawPropertiesLayer(false, map.current, mapTheme)
       dispatch(triggerMapEvent({
         'id': uuidv4(),
         'name': MapEvents.REFRESH_PROPERTIES_LAYER,
         'date': Date.now()
       }))
+      dispatch(setPopulationCountLegends([[],[]]))
     }
-    
-}, [startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues])
+  }, [isMapReady, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues])
+
+  const fetchPopulationCounts = React.useMemo(() => debounce((queryParams: string) => {
+    axios.get(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`).then((response) => {
+      if (response.data) {
+        let _provinceCounts = response.data['province'] as PopulationCountLegend[]
+        let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
+        drawPropertiesLayer(true, map.current, mapTheme, _propertiesCounts, _provinceCounts)
+        dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
+        dispatch(triggerMapEvent({
+          'id': uuidv4(),
+          'name': MapEvents.REFRESH_PROPERTIES_LAYER,
+          'date': Date.now(),
+          'payload': [queryParams]
+        }))
+      }
+    }).catch((error) => {
+      console.log(error)
+    })
+  }, 400), [mapTheme])
+
 
   return (
       <div className="map-wrap">

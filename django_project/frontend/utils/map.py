@@ -96,27 +96,13 @@ def get_map_template_style(request, theme_choice: int = 0, token: str = None):
             url = url.replace('http://', schema)
         # add epoch datetime
         url = url + f'?t={int(time.time())}'
+        # TODO: add query params if there is species filter
         styles['sources']['sanbi-dynamic'] = {
             "type": "vector",
             "tiles": [url],
             "minzoom": 5,
             "maxzoom": 24
         }
-        # TODO: move this layer to FE
-        # FF5252
-        # styles['layers'].append({
-        #     "id": "properties",
-        #     "type": "fill",
-        #     "source": "sanbi-dynamic",
-        #     "source-layer": "properties",
-        #     "minzoom": 10,
-        #     "maxzoom": 24,
-        #     "layout": {"visibility": "visible"},
-        #     "paint": {
-        #         "fill-color": "rgba(255, 82, 82, 1)",
-        #         "fill-opacity": 0.8
-        #     }
-        # })
         styles['layers'].append(get_highlighted_layer('erf'))
         styles['layers'].append(get_highlighted_layer('holding'))
         styles['layers'].append(get_highlighted_layer('farm_portion'))
@@ -185,7 +171,7 @@ def get_query_condition(
         sql = sql + 'AND p.organisation_id=%s '
         query_values.append(organisation_id)
     if filter_activity:
-        sql = sql + 'AND ap.name=%s '
+        sql = sql + 'AND aa.name=%s '
         query_values.append(filter_activity)
     # TODO: filter_spatial
     return sql, query_values
@@ -308,8 +294,8 @@ def get_count_summary_of_population(
         cursor.execute(sql, query_values)
         row = cursor.fetchone()
         if row:
-            min = row[0]
-            max = row[1]
+            min = row[0] if row[0] else 0
+            max = row[1] if row[1] else 0
     return (min, max)
 
 
@@ -319,6 +305,8 @@ def generate_population_count_categories_base(
         base_color: str):
     """
     Generate population count categories for choropleth map.
+    Using equal interval classification.
+    http://wiki.gis.com/wiki/index.php/Equal_Interval_classification
     
     :param min: minimum population count
     :param max: maximum population count
@@ -326,18 +314,29 @@ def generate_population_count_categories_base(
     :return: list of dict of minLabel, maxLabel, value and color.
     """
     result = []
-    colors = linear_gradient(base_color, n=CHOROPLETH_NUMBER_OF_BREAKS)
+    colors = linear_gradient(base_color, n=CHOROPLETH_NUMBER_OF_BREAKS)['hex']
     colors = colors[::-1]
-    break_val = math.ceil((max - min) / CHOROPLETH_NUMBER_OF_BREAKS) + 1
+    break_val = math.ceil((max - min) / CHOROPLETH_NUMBER_OF_BREAKS)
+    if break_val == 0:
+        # case min = max
+        break_val = 1
     val = min
     for t in range(0, CHOROPLETH_NUMBER_OF_BREAKS):
         result.append({
             'minLabel': val,
-            'maxLabel': (val + break_val - 1),
-            'value': min,
-            'color': colors[t]
+            'maxLabel': val + break_val,
+            'value': val,
+            'color': ''
         })
         val += break_val
+        if val > max:
+            break
+    t = CHOROPLETH_NUMBER_OF_BREAKS - 1
+    for element in reversed(result):
+        element['color'] = colors[t]
+        t -= 1
+        if t <= -1:
+            break
     return result
 
 
@@ -356,7 +355,7 @@ def generate_population_count_categories(
         filter_activity, filter_spatial
     )
     base_color = DEFAULT_BASE_COLOR
-    taxon = Taxon.objects.filter(name=filter_species_name).first()
+    taxon = Taxon.objects.filter(scientific_name=filter_species_name).first()
     if taxon and taxon.colour:
         base_color = taxon.colour
     return generate_population_count_categories_base(min, max, base_color)

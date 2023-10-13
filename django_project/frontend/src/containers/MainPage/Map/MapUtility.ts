@@ -6,7 +6,6 @@ import { MapTheme, PopulationCountLegend } from "../../../models/Map";
 
 const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
 const SEARCH_PROPERTY_URL = '/api/map/search/property/'
-const MAP_PROPERTIES_LEGENDS_URL = '/api/map/legends/properties/'
 export const MIN_SELECT_PARCEL_ZOOM_LEVEL = 12
 export const MIN_SELECT_PROPERTY_ZOOM_LEVEL = 12
 const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
@@ -368,8 +367,9 @@ const getMapPopulationStops = (legends: PopulationCountLegend[]) => {
  * @param propertiesCount 
  * @param provinceCount 
  */
-const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Map, currentTheme: MapTheme, propertiesCount?: PopulationCountLegend[], provinceCount?: PopulationCountLegend[]) => {
+export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Map, currentTheme: MapTheme, propertiesCount?: PopulationCountLegend[], provinceCount?: PopulationCountLegend[]) => {
     removePropertiesLayer(mapObj)
+    console.log('drawPropertiesLayer ', showPopulationCount)
     if (!showPopulationCount) {
         addLayerToMap('properties', mapObj, {
             "id": "properties",
@@ -383,7 +383,7 @@ const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Ma
                 "fill-color": "rgba(255, 82, 82, 1)",
                 "fill-opacity": 0.8
             }
-        })
+        }, 'erf-highlighted')
     } else {
         // add province layer
         let _provinceLayer = {
@@ -430,8 +430,10 @@ const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Ma
             "filter": ["all"],
             "source-layer": "properties"
         }
-        addLayerToMap('province-count', mapObj, _provinceLayer)
-        addLayerToMap('properties', mapObj, _propertiesLayer)
+        console.log('_provinceLayer', _provinceLayer)
+        console.log('_propertiesLayer', _propertiesLayer)
+        addLayerToMap('province-count', mapObj, _provinceLayer, 'NGI aerial imagery')
+        addLayerToMap('properties', mapObj, _propertiesLayer, 'erf-highlighted')
         // TODO: add label based on maptheme
         if (currentTheme === MapTheme.Dark) {
             
@@ -445,7 +447,7 @@ const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Ma
  * Remove layers related to properties
  * @param mapObj 
  */
-const removePropertiesLayer = (mapObj: maplibregl.Map) => {
+export const removePropertiesLayer = (mapObj: maplibregl.Map) => {
     // remove existing layer if any
     removeLayerFromMap('properties', mapObj)
     removeLayerFromMap('province-count', mapObj)

@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import ParcelInterface from "../models/Parcel";
-import { MapSelectionMode, MapEventInterface, MapTheme } from "../models/Map";
+import { MapSelectionMode, MapEventInterface, MapTheme, PopulationCountLegend } from "../models/Map";
 import PropertyInterface, { createNewProperty } from "../models/Property";
 import { UploadMode } from "../models/Upload";
 
@@ -14,6 +14,8 @@ export interface MapStateInterface {
     selectedProperty: PropertyInterface;
     mapEvents: MapEventInterface[];
     theme: MapTheme;
+    provinceCounts: PopulationCountLegend[];
+    propertiesCounts: PopulationCountLegend[];
 }
 
 const initialState: MapStateInterface = {
@@ -22,7 +24,9 @@ const initialState: MapStateInterface = {
     selectedParcels: [],
     selectedProperty: createNewProperty(),
     mapEvents: [],
-    theme: MapTheme.None
+    theme: MapTheme.None,
+    provinceCounts: [],
+    propertiesCounts: []
 }
 
 /* reset all selectedParcels */
@@ -133,6 +137,12 @@ export const MapStateSlice = createSlice({
             state.selectedParcels = []
             state.selectedProperty = createNewProperty()
             state.mapEvents = []
+            state.provinceCounts = []
+            state.propertiesCounts = []
+        },
+        setPopulationCountLegends: (state, action: PayloadAction<PopulationCountLegend[][]>) => {
+            state.provinceCounts = [...action.payload[0]]
+            state.propertiesCounts = [...action.payload[1]]
         }
     }
 })
@@ -151,7 +161,8 @@ export const {
     onMapEventProcessed,
     toggleMapTheme,
     setInitialMapTheme,
-    resetMapState
+    resetMapState,
+    setPopulationCountLegends
 } = MapStateSlice.actions
 
 export default MapStateSlice.reducer;
