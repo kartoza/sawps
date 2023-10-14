@@ -25,7 +25,6 @@ from frontend.models.map_session import MapSession
 from frontend.serializers.context_layer import ContextLayerSerializer
 from frontend.utils.map import (
     get_map_template_style,
-    get_population_query,
     generate_population_count_categories,
     PopulationQueryEnum,
     generate_map_view
@@ -115,6 +114,7 @@ class MapSessionBase(APIView):
         if session is None:
             raise Http404()
         return session
+
 
 class ContextLayerList(APIView):
     """Fetch context layers."""
@@ -233,8 +233,7 @@ class PropertiesLayerMVTTiles(MapSessionBase):
 
     def generate_province_layer(
             self, session: MapSession,
-            z: int, x: int, y: int
-        ):
+            z: int, x: int, y: int):
         sql = (
             """
             select zpss.id, zpss.adm1_en, population_summary.count,
