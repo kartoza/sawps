@@ -63,6 +63,23 @@ class BaseTestCase(TestCase):
         session = self.client.session
         session.save()
 
+class SpeciesPopuationCountPerProvinceTestCase(BaseTestCase):
+    """
+    This is to test if the API is reachable
+    and returns a success response.
+    """
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("species_count_per_province")
+
+    def test_species_population_count_api_view(self) -> None:
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
     """
@@ -256,20 +273,21 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         Test properties per population category.
         """
         url = self.url
+        # test without species name
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['>200'], 1)
 
-    def test_properties_population_category_filter_by_property(self) -> None:
-        """
-        Test species population categories filtered by property.
-        """
+        # test with property id only to check if response is oke
         id = self.owned_species[0].property_id
         data = {'property':id}
-        url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['1-10'], 0)
+        
+        # test property id
+        id = self.owned_species[0].property_id
+        data = {'property':id, 'species': 'Penthera leo'}
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):

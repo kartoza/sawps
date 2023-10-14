@@ -22,6 +22,7 @@ from frontend.utils.metrics import (
     calculate_total_area_available_to_species,
     calculate_total_area_per_property_type,
     calculate_base_population_of_species,
+    calculate_species_count_per_province
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -136,6 +137,35 @@ class TotalCountPerActivityAPIView(APIView):
         return Response(serializer.data)
 
 
+class SpeciesPopulationCountPerProvinceAPIView(APIView):
+    """
+    API view to retrieve species pcount per province.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> QuerySet[Property]:
+        """
+        Returns a filtered queryset of property objects
+        within the specified organization.
+        """
+        organisation_id = get_current_organisation_id(self.request.user)
+        queryset = Property.objects.filter(organisation_id=organisation_id)
+        filtered_queryset = PropertyFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset.distinct('name')
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve species count per province.
+        """
+        species_name = request.GET.get("species")
+        queryset = self.get_queryset()
+        return Response(
+            calculate_species_count_per_province(queryset, species_name)
+        )
+
+
 class SpeciesPopulationDensityPerPropertyAPIView(APIView):
     """
     API view to retrieve species population density per property.
@@ -199,8 +229,11 @@ class PropertiesPerPopulationCategoryAPIView(APIView):
         """
         Handle GET request to retrieve population categories for properties.
         """
+        species_name = request.GET.get("species")
         queryset = self.get_queryset()
-        return Response(calculate_population_categories(queryset))
+        return Response(
+            calculate_population_categories(queryset, species_name)
+        )
 
 
 class TotalAreaAvailableToSpeciesAPIView(APIView):

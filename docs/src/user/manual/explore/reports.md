@@ -33,6 +33,26 @@ The main area of the page displays your dataset in a tabular format. Each row re
 5. **XLSX Format:** Click the "DOWNLOAD DATA REPORT" button to download the current dataset in XLSX format.
 6. **CSV Format:** Click the "DOWNLOAD DATA CSV" button to download the current dataset in CSV format.
 
+
+### Report Type
+* **Activity Report:** Report on activity basis.
+* **Property Report:** Report on property basis.
+* **Species Report:** Report on species basis.
+* **Province Report:** Report on province basis. 
+Only member of `National data consumer` group can see this report.
+* **Sampling Report:** Filter data by property. 
+Member of `National data consumer` or `Regional data consumer` **CAN NOT** see this report.
+
+User group is configurable from the User Table in the [Django Admin](../../../administrator/manual/django-admin.md).
+
+### Activity Report
+![Activity Report](./img/reports-2.png)
+
+Activity Report columns consisted of base columns and custom columns.
+1. **Base columns**: Hardcoded.
+2. **Custom columns**: Configurable from the Django admin site by the site administrator. 
+See Activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
+
 ### Summary
 
 The reports table page is a comprehensive platform for exploring, analysing, and interacting with your data. With filters, column search, and data export options, you have the tools necessary to customise your data view, find specific information, and export data in the format that suits your needs.

@@ -12,6 +12,7 @@ import axios from "axios";
 import './index.scss';
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
+import { getTitle } from "../../../utils/Helpers";
 import {useGetUserInfoQuery, UserInfo} from "../../../services/api";
 
 const ITEM_HEIGHT = 48;
@@ -25,7 +26,17 @@ const MenuProps = {
     },
 };
 
+interface ActivityInterface {
+    id: number,
+    name: string,
+    recruitment: boolean,
+    colour: string,
+    width: number,
+    export_fields: string[]
+}
+
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
+const FETCH_ACTIVITY_LIST_URL = '/api/activity-type/'
 
 const DataList = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -52,12 +63,12 @@ const DataList = () => {
 
     let dataset: any[] = []
     let reportList: any[] = []
-    let customColorWidth = {}
+    let defaultColorWidth = {}
 
     if (isSuccess) {
         dataset = checkUserRole(userInfoData) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
         reportList = checkUserRole(userInfoData) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
-        customColorWidth =
+        defaultColorWidth =
             {
                 "Species_report": {color:"#F9A95D",width:107},
                 "Property_report": {color:'#9F89BF',width:131},
@@ -72,7 +83,7 @@ const DataList = () => {
                 "Unplanned/illegal hunting": {color:"#696969",width:147}
             }
     }
-
+    const [customColorWidth, setCustomColorWidth] = useState<any>(defaultColorWidth)
 
     function checkUserRole(userInfo: UserInfo) {
         if (!userInfo?.user_roles) return false;
@@ -80,6 +91,24 @@ const DataList = () => {
         const allowedRoles = new Set(["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"]);
         return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
     }
+
+    const fetchActivityList = () => {
+        setLoading(true)
+        axios.get(FETCH_ACTIVITY_LIST_URL).then((response) => {
+            setLoading(false)
+            setCustomColorWidth({
+                ...customColorWidth,
+                ...Object.assign({}, ...response.data.map((x: ActivityInterface) => ({[x.name]: {color: x.colour, width: x.width}})))
+            })
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
+    useEffect(() => {
+        fetchActivityList()
+    }, []);
 
     const fetchDataList = () => {
         setLoading(true)
@@ -135,9 +164,7 @@ const DataList = () => {
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
             <>
                 <Box className="data-table" style={{ backgroundColor: (customColorWidth as any)[each]?.color }}>
-                    {each.split('_')
-                        .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
-                        .join(' ')}
+                    {getTitle(each)}
                 </Box>
                 {
                     reportList.length > 0 && reportList.map((item, index) => {
@@ -146,9 +173,7 @@ const DataList = () => {
                             const cellKeys = Object.keys(cellData[0]);
                             const generatedColumns = cellKeys.map((key) => ({
                                 field: key,
-                                headerName: key.replace('owned','').replace('species','').replace('taxon','').replace('varbatim','').split('_')
-                                    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                                    .join(' ').trim(),
+                                headerName: getTitle(key),
                                 width: (customColorWidth as any)[each]?.width,
                             }));
                             for (const value of generatedColumns) {
@@ -179,17 +204,12 @@ const DataList = () => {
         const activityDataGrid = checkUserRole(userInfoData) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
             <>
                 <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
-                    {each.split('_')
-                        .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
-                        .join(' ')}
+                    {getTitle(each)}
                 </Box>
                 {activityReportList.map((each: any) =>
                     <>
                         <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
-                            {each.split('_')
-                                .map((part: any) => part.charAt(0).toUpperCase() + part.slice(1))
-                                .join(' ')
-                            }
+                            {getTitle(each)}
                         </Box>
                         {activityReportdataList.length > 0 && activityReportdataList.map((item, index) => {
                             const cellData = item[each];
@@ -197,9 +217,7 @@ const DataList = () => {
                                 const cellKeys = cellData[0] && Object.keys(cellData[0]);
                                 const generatedColumns: GridColDef[] = cellKeys.length > 0 && cellKeys.map((key) => ({
                                     field: key,
-                                    headerName: key.replace('owned','').replace('species','').replace('taxon','').replace('varbatim','').split('_')
-                                        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                                        .join(' ').trim(),
+                                    headerName: getTitle(key),
                                     width: (customColorWidth as any)[each]?.width,
                                 }));
                                 const cellRows = cellData.map((row: any, rowIndex: any) => ({

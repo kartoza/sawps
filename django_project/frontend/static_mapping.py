@@ -10,7 +10,7 @@ ACTIVITY_COLORS_DICT = {
 YEAR_DATA_LIMIT = 10
 
 REGIONAL_DATA_CONSUMER = 'Regional data consumer'
-NATIONAL_DATA_CONSUMER = 'National data consume'
+NATIONAL_DATA_CONSUMER = 'National data consumer'
 
 REGIONAL_DATA_SCIENTIST = 'Regional data scientist'
 NATIONAL_DATA_SCIENTIST = 'National data scientist'

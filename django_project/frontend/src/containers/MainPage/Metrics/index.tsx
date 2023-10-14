@@ -14,6 +14,8 @@ import AreaAvailableLineChart from "./AreaAvailableLineChart";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import SpeciesCountAsPercentage from "./SpeciesCountAsPercentage";
+import SpeciesCountPerProvinceChart from "./SpeciesCountPerProvinceChart";
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
@@ -137,29 +139,43 @@ const Metrics = () => {
                 {showChats ? (
                         <Grid container spacing={2} ref={contentRef}>
                             <Grid item xs={12} md={6}>
-                                <PropertyTypeBarChart
-                                    selectedSpecies={selectedSpecies}
-                                    propertyId={propertyId}
-                                    startYear={startYear}
-                                    endYear={endYear}
-                                    loading={loading}
-                                    setLoading={setLoading}
+                                <PopulationCategoryChart 
+                                selectedSpecies={selectedSpecies} 
+                                propertyId={propertyId} 
+                                startYear={startYear} 
+                                endYear={endYear} 
+                                loading={loading} 
+                                setLoading={setLoading} 
+                                populationData={populationData} 
+                                setPopulationData={setPopulationData} 
                                 />
                             </Grid>
-
+                            
                             <Grid item xs={12} md={6}>
-                                <DensityBarChart
-                                    selectedSpecies={selectedSpecies}
-                                    propertyId={propertyId}
-                                    startYear={startYear}
-                                    endYear={endYear}
-                                    loading={loading}
-                                    setLoading={setLoading}
-                                    densityData={densityData}
-                                    setDensityData={setDensityData}
+                                <PropertyTypeBarChart 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading} 
                                 />
                             </Grid>
 
+                           <Grid item xs={12} md={6}>
+                                <DensityBarChart 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading} 
+                                    densityData={densityData} 
+                                    setDensityData={setDensityData} 
+                                />
+                            </Grid>
+
+                            
                             <Grid item xs={12} md={6}>
                                 <PropertyAvailableBarChart
                                     selectedSpecies={selectedSpecies}
@@ -170,6 +186,7 @@ const Metrics = () => {
                                     setLoading={setLoading}
                                 />
                             </Grid>
+
 
                             {ageGroupData.map((data) => (
                                 <Grid container key={data.id} item xs={12} md={6}>
@@ -183,6 +200,7 @@ const Metrics = () => {
                                 </Grid>
                             ))}
 
+                            
                             {areaData.map((data, index) => (
                                 <Grid container key={index} item xs={12} md={6}>
                                     {data?.area?.owned_species ? (
@@ -196,6 +214,31 @@ const Metrics = () => {
                                     )}
                                 </Grid>
                             ))}
+
+                            <Grid item xs={12} md={6}>
+                                <SpeciesCountPerProvinceChart
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear}
+                                    loading={loading} 
+                                    setLoading={setLoading}
+                                />
+                            </Grid>
+                  
+                            <Grid item xs={12} md={6}>
+                                <SpeciesCountAsPercentage
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear}
+                                    loading={loading} 
+                                    setLoading={setLoading}
+                                    activityData={activityData}
+                                />
+                            </Grid>
+
+
                     </Grid>
                 ): (
                     // Render message to user

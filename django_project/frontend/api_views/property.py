@@ -31,7 +31,6 @@ from frontend.serializers.property import (
     PropertyDetailSerializer,
     PropertySerializer,
     PropertyTypeSerializer,
-    ProvinceSerializer,
     PropertySearchSerializer
 )
 from frontend.serializers.stakeholder import OrganisationSerializer
@@ -48,6 +47,7 @@ from property.models import (
     Province
 )
 from stakeholder.models import Organisation, OrganisationUser
+from frontend.utils.parcel import find_province
 
 
 class CreateNewProperty(APIView):
@@ -110,10 +110,11 @@ class CreateNewProperty(APIView):
         if isinstance(geom, Polygon):
             # parcels geom is in 3857
             geom = MultiPolygon([geom], srid=3857)
+        province = find_province(geom, Province.objects.first())
         if geom:
             # transform srid to 4326
             geom.transform(4326)
-        return geom
+        return geom, province
 
     def add_parcels(self, property, parcels):
         for parcel in parcels:
@@ -134,7 +135,13 @@ class CreateNewProperty(APIView):
     def post(self, request, *args, **kwargs):
         # union of parcels
         parcels = request.data.get('parcels')
-        geom = self.get_geometry(parcels)
+        geom, province = self.get_geometry(parcels)
+        if not province:
+            return Response(
+                status=400, data=(
+                    'Invalid Province! Please contact administrator '
+                    'to populate province table!'
+                ))
         current_organisation_id = get_current_organisation_id(
             request.user
         ) or 0
@@ -156,8 +163,8 @@ class CreateNewProperty(APIView):
             'name': request.data.get('name'),
             'owner_email': request.data.get('owner_email'),
             'property_type_id': request.data.get('property_type_id'),
+            'province_id': province.id,
             'open_id': request.data.get('open_id'),
-            'province_id': request.data.get('province_id'),
             'organisation_id': request.data.get('organisation_id'),
             'geometry': geom,
             'property_size_ha': self.get_geom_size_in_ha(geom) if geom else 0,
@@ -175,7 +182,6 @@ class PropertyMetadataList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        provinces = Province.objects.all().order_by('name')
         types = PropertyType.objects.all().order_by('name')
         current_organisation_id = get_current_organisation_id(
             self.request.user
@@ -185,9 +191,6 @@ class PropertyMetadataList(APIView):
         ).order_by('name')
         open_close_systems = OpenCloseSystem.objects.all().order_by("name")
         return Response(status=200, data={
-            'provinces': (
-                ProvinceSerializer(provinces, many=True).data
-            ),
             'types': (
                 PropertyTypeSerializer(types, many=True).data
             ),
@@ -282,12 +285,13 @@ class UpdatePropertyBoundaries(CreateNewProperty):
             id=request.data.get('id')
         )
         parcels = request.data.get('parcels')
-        geom = self.get_geometry(parcels)
+        geom, province = self.get_geometry(parcels)
         property.geometry = geom
         property.property_size_ha = (
             self.get_geom_size_in_ha(geom) if geom else 0
         )
         property.centroid = geom.point_on_surface
+        property.province = province
         property.save()
         # delete existing parcel
         Parcel.objects.filter(property=property).delete()
