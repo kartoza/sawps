@@ -181,7 +181,7 @@ def get_query_condition_for_population_query(
         query_values.append(filter_end_year)
     if filter_organisation:
         sql_conditions.append('p.organisation_id IN %s')
-        query_values.append(ast.literal_eval('('+filter_organisation+')'))
+        query_values.append(ast.literal_eval('(' + filter_organisation + ')'))
     else:
         sql_conditions.append('p.organisation_id=%s')
         query_values.append(organisation_id)
@@ -196,13 +196,14 @@ def get_query_condition_for_population_query(
             spatial_sql = (
                 """
                 select 1 from frontend_spatialdatavaluemodel fs2
-                inner join frontend_spatialdatamodel fs3 on fs3.id = fs2.spatial_data_id
+                inner join frontend_spatialdatamodel fs3 on
+                fs3.id = fs2.spatial_data_id
                 where fs3.property_id=p.id and fs2.context_layer_value in %s
                 """
             )
-            sql = sql + (
-                'AND exists({spatial_sql})'
-            ).format(spatial_sql=spatial_sql)
+            sql_conditions.append(
+                'exists({spatial_sql})'.format(spatial_sql=spatial_sql)
+            )
             query_values.append(spatial_filter_values)
     sql = ' AND '.join(sql_conditions)
     return sql, query_values
@@ -223,11 +224,11 @@ def get_population_query(
         filter_species_name, filter_organisation, filter_activity,
         filter_spatial
     )
-    additional_join=(
+    additional_join = (
         'inner join activity_activitytype aa '
         'on aa.id=ap.activity_type_id' if filter_activity else ''
     )
-    population_table=(
+    population_table = (
         'annual_population_per_activity' if filter_activity else
         'annual_population'
     )
@@ -257,7 +258,7 @@ def get_count_summary_of_population(
     """
     Return (Min, Max) for population query count.
     Materialized view for current session must be created.
-    
+
     :return: Tuple[int, int]: A tuple of (Min, Max) population count
     """
     sql = (
@@ -289,7 +290,7 @@ def generate_population_count_categories_base(
     Generate population count categories for choropleth map.
     Using equal interval classification.
     http://wiki.gis.com/wiki/index.php/Equal_Interval_classification
-    
+
     :param min: minimum population count
     :param max: maximum population count
     :param base_color: base color in ex to calculate color gradient
