@@ -7,7 +7,7 @@ import { MapTheme, PopulationCountLegend } from "../../../models/Map";
 const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
 const SEARCH_PROPERTY_URL = '/api/map/search/property/'
 export const MIN_SELECT_PARCEL_ZOOM_LEVEL = 12
-export const MIN_SELECT_PROPERTY_ZOOM_LEVEL = 12
+export const MIN_SELECT_PROPERTY_ZOOM_LEVEL = 10
 const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
     'erf': 14,
     'holding': 12,
