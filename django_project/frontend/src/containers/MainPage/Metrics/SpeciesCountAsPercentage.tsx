@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Loading from "../../../components/Loading";
 import { Doughnut } from "react-chartjs-2";
+import { Grid, Typography } from "@mui/material";
 
 const FETCH_ACTVITY_COUNT = "/api/species-count-per-province/";
 
@@ -56,7 +57,6 @@ const SpeciesCountAsPercentage = (props: any) => {
   const [speciesData, setSpeciesData] = useState<SpeciesDataItem[]>([]);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
 
-
   const fetchActivityCount = () => {
     setLoading(true);
     axios
@@ -75,128 +75,144 @@ const SpeciesCountAsPercentage = (props: any) => {
       });
   };
 
-    useEffect(() => {
-        fetchActivityCount();
-    }, [propertyId, startYear, endYear, selectedSpecies]);
+  useEffect(() => {
+    fetchActivityCount();
+  }, [propertyId, startYear, endYear, selectedSpecies]);
 
-    // Extract graph_icon URL from the first item in activityData
-    useEffect(() => {
-        if (activityData && activityData.length > 0) {
-        const firstItem = activityData[0];
-        if (firstItem.graph_icon) {
-            setBackgroundImageUrl(firstItem.graph_icon);
-        }
-        }
-    }, [activityData]);
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      }
 
-    const legendLabels: number[] = Array.from(new Set(speciesData.map((item) => item.year)))
+    }else setBackgroundImageUrl('')
+  }, [activityData]);
+
+  // Filter speciesData based on the most recent year
+  const legendLabels: number[] = Array.from(new Set(speciesData.map((item) => item.year)))
     .filter((year) => year !== null) as number[];
 
-    // Find the most recent year based on the endYear and legendLabels
-    const currentYear = new Date().getFullYear();
-    const endYearOrCurrent = endYear === currentYear ? Math.max(...legendLabels) : endYear;
-    const mostRecentYear = Math.max(startYear, endYearOrCurrent);
+  const currentYear = new Date().getFullYear();
+  const endYearOrCurrent = endYear === currentYear ? Math.max(...legendLabels) : endYear;
+  const mostRecentYear = Math.max(startYear, endYearOrCurrent);
 
-    // Filter out objects with years not equal to the most recent year
-    const filteredSpeciesData = speciesData.filter((item) => item.year === mostRecentYear);
+  const filteredSpeciesData = speciesData.filter((item) => item.year === mostRecentYear);
 
-    // Sum of all count values
-    const total = filteredSpeciesData.reduce((acc, item) => acc + item.count, 0);
+  const total = filteredSpeciesData.reduce((acc, item) => acc + (item.count || 0), 0);
 
-    // Calculate percentage values and create a new array
-    const calculatedPercentageValues = filteredSpeciesData.map((item) => ({
+  const calculatedPercentageValues = filteredSpeciesData.map((item) => ({
     ...item,
     percentage: (item.count / total) * 100,
-    }));
+  }));
 
-    // Create an array to store labels (province)
-    const labels = calculatedPercentageValues.map((item) => item.province);
+  const labels = calculatedPercentageValues.map((item) => {
+    const paddedProvince = item.province.padEnd(50, ' ');
+    return paddedProvince;
+  });
+  
+  const percentages = calculatedPercentageValues.map((item) => item.percentage);
 
-    // Create an array to store percentages
-    const percentages = calculatedPercentageValues.map((item) => item.percentage);
-
-    // Create an array for background colors
-    const uniqueBackgroundColors = Array.from(new Set(labels)).map(
+  const uniqueBackgroundColors = Array.from(new Set(labels)).map(
     (_, index) => {
-        // Determine the color index considering transparency
-        const colorIndex = index % availableColors.length;
-        const color = availableColors[colorIndex];
-        return color;
+      const colorIndex = index % availableColors.length;
+      return availableColors[colorIndex];
     }
-    );
+  );
 
-    const chartData = {
+  const chartData = {
     labels: labels,
     datasets: [
-        {
+      {
         data: percentages,
         backgroundColor: uniqueBackgroundColors,
-        },
+      },
     ],
-    };
-
-  // Define the inline style for the background image
-  const chartContainerStyle: React.CSSProperties = {
-    position: "relative",
-    backgroundImage: `url(${backgroundImageUrl})`, // Set the background image dynamically
-    backgroundSize: "100% 100%",
-    backgroundPosition: "left center",
-    backgroundRepeat: "no-repeat",
   };
 
-    const options = {
-        cutout: "60%",
-        plugins: {
-            legend: {
-                position: "right" as "right",
-                display: true,
-                labels: {
-                    boxWidth: 30,
-                    boxHeight: 30,
-                    padding: 12,
-                    font: {
-                        size: 20,
-                    },
-                },
-            },
-            datalabels: {
-                color: "#fff",
-                formatter: (value: number, ctx: { chart: { data: { datasets: { data: any; }[]; }; }; }) => {
-                    let sum = 0;
-                    let dataArr = ctx.chart.data.datasets[0].data;
-                    dataArr.map((data: number) => {
-                        sum += data;
-                    });
-                    const percentage = ((value * 100) / sum).toFixed(2) + "%";
-                    return percentage;
-                },
-                font: {
-                    size: 20,
-                },
-            },
-            title: {
-                display: true,
-                text: `Total count as % of total population per province for ${selectedSpecies} year of ${mostRecentYear}`,
-                align: 'start' as 'start',
-                font: {
-                    size: 16,
-                    weight: 'bold' as 'bold',
-                },
-            },
-        },
-    };
+  
+  // custom styling for donut charts
+  const chartContainerStyle: React.CSSProperties = {
+    position: "relative",
+    backgroundImage: `url(${backgroundImageUrl})`,
+    backgroundSize: "20% 24%", // width and height of image
+    backgroundPosition: "19% 57%", //horizontal and vertical position respectively
+    backgroundRepeat: "no-repeat",
+    whiteSpace: "pre-wrap", // Allow text to wrap
+  };
 
-    return (
-        <>
-            {!loading ? (
-                <div style={chartContainerStyle}>
-                    <Doughnut data={chartData} options={options} />
-               </div>
-            ) : (
-                <Loading />
-            )}
-        </>
-    );
+  if (filteredSpeciesData.length === 0) {
+    return null;
+  }
+  
+  // Define chart title based on conditions
+  let chartTitle = "Please select a species for the chart to show available data";
+
+  if (selectedSpecies) {
+    if (filteredSpeciesData.length > 0) {
+      chartTitle = `Total count as % of total population per province for ${selectedSpecies} year ${mostRecentYear}`;
+    } else {
+      chartTitle = "No data available for current filter selections";
+    }
+  }
+
+  const options = {
+    cutout: "54%",
+    plugins: {
+      legend: {
+        position: "right" as "right",
+        display: true,
+        labels: {
+          boxWidth: 20,
+          boxHeight: 13,
+          padding: 12,
+          font: {
+            size: 12,
+          },
+        },
+      },
+      datalabels: {
+        color: "#fff",
+        formatter: (value: number, ctx: { chart: { data: { datasets: { data: any; }[]; }; }; }) => {
+          let sum = 0;
+          let dataArr = ctx.chart.data.datasets[0].data;
+          dataArr.map((data: number) => {
+            sum += data;
+          });
+          const percentage = ((value * 100) / sum).toFixed(2) + "%";
+          return percentage;
+        },
+        font: {
+          size: 12,
+        },
+      },
+      title: {
+        display: true,
+        text: chartTitle,
+        align: 'start' as 'start',
+        
+        font: {
+          size: 16,
+          weight: 'bold' as 'bold',
+        },
+      },
+    },
+  };
+
+  return (
+    <>
+      {!loading ? (
+          <Doughnut
+            data={chartData}
+            options={options}
+            style={chartContainerStyle}
+          />
+      ) : (
+        <Loading containerStyle={{ minHeight: 160 }} />
+      )}
+    </>
+  );
 };
 
 export default SpeciesCountAsPercentage;
+
