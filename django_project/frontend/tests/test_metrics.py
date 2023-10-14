@@ -63,6 +63,30 @@ class BaseTestCase(TestCase):
         session = self.client.session
         session.save()
 
+class PopulationEstimateCategoryTestCase(BaseTestCase):
+    """
+    This is to test if the API is reachable
+    and returns a success response.
+    """
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("total-count-per-population-estimate")
+
+    def test_population_estimate_category_api_view(self) -> None:
+        url = self.url
+        response = self.client.get(url, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = {
+            'species': 'Penthera leo',
+            'property': [str(self.property.id), '1']
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
 class SpeciesPopuationCountPerProvinceTestCase(BaseTestCase):
     """
     This is to test if the API is reachable
