@@ -15,7 +15,7 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import SpeciesCountPerProvinceChart from "./SpeciesCountPerProvinceChart";
-import SpeciesCountAsPercentage from "./SpeciesCountPerProvince%Chart";
+import SpeciesCountAsPercentage from "./SpeciesCountAsPercentage";
 import TotalCountPerActivity from "./TotalCountPerActivity";
 import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
