@@ -369,7 +369,6 @@ const getMapPopulationStops = (legends: PopulationCountLegend[]) => {
  */
 export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Map, currentTheme: MapTheme, propertiesCount?: PopulationCountLegend[], provinceCount?: PopulationCountLegend[]) => {
     removePropertiesLayer(mapObj)
-    console.log('drawPropertiesLayer ', showPopulationCount)
     if (!showPopulationCount) {
         addLayerToMap('properties', mapObj, {
             "id": "properties",
@@ -460,9 +459,6 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             "minzoom": 5,
             "maxzoom": 10
         }
-        console.log('_provinceLayer', _provinceLayer)
-        console.log('_propertiesLayer', _propertiesLayer)
-        console.log('_propertiesPointsLayer', _propertiesPointsLayer)
         addLayerToMap('province-count', mapObj, _provinceLayer, 'NGI aerial imagery')
         addLayerToMap('properties', mapObj, _propertiesLayer, 'erf-highlighted')
         addLayerToMap('properties-points', mapObj, _propertiesPointsLayer, 'NGI aerial imagery')
@@ -475,7 +471,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             "type": "symbol",
             "source": "sanbi-dynamic",
             "source-layer": "properties-points",
-            "minzoom": 5,
+            "minzoom": 8,
             "maxzoom": 24,
             "layout": {
               "text-field": "{name}",
@@ -523,5 +519,4 @@ export const removePropertiesLayer = (mapObj: maplibregl.Map) => {
     removeLayerFromMap('province-count', mapObj)
     removeLayerFromMap('properties-points', mapObj)
     removeLayerFromMap('properties-label', mapObj)
-    // TODO: remove properties label layer
 }

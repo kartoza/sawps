@@ -16,6 +16,7 @@ export interface MapStateInterface {
     theme: MapTheme;
     provinceCounts: PopulationCountLegend[];
     propertiesCounts: PopulationCountLegend[];
+    dynamicMapSession: string;
 }
 
 const initialState: MapStateInterface = {
@@ -24,9 +25,10 @@ const initialState: MapStateInterface = {
     selectedParcels: [],
     selectedProperty: createNewProperty(),
     mapEvents: [],
-    theme: MapTheme.None,
+    theme: MapTheme.Light,
     provinceCounts: [],
-    propertiesCounts: []
+    propertiesCounts: [],
+    dynamicMapSession: ''
 }
 
 /* reset all selectedParcels */
@@ -143,6 +145,9 @@ export const MapStateSlice = createSlice({
         setPopulationCountLegends: (state, action: PayloadAction<PopulationCountLegend[][]>) => {
             state.provinceCounts = [...action.payload[0]]
             state.propertiesCounts = [...action.payload[1]]
+        },
+        setDynamicMapSession: (state, action: PayloadAction<string>) => {
+            state.dynamicMapSession = action.payload
         }
     }
 })
@@ -162,7 +167,8 @@ export const {
     toggleMapTheme,
     setInitialMapTheme,
     resetMapState,
-    setPopulationCountLegends
+    setPopulationCountLegends,
+    setDynamicMapSession
 } = MapStateSlice.actions
 
 export default MapStateSlice.reducer;

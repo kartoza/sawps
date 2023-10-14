@@ -19,8 +19,8 @@ import {
   toggleParcelSelectionMode,
   triggerMapEvent,
   toggleMapTheme,
-  setInitialMapTheme,
-  setPopulationCountLegends
+  setPopulationCountLegends,
+  setDynamicMapSession
 } from '../../../reducers/MapState';
 import ParcelInterface from '../../../models/Parcel';
 import { MapSelectionMode, MapTheme, MapEvents, PopulationCountLegend } from "../../../models/Map";
@@ -41,13 +41,11 @@ import {
   isContextLayerSelected,
   getMapPopupDescription,
   addParcelInvisibleFillLayers,
-  drawPropertiesLayer,
-  removePropertiesLayer
+  drawPropertiesLayer
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
 import LoadingIndicatorControl from './LoadingIndicatorControl';
-import useThemeDetector from '../../../components/ThemeDetector';
 import {useGetUserInfoQuery} from "../../../services/api";
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
@@ -107,7 +105,6 @@ export default function Map() {
   const [savingBoundaryDigitise, setSavingBoundaryDigitise] = useState(false)
   const [boundaryDigitiseSession, setBoundaryDigitiseSession] = useState(null)
   const mapNavControl = useRef(null)
-  const isDarkTheme = useThemeDetector()
   const [highlightedParcel, setHighlightedParcel] = useState<FeatureIdentifier>(getEmptyFeature())
   // Map Properties Filters
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -119,6 +116,7 @@ export default function Map() {
   const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
   const provinceCounts = useAppSelector((state: RootState) => state.mapState.provinceCounts)
   const propertiesCounts = useAppSelector((state: RootState) => state.mapState.propertiesCounts)
+  const dynamicMapSession = useAppSelector((state: RootState) => state.mapState.dynamicMapSession)
 
   const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
@@ -269,11 +267,6 @@ export default function Map() {
   }
   /* End of Map Draw (Digitise) Mode  */
 
-  /* Listen to theme change event */
-  useEffect(() => {
-    dispatch(setInitialMapTheme(isDarkTheme ? MapTheme.Dark : MapTheme.Light))
-  }, [isDarkTheme])
-
   /* Listen to context layers change (isSelected) */
   useEffect(() => {
     if (!isMapReady) return;
@@ -337,34 +330,42 @@ export default function Map() {
   }, [selectionMode])
 
   /* Called when mapTheme is changed */
+  const mapStyleOnLoaded = useCallback(() => {
+    if (map.current.isStyleLoaded()) {
+      console.log('styledata loaded ', selectedSpecies)
+      dispatch(setMapReady(true))
+      if (selectedSpecies.length > 0) {
+        drawPropertiesLayer(true, map.current, mapTheme, propertiesCounts, provinceCounts)
+      } else {
+        drawPropertiesLayer(false, map.current, mapTheme)
+      }
+      let enableParcelLayers = true;
+      if (userInfoData) {
+        for (let userRole of userInfoData.user_roles) {
+          if (userRole.toLowerCase().includes('decision maker')) {
+            enableParcelLayers = false
+          }
+        }
+      }
+      if(enableParcelLayers)
+        addParcelInvisibleFillLayers(map.current)
+    }
+  }, [mapTheme, selectedSpecies, provinceCounts, propertiesCounts])
+
   useEffect(() => {
     if (mapTheme === MapTheme.None) return;
     if (!isSuccess) return;
     if (map.current) {
-      console.log('mapTheme is changed ', map.current.isStyleLoaded())
       dispatch(setMapReady(false))
-      map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}`)
+      map.current.on('styledata', mapStyleOnLoaded)
+      map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}&session=${dynamicMapSession}`)
       if (mapNavControl.current) {
         mapNavControl.current.updateThemeSwitcherIcon(mapTheme)
       }
-      // check if filters are applied
-      // if (selectedSpecies) {
-        // rebuild query parameters to enable choropleth layers
-        // let _queryParams = `start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`
-        // drawPropertiesLayer(true, map.current, mapTheme, propertiesCounts, provinceCounts)
-        // dispatch(triggerMapEvent({
-        //   'id': uuidv4(),
-        //   'name': MapEvents.REFRESH_PROPERTIES_LAYER,
-        //   'date': Date.now(),
-        //   'payload': [_queryParams]
-        // }))
-      // } else {
-        // drawPropertiesLayer(false, map.current, mapTheme)
-      // }
-    } else {
+    } else if (dynamicMapSession) {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
-        style: `${MAP_STYLE_URL}?theme=${mapTheme}`,
+        style: `${MAP_STYLE_URL}?theme=${mapTheme}&session=${dynamicMapSession}`,
         minZoom: 5
       })
       // add exporter dialog
@@ -378,28 +379,17 @@ export default function Map() {
       map.current.addControl(mapNavControl.current, 'bottom-left')
       map.current.addControl(mapNavControl.current.getExportControl(), 'bottom-left')
       map.current.on('load', () => {
-        dispatch(setMapReady(true))
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
       })
-      map.current.on('styledata', () => {
-        if (map.current.isStyleLoaded()) {
-          dispatch(setMapReady(true))
-
-          let enableParcelLayers = true;
-          if (userInfoData) {
-            for (let userRole of userInfoData.user_roles) {
-              if (userRole.toLowerCase().includes('decision maker')) {
-                enableParcelLayers = false
-              }
-            }
-          }
-          if(enableParcelLayers)
-            addParcelInvisibleFillLayers(map.current)
-        }
-      })
+      map.current.on('styledata', mapStyleOnLoaded)
     }
-  }, [mapTheme, isSuccess]);
+    return () => {
+      if (map.current) {
+        map.current.off('styledata', mapStyleOnLoaded)
+      }
+    }
+  }, [mapTheme, isSuccess, dynamicMapSession]);
 
   /* Callback when map is on click. */
   const mapOnClick = useCallback((e: any) => {
@@ -457,7 +447,7 @@ export default function Map() {
         }
       }
     }
-  }, [contextLayers, selectionMode, uploadMode, selectedProperty])
+  }, [isMapReady, contextLayers, selectionMode, uploadMode, selectedProperty])
 
   /* OnClick event */
   useEffect(() => {
@@ -467,7 +457,7 @@ export default function Map() {
     return () => {
       map.current.off('click', mapOnClick)
     }
-  }, [contextLayers, selectionMode, uploadMode, selectedProperty, isSuccess])
+  }, [isMapReady, contextLayers, selectionMode, uploadMode, selectedProperty, isSuccess])
 
   /* render selected+unselected parcel */
   useEffect(() => {
@@ -493,6 +483,8 @@ export default function Map() {
 
   /* Render/Respond to mapEvents */
   useEffect(() => {
+    if (!isMapReady) return;
+    if (!map.current) return;
     if (mapEvents.length === 0) return
     let _mapObj: maplibregl.Map = map.current
     for (let i=0; i < mapEvents.length; ++i) {
@@ -501,11 +493,8 @@ export default function Map() {
         // add query param to properties layer to refresh it
         let _sanbiDynamicSource = _mapObj.getSource('sanbi-dynamic') as any;
         let _url = _sanbiDynamicSource['tiles'][0]
-        _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}`)
-        // check if has payload of query params
-        if (_event.payload) {
-          _url = _url + `&${_event.payload[0]}`
-        }
+        _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}&session=${dynamicMapSession}`)
+
         // Set the tile url to a cache-busting url (to circumvent browser caching behaviour):
         _sanbiDynamicSource.tiles = [ _url ]
 
@@ -559,7 +548,7 @@ export default function Map() {
       }
     }
     dispatch(onMapEventProcessed([...mapEvents]))
-  }, [mapEvents])
+  }, [mapEvents, isMapReady])
 
   /* Check Digitise Boundary Processing status every 3s */
   useEffect(() => {
@@ -573,40 +562,39 @@ export default function Map() {
 
   /* Called when filters are changed */
   useEffect(() => {
-    if (!isMapReady) return;
-    if (contextLayers.length === 0) return;
-    if (!map.current) return;
-    removePropertiesLayer(map.current)
-    if (selectedSpecies) {
-      // rebuild query parameters to enable choropleth layers
-      let _queryParams = `start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`
-      console.log('rebuild query parameters ', _queryParams)
-      fetchPopulationCounts(_queryParams)
-    } else {
-      console.log('rebuild query parameters **EMPTY**')
-      drawPropertiesLayer(false, map.current, mapTheme)
-      dispatch(triggerMapEvent({
-        'id': uuidv4(),
-        'name': MapEvents.REFRESH_PROPERTIES_LAYER,
-        'date': Date.now()
-      }))
-      dispatch(setPopulationCountLegends([[],[]]))
+    // rebuild query parameters to enable choropleth layers
+    let _queryParams = `start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`
+    if (dynamicMapSession) {
+      _queryParams = _queryParams + `&session=${dynamicMapSession}`
     }
-  }, [isMapReady, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues])
+    console.log('rebuild query parameters ', _queryParams)
+    fetchPopulationCountsLegends(_queryParams, selectedSpecies.length > 0)
+  }, [mapTheme, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues])
 
-  const fetchPopulationCounts = React.useMemo(() => debounce((queryParams: string) => {
+  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, showPopulationCount: boolean) => {
     axios.get(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`).then((response) => {
       if (response.data) {
-        let _provinceCounts = response.data['province'] as PopulationCountLegend[]
-        let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
-        drawPropertiesLayer(true, map.current, mapTheme, _propertiesCounts, _provinceCounts)
-        dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
-        dispatch(triggerMapEvent({
-          'id': uuidv4(),
-          'name': MapEvents.REFRESH_PROPERTIES_LAYER,
-          'date': Date.now(),
-          'payload': [queryParams]
-        }))
+        let _session = response.data['session']
+        if (map.current) {
+          console.log('redraw map showPopulationCount', showPopulationCount)
+          if (showPopulationCount) {
+            let _provinceCounts = response.data['province'] as PopulationCountLegend[]
+            let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
+            dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
+            drawPropertiesLayer(true, map.current, mapTheme, _provinceCounts, _propertiesCounts)
+          } else {
+            dispatch(setPopulationCountLegends([[], []]))
+            drawPropertiesLayer(false, map.current, mapTheme)
+          }
+          dispatch(triggerMapEvent({
+            'id': uuidv4(),
+            'name': MapEvents.REFRESH_PROPERTIES_LAYER,
+            'date': Date.now()
+          }))
+        } else {
+          console.log('set dynamic map session here ', _session)
+          dispatch(setDynamicMapSession(_session))
+        }
       }
     }).catch((error) => {
       console.log(error)

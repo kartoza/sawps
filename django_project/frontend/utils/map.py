@@ -6,14 +6,18 @@ import ast
 import math
 from enum import Enum
 from django.db import connection
+from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 from core.settings.utils import absolute_path
 from species.models import Taxon
+from frontend.models.map_session import MapSession
 from frontend.utils.color import linear_gradient
 
 
+User = get_user_model()
 # number of breaks to generate stops for color gradient of population count
 CHOROPLETH_NUMBER_OF_BREAKS = 5
 DEFAULT_BASE_COLOR = '#FF5252'
@@ -26,7 +30,8 @@ class PopulationQueryEnum(Enum):
     SUMMARY_COUNT = 'SUMMARY COUNT'
 
 
-def get_map_template_style(request, theme_choice: int = 0, token: str = None):
+def get_map_template_style(request, session, theme_choice: int = 0,
+                           token: str = None):
     """
     Fetch map template style from file.
 
@@ -103,8 +108,7 @@ def get_map_template_style(request, theme_choice: int = 0, token: str = None):
             # if not dev env, then replace with https
             url = url.replace('http://', schema)
         # add epoch datetime
-        url = url + f'?t={int(time.time())}'
-        # TODO: add query params if there is species filter
+        url = url + f'?t={int(time.time())}&session={session}'
         styles['sources']['sanbi-dynamic'] = {
             "type": "vector",
             "tiles": [url],
@@ -157,7 +161,7 @@ def get_highlighted_layer(layer_name):
     }
 
 
-def get_query_condition(
+def get_query_condition_for_population_query(
         organisation_id: int,
         filter_start_year: int,
         filter_end_year: int,
@@ -166,20 +170,23 @@ def get_query_condition(
         filter_activity: str,
         filter_spatial: str):
     """Generate query condition from filters dynamic VT."""
-    sql = 't.scientific_name=%s '
-    query_values = [filter_species_name]
+    sql_conditions = []
+    query_values = []
+    if filter_species_name:
+        sql_conditions.append('t.scientific_name=%s')
+        query_values.append(filter_species_name)
     if filter_start_year and filter_end_year:
-        sql = sql + 'AND ap.year between %s and %s '
+        sql_conditions.append('ap.year between %s and %s')
         query_values.append(filter_start_year)
         query_values.append(filter_end_year)
     if filter_organisation:
-        sql = sql + 'AND p.organisation_id IN %s '
+        sql_conditions.append('p.organisation_id IN %s')
         query_values.append(ast.literal_eval('('+filter_organisation+')'))
     else:
-        sql = sql + 'AND p.organisation_id=%s '
+        sql_conditions.append('p.organisation_id=%s')
         query_values.append(organisation_id)
     if filter_activity:
-        sql = sql + 'AND aa.name=%s '
+        sql_conditions.append('aa.name=%s')
         query_values.append(filter_activity)
     if filter_spatial:
         spatial_filter_values = tuple(
@@ -197,12 +204,12 @@ def get_query_condition(
                 'AND exists({spatial_sql})'
             ).format(spatial_sql=spatial_sql)
             query_values.append(spatial_filter_values)
+    sql = ' AND '.join(sql_conditions)
     return sql, query_values
 
 
 def get_population_query(
-        type: PopulationQueryEnum,
-        z: int, x: int, y: int,
+        is_province_view: bool,
         organisation_id: int,
         filter_start_year: int,
         filter_end_year: int,
@@ -211,7 +218,7 @@ def get_population_query(
         filter_activity: str,
         filter_spatial: str):
     """Generate query for population count."""
-    where_sql, query_values = get_query_condition(
+    where_sql, query_values = get_query_condition_for_population_query(
         organisation_id, filter_start_year, filter_end_year,
         filter_species_name, filter_organisation, filter_activity,
         filter_spatial
@@ -224,111 +231,49 @@ def get_population_query(
         'annual_population_per_activity' if filter_activity else
         'annual_population'
     )
-    sql = ''
-    if type == PopulationQueryEnum.PROVINCE_LAYER:
-        sql = (
-            """
-            select prov.id as id, sum(ap.total) as count
-            from {population_table} ap
-            inner join owned_species os on os.id=ap.owned_species_id
-            inner join taxon t on os.taxon_id=t.id
-            inner join property p on os.property_id=p.id
-            inner join province prov on prov.id=p.province_id
-            {additional_join}
-            where {where_sql} group by prov.id
-            """
-        ).format(
-            additional_join=additional_join,
-            population_table=population_table,
-            where_sql=where_sql
-        )
-    elif type == PopulationQueryEnum.SUMMARY_COUNT:
-        sql = (
-            """
-            select p.id, p.name, sum(ap.total) as count
-            from {population_table} ap
-            inner join owned_species os on os.id=ap.owned_species_id
-            inner join taxon t on os.taxon_id=t.id
-            inner join property p on os.property_id=p.id
-            {additional_join}
-            where {where_sql} group by p.id
-            """
-        ).format(
-            additional_join=additional_join,
-            population_table=population_table,
-            where_sql=where_sql
-        )
-    elif (
-        type == PopulationQueryEnum.PROPERTIES_LAYER or
-        type == PopulationQueryEnum.PROPERTIES_POINTS_LAYER
-    ):
-        geom_field = (
-            'centroid' if
-            type == PopulationQueryEnum.PROPERTIES_POINTS_LAYER else
-            'geometry'
-        )
-        where_sql = (
-            'p.{geom_field} && TileBBox(%s, %s, %s, 4326) AND ' + where_sql
-        ).format(geom_field=geom_field)
-        sql = (
-            """
-            select p.id,
-            ST_AsMVTGeom(ST_Transform(p.{geom_field}, 3857),
-                TileBBox(%s, %s, %s, 3857)) as geom,
-            p.name, sum(ap.total) as count
-            from {population_table} ap
-            inner join owned_species os on os.id=ap.owned_species_id
-            inner join taxon t on os.taxon_id=t.id
-            inner join property p on os.property_id=p.id
-            {additional_join}
-            where {where_sql} group by p.id
-            """
-        ).format(
-            geom_field=geom_field,
-            additional_join=additional_join,
-            population_table=population_table,
-            where_sql=where_sql
-        )
-        tilebbox_values = [z, x, y, z, x, y]
-        tilebbox_values.extend(query_values)
-        query_values = tilebbox_values
-    else:
-        raise ValueError(f'Invalid PopulationQuery type: {type}')
+    id_field = 'province_id' if is_province_view else 'id'
+    sql = (
+        """
+        select p.{id_field} as id, sum(ap.total) as count
+        from {population_table} ap
+        inner join owned_species os on os.id=ap.owned_species_id
+        inner join taxon t on os.taxon_id=t.id
+        inner join property p on os.property_id=p.id
+        {additional_join}
+        {where_sql} group by p.{id_field}
+        """
+    ).format(
+        additional_join=additional_join,
+        population_table=population_table,
+        where_sql=f'where {where_sql}' if where_sql else '',
+        id_field=id_field
+    )
     return sql, query_values
 
 
 def get_count_summary_of_population(
         is_province_layer: bool,
-        organisation_id: int,
-        filter_start_year: int,
-        filter_end_year: int,
-        filter_species_name: str,
-        filter_organisation: str,
-        filter_activity: str,
-        filter_spatial: str):
+        session: MapSession):
     """
     Return (Min, Max) for population query count.
+    Materialized view for current session must be created.
     
     :return: Tuple[int, int]: A tuple of (Min, Max) population count
     """
-    type = (
-        PopulationQueryEnum.PROVINCE_LAYER if is_province_layer else
-        PopulationQueryEnum.SUMMARY_COUNT
-    )
-    sub_sql, query_values = get_population_query(
-        type, 0, 0, 0, organisation_id,
-        filter_start_year, filter_end_year, filter_species_name,
-        filter_organisation, filter_activity, filter_spatial
-    )
     sql = (
         """
-        select min(count), max(count) from ({sub_sql}) as population_count
+        select min(count), max(count) from "{view_name}"
         """
-    ).format(sub_sql=sub_sql)
+    ).format(
+        view_name=(
+            session.province_view_name if is_province_layer else
+            session.properties_view_name
+        )
+    )
     max = 0
     min = 0
     with connection.cursor() as cursor:
-        cursor.execute(sql, query_values)
+        cursor.execute(sql)
         row = cursor.fetchone()
         if row:
             min = row[0] if row[0] else 0
@@ -351,6 +296,14 @@ def generate_population_count_categories_base(
     :return: list of dict of minLabel, maxLabel, value and color.
     """
     result = []
+    if max == 0 and min == 0:
+        result.append({
+            'minLabel': 0,
+            'maxLabel': 0,
+            'value': 0,
+            'color': '#ffffff'
+        })
+        return result
     colors = linear_gradient(base_color, n=CHOROPLETH_NUMBER_OF_BREAKS)['hex']
     colors = colors[::-1]
     break_val = math.ceil((max - min) / CHOROPLETH_NUMBER_OF_BREAKS)
@@ -379,20 +332,129 @@ def generate_population_count_categories_base(
 
 def generate_population_count_categories(
         is_province_layer: bool,
-        organisation_id: int,
-        filter_start_year: int,
-        filter_end_year: int,
-        filter_species_name: str,
-        filter_organisation: str,
-        filter_activity: str,
-        filter_spatial: str):
-    min, max = get_count_summary_of_population(
-        is_province_layer, organisation_id, filter_start_year,
-        filter_end_year, filter_species_name, filter_organisation,
-        filter_activity, filter_spatial
-    )
+        session: MapSession,
+        filter_species_name: str):
+    min, max = get_count_summary_of_population(is_province_layer, session)
     base_color = DEFAULT_BASE_COLOR
     taxon = Taxon.objects.filter(scientific_name=filter_species_name).first()
     if taxon and taxon.colour:
         base_color = taxon.colour
     return generate_population_count_categories_base(min, max, base_color)
+
+
+def create_map_materialized_view(view_name: str, sql: str, query_values):
+    """Execute sql to create materialized view."""
+    view_sql = (
+        """
+        CREATE MATERIALIZED VIEW "{view_name}"
+        AS {sql}
+        """
+    ).format(
+        view_name=view_name,
+        sql=sql
+    )
+    index_sql = (
+        """
+        CREATE UNIQUE INDEX "{view_name}_idx" ON "{view_name}" (id)
+        """
+    ).format(view_name=view_name)
+    with connection.cursor() as cursor:
+        cursor.execute(view_sql, query_values)
+        cursor.execute(index_sql)
+        if '_province' in view_name:
+            # need to add index by name
+            index_sql = (
+                """
+                CREATE UNIQUE INDEX "{view_name}_name_idx"
+                ON "{view_name}" (name)
+                """
+            ).format(view_name=view_name)
+            cursor.execute(index_sql)
+
+
+def drop_map_materialized_view(view_name: str):
+    """Execute sql to drop materialized view."""
+    view_sql = (
+        """
+        DROP MATERIALIZED VIEW IF EXISTS "{view_name}"
+        """
+    ).format(view_name=view_name)
+    with connection.cursor() as cursor:
+        cursor.execute(view_sql)
+
+
+def refresh_map_materialized_view(view_name: str):
+    """Execute sql to refresh materialized view."""
+    view_sql = (
+        """
+        REFRESH MATERIALIZED VIEW "{view_name}"
+        """
+    ).format(view_name=view_name)
+    with connection.cursor() as cursor:
+        cursor.execute(view_sql)
+
+
+def delete_expired_map_materialized_view():
+    """Remove expired materialized view."""
+    sessions = MapSession.objects.filter(
+        expired_date__lt=timezone.now()
+    )
+    for session in sessions:
+        drop_map_materialized_view(session.properties_view_name)
+        drop_map_materialized_view(session.province_view_name)
+
+
+def generate_map_view(
+        session: MapSession,
+        is_province_view: bool,
+        organisation_id: int,
+        filter_start_year: int = None,
+        filter_end_year: int = None,
+        filter_species_name: str = None,
+        filter_organisation: str = None,
+        filter_activity: str = None,
+        filter_spatial: str = None):
+    if is_province_view:
+        drop_map_materialized_view(session.province_view_name)
+    else:
+        drop_map_materialized_view(session.properties_view_name)
+    sub_sql, query_values = get_population_query(
+        is_province_view, organisation_id, filter_start_year,
+        filter_end_year, filter_species_name, filter_organisation,
+        filter_activity, filter_spatial
+    )
+    table_name = 'province' if is_province_view else 'property'
+    is_choropleth_view = True if filter_species_name else False
+    sql_view = (
+        """
+        select p2.id, p2.name, COALESCE(population_summary.count, 0) as count
+        from {table_name} p2
+        {pop_join} ({sub_sql}) as population_summary
+        on p2.id=population_summary.id
+        """
+    ).format(
+        table_name=table_name,
+        sub_sql=sub_sql,
+        pop_join='left join' if is_choropleth_view else 'inner join'
+    )
+    create_map_materialized_view(
+        session.province_view_name if is_province_view else
+        session.properties_view_name, sql_view, query_values
+    )
+    # store queryparams
+    query_params = (
+        """
+        start_year={start_year}&end_year={end_year}&species={species}&
+        organisation={organisation}&activity={activity}&
+        spatial_filter_values={spatial_filter_values}
+        """
+    ).format(
+        start_year=filter_start_year,
+        end_year=filter_end_year,
+        species=filter_species_name,
+        organisation=filter_organisation,
+        activity=filter_activity,
+        spatial_filter_values=filter_spatial
+    )
+    session.query_params = query_params
+    session.save(update_fields=['query_params'])

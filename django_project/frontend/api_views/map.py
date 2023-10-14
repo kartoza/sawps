@@ -15,17 +15,20 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.gis.geos import Point
+from django.utils import timezone
 from property.models import (
     Property,
     Parcel
 )
 from frontend.models.context_layer import ContextLayer
+from frontend.models.map_session import MapSession
 from frontend.serializers.context_layer import ContextLayerSerializer
 from frontend.utils.map import (
     get_map_template_style,
     get_population_query,
     generate_population_count_categories,
-    PopulationQueryEnum
+    PopulationQueryEnum,
+    generate_map_view
 )
 from frontend.models import (
     Erf,
@@ -57,6 +60,62 @@ def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
     return z >= zoom_configs[0] and z <= zoom_configs[1]
 
 
+class MapSessionBase(APIView):
+
+    def generate_session(self):
+        current_organisation_id = get_current_organisation_id(
+            self.request.user
+        ) or 0
+        session_uuid = self.request.GET.get('session', None)
+        session = MapSession.objects.filter(uuid=session_uuid).first()
+        if session is None:
+            session = MapSession.objects.create(
+                user=self.request.user,
+                created_date=timezone.now(),
+                expired_date=self.request.session.get_expiry_date()
+            )
+        if self.can_view_properties_layer():
+            generate_map_view(
+                session, False, current_organisation_id,
+                self.request.GET.get('start_year', None),
+                self.request.GET.get('end_year', None),
+                self.request.GET.get('species', None),
+                self.request.GET.get('organisation', None),
+                self.request.GET.get('activity', None),
+                self.request.GET.get('spatial_filter_values', None)
+            )
+        if self.can_view_province_layer():
+            generate_map_view(
+                session, True, current_organisation_id,
+                self.request.GET.get('start_year', None),
+                self.request.GET.get('end_year', None),
+                self.request.GET.get('species', None),
+                self.request.GET.get('organisation', None),
+                self.request.GET.get('activity', None),
+                self.request.GET.get('spatial_filter_values', None)
+            )
+        return session
+
+    def get_species_filter(self):
+        return self.request.GET.get('species', None)
+
+    def can_view_properties_layer(self):
+        # TODO: check if user can view properties layer
+        return True
+
+    def can_view_province_layer(self):
+        if self.request.user.is_superuser:
+            return True
+        # TODO: check if user can view province layer
+        return False
+
+    def get_current_session_or_404(self):
+        session_uuid = self.request.GET.get('session', None)
+        session = MapSession.objects.filter(uuid=session_uuid).first()
+        if session is None:
+            raise Http404()
+        return session
+
 class ContextLayerList(APIView):
     """Fetch context layers."""
     permission_classes = [IsAuthenticated]
@@ -70,7 +129,7 @@ class ContextLayerList(APIView):
         )
 
 
-class MapStyles(APIView):
+class MapStyles(MapSessionBase):
     """Fetch map styles."""
     permission_classes = [IsAuthenticated]
 
@@ -84,8 +143,10 @@ class MapStyles(APIView):
     def get(self, *args, **kwargs):
         """Retrieve map styles."""
         theme = self.request.GET.get('theme', 'light')
+        session = self.generate_session()
         styles = get_map_template_style(
             self.request,
+            str(session.uuid),
             theme_choice=(
                 0 if theme == 'light' else 1
             ),
@@ -98,7 +159,7 @@ class MapStyles(APIView):
         )
 
 
-class PropertiesLayerMVTTiles(APIView):
+class PropertiesLayerMVTTiles(MapSessionBase):
     """Dynamic Vector Tile for properties layer."""
     permission_classes = [IsAuthenticated]
 
@@ -107,6 +168,17 @@ class PropertiesLayerMVTTiles(APIView):
         with gzip.GzipFile(fileobj=bytesbuffer, mode='w') as w:
             w.write(data)
         return bytesbuffer.getvalue()
+
+    def get_mvt_sql(self, mvt_name, sql):
+        fsql = (
+            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
+            'AS data '
+            'FROM ({query}) AS q)'
+        ).format(
+            mvt_name=mvt_name,
+            query=sql
+        )
+        return fsql
 
     def generate_tile(self, sql, query_values):
         if sql is None:
@@ -124,7 +196,7 @@ class PropertiesLayerMVTTiles(APIView):
     def generate_properties_layer(
             self,
             type: PopulationQueryEnum,
-            organisation_id: int,
+            session: MapSession,
             z: int,
             x: int,
             y: int,) -> Tuple[str, List[str]]:
@@ -139,178 +211,69 @@ class PropertiesLayerMVTTiles(APIView):
             'properties'
         )
         sql = (
-            'SELECT p.id, p.name, 0 as count, '
-            'ST_AsMVTGeom('
-            '  ST_Transform(p.{geom_field}, 3857), '
-            '  TileBBox(%s, %s, %s, 3857)) as geom '
-            'from property p '
-            'where p.{geom_field} && TileBBox(%s, %s, %s, 4326) '
-        ).format(geom_field=geom_field)
-        # add filter by selected organisation
-        sql = (
-            sql +
-            'AND p.organisation_id=%s '
-        )
-        fsql = (
-            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
-            'AS data '
-            'FROM ({query}) AS q)'
+            """
+            SELECT p.id, p.name, population_summary.count,
+            ST_AsMVTGeom(
+              ST_Transform(p.{geom_field}, 3857),
+              TileBBox(%s, %s, %s, 3857)) as geom
+            from property p
+            inner join "{view_name}" population_summary
+                on p.id=population_summary.id
+            where p.{geom_field} && TileBBox(%s, %s, %s, 4326)
+            """
         ).format(
-            mvt_name=layer_name,
-            query=sql
+            geom_field=geom_field,
+            view_name=session.properties_view_name
         )
         query_values = [
             z, x, y,
-            z, x, y,
-            organisation_id
+            z, x, y
         ]
-        return fsql, query_values
+        return self.get_mvt_sql(layer_name, sql), query_values
 
     def generate_province_layer(
-            self, organisation_id: int,
-            z: int, x: int, y: int,
-            filter_start_year: int,
-            filter_end_year: int,
-            filter_species_name: str,
-            filter_organisation: str,
-            filter_activity: str,
-            filter_spatial: str
+            self, session: MapSession,
+            z: int, x: int, y: int
         ):
-        sub_sql, query_values = get_population_query(
-            PopulationQueryEnum.PROVINCE_LAYER, z, x, y, organisation_id,
-            filter_start_year, filter_end_year, filter_species_name,
-            filter_organisation, filter_activity, filter_spatial
-        )
         sql = (
             """
             select zpss.id, zpss.adm1_en, population_summary.count,
               ST_AsMVTGeom(zpss.geom, TileBBox(%s, %s, %s, 3857)) as geom
             from layer.zaf_provinces_small_scale zpss
             inner join province p2 on p2.name=zpss.adm1_en
-            inner join ({sub_sql}) as population_summary
+            inner join "{view_name}" population_summary
                 on p2.id=population_summary.id
             where zpss.geom && TileBBox(%s, %s, %s, 3857)
             """
-        ).format(sub_sql=sub_sql)
-        tilebbox_values = [z, x, y]
-        tilebbox_values.extend(query_values)
-        query_values = tilebbox_values
-        query_values.extend([z, x, y])
-        fsql = (
-            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
-            'AS data '
-            'FROM ({query}) AS q)'
-        ).format(
-            mvt_name='province_population',
-            query=sql
-        )
-        return fsql, query_values
-
-    def generate_properties_population_layer(
-            self, organisation_id: int,
-            z: int, x: int, y: int,
-            filter_start_year: int,
-            filter_end_year: int,
-            filter_species_name: str,
-            filter_organisation: str,
-            filter_activity: str,
-            filter_spatial: str
-        ):
-        sql, query_values = get_population_query(
-            PopulationQueryEnum.PROPERTIES_LAYER, z, x, y,
-            organisation_id, filter_start_year,
-            filter_end_year, filter_species_name, filter_organisation,
-            filter_activity, filter_spatial
-        )
-        fsql = (
-            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
-            'AS data '
-            'FROM ({query}) AS q)'
-        ).format(
-            mvt_name='properties',
-            query=sql
-        )
-        return fsql, query_values
-
-    def generate_properties_points_population_layer(
-            self, organisation_id: int,
-            z: int, x: int, y: int,
-            filter_start_year: int,
-            filter_end_year: int,
-            filter_species_name: str,
-            filter_organisation: str,
-            filter_activity: str,
-            filter_spatial: str):
-        sql, query_values = get_population_query(
-            PopulationQueryEnum.PROPERTIES_POINTS_LAYER, z, x, y,
-            organisation_id, filter_start_year,
-            filter_end_year, filter_species_name, filter_organisation,
-            filter_activity, filter_spatial
-        )
-        fsql = (
-            '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
-            'AS data '
-            'FROM ({query}) AS q)'
-        ).format(
-            mvt_name='properties-points',
-            query=sql
-        )
-        return fsql, query_values
+        ).format(view_name=session.province_view_name)
+        query_values = [z, x, y, z, x, y]
+        return self.get_mvt_sql('province_population', sql), query_values
 
     def generate_query_for_map(
             self,
-            organisation_id: int,
-            z: int, x: int, y: int,
-            filter_start_year: int,
-            filter_end_year: int,
-            filter_species_name: str,
-            filter_organisation: str,
-            filter_activity: str,
-            filter_spatial: str) -> Tuple[str, List[str]]:
+            session: MapSession,
+            z: int, x: int, y: int) -> Tuple[str, List[str]]:
+        """
+        Generate layer queries for vector tile.
+
+        Possible layers: province_population, properties, properties-point.
+        """
         sqls = []
         query_values = []
-        if filter_species_name:
+        if self.can_view_province_layer():
+            province_sql, province_val = (
+                self.generate_province_layer(
+                    session, z, x, y
+                )
+            )
+            sqls.append(province_sql)
+            query_values.extend(province_val)
+        if self.can_view_properties_layer():
             if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
-                # generate choropleth properties population layer
-                properties_sql, properties_val = (
-                    self.generate_properties_population_layer(
-                        organisation_id, z, x, y,
-                        filter_start_year, filter_end_year,
-                        filter_species_name, filter_organisation,
-                        filter_activity, filter_spatial
-                    )
-                )
-                sqls.append(properties_sql)
-                query_values.extend(properties_val)
-            if should_generate_layer(z, PROVINCE_LAYER_ZOOMS):
-                province_sql, province_val = (
-                    self.generate_province_layer(
-                        organisation_id, z, x, y,
-                        filter_start_year, filter_end_year,
-                        filter_species_name, filter_organisation,
-                        filter_activity, filter_spatial
-                    )
-                )
-                sqls.append(province_sql)
-                query_values.extend(province_val)
-            if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
-                propertie_points_sql, properties_points_val = (
-                    self.generate_properties_points_population_layer(
-                        organisation_id, z, x, y,
-                        filter_start_year, filter_end_year,
-                        filter_species_name, filter_organisation,
-                        filter_activity, filter_spatial
-                    )
-                )
-                sqls.append(propertie_points_sql)
-                query_values.extend(properties_points_val)
-        else:
-            if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
-                # generate properties layer
                 properties_sql, properties_val = (
                     self.generate_properties_layer(
                         PopulationQueryEnum.PROPERTIES_LAYER,
-                        organisation_id, z, x, y
+                        session, z, x, y
                     )
                 )
                 sqls.append(properties_sql)
@@ -319,7 +282,7 @@ class PropertiesLayerMVTTiles(APIView):
                 propertie_points_sql, properties_points_val = (
                     self.generate_properties_layer(
                         PopulationQueryEnum.PROPERTIES_POINTS_LAYER,
-                        organisation_id, z, x, y
+                        session, z, x, y
                     )
                 )
                 sqls.append(propertie_points_sql)
@@ -331,21 +294,13 @@ class PropertiesLayerMVTTiles(APIView):
         return output_sql, query_values
 
     def get(self, *args, **kwargs):
-        current_organisation_id = get_current_organisation_id(
-            self.request.user
-        ) or 0
+        session = self.get_current_session_or_404()
         sql, query_values = (
             self.generate_query_for_map(
-                current_organisation_id,
+                session,
                 int(kwargs.get('z')),
                 int(kwargs.get('x')),
-                int(kwargs.get('y')),
-                self.request.GET.get('start_year', None),
-                self.request.GET.get('end_year', None),
-                self.request.GET.get('species', None),
-                self.request.GET.get('organisation', None),
-                self.request.GET.get('activity', None),
-                self.request.GET.get('spatial_filter_values', None)
+                int(kwargs.get('y'))
             )
         )
         tile = self.generate_tile(sql, query_values)
@@ -508,38 +463,27 @@ class MapAuthenticate(APIView):
         return HttpResponseForbidden()
 
 
-class PopulationCountLegends(APIView):
+class PopulationCountLegends(MapSessionBase):
     """API to return categories/legend of population count."""
     permission_classes = [IsAuthenticated]
 
     def get(self, *args, **kwargs):
-        current_organisation_id = get_current_organisation_id(
-            self.request.user
-        ) or 0
-        species = self.request.GET.get('species', None)
+        species = self.get_species_filter()
         if species is None:
             return Response(status=400, data='Species filter is mandatory!')
-        province = generate_population_count_categories(
-            True,
-            current_organisation_id,
-            self.request.GET.get('start_year', None),
-            self.request.GET.get('end_year', None),
-            self.request.GET.get('species', None),
-            self.request.GET.get('organisation', None),
-            self.request.GET.get('activity', None),
-            self.request.GET.get('spatial_filter_values', None)
-        )
-        properties = generate_population_count_categories(
-            False,
-            current_organisation_id,
-            self.request.GET.get('start_year', None),
-            self.request.GET.get('end_year', None),
-            self.request.GET.get('species', None),
-            self.request.GET.get('organisation', None),
-            self.request.GET.get('activity', None),
-            self.request.GET.get('spatial_filter_values', None)
-        )
+        session = self.generate_session()
+        province = []
+        if self.can_view_province_layer():
+            province = generate_population_count_categories(
+                True, session, species
+            )
+        properties = []
+        if self.can_view_properties_layer():
+            properties = generate_population_count_categories(
+                False, session, species
+            )
         return Response(status=200, data={
             'province': province,
-            'properties': properties
+            'properties': properties,
+            'session': str(session.uuid)
         })

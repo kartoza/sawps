@@ -100,14 +100,14 @@ class TestMapAPIViews(TestCase):
             reverse('map-style')
         )
         request.user = self.user_1
-        get_map_template_style(request,1)
+        get_map_template_style(request, 'session-test', 1)
 
     def test_map_styles_with_different_role(self):
         request = self.factory.get(
             reverse('map-style')
         )
         request.user = self.user_1
-        response = get_map_template_style(request,1)
+        response = get_map_template_style(request, 'session-test', 1)
         self.assertIsNotNone(response['layers'])
 
     def test_get_properties_map_tile(self):
