@@ -137,7 +137,7 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
         url = self.url
         data = {
                 'species':"Penthera leo",
-                'property':"1,2",
+                'property':[str(self.property1.id),str(self.property2.id)],
                 'start_year':"2020",
                 'end_year':"2020"
         }
