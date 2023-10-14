@@ -399,9 +399,10 @@ def delete_expired_map_materialized_view():
     sessions = MapSession.objects.filter(
         expired_date__lt=timezone.now()
     )
+    total_count = sessions.count()
     for session in sessions:
-        drop_map_materialized_view(session.properties_view_name)
-        drop_map_materialized_view(session.province_view_name)
+        session.delete()
+    return total_count
 
 
 def generate_map_view(
