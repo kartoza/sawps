@@ -79,15 +79,6 @@ class PopulationEstimateCategoryTestCase(BaseTestCase):
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = {
-            'species': 'Penthera leo'
-            'property': [str(self.property.id),'1'],
-            'start_year' 1960,
-            'end_year': 2023
-        }
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreater(len(response.data),0)
 
 
 class SpeciesPopuationCountPerProvinceTestCase(BaseTestCase):
