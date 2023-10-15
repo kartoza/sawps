@@ -17,6 +17,15 @@ export function toSingular(str: string) {
   }
 
   /**
+   * Get title from string
+   */
+  export function getTitle(key: string) {
+    return  key.split('_')
+      .map((part) => capitalize(part))
+      .join(' ').trim()
+  }
+
+  /**
    * Get file type from layer_type and filename
    */
   export function getFileType(layer_type: string, filename: string): string {
