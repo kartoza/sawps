@@ -3,7 +3,7 @@
     width: 100%;
     display: flex;
     padding: 6px;
-    border-radius: 8px;
+    border-radius: 5px;
     margin-bottom: 10px;
     min-width: 120px;
 
@@ -88,7 +88,7 @@
     width: 100%;
     display: flex;
     padding: 6px;
-    border-radius: 8px;
+    border-radius: 5px;
     margin-bottom: 10px;
     min-width: 120px;
     color: white;
@@ -106,4 +106,8 @@
 }
 .dataTable-auto .MuiDataGrid-columnHeaderTitleContainer {
     text-align: left;
+}
+
+.dataContainer {
+    padding: 5px;
 }

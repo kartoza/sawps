@@ -255,7 +255,7 @@ const DataList = () => {
     }, [data, selectedColumns, isSuccess])
 
     return (
-        <Box style={{ paddingRight: '20px' }}>
+        <Box className='dataContainer'>
             <Box className="bgGreen">
                 <Box className="selectBox">
                     <FormControl fullWidth>
