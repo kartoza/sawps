@@ -76,7 +76,8 @@ function Filter(props: any) {
     const [selectedActivity, setSelectedActivity] = useState<string>('');
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
-    const [selectedInfo, setSelectedInfo] = useState<string>('Species report');
+    const [selectedInfo, setSelectedInfo] = useState<string[]>(['Species report']);
+    const [selectAllInfo, setSelectAllInfo] = useState(null);
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
@@ -88,11 +89,13 @@ function Filter(props: any) {
     const [nominatimResults, setNominatimResults] = useState([]);
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
-    const [searchText, setSearchText] = useState('')
-    const [isPropertySearchActive, setIsPropertySearchActive] = useState(false)
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
-    let informationList: string[] = []
+    type Information = {
+        id?: string,
+        name?: string
+    }
+    let informationList: Information[] = []
 
     const roleExists = (role: string) => {
         if (!userInfoData || !userInfoData.user_roles) return false;
@@ -101,11 +104,27 @@ function Filter(props: any) {
 
     if (userInfoData) {
         informationList = [
-            "Activity report",
-            "Property report",
-            roleExists("National data consumer") ? "Province report" :  roleExists("Regional data consumer") ? "" : "Sampling report",
-            "Species report",
-        ].filter(item => item !== "")
+            {
+                id: "Activity report",
+                name: "Activity report",
+            },
+            {
+                id: "Property report",
+                name: "Property report"
+            },
+            roleExists("National data consumer") ? {
+                id: "Province report",
+                name: "Province report"
+            } :  roleExists("Regional data consumer") ? {} : {
+                id: "Province report",
+                name: "Province report"
+            },
+            {
+                id: "Species report",
+                name: "Species report"
+            },
+        ].filter(item => item.id)
+
     }
 
     // Select all organisations by default
@@ -304,13 +323,18 @@ function Filter(props: any) {
         dispatch(toggleSpecies(selectedSpecies));
     }, [selectedSpecies])
 
-    const handleSelectedInfo = (e: SelectChangeEvent) => {
-        setSelectedInfo(e.target.value);
-    };
+    useEffect(() => {
+        const values = selectedInfo.join(',')
+        dispatch(setSelectedInfoList(values));
+    }, [selectedInfo])
 
     useEffect(() => {
-        dispatch(setSelectedInfoList(selectedInfo));
-    }, [selectedInfo])
+        if (selectAllInfo) {
+            setSelectedInfo(informationList.map((info) => info.id));
+        } else if (selectAllInfo === false) {
+            setSelectedInfo([]);
+        }
+    }, [selectAllInfo])
 
     const mergeBoundingBoxes = (boundingBoxes: number[][]): number[] => {
         let minLeft: number = 180;
@@ -348,8 +372,6 @@ function Filter(props: any) {
             // Merge the collected bounding boxes
             const combinedBoundingBox = mergeBoundingBoxes(propertyBoundingBoxes);
 
-            // LEVEL 1 DEBUG
-            // console.log('navigation to bounding box', combinedBoundingBox);
 
             adjustMapToBoundingBox(combinedBoundingBox)
           } else {
@@ -360,20 +382,6 @@ function Filter(props: any) {
         } catch (error) {
           setLoading(false);
           console.error(error);
-        }
-      };
-
-
-      const handleSelectedProperty = (updatedSelectedProperty: number[]) => () => {
-        // LEVEL 3 DEBUG
-        // console.log('selected properties', updatedSelectedProperty);
-
-        setSelectedProperty(updatedSelectedProperty);
-        if (updatedSelectedProperty.length === 0) {
-            adjustMapToBoundingBox(boundingBox)
-        } else {
-          // Call zoomToCombinedBoundingBox with the updated list of selected properties
-          zoomToCombinedBoundingBox(updatedSelectedProperty);
         }
       };
 
@@ -393,7 +401,11 @@ function Filter(props: any) {
     const handleSelectAllProperty = () => {
         let propertyIds = selectAllProperty ? propertyList.map((property) => property.id) : []
         setSelectedProperty(propertyIds);
-        zoomToCombinedBoundingBox(propertyIds);
+        if (propertyIds) {
+            zoomToCombinedBoundingBox(propertyIds);
+        } else {
+            adjustMapToBoundingBox(boundingBox)
+        }
     };
 
     useEffect(() => {
@@ -487,7 +499,7 @@ function Filter(props: any) {
         setSelectAllOrganisation(false)
         setSelectedSpecies('')
         setSelectedActivity('')
-        setSelectedInfo('')
+        setSelectAllInfo(false)
         setLocalStartYear(yearRangeStart)
         setLocalEndYear(yearRangeEnd)
         dispatch(setStartYear(yearRangeStart));
@@ -698,20 +710,31 @@ function Filter(props: any) {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading ? <Loading /> :
-                                (
-                                    <Select
-                                        displayEmpty
-                                        sx={{ width: '100%', textAlign: 'start' }}
-                                        value={selectedInfo}
-                                        onChange={handleSelectedInfo}
-                                        renderValue={
-                                            selectedInfo !== "" ? undefined : () => <div style={{ color: '#282829' }}>Select</div>
-                                        }
-                                    >
-                                        {informationList.map((info: any, index) => (
-                                            <MenuItem value={info} key={index}>{info}</MenuItem>
-                                        ))}
-                                    </Select>)
+                                // (
+                                //     <Select
+                                //         displayEmpty
+                                //         sx={{ width: '100%', textAlign: 'start' }}
+                                //         value={selectedInfo}
+                                //         onChange={handleSelectedInfo}
+                                //         renderValue={
+                                //             selectedInfo !== "" ? undefined : () => <div style={{ color: '#282829' }}>Select</div>
+                                //         }
+                                //     >
+                                //         {informationList.map((info: any, index) => (
+                                //             <MenuItem value={info} key={index}>{info}</MenuItem>
+                                //         ))}
+                                //     </Select>)
+                              (
+                                <AutoCompleteCheckbox
+                                    options={informationList}
+                                    selectedOption={selectedInfo}
+                                    singleTerm={'Report'}
+                                    pluralTerms={'Reports'}
+                                    selectAllFlag={selectAllInfo}
+                                    setSelectAll={setSelectAllInfo}
+                                    setSelectedOption={setSelectedInfo}
+                                  />
+                              )
                             }
                         </List>
                     </Box>
@@ -776,9 +799,18 @@ function Filter(props: any) {
                                 pluralTerms={'Properties'}
                                 selectAllFlag={selectAllProperty}
                                 setSelectAll={setSelectAllProperty}
-                                setSelectedOption={setSelectedProperty}
+                                // setSelectedOption={setSelectedProperty}
                                 // somehow handleSelectedProperty cannot be called
                                 // setSelectedOption={handleSelectedProperty}
+                                setSelectedOption={(newValues) => {
+                                    setSelectedProperty(newValues)
+                                    if (newValues.length === 0) {
+                                        adjustMapToBoundingBox(boundingBox)
+                                    } else {
+                                      // Call zoomToCombinedBoundingBox with the updated list of selected properties
+                                      zoomToCombinedBoundingBox(newValues);
+                                    }
+                                }}
                               />
                             )}
                         </List>

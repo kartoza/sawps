@@ -9,11 +9,11 @@ import Loading from '../../../components/Loading';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import axios from "axios";
-import './index.scss';
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
 import { getTitle } from "../../../utils/Helpers";
 import {useGetUserInfoQuery, UserInfo} from "../../../services/api";
+import './index.scss';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -111,7 +111,7 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?reports=Property_report,Activity_report&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -165,7 +165,12 @@ const DataList = () => {
         if (!isSuccess) return;
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
             <>
-                <Box className="data-table" style={{ backgroundColor: (customColorWidth as any)[each]?.color }}>
+                <Box className="data-table data-grid"
+                     style={{
+                         backgroundColor: (customColorWidth as any)[each]?.color,
+                         marginTop: '20px'
+                    }}
+                >
                     {getTitle(each)}
                 </Box>
                 {
@@ -205,7 +210,12 @@ const DataList = () => {
         )
         const activityDataGrid = checkUserRole(userInfoData) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
             <>
-                <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
+                <Box className="data-table"
+                     style={{
+                         backgroundColor: (customColorWidth as any)[each]?.color,
+                         marginTop: '20px',
+                    }}
+                >
                     {getTitle(each)}
                 </Box>
                 {activityReportList.map((each: any) =>

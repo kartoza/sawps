@@ -47,15 +47,15 @@ export function AutoCompleteCheckbox(props: AutoCompleteCheckboxProps) {
     setSelectAll,
     setSelectedOption
   } = props
-  
-    return (
+
+  return (
       <Autocomplete
           multiple
           options={options}
           fullWidth
           disableCloseOnSelect
           freeSolo={false}
-          value={options.filter(option => selectedOption.includes(option.id))}
+          value={options.filter((option) => selectedOption.includes(option.id))}
           getOptionLabel={(option) => option.name}
           renderOption={(props, option, { selected }) => (
             <li {...props}>
@@ -98,7 +98,6 @@ export function AutoCompleteCheckbox(props: AutoCompleteCheckboxProps) {
             ) {
                 const valueIds = value.map(val => val.id)
                 setSelectedOption(valueIds);
-                // setSelectedProperty(valueIds);
             }
           }}
           renderInput={(params) => (
