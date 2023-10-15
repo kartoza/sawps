@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Checkbox, ListItemText, Typography } from "@mui/material";
+import {Box, Button, Checkbox, Grid, ListItemText, Typography} from "@mui/material";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -59,29 +59,28 @@ const DataList = () => {
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
     const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
+    const [showReports, setShowReports] = useState(false);
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
     let dataset: any[] = []
     let reportList: any[] = []
-    let defaultColorWidth = {}
+    let defaultColorWidth = {
+        "Species_report": {color:"#F9A95D",width:107},
+        "Property_report": {color:'#9F89BF',width:131},
+        "Sampling_report": {color:"#FF5252",width:168},
+        "Province_report": {color:"#FF5252",width:100},
+        "Species_population_report": "#9F89BF",
+        "Activity_report": checkUserRole(userInfoData) ? {color:"#696969",width:100} : {color:"#75B37A",width:100},
+        "Unplanned/natural deaths": {color:"#75B37A",width:106.5},
+        "Planned translocation": {color:"#F9A95D",width:106.5},
+        "Planned hunt/cull": {color:"#FF5252",width:130.2},
+        "Planned euthanasia": {color:"#9F89BF",width:130.2},
+        "Unplanned/illegal hunting": {color:"#696969",width:147}
+    }
 
     if (isSuccess) {
         dataset = checkUserRole(userInfoData) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
         reportList = checkUserRole(userInfoData) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
-        defaultColorWidth =
-            {
-                "Species_report": {color:"#F9A95D",width:107},
-                "Property_report": {color:'#9F89BF',width:131},
-                "Sampling_report": {color:"#FF5252",width:168},
-                "Province_report": {color:"#FF5252",width:100},
-                "Species_population_report": "#9F89BF",
-                "Activity_report": checkUserRole(userInfoData) ? {color:"#696969",width:100} : {color:"#75B37A",width:100},
-                "Unplanned/natural deaths": {color:"#75B37A",width:106.5},
-                "Planned translocation": {color:"#F9A95D",width:106.5},
-                "Planned hunt/cull": {color:"#FF5252",width:130.2},
-                "Planned euthanasia": {color:"#9F89BF",width:130.2},
-                "Unplanned/illegal hunting": {color:"#696969",width:147}
-            }
     }
     const [customColorWidth, setCustomColorWidth] = useState<any>(defaultColorWidth)
 
@@ -112,7 +111,7 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?reports=Property_report,Activity_report&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -125,7 +124,10 @@ const DataList = () => {
 
     useEffect(() => {
         setColumns([])
-        fetchDataList();
+        if (selectedSpecies) {
+            fetchDataList()
+            setShowReports(true);
+        }
     }, [startYear, endYear, selectedSpecies, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
@@ -255,52 +257,67 @@ const DataList = () => {
     }, [data, selectedColumns, isSuccess])
 
     return (
-        <Box className='dataContainer'>
-            <Box className="bgGreen">
-                <Box className="selectBox">
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label" shrink={false}>Filter columns</InputLabel>
-                        <Select
-                            labelId="demo-multiple-checkbox-label"
-                            id="demo-multiple-checkbox"
-                            multiple
-                            value={selectedColumns}
-                            onChange={handleChange}
-                            renderValue={(selected: any) => selected.join(', ')}
-                            MenuProps={MenuProps}
-                        >
-                            {columns.map((column) => (
-                                <MenuItem key={column.headerName} value={column.headerName}>
-                                    <Checkbox checked={selectedColumns.indexOf(column.headerName) > -1} />
-                                    <ListItemText primary={column.headerName} />
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+          showReports ? (
+            <Box className='dataContainer'>
+                <Box className="bgGreen">
+                    <Box className="selectBox">
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label" shrink={false}>Filter columns</InputLabel>
+                            <Select
+                              labelId="demo-multiple-checkbox-label"
+                              id="demo-multiple-checkbox"
+                              multiple
+                              value={selectedColumns}
+                              onChange={handleChange}
+                              renderValue={(selected: any) => selected.join(', ')}
+                              MenuProps={MenuProps}
+                            >
+                                {columns.map((column) => (
+                                  <MenuItem key={column.headerName} value={column.headerName}>
+                                      <Checkbox checked={selectedColumns.indexOf(column.headerName) > -1} />
+                                      <ListItemText primary={column.headerName} />
+                                  </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
                 </Box>
-            </Box>
-            {loading ? <Loading /> :
-                <Box className="dataTable-auto">
-                    <Box className="dataTable">
-                        {data.length > 0 ?
+                {loading ? <Loading /> :
+                  <Box className="dataTable-auto">
+                      <Box className="dataTable">
+                          {data.length > 0 ?
                             <Box>{tableData}
                                 {activityTableGrid}
                             </Box> :
                             <Typography>
                                 No Data To Show
                             </Typography>}
-                    </Box>
-                </Box>}
-            <Box className="downlodBtn">
-                <Button onClick={handleExportExcel} variant="contained" color="primary">
-                    Download data Report
-                </Button>
-                <Button onClick={handleExportCsv} variant="contained" color="primary">
-                    Download data CSV
-                </Button>
-            </Box>
+                      </Box>
+                  </Box>}
+                <Box className="downlodBtn">
+                    <Button onClick={handleExportExcel} variant="contained" color="primary">
+                        Download data Report
+                    </Button>
+                    <Button onClick={handleExportCsv} variant="contained" color="primary">
+                        Download data CSV
+                    </Button>
+                </Box>
 
-        </Box>
+            </Box>
+          ) : (
+            <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
+                <Grid item>
+                    <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                        Ready to explore?
+                    </Typography>
+                </Grid>
+                <Grid>
+                    <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                        Choose a species to view the data as table.
+                    </Typography>
+                </Grid>
+            </Grid>
+          )
     )
 }
 

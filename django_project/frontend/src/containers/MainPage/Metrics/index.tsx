@@ -44,7 +44,7 @@ const Metrics = () => {
     const contentRef = useRef(null);
 
     // Declare errorMessage as a state variable
-    const [showChats, setShowCharts] = useState(false);
+    const [showCharts, setShowCharts] = useState(false);
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
@@ -102,12 +102,12 @@ const Metrics = () => {
     }
 
     useEffect(() => {
-        if(propertyId && propertyId != ''){
+        if(selectedSpecies){
+            setShowCharts(true)
             fetchActivityPercentageData();
             fetchActivityTotalCount();
             fetchPopulationAgeGroupData();
             fetchAreaAvailableLineData();
-            setShowCharts(true)
         }else {
             setShowCharts(false);
         }
@@ -134,7 +134,7 @@ const Metrics = () => {
         <Box>
             <Box className="charts-container">
 
-                {showChats ? (
+                {showCharts ? (
                         <Grid container spacing={2} ref={contentRef}>
                             <Grid item xs={12} md={6}>
                                 <PopulationCategoryChart 
@@ -212,10 +212,17 @@ const Metrics = () => {
                     </Grid>
                 ): (
                     // Render message to user
-                    <Grid container justifyContent="center" alignItems="center">
-                        <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                            Please select a property to fetch species data for.
-                        </Typography>
+                    <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
+                        <Grid item>
+                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                                Ready to explore?
+                            </Typography>
+                        </Grid>
+                        <Grid>
+                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                Choose a species to view the data as charts.
+                            </Typography>
+                        </Grid>
                     </Grid>
                 )}
 
@@ -225,7 +232,7 @@ const Metrics = () => {
             {/* {userRole === 'decision maker' && (
                 <GenerateChartImages />
             )} */}
-            {showChats && (
+            {showCharts && (
                 <Box className="download-btn-box" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
                     <Button onClick={handleDownloadPdf} variant="contained" color="primary">
                         Download data visualizations
