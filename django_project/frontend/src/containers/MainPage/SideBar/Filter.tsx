@@ -338,11 +338,6 @@ function Filter(props: any) {
         if (organisationList) {
             let organisationIds = selectAllOrganisation ? organisationList.map((organisation: Organisation) => organisation.id) : []
             setSelectedOrganisation(organisationIds);
-
-            if (organisationIds.length === 0) {
-                setSelectedProperty([])
-                setSelectedSpecies('')
-            }
         }
     };
 
