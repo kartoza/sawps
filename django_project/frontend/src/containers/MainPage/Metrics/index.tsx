@@ -54,6 +54,13 @@ const Metrics = () => {
     // Declare errorMessage as a state variable
     const [showChats, setShowCharts] = useState(false);
 
+    const [hasEmptyPopulationTrend, setHasEmptyPopulationTrend] = useState(true);
+
+    // Pass callback functions to each child component for the specific type
+    const handleEmptyPopulationTrend = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyPopulationTrend(isEmpty);
+    };
+
     const fetchActivityPercentageData = () => {
         setLoading(true)
         axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
@@ -120,6 +127,9 @@ const Metrics = () => {
             setShowCharts(false);
         }
 
+        // allow rerender
+        setHasEmptyPopulationTrend(true)
+
     }, [propertyId, startYear, endYear, selectedSpecies])
     const handleDownloadPdf = async () => {
         const content = contentRef.current;
@@ -144,16 +154,19 @@ const Metrics = () => {
 
                 {showChats ? (
                         <Grid container spacing={2} ref={contentRef}>
-                            <Grid item xs={12} md={6}>
-                                <PopulationTrend 
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear} 
-                                    loading={loading} 
-                                    setLoading={setLoading}
-                                />
-                            </Grid>
+                            {selectedSpecies && hasEmptyPopulationTrend && (
+                                <Grid item xs={12} md={6}>
+                                    <PopulationTrend 
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear} 
+                                        loading={loading} 
+                                        setLoading={setLoading}
+                                        onEmptyDatasets={handleEmptyPopulationTrend}
+                                    />
+                                </Grid>
+                            )}
                             
                             <Grid item xs={12} md={6}>
                                 <PopulationCategoryChart 
