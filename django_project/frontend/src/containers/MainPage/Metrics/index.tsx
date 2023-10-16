@@ -132,85 +132,85 @@ const Metrics = () => {
 
     return (
         <Box>
-            <Box className="charts-container">
-
-                {showCharts ? (
-                        <Grid container spacing={2} ref={contentRef}>
-                            <Grid item xs={12} md={6}>
-                                <PopulationCategoryChart 
-                                selectedSpecies={selectedSpecies} 
-                                propertyId={propertyId} 
-                                startYear={startYear} 
-                                endYear={endYear} 
-                                loading={loading} 
-                                setLoading={setLoading} 
-                                populationData={populationData} 
-                                setPopulationData={setPopulationData} 
-                                />
-                            </Grid>
-                            
-                            <Grid item xs={12} md={6}>
-                                <PropertyTypeBarChart 
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear} 
-                                    loading={loading} 
-                                    setLoading={setLoading} 
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                <DensityBarChart
-                                    selectedSpecies={selectedSpecies}
-                                    propertyId={propertyId}
-                                    startYear={startYear}
-                                    endYear={endYear}
-                                    loading={loading}
-                                    setLoading={setLoading}
-                                    densityData={densityData}
-                                    setDensityData={setDensityData}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                <PropertyAvailableBarChart
-                                    selectedSpecies={selectedSpecies}
-                                    propertyId={propertyId}
-                                    startYear={startYear}
-                                    endYear={endYear}
-                                    loading={loading}
-                                    setLoading={setLoading}
-                                />
-                            </Grid>
-
-                            {ageGroupData.map((data) => (
-                                <Grid container key={data.id} item xs={12} md={6}>
-                                    <AgeGroupBarChart
-                                        loading={loading}
-                                        ageGroupData={data?.age_group}
-                                        icon={data?.graph_icon}
-                                        colour={data?.colour}
-                                        name={data?.common_name_varbatim}
-                                    />
-                                </Grid>
-                            ))}
-
-                            {areaData.map((data, index) => (
-                                <Grid container key={index} item xs={12} md={6}>
-                                    {data?.area?.owned_species ? (
-                                        <AreaAvailableLineChart
-                                            loading={loading}
-                                            areaData={data?.area?.owned_species}
-                                            species_name={data?.common_name_varbatim}
-                                        />
-                                    ) : (
-                                        null
-                                    )}
-                                </Grid>
-                            ))}
+            {showCharts ? (
+              <Box className="charts-container">
+                <Grid container spacing={2} ref={contentRef}>
+                    <Grid item xs={12} md={6}>
+                        <PopulationCategoryChart
+                        selectedSpecies={selectedSpecies}
+                        propertyId={propertyId}
+                        startYear={startYear}
+                        endYear={endYear}
+                        loading={loading}
+                        setLoading={setLoading}
+                        populationData={populationData}
+                        setPopulationData={setPopulationData}
+                        />
                     </Grid>
-                ): (
+
+                    <Grid item xs={12} md={6}>
+                        <PropertyTypeBarChart
+                            selectedSpecies={selectedSpecies}
+                            propertyId={propertyId}
+                            startYear={startYear}
+                            endYear={endYear}
+                            loading={loading}
+                            setLoading={setLoading}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <DensityBarChart
+                            selectedSpecies={selectedSpecies}
+                            propertyId={propertyId}
+                            startYear={startYear}
+                            endYear={endYear}
+                            loading={loading}
+                            setLoading={setLoading}
+                            densityData={densityData}
+                            setDensityData={setDensityData}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <PropertyAvailableBarChart
+                            selectedSpecies={selectedSpecies}
+                            propertyId={propertyId}
+                            startYear={startYear}
+                            endYear={endYear}
+                            loading={loading}
+                            setLoading={setLoading}
+                        />
+                    </Grid>
+
+                    {ageGroupData.map((data) => (
+                        <Grid container key={data.id} item xs={12} md={6}>
+                            <AgeGroupBarChart
+                                loading={loading}
+                                ageGroupData={data?.age_group}
+                                icon={data?.graph_icon}
+                                colour={data?.colour}
+                                name={data?.common_name_varbatim}
+                            />
+                        </Grid>
+                    ))}
+
+                    {areaData.map((data, index) => (
+                        <Grid container key={index} item xs={12} md={6}>
+                            {data?.area?.owned_species ? (
+                                <AreaAvailableLineChart
+                                    loading={loading}
+                                    areaData={data?.area?.owned_species}
+                                    species_name={data?.common_name_varbatim}
+                                />
+                            ) : (
+                                null
+                            )}
+                        </Grid>
+                    ))}
+            </Grid>
+                </Box>
+            ) : (
                     // Render message to user
                     <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
                         <Grid item>
@@ -225,9 +225,6 @@ const Metrics = () => {
                         </Grid>
                     </Grid>
                 )}
-
-
-        </Box>
             {/* for decision makers only */}
             {/* {userRole === 'decision maker' && (
                 <GenerateChartImages />
