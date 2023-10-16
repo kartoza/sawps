@@ -63,7 +63,6 @@ function Filter(props: any) {
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
-    // const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
     const [selectAllProperty, setSelectAllProperty] = useState(true);
     const [selectedActivity, setSelectedActivity] = useState<string>('');
@@ -153,45 +152,6 @@ function Filter(props: any) {
         }
     }, [propertyList]);
 
-    // useEffect(() => {
-    //
-    //     if(selectedOrganisation.length === 0){
-    //         // reset
-    //         if (selectedOrganisation.length === 0) {
-    //             // setPropertyList([]);
-    //             adjustMapToBoundingBox(boundingBox)
-    //             setSelectedProperty([])
-    //             return;
-    //         }
-    //     }
-    //
-    //     const requests = selectedOrganisation.map((orgId) => {
-    //         return axios.get(`${FETCH_PROPERTY_LIST_URL}${orgId ? `${orgId}` : ""}`)
-    //         .then((response) => response.data)
-    //         .catch((error) => {
-    //             console.log(error);
-    //             return []; // Return an empty array in case of an error
-    //         });
-    //     });
-    //
-    //     // Use Promise.all to wait for all requests to complete
-    //     Promise.all(requests)
-    //         .then((results) => {
-    //         // Concatenate the results from all requests into a single array
-    //         const fetchedProperties = results.flat();
-    //
-    //         // Set filteredProperties once all requests are done
-    //         setPropertyList(fetchedProperties);
-    //         setLoading(false);
-    //         })
-    //         .catch((error) => {
-    //         console.log(error);
-    //         setLoading(false);
-    //         });
-    //
-    //   }, [selectedOrganisation]);
-
-
     // intial map state vars for zoom out
     const center = [25.86, -28.52]; // Center point in backend
     const width = 10;
@@ -258,21 +218,6 @@ function Filter(props: any) {
             dispatch(setEndYear(newValue[1]));
         }
     };
-
-    // const fetchPropertyList = () => {
-    //     axios.get(FETCH_PROPERTY_LIST_URL).then((response) => {
-    //         if (response.data) {
-    //             setPropertyList(response.data as PropertyInterface[])
-    //         }
-    //     }).catch((error) => {
-    //         console.log(error)
-    //     })
-    // }
-
-
-    useEffect(() => {
-        // fetchPropertyList();
-    }, [])
 
     const handleSelectedSpecies = (value: string) => {
         setSelectedSpecies(value);
@@ -515,28 +460,11 @@ function Filter(props: any) {
         }
     }, [SpeciesFilterList])
 
-    // // Function to filter properties based on the current organization
-    // const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
-    //     if (currentOrganisation && propertyList) {
-    //         const filtered = propertyList.filter((property) =>
-    //             property.organisation_id === currentOrganisation
-    //         );
-    //
-    //         setPropertyList(filtered);
-    //     } else {
-    //         setPropertyList([]);
-    //     }
-    // };
-
     useEffect(() => {
         if (!isSuccess) return;
 
         const userRoles = userInfoData.user_roles
         if (userRoles.length === 0) return;
-
-        // const currentOrganisationId = userInfoData.current_organisation_id;
-
-        // fetchPropertyList();
 
         // TODO : Update to use permissions
         const allowedRoles = new Set(["National data scientist", "Regional data scientist", "Super user"]);
@@ -553,7 +481,6 @@ function Filter(props: any) {
         if (
             userRoles.some(userRole => organisationRoles.has(userRole))
         ) {
-          // filterPropertiesByOrganisation(currentOrganisationId);
           setPropertiesSelection(true)
           setOrganisationSelection(false)
         }
@@ -731,7 +658,9 @@ function Filter(props: any) {
                                     singleTerm={'Organisation'}
                                     pluralTerms={'Organisations'}
                                     selectAllFlag={selectAllOrganisation}
-                                    setSelectAll={(val) => setSelectAllOrganisation(val)}
+                                    setSelectAll={(val) => {
+                                        setSelectAllOrganisation(val)
+                                    }}
                                     setSelectedOption={setSelectedOrganisation}
                                   />
                             }
