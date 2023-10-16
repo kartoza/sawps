@@ -17,6 +17,7 @@ import {
 import {Line} from 'react-chartjs-2'
 import Grid from '@mui/material/Grid';
 import Loading from '../../../components/Loading';
+import { Typography } from '@mui/material';
 
 /*
 a new dataset labeled "Counts" is added to the chartData object. 
@@ -120,9 +121,6 @@ const PopulationTrend= (props: any) => {
 
     useEffect(() => {
         fetchChartData()
-        if (chartData === null){
-            return null
-        }
     }, [propertyId, startYear, endYear, selectedSpecies])
 
 
@@ -168,7 +166,11 @@ const PopulationTrend= (props: any) => {
                 options={options}
                 plugins={[]}
               />
-            ) : null
+            ) : (
+                <Typography >
+                    No trend data available for selected species
+                </Typography>
+            )
           ) : (
             <Loading containerStyle={{ minHeight: 160 }} />
           )}
