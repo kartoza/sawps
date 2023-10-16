@@ -17,6 +17,7 @@ const DensityBarChart = (props: any) => {
         setLoading,
         densityData,
         setDensityData,
+        onEmptyDatasets
     } = props;
 
 
@@ -31,6 +32,9 @@ const DensityBarChart = (props: any) => {
                     setLoading(false);
                     if (response.data) {
                         const filteredData = response.data.filter((item: any) => item.density.density !== null);
+                        if(filteredData.length > 0){
+                            onEmptyDatasets(true)
+                        }else onEmptyDatasets(false)
                         setDensityData(filteredData.length > 0 ? filteredData : []);
                     }
                 })
