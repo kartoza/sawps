@@ -300,7 +300,8 @@ const DataList = () => {
                             </Typography>}
                       </Box>
                   </Box>}
-                <Box className="downlodBtn">
+                {loading ? <Loading/> : (
+                  <Box className="downlodBtn">
                     <Button onClick={handleExportExcel} variant="contained" color="primary">
                         Download data Report
                     </Button>
@@ -308,7 +309,7 @@ const DataList = () => {
                         Download data CSV
                     </Button>
                 </Box>
-
+                )}
             </Box>
           ) : (
             <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>

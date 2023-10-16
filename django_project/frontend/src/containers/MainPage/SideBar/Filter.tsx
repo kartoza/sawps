@@ -149,7 +149,11 @@ function Filter(props: any) {
     // Select all properties by default
     useEffect(() => {
         if (propertyList) {
-            setSelectedProperty(propertyList.map(property => property.id))
+            if (selectedOrganisation.length > 0) {
+                setSelectedProperty(propertyList.map(property => property.id))
+            } else {
+                setSelectedProperty([])
+            }
         }
     }, [propertyList]);
 
@@ -321,11 +325,7 @@ function Filter(props: any) {
 
     useEffect(() => {
         if (propertyList) {
-            let values = ''
-            if (selectedProperty.length !== propertyList.length) {
-                values = selectedProperty.join(',')
-            }
-            dispatch(selectedPropertyId(values));
+            dispatch(selectedPropertyId(selectedProperty.join(',')));
             const selectedPropertyNames = propertyList.filter(
               propertyObj => selectedProperty.includes(propertyObj.id)
             ).map(propertyObj => propertyObj.name)
@@ -347,12 +347,7 @@ function Filter(props: any) {
 
     useEffect(() => {
         if (organisationList) {
-            let values = ''
-            if (selectedOrganisation.length !== organisationList.length) {
-                values = selectedOrganisation.join(',')
-            }
-            dispatch(selectedOrganisationId(values))
-
+            dispatch(selectedOrganisationId(selectedOrganisation.join(',')))
             const selectedOrganisationNames = organisationList.filter(
               organisationObj => selectedOrganisation.includes(organisationObj.id)
             ).map(organisationObj => organisationObj.name)
