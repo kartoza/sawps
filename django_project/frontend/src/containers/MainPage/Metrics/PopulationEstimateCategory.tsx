@@ -34,6 +34,7 @@ const PopulationEstimateCategoryCount = (props: any) => {
     endYear,
     loading,
     setLoading,
+    onEmptyDatasets
   } = props;
   let year: number | null = null;
   const [speciesData, setSpeciesData] = useState([]);
@@ -46,6 +47,11 @@ const PopulationEstimateCategoryCount = (props: any) => {
       )
       .then((response) => {
         if (response.data) {
+          if (Object.keys(response.data).length === 0) {
+              onEmptyDatasets(false)
+          } else {
+              onEmptyDatasets(true)
+          }
           setSpeciesData(response.data);
           setLoading(false);
         }
@@ -110,7 +116,6 @@ const PopulationEstimateCategoryCount = (props: any) => {
       }
     } else {
       chartTitle = "No data available for current filter selections";
-      return null;
     }
   }
 
