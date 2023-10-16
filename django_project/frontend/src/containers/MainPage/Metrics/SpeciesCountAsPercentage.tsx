@@ -71,8 +71,7 @@ const SpeciesCountAsPercentage = (props: any) => {
             
             data.forEach((item: { year: null; province: any; species: any; }) => {
                 if (item.year === null) {
-                    console.log(`Year is null for province: ${item.province}, species: ${item.species}`);
-                    onEmptyDatasets(false)
+                   onEmptyDatasets(false)
                 }
                 if(startYear === item.year || endYear === item.year){
                   onEmptyDatasets(true)
