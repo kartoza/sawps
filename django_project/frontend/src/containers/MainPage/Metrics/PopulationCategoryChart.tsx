@@ -29,6 +29,7 @@ const PopulationCategoryChart = (props: any) => {
       setLoading,
       populationData,
       setPopulationData,
+      onEmptyDatasets
     } = props;
   
     const fetchPopulationCategoryData = () => {
@@ -40,6 +41,11 @@ const PopulationCategoryChart = (props: any) => {
         .then((response) => {
           setLoading(false);
           if (response.data) {
+            if (Object.keys(response.data).length === 0) {
+                onEmptyDatasets(false)
+            } else {
+                onEmptyDatasets(true)
+            }
             setPopulationData(response.data);
           }
         })
