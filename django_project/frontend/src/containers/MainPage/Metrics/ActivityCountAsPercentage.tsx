@@ -27,6 +27,7 @@ interface Props {
   endYear: number;
   loading: boolean;
   activityData: ActivityDataItem[];
+  onEmptyDatasets: any
 }
 
 const availableColors = [
@@ -49,6 +50,7 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   endYear,
   loading,
   activityData,
+  onEmptyDatasets
 }: Props) => {
   // Initialize variables
   const labels: string[] = [];
@@ -59,10 +61,11 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
 
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
 
-  if (!selectedSpecies || !activityData || activityData.length === 0) {
-    return null; // Return null if the condition fails
-  }
-
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      onEmptyDatasets(true)
+    }else onEmptyDatasets(false)
+  }, [activityData, selectedSpecies]);
 
   // Iterate through activityData
   activityData.forEach((speciesData: ActivityDataItem) => {
