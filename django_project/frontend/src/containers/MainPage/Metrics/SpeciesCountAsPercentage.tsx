@@ -153,6 +153,7 @@ const SpeciesCountAsPercentage = (props: any) => {
       chartTitle = `Total count as % of total population per province for ${selectedSpecies} year ${mostRecentYear}`;
     } else {
       chartTitle = "No data available for current filter selections";
+      return null;
     }
   }
 

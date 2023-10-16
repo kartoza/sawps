@@ -109,8 +109,8 @@ const PopulationEstimateCategoryCount = (props: any) => {
         chartTitle += ` year ${year}`;
       }
     } else {
-      setBackgroundImageUrl('')
       chartTitle = "No data available for current filter selections";
+      return null;
     }
   }
 
