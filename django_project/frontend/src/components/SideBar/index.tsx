@@ -73,7 +73,7 @@ export function AutoCompleteCheckbox(props: AutoCompleteCheckboxProps) {
           )}
           renderTags={(value, getTagProps) => {
             const numTags = value.length;
-            const field = numTags > 1 ? singleTerm : pluralTerms
+            const field = numTags > 1 ? pluralTerms : singleTerm
 
             return <Typography
               className={'autoComplete-Tags'}
@@ -101,7 +101,7 @@ export function AutoCompleteCheckbox(props: AutoCompleteCheckboxProps) {
             }
           }}
           renderInput={(params) => (
-            <TextField {...params}/>
+            <TextField {...params} placeholder={selectedOption.length > 0 ? '' : 'Select'}/>
           )}
           PaperComponent={(paperProps) => {
             const { children, ...restPaperProps } = paperProps;
