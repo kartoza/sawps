@@ -70,7 +70,6 @@ class SpeciesCSVUpload(object):
         """
         self.error_list = []
         self.success_list = []
-        self.property = self.upload_session.property
         uploaded_file = self.upload_session.process_file
         if self.upload_session.process_file.path.endswith('.xlsx'):
             excel = pd.ExcelFile(self.upload_session.process_file)
@@ -200,15 +199,17 @@ class SpeciesCSVUpload(object):
         # Create success message
         success_message = None
         if self.created_list > 0 and self.existed_list == 0:
-            success_message = "{} rows uploaded successfully."
+            success_message = "{} rows uploaded successfully." \
+                              "".format(self.created_list)
 
         if self.existed_list > 0 and self.created_list == 0:
-            success_message = "{} rows already exist in the database."
+            success_message = "{} rows already exist in the database." \
+                              "".format(self.existed_list)
 
-        if self.existed_list > 0 or self.created_list > 0:
+        if self.existed_list > 0 and self.created_list > 0:
             success_message = "{} rows already exist in the database. {} " \
-                              "uploaded successfully.".\
-                format(self.existed_list, self.created_list)
+                              "row uploaded successfully." \
+                              "".format(self.existed_list, self.created_list)
 
         if success_message:
             self.upload_session.success_notes = success_message

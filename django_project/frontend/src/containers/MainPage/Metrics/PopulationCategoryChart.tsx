@@ -7,12 +7,17 @@ import Loading from "../../../components/Loading";
 const FETCH_SPECIES_DENSITY = "/api/properties-per-population-category/";
 
 const availableColors = [
-    'rgba(112, 178, 118, 1)',
-    'rgba(250, 167, 85, 1)',
-    'rgba(157, 133, 190, 1)',
-    '#FF5252',
-    '#616161',
-  ];
+  'rgba(112, 178, 118, 1)', 
+  'rgba(250, 167, 85, 1)', 
+  'rgba(157, 133, 190, 1)', 
+  '#FF5252', 
+  '#616161',
+  'rgba(112, 178, 118, 0.5)',
+  'rgba(250, 167, 85, 0.5)',
+  'rgba(157, 133, 190, 0.5)',
+  'rgba(255, 82, 82, 0.5)',
+  'rgba(97, 97, 97, 0.5)'
+];
 
 const PopulationCategoryChart = (props: any) => {
     const {
@@ -99,10 +104,18 @@ const PopulationCategoryChart = (props: any) => {
         });
     }
 
-  const data = {
-    labels: labels,
-    datasets: newDatasets
-  };
+    // Sort labels in ascending order
+    labels.sort((a: any, b: any) => parseInt(a) - parseInt(b));
+
+    // Sort datasets in descending order
+    newDatasets.sort((a, b) => parseInt(b.label) - parseInt(a.label));
+
+
+
+    const data = {
+        labels: labels,
+        datasets: newDatasets
+    };
 
   const options = {
     plugins: {
@@ -174,8 +187,7 @@ return (
         {!loading ? (
             <Bar 
                 data={data} 
-                options={options} 
-                height={200} width={500} 
+                options={options}
             />
         ) : (
             <Loading containerStyle={{ minHeight: 160 }} />

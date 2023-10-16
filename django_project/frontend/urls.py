@@ -30,6 +30,7 @@ from frontend.api_views.metrics import (
     SpeciesPopuationCountPerYearAPIView,
     TotalAreaPerPropertyTypeAPIView,
     SpeciesPopulationDensityPerPropertyAPIView,
+    SpeciesPopulationCountPerProvinceAPIView,
     TotalCountPerActivityAPIView,
     TotalAreaAvailableToSpeciesAPIView,
     PopulationPerAgeGroupAPIView,
@@ -281,6 +282,11 @@ urlpatterns = [
         'api/species-population-total-density/',
         SpeciesPopulationDensityPerPropertyAPIView.as_view(),
         name='species_population_total_density'
+    ),
+    path(
+        'api/species-count-per-province/',
+        SpeciesPopulationCountPerProvinceAPIView.as_view(),
+        name='species_count_per_province'
     ),
     path(
         'api/properties-per-population-category/',

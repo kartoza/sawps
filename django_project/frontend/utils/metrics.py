@@ -7,6 +7,60 @@ from property.models import Property
 from species.models import OwnedSpecies
 
 
+def calculate_species_count_per_province(
+        queryset,
+        species_name: str
+) -> Dict[str, int]:
+    property_ids = [query.id for query in queryset]
+
+    # Filter properties by the provided property ids
+    if property_ids:
+        queryset = queryset.filter(id__in=property_ids)
+
+        # Retrieve species data per property and province
+        species_data = (
+            OwnedSpecies.objects.filter(
+                property__in=queryset,
+                taxon__scientific_name=species_name
+            )
+            .values(
+                "property__province__name",
+                "taxon__scientific_name",
+                "annualpopulation__year"
+            )
+            .annotate(total=Sum("annualpopulation__total"))
+        )
+
+        # Group the data by province, species, and year
+        grouped_data = {}
+        for item in species_data:
+            province_name = item["property__province__name"]
+            species_name = item["taxon__scientific_name"]
+            year = item["annualpopulation__year"]
+            total = item["total"]
+
+            key = (province_name, species_name, year)
+            if key in grouped_data:
+                grouped_data[key] += total
+            else:
+                grouped_data[key] = total
+
+        # Format the result data
+        result_data = []
+        for (
+            province_name,
+            species_name, year
+        ), total in grouped_data.items():
+            result_data.append({
+                "province": province_name,
+                "species": species_name,
+                "year": year,
+                "count": total,
+            })
+
+    return result_data
+
+
 def calculate_population_categories(
     queryset,
     species_name: str,
