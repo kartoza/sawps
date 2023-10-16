@@ -320,11 +320,7 @@ function Filter(props: any) {
 
     useEffect(() => {
         if (propertyList) {
-            let values = ''
-            if (selectedProperty.length !== propertyList.length) {
-                values = selectedProperty.join(',')
-            }
-            dispatch(selectedPropertyId(values));
+            dispatch(selectedPropertyId(selectedProperty.join(',')));
         }
     }, [selectedProperty])
 
@@ -342,11 +338,7 @@ function Filter(props: any) {
 
     useEffect(() => {
         if (organisationList) {
-            let values = ''
-            if (selectedOrganisation.length !== organisationList.length) {
-                values = selectedOrganisation.join(',')
-            }
-            dispatch(selectedOrganisationId(values))
+            dispatch(selectedOrganisationId(selectedOrganisation.join(',')))
         }
     }, [selectedOrganisation])
 
