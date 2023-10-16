@@ -680,7 +680,7 @@ function Filter(props: any) {
                             ) : (
                               <AutoCompleteCheckbox
                                 options={propertyList}
-                                selectedOption={selectedProperty}
+                                selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
                                 singleTerm={'Property'}
                                 pluralTerms={'Properties'}
                                 selectAllFlag={selectAllProperty}
