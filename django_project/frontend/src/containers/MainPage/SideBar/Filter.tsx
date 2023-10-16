@@ -63,7 +63,7 @@ function Filter(props: any) {
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
-    const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
+    // const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
     const [selectAllProperty, setSelectAllProperty] = useState(true);
     const [selectedActivity, setSelectedActivity] = useState<string>('');
@@ -92,11 +92,11 @@ function Filter(props: any) {
         isLoading: isActivityLoading,
         isSuccess: isActivitySuccess
     } = useGetActivityQuery()
-    // const {
-    //     data: propertyList,
-    //     isLoading: isPropertyLoading,
-    //     isSuccess: isPropertySuccess
-    // } = useGetPropertyQuery()
+    const {
+        data: propertyList,
+        isLoading: isPropertyLoading,
+        isSuccess: isPropertySuccess
+    } = useGetPropertyQuery(selectedOrganisation.join(','))
     const {
         data: SpeciesFilterList,
         isLoading: isSpeciesLoading,
@@ -153,44 +153,43 @@ function Filter(props: any) {
         }
     }, [propertyList]);
 
-    useEffect(() => {
-        let fetchedProperties: any[] = [];
-
-        if(selectedOrganisation.length === 0){
-            // reset
-            if (selectedOrganisation.length === 0) {
-                setPropertyList([]);
-                adjustMapToBoundingBox(boundingBox)
-                setSelectedProperty([])
-                return;
-            }
-        }
-
-        const requests = selectedOrganisation.map((orgId) => {
-            return axios.get(`${FETCH_PROPERTY_LIST_URL}${orgId ? `${orgId}` : ""}`)
-            .then((response) => response.data)
-            .catch((error) => {
-                console.log(error);
-                return []; // Return an empty array in case of an error
-            });
-        });
-
-        // Use Promise.all to wait for all requests to complete
-        Promise.all(requests)
-            .then((results) => {
-            // Concatenate the results from all requests into a single array
-            const fetchedProperties = results.flat();
-
-            // Set filteredProperties once all requests are done
-            setPropertyList(fetchedProperties);
-            setLoading(false);
-            })
-            .catch((error) => {
-            console.log(error);
-            setLoading(false);
-            });
-
-      }, [selectedOrganisation]);
+    // useEffect(() => {
+    //
+    //     if(selectedOrganisation.length === 0){
+    //         // reset
+    //         if (selectedOrganisation.length === 0) {
+    //             // setPropertyList([]);
+    //             adjustMapToBoundingBox(boundingBox)
+    //             setSelectedProperty([])
+    //             return;
+    //         }
+    //     }
+    //
+    //     const requests = selectedOrganisation.map((orgId) => {
+    //         return axios.get(`${FETCH_PROPERTY_LIST_URL}${orgId ? `${orgId}` : ""}`)
+    //         .then((response) => response.data)
+    //         .catch((error) => {
+    //             console.log(error);
+    //             return []; // Return an empty array in case of an error
+    //         });
+    //     });
+    //
+    //     // Use Promise.all to wait for all requests to complete
+    //     Promise.all(requests)
+    //         .then((results) => {
+    //         // Concatenate the results from all requests into a single array
+    //         const fetchedProperties = results.flat();
+    //
+    //         // Set filteredProperties once all requests are done
+    //         setPropertyList(fetchedProperties);
+    //         setLoading(false);
+    //         })
+    //         .catch((error) => {
+    //         console.log(error);
+    //         setLoading(false);
+    //         });
+    //
+    //   }, [selectedOrganisation]);
 
 
     // intial map state vars for zoom out
@@ -260,19 +259,19 @@ function Filter(props: any) {
         }
     };
 
-    const fetchPropertyList = () => {
-        axios.get(FETCH_PROPERTY_LIST_URL).then((response) => {
-            if (response.data) {
-                setPropertyList(response.data as PropertyInterface[])
-            }
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
+    // const fetchPropertyList = () => {
+    //     axios.get(FETCH_PROPERTY_LIST_URL).then((response) => {
+    //         if (response.data) {
+    //             setPropertyList(response.data as PropertyInterface[])
+    //         }
+    //     }).catch((error) => {
+    //         console.log(error)
+    //     })
+    // }
 
 
     useEffect(() => {
-        fetchPropertyList();
+        // fetchPropertyList();
     }, [])
 
     const handleSelectedSpecies = (value: string) => {
@@ -516,18 +515,18 @@ function Filter(props: any) {
         }
     }, [SpeciesFilterList])
 
-    // Function to filter properties based on the current organization
-    const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
-        if (currentOrganisation && propertyList) {
-            const filtered = propertyList.filter((property) =>
-                property.organisation_id === currentOrganisation
-            );
-
-            setPropertyList(filtered);
-        } else {
-            setPropertyList([]);
-        }
-    };
+    // // Function to filter properties based on the current organization
+    // const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
+    //     if (currentOrganisation && propertyList) {
+    //         const filtered = propertyList.filter((property) =>
+    //             property.organisation_id === currentOrganisation
+    //         );
+    //
+    //         setPropertyList(filtered);
+    //     } else {
+    //         setPropertyList([]);
+    //     }
+    // };
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -535,9 +534,9 @@ function Filter(props: any) {
         const userRoles = userInfoData.user_roles
         if (userRoles.length === 0) return;
 
-        const currentOrganisationId = userInfoData.current_organisation_id;
+        // const currentOrganisationId = userInfoData.current_organisation_id;
 
-        fetchPropertyList();
+        // fetchPropertyList();
 
         // TODO : Update to use permissions
         const allowedRoles = new Set(["National data scientist", "Regional data scientist", "Super user"]);
@@ -554,7 +553,7 @@ function Filter(props: any) {
         if (
             userRoles.some(userRole => organisationRoles.has(userRole))
         ) {
-          filterPropertiesByOrganisation(currentOrganisationId);
+          // filterPropertiesByOrganisation(currentOrganisationId);
           setPropertiesSelection(true)
           setOrganisationSelection(false)
         }
@@ -747,7 +746,7 @@ function Filter(props: any) {
                             <Typography color='#75B37A' fontSize='medium'>Property</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
-                            {loading ? (
+                            {loading || isPropertyLoading ? (
                                 <Loading />
                             ) : (
                               <AutoCompleteCheckbox
