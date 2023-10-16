@@ -20,6 +20,7 @@ import TotalCountPerActivity from "./TotalCountPerActivity";
 import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
+import PopulationTrend from "./PopulationTrend";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
@@ -143,6 +144,17 @@ const Metrics = () => {
 
                 {showChats ? (
                         <Grid container spacing={2} ref={contentRef}>
+                            <Grid item xs={12} md={6}>
+                                <PopulationTrend 
+                                    selectedSpecies={selectedSpecies} 
+                                    propertyId={propertyId} 
+                                    startYear={startYear} 
+                                    endYear={endYear} 
+                                    loading={loading} 
+                                    setLoading={setLoading}
+                                />
+                            </Grid>
+                            
                             <Grid item xs={12} md={6}>
                                 <PopulationCategoryChart 
                                 selectedSpecies={selectedSpecies} 
