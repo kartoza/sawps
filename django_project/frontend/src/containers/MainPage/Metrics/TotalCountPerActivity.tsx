@@ -98,6 +98,7 @@ interface SpeciesDataItem {
     
     if (!selectedSpecies){
         chartTitle = "Please select a species for the chart to show available data";
+        return null;
     }
   
     const options = {
