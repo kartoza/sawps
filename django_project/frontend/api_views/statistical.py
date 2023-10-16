@@ -10,6 +10,7 @@ from species.models import Taxon
 from population_data.models import AnnualPopulation
 from frontend.models import (
     NATIONAL_TREND,
+    SPECIE_PER_PROPERTY,
     StatisticalModelOutput
 )
 from frontend.utils.statistical_model import (
@@ -19,6 +20,7 @@ from frontend.utils.statistical_model import (
     save_statistical_model_output_cache,
     get_statistical_model_output_cache
 )
+from django.db.models import Q
 
 
 class SpeciesNationalTrend(APIView):
