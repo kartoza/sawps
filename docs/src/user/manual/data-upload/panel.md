@@ -167,3 +167,34 @@ By following these steps, you can effectively upload data, define parcel boundar
 2. **Parcel Type**: Parcel Type categorizes the parcels based on their purpose or characteristics.
 
 3. **Delete icon**: This delete icon allows you to delete the perticuler parcel detail.
+
+#
+
+# Step 3
+
+## Description
+
+Step 3 of the data upload process is a crucial phase that allows you to upload species population data. In this step, you will find two buttons for uploading your data, along with an option to download a template for your convenience. Additionally, there is a button to update property boundaries, which leads you to Step 2 where you can make property boundary modifications.
+
+### Data Upload step 3
+![Step 3](./img/panel-9.png)
+
+1. **Step 3**: Step 3 of data upload.
+
+2. **Online Form**: Click on the `ONLINE FORM` button to access the online data upload form. This option is ideal for manually entering data into a user-friendly interface. Follow the provided prompts to input your species population data.
+
+3. **Download Template**: Click on the `DOWNLOAD TEMPLATE` button to obtain a blank template that you can use as a starting point for entering your species population data. This template is designed to assist you in organizing your data correctly.
+
+4. **Upload Template**: Use the `UPLOAD DATA` button to upload a pre-prepared template containing your species population data. Templates are useful for bulk data uploads or when you have data formatted in a specific way. Ensure your template adheres to the required format and guidelines for a successful upload.
+
+### Updating Property Boundary
+
+5. **Update Property Boundary**: By clicking the `UPDATE PROPERTY BOUNDARY` button, you will be directed to Step 2 of the data upload process. In this step, you can modify property boundaries.
+
+6. **Property Information Display**: A section is provided on this page to display information about the property. This information is for reference and provides details about the property related to the data you're uploading.
+
+7. **Selected property**: The property is highlighted on the map to make it easy for you to pinpoint the area.
+
+## Summary
+
+Step 3 of the data upload process provides multiple options for uploading species population data, allowing flexibility in how you input your information. You can choose between an online form or uploading a prepared template. Additionally, the availability of a downloadable template simplifies data organization. If needed, you can update property boundaries by clicking the dedicated button, which takes you to Step 2 where you can make the necessary adjustments while visually identifying the selected property on the map.
