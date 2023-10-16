@@ -4,16 +4,11 @@ import axios from "axios";
 import {
     Autocomplete,
     Box,
-    Checkbox,
-    Divider,
-    FormControlLabel,
-    Paper,
     TextField,
     Typography
 } from '@mui/material';
 import List from '@mui/material/List';
 import CircularProgress from '@mui/material/CircularProgress';
-import MenuItem from '@mui/material/MenuItem';
 import InputAdornment from '@mui/material/InputAdornment';
 import {debounce} from '@mui/material/utils';
 import SearchIcon from '@mui/icons-material/Search';
@@ -21,7 +16,6 @@ import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
 import Slider from '@mui/material/Slider';
 import Loading from '../../../components/Loading';
-import SpeciesLayer from '../../../models/SpeciesLayer';
 import {
     selectedActivityId,
     selectedOrganisationId,
@@ -29,7 +23,6 @@ import {
     setEndYear,
     setSelectedInfoList,
     setSpatialFilterValues,
-    setSpeciesFilter,
     setStartYear,
     toggleSpecies
 } from '../../../reducers/SpeciesFilter';
@@ -37,20 +30,23 @@ import './index.scss';
 import PropertyInterface from '../../../models/Property';
 import {MapEvents} from '../../../models/Map';
 import {triggerMapEvent} from '../../../reducers/MapState';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
 import SpatialFilter from "./SpatialFilter";
-import {useGetUserInfoQuery} from "../../../services/api";
+import {
+    useGetUserInfoQuery,
+    useGetActivityQuery,
+    useGetOrganisationQuery,
+    useGetPropertyQuery,
+    useGetSpeciesQuery,
+    Organisation
+} from "../../../services/api";
 import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
 import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
-const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const SEARCH_PROPERTY_URL = '/api/property/search'
-const FETCH_ORGANISATION_LIST_URL = '/api/organisation/'
-const FETCH_ACTIVITY_LIST_URL = '/api/activity-type/'
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
 interface SearchPropertyResult {
@@ -62,13 +58,10 @@ interface SearchPropertyResult {
 }
 
 function Filter(props: any) {
-    const { containsCharts } = props;
     const dispatch = useAppDispatch()
-    const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
-    const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
@@ -81,7 +74,6 @@ function Filter(props: any) {
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
-    const [organisationList, setOrganisationList] = useState([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [selectAllOrganisation, setSelectAllOrganisation] = useState(true);
     const [tab, setTab] = useState<string>('')
@@ -90,6 +82,26 @@ function Filter(props: any) {
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
+    const {
+        data: organisationList,
+        isLoading: isOrganisationLoading,
+        isSuccess: isOrganisationSuccess
+    } = useGetOrganisationQuery()
+    const {
+        data: activityList,
+        isLoading: isActivityLoading,
+        isSuccess: isActivitySuccess
+    } = useGetActivityQuery()
+    // const {
+    //     data: propertyList,
+    //     isLoading: isPropertyLoading,
+    //     isSuccess: isPropertySuccess
+    // } = useGetPropertyQuery()
+    const {
+        data: SpeciesFilterList,
+        isLoading: isSpeciesLoading,
+        isSuccess: isSpeciesSuccess
+    } = useGetSpeciesQuery(selectedOrganisation.join(','))
 
     type Information = {
         id?: string,
@@ -130,7 +142,7 @@ function Filter(props: any) {
     // Select all organisations by default
     useEffect(() => {
         if (organisationList) {
-            setSelectedOrganisation(organisationList.map(organisation => organisation.id))
+            setSelectedOrganisation(organisationList.map((organisation: Organisation) => organisation.id))
         }
     }, [organisationList]);
 
@@ -143,8 +155,6 @@ function Filter(props: any) {
 
     useEffect(() => {
         let fetchedProperties: any[] = [];
-
-        fetchSpeciesList()
 
         if(selectedOrganisation.length === 0){
             // reset
@@ -236,8 +246,6 @@ function Filter(props: any) {
         }
       };
 
-    const [activityList,setActivityList]= useState<string[]>([])
-
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
         setTab(pathname)
@@ -252,27 +260,6 @@ function Filter(props: any) {
         }
     };
 
-    const fetchSpeciesList = () => {
-        let url = FETCH_AVAILABLE_SPECIES;
-        if (selectedOrganisation) {
-            url += '?organisation=' + selectedOrganisation.join(',')
-        }
-        axios.get(url).then((response) => {
-            if (response.data) {
-                let _species = response.data as SpeciesLayer[]
-                _species = _species.map((species) => {
-                    return species
-                })
-                dispatch(setSpeciesFilter(_species))
-                if (_species.length === 0) {
-                    setSelectedSpecies('');
-                }
-            }
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
-
     const fetchPropertyList = () => {
         axios.get(FETCH_PROPERTY_LIST_URL).then((response) => {
             if (response.data) {
@@ -282,37 +269,10 @@ function Filter(props: any) {
             console.log(error)
         })
     }
-    const fetchOrganisationList = (selectAll: boolean = false) => {
-        setLoading(true)
-        axios.get(FETCH_ORGANISATION_LIST_URL).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                setOrganisationList(response.data)
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
 
-    const fetchActivityList = () => {
-        setLoading(true)
-        axios.get(FETCH_ACTIVITY_LIST_URL).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                setActivityList(response.data.map((activity: any) => activity.name))
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
 
     useEffect(() => {
-        fetchSpeciesList();
         fetchPropertyList();
-        fetchOrganisationList(true); // Select all by default
-        fetchActivityList();
     }, [])
 
     const handleSelectedSpecies = (value: string) => {
@@ -399,12 +359,14 @@ function Filter(props: any) {
 
     // Handle selecting all properties
     const handleSelectAllProperty = () => {
-        let propertyIds = selectAllProperty ? propertyList.map((property) => property.id) : []
-        setSelectedProperty(propertyIds);
-        if (propertyIds) {
-            zoomToCombinedBoundingBox(propertyIds);
-        } else {
-            adjustMapToBoundingBox(boundingBox)
+        if (propertyList) {
+            let propertyIds = selectAllProperty ? propertyList.map((property) => property.id) : []
+            setSelectedProperty(propertyIds);
+            if (propertyIds.length > 0) {
+                zoomToCombinedBoundingBox(propertyIds);
+            } else {
+                adjustMapToBoundingBox(boundingBox)
+            }
         }
     };
 
@@ -413,17 +375,21 @@ function Filter(props: any) {
     }, [selectAllProperty])
 
     useEffect(() => {
-        let values = ''
-        if (selectedProperty.length !== propertyList.length) {
-            values = selectedProperty.join(',')
+        if (propertyList) {
+            let values = ''
+            if (selectedProperty.length !== propertyList.length) {
+                values = selectedProperty.join(',')
+            }
+            dispatch(selectedPropertyId(values));
         }
-        dispatch(selectedPropertyId(values));
     }, [selectedProperty])
 
     // Handle selecting all organisation
     const handleSelectAllOrganisation = () => {
-        let organisationIds = selectAllOrganisation ? organisationList.map((organisation) => organisation.id) : []
-        setSelectedOrganisation(organisationIds);
+        if (organisationList) {
+            let organisationIds = selectAllOrganisation ? organisationList.map((organisation: Organisation) => organisation.id) : []
+            setSelectedOrganisation(organisationIds);
+        }
     };
 
     useEffect(() => {
@@ -431,11 +397,13 @@ function Filter(props: any) {
     }, [selectAllOrganisation])
 
     useEffect(() => {
-        let values = ''
-        if (selectedOrganisation.length !== organisationList.length) {
-            values = selectedOrganisation.join(',')
+        if (organisationList) {
+            let values = ''
+            if (selectedOrganisation.length !== organisationList.length) {
+                values = selectedOrganisation.join(',')
+            }
+            dispatch(selectedOrganisationId(values))
         }
-        dispatch(selectedOrganisationId(values))
     }, [selectedOrganisation])
 
     const handleSelectedActivity =(value: string) => {
@@ -535,16 +503,22 @@ function Filter(props: any) {
 
 
     useEffect(() => {
-        const sList: any = []
-        SpeciesFilterList.map((item: any) => {
-            sList.push(item.scientific_name)
-        })
-        setSearchSpeciesList(sList)
+        if (SpeciesFilterList) {
+            const sList: any = []
+            SpeciesFilterList.map((item: any) => {
+                sList.push(item.scientific_name)
+            })
+            if (selectedOrganisation.length === 0) {
+                setSearchSpeciesList([])
+            } else {
+                setSearchSpeciesList(sList)
+            }
+        }
     }, [SpeciesFilterList])
 
     // Function to filter properties based on the current organization
     const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
-        if (currentOrganisation) {
+        if (currentOrganisation && propertyList) {
             const filtered = propertyList.filter((property) =>
                 property.organisation_id === currentOrganisation
             );
@@ -563,9 +537,7 @@ function Filter(props: any) {
 
         const currentOrganisationId = userInfoData.current_organisation_id;
 
-        fetchSpeciesList();
         fetchPropertyList();
-        fetchOrganisationList();
 
         // TODO : Update to use permissions
         const allowedRoles = new Set(["National data scientist", "Regional data scientist", "Super user"]);
@@ -688,7 +660,7 @@ function Filter(props: any) {
                     <Typography color='#75B37A' fontSize='medium'>Species</Typography>
                 </Box>
                 <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
+                    {loading || isSpeciesLoading ? <Loading /> :
                         (
                             <Autocomplete
                                 id="combo-box-demo"
@@ -710,20 +682,6 @@ function Filter(props: any) {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading ? <Loading /> :
-                                // (
-                                //     <Select
-                                //         displayEmpty
-                                //         sx={{ width: '100%', textAlign: 'start' }}
-                                //         value={selectedInfo}
-                                //         onChange={handleSelectedInfo}
-                                //         renderValue={
-                                //             selectedInfo !== "" ? undefined : () => <div style={{ color: '#282829' }}>Select</div>
-                                //         }
-                                //     >
-                                //         {informationList.map((info: any, index) => (
-                                //             <MenuItem value={info} key={index}>{info}</MenuItem>
-                                //         ))}
-                                //     </Select>)
                               (
                                 <AutoCompleteCheckbox
                                     options={informationList}
@@ -731,7 +689,7 @@ function Filter(props: any) {
                                     singleTerm={'Report'}
                                     pluralTerms={'Reports'}
                                     selectAllFlag={selectAllInfo}
-                                    setSelectAll={setSelectAllInfo}
+                                    setSelectAll={(val) => setSelectAllInfo(val)}
                                     setSelectedOption={setSelectedInfo}
                                   />
                               )
@@ -745,7 +703,7 @@ function Filter(props: any) {
                         <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
                     </Box>
                     <List className='ListItem' component="nav" aria-label="">
-                        {loading ? <Loading /> :
+                        {loading || isActivityLoading ? <Loading /> :
                             (
                                 <Autocomplete
                                     id="combo-box-demo"
@@ -767,14 +725,14 @@ function Filter(props: any) {
                             <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
-                            {loading || isLoading ? <Loading /> :
+                            {loading || isLoading || isOrganisationLoading? <Loading /> :
                                 <AutoCompleteCheckbox
                                     options={organisationList}
                                     selectedOption={selectedOrganisation}
                                     singleTerm={'Organisation'}
                                     pluralTerms={'Organisations'}
                                     selectAllFlag={selectAllOrganisation}
-                                    setSelectAll={setSelectAllOrganisation}
+                                    setSelectAll={(val) => setSelectAllOrganisation(val)}
                                     setSelectedOption={setSelectedOrganisation}
                                   />
                             }
@@ -798,10 +756,7 @@ function Filter(props: any) {
                                 singleTerm={'Property'}
                                 pluralTerms={'Properties'}
                                 selectAllFlag={selectAllProperty}
-                                setSelectAll={setSelectAllProperty}
-                                // setSelectedOption={setSelectedProperty}
-                                // somehow handleSelectedProperty cannot be called
-                                // setSelectedOption={handleSelectedProperty}
+                                setSelectAll={(val) => setSelectAllProperty(val)}
                                 setSelectedOption={(newValues) => {
                                     setSelectedProperty(newValues)
                                     if (newValues.length === 0) {

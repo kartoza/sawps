@@ -12,7 +12,12 @@ import axios from "axios";
 import { useAppSelector } from "../../../app/hooks";
 import { RootState } from "../../../app/store";
 import { getTitle } from "../../../utils/Helpers";
-import {useGetUserInfoQuery, UserInfo} from "../../../services/api";
+import {
+    Activity,
+    useGetUserInfoQuery,
+    useGetActivityAsObjQuery,
+    UserInfo
+} from "../../../services/api";
 import './index.scss';
 
 const ITEM_HEIGHT = 48;
@@ -26,17 +31,7 @@ const MenuProps = {
     },
 };
 
-interface ActivityInterface {
-    id: number,
-    name: string,
-    recruitment: boolean,
-    colour: string,
-    width: number,
-    export_fields: string[]
-}
-
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
-const FETCH_ACTIVITY_LIST_URL = '/api/activity-type/'
 
 const DataList = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -61,6 +56,11 @@ const DataList = () => {
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const [showReports, setShowReports] = useState(false);
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
+    const {
+        data: activityList,
+        isLoading: isActivityLoading,
+        isSuccess: isActivitySuccess
+    } = useGetActivityAsObjQuery()
 
     let dataset: any[] = []
     let reportList: any[] = []
@@ -91,23 +91,17 @@ const DataList = () => {
         return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
     }
 
-    const fetchActivityList = () => {
-        setLoading(true)
-        axios.get(FETCH_ACTIVITY_LIST_URL).then((response) => {
-            setLoading(false)
+    useEffect(() => {
+        if (activityList) {
             setCustomColorWidth({
                 ...customColorWidth,
-                ...Object.assign({}, ...response.data.map((x: ActivityInterface) => ({[x.name]: {color: x.colour, width: x.width}})))
+                ...Object.assign({}, ...activityList.map(
+                  (x: Activity) => ({[x.name]: {color: x.colour, width: x.width}})
+                )
+                )
             })
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-
-    useEffect(() => {
-        fetchActivityList()
-    }, []);
+        }
+    }, [activityList]);
 
     const fetchDataList = () => {
         setLoading(true)
