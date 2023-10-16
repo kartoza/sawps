@@ -152,6 +152,7 @@ const SpeciesCountAsPercentage = (props: any) => {
     if (filteredSpeciesData.length > 0) {
       chartTitle = `Total count as % of total population per province for ${selectedSpecies} year ${mostRecentYear}`;
     } else {
+      setBackgroundImageUrl('')
       chartTitle = "No data available for current filter selections";
     }
   }
