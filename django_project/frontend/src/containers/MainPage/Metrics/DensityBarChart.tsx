@@ -112,6 +112,9 @@ const DensityBarChart = (props: any) => {
     // Remove duplicate years
     const uniqueYears = Array.from(new Set(yearsInData));
 
+    // Sort the years from highest to lowest
+    uniqueYears.sort((a: number, b: number) => b - a);
+
     // Create datasets for each year using available colors
     const datasets = uniqueYears.map((year: any, index: number) => {
         const backgroundColor = colors[index % colors.length];

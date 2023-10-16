@@ -81,6 +81,9 @@ const SpeciesCountPerProvinceChart = (props: any) => {
   const legendLabels: number[] = Array.from(new Set(speciesData.map((item) => item.year)))
     .filter((year) => year !== null) as number[];
 
+  // sort the years from highest 
+  legendLabels.sort((a: number, b: number) => b - a);
+
     const datasets = legendLabels.map((year, yearIndex) => {
       const backgroundColor = availableColors[yearIndex];
   

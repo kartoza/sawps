@@ -35,6 +35,7 @@ from frontend.api_views.metrics import (
     TotalAreaAvailableToSpeciesAPIView,
     PopulationPerAgeGroupAPIView,
     TotalAreaVSAvailableAreaAPIView,
+    TotalCountPerPopulationEstimateAPIView
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -282,6 +283,11 @@ urlpatterns = [
         'api/species-population-total-density/',
         SpeciesPopulationDensityPerPropertyAPIView.as_view(),
         name='species_population_total_density'
+    ),
+    path(
+        'api/total-count-per-population-estimate/',
+        TotalCountPerPopulationEstimateAPIView.as_view(),
+        name='total-count-per-population-estimate'
     ),
     path(
         'api/species-count-per-province/',
