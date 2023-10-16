@@ -49,7 +49,7 @@ interface NationalTrendInterface {
 const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/'
 
 const PopulationTrend= (props: any) => {
-    const { selectedSpecies, propertyId, startYear, endYear, loading, setLoading } = props;
+    const { selectedSpecies, propertyId, startYear, endYear, loading, setLoading, onEmptyDatasets } = props;
     const [chartData, setChartData] = useState(null)
 
     const fetchChartData = () => {
@@ -124,6 +124,9 @@ const PopulationTrend= (props: any) => {
     }, [propertyId, startYear, endYear, selectedSpecies])
 
 
+    if(chartData === null){
+        onEmptyDatasets(false);
+    }else onEmptyDatasets(true);
     
 
     const options:object={
