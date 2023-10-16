@@ -38,6 +38,28 @@ const AreaAvailableLineChart = (props: any) => {
         ]
     }
 
+    // incase there is a single label and single value
+    interface AreaDataValueB {
+        labels: number[];
+        datasets: any[];
+      }
+
+    const areaDataB: AreaDataValueB = AreaDataValue
+      
+      if (areaDataB.labels.length === 1) {
+        const year = areaDataB.labels[0];
+        if (!isNaN(year)) {
+          // Modify the data in place by adding the previous year to labels
+          areaDataB.labels = [year - 1, year];
+        }
+      }
+
+      areaDataB.datasets.forEach(dataset => {
+        if (dataset.data.length === 1) {
+          dataset.data.unshift(0);
+        }
+      });
+
     const AreaOptions = {
         tension: 0.5,
         elements: {
