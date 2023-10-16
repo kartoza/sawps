@@ -94,8 +94,6 @@ interface SpeciesDataItem {
   
     if (selectedSpecies && activityData && activityData.length > 0) {
       chartTitle = `Total count per activity for ${selectedSpecies} year ${year}`;
-    }else {
-        setBackgroundImageUrl('')
     }
     
     if (!selectedSpecies){
