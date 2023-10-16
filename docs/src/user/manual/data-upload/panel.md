@@ -83,17 +83,19 @@ The second step of the data upload process on the Data upload involves working w
 
 ![Parcel Details](./img/panel-4.png)
 
-1. **Parcel ID**: The Parcel ID is a unique identifier for each parcel within the property.
+1. **Step 2**: Step 2 of data upload.
 
-2. **Parcel Type**: Parcel Type categorizes the parcels based on their purpose or characteristics.
+2. **Parcel ID**: The Parcel ID is a unique identifier for each parcel within the property.
 
-1. **SELECT**: The `SELECT` button allows you to choose specific parcels from the map.
+3. **Parcel Type**: Parcel Type categorizes the parcels based on their purpose or characteristics.
 
-2. **DIGITISE**: Clicking the `DIGITISE` button initiates the process of mapping parcel boundaries. This step is essential for geospatial data.
+4. **SELECT**: The `SELECT` button allows you to choose specific parcels from the map.
 
-3. **UPLOAD**: The `UPLOAD` it is used for creating parcel boundaries using the supported formats: zip, json, geojson, gpkg, kml (CRS 4326).
+5. **DIGITISE**: Clicking the `DIGITISE` button initiates the process of mapping parcel boundaries. This step is essential for geospatial data.
 
-4. **SAVE PROPERTY INFORMATION**: If you need to update or modify property information, you can click the `SAVE PROPERTY INFORMATION` button to make changes to the property-level information.
+6. **UPLOAD**: The `UPLOAD` it is used for creating parcel boundaries using the supported formats: zip, json, geojson, gpkg, kml (CRS 4326).
+
+7. **SAVE PROPERTY INFORMATION**: If you need to update or modify property information, you can click the `SAVE PROPERTY INFORMATION` button to make changes to the property-level information.
 
 Completing Step 2 ensures that your dataset is comprehensive and includes detailed information about individual parcels within the property. This data is essential for various analyses and property management tasks.
 
@@ -101,19 +103,19 @@ Completing Step 2 ensures that your dataset is comprehensive and includes detail
 
 ![Select button](./img/panel-5.png)
 
-1. **Select parcel**: Zoom in the map untill parcels are visible once you are able to see the parcels select parcels.
+1. **Select parcel**: Zoom in the map until parcels are visible once you are able to see the parcels select parcels.
 
-2. **Cencel**: You can cancel the selection of the parcel using this button.
+2. **Cancel**: You can cancel the selection of the parcel using this button.
 
 3. **Save Boundary**: Click on `SAVE BOUNDARY` button to save the boundaries. After saving the boundary you will be able to see the selected parcel id and its type.
 
 ### Select parcel using the digitise button
 
-## Description
+#### Description
 
 The `DIGITISE` button is a powerful tool that allows you to digitise parcel boundaries. When you click the `DIGITISE` button, you'll see a set of options on the left top of the map, giving you full control over the digitisation process. These options are essential for mapping out parcel boundaries accurately.
 
-### Digitisation Options
+#### Digitisation Options
 
 ![Digitisation Options](./img/panel-6.png)
 
@@ -135,15 +137,15 @@ By utilising the digitisation options, you can accurately define parcel boundari
 
 ### Upload parcel using the upload data button
 
-## Description
+#### Description
 
 The `UPLOAD` button is a pivotal element of the `DATA UPLOAD`, allowing you to upload essential data for parcel boundaries. By clicking this button, you initiate the data upload process, which includes defining parcel boundaries and saving them. Here's a step-by-step guide on how to use this feature:
 
-### Uploading Data
-
-1. **Upload**: Click the `UPLOAD` button, and a popup window will open, providing you with options for uploading data.
+#### Uploading Data
 
 ![Upload Popup](./img/panel-7.png)
+
+1. **Upload**: Click the `UPLOAD` button, and a popup window will open, providing you with options for uploading data.
 
 The popup window includes the following components:
 
@@ -158,7 +160,7 @@ The popup window includes the following components:
 By following these steps, you can effectively upload data, define parcel boundaries, and save them within the `DATA UPLOAD`. This feature is crucial for geospatial data and mapping applications, ensuring your data is accurate and complete.
 
 #
-### After selecting the parcel
+#### After selecting the parcel
 
 ![Upload Popup](./img/panel-8.png)
 
