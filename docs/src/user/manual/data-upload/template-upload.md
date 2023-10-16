@@ -1,4 +1,4 @@
-# Template upload
+# Template upload Documentation
 
 ## Description
 
@@ -8,13 +8,14 @@ The data upload feature enables you to seamlessly upload your data for analysis 
 
 ![Upload Data](./img/template-upload-1.png)
 
-1. **Upload data**: By clicking the `UPLOAD DATA` button, a upload data popup window will appear, providing you with easy-to-use tools for uploading your data.
+1. **Download Template**: Click on the `DOWNLOAD TEMPLATE` button to obtain a blank template that you can use as a starting point for entering your species population data. This template is designed to assist you in organizing your data correctly.
+2. **Upload data**: By clicking the `UPLOAD DATA` button, a upload data popup window will appear, providing you with easy-to-use tools for uploading your data.
 
-2. **Browse Button**: Click the `Browse` button to select the file you wish to upload. You can choose a file from your local storage that is in either CSV or XLSX format. This file should contain the data you want to integrate into the system for further analysis.
+3. **Browse Button**: Click the `Browse` button to select the file you wish to upload. You can choose a file from your local storage that is in either CSV or XLSX format. This file should contain the data you want to integrate into the system for further analysis.
 
-3. **Upload File Button**: After selecting the file, click the `UPLOAD FILE` button to begin the data upload process. The system will validate and process the data, making it available for your use.
+4. **Upload File Button**: After selecting the file, click the `UPLOAD FILE` button to begin the data upload process. The system will validate and process the data, making it available for your use.
 
-4. **Close Button**: If you decide not to proceed with the upload or wish to cancel the operation, you can click the `CLOSE` button. This will close the upload popup without initiating the data upload process.
+5. **Close Button**: If you decide not to proceed with the upload or wish to cancel the operation, you can click the `CLOSE` button. This will close the upload popup without initiating the data upload process.
 
 ## Summary
 
