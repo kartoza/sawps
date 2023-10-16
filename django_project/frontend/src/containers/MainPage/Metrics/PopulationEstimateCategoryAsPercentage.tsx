@@ -107,7 +107,6 @@ const PopulationEstimateAsPercentage = (props: any) => {
     chartTitle = "Please select a species for the chart to show available data";
   } else if (Object.keys(speciesData).length === 0) {
     chartTitle = "No data available for current filter selections";
-    setBackgroundImageUrl('')
   }
 
   const options = {
