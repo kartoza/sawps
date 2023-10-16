@@ -34,6 +34,7 @@ const PopulationEstimateAsPercentage = (props: any) => {
     endYear,
     loading,
     setLoading,
+    onEmptyDatasets
   } = props;
 
   const [speciesData, setSpeciesData] = useState<any>({});
@@ -46,6 +47,11 @@ const PopulationEstimateAsPercentage = (props: any) => {
       )
       .then((response) => {
         if (response.data) {
+          if (Object.keys(response.data).length === 0) {
+              onEmptyDatasets(false)
+          } else {
+              onEmptyDatasets(true)
+          }
           setSpeciesData(response.data);
           setLoading(false);
         }
@@ -107,7 +113,6 @@ const PopulationEstimateAsPercentage = (props: any) => {
     chartTitle = "Please select a species for the chart to show available data";
   } else if (Object.keys(speciesData).length === 0) {
     chartTitle = "No data available for current filter selections";
-    return null;
   }
 
   const options = {
