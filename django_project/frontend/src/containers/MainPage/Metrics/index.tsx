@@ -14,6 +14,7 @@ import AreaAvailableLineChart from "./AreaAvailableLineChart";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import Topper from '../Data/Topper'
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
@@ -133,6 +134,8 @@ const Metrics = () => {
     return (
         <Box>
             {showCharts ? (
+              <>
+              <Topper></Topper>
               <Box className="charts-container">
                 <Grid container spacing={2} ref={contentRef}>
                     <Grid item xs={12} md={6}>
@@ -210,6 +213,7 @@ const Metrics = () => {
                     ))}
             </Grid>
                 </Box>
+              </>
             ) : (
                     // Render message to user
                     <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>

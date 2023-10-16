@@ -23,11 +23,12 @@ import {
     setEndYear,
     setSelectedInfoList,
     setSpatialFilterValues,
+    selectedOrganisationName,
+    selectedPropertyName,
     setStartYear,
     toggleSpecies
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
-import PropertyInterface from '../../../models/Property';
 import {MapEvents} from '../../../models/Map';
 import {triggerMapEvent} from '../../../reducers/MapState';
 import SpatialFilter from "./SpatialFilter";
@@ -325,6 +326,10 @@ function Filter(props: any) {
                 values = selectedProperty.join(',')
             }
             dispatch(selectedPropertyId(values));
+            const selectedPropertyNames = propertyList.filter(
+              propertyObj => selectedProperty.includes(propertyObj.id)
+            ).map(propertyObj => propertyObj.name)
+            dispatch(selectedPropertyName(selectedPropertyNames.length > 0 ? selectedPropertyNames.join(', ') : ''));
         }
     }, [selectedProperty])
 
@@ -333,6 +338,11 @@ function Filter(props: any) {
         if (organisationList) {
             let organisationIds = selectAllOrganisation ? organisationList.map((organisation: Organisation) => organisation.id) : []
             setSelectedOrganisation(organisationIds);
+
+            if (organisationIds.length === 0) {
+                setSelectedProperty([])
+                setSelectedSpecies('')
+            }
         }
     };
 
@@ -347,6 +357,11 @@ function Filter(props: any) {
                 values = selectedOrganisation.join(',')
             }
             dispatch(selectedOrganisationId(values))
+
+            const selectedOrganisationNames = organisationList.filter(
+              organisationObj => selectedOrganisation.includes(organisationObj.id)
+            ).map(organisationObj => organisationObj.name)
+            dispatch(selectedOrganisationName(selectedOrganisationNames.length > 0 ? selectedOrganisationNames.join(', ') : ''));
         }
     }, [selectedOrganisation])
 

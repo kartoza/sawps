@@ -18,6 +18,7 @@ import {
     useGetActivityAsObjQuery,
     UserInfo
 } from "../../../services/api";
+import Topper from "./Topper";
 import './index.scss';
 
 const ITEM_HEIGHT = 48;
@@ -263,6 +264,7 @@ const DataList = () => {
     return (
           showReports ? (
             <Box className='dataContainer'>
+                <Topper></Topper>
                 <Box className="bgGreen">
                     <Box className="selectBox">
                         <FormControl fullWidth>
