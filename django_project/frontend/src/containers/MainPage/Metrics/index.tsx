@@ -127,7 +127,7 @@ const Metrics = () => {
             setShowCharts(false);
         }
 
-        // allow rerender
+        // allow rerender 
         setHasEmptyPopulationTrend(true)
 
     }, [propertyId, startYear, endYear, selectedSpecies])
