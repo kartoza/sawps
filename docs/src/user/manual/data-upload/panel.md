@@ -182,10 +182,14 @@ Step 3 of the data upload process is a crucial phase that allows you to upload s
 1. **Step 3**: Step 3 of data upload.
 
 2. **Online Form**: Click on the `ONLINE FORM` button to access the online data upload form. This option is ideal for manually entering data into a user-friendly interface. Follow the provided prompts to input your species population data.
+![Online form](./img/panel-10.png)
+click on the [Online form](./online-form.md) to see the detailed documentation of online form.
 
 3. **Download Template**: Click on the `DOWNLOAD TEMPLATE` button to obtain a blank template that you can use as a starting point for entering your species population data. This template is designed to assist you in organizing your data correctly.
 
 4. **Upload Template**: Use the `UPLOAD DATA` button to upload a pre-prepared template containing your species population data. Templates are useful for bulk data uploads or when you have data formatted in a specific way. Ensure your template adheres to the required format and guidelines for a successful upload.
+![Upload template](./img/panel-11.png)
+click on the [Upload template](./template-upload.md) to see the detailed documentation of template upload.
 
 ### Updating Property Boundary
 
