@@ -52,7 +52,8 @@ const SpeciesCountAsPercentage = (props: any) => {
     endYear,
     loading,
     setLoading,
-    activityData
+    activityData,
+    onEmptyDatasets
   } = props;
   const [speciesData, setSpeciesData] = useState<SpeciesDataItem[]>([]);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
@@ -65,6 +66,20 @@ const SpeciesCountAsPercentage = (props: any) => {
       )
       .then((response) => {
         if (response.data) {
+          if(response.data.length > 0){
+            const data = response.data; 
+            
+            data.forEach((item: { year: null; province: any; species: any; }) => {
+                if (item.year === null) {
+                    console.log(`Year is null for province: ${item.province}, species: ${item.species}`);
+                    onEmptyDatasets(false)
+                }
+                if(startYear === item.year || endYear === item.year){
+                  onEmptyDatasets(true)
+                }
+            });
+            
+          }else onEmptyDatasets(false)
           setSpeciesData(response.data);
           setLoading(false);
         }
