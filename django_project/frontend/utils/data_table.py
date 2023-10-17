@@ -50,7 +50,6 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
             SAMPLING_REPORT: sampling_report,
             SPECIES_REPORT: species_report,
         }
-        print(reports_list)
 
         for report_name in reports_list:
             if report_name in report_functions:
@@ -104,10 +103,9 @@ def get_report_filter(request, report_type):
         end_year = int(request.GET.get("end_year"))
         filters[year_fields[report_type]] = (start_year, end_year)
 
-    activity = request.GET.get("activity")
+    activity = request.GET.get("activity", "")
     activity = urllib.parse.unquote(activity)
     filters[activity_fields[report_type]] = [int(act) for act in activity.split(',')] if activity else []
-    print(filters)
     return filters
 
 
@@ -186,7 +184,6 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
     )
     activity_type_ids = filters[activity_field]
     del filters[activity_field]
-    print(activity_type_ids)
 
     activity_reports = {}
     valid_activities = ActivityType.objects.filter(id__in=activity_type_ids)
