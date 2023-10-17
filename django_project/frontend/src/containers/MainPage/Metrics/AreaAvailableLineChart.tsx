@@ -54,6 +54,15 @@ const AreaAvailableLineChart = (props: any) => {
         }
       }
 
+      let render_chart = true
+      areaDataB.datasets.forEach(dataset => {
+        if (dataset.data.length === 0) {
+          render_chart = false
+        }else render_chart = true
+      });
+
+      if (!render_chart) return null
+
       areaDataB.datasets.forEach(dataset => {
         if (dataset.data.length === 1) {
           dataset.data.unshift(0);
