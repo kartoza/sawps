@@ -312,31 +312,31 @@ const Metrics = () => {
                                
                             <Grid item xs={12} md={6}></Grid>
                             
-                            {hasEmptyProvinceCountPercentage && (
-                            <Grid item xs={12} md={6} 
-                                style={{ 
-                                    textAlign: 'center', 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center',
-                                    maxHeight: '370px'
-                                }}
-                            >
-                                <SpeciesCountAsPercentage
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear}
-                                    loading={loading} 
-                                    setLoading={setLoading}
-                                    activityData={activityData}
-                                    onEmptyDatasets={handleEmptyProvinceCountPercentage}
-                                />
-                            </Grid>
+                            {selectedSpecies && hasEmptyProvinceCountPercentage && (
+                                <Grid item xs={12} md={6} 
+                                    style={{ 
+                                        textAlign: 'center', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        maxHeight: '370px'
+                                    }}
+                                >
+                                    <SpeciesCountAsPercentage
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear}
+                                        loading={loading} 
+                                        setLoading={setLoading}
+                                        activityData={activityData}
+                                        onEmptyDatasets={handleEmptyProvinceCountPercentage}
+                                    />
+                                </Grid>
                             )}
 
-                                     
-                            {hasEmptyTotalCountPerActivity && (
+                                    
+                            {selectedSpecies && hasEmptyTotalCountPerActivity && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
@@ -347,7 +347,10 @@ const Metrics = () => {
                                     }}
                                 >
                                     <TotalCountPerActivity
-                                        selectedSpecies={selectedSpecies} 
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear}
                                         loading={loading} 
                                         activityData={totalCoutData}
                                         onEmptyDatasets={handleEmptyTotalCountPerActivity}
@@ -355,8 +358,8 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
-
-                            {hasEmptyTotalCountPerActivityPercentage && (
+                            
+                            {selectedSpecies && hasEmptyTotalCountPerActivityPercentage && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
@@ -378,7 +381,7 @@ const Metrics = () => {
                                 )}
 
                                 
-                            {hasEmptyPopulationEstimateCategoryCount && (
+                            {selectedSpecies && hasEmptyPopulationEstimateCategoryCount && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
@@ -395,12 +398,14 @@ const Metrics = () => {
                                         endYear={endYear}
                                         loading={loading} 
                                         setLoading={setLoading}
+                                        activityData={activityData}
                                         onEmptyDatasets={handleEmptyTopulationEstimateCategoryCount}
                                     />
                                 </Grid>
                                 )}
                            
-                            {hasEmptyPopulationEstimateCategoryCountPercentage && (
+                           
+                            {selectedSpecies && hasEmptyPopulationEstimateCategoryCountPercentage && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
@@ -417,6 +422,7 @@ const Metrics = () => {
                                         endYear={endYear}
                                         loading={loading} 
                                         setLoading={setLoading}
+                                        activityData={activityData}
                                         onEmptyDatasets={handleEmptyPopulationEstimateCategoryCountPercentage}
                                     />
                                 </Grid>
