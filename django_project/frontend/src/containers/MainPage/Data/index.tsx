@@ -123,6 +123,7 @@ const DataList = () => {
             setShowReports(true);
         }
     }, [startYear, endYear, selectedSpecies, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
+
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
             target: { value },
@@ -154,6 +155,18 @@ const DataList = () => {
         const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         saveAs(blob, 'data.xlsx');
     };
+
+    const getUniqueColumn = () => {
+        const uniqueColumns = [];
+        const seenFields = new Set();
+        for (const column of columns) {
+            if (!seenFields.has(column.field)) {
+                uniqueColumns.push(column);
+                seenFields.add(column.field);
+            }
+        }
+        return uniqueColumns
+    }
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -248,17 +261,20 @@ const DataList = () => {
                 )}
             </>)
         setActivityTable(activityDataGrid)
-        const uniqueColumns = [];
-        const seenFields = new Set();
-        for (const column of columns) {
-            if (!seenFields.has(column.field)) {
-                uniqueColumns.push(column);
-                seenFields.add(column.field);
-            }
-        }
+
+        const uniqueColumns = getUniqueColumn()
         setColumns(uniqueColumns)
         setTableData(dataGrid)
     }, [data, selectedColumns, isSuccess])
+
+    useEffect(() => {
+        const uniqueColumns = getUniqueColumn()
+        setSelectedColumns(
+          uniqueColumns
+            .filter(col => !['Common Name', 'Scientific Name'].includes(col.headerName))
+            .map(col => col.headerName)
+        )
+    }, [data])
 
     return (
           showReports ? (
