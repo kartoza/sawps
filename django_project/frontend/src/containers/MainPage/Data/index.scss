@@ -3,7 +3,6 @@
     width: 100%;
     display: flex;
     padding: 6px;
-    border-radius: 5px;
     margin-bottom: 10px;
     min-width: 120px;
 
@@ -11,7 +10,6 @@
         margin-left: auto;
         width: 300px;
         background-color: #fff;
-        border-radius: 6px;
         text-align: left;
 
         .MuiInputBase-formControl {
@@ -86,7 +84,6 @@
     width: 100%;
     display: flex;
     padding: 6px;
-    border-radius: 5px;
     margin-bottom: 10px;
     min-width: 120px;
     color: white;
@@ -113,15 +110,14 @@
 .topper-container {
     width: 100%;
     text-align: left;
-    border-radius: 8px;
     margin-bottom: 10px;
-    background-color: #70b276;
+    background-color: #EFEFEF;
     min-width: 120px;
+    border: solid medium #97C19C;
 
     .topper-grey {
-        background-color: #cccccc;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
+        background-color: #CCCCCC;
+        border-top: solid medium #97C19C;
     }
 
     .topper-detail {
