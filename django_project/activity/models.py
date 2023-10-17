@@ -35,12 +35,6 @@ class ActivityType(models.Model):
     def __str__(self):
         return self.name
 
-    @classmethod
-    def get_all_activities(cls):
-        return list(cls.objects.values_list(
-            'name', flat=True
-        ).order_by('name'))
-
     class Meta:
         verbose_name = 'Activity'
         verbose_name_plural = 'Activities'

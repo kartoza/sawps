@@ -26,7 +26,8 @@ import {
     selectedOrganisationName,
     selectedPropertyName,
     setStartYear,
-    toggleSpecies
+    toggleSpecies,
+    selectedActivityName
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import {MapEvents} from '../../../models/Map';
@@ -38,7 +39,9 @@ import {
     useGetOrganisationQuery,
     useGetPropertyQuery,
     useGetSpeciesQuery,
-    Organisation
+    Organisation,
+    Activity,
+    Property
 } from "../../../services/api";
 import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
@@ -66,7 +69,8 @@ function Filter(props: any) {
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [selectedProperty, setSelectedProperty] = useState([]);
     const [selectAllProperty, setSelectAllProperty] = useState(true);
-    const [selectedActivity, setSelectedActivity] = useState<string>('');
+    const [selectedActivity, setSelectedActivity] = useState<number[]>([]);
+    const [selectAllActivity, setSelectAllActivity] = useState<boolean>(true);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string[]>(['Species report']);
@@ -156,6 +160,13 @@ function Filter(props: any) {
             }
         }
     }, [propertyList]);
+
+    // Select all activities by default
+    useEffect(() => {
+        if (activityList) {
+            setSelectedActivity(activityList.map((activity: Activity) => activity.id))
+        }
+    }, [activityList]);
 
     // intial map state vars for zoom out
     const center = [25.86, -28.52]; // Center point in backend
@@ -309,7 +320,7 @@ function Filter(props: any) {
     // Handle selecting all properties
     const handleSelectAllProperty = () => {
         if (propertyList) {
-            let propertyIds = selectAllProperty ? propertyList.map((property) => property.id) : []
+            let propertyIds = selectAllProperty ? propertyList.map((property: Property) => property.id) : []
             setSelectedProperty(propertyIds);
             if (propertyIds.length > 0) {
                 zoomToCombinedBoundingBox(propertyIds);
@@ -355,13 +366,27 @@ function Filter(props: any) {
         }
     }, [selectedOrganisation])
 
-    const handleSelectedActivity =(value: string) => {
-        setSelectedActivity(value);
+    useEffect(() => {
+        if (activityList) {
+            dispatch(selectedActivityId(selectedActivity.join(',')));
+            const selectedActivityNames = activityList.filter(
+              activityObj => selectedActivity.includes(activityObj.id)
+            ).map(activityObj => activityObj.name)
+            dispatch(selectedActivityName(selectedActivityNames.length > 0 ? selectedActivityNames.join(',') : ''));
+        }
+    }, [selectedActivity])
+
+    // Handle selecting all activities
+    const handleSelectAllActivity = () => {
+        if (activityList) {
+            let activityIds = selectAllActivity ? activityList.map((activity: Activity) => activity.id) : []
+            setSelectedActivity(activityIds);
+        }
     };
 
     useEffect(() => {
-        dispatch(selectedActivityId(selectedActivity));
-    }, [selectedActivity])
+        handleSelectAllActivity()
+    }, [selectAllActivity])
 
     const handleStartYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
@@ -415,7 +440,7 @@ function Filter(props: any) {
         setSelectAllProperty(false)
         setSelectAllOrganisation(false)
         setSelectedSpecies('')
-        setSelectedActivity('')
+        setSelectAllActivity(false)
         setSelectAllInfo(false)
         setLocalStartYear(yearRangeStart)
         setLocalEndYear(yearRangeEnd)
@@ -636,15 +661,17 @@ function Filter(props: any) {
                     <List className='ListItem' component="nav" aria-label="">
                         {loading || isActivityLoading ? <Loading /> :
                             (
-                                <Autocomplete
-                                    id="combo-box-demo"
-                                    value={selectedActivity}
-                                    disableClearable={true}
+                                <AutoCompleteCheckbox
                                     options={activityList}
-                                    sx={{ width: '100%' }}
-                                    onChange={(event, value) => handleSelectedActivity(value)}
-                                    renderInput={(params) => <TextField {...params} placeholder="Select" />}
-                                />
+                                    selectedOption={selectedActivity}
+                                    singleTerm={'Activity'}
+                                    pluralTerms={'Activities'}
+                                    selectAllFlag={selectAllActivity}
+                                    setSelectAll={(val) => {
+                                        setSelectAllActivity(val)
+                                    }}
+                                    setSelectedOption={setSelectedActivity}
+                                  />
                             )
                         }
                     </List>

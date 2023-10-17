@@ -73,10 +73,10 @@ export const userApi = createApi({
             },
             providesTags: ['Organisation']
         }),
-        getActivity: build.query<string[], void>({
+        getActivity: build.query<Activity[], void>({
             query: () => 'api/activity-type/',
             transformResponse: (response: Activity[]) => {
-                return response.map((activity: any) => activity.name);
+                return response;
             },
             providesTags: ['Activity']
         }),
