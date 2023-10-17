@@ -31,7 +31,11 @@ const DensityBarChart = (props: any) => {
                 .then((response) => {
                     setLoading(false);
                     if (response.data) {
-                        const filteredData = response.data.filter((item: any) => item.density.density !== null);
+                        const filteredData = response.data.filter((item: any) => (
+                            item.density &&
+                            Array.isArray(item.density.density) &&
+                            item.density.density.length > 0
+                        ));
                         if(filteredData.length > 0){
                             onEmptyDatasets(true)
                         }else onEmptyDatasets(false)
