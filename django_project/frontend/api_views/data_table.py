@@ -34,18 +34,17 @@ class DataTableAPIView(APIView):
         if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             query_filter = DataContributorsFilter
             organisation = self.request.GET.get("organisation")
-            queryset = Property.objects.none()
             if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
                 ids = organisation.split(",")
                 queryset = Property.objects.filter(
                     organisation_id__in=ids,
                     ownedspecies__taxon__taxon_rank__name="Species"
                 ).distinct().order_by("name")
-            # else:
-            #     queryset = Property.objects.filter(
-            #         organisation_id=organisation_id,
-            #         ownedspecies__taxon__taxon_rank__name="Species"
-            #     ).distinct().order_by("name")
+            else:
+                queryset = Property.objects.filter(
+                    organisation_id=organisation_id,
+                    ownedspecies__taxon__taxon_rank__name="Species"
+                ).distinct().order_by("name")
 
             spatial_filter_values = self.request.GET.get(
                 'spatial_filter_values',

@@ -5,7 +5,12 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
-from frontend.static_mapping import NATIONAL_DATA_SCIENTIST, REGIONAL_DATA_SCIENTIST, REGIONAL_DATA_CONSUMER
+from frontend.static_mapping import (
+    NATIONAL_DATA_SCIENTIST,
+    NATIONAL_DATA_CONSUMER,
+    REGIONAL_DATA_SCIENTIST,
+    REGIONAL_DATA_CONSUMER
+)
 from population_data.models import AnnualPopulationPerActivity
 from property.factories import PropertyFactory
 from rest_framework import status
@@ -29,25 +34,8 @@ from frontend.tests.model_factories import (
 )
 from stakeholder.models import OrganisationInvites, MANAGER
 
-class TestEmptyParameterMixins():
-    
-    def test_empty_organisation_property(self):
-        data = {
-            "species": "SpeciesA",
-            "activity": ",".join(
-                [
-                    str(act_id) for act_id in ActivityType.objects.values_list("id", flat=True)
-                ]
-            ),
-            "reports": "Property_report",
-            "organisation": '',
-            "property": ''
-        }
-        response = self.client.get(self.url, data, **self.auth_headers)
-        self.assertEqual(len(response.json()), 0)
 
-
-class OwnedSpeciesTestCase(TestCase, TestEmptyParameterMixins):
+class OwnedSpeciesTestCase(TestCase):
     def setUp(self):
         taxon_rank = TaxonRank.objects.filter(
             name='Species'
@@ -294,10 +282,12 @@ class NationalUserTestCase(TestCase):
         """Test national data consumer reports"""
         year = self.owned_species[0].annualpopulation_set.first().year
         property = self.owned_species[0].property.id
+        organisation = self.owned_species[0].property.organisation_id
         value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
             "species": "SpeciesA",
             "property": property,
+            "organisation": organisation,
             "start_year": year,
             "end_year": year,
             "reports": (

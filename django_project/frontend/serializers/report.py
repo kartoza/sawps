@@ -5,7 +5,6 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
-from activity.models import ActivityType
 from species.models import OwnedSpecies
 
 

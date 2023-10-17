@@ -105,7 +105,9 @@ def get_report_filter(request, report_type):
 
     activity = request.GET.get("activity", "")
     activity = urllib.parse.unquote(activity)
-    filters[activity_fields[report_type]] = [int(act) for act in activity.split(',')] if activity else []
+    filters[activity_fields[report_type]] = [
+        int(act) for act in activity.split(',')
+    ] if activity else []
     return filters
 
 
@@ -293,7 +295,7 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     activity = request.GET.get("activity")
     if activity:
         filters[
-            "annualpopulationperactivity__activity_type__name"
+            "annualpopulationperactivity__activity_type_id"
         ] = urllib.parse.unquote(activity)
 
     if REGIONAL_DATA_CONSUMER in user_roles:
@@ -326,7 +328,6 @@ def national_level_species_report(
 
     """
     filters = common_filters(request, user_roles)
-    report_data = []
 
     report_data = OwnedSpecies.objects.\
         filter(**filters, taxon__in=queryset).\
