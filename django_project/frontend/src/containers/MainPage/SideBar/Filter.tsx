@@ -23,12 +23,13 @@ import {
     setEndYear,
     setSelectedInfoList,
     setSpatialFilterValues,
+    selectedOrganisationName,
+    selectedPropertyName,
     setStartYear,
     toggleSpecies,
     selectedActivityName
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
-import PropertyInterface from '../../../models/Property';
 import {MapEvents} from '../../../models/Map';
 import {triggerMapEvent} from '../../../reducers/MapState';
 import SpatialFilter from "./SpatialFilter";
@@ -152,7 +153,11 @@ function Filter(props: any) {
     // Select all properties by default
     useEffect(() => {
         if (propertyList) {
-            setSelectedProperty(propertyList.map(property => property.id))
+            if (selectedOrganisation.length > 0) {
+                setSelectedProperty(propertyList.map(property => property.id))
+            } else {
+                setSelectedProperty([])
+            }
         }
     }, [propertyList]);
 
@@ -332,6 +337,10 @@ function Filter(props: any) {
     useEffect(() => {
         if (propertyList) {
             dispatch(selectedPropertyId(selectedProperty.join(',')));
+            const selectedPropertyNames = propertyList.filter(
+              propertyObj => selectedProperty.includes(propertyObj.id)
+            ).map(propertyObj => propertyObj.name)
+            dispatch(selectedPropertyName(selectedPropertyNames.length > 0 ? selectedPropertyNames.join(', ') : ''));
         }
     }, [selectedProperty])
 
@@ -350,6 +359,10 @@ function Filter(props: any) {
     useEffect(() => {
         if (organisationList) {
             dispatch(selectedOrganisationId(selectedOrganisation.join(',')))
+            const selectedOrganisationNames = organisationList.filter(
+              organisationObj => selectedOrganisation.includes(organisationObj.id)
+            ).map(organisationObj => organisationObj.name)
+            dispatch(selectedOrganisationName(selectedOrganisationNames.length > 0 ? selectedOrganisationNames.join(', ') : ''));
         }
     }, [selectedOrganisation])
 
