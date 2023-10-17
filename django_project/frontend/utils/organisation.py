@@ -13,3 +13,18 @@ def get_current_organisation_id(user):
             return user_profile.current_organisation.id
     except UserProfile.DoesNotExist:
         return None
+
+def get_abbreviation(text: str):
+    """
+    const words = name.split(' ');
+                if (words.length === 1) {
+                    return words[0].substring(0, 2).toUpperCase();
+                } else {
+                    return words.map(word => word.substring(0, 1).toUpperCase()).join('');
+                }
+    """
+    words = text.split(' ')
+    if len(words) == 1:
+        return words[0][0:2].upper()
+    else:
+        return ''.join(map(lambda word: word[0:1].upper(), words))

@@ -31,6 +31,11 @@ class Province(models.Model):
 class Property(models.Model):
     """Property model."""
     name = models.CharField(max_length=300, unique=True)
+    short_code = models.CharField(
+        max_length=50,
+        null=False,
+        blank=True
+    )
     owner_email = models.EmailField(null=True, blank=True)
     property_size_ha = models.IntegerField(null=True, blank=True)
     geometry = models.MultiPolygonField(srid=4326, null=True, blank=True)
@@ -55,6 +60,30 @@ class Property(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.short_code:
+            self.short_code = self.get_short_code()
+        super().save(*args, **kwargs)
+
+    def get_short_code(self):
+        from frontend.utils.organisation import get_abbreviation
+
+        if self.short_code:
+            return self.short_code
+        else:
+            province = get_abbreviation(self.province.name) if self.province else ''
+            organisation = get_abbreviation(self.organisation.name)
+            property_abr = get_abbreviation(self.name)
+
+            # instead of using DB count, take next digit based on the latest digit
+            try:
+                last_digit = int(Property.objects.latest('id').short_code[-4:])
+            except Property.DoesNotExist:
+                last_digit = 1000
+
+            last_digit += 1
+            return f"{province}{organisation}{property_abr}{last_digit}"
 
 
 @receiver(post_save, sender=Property)

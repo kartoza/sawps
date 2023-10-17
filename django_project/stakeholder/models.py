@@ -77,6 +77,11 @@ class Organisation(models.Model):
     """Organisation model."""
 
     name = models.CharField(unique=True, max_length=250)
+    short_code = models.CharField(
+        max_length=50,
+        null=False,
+        blank=True
+    )
     data_use_permission = models.ForeignKey(
         'regulatory_permit.dataUsePermission',
         on_delete=models.DO_NOTHING
@@ -105,6 +110,27 @@ class Organisation(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.short_code:
+            self.short_code = self.get_short_code()
+        super().save(*args, **kwargs)
+
+    def get_short_code(self):
+        from frontend.utils.organisation import get_abbreviation
+
+        if self.short_code:
+            return self.short_code
+        else:
+            province = get_abbreviation(self.province.name) if self.province else ''
+            organisation = get_abbreviation(self.name)
+            try:
+                last_digit = int(Organisation.objects.latest('id').short_code[-4:])
+            except Organisation.DoesNotExist:
+                last_digit = 1000
+
+            last_digit += 1
+            return f"{province}{organisation}{last_digit}"
 
 
 class UserProfile(models.Model):
