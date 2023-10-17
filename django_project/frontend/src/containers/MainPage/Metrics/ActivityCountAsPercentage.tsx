@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
@@ -16,6 +16,7 @@ interface ActivityItem {
 }
 
 interface ActivityDataItem {
+  graph_icon: any;
   species_name: string;
   activities: ActivityItem[];
   total: number;
@@ -63,9 +64,12 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
 
   useEffect(() => {
     if (activityData && activityData.length > 0) {
-      onEmptyDatasets(true)
-    }else onEmptyDatasets(false)
-  }, [activityData, selectedSpecies]);
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      }
+    }
+  }, [activityData, selectedSpecies,startYear,endYear]);
 
   // Iterate through activityData
   activityData.forEach((speciesData: ActivityDataItem) => {
@@ -129,6 +133,10 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
       recentActivitiesMap[activityType].total += total;
     });
   });
+
+   if(labels.length>0){
+    onEmptyDatasets(true)
+  }else onEmptyDatasets(false);
 
   // Create the chartData object
   const chartData = {
