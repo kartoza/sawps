@@ -49,7 +49,7 @@ const Topper = () => {
                                   <img src="/static/images/separator.svg" alt='Separator'/>
                               </Grid>
                               <Grid item xs>
-                                  <Box><img src="/static/images/organisation-black.svg" alt='Organisation image'/></Box>
+                                  <Box><img src="/static/images/organisation-topper.svg" alt='Organisation image'/></Box>
                                   <Box className={'text-content'}>
                                       <b>{organisationCount} Organisation{organisationCount > 1 ? 's' : ''}</b>
                                   </Box>
@@ -58,7 +58,7 @@ const Topper = () => {
                                   <img src="/static/images/separator.svg" alt='Separator'/>
                               </Grid>
                               <Grid item xs>
-                                  <Box><img src="/static/images/property-black.svg" alt='Property image'/></Box>
+                                  <Box><img src="/static/images/property-topper.svg" alt='Property image'/></Box>
                                   <Box className={'text-content'}>
                                       <b>{propertyCount} {propertyCount > 1 ? 'Properties' : 'Property'}</b>
                                   </Box>
@@ -67,7 +67,7 @@ const Topper = () => {
                                   <img src="/static/images/separator.svg" alt='Separator'/>
                               </Grid>
                               <Grid item xs>
-                                  <Box><img src="/static/images/clock-black.svg" alt='Clock image'/></Box>
+                                  <Box><img src="/static/images/clock-topper.svg" alt='Clock image'/></Box>
                                   <Box className={'text-content'}>
                                       <b>{startYear} - {endYear}</b>
                                   </Box>
@@ -76,7 +76,7 @@ const Topper = () => {
                                   <img src="/static/images/separator.svg" alt='Separator'/>
                               </Grid>
                               <Grid item xs>
-                                  <Box><img src="/static/images/activity-black.svg" alt='Activity image'/></Box>
+                                  <Box><img src="/static/images/activity-topper.svg" alt='Activity image'/></Box>
                                   <Box className={'text-content'}>
                                       <b>{activityCount} {activityCount > 1 ? 'Activities' : 'Activity'}</b>
                                   </Box>
