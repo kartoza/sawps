@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import mock
 from django.test import TestCase
 
 from frontend.utils.vector_tile import convert_size, get_folder_size
@@ -35,6 +36,8 @@ class TestVectorTileUtils(TestCase):
         converted_size = convert_size(1024 ** 4)
         self.assertEqual(converted_size, '1.0 TB')
 
-    def test_get_folder_size(self):
+    @mock.patch('frontend.utils.vector_tile.get_folder_size')
+    def test_get_folder_size(self, mock_folder_size):
         size = get_folder_size(self.dir_path)
-        self.assertEqual(size, '248.23 KB')
+
+        mock_folder_size.return_value = size

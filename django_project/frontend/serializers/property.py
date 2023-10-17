@@ -63,7 +63,6 @@ class PropertySerializer(serializers.ModelSerializer):
         return obj.property_size_ha
 
 
-
     class Meta:
         model = Property
         fields = [
