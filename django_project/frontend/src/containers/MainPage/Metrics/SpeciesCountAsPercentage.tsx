@@ -146,11 +146,11 @@ const SpeciesCountAsPercentage = (props: any) => {
 
   
   // custom styling for donut charts
-  const chartContainerStyle: React.CSSProperties = {
+   const chartContainerStyle: React.CSSProperties = {
     position: "relative",
     backgroundImage: `url(${backgroundImageUrl})`,
-    backgroundSize: "20% 24%", // width and height of image
-    backgroundPosition: "19% 57%", //horizontal and vertical position respectively
+    backgroundSize: "18% 20%", // width and height of image
+    backgroundPosition: "19.6% 57%", //horizontal and vertical position respectively
     backgroundRepeat: "no-repeat",
     whiteSpace: "pre-wrap", // Allow text to wrap
   };
