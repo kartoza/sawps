@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
@@ -36,45 +36,56 @@ interface SpeciesDataItem {
   const TotalCountPerActivity = (props: any) => {
     const {
       selectedSpecies,
+      propertyId,
+      startYear,
+      endYear,
       loading,
-      activityData
+      activityData,
+      onEmptyDatasets
     } = props;
     const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
 
-    // Add a condition to check if the selectedSpecies and activityData meet your criteria
-    if (!selectedSpecies || !activityData || activityData.length === 0) {
-        return null; // Return null if the condition fails
-    }
+    useEffect(() => {
+      if (activityData && activityData.length > 0) {
+        onEmptyDatasets(true)
+        const firstItem = activityData[0];
+        if (firstItem.graph_icon) {
+          setBackgroundImageUrl(firstItem.graph_icon);
+        }
+      }else onEmptyDatasets(false)
+    }, [propertyId,startYear,endYear,activityData, selectedSpecies]);
   
     // Initialize variables
     const labels: string[] = [];
     const data: number[] = [];
     const uniqueColors: string[] = [];
-    let year: number = 0;
-  
+    let year: number = endYear; // Set the year to the provided startYear
+
     if (activityData && activityData.length > 0) {
       // Iterate through activityData
       activityData.forEach((speciesData: any) => {
         const speciesActivities = speciesData.activities;
-        const latestActivity = speciesActivities.reduce(
-          (maxActivity: any, currentActivity: any) =>
-            currentActivity.year > maxActivity.year ? currentActivity : maxActivity,
-          speciesActivities[0]
+
+        // Find the activity entry that matches the provided startYear
+        const matchingActivity = speciesActivities.find(
+          (activity: any) => activity.year === endYear? activity: null
         );
-  
-        const activityType = latestActivity.activity_type;
-        const total = latestActivity.total;
-        year = latestActivity.year;
-  
-        // Check if the activityType is not in the labels list
-        if (!labels.includes(activityType)) {
+
+        if (matchingActivity) {
+          onEmptyDatasets(true)
+          const activityType = matchingActivity.activity_type;
+          const total = matchingActivity.total;
+
+          // Check if the activityType is not in the labels list
+          if (!labels.includes(activityType)) {
             // Ensure the label is exactly 23 characters long with padding
             const paddedLabel = activityType.padEnd(50, ' '); // Pad with spaces
-          
+
             labels.push(paddedLabel); // Use the padded label
             data.push(total);
             uniqueColors.push(availableColors[labels.length - 1]);
-          }          
+          }
+        } else onEmptyDatasets(false)
       });
     }
   
@@ -98,7 +109,6 @@ interface SpeciesDataItem {
     
     if (!selectedSpecies){
         chartTitle = "Please select a species for the chart to show available data";
-        return null;
     }
   
     const options = {
@@ -135,13 +145,13 @@ interface SpeciesDataItem {
     };
 
     // custom styling for donut charts
-    const chartContainerStyle: React.CSSProperties = {
-        position: "relative",
-        backgroundImage: `url(${backgroundImageUrl})`,
-        backgroundSize: "20% 24%", // width and height of image
-        backgroundPosition: "19% 57%", //horizontal and vertical position respectively
-        backgroundRepeat: "no-repeat",
-        whiteSpace: "pre-wrap", // Allow text to wrap
+     const chartContainerStyle: React.CSSProperties = {
+      position: "relative",
+      backgroundImage: `url(${backgroundImageUrl})`,
+      backgroundSize: "18% 20%", // width and height of image
+      backgroundPosition: "19.6% 57%", //horizontal and vertical position respectively
+      backgroundRepeat: "no-repeat",
+      whiteSpace: "pre-wrap", // Allow text to wrap
     };
   
     return (
