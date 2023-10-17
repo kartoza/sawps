@@ -34,10 +34,23 @@ const PopulationEstimateCategoryCount = (props: any) => {
     endYear,
     loading,
     setLoading,
+    activityData,
     onEmptyDatasets
   } = props;
   let year: number | null = null;
   const [speciesData, setSpeciesData] = useState([]);
+
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      }
+
+    }
+  }, [activityData]);
 
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
@@ -65,12 +78,6 @@ const PopulationEstimateCategoryCount = (props: any) => {
   useEffect(() => {
     fetchPopulationEstimateCategoryCount();
   }, [propertyId, startYear, endYear, selectedSpecies]);
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-
-  if (!selectedSpecies) {
-    return null; // Return null if the condition fails
-  }
-
 
   // Initialize variables
   const labels: string[] = [];
@@ -156,8 +163,8 @@ const PopulationEstimateCategoryCount = (props: any) => {
   const chartContainerStyle: React.CSSProperties = {
     position: "relative",
     backgroundImage: `url(${backgroundImageUrl})`,
-    backgroundSize: "20% 24%", // width and height of image
-    backgroundPosition: "19% 57%", //horizontal and vertical position respectively
+    backgroundSize: "18% 20%", // width and height of image
+    backgroundPosition: "19.6% 57%", //horizontal and vertical position respectively
     backgroundRepeat: "no-repeat",
     whiteSpace: "pre-wrap", // Allow text to wrap
   };
