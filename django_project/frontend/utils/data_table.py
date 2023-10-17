@@ -58,11 +58,6 @@ def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
                     {report_name: report_data}
                 ) if report_data else []
 
-    else:
-        property_report_data = property_report(queryset, request)
-        if property_report_data:
-            reports.append({PROPERTY_REPORT: property_report_data})
-
     return reports
 
 
@@ -86,12 +81,12 @@ def get_report_filter(request, report_type):
 
     default_activity_field = (
         'owned_species__annualpopulationperactivity__'
-        'activity_type__name__in'
+        'activity_type_id__in'
     )
     activity_fields = {
         SPECIES_REPORT: default_activity_field,
         PROPERTY_REPORT: (
-            'annualpopulationperactivity__activity_type__name__in'
+            'annualpopulationperactivity__activity_type_id__in'
         ),
         SAMPLING_REPORT: default_activity_field,
         ACTIVITY_REPORT: default_activity_field,
@@ -108,17 +103,11 @@ def get_report_filter(request, report_type):
         end_year = int(request.GET.get("end_year"))
         filters[year_fields[report_type]] = (start_year, end_year)
 
-    activity = request.GET.get("activity")
-    if activity:
-        activity = urllib.parse.unquote(activity)
-        filters[activity_fields[report_type]] = [activity]
-
-    if report_type == ACTIVITY_REPORT:
-        if activity:
-            activity_types = [activity]
-        else:
-            activity_types = ActivityType.get_all_activities()
-        filters[activity_fields[report_type]] = activity_types
+    activity = request.GET.get("activity", "")
+    activity = urllib.parse.unquote(activity)
+    filters[activity_fields[report_type]] = [
+        int(act) for act in activity.split(',')
+    ] if activity else []
     return filters
 
 
@@ -193,28 +182,25 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
     filters = get_report_filter(request, ACTIVITY_REPORT)
     activity_field = (
         'owned_species__annualpopulationperactivity__'
-        'activity_type__name__in'
+        'activity_type_id__in'
     )
-    activity_types = filters[activity_field]
+    activity_type_ids = filters[activity_field]
     del filters[activity_field]
 
-    activity_reports = {
-        activity: [] for activity in activity_types
-    }
-    valid_activity_types = set(ActivityType.get_all_activities())
-    valid_activities = set(activity_types).intersection(valid_activity_types)
-    for activity_name in valid_activities:
+    activity_reports = {}
+    valid_activities = ActivityType.objects.filter(id__in=activity_type_ids)
+    for activity in valid_activities:
         activity_data = AnnualPopulationPerActivity.objects.filter(
             owned_species__property__in=queryset,
-            activity_type__name__iexact=activity_name,
+            activity_type=activity,
             **filters
         )
         serializer = ActivityReportSerializer(
             activity_data,
             many=True,
-            activity_name=activity_name
+            activity=activity
         )
-        activity_reports[activity_name].extend(serializer.data)
+        activity_reports[activity.name] = serializer.data
 
     activity_reports = {k: v for k, v in activity_reports.items() if v}
 
@@ -309,7 +295,7 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     activity = request.GET.get("activity")
     if activity:
         filters[
-            "annualpopulationperactivity__activity_type__name"
+            "annualpopulationperactivity__activity_type_id"
         ] = urllib.parse.unquote(activity)
 
     if REGIONAL_DATA_CONSUMER in user_roles:
@@ -342,7 +328,6 @@ def national_level_species_report(
 
     """
     filters = common_filters(request, user_roles)
-    report_data = []
 
     report_data = OwnedSpecies.objects.\
         filter(**filters, taxon__in=queryset).\
