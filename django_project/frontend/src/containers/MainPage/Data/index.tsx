@@ -18,6 +18,7 @@ import {
     useGetActivityAsObjQuery,
     UserInfo
 } from "../../../services/api";
+import Topper from "./Topper";
 import './index.scss';
 
 const ITEM_HEIGHT = 48;
@@ -279,6 +280,7 @@ const DataList = () => {
     return (
           showReports ? (
             <Box className='dataContainer'>
+                <Topper></Topper>
                 <Box className="bgGreen">
                     <Box className="selectBox">
                         <FormControl fullWidth>
@@ -314,7 +316,8 @@ const DataList = () => {
                             </Typography>}
                       </Box>
                   </Box>}
-                <Box className="downlodBtn">
+                {loading ? <Loading/> : (
+                  <Box className="downlodBtn">
                     <Button onClick={handleExportExcel} variant="contained" color="primary">
                         Download data Report
                     </Button>
@@ -322,7 +325,7 @@ const DataList = () => {
                         Download data CSV
                     </Button>
                 </Box>
-
+                )}
             </Box>
           ) : (
             <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>

@@ -1,6 +1,6 @@
-import { Grid } from '@mui/material';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
+import "./index.scss";
 import Loading from '../../../components/Loading';
 
 type AvailableColors = {
@@ -78,7 +78,6 @@ const options = {
                 text: 'Count', // X-axis label
                 font: {
                     size: 14,
-                    weight: "bold" as "bold",
                 },
             },
         },
@@ -90,7 +89,6 @@ const options = {
                 text: 'Year', // Y-axis label
                 font: {
                     size: 14,
-                    weight: "bold" as "bold",
                 },
             },
             grid: {
@@ -102,6 +100,8 @@ const options = {
         },
     },
     plugins: {
+        responsive: true,
+        maintainAspectRatio: false,
         tooltip: {
             enabled: true
         },
@@ -117,7 +117,6 @@ const options = {
                 padding: 12,
                 font : {
                   size: 10,
-                  weight: "bold" as "bold"
                 }
             },
         },
@@ -135,16 +134,16 @@ const options = {
 
 
 return (
-    <Grid>
+    <>
         {!loading ? (
             <Bar 
                 data={data} 
                 options={options} 
-                height={265} width={660} />
+            />
         ) : (
             <Loading containerStyle={{ minHeight: 160 }} />
         )}
-    </Grid>
+    </>
 );
 };
 
