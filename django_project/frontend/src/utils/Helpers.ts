@@ -44,3 +44,11 @@ export function toSingular(str: string) {
 export const delay = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+/**
+ * Checks if the current URL corresponds to the map page
+ */
+export const isMapDisplayed = () => {
+  const currentUrl = window.location.href;
+  return currentUrl.endsWith('/map') || currentUrl.endsWith('/map/')
+}
