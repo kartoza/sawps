@@ -116,7 +116,7 @@ class SpeciesTrend(APIView):
             query &= Q(
                 owned_species__taxon__scientific_name=species_name
             )
-   
+
         if property_list:
             property_ids = property_list.split(',')
             query &= Q(
