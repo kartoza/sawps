@@ -20,11 +20,18 @@ const Topper = () => {
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const propertyName = useAppSelector((state: RootState) => state.SpeciesFilter.propertyName)
+    const activityName = useAppSelector(
+      (state: RootState) => state.SpeciesFilter.activityName
+    ).split(',').join(', ')
     const organisationName = useAppSelector((state: RootState) => state.SpeciesFilter.organisationName)
     const organisationCount = organisationName ? organisationName.split(',').length : 0
     const propertyCount = propertyName ? propertyName.split(',').length : 0
     const activityCount = activityId !== '' ? activityId.split(',').length : 0
-    const today = new Date().toLocaleDateString()
+    const today = new Date()
+    const todayDate = String(today.getDate()).padStart(2, '0')
+    const todayMonth = String(today.getMonth() + 1).padStart(2, '0')
+    const todayYear = today.getFullYear()
+    const todayStr = [todayDate, todayMonth, todayYear].join('/')
 
     return (
       <Box className={'topper-container'}>
@@ -35,7 +42,7 @@ const Topper = () => {
                   </Box>
                   <Box>
                       <Box>
-                          This report was generated on the {today} using the South African Wildlife Population System
+                          This report was generated on the {todayStr} using the South African Wildlife Population System
                           (SAWPS).
                           The data presented is based on the following criteria.
                       </Box>
@@ -92,6 +99,9 @@ const Topper = () => {
               </Box>
               <Box>
                   <b>Property list</b>: {propertyName}
+              </Box>
+              <Box>
+                  <b>Activity list</b>: {activityName}
               </Box>
           </Box>
       </Box>
