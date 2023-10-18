@@ -17,6 +17,7 @@ import TotalCountPerActivity from "./TotalCountPerActivity";
 import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
+import PopulationTrend from "./PopulationTrend";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
@@ -169,7 +170,6 @@ const Metrics = () => {
         setHasEmptyTotalCountPerActivityPercentage(true)
         setHasEmptyPopulationEstimateCategoryCount(true)
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
-
     }, [propertyId, startYear, endYear, selectedSpecies])
     const handleDownloadPdf = async () => {
         const content = contentRef.current;
@@ -194,6 +194,21 @@ const Metrics = () => {
 
                 {showCharts ? (
                         <Grid container spacing={2} ref={contentRef}>
+                            {selectedSpecies && hasEmptyPopulationTrend && (
+                                <Grid item xs={12} md={6}>
+                                    <PopulationTrend 
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear} 
+                                        loading={loading} 
+                                        setLoading={setLoading}
+                                        onEmptyDatasets={handleEmptyPopulationTrend}
+                                    />
+                                </Grid>
+                            )}
+
+
                             {selectedSpecies && hasEmptyPopulationCategory && (
                                 <Grid item xs={12} md={6}>
                                     <PopulationCategoryChart 
@@ -283,7 +298,7 @@ const Metrics = () => {
                                         />
                                     ) : null}
                                 </Grid>
-                            ))} 
+                            ))}
                             
 
                             {selectedSpecies && hasEmptyProvinceCount && (
@@ -301,7 +316,6 @@ const Metrics = () => {
                             )}
 
                                
-                            <Grid item xs={12} md={6}></Grid>
                             
                             {selectedSpecies && hasEmptyProvinceCountPercentage && (
                                 <Grid item xs={12} md={6} 
