@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import Chart from "chart.js/auto";
@@ -16,6 +16,7 @@ interface ActivityItem {
 }
 
 interface ActivityDataItem {
+  graph_icon: any;
   species_name: string;
   activities: ActivityItem[];
   total: number;
@@ -27,6 +28,7 @@ interface Props {
   endYear: number;
   loading: boolean;
   activityData: ActivityDataItem[];
+  onEmptyDatasets: any
 }
 
 const availableColors = [
@@ -49,6 +51,7 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   endYear,
   loading,
   activityData,
+  onEmptyDatasets
 }: Props) => {
   // Initialize variables
   const labels: string[] = [];
@@ -59,10 +62,14 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
 
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
 
-  if (!selectedSpecies || !activityData || activityData.length === 0) {
-    return null; // Return null if the condition fails
-  }
-
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      }
+    }
+  }, [activityData, selectedSpecies,startYear,endYear]);
 
   // Iterate through activityData
   activityData.forEach((speciesData: ActivityDataItem) => {
@@ -127,6 +134,10 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
     });
   });
 
+   if(labels.length>0){
+    onEmptyDatasets(true)
+  }else onEmptyDatasets(false);
+
   // Create the chartData object
   const chartData = {
     labels: labels,
@@ -177,11 +188,11 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   };
 
   // custom styling for donut charts
-  const chartContainerStyle: React.CSSProperties = {
+   const chartContainerStyle: React.CSSProperties = {
     position: "relative",
     backgroundImage: `url(${backgroundImageUrl})`,
-    backgroundSize: "20% 24%", // width and height of image
-    backgroundPosition: "19% 57%", //horizontal and vertical position respectively
+    backgroundSize: "18% 20%", // width and height of image
+    backgroundPosition: "19.6% 57%", //horizontal and vertical position respectively
     backgroundRepeat: "no-repeat",
     whiteSpace: "pre-wrap", // Allow text to wrap
   };

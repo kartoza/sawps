@@ -55,10 +55,35 @@ const Metrics = () => {
     const [showChats, setShowCharts] = useState(false);
 
     const [hasEmptyPopulationTrend, setHasEmptyPopulationTrend] = useState(true);
-
-    // Pass callback functions to each child component for the specific type
-    const handleEmptyPopulationTrend = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
-        setHasEmptyPopulationTrend(isEmpty);
+    const handleEmptyPopulationCategory = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyPopulationCategory(isEmpty);
+    };
+    const handleEmptyPropertyType = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyPropertyType(isEmpty);
+    };
+    const handleEmptyDensity = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyDensity(isEmpty);
+    };
+    const handleEmptyPropertyAvailable = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyPropertyAvailable(isEmpty);
+    };
+    const handleEmptyProvinceCount = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyProvinceCount(isEmpty);
+    };
+    const handleEmptyProvinceCountPercentage = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyProvinceCountPercentage(isEmpty);
+    };
+    const handleEmptyTotalCountPerActivity = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyTotalCountPerActivity(isEmpty);
+    };
+    const handleEmptyTotalCountPerActivityPercentage = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyTotalCountPerActivityPercentage(isEmpty);
+    };
+    const handleEmptyTopulationEstimateCategoryCount = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyPopulationEstimateCategoryCount(isEmpty);
+    };
+    const handleEmptyPopulationEstimateCategoryCountPercentage = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(isEmpty);
     };
 
     const fetchActivityPercentageData = () => {
@@ -126,6 +151,17 @@ const Metrics = () => {
         }else {
             setShowCharts(false);
         }
+        // allow rerender
+        setHasEmptyPopulationTrend(true)
+        setHasEmptyPopulationCategory(true)
+        setHasEmptyPropertyType(true)
+        setHasEmptyDensity(true)
+        setHasEmptyPropertyAvailable(true)
+        setHasEmptyProvinceCountPercentage(true)
+        setHasEmptyTotalCountPerActivity(true)
+        setHasEmptyTotalCountPerActivityPercentage(true)
+        setHasEmptyPopulationEstimateCategoryCount(true)
+        setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
 
         // allow rerender 
         setHasEmptyPopulationTrend(true)
@@ -167,57 +203,73 @@ const Metrics = () => {
                                     />
                                 </Grid>
                             )}
-                            
-                            <Grid item xs={12} md={6}>
-                                <PopulationCategoryChart 
-                                selectedSpecies={selectedSpecies} 
-                                propertyId={propertyId} 
-                                startYear={startYear} 
-                                endYear={endYear} 
-                                loading={loading} 
-                                setLoading={setLoading} 
-                                populationData={populationData} 
-                                setPopulationData={setPopulationData} 
-                                />
-                            </Grid>
-                            
-                            <Grid item xs={12} md={6}>
-                                <PropertyTypeBarChart 
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear} 
-                                    loading={loading} 
-                                    setLoading={setLoading} 
-                                />
-                            </Grid>
 
-                           <Grid item xs={12} md={6}>
-                                <DensityBarChart 
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear} 
-                                    loading={loading} 
-                                    setLoading={setLoading} 
-                                    densityData={densityData} 
-                                    setDensityData={setDensityData} 
-                                />
-                            </Grid>
+
+                            {selectedSpecies && hasEmptyPopulationCategory && (
+                                <Grid item xs={12} md={6}>
+                                    <PopulationCategoryChart 
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear} 
+                                        loading={loading} 
+                                        setLoading={setLoading} 
+                                        populationData={populationData} 
+                                        setPopulationData={setPopulationData}
+                                        onEmptyDatasets={handleEmptyPopulationCategory}
+                                    />
+                                </Grid>
+                            )}
+
+                             {hasEmptyPropertyType && (
+                                <Grid item xs={12} md={6}>
+                                    <PropertyTypeBarChart 
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear} 
+                                        loading={loading} 
+                                        setLoading={setLoading}
+                                        onEmptyDatasets={handleEmptyPropertyType}
+                                    />
+                                </Grid>
+                            )}
 
                             
-                            <Grid item xs={12} md={6}>
-                                <PropertyAvailableBarChart
-                                    selectedSpecies={selectedSpecies}
-                                    propertyId={propertyId}
-                                    startYear={startYear}
-                                    endYear={endYear}
-                                    loading={loading}
-                                    setLoading={setLoading}
-                                />
-                            </Grid>
+                            {selectedSpecies && hasEmptyDensity && (
+                                <Grid item xs={12} md={6}>
+                                    <DensityBarChart 
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear} 
+                                        loading={loading} 
+                                        setLoading={setLoading} 
+                                        densityData={densityData} 
+                                        setDensityData={setDensityData}
+                                        onEmptyDatasets={handleEmptyDensity}
+                                    /> 
+                                </Grid>
+                            )}
 
 
+                            
+                            {selectedSpecies && hasEmptyPropertyAvailable && (
+                                <Grid item xs={12} md={6}>
+                                    <PropertyAvailableBarChart 
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear} 
+                                        loading={loading} 
+                                        setLoading={setLoading}
+                                        onEmptyDatasets={handleEmptyPropertyAvailable}
+                                    /> 
+                                </Grid>
+                            )}
+
+
+                            
                             {ageGroupData.map((data) => (
                                 <Grid container key={data.id} item xs={12} md={6}>
                                     <AgeGroupBarChart
@@ -229,6 +281,7 @@ const Metrics = () => {
                                     />
                                 </Grid>
                             ))}
+                           
 
                             
                             {areaData.map((data, index) => (
@@ -244,61 +297,79 @@ const Metrics = () => {
                                     )}
                                 </Grid>
                             ))}
-
-                            <Grid item xs={12} md={6}>
-                                <SpeciesCountPerProvinceChart
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear}
-                                    loading={loading} 
-                                    setLoading={setLoading}
-                                />
-                            </Grid>
-                  
-                            <Grid item xs={12} md={6}></Grid>
                             
-                            <Grid item xs={12} md={6} 
-                                style={{ 
-                                    textAlign: 'center', 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center' 
-                                }}
-                            >
-                                <SpeciesCountAsPercentage
-                                    selectedSpecies={selectedSpecies} 
-                                    propertyId={propertyId} 
-                                    startYear={startYear} 
-                                    endYear={endYear}
-                                    loading={loading} 
-                                    setLoading={setLoading}
-                                    activityData={activityData}
-                                />
-                            </Grid>
 
+                            {selectedSpecies && hasEmptyProvinceCount && (
+                                <Grid item xs={12} md={6}>
+                                    <SpeciesCountPerProvinceChart
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        onEmptyDatasets={handleEmptyProvinceCount}
+                                    />
+                                </Grid>
+                            )}
+
+                               
                             
+                            {selectedSpecies && hasEmptyProvinceCountPercentage && (
+                                <Grid item xs={12} md={6} 
+                                    style={{ 
+                                        textAlign: 'center', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        maxHeight: '370px'
+                                    }}
+                                >
+                                    <SpeciesCountAsPercentage
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear}
+                                        loading={loading} 
+                                        setLoading={setLoading}
+                                        activityData={activityData}
+                                        onEmptyDatasets={handleEmptyProvinceCountPercentage}
+                                    />
+                                </Grid>
+                            )}
+
+                                    
+                            {selectedSpecies && hasEmptyTotalCountPerActivity && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
                                         display: 'flex', 
                                         alignItems: 'center', 
-                                        justifyContent: 'center' 
+                                        justifyContent: 'center',
+                                        maxHeight: '370px'
                                     }}
                                 >
                                     <TotalCountPerActivity
-                                        selectedSpecies={selectedSpecies} 
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear}
                                         loading={loading} 
                                         activityData={totalCoutData}
+                                        onEmptyDatasets={handleEmptyTotalCountPerActivity}
                                     />
                                 </Grid>
+                            )}
 
+                            
+                            {selectedSpecies && hasEmptyTotalCountPerActivityPercentage && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
                                         display: 'flex', 
                                         alignItems: 'center', 
-                                        justifyContent: 'center' 
+                                        justifyContent: 'center',
+                                        maxHeight: '370px'
                                     }}
                                 >
                                     <ActivityCountAsPercentage
@@ -307,15 +378,20 @@ const Metrics = () => {
                                         endYear={endYear}
                                         loading={loading} 
                                         activityData={totalCoutData}
+                                        onEmptyDatasets={handleEmptyTotalCountPerActivityPercentage}
                                     />
                                 </Grid>
+                                )}
 
+                                
+                            {selectedSpecies && hasEmptyPopulationEstimateCategoryCount && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
                                         display: 'flex', 
                                         alignItems: 'center', 
-                                        justifyContent: 'center' 
+                                        justifyContent: 'center',
+                                        maxHeight: '370px'
                                     }}
                                 >
                                     <PopulationEstimateCategoryCount
@@ -325,15 +401,21 @@ const Metrics = () => {
                                         endYear={endYear}
                                         loading={loading} 
                                         setLoading={setLoading}
+                                        activityData={activityData}
+                                        onEmptyDatasets={handleEmptyTopulationEstimateCategoryCount}
                                     />
                                 </Grid>
-
+                                )}
+                           
+                           
+                            {selectedSpecies && hasEmptyPopulationEstimateCategoryCountPercentage && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
                                         display: 'flex', 
                                         alignItems: 'center', 
-                                        justifyContent: 'center' 
+                                        justifyContent: 'center',
+                                        maxHeight: '370px'
                                     }}
                                 >
                                     <PopulationEstimateAsPercentage
@@ -343,9 +425,11 @@ const Metrics = () => {
                                         endYear={endYear}
                                         loading={loading} 
                                         setLoading={setLoading}
+                                        activityData={activityData}
+                                        onEmptyDatasets={handleEmptyPopulationEstimateCategoryCountPercentage}
                                     />
                                 </Grid>
-
+                            )}
 
                     </Grid>
                 ): (
