@@ -10,7 +10,7 @@ from frontend.tests.model_factories import (
     StatisticalModelF,
     StatisticalModelOutputF
 )
-from frontend.models import SPECIE_PER_PROPERTY
+from frontend.models import SPECIES_PER_PROPERTY
 from frontend.utils.statistical_model import PLUMBER_PORT
 from frontend.api_views.statistical import SpeciesTrend
 from species.factories import (
@@ -111,13 +111,13 @@ class TestSpeciesTrend(TestCase):
         )
         StatisticalModelOutputF.create(
             model=model,
-            type=SPECIE_PER_PROPERTY
+            type=SPECIES_PER_PROPERTY
         )
         url = reverse('species-population-trend')
         url += f'?species={self.owned_species_one.taxon.scientific_name}&start_year=1960&end_year=2023&property={self.property1.id}'
         request = self.factory.get(url)
         with requests_mock.Mocker() as m:
-            json_response = {'specie_per_property': 'abcde'}
+            json_response = {'species_per_property': 'abcde'}
             m.post(
                 f'http://plumber:{PLUMBER_PORT}/statistical/api_{model.id}',
                 json=json_response,
@@ -147,7 +147,7 @@ class TestSpeciesTrend(TestCase):
         url += f'?species={self.owned_species_one.taxon.scientific_name}&start_year=1960&end_year=2023&property={self.property1.id}'
         request = self.factory.get(url)
         with requests_mock.Mocker() as m:
-            json_response = {'specie_per_property': 'qwerty'}
+            json_response = {'species_per_property': 'qwerty'}
             m.post(
                 f'http://plumber:{PLUMBER_PORT}/statistical/generic',
                 json=json_response,
