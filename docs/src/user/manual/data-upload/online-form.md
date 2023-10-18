@@ -64,13 +64,13 @@ The data upload online form provides a convenient and structured way to enter sp
 
 The data upload online form streamlines the process of entering detailed species population data for your selected property. Ensure that mandatory fields are filled in and that you have provided accurate information before saving your draft or moving to the next step in the data upload process.
 
-# Online Form Step 2
+## Online Form Step 2
 
-## Description
+### Description
 
 The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections, each with its own table and form. These sections allow you to record important information related to species introduction or reintroduction and off-take data.
 
-### Activity Detail
+#### Activity Detail
 
 ![Activity Detail](./img/online-form-2.png)
 
@@ -78,7 +78,7 @@ The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections,
 
 2. **Introduction/Reintroduction**: The `Introduction/Reintroduction` section displays the table and form. table for relevant data in a structured tabular format, and  form for entering detailed information related to species introduction or reintroduction.
 
-    #### Introduction/Reintroduction Table and Form
+    ##### Introduction/Reintroduction Table and Form
 
     ![Introduction/Reintroduction Table and Form](./img/online-form-3.png)
 
@@ -113,6 +113,14 @@ The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections,
     15. **Add**: Click the `ADD` button to save the information entered into the form. This action will record the introduction or reintroduction event with the specified details.
 
 3. **Off-take**: The `Off-take` section displays the table and form. Table provides a clear overview of your off-take data, and form for input data related to species off-take.
+
+    ##### Off-take Table and Form
+
+    ![Off-take Table and Form](./img/online-form-4.png)
+
+    1. **Off-take Table**: The `Off-take` table displays relevant data in a structured tabular format, making it easy to review and manage your Off-take records.
+
+    2. **Off-take Form**: The `Off-take` is same as the `Introduction/Reintroduction` enter the information related to off-take and add it by clicking on the `ADD` button.
 
 4. **Save Draft**: Use the `SAVE DRAFT` button to save your progress and store the data you've entered in the forms. This allows you to return to your work at a later time.
 
