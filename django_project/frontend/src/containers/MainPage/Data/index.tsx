@@ -237,6 +237,11 @@ const DataList = () => {
                                     headerName: getTitle(key),
                                     width: (customColorWidth as any)[each]?.width,
                                 }));
+                                for (const value of generatedColumns) {
+                                    if (filteredColumns.length === 0) {
+                                        columns.push(value);
+                                    }
+                                }
                                 const cellRows = cellData.map((row: any, rowIndex: any) => ({
                                     id: rowIndex,
                                     ...row,
