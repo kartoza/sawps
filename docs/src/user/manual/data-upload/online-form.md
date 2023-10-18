@@ -63,3 +63,29 @@ The data upload online form provides a convenient and structured way to enter sp
 ## Summary
 
 The data upload online form streamlines the process of entering detailed species population data for your selected property. Ensure that mandatory fields are filled in and that you have provided accurate information before saving your draft or moving to the next step in the data upload process.
+
+# Online Form Step 2
+
+## Description
+
+The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections, each with its own table and form. These sections allow you to record important information related to species introduction or reintroduction and off-take data.
+
+### Activity Detail
+
+![Activity Detail](./img/online-form-2.png)
+
+1. **Activity Detail**: Second step of data upload online form `ACTIVITY DETAIL`.
+
+2. **Introduction/Reintroduction**: The `Introduction/Reintroduction` section displays the table and form. table for relevant data in a structured tabular format, and  form for entering detailed information related to species introduction or reintroduction.
+
+3. **Off-take**: The `Off-take` section displays the table and form. Table provides a clear overview of your off-take data, and form for input data related to species off-take.
+
+4. **Save Draft**: Use the `Save Draft` button to save your progress and store the data you've entered in the forms. This allows you to return to your work at a later time.
+
+5. **Back**: The `Back` button enables you to go back to the previous step if you need to review or edit data from Step 1.
+
+6. **Next**: Click `Next` to advance to the next step in the data upload process.
+
+## Summary
+
+Step 2 of the data upload online form  introduces the `Introduction/Reintroduction` and `Off-take` sections, each comprising a table and a form for data entry. These sections are critical for recording and managing information related to species introduction or reintroduction and off-take. The provided navigation buttons, including `SAVE DRAFT,` `BACK,` and `NEXT,` give you control over your data entry process and progression through the data management steps.
