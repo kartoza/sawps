@@ -18,8 +18,10 @@ import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
 import PopulationTrend from "./PopulationTrend";
+import {
+    useGetUserInfoQuery,
+} from "../../../services/api";
 import Tooltip from '@mui/material/Tooltip';
-
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
@@ -74,6 +76,18 @@ const Metrics = () => {
     const [hasEmptyPopulationEstimateCategoryCountPercentage, setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage] = useState(true);
     const [hasEmptyPropertyAvailable, setHasEmptyPropertyAvailable] = useState(true);
 
+    const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery();
+    const [userRoles, setUserRoles] = useState([]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            // Preprocess user roles to make them lowercase and remove spaces
+            setUserRoles(userInfoData?.user_roles.map((role) => role.toLowerCase().replace(/\s/g, '')) || []);
+        }
+    }, [isSuccess, userInfoData]);
+
+
+    
     // Pass callback functions to each child component for the specific type
     const handleEmptyPopulationTrend = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyPopulationTrend(isEmpty);
@@ -108,6 +122,23 @@ const Metrics = () => {
     const handleEmptyPopulationEstimateCategoryCountPercentage = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(isEmpty);
     };
+
+    const imageUrl = 'http://localhost:8000/static/images/icons/download.svg';
+
+    // Get the current window location (i.e., the full URL)
+    let currentLocation = window.location.href;
+
+    // Remove '/charts' from the current URL
+    currentLocation = currentLocation.replace('/charts', '');
+
+    // Replace 'localhost:8000' with the current full URL
+    const imageUrlWithDomain = imageUrl.replace('http://localhost:8000', currentLocation);
+
+    const informationIconUrl = 'http://localhost:8000/static/images/icons/information.svg';
+
+    // Replace 'localhost:8000' with the current full URL
+    const informationIconUrlWithDomain = informationIconUrl.replace('http://localhost:8000', currentLocation);
+
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
@@ -187,25 +218,6 @@ const Metrics = () => {
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
     }, [propertyId, startYear, endYear, selectedSpecies])
 
-    // retrieve icons stored in backend
-    const imageUrl = 'http://localhost:8000/static/images/icons/download.svg';
-
-    // Get the current window location (i.e., the full URL)
-    let currentLocation = window.location.href;
-
-    // Remove '/charts' from the current URL
-    currentLocation = currentLocation.replace('/charts', '');
-
-    // Replace 'localhost:8000' with the current full URL
-    const imageUrlWithDomain = imageUrl.replace('http://localhost:8000', currentLocation);
-
-    const informationIconUrl = 'http://localhost:8000/static/images/icons/information.svg';
-
-    // Replace 'localhost:8000' with the current full URL
-    const informationIconUrlWithDomain = informationIconUrl.replace('http://localhost:8000', currentLocation);
-
-
-    // download all charts
     const handleDownloadPdf = async () => {
         setIconsHidden(true);
         const content = contentRefAllCharts.current;
@@ -225,9 +237,52 @@ const Metrics = () => {
         setIconsHidden(false);
     }
 
+
+    // Check if the user's roles allow them to view charts
+    const canViewPopulationTrend = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser', 'sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPopulationCategory = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPropertyType = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewDensityBar = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPropertyAvailable = userRoles.some((role) =>
+        ['datacontributor', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewAgeGroup = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewAreaAvailable = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewProvinceSpeciesCount = userRoles.some((role) =>
+        ['nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewProvinceSpeciesCountAsPercentage = userRoles.some((role) =>
+        ['nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewTotalCount = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewCountAsPercentage = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPopulationEstimate= userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPopulationEstimateAsPercentage = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+
+
     const [iconsHidden, setIconsHidden] = useState(false);
 
-    // donwload individual charts
+    
     const handleDownload = async (contentRef: any) => {
         setIconsHidden(true);
         const content = contentRef.current;
@@ -270,14 +325,16 @@ const Metrics = () => {
         pdf.save(pdf_name);
         setIconsHidden(false);
     };
+    
 
+    
 
     return (
         <Box>
             <Box className="charts-container">
 
                 {showCharts ? (
-                        <Grid container spacing={2} ref={contentRef}>
+                        <Grid container spacing={2} ref={contentRefAllCharts}>
                             {
                             canViewPopulationTrend && 
                             selectedSpecies && 
