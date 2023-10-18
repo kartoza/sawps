@@ -170,8 +170,6 @@ By following these steps, you can effectively upload data, define parcel boundar
 
 3. **Delete icon**: This delete icon allows you to delete the perticuler parcel detail.
 
-#
-
 ## Step 3
 
 ### Description
@@ -179,6 +177,7 @@ By following these steps, you can effectively upload data, define parcel boundar
 Step 3 of the data upload process is a crucial phase that allows you to upload species population data. In this step, you will find two buttons for uploading your data, along with an option to download a template for your convenience. Additionally, there is a button to update property boundaries, which leads you to Step 2 where you can make property boundary modifications.
 
 #### Data Upload step 3
+
 ![Step 3](./img/panel-9.png)
 
 1. **Step 3**: Step 3 of data upload.
