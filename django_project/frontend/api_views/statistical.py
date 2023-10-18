@@ -174,7 +174,7 @@ class SpeciesTrend(APIView):
             survey_method = row.get('survey_method')
             survey_method_name = ''
             if survey_method:
-                survey_method_name = survey_method.name
+                survey_method_name = survey_method
             if owned_species is not None:
                 data_row = [
                     row.get('owned_species').property.name,
