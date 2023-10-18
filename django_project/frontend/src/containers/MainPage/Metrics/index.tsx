@@ -18,6 +18,9 @@ import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
 import PopulationTrend from "./PopulationTrend";
+import {
+    useGetUserInfoQuery,
+} from "../../../services/api";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
@@ -58,6 +61,16 @@ const Metrics = () => {
     const [hasEmptyPopulationEstimateCategoryCount, setHasEmptyPopulationEstimateCategoryCount] = useState(true);
     const [hasEmptyPopulationEstimateCategoryCountPercentage, setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage] = useState(true);
     const [hasEmptyPropertyAvailable, setHasEmptyPropertyAvailable] = useState(true);
+
+    const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery();
+    const [userRoles, setUserRoles] = useState([]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            // Preprocess user roles to make them lowercase and remove spaces
+            setUserRoles(userInfoData?.user_roles.map((role) => role.toLowerCase().replace(/\s/g, '')) || []);
+        }
+    }, [isSuccess, userInfoData]);
 
     // Pass callback functions to each child component for the specific type
     const handleEmptyPopulationTrend = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
@@ -171,6 +184,8 @@ const Metrics = () => {
         setHasEmptyPopulationEstimateCategoryCount(true)
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
     }, [propertyId, startYear, endYear, selectedSpecies])
+
+    // downloads all charts rendered on page
     const handleDownloadPdf = async () => {
         const content = contentRef.current;
         if (!content) return;
@@ -188,13 +203,57 @@ const Metrics = () => {
         pdf.save('metrics.pdf');
     }
 
+    // determines which role can see which charts on page
+    const canViewPopulationTrend = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser', 'sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPopulationCategory = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPropertyType = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewDensityBar = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPropertyAvailable = userRoles.some((role) =>
+        ['datacontributor', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewAgeGroup = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewAreaAvailable = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewProvinceSpeciesCount = userRoles.some((role) =>
+        ['nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewProvinceSpeciesCountAsPercentage = userRoles.some((role) =>
+        ['nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewTotalCount = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewCountAsPercentage = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPopulationEstimate= userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+    const canViewPopulationEstimateAsPercentage = userRoles.some((role) =>
+        ['datacontributor', 'nationaldatascientist', 'superuser','sanbiplatformadministrator'].includes(role)
+    );
+
     return (
         <Box>
             <Box className="charts-container">
 
                 {showCharts ? (
                         <Grid container spacing={2} ref={contentRef}>
-                            {selectedSpecies && hasEmptyPopulationTrend && (
+                            {
+                            canViewPopulationTrend && 
+                            selectedSpecies && 
+                            hasEmptyPopulationTrend && (
                                 <Grid item xs={12} md={6}>
                                     <PopulationTrend 
                                         selectedSpecies={selectedSpecies} 
@@ -209,7 +268,10 @@ const Metrics = () => {
                             )}
 
 
-                            {selectedSpecies && hasEmptyPopulationCategory && (
+                            {
+                            canViewPopulationCategory && 
+                            selectedSpecies && 
+                            hasEmptyPopulationCategory && (
                                 <Grid item xs={12} md={6}>
                                     <PopulationCategoryChart 
                                         selectedSpecies={selectedSpecies} 
@@ -225,7 +287,9 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
-                             {hasEmptyPropertyType && (
+                             {
+                             canViewPropertyType && 
+                             hasEmptyPropertyType && (
                                 <Grid item xs={12} md={6}>
                                     <PropertyTypeBarChart 
                                         selectedSpecies={selectedSpecies} 
@@ -240,7 +304,10 @@ const Metrics = () => {
                             )}
 
                             
-                            {selectedSpecies && hasEmptyDensity && (
+                            {
+                            canViewDensityBar && 
+                            selectedSpecies && 
+                            hasEmptyDensity && (
                                 <Grid item xs={12} md={6}>
                                     <DensityBarChart 
                                         selectedSpecies={selectedSpecies} 
@@ -258,7 +325,10 @@ const Metrics = () => {
 
 
                             
-                            {selectedSpecies && hasEmptyPropertyAvailable && (
+                            {
+                            canViewPropertyAvailable && 
+                            selectedSpecies && 
+                            hasEmptyPropertyAvailable && (
                                 <Grid item xs={12} md={6}>
                                     <PropertyAvailableBarChart 
                                         selectedSpecies={selectedSpecies} 
@@ -274,7 +344,9 @@ const Metrics = () => {
 
 
                             
-                            {ageGroupData.map((data) => (
+                            {
+                            canViewAgeGroup && 
+                            ageGroupData.map((data) => (
                                 <Grid container key={data.id} item xs={12} md={6}>
                                     <AgeGroupBarChart
                                         loading={loading}
@@ -288,7 +360,9 @@ const Metrics = () => {
                            
 
                             
-                            {areaData.map((data, index) => (
+                            {
+                            canViewAreaAvailable && 
+                            areaData.map((data, index) => (
                                 <Grid container key={index} item xs={12} md={6}>
                                     {data?.area?.owned_species ? (
                                         <AreaAvailableLineChart
@@ -301,7 +375,10 @@ const Metrics = () => {
                             ))}
                             
 
-                            {selectedSpecies && hasEmptyProvinceCount && (
+                            {
+                            canViewProvinceSpeciesCount && 
+                            selectedSpecies && 
+                            hasEmptyProvinceCount && (
                                 <Grid item xs={12} md={6}>
                                     <SpeciesCountPerProvinceChart
                                         selectedSpecies={selectedSpecies}
@@ -317,7 +394,10 @@ const Metrics = () => {
 
                                
                             
-                            {selectedSpecies && hasEmptyProvinceCountPercentage && (
+                            {
+                            canViewProvinceSpeciesCountAsPercentage && 
+                            selectedSpecies && 
+                            hasEmptyProvinceCountPercentage && (
                                 <Grid item xs={12} md={6} 
                                     style={{ 
                                         textAlign: 'center', 
@@ -341,7 +421,10 @@ const Metrics = () => {
                             )}
 
                                     
-                            {selectedSpecies && hasEmptyTotalCountPerActivity && (
+                            {
+                            canViewTotalCount && 
+                            selectedSpecies && 
+                            hasEmptyTotalCountPerActivity && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
@@ -364,7 +447,10 @@ const Metrics = () => {
                             )}
 
                             
-                            {selectedSpecies && hasEmptyTotalCountPerActivityPercentage && (
+                            {
+                            canViewCountAsPercentage && 
+                            selectedSpecies &&
+                            hasEmptyTotalCountPerActivityPercentage && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
@@ -386,7 +472,10 @@ const Metrics = () => {
                                 )}
 
                                 
-                            {selectedSpecies && hasEmptyPopulationEstimateCategoryCount && (
+                            {
+                            canViewPopulationEstimate && 
+                            selectedSpecies && 
+                            hasEmptyPopulationEstimateCategoryCount && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
@@ -410,7 +499,10 @@ const Metrics = () => {
                                 )}
                            
                            
-                            {selectedSpecies && hasEmptyPopulationEstimateCategoryCountPercentage && (
+                            {
+                            canViewPopulationEstimateAsPercentage && 
+                            selectedSpecies && 
+                            hasEmptyPopulationEstimateCategoryCountPercentage && (
                                 <Grid item xs={12} md={6}
                                     style={{ 
                                         textAlign: 'center', 
