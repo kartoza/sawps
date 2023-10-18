@@ -108,48 +108,48 @@ class SpeciesTrend(APIView):
         end_year = request.GET.get("end_year")
         property_list = request.GET.get('property')
         property_ids = property_list.split(',') if property_list else []
-            
+
         # Create a base query
         query = Q()
-            
+
         if species_name:
             query &= Q(
                 owned_species__taxon__scientific_name=species_name
             )
-            
+   
         if property_list:
             property_ids = property_list.split(',')
             query &= Q(
                 owned_species__property__id__in=property_ids
             )
-            
+
         if start_year:
             query &= Q(year__gte=start_year)
-            
+
         if end_year:
             query &= Q(year__lte=end_year)
-            
+
         species = get_object_or_404(
             Taxon, scientific_name=species_name
         )
-            
+
         cached_json_data = get_statistical_model_output_cache(
                 species, SPECIES_PER_PROPERTY)
-            
+
         if cached_json_data:
             return Response(status=200, data=cached_json_data)
-            
+
         statistical_model_output = StatisticalModelOutput.objects.filter(
             model__taxon=species,
             type=SPECIES_PER_PROPERTY
         ).first()
-            
+
         csv_headers = [
             'property', 'province', 'species', 'year', 'count_total',
             'survey_method', 'open_closed', 'property_type',
             'property_size', 'area_available_to_species'
         ]
-            
+
         rows = AnnualPopulation.objects.select_related(
             'owned_species', 'survey_method',
             'owned_species__taxon',
@@ -180,7 +180,7 @@ class SpeciesTrend(APIView):
                     row.get('year'),
                     row.get('total'),
                     survey_method.get('name') if survey_method else '',
-                    'Open' if row.get('owned_species').property.open else 'Closed',
+                    'Open' if owned_species.property.open else 'Closed',
                     row.get('owned_species__property__property_type').name,
                     row.get('owned_species').property.property_size_ha,
                     row.get('area_available_to_species')
