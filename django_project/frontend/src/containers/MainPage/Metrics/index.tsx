@@ -55,6 +55,21 @@ const Metrics = () => {
     const [showChats, setShowCharts] = useState(false);
 
     const [hasEmptyPopulationTrend, setHasEmptyPopulationTrend] = useState(true);
+    const [hasEmptyPopulationCategory, setHasEmptyPopulationCategory] = useState(true);
+    const [hasEmptyPropertyType, setHasEmptyPropertyType] = useState(true);
+    const [hasEmptyDensity, setHasEmptyDensity] = useState(true);
+    const [hasEmptyProvinceCount, setHasEmptyProvinceCount] = useState(true);
+    const [hasEmptyProvinceCountPercentage, setHasEmptyProvinceCountPercentage] = useState(true);
+    const [hasEmptyTotalCountPerActivity, setHasEmptyTotalCountPerActivity] = useState(true);
+    const [hasEmptyTotalCountPerActivityPercentage, setHasEmptyTotalCountPerActivityPercentage] = useState(true);
+    const [hasEmptyPopulationEstimateCategoryCount, setHasEmptyPopulationEstimateCategoryCount] = useState(true);
+    const [hasEmptyPopulationEstimateCategoryCountPercentage, setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage] = useState(true);
+    const [hasEmptyPropertyAvailable, setHasEmptyPropertyAvailable] = useState(true);
+
+    // Pass callback functions to each child component for the specific type
+    const handleEmptyPopulationTrend = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyPopulationTrend(isEmpty);
+    };
     const handleEmptyPopulationCategory = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyPopulationCategory(isEmpty);
     };
@@ -162,10 +177,6 @@ const Metrics = () => {
         setHasEmptyTotalCountPerActivityPercentage(true)
         setHasEmptyPopulationEstimateCategoryCount(true)
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
-
-        // allow rerender 
-        setHasEmptyPopulationTrend(true)
-
     }, [propertyId, startYear, endYear, selectedSpecies])
     const handleDownloadPdf = async () => {
         const content = contentRef.current;
