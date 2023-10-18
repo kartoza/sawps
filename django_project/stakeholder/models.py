@@ -119,18 +119,19 @@ class Organisation(models.Model):
     def get_short_code(self):
         from frontend.utils.organisation import get_abbreviation
 
-        if self.short_code:
-            return self.short_code
-        else:
-            province = get_abbreviation(self.province.name) if self.province else ''
-            organisation = get_abbreviation(self.name)
-            try:
-                last_digit = int(Organisation.objects.latest('id').short_code[-4:])
-            except Organisation.DoesNotExist:
-                last_digit = 1000
+        province = get_abbreviation(
+            self.province.name
+        ) if self.province else ''
+        organisation = get_abbreviation(self.name)
+        try:
+            last_digit = int(
+                Organisation.objects.latest('id').short_code[-4:]
+            )
+        except Organisation.DoesNotExist:
+            last_digit = 1000
 
-            last_digit += 1
-            return f"{province}{organisation}{last_digit}"
+        last_digit += 1
+        return f"{province}{organisation}{last_digit}"
 
 
 class UserProfile(models.Model):

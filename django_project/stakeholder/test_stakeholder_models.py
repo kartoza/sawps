@@ -197,7 +197,9 @@ class OrganizationTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.organization = organisationFactory()
+        cls.organization = organisationFactory(
+            name='CapeNature'
+        )
 
     def test_create_organization(self):
         """Test creating organization."""
@@ -205,6 +207,10 @@ class OrganizationTestCase(TestCase):
         self.assertTrue(isinstance(self.organization, Organisation))
         self.assertTrue(self.organization.name, Organisation.objects.get(
             id=self.organization.id).name)
+        self.assertEqual(
+            self.organization.short_code,
+            'CA1001'
+        )
 
     def test_update_organization(self):
         """Test updating organization."""
@@ -215,12 +221,20 @@ class OrganizationTestCase(TestCase):
         self.organization.national = True
         self.organization.province = province
         self.organization.save()
+        self.organization.refresh_from_db()
         self.assertEqual(Organisation.objects.get(
             id=self.organization.id).name, 'test')
         self.assertEqual(Organisation.objects.filter(
             national=True).count(), 1)
         self.assertEqual(Organisation.objects.filter(
             province__name="Limpopo").count(), 1)
+
+        # TODO: Confirm whether organisation short code would change if name/province is updated.
+        # It is currently not updated.
+        self.assertEqual(
+            self.organization.short_code,
+            'CA1001'
+        )
 
     def test_delete_organization(self):
         """Test deleting organization."""

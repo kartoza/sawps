@@ -28,6 +28,7 @@ from stakeholder.factories import (
     organisationUserFactory,
     userRoleTypeFactory,
 )
+from property.factories import ProvinceFactory
 from frontend.tests.model_factories import (
     SpatialDataModelF,
     SpatialDataModelValueF
@@ -35,7 +36,8 @@ from frontend.tests.model_factories import (
 from stakeholder.models import OrganisationInvites, MANAGER
 
 
-class OwnedSpeciesTestCase(TestCase):
+class OwnedSpeciesTestMixins:
+
     def setUp(self):
         taxon_rank = TaxonRank.objects.filter(
             name='Species'
@@ -49,10 +51,14 @@ class OwnedSpeciesTestCase(TestCase):
             scientific_name='SpeciesA'
         )
         user = User.objects.create_user(
-                username='testuserd',
-                password='testpasswordd'
-            )
-        self.organisation_1 = organisationFactory.create()
+            username='testuserd',
+            password='testpasswordd'
+        )
+        self.province = ProvinceFactory.create(name='Western Cape')
+        self.organisation_1 = organisationFactory.create(
+            name='OrganisationA',
+            province=self.province
+        )
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
             user=user,
@@ -65,7 +71,8 @@ class OwnedSpeciesTestCase(TestCase):
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
-            name='PropertyA'
+            name='PropertyA',
+            province=self.province
         )
 
         self.owned_species = OwnedSpeciesFactory.create_batch(
@@ -74,7 +81,7 @@ class OwnedSpeciesTestCase(TestCase):
 
         self.auth_headers = {
             'HTTP_AUTHORIZATION': 'Basic ' +
-            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+                                  base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
         }
         self.client = Client()
         session = self.client.session
@@ -87,6 +94,9 @@ class OwnedSpeciesTestCase(TestCase):
             spatial_data=self.spatial_data,
             context_layer_value='spatial filter test'
         )
+
+
+class OwnedSpeciesTestCase(OwnedSpeciesTestMixins, TestCase):
 
     def test_data_table_filter_by_species_name(self) -> None:
         """Test data table filter by species name"""
@@ -170,7 +180,7 @@ class OwnedSpeciesTestCase(TestCase):
         data = {
             "species": "SpeciesA",
             "start_year": year,
-            "end_year":year,
+            "end_year": year,
             "reports": "Activity_report",
             "activity": str(value.activity_type.id)
         }

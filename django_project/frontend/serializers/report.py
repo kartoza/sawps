@@ -209,7 +209,7 @@ class ActivityReportSerializer(
     def __init__(self, *args, **kwargs):
         activity = kwargs.pop('activity', None)
         if not activity:
-            raise ValueError("'activity_name' argument is required!")
+            raise ValueError("'activity' argument is required!")
         super().__init__(*args, **kwargs)
 
         base_fields = [

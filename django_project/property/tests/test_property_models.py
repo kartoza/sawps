@@ -3,6 +3,8 @@ from property.models import PropertyType, Province, ParcelType, Parcel, Property
 from property.factories import PropertyTypeFactory, ProvinceFactory, ParcelTypeFactory, ParcelFactory, PropertyFactory
 from django.db.utils import IntegrityError
 
+from stakeholder.factories import organisationFactory
+
 
 class ProvinceTestCase(TestCase):
     """Province test case"""
@@ -75,19 +77,35 @@ class PropertyTestCase(TestCase):
     """ Property test case."""
     @classmethod
     def setUpTestData(cls):
-        cls.property = PropertyFactory()
+        cls.province = ProvinceFactory(name='Western Cape')
+        cls.organisation = organisationFactory(name='CapeNature')
+        cls.property = PropertyFactory(
+            name='Test Property 1',
+            province=cls.province,
+            organisation=cls.organisation
+        )
     
     def test_create_property(self):
         """Test creating property """
         self.assertTrue(isinstance(self.property, Property))
         self.assertEqual(Property.objects.count(), 1)
         self.assertEqual(self.property.name, Property.objects.get(id=self.property.id).name)
+
+        self.assertEqual(
+            self.property.short_code,
+            'WCCATP11001'
+        )
     
     def test_update_property(self):
         """Test update property."""
         self.property.name = 'Property_1'
         self.property.save()
         self.assertEqual(Property.objects.get(id=self.property.id).name, 'Property_1')
+
+        self.assertEqual(
+            self.property.short_code,
+            'WCCATP11001'
+        )
 
 
     def test_delete_property(self):
