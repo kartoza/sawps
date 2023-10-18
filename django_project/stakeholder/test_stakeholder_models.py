@@ -229,11 +229,10 @@ class OrganizationTestCase(TestCase):
         self.assertEqual(Organisation.objects.filter(
             province__name="Limpopo").count(), 1)
 
-        # TODO: Confirm whether organisation short code would change if name/province is updated.
         # It is currently not updated.
         self.assertEqual(
             self.organization.short_code,
-            'CA1001'
+            'LICA1001'
         )
 
     def test_delete_organization(self):

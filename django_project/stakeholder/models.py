@@ -111,10 +111,10 @@ class Organisation(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if not self.short_code:
-            self.short_code = self.get_short_code()
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     self.short_code = self.get_short_code()
+    #     super().save(*args, **kwargs)
 
     def get_short_code(self):
         from frontend.utils.organisation import get_abbreviation
@@ -123,15 +123,20 @@ class Organisation(models.Model):
             self.province.name
         ) if self.province else ''
         organisation = get_abbreviation(self.name)
-        try:
-            last_digit = int(
-                Organisation.objects.latest('id').short_code[-4:]
-            )
-        except Organisation.DoesNotExist:
-            last_digit = 1000
 
-        last_digit += 1
-        return f"{province}{organisation}{last_digit}"
+        # # if organisation is created, retain the digit
+        # if self.pk:
+        #     digit = int(self.short_code[-4])
+        # else:
+        #     try:
+        #         digit = int(
+        #             Organisation.objects.latest('id').short_code[-4:] + 1
+        #         )
+        #     except Organisation.DoesNotExist:
+        #         digit = 1001
+        digit = "{:05d}".format(self.pk)
+
+        return f"{province}{organisation}{digit}"
 
 
 class UserProfile(models.Model):

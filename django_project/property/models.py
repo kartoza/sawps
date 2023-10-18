@@ -61,11 +61,10 @@ class Property(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        # TODO: Confirm whether short code would be updated on value change
-        if not self.short_code:
-            self.short_code = self.get_short_code()
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     self.short_code = self.get_short_code()
+    #     super().save(*args, **kwargs)
 
     def get_short_code(self):
         from frontend.utils.organisation import get_abbreviation
@@ -76,15 +75,19 @@ class Property(models.Model):
         organisation = get_abbreviation(self.organisation.name)
         property_abr = get_abbreviation(self.name)
 
-        # instead of using DB count, take next digit based on
-        # the latest digit
-        try:
-            last_digit = int(Property.objects.latest('id').short_code[-4:])
-        except Property.DoesNotExist:
-            last_digit = 1000
+        # # if property is created, retain the digit
+        # if self.pk:
+        #     digit = int(self.short_code[-4])
+        # else:
+        #     # instead of using DB count, take next digit based on
+        #     # the latest digit
+        #     try:
+        #         digit = int(Property.objects.latest('id').short_code[-4:]) + 1
+        #     except Property.DoesNotExist:
+        #         digit = 1001
+        digit = "{:05d}".format(self.pk)
 
-        last_digit += 1
-        return f"{province}{organisation}{property_abr}{last_digit}"
+        return f"{province}{organisation}{property_abr}{digit}"
 
 
 @receiver(post_save, sender=Property)
