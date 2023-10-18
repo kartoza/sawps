@@ -5,7 +5,6 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
-from activity.models import ActivityType
 from species.models import OwnedSpecies
 
 
@@ -176,24 +175,17 @@ class ActivityReportSerializer(
     """
 
     def __init__(self, *args, **kwargs):
-        activity_name = kwargs.pop('activity_name', None)
-        if not activity_name:
+        activity = kwargs.pop('activity', None)
+        if not activity:
             raise ValueError("'activity_name' argument is required!")
         super().__init__(*args, **kwargs)
-
-        try:
-            activity_fields = ActivityType.objects.get(
-                name__iexact=activity_name
-            ).export_fields
-        except ActivityType.DoesNotExist:
-            activity_fields = []
 
         base_fields = [
             "property_name", "scientific_name", "common_name",
             "year", "total", "adult_male", "adult_female",
             "juvenile_male", "juvenile_female"
         ]
-        valid_fields = base_fields + activity_fields
+        valid_fields = base_fields + activity.export_fields
         allowed = set(valid_fields)
         existing = set(self.fields.keys())
         for field_name in existing - allowed:
