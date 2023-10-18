@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, Grid, Typography } from "@mui/material";
-import ActivityDonutChart from "./ActivityDonutChart";
-import SpeciesLineChart from "./SpeciesLineChart";
 import DensityBarChart from "./DensityBarChart";
 import PopulationCategoryChart from "./PopulationCategoryChart";
 import { useAppSelector } from "../../../app/hooks";
@@ -9,7 +7,6 @@ import { RootState } from "../../../app/store";
 import PropertyAvailableBarChart from "./PropertyAvailable";
 import PropertyTypeBarChart from "./PropertyType";
 import AgeGroupBarChart from "./AgeGroupBarChart";
-import Card from "@mui/material/Card";
 import AreaAvailableLineChart from "./AreaAvailableLineChart";
 import axios from "axios";
 import html2canvas from "html2canvas";
@@ -20,16 +17,13 @@ import TotalCountPerActivity from "./TotalCountPerActivity";
 import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
+import PopulationTrend from "./PopulationTrend";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
 const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
-
-// national metrics and download button
-import GenerateChartImages from "../../../components/PdfReport/generateChartImage";
-import { Margin } from "@mui/icons-material";
 
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -51,7 +45,7 @@ const Metrics = () => {
     const contentRef = useRef(null);
 
     // Declare errorMessage as a state variable
-    const [showChats, setShowCharts] = useState(false);
+    const [showCharts, setShowCharts] = useState(false);
 
     const [hasEmptyPopulationTrend, setHasEmptyPopulationTrend] = useState(true);
     const [hasEmptyPopulationCategory, setHasEmptyPopulationCategory] = useState(true);
@@ -160,12 +154,12 @@ const Metrics = () => {
     }
 
     useEffect(() => {
-        if(propertyId && propertyId != ''){
+        if(selectedSpecies){
+            setShowCharts(true)
             fetchActivityPercentageData();
             fetchActivityTotalCount();
             fetchPopulationAgeGroupData();
             fetchAreaAvailableLineData();
-            setShowCharts(true)
         }else {
             setShowCharts(false);
         }
@@ -181,6 +175,7 @@ const Metrics = () => {
         setHasEmptyPopulationEstimateCategoryCount(true)
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
         handleHasEmptyAreaAvailable(true)
+
 
     }, [propertyId, startYear, endYear, selectedSpecies])
     const handleDownloadPdf = async () => {
@@ -204,8 +199,23 @@ const Metrics = () => {
         <Box>
             <Box className="charts-container">
 
-                {showChats ? (
+                {showCharts ? (
                         <Grid container spacing={2} ref={contentRef}>
+                            {selectedSpecies && hasEmptyPopulationTrend && (
+                                <Grid item xs={12} md={6}>
+                                    <PopulationTrend 
+                                        selectedSpecies={selectedSpecies} 
+                                        propertyId={propertyId} 
+                                        startYear={startYear} 
+                                        endYear={endYear} 
+                                        loading={loading} 
+                                        setLoading={setLoading}
+                                        onEmptyDatasets={handleEmptyPopulationTrend}
+                                    />
+                                </Grid>
+                            )}
+
+
                             {selectedSpecies && hasEmptyPopulationCategory && (
                                 <Grid item xs={12} md={6}>
                                     <PopulationCategoryChart 
@@ -298,9 +308,7 @@ const Metrics = () => {
                                             species_name={data?.common_name_varbatim}
                                             onEmptyDatasets={handleHasEmptyAreaAvailable}
                                         />
-                                    ) : (
-                                        null
-                                    )}
+                                    ) : null}
                                 </Grid>
                             ))}
                             
@@ -319,8 +327,6 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
-                               
-                            
                             
                             {selectedSpecies && hasEmptyProvinceCountPercentage && (
                                 <Grid item xs={12} md={6} 
@@ -441,10 +447,17 @@ const Metrics = () => {
                     </Grid>
                 ): (
                     // Render message to user
-                    <Grid container justifyContent="center" alignItems="center">
-                        <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                            Please select a property to fetch species data for.
-                        </Typography>
+                    <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
+                        <Grid item>
+                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                                Ready to explore?
+                            </Typography>
+                        </Grid>
+                        <Grid>
+                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                Choose a species to view the data as charts.
+                            </Typography>
+                        </Grid>
                     </Grid>
                 )}
 
@@ -454,7 +467,7 @@ const Metrics = () => {
             {/* {userRole === 'decision maker' && (
                 <GenerateChartImages />
             )} */}
-            {showChats && (
+            {showCharts && (
                 <Box className="download-btn-box" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
                     <Button onClick={handleDownloadPdf} variant="contained" color="primary">
                         Download data visualizations
