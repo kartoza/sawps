@@ -19,6 +19,7 @@ The Data Upload Page is a key component for managing and uploading your data. Th
 In the bottom left corner of the Data Upload Page, you'll find an interactive map that allows you to visualize spatial data. The map provides several options:
 
 ### Map Visualisation
+
 ![Map Visualisation](./img/panel-2.png)
 
 1. **Zoom In**: Click the plus (+) sign to zoom in on the map for a closer view of specific areas.
@@ -35,7 +36,6 @@ The map enhances your ability to work with spatial data and provides valuable in
 
 The Data Upload Page is an essential tool for managing your data, allowing you to input new records, categorize them with properties, and visualize spatial data using the interactive map. Whether you're adding new information or searching for existing records, this page provides a user-friendly experience to help you effectively handle your data.
 
-#
 ## Step 1
 
 ### Description
@@ -72,7 +72,6 @@ By completing the `Property Information Form`, you establish a foundational reco
 
 This step ensures that your data is organized and ready for further processing within the data upload.
 
-#
 ## Step 2
 
 ### Description
@@ -159,7 +158,6 @@ The popup window includes the following components:
 
 By following these steps, you can effectively upload data, define parcel boundaries, and save them within the `DATA UPLOAD`. This feature is crucial for geospatial data and mapping applications, ensuring your data is accurate and complete.
 
-#
 #### After selecting the parcel
 
 ![Upload Popup](./img/panel-8.png)
