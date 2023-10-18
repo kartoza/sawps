@@ -52,7 +52,8 @@ const SpeciesCountAsPercentage = (props: any) => {
     endYear,
     loading,
     setLoading,
-    activityData
+    activityData,
+    onEmptyDatasets
   } = props;
   const [speciesData, setSpeciesData] = useState<SpeciesDataItem[]>([]);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
@@ -65,6 +66,19 @@ const SpeciesCountAsPercentage = (props: any) => {
       )
       .then((response) => {
         if (response.data) {
+          if(response.data.length > 0){
+            const data = response.data; 
+            
+            data.forEach((item: { year: null; province: any; species: any; }) => {
+                if (item.year === null || item.year !== endYear || item.year !== startYear) {
+                    onEmptyDatasets(false)
+                }
+                if(startYear === item.year || endYear === item.year){
+                  onEmptyDatasets(true)
+                }
+            });
+            
+          }else onEmptyDatasets(false)
           setSpeciesData(response.data);
           setLoading(false);
         }
@@ -132,11 +146,11 @@ const SpeciesCountAsPercentage = (props: any) => {
 
   
   // custom styling for donut charts
-  const chartContainerStyle: React.CSSProperties = {
+   const chartContainerStyle: React.CSSProperties = {
     position: "relative",
     backgroundImage: `url(${backgroundImageUrl})`,
-    backgroundSize: "20% 24%", // width and height of image
-    backgroundPosition: "19% 57%", //horizontal and vertical position respectively
+    backgroundSize: "18% 20%", // width and height of image
+    backgroundPosition: "19.6% 57%", //horizontal and vertical position respectively
     backgroundRepeat: "no-repeat",
     whiteSpace: "pre-wrap", // Allow text to wrap
   };

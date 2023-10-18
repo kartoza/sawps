@@ -34,9 +34,22 @@ const PopulationEstimateAsPercentage = (props: any) => {
     endYear,
     loading,
     setLoading,
+    activityData,
+    onEmptyDatasets
   } = props;
 
   const [speciesData, setSpeciesData] = useState<any>({});
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      }
+
+    }
+  }, [activityData]);
 
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
@@ -46,6 +59,11 @@ const PopulationEstimateAsPercentage = (props: any) => {
       )
       .then((response) => {
         if (response.data) {
+          if (Object.keys(response.data).length === 0) {
+              onEmptyDatasets(false)
+          } else {
+              onEmptyDatasets(true)
+          }
           setSpeciesData(response.data);
           setLoading(false);
         }
@@ -59,13 +77,7 @@ const PopulationEstimateAsPercentage = (props: any) => {
   useEffect(() => {
     fetchPopulationEstimateCategoryCount();
   }, [propertyId, startYear, endYear, selectedSpecies]);
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-
-
-  if (!selectedSpecies) {
-    return null; // Return null if the condition fails
-  }
-
+ 
   // Initialize variables
   const labels: string[] = [];
   const data: number[] = [];
@@ -107,7 +119,6 @@ const PopulationEstimateAsPercentage = (props: any) => {
     chartTitle = "Please select a species for the chart to show available data";
   } else if (Object.keys(speciesData).length === 0) {
     chartTitle = "No data available for current filter selections";
-    return null;
   }
 
   const options = {
@@ -146,15 +157,15 @@ const PopulationEstimateAsPercentage = (props: any) => {
     },
   };
 
-  // custom styling for donut charts
-  const chartContainerStyle: React.CSSProperties = {
-    position: "relative",
-    backgroundImage: `url(${backgroundImageUrl})`,
-    backgroundSize: "20% 24%", // width and height of image
-    backgroundPosition: "19% 57%", //horizontal and vertical position respectively
-    backgroundRepeat: "no-repeat",
-    whiteSpace: "pre-wrap", // Allow text to wrap
-  };
+ // custom styling for donut charts
+ const chartContainerStyle: React.CSSProperties = {
+  position: "relative",
+  backgroundImage: `url(${backgroundImageUrl})`,
+  backgroundSize: "18% 20%", // width and height of image
+  backgroundPosition: "19.6% 57%", //horizontal and vertical position respectively
+  backgroundRepeat: "no-repeat",
+  whiteSpace: "pre-wrap", // Allow text to wrap
+};
 
     return (
       <>
