@@ -179,7 +179,7 @@ class SpeciesTrend(APIView):
                     row.get('owned_species__taxon').scientific_name,
                     row.get('year'),
                     row.get('total'),
-                    survey_method.get('name') if survey_method else '',
+                    survey_method.name if survey_method else '',
                     'Open' if owned_species.property.open else 'Closed',
                     row.get('owned_species__property__property_type').name,
                     row.get('owned_species').property.property_size_ha,
