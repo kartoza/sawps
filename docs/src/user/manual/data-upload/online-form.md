@@ -78,13 +78,47 @@ The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections,
 
 2. **Introduction/Reintroduction**: The `Introduction/Reintroduction` section displays the table and form. table for relevant data in a structured tabular format, and  form for entering detailed information related to species introduction or reintroduction.
 
+    #### Introduction/Reintroduction Table and Form
+
+    ![Introduction/Reintroduction Table and Form](./img/online-form-3.png)
+
+    1. **Introduction/Reintroduction Table**: The `Introduction/Reintroduction` table displays relevant data in a structured tabular format, making it easy to review and manage your introduction and reintroduction records.
+
+    2. **Edit Icon**: This icon allows you to edit the data of the row.
+
+    3. **Delete Icon**: This icon allows you to delete the data of the row
+
+    4. **Rows per page**: This is a dropdown for choosing the number of row to display in the table.
+
+    5. **Adult Males**: Enter the count of adult males.
+
+    6. **Adult Females**: Specify the count of adult females.
+
+    7. **Juvenile Males**: Provide the count of juvenile males.
+
+    8. **Juvenile Females**: Record the count of juvenile females.
+
+    9. **Total Count**: The total count field will automatically calculate based on the counts entered for adult males, adult females, juvenile males, and juvenile females.
+
+    10. **Founder Population**: Indicate whether the introduced or reintroduced group is considered a founder population. Use the radio buttons to select `Yes` or `No`. This is mendatory.
+
+    11. **Event**: Select the appropriate event type from the dropdown menu. Choose the event category that best describes the introduction or reintroduction process. This field is mendatory.
+
+    12. **Source**: Describe the source of the introduced or reintroduced population. This field is mendatory.
+
+    13. **Permit Number**: Enter the permit number.
+
+    14. **Notes**: Include any additional notes or comments relevant to the introduction or reintroduction event.
+
+    15. **Add**: Click the `ADD` button to save the information entered into the form. This action will record the introduction or reintroduction event with the specified details.
+
 3. **Off-take**: The `Off-take` section displays the table and form. Table provides a clear overview of your off-take data, and form for input data related to species off-take.
 
-4. **Save Draft**: Use the `Save Draft` button to save your progress and store the data you've entered in the forms. This allows you to return to your work at a later time.
+4. **Save Draft**: Use the `SAVE DRAFT` button to save your progress and store the data you've entered in the forms. This allows you to return to your work at a later time.
 
-5. **Back**: The `Back` button enables you to go back to the previous step if you need to review or edit data from Step 1.
+5. **Back**: The `BACK` button enables you to go back to the previous step if you need to review or edit data from Step 1.
 
-6. **Next**: Click `Next` to advance to the next step in the data upload process.
+6. **Next**: Click `NEXT` to advance to the next step in the data upload process.
 
 ## Summary
 
