@@ -71,12 +71,6 @@ class OwnedSpeciesTestCase(TestCase):
 
         self.owned_species = OwnedSpeciesFactory.create_batch(
             5, taxon=self.taxon, user=user, property=self.property)
-        self.population_per_activity = AnnualPopulationPerActivityFactory.create(
-            taxon=self.taxon,
-            user=user,
-            property=self.property,
-            year=2000
-        )
         self.url = reverse('data-table')
 
         self.auth_headers = {
@@ -95,7 +89,7 @@ class OwnedSpeciesTestCase(TestCase):
             context_layer_value='spatial filter test'
         )
 
-    def test_data_table_filter_by_species_name_filtered_activity(self) -> None:
+    def test_data_table_filter_by_species_name(self) -> None:
         """Test data table filter by species name"""
         url = self.url
         value = self.owned_species[0].annualpopulationperactivity_set.first()
@@ -105,28 +99,63 @@ class OwnedSpeciesTestCase(TestCase):
             "reports": "Property_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
-        # self.assertEqual(len(response.data[0]["Property_report"], 1))
+        self.assertEqual(len(response.data[0]["Property_report"]), 1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]["Property_report"][0]["scientific_name"],
             "SpeciesA"
         )
 
-    def test_data_table_filter_by_species_name_all_activity(self) -> None:
-        """Test data table filter by species name"""
+    # def test_data_table_filter_by_species_name_all_activity(self) -> None:
+    #     """Test data table filter by species name"""
+    #     url = self.url
+    #     data = {
+    #         "species": "SpeciesA",
+    #         "activity": 'all',
+    #         "reports": "Property_report"
+    #     }
+    #     response = self.client.get(url, data, **self.auth_headers)
+    #     self.assertEqual(len(response.data[0]["Property_report"]), 5)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(
+    #         response.data[0]["Property_report"][0]["scientific_name"],
+    #         "SpeciesA"
+    #     )
+    #
+    # def test_data_table_filter_by_species_name_no_activity(self) -> None:
+    #     """Test data table filter by species name"""
+    #     url = self.url
+    #     data = {
+    #         "species": "SpeciesA",
+    #         "activity": '',
+    #         "reports": "Property_report"
+    #     }
+    #     response = self.client.get(url, data, **self.auth_headers)
+    #     self.assertEqual(len(response.data), 0)
+
+    def test_filter_all_reports_by_all_activity_type(self) -> None:
+        """Test data table filter by activity name"""
         url = self.url
+        self.owned_species[0].annualpopulationperactivity_set.all().delete()
+        self.owned_species[1].annualpopulationperactivity_set.all().delete()
+
         data = {
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Property_report"
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(len(response.data[0]["Property_report"], 2))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data[0]["Property_report"][0]["scientific_name"],
-            "SpeciesA"
-        )
+
+        # We delete 2 population per activity records, now it remains only 3
+        self.assertEqual(len(response.data[0]["Activity_report"]), 3)
+
+        # Show all property report (5)
+        self.assertEqual(len(response.data[1]["Property_report"]), 5)
+        # Show all sampling report (5)
+        self.assertEqual(len(response.data[2]["Sampling_report"]), 5)
+        # Show all species report (5)
+        self.assertEqual(len(response.data[3]["Species_report"]), 5)
 
     def test_data_table_filter_by_activity_type(self) -> None:
         """Test data table filter by activity type"""
@@ -242,8 +271,6 @@ class OwnedSpeciesTestCase(TestCase):
             ],
             "SpeciesA"
         )
-
-
 
 
 class NationalUserTestCase(TestCase):
