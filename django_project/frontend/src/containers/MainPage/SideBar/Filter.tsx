@@ -131,10 +131,10 @@ function Filter(props: any) {
             roleExists("National data consumer") ? {
                 id: "Province report",
                 name: "Province report"
-            } :  roleExists("Regional data consumer") ? {} : {
-                id: "Province report",
-                name: "Province report"
-            },
+            } :  roleExists("National data scientist") ? {
+                id: "Sampling report",
+                name: "Sampling report"
+            } : {},
             {
                 id: "Species report",
                 name: "Species report"
