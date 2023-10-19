@@ -11,6 +11,7 @@ def calculate_species_count_per_province(
         queryset,
         species_name: str
 ) -> Dict[str, int]:
+    result_data = []  # Initialize result_data as an empty list
     property_ids = [query.id for query in queryset]
 
     # Filter properties by the provided property ids
