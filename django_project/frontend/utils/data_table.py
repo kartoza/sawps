@@ -34,7 +34,6 @@ from django.conf import settings
 
 logger = logging.getLogger('sawps')
 
-
 ACTIVITY_REPORT = 'Activity_report'
 PROPERTY_REPORT = 'Property_report'
 SAMPLING_REPORT = 'Sampling_report'
@@ -342,31 +341,31 @@ def national_level_species_report(
     report_data = OwnedSpecies.objects. \
         filter(**filters, taxon__in=queryset). \
         values(
-        'taxon__common_name_varbatim',
-        'taxon__scientific_name'
-    ). \
+            'taxon__common_name_varbatim',
+            'taxon__scientific_name'
+        ). \
         annotate(
-        property_area=Sum("property__property_size_ha"),
-        total_area_available=Sum("area_available_to_species"),
-        adult_male_total_population=Sum(
-            "annualpopulation__adult_male"
-        ),
-        adult_female_total_population=Sum(
-            "annualpopulation__adult_female"
-        ),
-        sub_adult_male_total_population=Sum(
-            "annualpopulation__sub_adult_male"
-        ),
-        sub_adult_female_total_population=Sum(
-            "annualpopulation__sub_adult_female"
-        ),
-        juvenile_male_total_population=Sum(
-            "annualpopulation__juvenile_male"
-        ),
-        juvenile_female_total_population=Sum(
-            "annualpopulation__juvenile_female"
-        ),
-    )
+            property_area=Sum("property__property_size_ha"),
+            total_area_available=Sum("area_available_to_species"),
+            adult_male_total_population=Sum(
+                "annualpopulation__adult_male"
+            ),
+            adult_female_total_population=Sum(
+                "annualpopulation__adult_female"
+            ),
+            sub_adult_male_total_population=Sum(
+                "annualpopulation__sub_adult_male"
+            ),
+            sub_adult_female_total_population=Sum(
+                "annualpopulation__sub_adult_female"
+            ),
+            juvenile_male_total_population=Sum(
+                "annualpopulation__juvenile_male"
+            ),
+            juvenile_female_total_population=Sum(
+                "annualpopulation__juvenile_female"
+            ),
+        )
     return NationalLevelSpeciesReport(report_data, many=True).data
 
 
@@ -484,7 +483,7 @@ def write_report_to_rows(queryset, request):
         }
 
         if request.GET.get('file') == 'xlsx':
-            filename = 'data_report'+'.' + request.GET.get('file')
+            filename = 'data_report' + '.' + request.GET.get('file')
             path_file = os.path.join(path, filename)
             if os.path.exists(path_file):
                 os.remove(path_file)
@@ -500,17 +499,17 @@ def write_report_to_rows(queryset, request):
                         rows = report_functions[report_name](queryset, request)
                         dataframe = pd.DataFrame(rows)
                         dataframe.to_excel(
-                                writer,
-                                sheet_name=report_name,
-                                index=False
-                            )
+                            writer,
+                            sheet_name=report_name,
+                            index=False
+                        )
                 return path_file
         csv_reports = []
         for report_name in reports_list:
             if report_name in report_functions:
                 rows = report_functions[report_name](queryset, request)
                 dataframe = pd.DataFrame(rows)
-                filename = "data_report_"+report_name
+                filename = "data_report_" + report_name
                 filename = filename + '.' + request.GET.get('file')
                 path_file = os.path.join(path, filename)
 
@@ -529,7 +528,8 @@ def write_report_to_rows(queryset, request):
 
 def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
     """
-    Generate property reports for csv and excel file based on the user's request.
+    Generate property reports for csv and Excel file
+    based on the user's request.
     Params:
         queryset (QuerySet): Properties queryset to generate reports from.
         request: The HTTP request object.
@@ -547,7 +547,8 @@ def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         **filters
     )
     years = activity_data.order_by().values_list('year', flat=True).distinct()
-    properties = activity_data.order_by().values_list('owned_species__property__name', flat=True).distinct()
+    properties = activity_data.order_by(
+    ).values_list('owned_species__property__name', flat=True).distinct()
     rows = []
 
     for year in list(years):
@@ -571,18 +572,23 @@ def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
                 juvenile_male_field = activity.name + "_juvenile_male"
                 juvenile_female_field = activity.name + "_juvenile_female"
                 for activity_data in serializer.data:
-                    activity_report_one_row['property_name'] = activity_data['property_name']
-                    activity_report_one_row['scientific_name'] = activity_data['scientific_name']
-                    activity_report_one_row['common_name'] = activity_data['common_name']
+                    activity_report_one_row['property_name'] = \
+                        activity_data['property_name']
+                    activity_report_one_row['scientific_name'] = \
+                        activity_data['scientific_name']
+                    activity_report_one_row['common_name'] = \
+                        activity_data['common_name']
                     activity_report_one_row['year'] = year
-                    activity_report_one_row[total_field] = activity_data['total']
-                    activity_report_one_row[adult_male_field] = activity_data['adult_male']
-                    activity_report_one_row[juvenile_male_field] = activity_data['adult_female']
-                    activity_report_one_row[adult_female_field] = activity_data['juvenile_male']
-                    activity_report_one_row[juvenile_female_field] = activity_data['juvenile_female']
+                    activity_report_one_row[total_field] = \
+                        activity_data['total']
+                    activity_report_one_row[adult_male_field] = \
+                        activity_data['adult_male']
+                    activity_report_one_row[juvenile_male_field] = \
+                        activity_data['adult_female']
+                    activity_report_one_row[adult_female_field] = \
+                        activity_data['juvenile_male']
+                    activity_report_one_row[juvenile_female_field] = \
+                        activity_data['juvenile_female']
         rows.append(activity_report_one_row)
 
     return rows
-
-
-
