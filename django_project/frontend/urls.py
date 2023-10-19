@@ -67,6 +67,8 @@ from frontend.api_views.upload import (
     BoundaryFileUpload,
 )
 from frontend.views.base_view import get_user_notifications
+
+from .api_views.download_data import DownloadData
 from .api_views.user import UserInfoAPIView
 
 from .views.about import AboutView
@@ -396,5 +398,9 @@ urlpatterns = [
         'api/user-info/',
         UserInfoAPIView.as_view(),
         name='user-info-api'
+    ),
+    path('api/download-data/',
+         DownloadData.as_view(),
+         name='download-report-data'
     )
 ]
