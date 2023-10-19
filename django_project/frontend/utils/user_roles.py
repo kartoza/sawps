@@ -113,7 +113,9 @@ def get_user_permissions(user: User) -> List[str]:
 
     for group in groups:
         allowed_permission = set(
-            group.permissions.values_list('name', flat=True)
+            group.permissions.filter(
+                id__in=ext_group_permissions
+            ).values_list('name', flat=True)
         )
         permissions = permissions.union(allowed_permission)
 
