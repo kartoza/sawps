@@ -78,6 +78,47 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
 9. **Activity List**: Show the name of the selected activities.
 
+     ##### Activity Report Filter
+
+     ![Reports Type Filter](./img/reports-4.png)
+
+     1. **Activity Report**: Selected `Activity report`.
+     ##### Activity Report Tables
+
+     ![Reports Type Table](./img/reports-5.png)
+
+     ##### Activity Types
+
+     The Activity Report includes information for the following activity types:
+
+     1. **Translocation (Intake)**: This table provides details on translocation activities related to the intake of species, for properties per year.
+
+     2. **Translocation (Offtake)**: This table displays information about translocation activities related to off-take,  for properties per year.
+
+     3. **Planned Hunt/Cull**: This table contains data related to planned hunting or culling activities,  for properties per year.
+
+     4. **Planned Euthanasia/DCA**: This table presents information on planned euthanasia or disease control activities, for properties per year.
+
+     5. **Unplanned/Illegal Hunting**: This table offers insights into unplanned or illegal hunting activities,  for properties per year.
+
+     ##### Table Columns
+
+     Each of the tables associated with the activity types contains the following columns:
+
+     - **Property Name**: The name of the property where the activity took place.
+     - **Scientific Name**: The scientific name of the species involved in the activity.
+     - **Common Name**: The common name of the species.
+     - **Year**: The year in which the activity occurred.
+     - **Total**: The total count of the species involved in the activity.
+     - **Adult Male**: The count of adult male individuals.
+     - **Adult Female**: The count of adult female individuals.
+     - **Juvenile Male**: The count of juvenile male individuals.
+     - **Juvenile Female**: The count of juvenile female individuals.
+
+     ##### Summary
+
+     The Activity Report is a valuable tool for generating detailed reports on a variety of wildlife management activities. It provides specific information for each activity type, including property details, species information, and counts related to the activities. This report allows for a comprehensive view of wildlife management efforts, enabling informed decision-making and analysis of data related to different activities.
+
 ### Summary
 
 The reports table page is a comprehensive platform for exploring, analysing, and interacting with your data. With filters, column search, and data export options, you have the tools necessary to customise your data view, find specific information, and export data in the format that suits your needs.
