@@ -54,6 +54,30 @@ Activity Report columns consisted of base columns and custom columns.
 
 See Activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
 
+### Reports Page with Reports Filter
+
+#### Report Type Filter
+
+![Reports Type](./img/reports-3.png)
+
+1. **Report Type**: Report type filter with the reports type.
+
+2. **Species**: The species icon displays with the scientific name of the selected species.
+
+3. **Organisation**: The organisation icon displays with the count of selected organisations.
+
+4. **Property**: The property icon displays with the count of selected properties.
+
+5. **Clock Icon**: The clock icon serves as a visual indicator for the year range filter with year range.
+
+6. **Activity**: The activity icon displays with the count of selected activities.
+
+7. **Organisation List**: Show the name of the selected organisations.
+
+8. **Property List**: Show the name of the selected properties.
+
+9. **Activity List**: Show the name of the selected activities.
+
 ### Summary
 
 The reports table page is a comprehensive platform for exploring, analysing, and interacting with your data. With filters, column search, and data export options, you have the tools necessary to customise your data view, find specific information, and export data in the format that suits your needs.
