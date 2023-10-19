@@ -221,38 +221,22 @@ const Metrics = () => {
 
     const handleDownloadPdf = async () => {
         setIconsHidden(true);
-      
-        const container = contentRefAllCharts.current; // The container that holds all the content
-      
-        if (!container) return;
-      
-        const pdf = new jsPDF();
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-      
-        // Function to capture the container's content
-        const captureContainer = async (container: HTMLElement) => {
-          const canvas = await html2canvas(container);
-          const imageDataUrl = canvas.toDataURL('image/png');
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-          pdf.addImage(imageDataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        };
-      
-        // Calculate the number of pages needed
-        const totalHeight = container.scrollHeight;
+        const content = contentRefAllCharts.current;
+        if (!content) return;
+        const totalHeight = content.scrollHeight;
         const windowHeight = window.innerHeight;
-      
+        const pdf = new jsPDF();
         for (let offsetY = 0; offsetY < totalHeight; offsetY += windowHeight) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          if (offsetY > 0) {
-            pdf.addPage();
-          }
-          container.scrollTop = offsetY;
-          await captureContainer(container);
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            const canvas = await html2canvas(content);
+            const imageDataUrl = canvas.toDataURL('image/png');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            pdf.addImage(imageDataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
         }
-      
         pdf.save('metrics.pdf');
         setIconsHidden(false);
-      };
+    }
 
 
     // Check if the user's roles allow them to view charts
