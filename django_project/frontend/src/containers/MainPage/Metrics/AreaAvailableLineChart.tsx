@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid } from "@mui/material";
 import { Line } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
@@ -9,7 +9,16 @@ import "./index.scss";
 Chart.register(CategoryScale);
 
 const AreaAvailableLineChart = (props: any) => {
-    const { loading, areaData, species_name } = props
+    const { 
+        selectedSpecies,
+        propertyId,
+        startYear,
+        endYear,
+        loading,
+        areaData,
+        species_name,
+        onEmptyDatasets 
+    } = props
 
     // Extract the species name
     const speciesName = species_name ? species_name : '';
@@ -37,6 +46,43 @@ const AreaAvailableLineChart = (props: any) => {
             }
         ]
     }
+
+    // incase there is a single label and single value
+    interface AreaDataValueB {
+        labels: number[];
+        datasets: any[];
+      }
+
+    const areaDataB: AreaDataValueB = AreaDataValue
+      
+      if (areaDataB.labels.length === 1) {
+        const year = areaDataB.labels[0];
+        if (!isNaN(year)) {
+          // Modify the data in place by adding the previous year to labels
+          areaDataB.labels = [year - 1, year];
+        }
+      }
+
+      useEffect(() => {
+        let render_chart = true
+        let override_render_chart = false
+        areaDataB.datasets.forEach(dataset => {
+            if (dataset.data.length === 0) {
+            render_chart = false
+            }else {
+                render_chart = true
+                override_render_chart = true 
+            }
+        });
+        if (!render_chart && !override_render_chart) onEmptyDatasets(false)
+        else onEmptyDatasets(true)
+      }, [propertyId, startYear, endYear, selectedSpecies,areaData]);
+
+      areaDataB.datasets.forEach(dataset => {
+        if (dataset.data.length === 1) {
+          dataset.data.unshift(0);
+        }
+      });
 
     const AreaOptions = {
         tension: 0.5,

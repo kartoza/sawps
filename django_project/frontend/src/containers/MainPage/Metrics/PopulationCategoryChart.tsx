@@ -29,6 +29,7 @@ const PopulationCategoryChart = (props: any) => {
       setLoading,
       populationData,
       setPopulationData,
+      onEmptyDatasets
     } = props;
   
     const fetchPopulationCategoryData = () => {
@@ -40,6 +41,11 @@ const PopulationCategoryChart = (props: any) => {
         .then((response) => {
           setLoading(false);
           if (response.data) {
+            if (Object.keys(response.data).length === 0) {
+                onEmptyDatasets(false)
+            } else {
+                onEmptyDatasets(true)
+            }
             setPopulationData(response.data);
           }
         })
@@ -104,8 +110,17 @@ const PopulationCategoryChart = (props: any) => {
         });
     }
 
-    // Sort labels in ascending order
-    labels.sort((a: any, b: any) => parseInt(a) - parseInt(b));
+    // Sort labels in ascending order (lowest year first)
+    // Custom sorting function to handle numerical ranges
+    const customSort = (a: string, b: string): number => {
+        const [minA, maxA] = a.split(/-|>/).map((num) => parseInt(num, 10) || 0);
+        const [minB, maxB] = b.split(/-|>/).map((num) => parseInt(num, 10) || 0);
+    
+      // Compare based on the maximum values
+      return maxA - maxB;
+    };
+
+    labels.sort(customSort);
 
     // Sort datasets in descending order
     newDatasets.sort((a, b) => parseInt(b.label) - parseInt(a.label));

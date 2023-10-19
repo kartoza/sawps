@@ -17,6 +17,7 @@ const DensityBarChart = (props: any) => {
         setLoading,
         densityData,
         setDensityData,
+        onEmptyDatasets
     } = props;
 
 
@@ -30,7 +31,10 @@ const DensityBarChart = (props: any) => {
                 .then((response) => {
                     setLoading(false);
                     if (response.data) {
-                        const filteredData = response.data.filter((item: any) => item.density.density !== null);
+                        const filteredData = response.data.filter((item: any) => (item.density.density !== null || item.density.density.length !== 0));
+                        if(filteredData.length > 0){
+                            onEmptyDatasets(true)
+                        }else onEmptyDatasets(false)
                         setDensityData(filteredData.length > 0 ? filteredData : []);
                     }
                 })
@@ -111,6 +115,9 @@ const DensityBarChart = (props: any) => {
 
     // Remove duplicate years
     const uniqueYears = Array.from(new Set(yearsInData));
+
+    // Sort the years from highest to lowest
+    uniqueYears.sort((a: number, b: number) => b - a);
 
     // Create datasets for each year using available colors
     const datasets = uniqueYears.map((year: any, index: number) => {
