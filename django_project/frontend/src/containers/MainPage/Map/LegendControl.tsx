@@ -6,19 +6,19 @@ function LegendPlaceholder(props: any) {
     return (
       <div className='legend-placeholder'>
         <div className='legend-header'>
-          LEGEND
+          SPECIES NAME POPULATION
         </div>
         <div className='legend-item'>
-          Properties
+          1 - 15
         </div>
         <div className='legend-item'>
-          Rivers
+          16 - 20
         </div>
         <div className='legend-item'>
-          Roads
+          21 - 25
         </div>
         <div className='legend-item'>
-          Places
+          26 - 30
         </div>
       </div>
     )

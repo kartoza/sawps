@@ -13,6 +13,8 @@ const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
     'holding': 12,
     'farm_portion': 12
 }
+export const MIN_PROVINCE_ZOOM_LEVEL = 5
+export const MAX_PROVINCE_ZOOM_LEVEL = 8
 
 /**
  * Determine layer visibility based on selected context layers

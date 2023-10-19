@@ -9,6 +9,7 @@ import io
 import gzip
 from django.core.cache import cache
 from django.db import connection
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from rest_framework.views import APIView
@@ -62,9 +63,6 @@ def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
 class MapSessionBase(APIView):
 
     def generate_session(self):
-        current_organisation_id = get_current_organisation_id(
-            self.request.user
-        ) or 0
         session_uuid = self.request.GET.get('session', None)
         session = MapSession.objects.filter(uuid=session_uuid).first()
         if session is None:
@@ -75,28 +73,30 @@ class MapSessionBase(APIView):
             )
         if self.can_view_properties_layer():
             generate_map_view(
-                session, False, current_organisation_id,
-                self.request.GET.get('start_year', None),
-                self.request.GET.get('end_year', None),
-                self.request.GET.get('species', None),
-                self.request.GET.get('organisation', None),
-                self.request.GET.get('activity', None),
-                self.request.GET.get('spatial_filter_values', None)
+                session, False, 0,
+                self.request.data.get('start_year', None),
+                self.request.data.get('end_year', None),
+                self.request.data.get('species', None),
+                self.request.data.get('organisation', None),
+                self.request.data.get('activity', None),
+                self.request.data.get('spatial_filter_values', None),
+                self.request.data.get('property', None)
             )
         if self.can_view_province_layer():
             generate_map_view(
-                session, True, current_organisation_id,
-                self.request.GET.get('start_year', None),
-                self.request.GET.get('end_year', None),
-                self.request.GET.get('species', None),
-                self.request.GET.get('organisation', None),
-                self.request.GET.get('activity', None),
-                self.request.GET.get('spatial_filter_values', None)
+                session, True, 0,
+                self.request.data.get('start_year', None),
+                self.request.data.get('end_year', None),
+                self.request.data.get('species', None),
+                self.request.data.get('organisation', None),
+                self.request.data.get('activity', None),
+                self.request.data.get('spatial_filter_values', None),
+                self.request.data.get('property', None)
             )
         return session
 
     def get_species_filter(self):
-        return self.request.GET.get('species', None)
+        return self.request.data.get('species', None)
 
     def can_view_properties_layer(self):
         # TODO: check if user can view properties layer
@@ -143,7 +143,7 @@ class MapStyles(MapSessionBase):
     def get(self, *args, **kwargs):
         """Retrieve map styles."""
         theme = self.request.GET.get('theme', 'light')
-        session = self.generate_session()
+        session = self.get_current_session_or_404()
         styles = get_map_template_style(
             self.request,
             str(session.uuid),
@@ -463,10 +463,10 @@ class MapAuthenticate(APIView):
 
 
 class PopulationCountLegends(MapSessionBase):
-    """API to return categories/legend of population count."""
+    """API to iniitalize map session based on user filters."""
     permission_classes = [IsAuthenticated]
 
-    def get(self, *args, **kwargs):
+    def post(self, *args, **kwargs):
         species = self.get_species_filter()
         if species is None:
             return Response(status=400, data='Species filter is mandatory!')

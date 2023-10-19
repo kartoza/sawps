@@ -16,7 +16,8 @@ export interface MapStateInterface {
     theme: MapTheme;
     provinceCounts: PopulationCountLegend[];
     propertiesCounts: PopulationCountLegend[];
-    dynamicMapSession: string;
+    dynamicMapSession: string; // this session is used for filtering of the property
+    selectedSpeciesName: string;
 }
 
 const initialState: MapStateInterface = {
@@ -28,7 +29,8 @@ const initialState: MapStateInterface = {
     theme: MapTheme.Light,
     provinceCounts: [],
     propertiesCounts: [],
-    dynamicMapSession: ''
+    dynamicMapSession: '',
+    selectedSpeciesName: ''
 }
 
 /* reset all selectedParcels */

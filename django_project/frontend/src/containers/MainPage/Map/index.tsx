@@ -47,6 +47,7 @@ import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
 import LoadingIndicatorControl from './LoadingIndicatorControl';
 import {useGetUserInfoQuery} from "../../../services/api";
+import LegendControl from './LegendControl';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_PROPERTIES_LEGENDS_URL = '/api/map/legends/properties/'
@@ -117,6 +118,7 @@ export default function Map() {
   const provinceCounts = useAppSelector((state: RootState) => state.mapState.provinceCounts)
   const propertiesCounts = useAppSelector((state: RootState) => state.mapState.propertiesCounts)
   const dynamicMapSession = useAppSelector((state: RootState) => state.mapState.dynamicMapSession)
+  // Map Legends reference
 
   const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
@@ -378,6 +380,7 @@ export default function Map() {
       })
       map.current.addControl(mapNavControl.current, 'bottom-left')
       map.current.addControl(mapNavControl.current.getExportControl(), 'bottom-left')
+      map.current.addControl(new LegendControl(), 'bottom-right')
       map.current.on('load', () => {
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
@@ -563,16 +566,27 @@ export default function Map() {
   /* Called when filters are changed */
   useEffect(() => {
     // rebuild query parameters to enable choropleth layers
-    let _queryParams = `start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`
+    let _queryParams = ''
     if (dynamicMapSession) {
-      _queryParams = _queryParams + `&session=${dynamicMapSession}`
+      _queryParams = `session=${dynamicMapSession}`
     }
-    console.log('rebuild query parameters ', _queryParams)
-    fetchPopulationCountsLegends(_queryParams, selectedSpecies.length > 0)
-  }, [mapTheme, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues])
+    let _data = {
+      'start_year': startYear,
+      'end_year': endYear,
+      'species': selectedSpecies,
+      'organisation': organisationId,
+      'activity': activityId,
+      'spatial_filter_values': spatialFilterValues,
+      'property': propertyId 
+    }
+    console.log('rebuild query parameters ', _queryParams, _data)
+    fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies.length > 0)
+  }, [mapTheme, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
-  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, showPopulationCount: boolean) => {
-    axios.get(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`).then((response) => {
+  /* Use debounce+UseMemo to avoid updating filter (materialized view) frequently when filter is changed */
+  /* useMemo is used to avoid the debounce function is recreated during each render (unless MapTheme is changed) */
+  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, bodyData: any, showPopulationCount: boolean) => {
+    axios.post(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`, bodyData).then((response) => {
       if (response.data) {
         let _session = response.data['session']
         if (map.current) {
@@ -592,6 +606,7 @@ export default function Map() {
             'date': Date.now()
           }))
         } else {
+          // initial map state will not have DynamicMapSession, hence map initialization depends on filters/mapTheme changed
           console.log('set dynamic map session here ', _session)
           dispatch(setDynamicMapSession(_session))
         }
@@ -600,7 +615,6 @@ export default function Map() {
       console.log(error)
     })
   }, 400), [mapTheme])
-
 
   return (
       <div className="map-wrap">

@@ -168,7 +168,8 @@ def get_query_condition_for_population_query(
         filter_species_name: str,
         filter_organisation: str,
         filter_activity: str,
-        filter_spatial: str):
+        filter_spatial: str,
+        filter_property: str):
     """Generate query condition from filters dynamic VT."""
     sql_conditions = []
     query_values = []
@@ -181,13 +182,17 @@ def get_query_condition_for_population_query(
         query_values.append(filter_end_year)
     if filter_organisation:
         sql_conditions.append('p.organisation_id IN %s')
-        query_values.append(ast.literal_eval('(' + filter_organisation + ')'))
+        query_values.append(ast.literal_eval('(' + filter_organisation + ',)'))
     else:
-        sql_conditions.append('p.organisation_id=%s')
-        query_values.append(organisation_id)
+        sql_conditions.append('p.organisation_id = any(ARRAY[]::bigint[])')
     if filter_activity:
-        sql_conditions.append('aa.name=%s')
-        query_values.append(filter_activity)
+        sql_conditions.append('ap.activity_type_id IN %s')
+        query_values.append(ast.literal_eval('(' + filter_activity + ',)'))
+    if filter_property:
+        sql_conditions.append('p.id IN %s')
+        query_values.append(ast.literal_eval('(' + filter_property + ',)'))
+    else:
+        sql_conditions.append('p.id = any(ARRAY[]::bigint[])')
     if filter_spatial:
         spatial_filter_values = tuple(
             filter(None, filter_spatial.split(','))
@@ -217,16 +222,13 @@ def get_population_query(
         filter_species_name: str,
         filter_organisation: str,
         filter_activity: str,
-        filter_spatial: str):
+        filter_spatial: str,
+        filter_property: str):
     """Generate query for population count."""
     where_sql, query_values = get_query_condition_for_population_query(
         organisation_id, filter_start_year, filter_end_year,
         filter_species_name, filter_organisation, filter_activity,
-        filter_spatial
-    )
-    additional_join = (
-        'inner join activity_activitytype aa '
-        'on aa.id=ap.activity_type_id' if filter_activity else ''
+        filter_spatial, filter_property
     )
     population_table = (
         'annual_population_per_activity' if filter_activity else
@@ -240,11 +242,9 @@ def get_population_query(
         inner join owned_species os on os.id=ap.owned_species_id
         inner join taxon t on os.taxon_id=t.id
         inner join property p on os.property_id=p.id
-        {additional_join}
         {where_sql} group by p.{id_field}
         """
     ).format(
-        additional_join=additional_join,
         population_table=population_table,
         where_sql=f'where {where_sql}' if where_sql else '',
         id_field=id_field
@@ -415,7 +415,8 @@ def generate_map_view(
         filter_species_name: str = None,
         filter_organisation: str = None,
         filter_activity: str = None,
-        filter_spatial: str = None):
+        filter_spatial: str = None,
+        filter_property: str = None):
     if is_province_view:
         drop_map_materialized_view(session.province_view_name)
     else:
@@ -423,7 +424,7 @@ def generate_map_view(
     sub_sql, query_values = get_population_query(
         is_province_view, organisation_id, filter_start_year,
         filter_end_year, filter_species_name, filter_organisation,
-        filter_activity, filter_spatial
+        filter_activity, filter_spatial, filter_property
     )
     table_name = 'province' if is_province_view else 'property'
     is_choropleth_view = True if filter_species_name else False
@@ -448,7 +449,7 @@ def generate_map_view(
         """
         start_year={start_year}&end_year={end_year}&species={species}&
         organisation={organisation}&activity={activity}&
-        spatial_filter_values={spatial_filter_values}
+        spatial_filter_values={spatial_filter_values}&property={property}
         """
     ).format(
         start_year=filter_start_year,
@@ -456,7 +457,8 @@ def generate_map_view(
         species=filter_species_name,
         organisation=filter_organisation,
         activity=filter_activity,
-        spatial_filter_values=filter_spatial
+        spatial_filter_values=filter_spatial,
+        property=filter_property
     )
     session.query_params = query_params
     session.save(update_fields=['query_params'])
