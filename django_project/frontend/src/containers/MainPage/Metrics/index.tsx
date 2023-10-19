@@ -369,8 +369,7 @@ const Metrics = () => {
                             
                             {
                             canViewAreaAvailable && 
-                            areaData.map((data, index) => (
-                            {hasEmptyAreaAvailable && areaData.map((data, index) => (
+                            hasEmptyAreaAvailable && areaData.map((data, index) => (
                                 <Grid container key={index} item xs={12} md={6}>
                                     {data?.area?.owned_species ? (
                                         <AreaAvailableLineChart
