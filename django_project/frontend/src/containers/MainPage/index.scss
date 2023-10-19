@@ -32,7 +32,6 @@ body {
 
 .grayBg {
     background: #f5f3f3;
-    margin-left: 5px;
     .Content{
         background-color: #fff;
         padding-left: 0px;
@@ -45,7 +44,7 @@ body {
 .customWidth {
     width: calc(100vw - 440px);
     .dataTable {
-        width: calc(100vw - 425px);
+        width: calc(100vw - 410px);
         overflow: auto;
         .MuiDataGrid-columnHeaderTitle{
             text-overflow: inherit;
@@ -85,4 +84,14 @@ body {
             }
         }
     }
+}
+
+.LeftSideBar {
+    box-shadow: 0 0 6px -2px rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.TabHeaders {
+    box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.3);
+    z-index: 1;
 }

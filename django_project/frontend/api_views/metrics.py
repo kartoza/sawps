@@ -16,12 +16,14 @@ from frontend.serializers.metrics import (
     TotalCountPerActivitySerializer,
     PopulationPerAgeGroupSerialiser,
     TotalAreaVSAvailableAreaSerializer,
+    TotalCountPerPopulationEstimateSerializer
 )
 from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_available_to_species,
     calculate_total_area_per_property_type,
     calculate_base_population_of_species,
+    calculate_species_count_per_province
 )
 from property.models import Property
 from rest_framework.permissions import IsAuthenticated
@@ -102,6 +104,21 @@ class ActivityPercentageAPIView(APIView):
         return Response(calculate_base_population_of_species(serializer.data))
 
 
+class TotalCountPerPopulationEstimateAPIView(APIView):
+    """
+    API view to retrieve total counts per population
+    estimate category for species.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs) -> Response:
+        serializer = TotalCountPerPopulationEstimateSerializer(
+            context={"request": request}
+        )
+        result = serializer.get_total_counts_per_population_estimate()
+        return Response(result)
+
+
 class TotalCountPerActivityAPIView(APIView):
     """
     API view to retrieve total counts per activity for species.
@@ -134,6 +151,35 @@ class TotalCountPerActivityAPIView(APIView):
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
+
+
+class SpeciesPopulationCountPerProvinceAPIView(APIView):
+    """
+    API view to retrieve species pcount per province.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> QuerySet[Property]:
+        """
+        Returns a filtered queryset of property objects
+        within the specified organization.
+        """
+        organisation_id = get_current_organisation_id(self.request.user)
+        queryset = Property.objects.filter(organisation_id=organisation_id)
+        filtered_queryset = PropertyFilter(
+            self.request.GET, queryset=queryset
+        ).qs
+        return filtered_queryset.distinct('name')
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve species count per province.
+        """
+        species_name = request.GET.get("species")
+        queryset = self.get_queryset()
+        return Response(
+            calculate_species_count_per_province(queryset, species_name)
+        )
 
 
 class SpeciesPopulationDensityPerPropertyAPIView(APIView):
