@@ -110,7 +110,9 @@ def get_report_filter(request, report_type):
             int(act) for act in activity.split(',')
         ] if activity else []
     elif report_type == ACTIVITY_REPORT:
-        filters[activity_fields[report_type]] = ActivityType.objects.values_list('id', flat=True)
+        filters[
+            activity_fields[report_type]
+        ] = ActivityType.objects.values_list('id', flat=True)
     return filters
 
 

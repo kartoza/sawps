@@ -18,6 +18,8 @@ class AnnualPopulationAdmin(admin.ModelAdmin):
 
 admin.site.register(OpenCloseSystem)
 admin.site.register(AnnualPopulation, AnnualPopulationAdmin)
+
+
 @admin.register(AnnualPopulationPerActivity)
 class AnnualPopulationPerActivityAdmin(admin.ModelAdmin):
     list_display = [
