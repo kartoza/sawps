@@ -22,6 +22,7 @@ import {
     useGetUserInfoQuery,
 } from "../../../services/api";
 import Tooltip from '@mui/material/Tooltip';
+import Topper from "../Data/Topper";
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
@@ -60,6 +61,7 @@ const Metrics = () => {
     const contentRefPropertyAvailable = useRef(null);
     const contentRefAgeGroup = useRef(null);
     const contentRefAreaAvailable = useRef(null);
+    const topperRef = useRef(null);
 
     // Declare errorMessage as a state variable
     const [showCharts, setShowCharts] = useState(false);
@@ -172,7 +174,6 @@ const Metrics = () => {
         axios.get(`${FETCH_POPULATION_AGE_GROUP}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
-                console.log('fetched data: ',response.data)
                 setAgeGroupData(response.data)
             }
         }).catch((error) => {
@@ -286,45 +287,52 @@ const Metrics = () => {
     const handleDownload = async (contentRef: any) => {
         setIconsHidden(true);
         const content = contentRef.current;
-        if (!content) return;
+        const topperContent = topperRef.current;
+        
+        if (!content || !topperContent) return;
+        
         const totalHeight = content.scrollHeight;
         const windowHeight = window.innerHeight;
         const pdf = new jsPDF();
-        
         const pdfWidth = pdf.internal.pageSize.getWidth();
-
-        let pdf_name ='test.pdf'
+        
+        let pdf_name = selectedSpecies + '.pdf';
         
         for (let offsetY = 0; offsetY < totalHeight; offsetY += windowHeight) {
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            
-            const scale = 8; // Adjust the scale as needed (higher values result in higher quality)
-            
-            // Define html2canvas options for better quality
-            const canvas = await html2canvas(content, {
-                scale: scale, // Increase the scale for better quality
-                windowWidth: window.innerWidth,
-                width: content.scrollWidth,
-                height: content.scrollHeight,
-            });
-            
-            const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0); // Adjust the quality (1.0 is maximum)
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-
-            pdf_name = selectedSpecies + '.pdf';
-            
-            // Add a header to the PDF
-            pdf.setFontSize(16);
-            pdf.text('Topper Placeholder', 15, 15);
-            
-            // Add the chart to the PDF
-            pdf.addImage(imageDataUrl, 'JPEG', 0, 25, pdfWidth, pdfHeight);
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          
+          const scale = 8; // Adjust the scale as needed (higher values result in higher quality)
+          
+          // Define html2canvas options for better quality
+          const canvas = await html2canvas(content, {
+            scale: scale, // Increase the scale for better quality
+            windowWidth: window.innerWidth,
+            width: content.scrollWidth,
+            height: content.scrollHeight,
+          });
+          
+          const topperCanvas = await html2canvas(topperContent, {
+            scale: scale, // Increase the scale for better quality
+            windowWidth: window.innerWidth,
+            width: topperContent.scrollWidth,
+            height: topperContent.scrollHeight,
+          });
+      
+          const topperImageDataUrl = topperCanvas.toDataURL('image/jpeg', 1.0);
+          const imageDataUrl = canvas.toDataURL('image/jpeg', 1.0); // Adjust the quality (1.0 is maximum)
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+          
+          // Add a header to the PDF
+          pdf.addImage(topperImageDataUrl, 'JPEG', 0, 0, pdfWidth, (topperCanvas.height * pdfWidth) / topperCanvas.width);
+      
+          // Add the chart to the PDF
+          pdf.addImage(imageDataUrl, 'JPEG', 0, (topperCanvas.height * pdfWidth) / topperCanvas.width, pdfWidth, pdfHeight);
         }
         
         pdf.save(pdf_name);
         setIconsHidden(false);
-    };
+      };
+      
     
 
     
@@ -332,13 +340,20 @@ const Metrics = () => {
     return (
         <Box>
             <Box className="charts-container">
+                
 
                 {showCharts ? (
+                    
                         <Grid container spacing={2} ref={contentRefAllCharts}>
-                            {
+                            <div ref={topperRef}>
+                                <Topper title="SAWPS CHARTS SUMMARY" on_charts={true}/>
+                            </div>
+
+                            {/* {
                             canViewPopulationTrend && 
                             selectedSpecies && 
-                            hasEmptyPopulationTrend && (
+                            hasEmptyPopulationTrend && 
+                            (
                                 <Grid item xs={12} md={6} ref={contentRefPopulationTrend}>
                                     <PopulationTrend 
                                         selectedSpecies={selectedSpecies} 
@@ -351,7 +366,6 @@ const Metrics = () => {
                                     />
                             {iconsHidden ? null : ( 
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                                        {/* Information Icon with Tooltip */}
                                         <Tooltip title="Information Tooltip" arrow placement="top">
                                             <img
                                             src={informationIconUrlWithDomain}
@@ -361,7 +375,6 @@ const Metrics = () => {
                                             />
                                         </Tooltip>
 
-                                        {/* Image for Download */}
                                         <div
                                             onClick={() => {
                                                 handleDownload(contentRefPopulationTrend);
@@ -378,7 +391,7 @@ const Metrics = () => {
                                     </div>
                                 )}
                                 </Grid>
-                            )}
+                            )} */}
 
 
 
