@@ -1,15 +1,16 @@
 import json
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.core.serializers.json import DjangoJSONEncoder
 from django.test import RequestFactory, TestCase, Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.contrib.contenttypes.models import ContentType
 
 from frontend.static_mapping import REGIONAL_DATA_CONSUMER
 from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
+from sawps.models import ExtendedGroup
 from sawps.tests.models.account_factory import GroupF
-from sawps.tests.model_factories import ExtendedGroupF, ExtendedGroupPermissionF
 from stakeholder.factories import userRoleTypeFactory
 from stakeholder.models import (
     Organisation,
@@ -353,20 +354,9 @@ class UserApiTest(TestCase):
             email='test@gmail.com'
         )
         group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
-        # extended_group = ExtendedGroupF.create(group=group)
-        permission_1 = ExtendedGroupPermissionF.create(
-            name='Can View Province Species Count'
-        )
-        permission_2 = ExtendedGroupPermissionF.create(
-            name='Can View Population Category'
-        )
-        permission_3 = ExtendedGroupPermissionF.create(
-            name='Can View Population Trend',
-            allow_for_organisation_member=True,
-            allow_for_organisation_manager=True
-        )
-        group.extended.permissions.add(permission_1)
-        group.extended.permissions.add(permission_3)
+        content_type = ContentType.objects.get_for_model(ExtendedGroup)
+        all_permissions = Permission.objects.filter(content_type=content_type)
+        group.permissions.add(all_permissions[0])
 
         user.groups.add(group)
         login = client.login(
@@ -398,10 +388,10 @@ class UserApiTest(TestCase):
         self.assertEqual(response.data['current_organisation_id'], organisation.id)
         self.assertEqual(response.data['current_organisation'], organisation.name)
 
-        # Permission 2 should not be in the user permisisons because:
+        # Permission 2 should not be in the user permisions because:
         # - It is not assigned to user's group
         # - It is not allowed for organisation member or manager
         self.assertEqual(
             sorted(response.data['user_permissions']),
-            sorted([permission_1.name, permission_3.name])
+            [all_permissions[0].name]
         )

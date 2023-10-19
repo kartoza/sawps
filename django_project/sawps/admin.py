@@ -5,9 +5,7 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.db.models.signals import post_save
 from django_otp.plugins.otp_static.models import StaticDevice
 
-from sawps.models import ExtendedGroup, ExtendedGroupPermission, save_extended_group
-from sawps.forms.group_forms import ExtendedGroupForm
-
+from sawps.models import ExtendedGroup, save_extended_group
 from sawps.utils import disconnected_signal
 
 
@@ -30,7 +28,6 @@ class ExtendedGroupInline(admin.StackedInline):
     list_display = (
         'description',
     )
-    form = ExtendedGroupForm
 
 
 class GroupAdmin(BaseGroupAdmin):
@@ -57,14 +54,6 @@ class GroupAdmin(BaseGroupAdmin):
 
     get_description.short_description = 'Description'
 
-
-@admin.register(ExtendedGroupPermission)
-class ExtendedGroupPermissionAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'allow_for_organisation_member',
-        'allow_for_organisation_manager'
-    ]
 
 # Unregister the model if it's already registered
 admin.site.unregister(StaticDevice)

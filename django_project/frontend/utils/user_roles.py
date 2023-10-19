@@ -1,6 +1,7 @@
 from typing import List
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+from django.contrib.contenttypes.models import ContentType
 
 from frontend.static_mapping import (
     SUPER_USER,
@@ -10,7 +11,7 @@ from frontend.static_mapping import (
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
 )
-from sawps.models import ExtendedGroupPermission
+from sawps.models import ExtendedGroup
 
 
 def is_organisation_member(user: User) -> bool:
@@ -100,24 +101,20 @@ def get_user_permissions(user: User) -> List[str]:
     """
     permissions = set()
     groups = user.groups.all()
+    content_type = ContentType.objects.get_for_model(ExtendedGroup)
+    ext_group_permissions = Permission.objects.filter(
+        content_type=content_type
+    )
     if user.is_superuser or user.is_staff:
-        all_permissions = set(ExtendedGroupPermission.objects.values_list('name', flat=True))
-        permissions = permissions.union(all_permissions)
+        ext_group_permissions_set = set(
+            ext_group_permissions.values_list('name', flat=True)
+        )
+        permissions = permissions.union(ext_group_permissions_set)
 
     for group in groups:
-        group_permissions = group.extended.permissions.values_list('name', flat=True)
-        permissions = permissions.union(group_permissions)
-
-    if is_organisation_member(user):
-        allowed_permission = group.extended.permissions.objects.filter(
-            allowed_for_organisation_member=True
-        ).values_list('name', flat=True)
-        permissions = permissions.union(allowed_permission)
-
-    if is_organisation_manager(user):
-        allowed_permission = group.extended.permissions.objects.filter(
-            allowed_for_organisation_manager=True
-        ).values_list('name', flat=True)
+        allowed_permission = set(
+            group.permissions.values_list('name', flat=True)
+        )
         permissions = permissions.union(allowed_permission)
 
     return sorted(list(permissions))
