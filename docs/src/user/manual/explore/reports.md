@@ -85,7 +85,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
      1. **Activity Report**: Selected `Activity report`.
      ##### Activity Report Tables
 
-     ![Reports Type Table](./img/reports-5.png)
+     ![Activity Reports Table](./img/reports-5.png)
 
      ##### Activity Types
 
@@ -117,7 +117,43 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      ##### Summary
 
-     The Activity Report is a valuable tool for generating detailed reports on a variety of wildlife management activities. It provides specific information for each activity type, including property details, species information, and counts related to the activities. This report allows for a comprehensive view of wildlife management efforts, enabling informed decision-making and analysis of data related to different activities.
+     The `Activity Report` is a valuable filter for generating detailed reports on a variety of wildlife management activities. It provides specific information for each activity type, including property details, species information, and counts related to the activities. This report allows for a comprehensive view of wildlife management efforts, enabling informed decision-making and analysis of data related to different activities.
+
+     ##### Property Report
+
+     ![Property Reports](./img/reports-6.png)
+
+     1. **Property Report**: Selected `Property report`.
+
+     2. **Property Table**: Property table displays data for the properties.
+
+     ##### Report Columns
+
+     The Property Report includes the following columns:
+
+     - **Property Name**: The name of the property being reported on.
+
+     - **Scientific Name**: The scientific name of the species associated with the property.
+
+     - **Common Name**: The common name of the species related to the property.
+
+     - **Owner**: The name of the owner of the property.
+
+     - **Owner Email**: The email address of the property owner.
+
+     - **Property Type**: The type of the property.
+
+     - **Province**: The province where the property is situated.
+
+     - **Property Size (Ha)**: The size of the property in hectares.
+
+     - **Area Available To Species**: The portion of the property that is available for species habitat.
+
+     - **Open/Close Systems**: Indicates whether the property employs open or closed systems for wildlife management.
+
+     ##### Summary
+
+     The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analyzing and managing property-related information in an organized and structured manner.
 
 ### Summary
 
