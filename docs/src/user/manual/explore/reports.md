@@ -155,6 +155,46 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analyzing and managing property-related information in an organized and structured manner.
 
+     ##### Species Report
+
+     ![Species Report](./img/reports-7.png)
+
+     1. **Species Report**: Selected `Species report`.
+
+     2. **Species Table**: Species report table displays data of the species for the property.
+
+     ##### Report Columns
+
+     The Species Report includes the following columns:
+
+     - **Property Name**: The name of the property associated with the species data.
+
+     - **Scientific Name**: The scientific name of the species.
+
+     - **Common Name**: The common name of the species.
+
+     - **Year**: The specific year for which the data is recorded.
+
+     - **Group**: Information about the group which the species belongs.
+
+     - **Total**: The total count of the species in the specified year.
+
+     - **Adult Males**: The count of adult male individuals within the species.
+
+     - **Adult Females**: The count of adult female individuals within the species.
+
+     - **Juvenile Males**: The count of juvenile male individuals within the species.
+
+     - **Juvenile Females**: The count of juvenile female individuals within the species.
+
+     - **Sub-Adult Males**: The count of sub-adult male individuals within the species.
+
+     - **Sub-Adult Females**: The count of sub-adult female individuals within the species.
+
+     ##### Summary
+
+     The Species Report is a vital filter for reporting on various species. It provides comprehensive information on species-specific data, including counts, age groups, and associated property details. This report is essential for detailed analysis and management of species-related information.
+
 ### Summary
 
 The reports table page is a comprehensive platform for exploring, analysing, and interacting with your data. With filters, column search, and data export options, you have the tools necessary to customise your data view, find specific information, and export data in the format that suits your needs.
