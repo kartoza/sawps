@@ -31,11 +31,17 @@ const DensityBarChart = (props: any) => {
                 .then((response) => {
                     setLoading(false);
                     if (response.data) {
-                        const filteredData = response.data.filter((item: any) => (item.density.density !== null || item.density.density.length !== 0));
+                        // Filter out objects with non-null density
+                        const filteredData = response.data.filter((item: { density: any[]; }) => {
+                            const hasNonNullDensity = item.density.some((densityItem) => densityItem.density !== null);
+                            return hasNonNullDensity;
+                        });
+                        
                         if(filteredData.length > 0){
                             onEmptyDatasets(true)
+                            setDensityData(filteredData);
                         }else onEmptyDatasets(false)
-                        setDensityData(filteredData.length > 0 ? filteredData : []);
+                        
                     }
                 })
                 .catch((error) => {
