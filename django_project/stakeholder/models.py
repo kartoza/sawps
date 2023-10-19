@@ -1,7 +1,9 @@
+from typing import Union, List
+from django.db.models import QuerySet
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
 from property.models import Province
@@ -111,32 +113,70 @@ class Organisation(models.Model):
     def __str__(self):
         return self.name
 
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     self.short_code = self.get_short_code()
-    #     super().save(*args, **kwargs)
-
-    def get_short_code(self):
+    def get_short_code(
+        self,
+        province_name: str = None,
+        organisation_name: str = None,
+        with_digit: bool = True
+    ) -> str:
         from frontend.utils.organisation import get_abbreviation
 
+        if not province_name:
+            province_name = self.province.name if self.province else ''
+
+        organisation_name = organisation_name if organisation_name else self.name
+
         province = get_abbreviation(
-            self.province.name
-        ) if self.province else ''
-        organisation = get_abbreviation(self.name)
+            province_name
+        ) if province_name else ''
+        organisation = get_abbreviation(organisation_name)
 
-        # # if organisation is created, retain the digit
-        # if self.pk:
-        #     digit = int(self.short_code[-4])
-        # else:
-        #     try:
-        #         digit = int(
-        #             Organisation.objects.latest('id').short_code[-4:] + 1
-        #         )
-        #     except Organisation.DoesNotExist:
-        #         digit = 1001
-        digit = "{:05d}".format(self.pk)
+        if with_digit:
+            # instead of using DB count, take next digit based on
+            # the latest digit
+            try:
+                digit = int(
+                    Organisation.objects.filter(
+                        province__name=province_name,
+                        name=organisation_name
+                    ).latest('short_code').short_code[-4:]
+                )
+            except Organisation.DoesNotExist:
+                digit = 1
+            digit = "{:04d}".format(digit + 1)
+            return f"{province}{organisation}{digit}"
+        else:
+            return f"{province}{organisation}"
 
-        return f"{province}{organisation}{digit}"
+
+@receiver(pre_save, sender=Organisation)
+def organisation_pre_save(
+    sender, instance: Organisation, *args, **kwargs
+):
+    print('org post_save')
+    if instance.id:
+        old_org: Organisation = Organisation.objects.get(id=instance.id)
+        is_name_changed = old_org.name != instance.name
+        is_province_changed = old_org.province != instance.province
+        if any([is_province_changed, is_name_changed]):
+            instance.short_code = instance.get_short_code(
+                province_name=instance.province.name if instance.province else '',
+                organisation_name=instance.name
+            )
+            instance.skip_post_save = False
+    else:
+        instance.short_code = instance.get_short_code()
+
+
+@receiver(post_save, sender=Organisation)
+def organisation_post_save(
+    sender, instance: Organisation, created, *args, **kwargs
+):
+    from stakeholder.tasks import update_property_short_code
+
+    if not created and not getattr(instance, 'skip_post_save', True):
+        print('org post_save')
+        update_property_short_code.delay(instance.id)
 
 
 class UserProfile(models.Model):
@@ -189,8 +229,8 @@ class UserProfile(models.Model):
     def picture_url(self):
         if self.picture.url:
             return '{media}/{url}'.format(
-                    media=settings.MEDIA_ROOT,
-                    url=self.picture,
+                media=settings.MEDIA_ROOT,
+                url=self.picture,
             )
 
     class Meta:
@@ -340,6 +380,7 @@ class OrganisationPersonnel(models.Model):
 
 class OrganisationRepresentative(OrganisationPersonnel):
     """Organisation representative model."""
+
     class Meta:
         verbose_name = 'Organisation representative'
         verbose_name_plural = 'Organisation representatives'
@@ -348,6 +389,7 @@ class OrganisationRepresentative(OrganisationPersonnel):
 
 class OrganisationUser(OrganisationPersonnel):
     """Organisation user model."""
+
     class Meta:
         verbose_name = 'Organisation user'
         verbose_name_plural = 'Organisation users'

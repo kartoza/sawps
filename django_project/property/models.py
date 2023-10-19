@@ -1,6 +1,9 @@
+from typing import Union, List
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
-from django.db.models.signals import post_save
+from django.db.models import QuerySet
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 
@@ -26,6 +29,26 @@ class Province(models.Model):
         verbose_name = 'Province'
         verbose_name_plural = 'Provinces'
         db_table = 'province'
+
+
+@receiver(pre_save, sender=Province)
+def province_pre_save(
+    sender, instance: Province, *args, **kwargs
+):
+    if instance.id:
+        old_province = Province.objects.get(id=instance.id)
+        if old_province.name != instance.name:
+            instance.skip_post_save = False
+
+
+@receiver(post_save, sender=Province)
+def province_post_save(
+    sender, instance: Province, created, *args, **kwargs
+):
+    from property.tasks import update_organisation_property_short_code
+
+    if not created and not getattr(instance, 'skip_post_save', True):
+        update_organisation_property_short_code.delay(instance.id)
 
 
 class Property(models.Model):
@@ -61,33 +84,38 @@ class Property(models.Model):
     def __str__(self):
         return self.name
 
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     self.short_code = self.get_short_code()
-    #     super().save(*args, **kwargs)
+    def get_short_code(
+        self,
+        with_digit: bool = True
+    ):
+        from property.utils import get_property_short_code
 
-    def get_short_code(self):
-        from frontend.utils.organisation import get_abbreviation
+        province_name = self.province.name if self.province else ''
+        organisation_name = self.organisation.name if self.organisation else ''
+        property_name = self.name
+        return get_property_short_code(province_name, organisation_name, property_name, with_digit)
 
-        province = get_abbreviation(
-            self.province.name
-        ) if self.province else ''
-        organisation = get_abbreviation(self.organisation.name)
-        property_abr = get_abbreviation(self.name)
 
-        # # if property is created, retain the digit
-        # if self.pk:
-        #     digit = int(self.short_code[-4])
-        # else:
-        #     # instead of using DB count, take next digit based on
-        #     # the latest digit
-        #     try:
-        #         digit = int(Property.objects.latest('id').short_code[-4:]) + 1
-        #     except Property.DoesNotExist:
-        #         digit = 1001
-        digit = "{:05d}".format(self.pk)
-
-        return f"{province}{organisation}{property_abr}{digit}"
+@receiver(pre_save, sender=Property)
+def organisation_pre_save(
+    sender, instance: Property, *args, **kwargs
+):
+    from property.utils import get_property_short_code
+    print('prop post_save')
+    if instance.id:
+        old_property: Property = Property.objects.get(id=instance.id)
+        is_name_changed = old_property.name != instance.name
+        is_org_changed = old_property.organisation != instance.organisation
+        is_province_changed = old_property.province != instance.province
+        if any([is_province_changed, is_org_changed, is_name_changed]):
+            instance.short_code = get_property_short_code(
+                province_name=instance.province.name if instance.province else '',
+                organisation_name=instance.organisation.name,
+                property_name=instance.name
+            )
+            instance.skip_post_save = False
+    else:
+        instance.short_code = instance.get_short_code()
 
 
 @receiver(post_save, sender=Property)
