@@ -1,20 +1,21 @@
 import json
-from django.test import RequestFactory, TestCase, Client
+
 from django.contrib.auth.models import User
+from django.core.serializers.json import DjangoJSONEncoder
+from django.test import RequestFactory, TestCase, Client
+from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from frontend.static_mapping import REGIONAL_DATA_CONSUMER
-from sawps.tests.models.account_factory import GroupF
-from stakeholder.factories import userProfileFactory, userRoleTypeFactory
 from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
+from sawps.tests.models.account_factory import GroupF
+from sawps.tests.model_factories import ExtendedGroupF, ExtendedGroupPermissionF
+from stakeholder.factories import userRoleTypeFactory
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
-    OrganisationUser,
-    UserProfile
+    OrganisationUser
 )
-from django.core.serializers.json import DjangoJSONEncoder
-from django_otp.plugins.otp_totp.models import TOTPDevice
 
 
 class OrganisationUsersViewTest(TestCase):
@@ -352,6 +353,21 @@ class UserApiTest(TestCase):
             email='test@gmail.com'
         )
         group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
+        # extended_group = ExtendedGroupF.create(group=group)
+        permission_1 = ExtendedGroupPermissionF.create(
+            name='Can View Province Species Count'
+        )
+        permission_2 = ExtendedGroupPermissionF.create(
+            name='Can View Population Category'
+        )
+        permission_3 = ExtendedGroupPermissionF.create(
+            name='Can View Population Trend',
+            allow_for_organisation_member=True,
+            allow_for_organisation_manager=True
+        )
+        group.extended.permissions.add(permission_1)
+        group.extended.permissions.add(permission_3)
+
         user.groups.add(group)
         login = client.login(
             username='testuser',
@@ -381,3 +397,11 @@ class UserApiTest(TestCase):
         response = client.get('/api/user-info/')
         self.assertEqual(response.data['current_organisation_id'], organisation.id)
         self.assertEqual(response.data['current_organisation'], organisation.name)
+
+        # Permission 2 should not be in the user permisisons because:
+        # - It is not assigned to user's group
+        # - It is not allowed for organisation member or manager
+        self.assertEqual(
+            sorted(response.data['user_permissions']),
+            sorted([permission_1.name, permission_3.name])
+        )

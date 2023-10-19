@@ -4,6 +4,26 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+class ExtendedGroupPermission(models.Model):
+    name = models.CharField(
+        max_length=50,
+        blank=True,
+        null=False,
+        unique=True
+    )
+
+    allow_for_organisation_member = models.BooleanField(
+        default=False
+    )
+
+    allow_for_organisation_manager = models.BooleanField(
+        default=False
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class ExtendedGroup(models.Model):
     """
     Stores additional attributes for Django's built-in Group model.
@@ -16,6 +36,8 @@ class ExtendedGroup(models.Model):
         related_name='extended')
 
     description = models.TextField()
+
+    permissions = models.ManyToManyField(ExtendedGroupPermission)
 
     def __str__(self):
         return self.description

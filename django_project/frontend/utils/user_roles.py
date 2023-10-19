@@ -10,6 +10,7 @@ from frontend.static_mapping import (
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
 )
+from sawps.models import ExtendedGroupPermission
 
 
 def is_organisation_member(user: User) -> bool:
@@ -87,3 +88,36 @@ def get_user_roles(user: User) -> List[str]:
         roles += [ORGANISATION_MANAGER]
 
     return roles
+
+
+def get_user_permissions(user: User) -> List[str]:
+    """
+    Retrieve the permissions associated with a given user.
+
+    :param user: The user object
+    :return: A list containing the names of all
+        roles associated with the user
+    """
+    permissions = set()
+    groups = user.groups.all()
+    if user.is_superuser or user.is_staff:
+        all_permissions = set(ExtendedGroupPermission.objects.values_list('name', flat=True))
+        permissions = permissions.union(all_permissions)
+
+    for group in groups:
+        group_permissions = group.extended.permissions.values_list('name', flat=True)
+        permissions = permissions.union(group_permissions)
+
+    if is_organisation_member(user):
+        allowed_permission = group.extended.permissions.objects.filter(
+            allowed_for_organisation_member=True
+        ).values_list('name', flat=True)
+        permissions = permissions.union(allowed_permission)
+
+    if is_organisation_manager(user):
+        allowed_permission = group.extended.permissions.objects.filter(
+            allowed_for_organisation_manager=True
+        ).values_list('name', flat=True)
+        permissions = permissions.union(allowed_permission)
+
+    return sorted(list(permissions))

@@ -1,6 +1,6 @@
 import factory
 from django.contrib.auth.models import Group
-from sawps.models import ExtendedGroup
+from sawps.models import ExtendedGroup, ExtendedGroupPermission
 
 
 class GroupF(factory.django.DjangoModelFactory):
@@ -26,3 +26,16 @@ class ExtendedGroupF(factory.django.DjangoModelFactory):
 
     class Meta:
         model = ExtendedGroup
+
+
+
+class ExtendedGroupPermissionF(factory.django.DjangoModelFactory):
+    """
+    Extended group model factory
+    """
+    name = factory.Sequence(
+        lambda n: 'Permission %d' % n
+    )
+
+    class Meta:
+        model = ExtendedGroupPermission
