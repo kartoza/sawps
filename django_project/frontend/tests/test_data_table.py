@@ -12,6 +12,7 @@ from frontend.static_mapping import (
     REGIONAL_DATA_CONSUMER
 )
 from population_data.models import AnnualPopulationPerActivity
+from population_data.factories import AnnualPopulationPerActivityFactory
 from property.factories import PropertyFactory
 from rest_framework import status
 
@@ -70,6 +71,12 @@ class OwnedSpeciesTestCase(TestCase):
 
         self.owned_species = OwnedSpeciesFactory.create_batch(
             5, taxon=self.taxon, user=user, property=self.property)
+        self.population_per_activity = AnnualPopulationPerActivityFactory.create(
+            taxon=self.taxon,
+            user=user,
+            property=self.property,
+            year=2000
+        )
         self.url = reverse('data-table')
 
         self.auth_headers = {
@@ -88,16 +95,33 @@ class OwnedSpeciesTestCase(TestCase):
             context_layer_value='spatial filter test'
         )
 
-    def test_data_table_filter_by_species_name(self) -> None:
+    def test_data_table_filter_by_species_name_filtered_activity(self) -> None:
         """Test data table filter by species name"""
         url = self.url
         value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
-            'species': 'SpeciesA',
-            'activity': str(value.activity_type.id),
-            'reports': 'Property_report'
+            "species": "SpeciesA",
+            "activity": str(value.activity_type.id),
+            "reports": "Property_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
+        # self.assertEqual(len(response.data[0]["Property_report"], 1))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]["Property_report"][0]["scientific_name"],
+            "SpeciesA"
+        )
+
+    def test_data_table_filter_by_species_name_all_activity(self) -> None:
+        """Test data table filter by species name"""
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Property_report"
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(len(response.data[0]["Property_report"], 2))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]["Property_report"][0]["scientific_name"],
@@ -109,8 +133,8 @@ class OwnedSpeciesTestCase(TestCase):
         url = self.url
         value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
-            'activity': str(value.activity_type.id),
-            'reports': 'Property_report'
+            "activity": str(value.activity_type.id),
+            "reports": "Property_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -123,13 +147,13 @@ class OwnedSpeciesTestCase(TestCase):
         """Test data table filter by property"""
         value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
-            'species': self.taxon.scientific_name,
-            'property': self.property.id,
-            'start_year': self.owned_species[0].annualpopulation_set.first().year,
-            'end_year': self.owned_species[0].annualpopulation_set.first().year,
-            'spatial_filter_values': 'spatial filter test',
-            'activity': str(value.activity_type.id),
-            'reports': 'Property_report'
+            "species": self.taxon.scientific_name,
+            "property": self.property.id,
+            "start_year": self.owned_species[0].annualpopulation_set.first().year,
+            "end_year": self.owned_species[0].annualpopulation_set.first().year,
+            "spatial_filter_values": "spatial filter test",
+            "activity": str(value.activity_type.id),
+            "reports": "Property_report"
         }
         response = self.client.get(self.url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -170,7 +194,7 @@ class OwnedSpeciesTestCase(TestCase):
         data = {
             "species": "SpeciesA",
             "start_year": year,
-            "end_year":year,
+            "end_year": year,
             "reports": "Activity_report",
             "activity": str(value.activity_type.id)
         }
@@ -188,7 +212,7 @@ class OwnedSpeciesTestCase(TestCase):
         data = {
             "species": "SpeciesA",
             "start_year": year,
-            "end_year":year,
+            "end_year": year,
             "reports": "Activity_report",
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -218,6 +242,8 @@ class OwnedSpeciesTestCase(TestCase):
             ],
             "SpeciesA"
         )
+
+
 
 
 class NationalUserTestCase(TestCase):
