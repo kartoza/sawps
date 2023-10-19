@@ -38,9 +38,9 @@ The main area of the page displays your dataset in a tabular format. Each row re
 * **Activity Report:** Report on activity basis.
 * **Property Report:** Report on property basis.
 * **Species Report:** Report on species basis.
-* **Province Report:** Report on province basis. 
+* **Province Report:** Report on province basis.
 Only member of `National data consumer` group can see this report.
-* **Sampling Report:** Filter data by property. 
+* **Sampling Report:** Filter data by property.
 Member of `National data consumer` or `Regional data consumer` **CAN NOT** see this report.
 
 User group is configurable from the User Table in the [Django Admin](../../../administrator/manual/django-admin.md).
@@ -50,7 +50,8 @@ User group is configurable from the User Table in the [Django Admin](../../../ad
 
 Activity Report columns consisted of base columns and custom columns.
 1. **Base columns**: Hardcoded.
-2. **Custom columns**: Configurable from the Django admin site by the site administrator. 
+2. **Custom columns**: Configurable from the Django admin site by the site administrator.
+
 See Activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
 
 ### Summary
