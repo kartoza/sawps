@@ -1,10 +1,11 @@
-# Landing Page Documentation Before Login
+# Landing Page Documentation
 
 ## Description
 
 Welcome to our `Landing Page`, the entry point to your data exploration journey. Our `Landing Page` provides a user-friendly interface for accessing and managing your data. Whether you're here to log in, create a new account, or learn more about our platform, this page offers easy access to all these features.
 
-### Landing Page
+## Before Login
+
 ![Landing Page](./img/landing-page-1.png)
 
 In the navigation bar at the top of the page, you'll find several options:
@@ -19,7 +20,7 @@ In the navigation bar at the top of the page, you'll find several options:
 
 5. **Register**: If you're new to our platform, you can click `REGISTER` to create a new account. Registration is quick and easy, and it will give you full access of platform.
 
-## Central Buttons
+### Central Buttons
 
 In the middle of the landing page, you'll find three prominent buttons:
 
@@ -29,10 +30,10 @@ In the middle of the landing page, you'll find three prominent buttons:
 
 8. **Register**: If you're new to our platform, click `REGISTER` to begin the registration process. Becoming a registered user opens up a world of data exploration and manipulation.
 
-## National Population Trends
+### National Population Trends
 
 On our `Landing Page`, you'll find an interactive chart that displays national population trends. This chart provides valuable insights into demographic changes and trends over time.
-### National Population Trends
+
 ![National Population Trends](./img/landing-page-2.png)
 
 1. **Image**: Image of the species.
@@ -41,24 +42,23 @@ On our `Landing Page`, you'll find an interactive chart that displays national p
 
 3. **Chart**: Chart showing the data of the species over the year.
 
-## Footer Buttons
+### Footer Buttons
 
 In the footer of the `Landing Page`, you'll find four buttons for easy navigation:
 
 4. **HOME**: Click `HOME` to return to the main landing page and access the national population trends chart and other features.
 
-5. **MAP**: The `MAP` will redirect you to the login page because login is requred to see the `map` data.
+5. **MAP**: The `MAP` will redirect you to the login page because login is required to see the `map` data.
 
 6. **DOCUMENTATION**: Click `DOCUMENTATION` you'll redirect to the landing page.
 
 7. **CONTACT**: If you have any questions, require assistance, or wish to provide feedback, clicking `CONTACT` will allow you to get in touch with our support team.
 
-# Landing Page Documentation After Login
+## After Login
 
-### Landing Page
 ![Landing Page After Login](./img/landing-page-3.png)
 
-## Navigation Bar
+### Navigation Bar
 
 The navigation bar at the top of the `Landing Page` offers convenient access to key sections and actions within our platform. It includes the following elements:
 
@@ -76,7 +76,7 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 7. **Logout:** The `LOGOUT` button allows you to securely log out of your account when you're done using our platform.
 
-## Main Content
+### Main Content
 
 In the central part of the `Landing Page`, you'll find three prominent buttons that guide you to key areas of our platform:
 
@@ -86,7 +86,8 @@ In the central part of the `Landing Page`, you'll find three prominent buttons t
 
 10. **Upload Data:** Select `UPLOAD DATA` to initiate the process of adding new datasets to your account, making them accessible for further analysis.
 
-### National Population Trends
+#### National Population Trends
+
 ![National Population Trends](./img/landing-page-2.png)
 
 1. **Image**: Image of the species.
@@ -94,7 +95,8 @@ In the central part of the `Landing Page`, you'll find three prominent buttons t
 2. **Scientific Name**: Scientific name of the species.
 
 3. **Chart**: Chart showing the data of the species over the year.
-## Footer
+
+#### Footer
 
 The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
 
