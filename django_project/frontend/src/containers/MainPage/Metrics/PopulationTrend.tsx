@@ -53,15 +53,15 @@ const PopulationTrend= (props: any) => {
     const [chartData, setChartData] = useState(null)
 
     const fetchChartData = () => {
-        axios
-      .get(
-        `${SPECIES_POPULATION_TREND_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`
-      )
-      .then((response) => {
-            if (response) {
-                onEmptyDatasets(true)
+      setLoading(true);
+        axios.get(`${SPECIES_POPULATION_TREND_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`)
+            .then((response) => {
+            if (response.data) {
                 setLoading(false)
                 let _data = response.data as NationalTrendInterface[]
+                if(_data.length > 0){
+                  onEmptyDatasets(true)
+                }else onEmptyDatasets(false)
                 setChartData({
                     labels: _data.map((a) => {
                       if (a.year % 2 === 0) return a.year;
@@ -116,13 +116,15 @@ const PopulationTrend= (props: any) => {
             }else onEmptyDatasets(false)
         }).catch((error) => {
             console.log(error)
-            setLoading(false)
+            setLoading(false)              
         })
     }
 
     useEffect(() => {
-        fetchChartData()
-    }, [propertyId, startYear, endYear, selectedSpecies])
+      if (!loading) {
+        fetchChartData();
+      }
+    }, [propertyId, startYear, endYear, selectedSpecies, loading]);
 
 
     if(chartData === null){
@@ -133,11 +135,32 @@ const PopulationTrend= (props: any) => {
     const options:object={
         responsive: true,
         maintainAspectRatio: true,
-        aspectRatio: 1.5,
         scales: {
-            y: {grace:50},
+            y: {
+              grace:50,
+              title: {
+                display: true,
+                text: 'Count', // Y-axis label
+                font: {
+                  size: 14,
+                },
+              },
+            },
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Year', // X-axis label
+                font: {
+                  size: 14,
+                },
+              },
+            },
         },
         plugins: {
+            datalabels: {
+              display: false,
+            },
             legend: {
                 position: 'right' as 'right',
                 labels: {
@@ -157,7 +180,15 @@ const PopulationTrend= (props: any) => {
             },
             tooltips: {
                 enabled: true
-           }
+           },
+           title: {
+            display: true,
+            text: `Population trend for ${selectedSpecies}`,
+            font: {
+              size: 16,
+              weight: 'bold' as 'bold',
+            },
+          },
         }
     }
     
