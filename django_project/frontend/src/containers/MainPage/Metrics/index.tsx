@@ -201,7 +201,7 @@ const Metrics = () => {
 
                 {showCharts ? (
                         <Grid container spacing={2} ref={contentRef}>
-{/*                             {selectedSpecies && hasEmptyPopulationTrend && (
+                           {selectedSpecies && hasEmptyPopulationTrend && (
                                 <Grid item xs={12} md={6}>
                                     <PopulationTrend 
                                         selectedSpecies={selectedSpecies} 
@@ -213,7 +213,7 @@ const Metrics = () => {
                                         onEmptyDatasets={handleEmptyPopulationTrend}
                                     />
                                 </Grid>
-                            )} */}
+                            )}
 
 
                             {selectedSpecies && hasEmptyPopulationCategory && (
