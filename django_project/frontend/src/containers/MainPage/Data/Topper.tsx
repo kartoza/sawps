@@ -5,16 +5,18 @@ import { RootState } from "../../../app/store";
 
 
 interface TopperProps {
-    activity: string;
-    organisationId: string;
-    propertyId: string;
-    endYear: number;
-    startYear: number;
-    species: string;
+    title?: string;
+    activity?: string;
+    organisationId?: string;
+    propertyId?: string;
+    endYear?: number;
+    startYear?: number;
+    species?: string;
+    on_charts?: boolean;
 }
 
 
-const Topper = () => {
+const Topper: React.FC<TopperProps> = ({ title = "SAWPS SUMMARY REPORT", ...props }) => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -38,7 +40,7 @@ const Topper = () => {
           <Box>
               <Box padding={'10px'}>
                   <Box borderBottom={'thin solid'}>
-                      <b>SAWPS SUMMARY REPORT</b>
+                      <b>{title}</b>
                   </Box>
                   <Box>
                       <Box>
@@ -82,12 +84,14 @@ const Topper = () => {
                               <Grid item xs>
                                   <img src="/static/images/separator.svg" alt='Separator'/>
                               </Grid>
+                              {!props.on_charts && (
                               <Grid item xs>
                                   <Box><img src="/static/images/activity-topper.svg" alt='Activity image'/></Box>
                                   <Box className={'text-content'}>
                                       <b>{activityCount} {activityCount > 1 ? 'Activities' : 'Activity'}</b>
                                   </Box>
                               </Grid>
+                              )}
                           </Grid>
                       </Box>
                   </Box>
@@ -100,9 +104,11 @@ const Topper = () => {
               <Box>
                   <b>Property list</b>: {propertyName}
               </Box>
-              <Box>
-                  <b>Activity list</b>: {activityName}
-              </Box>
+              {!props.on_charts && (
+                <Box>
+                    <b>Activity list</b>: {activityName}
+                </Box>
+              )}
           </Box>
       </Box>
     )
