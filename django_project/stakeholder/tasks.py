@@ -96,5 +96,6 @@ def update_property_short_code(organisation_id):
     prov_orgs: Union[QuerySet, List[dict]] = Property.objects.filter(
         organisation_id=organisation_id
     ).values('province', 'organisation').distinct()
+    print(prov_orgs)
     for prov_org in prov_orgs:
         batch_short_code_update(prov_org['province'], prov_org['organisation'])

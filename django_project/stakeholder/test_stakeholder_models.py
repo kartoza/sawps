@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.db.models.signals import post_save
 
 from property.models import Province
+from property.factories import PropertyFactory
 from regulatory_permit.models import DataUsePermission
 from stakeholder.factories import (
     loginStatusFactory,
@@ -192,6 +193,11 @@ class TestUserLogin(TestCase):
         self.assertEqual(User.objects.count(), 2)
 
 
+@override_settings(
+    CELERY_ALWAYS_EAGER=True,
+    BROKER_BACKEND='memory',
+    CELERY_EAGER_PROPAGATES_EXCEPTIONS=True
+)
 class OrganizationTestCase(TestCase):
     """Organization test case."""
 
@@ -209,7 +215,7 @@ class OrganizationTestCase(TestCase):
             id=self.organization.id).name)
         self.assertEqual(
             self.organization.short_code,
-            'CA1001'
+            'CA0001'
         )
 
     def test_update_organization(self):
@@ -217,11 +223,23 @@ class OrganizationTestCase(TestCase):
         province, created = Province.objects.get_or_create(
                     name="Limpopo"
         )
+        property_1 = PropertyFactory.create(
+            organisation=self.organization,
+            province=province
+        )
+        property_2 = PropertyFactory.create(
+            organisation=self.organization,
+            province=province
+        )
         self.organization.name = 'test'
         self.organization.national = True
         self.organization.province = province
         self.organization.save()
         self.organization.refresh_from_db()
+        property_1.refresh_from_db()
+        property_2.refresh_from_db()
+        print(property_1.short_code)
+        print(property_2.short_code)
         self.assertEqual(Organisation.objects.get(
             id=self.organization.id).name, 'test')
         self.assertEqual(Organisation.objects.filter(
@@ -232,7 +250,7 @@ class OrganizationTestCase(TestCase):
         # It is currently not updated.
         self.assertEqual(
             self.organization.short_code,
-            'LICA1001'
+            'LITE0001'
         )
 
     def test_delete_organization(self):

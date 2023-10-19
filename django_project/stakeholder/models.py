@@ -115,51 +115,32 @@ class Organisation(models.Model):
 
     def get_short_code(
         self,
-        province_name: str = None,
-        organisation_name: str = None,
         with_digit: bool = True
     ) -> str:
-        from frontend.utils.organisation import get_abbreviation
+        from stakeholder.utils import get_organisation_short_code
 
-        if not province_name:
-            province_name = self.province.name if self.province else ''
-
-        organisation_name = organisation_name if organisation_name else self.name
-
-        province = get_abbreviation(
-            province_name
-        ) if province_name else ''
-        organisation = get_abbreviation(organisation_name)
-
-        if with_digit:
-            # instead of using DB count, take next digit based on
-            # the latest digit
-            try:
-                digit = int(
-                    Organisation.objects.filter(
-                        province__name=province_name,
-                        name=organisation_name
-                    ).latest('short_code').short_code[-4:]
-                )
-            except Organisation.DoesNotExist:
-                digit = 1
-            digit = "{:04d}".format(digit + 1)
-            return f"{province}{organisation}{digit}"
-        else:
-            return f"{province}{organisation}"
+        province_name = self.province.name if self.province else ''
+        organisation_name = self.name
+        return get_organisation_short_code(
+            province_name=province_name,
+            organisation_name=organisation_name,
+            with_digit=with_digit,
+            OrganisationModel=Organisation
+        )
 
 
 @receiver(pre_save, sender=Organisation)
 def organisation_pre_save(
     sender, instance: Organisation, *args, **kwargs
 ):
-    print('org post_save')
+    from stakeholder.utils import get_organisation_short_code
+
     if instance.id:
         old_org: Organisation = Organisation.objects.get(id=instance.id)
         is_name_changed = old_org.name != instance.name
         is_province_changed = old_org.province != instance.province
         if any([is_province_changed, is_name_changed]):
-            instance.short_code = instance.get_short_code(
+            instance.short_code = get_organisation_short_code(
                 province_name=instance.province.name if instance.province else '',
                 organisation_name=instance.name
             )
@@ -175,7 +156,6 @@ def organisation_post_save(
     from stakeholder.tasks import update_property_short_code
 
     if not created and not getattr(instance, 'skip_post_save', True):
-        print('org post_save')
         update_property_short_code.delay(instance.id)
 
 

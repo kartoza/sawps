@@ -97,11 +97,11 @@ class Property(models.Model):
 
 
 @receiver(pre_save, sender=Property)
-def organisation_pre_save(
+def property_pre_save(
     sender, instance: Property, *args, **kwargs
 ):
     from property.utils import get_property_short_code
-    print('prop post_save')
+
     if instance.id:
         old_property: Property = Property.objects.get(id=instance.id)
         is_name_changed = old_property.name != instance.name
@@ -111,7 +111,8 @@ def organisation_pre_save(
             instance.short_code = get_property_short_code(
                 province_name=instance.province.name if instance.province else '',
                 organisation_name=instance.organisation.name,
-                property_name=instance.name
+                property_name=instance.name,
+                with_digit=True
             )
             instance.skip_post_save = False
     else:

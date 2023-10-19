@@ -34,7 +34,7 @@ def get_property_short_code(
     province_name: str,
     organisation_name: str,
     property_name: str,
-    with_digit: bool
+    with_digit: bool = True
 ):
     from frontend.utils.organisation import get_abbreviation
     province = get_abbreviation(
@@ -50,16 +50,15 @@ def get_property_short_code(
     if with_digit:
         # instead of using DB count, take next digit based on
         # the latest digit
-        try:
-            digit = int(
-                Property.objects.filter(
-                    province__name=province_name,
-                    organisation__name=organisation,
-                    name=property_name
-                ).latest('short_code').short_code[-4:]
-            )
-        except Property.DoesNotExist:
-            digit = 1
+
+        obj_latest_code = Property.objects.filter(
+            province__name=province_name,
+            organisation__name=organisation_name
+        ).order_by('short_code').last()
+
+        digit = 1
+        if obj_latest_code:
+            digit = int(obj_latest_code.short_code[-4:]) + 1
         digit = "{:04d}".format(digit)
         return f"{province}{organisation}{property_abr}{digit}"
     else:

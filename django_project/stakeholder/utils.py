@@ -23,16 +23,14 @@ def get_organisation_short_code(
     if with_digit:
         # instead of using DB count, take next digit based on
         # the latest digit
-        try:
-            digit = int(
-                OrganisationModel.objects.filter(
-                    province__name=province_name,
-                    name=organisation_name
-                ).latest('short_code').short_code[-4:]
-            )
-        except OrganisationModel.DoesNotExist:
-            digit = 1
-        digit = "{:04d}".format(digit + 1)
+        obj_latest_code = Organisation.objects.filter(
+            province__name=province_name
+        ).order_by('short_code').last()
+
+        digit = 1
+        if obj_latest_code:
+            digit = int(obj_latest_code.short_code[-4:]) + 1
+        digit = "{:04d}".format(digit)
         return f"{province}{organisation}{digit}"
     else:
         return f"{province}{organisation}"
