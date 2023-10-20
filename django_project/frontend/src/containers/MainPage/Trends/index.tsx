@@ -1,12 +1,7 @@
-import React, { useEffect, useState } from "react";
-import {alpha, Box, Button, Checkbox, Grid, ListItemText, Typography} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {alpha, Box, Button, Grid} from "@mui/material";
 
-import OverviewCardsHolder, {FrontPageSpecies} from '../../../components/LandingPage/LandingPagePopulationOverview/OverviewCardsHolder'
-import Topper from "../Data/Topper";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
+import {FrontPageSpecies} from '../../../components/LandingPage/LandingPagePopulationOverview/OverviewCardsHolder'
 import Loading from "../../../components/Loading";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
@@ -58,7 +53,7 @@ const Trends = () => {
                   </Grid>
                 }
                 {loading ? <Loading/> : (
-                  <Box className="downlodBtn">
+                  <Box className="downloadBtn-Trend">
                     <Button onClick={(e) => {
                         alert('This is experiemntal feature. The JSON document does not yet exist.')
                     }} variant="contained" color="primary">

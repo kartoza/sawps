@@ -262,6 +262,10 @@ function Filter(props: any) {
     }, [selectedSpecies])
 
     useEffect(() => {
+        dispatch(toggleSpecies(selectedSpecies));
+    }, [selectedSpecies])
+
+    useEffect(() => {
         const values = selectedInfo.join(',')
         dispatch(setSelectedInfoList(values));
     }, [selectedInfo])
