@@ -77,6 +77,7 @@ const Metrics = () => {
     const [hasEmptyPopulationEstimateCategoryCount, setHasEmptyPopulationEstimateCategoryCount] = useState(true);
     const [hasEmptyPopulationEstimateCategoryCountPercentage, setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage] = useState(true);
     const [hasEmptyPropertyAvailable, setHasEmptyPropertyAvailable] = useState(true);
+    const [hasEmptyAreaAvailable, setHasEmptyAreaAvailable] = useState(true);
 
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery();
     const [userRoles, setUserRoles] = useState([]);
@@ -128,6 +129,9 @@ const Metrics = () => {
     };
     const handleEmptyPopulationEstimateCategoryCountPercentage = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(isEmpty);
+    };
+    const handleEmptyAreaAvailable = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
+        setHasEmptyAreaAvailable(isEmpty);
     };
 
     const imageUrl = 'http://localhost:8000/static/images/icons/download.svg';
@@ -222,6 +226,7 @@ const Metrics = () => {
         setHasEmptyTotalCountPerActivityPercentage(true)
         setHasEmptyPopulationEstimateCategoryCount(true)
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
+        setHasEmptyAreaAvailable(true)
     }, [propertyId, startYear, endYear, selectedSpecies])
 
     const handleDownloadPdf = async () => {
@@ -645,6 +650,7 @@ const Metrics = () => {
                             
                             {
                             constants.canViewAreaAvailable && 
+                            hasEmptyAreaAvailable && 
                             areaData.map((data, index) => (
                                 <Grid container key={index} item xs={12} md={6} ref={contentRefAreaAvailable}>
                                     {data?.area?.owned_species ? (
@@ -652,6 +658,7 @@ const Metrics = () => {
                                             loading={loading}
                                             areaData={data?.area?.owned_species}
                                             species_name={data?.common_name_varbatim}
+                                            onEmptyDatasets={handleEmptyAreaAvailable}
                                         />
                                     ) : null}
                                     {iconsHidden ? null : ( 
