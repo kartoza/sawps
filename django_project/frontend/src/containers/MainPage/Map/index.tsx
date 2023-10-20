@@ -653,7 +653,7 @@ export default function Map(props: MapInterface) {
             let _provinceCounts = response.data['province'] as PopulationCountLegend[]
             let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
             dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
-            drawPropertiesLayer(true, map.current, mapTheme, true, _provinceCounts, _propertiesCounts)
+            drawPropertiesLayer(true, map.current, mapTheme, true, _propertiesCounts, _provinceCounts)
           } else {
             dispatch(setPopulationCountLegends([[], []]))
             drawPropertiesLayer(false, map.current, mapTheme, true)
