@@ -88,7 +88,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      ![Activity Reports Table](./img/reports-5.png)
 
-     ##### Activity Types
+     **Activity Types**
 
      The Activity Report includes information for the following activity types:
 
@@ -102,7 +102,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      5. **Unplanned/Illegal Hunting**: This table offers insights into unplanned or illegal hunting activities,  for properties per year.
 
-     ##### Table Columns
+     **Table Columns**
 
      Each of the tables associated with the activity types contains the following columns:
 
@@ -116,11 +116,11 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
      - **Juvenile Male**: The count of juvenile male individuals.
      - **Juvenile Female**: The count of juvenile female individuals.
 
-     ##### Summary
+     **Summary**
 
      The `Activity Report` is a valuable filter for generating detailed reports on a variety of wildlife management activities. It provides specific information for each activity type, including property details, species information, and counts related to the activities. This report allows for a comprehensive view of wildlife management efforts, enabling informed decision-making and analysis of data related to different activities.
 
-     ##### Property Report
+     **Property Report**
 
      ![Property Reports](./img/reports-6.png)
 
@@ -128,7 +128,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      2. **Property Table**: Property table displays data for the properties.
 
-     ##### Report Columns
+     **Report Columns**
 
      The Property Report includes the following columns:
 
@@ -152,11 +152,11 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      - **Open/Close Systems**: Indicates whether the property employs open or closed systems for wildlife management.
 
-     ##### Summary
+     **Summary**
 
      The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analyzing and managing property-related information in an organized and structured manner.
 
-     ##### Species Report
+     **Species Report**
 
      ![Species Report](./img/reports-7.png)
 
@@ -164,7 +164,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      2. **Species Table**: Species report table displays data of the species for the property.
 
-     ##### Report Columns
+     **Report Columns**
 
      The Species Report includes the following columns:
 
@@ -192,7 +192,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      - **Sub-Adult Females**: The count of sub-adult female individuals within the species.
 
-     ##### Summary
+     **Summary**
 
      The Species Report is a vital filter for reporting on various species. It provides comprehensive information on species-specific data, including counts, age groups, and associated property details. This report is essential for detailed analysis and management of species-related information.
 
