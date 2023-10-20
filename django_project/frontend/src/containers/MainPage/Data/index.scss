@@ -72,6 +72,10 @@
     .MuiDataGrid-footerContainer {
         display: none;
     }
+
+    .MuiDataGrid-cellContent {
+        text-align: left;
+    }
 }
 
 .MuiMenu-list {
