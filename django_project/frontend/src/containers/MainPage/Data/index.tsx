@@ -106,7 +106,11 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        let activityParams = activityId
+        if (activityList) {
+            activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
+        }
+        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityParams}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -252,7 +256,6 @@ const DataList = () => {
                                         rows={cellRows}
                                         columns={generatedColumns}
                                         disableRowSelectionOnClick
-                                        getRowHeight={() => 'auto'}
                                         components={{
                                             Pagination: null,
                                         }}
