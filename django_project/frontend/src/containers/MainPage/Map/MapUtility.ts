@@ -369,8 +369,10 @@ const getMapPopulationStops = (legends: PopulationCountLegend[]) => {
  * @param propertiesCount 
  * @param provinceCount 
  */
-export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Map, currentTheme: MapTheme, propertiesCount?: PopulationCountLegend[], provinceCount?: PopulationCountLegend[]) => {
-    removePropertiesLayer(mapObj)
+export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplibregl.Map, currentTheme: MapTheme, shouldRemoveFirst: boolean, propertiesCount?: PopulationCountLegend[], provinceCount?: PopulationCountLegend[]) => {
+    if (shouldRemoveFirst) {
+        removePropertiesLayer(mapObj)
+    }
     if (!showPopulationCount) {
         addLayerToMap('properties', mapObj, {
             "id": "properties",

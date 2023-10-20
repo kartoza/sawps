@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import axios from 'axios';
 import {v4 as uuidv4} from 'uuid';
-import maplibregl, {Map as MapLibreMap, FeatureIdentifier} from 'maplibre-gl';
+import maplibregl, {Map as MapLibreMap, FeatureIdentifier, IControl} from 'maplibre-gl';
 import MapboxDraw, { constants as MapboxDrawConstant } from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import {RootState} from '../../../app/store';
@@ -42,7 +42,8 @@ import {
   getMapPopupDescription,
   addParcelInvisibleFillLayers,
   drawPropertiesLayer,
-  MAX_PROVINCE_ZOOM_LEVEL
+  MAX_PROVINCE_ZOOM_LEVEL,
+  MIN_PROVINCE_ZOOM_LEVEL
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -104,6 +105,7 @@ export default function Map(props: MapInterface) {
   const uploadMode = useAppSelector((state: RootState) => state.uploadState.uploadMode)
   const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
   const mapTheme = useAppSelector((state: RootState) => state.mapState.theme)
+  const [zoom, setZoom] = useState(5)
   const mapContainer = useRef(null);
   const map = useRef(null);
   const mapDraw = useRef(null);
@@ -112,6 +114,7 @@ export default function Map(props: MapInterface) {
   const [boundaryDigitiseSession, setBoundaryDigitiseSession] = useState(null)
   const mapNavControl = useRef(null)
   const mapPopupRef = useRef(null)
+  const mapLegendControlRef = useRef(null)
   const [highlightedParcel, setHighlightedParcel] = useState<FeatureIdentifier>(getEmptyFeature())
   // Map Properties Filters
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -342,9 +345,9 @@ export default function Map(props: MapInterface) {
     if (map.current.isStyleLoaded()) {
       dispatch(setMapReady(true))
       if (selectedSpecies.length > 0) {
-        drawPropertiesLayer(true, map.current, mapTheme, propertiesCounts, provinceCounts)
+        drawPropertiesLayer(true, map.current, mapTheme, false, propertiesCounts, provinceCounts)
       } else {
-        drawPropertiesLayer(false, map.current, mapTheme)
+        drawPropertiesLayer(false, map.current, mapTheme, false)
       }
       let enableParcelLayers = true;
       if (userInfoData) {
@@ -360,6 +363,27 @@ export default function Map(props: MapInterface) {
   }, [mapTheme, selectedSpecies, provinceCounts, propertiesCounts])
 
   useEffect(() => {
+    if (!map.current) return;
+    if (!isMapReady) return;
+    // update the legends if we need to show it
+    if (mapLegendControlRef.current) {
+      let _legendObj: LegendControl<IControl> = mapLegendControlRef.current
+      if (_legendObj.getCurrentZoom() === zoom) return;
+      if (selectedSpecies) {
+        if (zoom >= MIN_PROVINCE_ZOOM_LEVEL && zoom <= MAX_PROVINCE_ZOOM_LEVEL && provinceCounts) {
+          _legendObj.onUpdateLegends(zoom, selectedSpecies, provinceCounts)
+        } else if (zoom > MIN_SELECT_PROPERTY_ZOOM_LEVEL && propertiesCounts) {
+          _legendObj.onUpdateLegends(zoom, selectedSpecies, propertiesCounts)
+        } else {
+          _legendObj.onClearLegends()
+        }
+      } else {
+        _legendObj.onClearLegends()
+      }
+    }
+  }, [zoom, provinceCounts, propertiesCounts])
+
+  useEffect(() => {
     if (mapTheme === MapTheme.None) return;
     if (!isSuccess) return;
     if (map.current) {
@@ -368,6 +392,9 @@ export default function Map(props: MapInterface) {
       map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}&session=${dynamicMapSession}`)
       if (mapNavControl.current) {
         mapNavControl.current.updateThemeSwitcherIcon(mapTheme)
+      }
+      if (mapLegendControlRef.current) {
+        mapLegendControlRef.current.onThemeChanged(mapTheme)
       }
     } else if (dynamicMapSession) {
       map.current = new maplibregl.Map({
@@ -383,9 +410,10 @@ export default function Map(props: MapInterface) {
         initialTheme: mapTheme,
         onThemeSwitched: () => { dispatch(toggleMapTheme()) }
       })
+      mapLegendControlRef.current = new LegendControl()
       map.current.addControl(mapNavControl.current, 'bottom-left')
       map.current.addControl(mapNavControl.current.getExportControl(), 'bottom-left')
-      map.current.addControl(new LegendControl(), 'bottom-right')
+      map.current.addControl(mapLegendControlRef.current, 'bottom-left')
       map.current.on('load', () => {
         map.current.on('mouseenter', 'properties', onMapMouseEnter)
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
@@ -398,6 +426,7 @@ export default function Map(props: MapInterface) {
           mapPopupRef.current.remove()
           mapPopupRef.current = null
         }
+        setZoom(_zoom)
       })
     }
     return () => {
@@ -624,10 +653,10 @@ export default function Map(props: MapInterface) {
             let _provinceCounts = response.data['province'] as PopulationCountLegend[]
             let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
             dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
-            drawPropertiesLayer(true, map.current, mapTheme, _provinceCounts, _propertiesCounts)
+            drawPropertiesLayer(true, map.current, mapTheme, true, _provinceCounts, _propertiesCounts)
           } else {
             dispatch(setPopulationCountLegends([[], []]))
-            drawPropertiesLayer(false, map.current, mapTheme)
+            drawPropertiesLayer(false, map.current, mapTheme, true)
           }
           dispatch(triggerMapEvent({
             'id': uuidv4(),

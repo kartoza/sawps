@@ -47,7 +47,7 @@ export default function MapPreview(props: MapPreviewInterface) {
     useEffect(() => {
         if (!isMapReady) return;
         if (!map.current) return;
-        drawPropertiesLayer(false, map.current, MapTheme.Light)
+        drawPropertiesLayer(false, map.current, MapTheme.Light, true)
     }, [isMapReady])
 
     return (
