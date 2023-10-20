@@ -25,7 +25,6 @@ def is_organisation_member(user: User) -> bool:
         user=user
     ).exists():
         return False
-
     if not user.user_profile.current_organisation:
         return False
 
