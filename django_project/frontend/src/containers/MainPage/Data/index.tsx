@@ -252,7 +252,6 @@ const DataList = () => {
                                         rows={cellRows}
                                         columns={generatedColumns}
                                         disableRowSelectionOnClick
-                                        getRowHeight={() => 'auto'}
                                         components={{
                                             Pagination: null,
                                         }}
