@@ -53,8 +53,9 @@ class TaxonTrendPageListAPIView(APIView):
     """Fetch taxon list to display on TrendPage."""
     permission_classes = [AllowAny]
 
-    def get(self, request, species_id):
-        taxon = Taxon.objects.filter(id=species_id)
+    def get(self, request):
+        species_name = request.GET.get('species', '')
+        taxon = Taxon.objects.filter(scientific_name=species_name)
         return Response(
             status=200,
             data=FrontPageTaxonSerializer(taxon, many=True).data

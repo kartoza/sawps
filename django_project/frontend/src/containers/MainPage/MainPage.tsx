@@ -29,6 +29,7 @@ import {
 } from '../../reducers/MapState';
 import DataList from './Data';
 import Metrics from './Metrics';
+import Trends from './Trends';
 
 
 
@@ -171,7 +172,7 @@ function MainPage() {
                   <Metrics/>
                 </TabPanel>
                 <TabPanel key={3} value={selectedTab} index={3} noPadding>
-                  <Box></Box>
+                  <Trends/>
                 </TabPanel>
               </Grid>
             </Grid>

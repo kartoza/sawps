@@ -14,8 +14,9 @@ from .views import (
 urlpatterns = [
     path('api/species/front-page/list/', TaxonFrontPageListAPIView.as_view(),
          name='species-front-page'),
-    re_path(r'^api/species/trend-page/(?P<species_id>\d+)/?$', TaxonTrendPageListAPIView.as_view(),
-         name='species-trend-page'),
+    re_path(r'^api/species/trend-page/?$',
+            TaxonTrendPageListAPIView.as_view(),
+            name='species-trend-page'),
     path('species/', TaxonListAPIView.as_view(),
          name='species'),
     path('api/upload-species/', SpeciesUploader.as_view(),

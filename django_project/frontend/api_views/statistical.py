@@ -29,58 +29,124 @@ class SpeciesNationalTrend(APIView):
     permission_classes = [AllowAny]
 
     def get(self, *args, **kwargs):
-        species_id = kwargs.get('species_id')
-        species = get_object_or_404(Taxon, id=species_id)
-        cached_json_data = get_statistical_model_output_cache(
-            species, NATIONAL_TREND)
-        if cached_json_data:
-            return Response(status=200, data=cached_json_data)
-        statistical_model_output = StatisticalModelOutput.objects.filter(
-            model__taxon=species,
-            type=NATIONAL_TREND
-        ).first()
-        csv_headers = [
-            'property', 'province', 'species', 'year', 'count_total',
-            'survey_method', 'open_closed', 'property_type',
-            'property_size', 'area_available_to_species'
+        response = [
+            {
+                "year": 2019,
+                "fit": 345,
+                "se.fit": 0.0248,
+                "lower_ci": 344.9255,
+                "upper_ci": 345.0744
+            },
+            {
+                "year": 2019.5,
+                "fit": 343.0886,
+                "se.fit": 0.0222,
+                "lower_ci": 343.0221,
+                "upper_ci": 343.1551
+            },
+            {
+                "year": 2020,
+                "fit": 341.3335,
+                "se.fit": 0.0251,
+                "lower_ci": 341.2581,
+                "upper_ci": 341.4088
+            },
+            {
+                "year": 2020.5,
+                "fit": 339.8908,
+                "se.fit": 0.0297,
+                "lower_ci": 339.8016,
+                "upper_ci": 339.98
+            },
+            {
+                "year": 2021,
+                "fit": 338.9169,
+                "se.fit": 0.0324,
+                "lower_ci": 338.8197,
+                "upper_ci": 339.0141
+            },
+            {
+                "year": 2021.5,
+                "fit": 338.5679,
+                "se.fit": 0.031,
+                "lower_ci": 338.4749,
+                "upper_ci": 338.661
+            },
+            {
+                "year": 2022,
+                "fit": 339.0002,
+                "se.fit": 0.0248,
+                "lower_ci": 338.9257,
+                "upper_ci": 339.0746
+            },
+            {
+                "year": 2022.5,
+                "fit": 340.2657,
+                "se.fit": 0.0179,
+                "lower_ci": 340.2119,
+                "upper_ci": 340.3194
+            },
+            {
+                "year": 2023,
+                "fit": 341.9999,
+                "se.fit": 0.0248,
+                "lower_ci": 341.9254,
+                "upper_ci": 342.0743
+            }
         ]
-        rows = AnnualPopulation.objects.select_related(
-            'owned_species', 'survey_method',
-            'owned_species__taxon',
-            'owned_species__property', 'owned_species__property__province',
-            'owned_species__property__property_type'
-        ).filter(
-            owned_species__taxon=species
-        ).order_by('year')
-        csv_data = [
-            [
-                row.owned_species.property.name,
-                row.owned_species.property.province.name,
-                row.owned_species.taxon.scientific_name,
-                row.year,
-                row.total,
-                row.survey_method.name if row.survey_method else '',
-                'Open' if row.owned_species.property.open else 'Closed',
-                row.owned_species.property.property_type.name,
-                row.owned_species.property.property_size_ha,
-                row.owned_species.area_available_to_species
-            ] for row in rows
-        ]
-        data_filepath = write_plumber_data(csv_headers, csv_data)
-        statistical_model = (
-            statistical_model_output.model if
-            statistical_model_output else None
-        )
-        is_success, json_data = execute_statistical_model(
-            data_filepath, species, model=statistical_model)
-        # remove data_filepath
-        remove_plumber_data(data_filepath)
-        if is_success:
-            national_trend_data = json_data.get(NATIONAL_TREND, [])
-            save_statistical_model_output_cache(species, NATIONAL_TREND,
-                                                national_trend_data)
-            return Response(status=200, data=national_trend_data)
-        return Response(status=200, data=[])
+        # species_id = kwargs.get('species_id')
+        # species = get_object_or_404(Taxon, id=species_id)
+        # cached_json_data = get_statistical_model_output_cache(
+        #     species, NATIONAL_TREND)
+        # if cached_json_data:
+        #     return Response(status=200, data=cached_json_data)
+        # statistical_model_output = StatisticalModelOutput.objects.filter(
+        #     model__taxon=species,
+        #     type=NATIONAL_TREND
+        # ).first()
+        # csv_headers = [
+        #     'property', 'province', 'species', 'year', 'count_total',
+        #     'survey_method', 'open_closed', 'property_type',
+        #     'property_size', 'area_available_to_species'
+        # ]
+        # rows = AnnualPopulation.objects.select_related(
+        #     'owned_species', 'survey_method',
+        #     'owned_species__taxon',
+        #     'owned_species__property', 'owned_species__property__province',
+        #     'owned_species__property__property_type'
+        # ).filter(
+        #     owned_species__taxon=species
+        # ).order_by('year')
+        # csv_data = [
+        #     [
+        #         row.owned_species.property.name,
+        #         row.owned_species.property.province.name,
+        #         row.owned_species.taxon.scientific_name,
+        #         row.year,
+        #         row.total,
+        #         row.survey_method.name if row.survey_method else '',
+        #         'Open' if row.owned_species.property.open else 'Closed',
+        #         row.owned_species.property.property_type.name,
+        #         row.owned_species.property.property_size_ha,
+        #         row.owned_species.area_available_to_species
+        #     ] for row in rows
+        # ]
+        # data_filepath = write_plumber_data(csv_headers, csv_data)
+        # statistical_model = (
+        #     statistical_model_output.model if
+        #     statistical_model_output else None
+        # )
+        # is_success, json_data = execute_statistical_model(
+        #     data_filepath, species, model=statistical_model)
+        # # remove data_filepath
+        # remove_plumber_data(data_filepath)
+        # if is_success:
+        #     national_trend_data = json_data.get(NATIONAL_TREND, [])
+        #     save_statistical_model_output_cache(species, NATIONAL_TREND,
+        #                                         national_trend_data)
+        #     return Response(status=200, data=national_trend_data)
+        # return Response(status=200, data=[])
+        return Response(status=200, data=response)
 
 
 class SpeciesTrend(APIView):
