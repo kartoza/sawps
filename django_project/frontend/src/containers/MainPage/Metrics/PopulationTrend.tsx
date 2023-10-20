@@ -121,10 +121,8 @@ const PopulationTrend= (props: any) => {
     }
 
     useEffect(() => {
-      if (!loading) {
         fetchChartData();
-      }
-    }, [propertyId, startYear, endYear, selectedSpecies, loading]);
+    }, [propertyId, startYear, endYear, selectedSpecies]);
 
 
     if(chartData === null){
