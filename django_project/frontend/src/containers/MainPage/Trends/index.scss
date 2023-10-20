@@ -1,0 +1,141 @@
+.bgGreen {
+    background-color: #86BC8B;
+    width: 100%;
+    display: flex;
+    padding: 6px;
+    margin-bottom: 10px;
+    min-width: 120px;
+
+    .selectBox {
+        margin-left: auto;
+        width: 300px;
+        background-color: #fff;
+        text-align: left;
+
+        .MuiInputBase-formControl {
+            height: 44px;
+        }
+
+        label.MuiFormLabel-root {
+            margin-bottom: 0;
+            top: -6px;
+        }
+
+        .MuiFormLabel-filled[data-shrink="false"] {
+            display: none;
+        }
+
+        fieldset {
+            border: none;
+        }
+
+        #demo-simple-select {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    }
+}
+
+.sidebarBox .selectBox {
+    .MuiFormControlLabel-root {
+        align-items: flex-start;
+        span.MuiButtonBase-root{
+            padding-top: 0;
+        }
+        .MuiTypography-root{
+            text-align: left;
+        }
+    }
+}
+
+.downlodBtn {
+	display: flex;
+	gap: 15px;
+	flex-direction: row-reverse;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+.dataTable {
+    width: 100%;
+
+    input[type=checkbox] {
+        width: 100%;
+        height: 100%;
+    }
+
+    .MuiDataGrid-columnHeaderTitleContainerContent *,
+    .MuiDataGrid-cellCheckbox * {
+        color: #000;
+    }
+
+    .MuiDataGrid-footerContainer {
+        display: none;
+    }
+}
+
+.MuiMenu-list {
+    .MuiCheckbox-root {
+        color: #000;
+    }
+}
+
+.data-table {
+    width: 100%;
+    display: flex;
+    padding: 6px;
+    margin-bottom: 10px;
+    min-width: 120px;
+    color: white;
+}
+.dataTable-auto{
+    overflow: auto;
+    max-height: calc(100vh - 260px);
+    min-height: calc(100vh - 260px);
+}
+.dataTable-auto .MuiDataGrid-virtualScroller{
+    max-height: 704px;
+}
+.dataTable-auto .MuiDataGrid-root{
+   margin-bottom: 0px;
+}
+.dataTable-auto .MuiDataGrid-columnHeaderTitleContainer {
+    text-align: left;
+}
+
+.dataContainer {
+    padding: 5px;
+}
+
+.topper-container {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+    background-color: #EFEFEF;
+    min-width: 120px;
+    border: solid medium #97C19C;
+
+    .topper-grey {
+        background-color: #CCCCCC;
+        border-top: solid medium #97C19C;
+    }
+
+    .topper-detail {
+        width: 75%;
+        margin: auto;
+
+        .text-content {
+            width: max-content;
+        }
+
+        .MuiGrid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            img {
+                margin: auto;
+            }
+        }
+    }
+}

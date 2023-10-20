@@ -653,29 +653,31 @@ function Filter(props: any) {
                         </List>
                     </Box>
                 }
-                <Box>
-                    <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/Activity.svg" alt='Property image' />
-                        <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
+                 {tab !== 'trends' &&
+                   <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/Activity.svg" alt='Property image' />
+                            <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isActivityLoading ? <Loading /> :
+                                (
+                                    <AutoCompleteCheckbox
+                                        options={activityList}
+                                        selectedOption={selectedActivity}
+                                        singleTerm={'Activity'}
+                                        pluralTerms={'Activities'}
+                                        selectAllFlag={selectAllActivity}
+                                        setSelectAll={(val) => {
+                                            setSelectAllActivity(val)
+                                        }}
+                                        setSelectedOption={setSelectedActivity}
+                                      />
+                                )
+                            }
+                        </List>
                     </Box>
-                    <List className='ListItem' component="nav" aria-label="">
-                        {loading || isActivityLoading ? <Loading /> :
-                            (
-                                <AutoCompleteCheckbox
-                                    options={activityList}
-                                    selectedOption={selectedActivity}
-                                    singleTerm={'Activity'}
-                                    pluralTerms={'Activities'}
-                                    selectAllFlag={selectAllActivity}
-                                    setSelectAll={(val) => {
-                                        setSelectAllActivity(val)
-                                    }}
-                                    setSelectedOption={setSelectedActivity}
-                                  />
-                            )
-                        }
-                    </List>
-                </Box>
+                 }
                 {
                     allowOrganisationSelection && <Box>
                         <Box className='sidebarBoxHeading'>
@@ -731,41 +733,48 @@ function Filter(props: any) {
                         </List>
                     </Box>
                 }
-                <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/Clock.svg" alt='watch image' />
-                    <Typography color='#75B37A' fontSize='medium'>Year</Typography>
-                </Box>
-                <Box className='sliderYear'>
-                    <Slider
-                        value={[startYear, endYear]}
-                        onChange={handleChange}
-                        valueLabelDisplay="auto"
-                        min={yearRangeStart}
-                        max={yearRangeEnd}
-                        style={{ color: 'black' }}
-                    />
-                </Box>
 
-                <Box className='formboxInput'>
-                    <Box className='form-inputFild'>
-                        <TextField type="number" size='small' value={localStartYear} onChange={(e: any) => handleStartYearChange(e.target.value)} />
-                        <Typography className='formtext'>From</Typography>
-                    </Box>
-                    <Box className='form-inputFild right-flids'>
-                        <TextField type="number" size='small' value={localEndYear} onChange={(e: any) => handleEndYearChange(e.target.value)} />
-                        <Typography className='formtext'>To</Typography>
-                    </Box>
-                </Box>
+                {tab != 'trends' &&
+                  <Box>
+                      <Box className='sidebarBoxHeading'>
+                          <img src="/static/images/Clock.svg" alt='watch image'/>
+                          <Typography color='#75B37A' fontSize='medium'>Year</Typography>
+                      </Box>
+                      <Box className='sliderYear'>
+                          <Slider
+                            value={[startYear, endYear]}
+                            onChange={handleChange}
+                            valueLabelDisplay="auto"
+                            min={yearRangeStart}
+                            max={yearRangeEnd}
+                            style={{color: 'black'}}
+                          />
+                      </Box>
 
-                <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/Layers.svg" alt='Filter image' />
-                    <Typography color='#75B37A' fontSize='medium'>Spatial filters</Typography>
-                </Box>
-                <Box>
-                    <SpatialFilter loading={loading}
-                                   onSpatialFilterValuesUpdate={(spatialFilterValues: string[]) =>
-                                       dispatch(setSpatialFilterValues(spatialFilterValues))}/>
-                </Box>
+                      <Box className='formboxInput'>
+                          <Box className='form-inputFild'>
+                              <TextField type="number" size='small' value={localStartYear}
+                                         onChange={(e: any) => handleStartYearChange(e.target.value)}/>
+                              <Typography className='formtext'>From</Typography>
+                          </Box>
+                          <Box className='form-inputFild right-flids'>
+                              <TextField type="number" size='small' value={localEndYear}
+                                         onChange={(e: any) => handleEndYearChange(e.target.value)}/>
+                              <Typography className='formtext'>To</Typography>
+                          </Box>
+                      </Box>
+
+                      <Box className='sidebarBoxHeading'>
+                          <img src="/static/images/Layers.svg" alt='Filter image'/>
+                          <Typography color='#75B37A' fontSize='medium'>Spatial filters</Typography>
+                      </Box>
+                      <Box>
+                          <SpatialFilter loading={loading}
+                                         onSpatialFilterValuesUpdate={(spatialFilterValues: string[]) =>
+                                           dispatch(setSpatialFilterValues(spatialFilterValues))}/>
+                      </Box>
+                  </Box>
+                }
             </Box>
         </Box >
     )
