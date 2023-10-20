@@ -26,6 +26,13 @@ class MapSession(models.Model):
         unique=True
     )
 
+    species = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        default=''
+    )
+
     created_date = models.DateTimeField()
     expired_date = models.DateTimeField()
 

@@ -7,8 +7,10 @@ from typing import Tuple, List
 import requests
 import io
 import gzip
+import datetime
 from django.core.cache import cache
 from django.db import connection
+from django.db.utils import ProgrammingError
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, Http404, HttpResponseForbidden
@@ -65,15 +67,18 @@ class MapSessionBase(APIView):
     def generate_session(self):
         session_uuid = self.request.GET.get('session', None)
         session = MapSession.objects.filter(uuid=session_uuid).first()
+        filter_species = self.get_species_filter()
         if session is None:
             session = MapSession.objects.create(
                 user=self.request.user,
                 created_date=timezone.now(),
-                expired_date=self.request.session.get_expiry_date()
+                expired_date=timezone.now() + datetime.timedelta(days=2)
             )
+        session.species = filter_species
+        session.save(update_fields=['species'])
         if self.can_view_properties_layer():
             generate_map_view(
-                session, False, 0,
+                session, False,
                 self.request.data.get('start_year', None),
                 self.request.data.get('end_year', None),
                 self.request.data.get('species', None),
@@ -82,9 +87,9 @@ class MapSessionBase(APIView):
                 self.request.data.get('spatial_filter_values', None),
                 self.request.data.get('property', None)
             )
-        if self.can_view_province_layer():
+        if self.can_view_province_layer() and filter_species:
             generate_map_view(
-                session, True, 0,
+                session, True,
                 self.request.data.get('start_year', None),
                 self.request.data.get('end_year', None),
                 self.request.data.get('species', None),
@@ -183,15 +188,19 @@ class PropertiesLayerMVTTiles(MapSessionBase):
     def generate_tile(self, sql, query_values):
         if sql is None:
             return []
-        tile = bytes()
-        with connection.cursor() as cursor:
-            raw_sql = (
-                'SELECT ({sub_sqls}) AS data'
-            ).format(sub_sqls=sql)
-            cursor.execute(raw_sql, query_values)
-            row = cursor.fetchone()
-            tile = row[0]
-        return tile
+        try:
+            tile = bytes()
+            with connection.cursor() as cursor:
+                raw_sql = (
+                    'SELECT ({sub_sqls}) AS data'
+                ).format(sub_sqls=sql)
+                cursor.execute(raw_sql, query_values)
+                row = cursor.fetchone()
+                tile = row[0]
+            return tile
+        except ProgrammingError:
+            # view is deleted
+            return []
 
     def generate_properties_layer(
             self,
@@ -259,7 +268,10 @@ class PropertiesLayerMVTTiles(MapSessionBase):
         """
         sqls = []
         query_values = []
-        if self.can_view_province_layer():
+        if (
+            self.can_view_province_layer() and session.species and
+            should_generate_layer(z, PROVINCE_LAYER_ZOOMS)
+        ):
             province_sql, province_val = (
                 self.generate_province_layer(
                     session, z, x, y
@@ -468,16 +480,14 @@ class PopulationCountLegends(MapSessionBase):
 
     def post(self, *args, **kwargs):
         species = self.get_species_filter()
-        if species is None:
-            return Response(status=400, data='Species filter is mandatory!')
         session = self.generate_session()
         province = []
-        if self.can_view_province_layer():
+        if self.can_view_province_layer() and species:
             province = generate_population_count_categories(
                 True, session, species
             )
         properties = []
-        if self.can_view_properties_layer():
+        if self.can_view_properties_layer() and species:
             properties = generate_population_count_categories(
                 False, session, species
             )

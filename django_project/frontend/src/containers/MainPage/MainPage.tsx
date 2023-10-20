@@ -160,7 +160,7 @@ function MainPage() {
               </Grid>
               <Grid item className="TabPanels">
                 <TabPanel key={0} value={selectedTab} index={-1} indexList={[0, 3]} noPadding>
-                  <Map />
+                  <Map isDataUpload={selectedTab === 3} />
                 </TabPanel>
                 <TabPanel key={1} value={selectedTab} index={1} noPadding>
                   <DataList/>

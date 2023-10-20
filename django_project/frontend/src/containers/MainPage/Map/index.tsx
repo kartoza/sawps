@@ -89,7 +89,11 @@ const getEmptyFeature = (): FeatureIdentifier => {
   }
 }
 
-export default function Map() {
+interface MapInterface {
+  isDataUpload?: boolean
+}
+
+export default function Map(props: MapInterface) {
   const dispatch = useAppDispatch()
   const contextLayers = useAppSelector((state: RootState) => state.layerFilter.contextLayers)
   const isMapReady = useAppSelector((state: RootState) => state.mapState.isMapReady)
@@ -334,7 +338,6 @@ export default function Map() {
   /* Called when mapTheme is changed */
   const mapStyleOnLoaded = useCallback(() => {
     if (map.current.isStyleLoaded()) {
-      console.log('styledata loaded ', selectedSpecies)
       dispatch(setMapReady(true))
       if (selectedSpecies.length > 0) {
         drawPropertiesLayer(true, map.current, mapTheme, propertiesCounts, provinceCounts)
@@ -567,19 +570,31 @@ export default function Map() {
   useEffect(() => {
     // rebuild query parameters to enable choropleth layers
     let _queryParams = ''
+    let _data = {}
     if (dynamicMapSession) {
       _queryParams = `session=${dynamicMapSession}`
     }
-    let _data = {
-      'start_year': startYear,
-      'end_year': endYear,
-      'species': selectedSpecies,
-      'organisation': organisationId,
-      'activity': activityId,
-      'spatial_filter_values': spatialFilterValues,
-      'property': propertyId 
+    if (props.isDataUpload) {
+      _data = {
+        'start_year': startYear,
+        'end_year': endYear,
+        'species': '',
+        'organisation': 'all',
+        'activity': 'all',
+        'spatial_filter_values': '',
+        'property': 'all' 
+      }
+    } else {
+      _data = {
+        'start_year': startYear,
+        'end_year': endYear,
+        'species': selectedSpecies,
+        'organisation': organisationId,
+        'activity': activityId,
+        'spatial_filter_values': spatialFilterValues,
+        'property': propertyId 
+      }
     }
-    console.log('rebuild query parameters ', _queryParams, _data)
     fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies.length > 0)
   }, [mapTheme, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
@@ -589,8 +604,12 @@ export default function Map() {
     axios.post(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`, bodyData).then((response) => {
       if (response.data) {
         let _session = response.data['session']
-        if (map.current) {
-          console.log('redraw map showPopulationCount', showPopulationCount)
+        if (map.current && _session !== dynamicMapSession) {
+          let _provinceCounts = response.data['province'] as PopulationCountLegend[]
+          let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
+          dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
+          dispatch(setDynamicMapSession(_session))
+        } else if (map.current) {
           if (showPopulationCount) {
             let _provinceCounts = response.data['province'] as PopulationCountLegend[]
             let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
@@ -607,14 +626,13 @@ export default function Map() {
           }))
         } else {
           // initial map state will not have DynamicMapSession, hence map initialization depends on filters/mapTheme changed
-          console.log('set dynamic map session here ', _session)
           dispatch(setDynamicMapSession(_session))
         }
       }
     }).catch((error) => {
       console.log(error)
     })
-  }, 400), [mapTheme])
+  }, 400), [mapTheme, dynamicMapSession])
 
   return (
       <div className="map-wrap">

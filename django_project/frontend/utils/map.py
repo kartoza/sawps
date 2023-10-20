@@ -15,6 +15,7 @@ from core.settings.utils import absolute_path
 from species.models import Taxon
 from frontend.models.map_session import MapSession
 from frontend.utils.color import linear_gradient
+from stakeholder.models import OrganisationUser
 
 
 User = get_user_model()
@@ -162,7 +163,7 @@ def get_highlighted_layer(layer_name):
 
 
 def get_query_condition_for_population_query(
-        organisation_id: int,
+        is_province_layer: bool,
         filter_start_year: int,
         filter_end_year: int,
         filter_species_name: str,
@@ -176,47 +177,72 @@ def get_query_condition_for_population_query(
     if filter_species_name:
         sql_conditions.append('t.scientific_name=%s')
         query_values.append(filter_species_name)
+    if filter_activity and filter_activity != 'all':
+        filter_years = ''
+        if filter_start_year and filter_end_year and not is_province_layer:
+            filter_years = (
+                """AND appa.year between %s and %s"""
+            )
+        activity_sql = (
+            """
+            SELECT 1 FROM annual_population_per_activity appa
+            WHERE appa.owned_species_id=os.id
+            AND appa.activity_type_id IN %s
+            {filter_years}
+            """
+        ).format(filter_years=filter_years)
+        sql_conditions.append(
+            'exists({activity_sql})'.format(activity_sql=activity_sql)
+        )
+        query_values.append(ast.literal_eval('(' + filter_activity + ',)'))
+        if filter_years:
+            query_values.append(filter_start_year)
+            query_values.append(filter_end_year)
     if filter_start_year and filter_end_year:
         sql_conditions.append('ap.year between %s and %s')
         query_values.append(filter_start_year)
         query_values.append(filter_end_year)
-    if filter_organisation:
-        sql_conditions.append('p.organisation_id IN %s')
-        query_values.append(ast.literal_eval('(' + filter_organisation + ',)'))
-    else:
-        sql_conditions.append('p.organisation_id = any(ARRAY[]::bigint[])')
-    if filter_activity:
-        sql_conditions.append('ap.activity_type_id IN %s')
-        query_values.append(ast.literal_eval('(' + filter_activity + ',)'))
-    if filter_property:
-        sql_conditions.append('p.id IN %s')
-        query_values.append(ast.literal_eval('(' + filter_property + ',)'))
-    else:
-        sql_conditions.append('p.id = any(ARRAY[]::bigint[])')
-    if filter_spatial:
-        spatial_filter_values = tuple(
-            filter(None, filter_spatial.split(','))
-        )
-        if spatial_filter_values:
-            spatial_sql = (
-                """
-                select 1 from frontend_spatialdatavaluemodel fs2
-                inner join frontend_spatialdatamodel fs3 on
-                fs3.id = fs2.spatial_data_id
-                where fs3.property_id=p.id and fs2.context_layer_value in %s
-                """
-            )
+    if not is_province_layer:
+        # Province layer for Data Consumer does not use below filters
+        if filter_organisation:
+            if filter_organisation != 'all':
+                sql_conditions.append('p.organisation_id IN %s')
+                query_values.append(
+                    ast.literal_eval('(' + filter_organisation + ',)'))
+        else:
             sql_conditions.append(
-                'exists({spatial_sql})'.format(spatial_sql=spatial_sql)
+                'p.organisation_id = any(ARRAY[]::bigint[])')
+        if filter_property:
+            if filter_property != 'all':
+                sql_conditions.append('p.id IN %s')
+                query_values.append(
+                    ast.literal_eval('(' + filter_property + ',)'))
+        else:
+            sql_conditions.append('p.id = any(ARRAY[]::bigint[])')
+        if filter_spatial:
+            spatial_filter_values = tuple(
+                filter(None, filter_spatial.split(','))
             )
-            query_values.append(spatial_filter_values)
+            if spatial_filter_values:
+                spatial_sql = (
+                    """
+                    select 1 from frontend_spatialdatavaluemodel fs2
+                    inner join frontend_spatialdatamodel fs3 on
+                    fs3.id = fs2.spatial_data_id
+                    where fs3.property_id=p.id and
+                    fs2.context_layer_value in %s
+                    """
+                )
+                sql_conditions.append(
+                    'exists({spatial_sql})'.format(spatial_sql=spatial_sql)
+                )
+                query_values.append(spatial_filter_values)
     sql = ' AND '.join(sql_conditions)
     return sql, query_values
 
 
 def get_population_query(
         is_province_view: bool,
-        organisation_id: int,
         filter_start_year: int,
         filter_end_year: int,
         filter_species_name: str,
@@ -226,26 +252,21 @@ def get_population_query(
         filter_property: str):
     """Generate query for population count."""
     where_sql, query_values = get_query_condition_for_population_query(
-        organisation_id, filter_start_year, filter_end_year,
+        is_province_view, filter_start_year, filter_end_year,
         filter_species_name, filter_organisation, filter_activity,
         filter_spatial, filter_property
-    )
-    population_table = (
-        'annual_population_per_activity' if filter_activity else
-        'annual_population'
     )
     id_field = 'province_id' if is_province_view else 'id'
     sql = (
         """
         select p.{id_field} as id, sum(ap.total) as count
-        from {population_table} ap
+        from annual_population ap
         inner join owned_species os on os.id=ap.owned_species_id
         inner join taxon t on os.taxon_id=t.id
         inner join property p on os.property_id=p.id
         {where_sql} group by p.{id_field}
         """
     ).format(
-        population_table=population_table,
         where_sql=f'where {where_sql}' if where_sql else '',
         id_field=id_field
     )
@@ -261,15 +282,20 @@ def get_count_summary_of_population(
 
     :return: Tuple[int, int]: A tuple of (Min, Max) population count
     """
+    where_sql = ''
+    if not is_province_layer:
+        where_sql = 'WHERE count > 0'
     sql = (
         """
         select min(count), max(count) from "{view_name}"
+        {where_sql}
         """
     ).format(
         view_name=(
             session.province_view_name if is_province_layer else
             session.properties_view_name
-        )
+        ),
+        where_sql=where_sql
     )
     max = 0
     min = 0
@@ -409,7 +435,6 @@ def delete_expired_map_materialized_view():
 def generate_map_view(
         session: MapSession,
         is_province_view: bool,
-        organisation_id: int,
         filter_start_year: int = None,
         filter_end_year: int = None,
         filter_species_name: str = None,
@@ -421,13 +446,21 @@ def generate_map_view(
         drop_map_materialized_view(session.province_view_name)
     else:
         drop_map_materialized_view(session.properties_view_name)
+    if filter_organisation == 'all' and not session.user.is_superuser:
+        # get user organisation ids
+        org_ids = OrganisationUser.objects.filter(
+            user=session.user
+        ).values_list('organisation_id', flat=True)
+        filter_organisation = ','.join(map(str, org_ids))
     sub_sql, query_values = get_population_query(
-        is_province_view, organisation_id, filter_start_year,
+        is_province_view, filter_start_year,
         filter_end_year, filter_species_name, filter_organisation,
         filter_activity, filter_spatial, filter_property
     )
     table_name = 'province' if is_province_view else 'property'
-    is_choropleth_view = True if filter_species_name else False
+    pop_join = 'inner join'
+    if is_province_view:
+        pop_join = 'left join'
     sql_view = (
         """
         select p2.id, p2.name, COALESCE(population_summary.count, 0) as count
@@ -438,7 +471,7 @@ def generate_map_view(
     ).format(
         table_name=table_name,
         sub_sql=sub_sql,
-        pop_join='left join' if is_choropleth_view else 'inner join'
+        pop_join=pop_join
     )
     create_map_materialized_view(
         session.province_view_name if is_province_view else
