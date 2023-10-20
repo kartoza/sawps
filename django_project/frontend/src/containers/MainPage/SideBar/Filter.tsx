@@ -128,18 +128,36 @@ function Filter(props: any) {
                 id: "Property report",
                 name: "Property report"
             },
-            roleExists("National data consumer") ? {
-                id: "Province report",
-                name: "Province report"
-            } :  roleExists("Regional data consumer") ? {} : {
-                id: "Province report",
-                name: "Province report"
-            },
             {
                 id: "Species report",
                 name: "Species report"
             },
-        ].filter(item => item.id)
+        ]
+
+        const provinceReportRoles = [
+            'National data scientist',
+            'Regional data scientist',
+            'Organisation member',
+            'Organisation manager'
+        ]
+        if (provinceReportRoles.some(roleExists)) {
+            informationList.push({
+                id: "Province report",
+                name: "Province report"
+            })
+        }
+
+        const samplingReportRoles = [
+            'National data consumer',
+            'National data scientist'
+        ]
+        if (samplingReportRoles.some(roleExists)) {
+            informationList.push({
+                id: "Sampling report",
+                name: "Sampling report"
+            })
+        }
+        informationList = informationList.sort((a, b) => a.id > b.id ? 1 : -1)
 
     }
 
