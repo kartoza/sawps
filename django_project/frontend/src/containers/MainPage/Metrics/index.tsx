@@ -272,7 +272,7 @@ const Metrics = () => {
                 {showCharts ? (
                         <Grid container spacing={2} ref={contentRef}>
                             {
-                            canViewPopulationTrend && 
+                            constants.canViewPopulationTrend && 
                             selectedSpecies && 
                             hasEmptyPopulationTrend && (
                                 <Grid item xs={12} md={6}>
@@ -290,7 +290,7 @@ const Metrics = () => {
 
 
                             {
-                            canViewPopulationCategory && 
+                            constants.canViewPopulationCategory && 
                             selectedSpecies && 
                             hasEmptyPopulationCategory && (
                                 <Grid item xs={12} md={6}>
@@ -309,7 +309,7 @@ const Metrics = () => {
                             )}
 
                              {
-                             canViewPropertyType && 
+                             constants.canViewPropertyType && 
                              hasEmptyPropertyType && (
                                 <Grid item xs={12} md={6}>
                                     <PropertyTypeBarChart 
@@ -326,7 +326,7 @@ const Metrics = () => {
 
                             
                             {
-                            canViewDensityBar && 
+                            constants.canViewDensityBar && 
                             selectedSpecies && 
                             hasEmptyDensity && (
                                 <Grid item xs={12} md={6}>
@@ -347,7 +347,7 @@ const Metrics = () => {
 
                             
                             {
-                            canViewPropertyAvailable && 
+                            constants.canViewPropertyAvailable && 
                             selectedSpecies && 
                             hasEmptyPropertyAvailable && (
                                 <Grid item xs={12} md={6}>
@@ -366,7 +366,7 @@ const Metrics = () => {
 
                             
                             {
-                            canViewAgeGroup && 
+                            constants.canViewAgeGroup && 
                             ageGroupData.map((data) => (
                                 <Grid container key={data.id} item xs={12} md={6}>
                                     <AgeGroupBarChart
@@ -382,7 +382,7 @@ const Metrics = () => {
 
                             
                             {
-                            canViewAreaAvailable && 
+                            constants.canViewAreaAvailable && 
                             hasEmptyAreaAvailable && areaData.map((data, index) => (
                                 <Grid container key={index} item xs={12} md={6}>
                                     {data?.area?.owned_species ? (
@@ -402,7 +402,7 @@ const Metrics = () => {
                             
 
                             {
-                            canViewProvinceSpeciesCount && 
+                            constants.canViewProvinceSpeciesCount && 
                             selectedSpecies && 
                             hasEmptyProvinceCount && (
                                 <Grid item xs={12} md={6}>
@@ -420,7 +420,7 @@ const Metrics = () => {
 
                             
                             {
-                            canViewProvinceSpeciesCountAsPercentage && 
+                            constants.canViewProvinceSpeciesCountAsPercentage && 
                             selectedSpecies && 
                             hasEmptyProvinceCountPercentage && (
                                 <Grid item xs={12} md={6} 
@@ -447,7 +447,7 @@ const Metrics = () => {
 
                                     
                             {
-                            canViewTotalCount && 
+                            constants.canViewTotalCount && 
                             selectedSpecies && 
                             hasEmptyTotalCountPerActivity && (
                                 <Grid item xs={12} md={6}
@@ -473,7 +473,7 @@ const Metrics = () => {
 
                             
                             {
-                            canViewCountAsPercentage && 
+                            constants.canViewCountAsPercentage && 
                             selectedSpecies &&
                             hasEmptyTotalCountPerActivityPercentage && (
                                 <Grid item xs={12} md={6}
@@ -498,7 +498,7 @@ const Metrics = () => {
 
                                 
                             {
-                            canViewPopulationEstimate && 
+                            constants.canViewPopulationEstimate && 
                             selectedSpecies && 
                             hasEmptyPopulationEstimateCategoryCount && (
                                 <Grid item xs={12} md={6}
@@ -525,7 +525,7 @@ const Metrics = () => {
                            
                            
                             {
-                            canViewPopulationEstimateAsPercentage && 
+                            constants.canViewPopulationEstimateAsPercentage && 
                             selectedSpecies && 
                             hasEmptyPopulationEstimateCategoryCountPercentage && (
                                 <Grid item xs={12} md={6}
