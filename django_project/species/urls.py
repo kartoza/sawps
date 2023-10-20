@@ -5,11 +5,17 @@ from species.api_views.upload_species import (
     UploadSpeciesStatus,
 )
 
-from .views import TaxonFrontPageListAPIView, TaxonListAPIView
+from .views import (
+    TaxonFrontPageListAPIView,
+    TaxonListAPIView,
+    TaxonTrendPageListAPIView
+)
 
 urlpatterns = [
     path('api/species/front-page/list/', TaxonFrontPageListAPIView.as_view(),
          name='species-front-page'),
+    path(r'^api/species/trend-page/(?P<species_id>\d+)/?$', TaxonTrendPageListAPIView.as_view(),
+         name='species-trend-page'),
     path('species/', TaxonListAPIView.as_view(),
          name='species'),
     path('api/upload-species/', SpeciesUploader.as_view(),
