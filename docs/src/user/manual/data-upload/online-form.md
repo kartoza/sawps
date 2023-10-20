@@ -12,7 +12,7 @@ The data upload online form provides a convenient and structured way to enter sp
 
 1. **Species detail**: First step of data upload online form `SPECIES DETAIL`.
 
-2. **Property detail**: Showing property details alog with the image.
+2. **Property detail**: Showing property details along with the image.
 
 3. **Scientific Name**: Select the scientific name of the species from the dropdown menu. This field is mandatory.
 
@@ -80,7 +80,7 @@ The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections,
 
 2. **Introduction/Reintroduction**: The `Introduction/Reintroduction` section displays the table and form. table for relevant data in a structured tabular format, and  form for entering detailed information related to species introduction or reintroduction.
 
-    ##### Introduction/Reintroduction Table and Form
+    **Introduction/Reintroduction Table and Form**
 
     ![Introduction/Reintroduction Table and Form](./img/online-form-3.png)
 
@@ -102,11 +102,11 @@ The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections,
 
     9. **Total Count**: The total count field will automatically calculate based on the counts entered for adult males, adult females, juvenile males, and juvenile females.
 
-    10. **Founder Population**: Indicate whether the introduced or reintroduced group is considered a founder population. Use the radio buttons to select `Yes` or `No`. This is mendatory.
+    10. **Founder Population**: Indicate whether the introduced or reintroduced group is considered a founder population. Use the radio buttons to select `Yes` or `No`. This is mandatory.
 
-    11. **Event**: Select the appropriate event type from the dropdown menu. Choose the event category that best describes the introduction or reintroduction process. This field is mendatory.
+    11. **Event**: Select the appropriate event type from the dropdown menu. Choose the event category that best describes the introduction or reintroduction process. This field is mandatory.
 
-    12. **Source**: Describe the source of the introduced or reintroduced population. This field is mendatory.
+    12. **Source**: Describe the source of the introduced or reintroduced population. This field is mandatory.
 
     13. **Permit Number**: Enter the permit number.
 
@@ -116,7 +116,7 @@ The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections,
 
 3. **Off-take**: The `Off-take` section displays the table and form. Table provides a clear overview of your off-take data, and form for input data related to species off-take.
 
-    ##### Off-take Table and Form
+    **Off-take Table and Form**
 
     ![Off-take Table and Form](./img/online-form-4.png)
 
@@ -147,7 +147,6 @@ Step 3, `Review & Submit`, is the final stage of the data management process, wh
 1. **Species Detail**: The `Species Detail` section displays a summary of the species-specific information you've entered, providing an overview of species counts and other relevant details.
 
 2. **Edit Note Icon**: For editing the species detail, simply click on the `Edit Note Icon` to access and modify the species-related information.
-
 
 3. **Activity Detail**: The `Activity Detail` section provides a summary of the activity-related information you've entered, giving you an overview of the activity's attributes and data.
 
