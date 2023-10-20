@@ -402,5 +402,5 @@ urlpatterns = [
     path('api/download-data/',
          DownloadData.as_view(),
          name='download-report-data'
-    )
+         )
 ]

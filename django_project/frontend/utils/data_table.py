@@ -469,7 +469,7 @@ def write_report_to_rows(queryset, request):
     Write report rows.
     """
     reports_list = request.GET.get("reports", None)
-    path = os.path.join(settings.MEDIA_URL, "download_data")
+    path = os.path.join(settings.MEDIA_ROOT, "download_data")
     if not os.path.exists(path):
         os.mkdir(path)
 
@@ -503,7 +503,9 @@ def write_report_to_rows(queryset, request):
                             sheet_name=report_name,
                             index=False
                         )
-                return path_file
+                return settings.MEDIA_URL + 'download_data/' \
+                    + os.path.basename(path_file)
+
         csv_reports = []
         for report_name in reports_list:
             if report_name in report_functions:
@@ -515,15 +517,16 @@ def write_report_to_rows(queryset, request):
 
                 if os.path.exists(path_file):
                     os.remove(path_file)
-                    dataframe.to_csv(path_file)
-                    csv_reports.append(path_file)
+                dataframe.to_csv(path_file)
+                csv_reports.append(path_file)
         path_zip = os.path.join(path, 'data_report.zip')
         if os.path.exists(path_zip):
             os.remove(path_zip)
         with ZipFile(path_zip, 'w') as zip:
             for file in csv_reports:
                 zip.write(file, os.path.basename(file))
-        return path_zip
+        return settings.MEDIA_URL + 'download_data/' \
+            + os.path.basename(path_zip)
 
 
 def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
