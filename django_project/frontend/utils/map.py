@@ -450,7 +450,7 @@ def generate_map_view(
         # get user organisation ids
         org_ids = OrganisationUser.objects.filter(
             user=session.user
-        ).values_list('organisation_id', flat=True)
+        ).values_list('organisation_id', flat=True).distinct()
         filter_organisation = ','.join(map(str, org_ids))
     sub_sql, query_values = get_population_query(
         is_province_view, filter_start_year,

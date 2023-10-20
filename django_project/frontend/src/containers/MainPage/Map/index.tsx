@@ -41,7 +41,8 @@ import {
   isContextLayerSelected,
   getMapPopupDescription,
   addParcelInvisibleFillLayers,
-  drawPropertiesLayer
+  drawPropertiesLayer,
+  MAX_PROVINCE_ZOOM_LEVEL
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -110,6 +111,7 @@ export default function Map(props: MapInterface) {
   const [savingBoundaryDigitise, setSavingBoundaryDigitise] = useState(false)
   const [boundaryDigitiseSession, setBoundaryDigitiseSession] = useState(null)
   const mapNavControl = useRef(null)
+  const mapPopupRef = useRef(null)
   const [highlightedParcel, setHighlightedParcel] = useState<FeatureIdentifier>(getEmptyFeature())
   // Map Properties Filters
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -389,6 +391,14 @@ export default function Map(props: MapInterface) {
         map.current.on('mouseleave', 'properties', onMapMouseLeave)
       })
       map.current.on('styledata', mapStyleOnLoaded)
+      map.current.on('zoom', () => {
+        let _zoom = Math.trunc(map.current.getZoom())
+        if (_zoom < MAX_PROVINCE_ZOOM_LEVEL && mapPopupRef.current) {
+          // close popup
+          mapPopupRef.current.remove()
+          mapPopupRef.current = null
+        }
+      })
     }
     return () => {
       if (map.current) {
@@ -431,15 +441,6 @@ export default function Map(props: MapInterface) {
       let features = map.current.queryRenderedFeatures(e.point, { layers: _searchLayers })
       if (features.length) {
         const _resultLayers = features.map((e:any) => e.layer.id)
-        // display popup
-        let _description = getMapPopupDescription(features)
-        localStorage.setItem('description',_description)
-        if (_description) {
-          new maplibregl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(_description)
-            .addTo(map.current)
-        }
         if (_resultLayers.includes('properties')) {
           searchProperty(e.lngLat, (property: PropertyInterface) => {
             if (property) {
@@ -450,6 +451,15 @@ export default function Map(props: MapInterface) {
           })
         } else {
           dispatch(resetSelectedProperty())
+          // display popup
+          let _description = getMapPopupDescription(features)
+          localStorage.setItem('description',_description)
+          if (_description) {
+            mapPopupRef.current = new maplibregl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(_description)
+              .addTo(map.current)
+          }
         }
       }
     }

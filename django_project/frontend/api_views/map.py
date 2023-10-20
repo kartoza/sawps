@@ -11,7 +11,6 @@ import datetime
 from django.core.cache import cache
 from django.db import connection
 from django.db.utils import ProgrammingError
-from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from rest_framework.views import APIView
@@ -47,9 +46,8 @@ from frontend.serializers.parcel import (
 from frontend.serializers.property import (
     PropertySerializer
 )
-from frontend.utils.organisation import (
-    get_current_organisation_id
-)
+from stakeholder.models import OrganisationUser
+
 
 User = get_user_model()
 PROVINCE_LAYER_ZOOMS = (5, 8)
@@ -435,13 +433,13 @@ class FindPropertyByCoord(APIView):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
         point = Point(float(lng), float(lat), srid=4326)
-        current_organisation_id = get_current_organisation_id(
-            request.user
-        )
+        org_ids = OrganisationUser.objects.filter(
+            user=self.request.user
+        ).values_list('organisation_id', flat=True).distinct()
         properties = Property.objects.filter(
             geometry__contains=point
         ).filter(
-            organisation_id=current_organisation_id
+            organisation_id__in=org_ids
         )
         property = properties.order_by('id').first()
         if not property:
