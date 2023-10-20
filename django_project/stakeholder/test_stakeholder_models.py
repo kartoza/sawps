@@ -238,8 +238,6 @@ class OrganizationTestCase(TestCase):
         self.organization.refresh_from_db()
         property_1.refresh_from_db()
         property_2.refresh_from_db()
-        print(property_1.short_code)
-        print(property_2.short_code)
         self.assertEqual(Organisation.objects.get(
             id=self.organization.id).name, 'test')
         self.assertEqual(Organisation.objects.filter(
@@ -247,7 +245,6 @@ class OrganizationTestCase(TestCase):
         self.assertEqual(Organisation.objects.filter(
             province__name="Limpopo").count(), 1)
 
-        # It is currently not updated.
         self.assertEqual(
             self.organization.short_code,
             'LITE0001'

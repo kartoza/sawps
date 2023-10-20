@@ -1,21 +1,26 @@
 # your_app/tests/test_tasks.py
-from datetime import timedelta
+from django.contrib.auth.models import User
+from django.core import mail
 from django.test import TestCase
 from django.utils import timezone
-from django.core import mail
-from django.contrib.auth.models import User
+
+from property.factories import PropertyFactory
+from property.models import Province
+from regulatory_permit.models import DataUsePermission
+from stakeholder.factories import (
+    organisationFactory,
+)
+from stakeholder.models import (
+    Organisation,
+    OrganisationUser,
+    Reminders
+)
 from stakeholder.tasks import (
     send_reminder_emails,
     send_reminder_email,
     update_user_profile
 )
-from stakeholder.models import (
-    OrganisationUser,
-    Reminders,
-    Organisation,
-    UserProfile
-)
-from regulatory_permit.models import DataUsePermission
+from stakeholder.tasks import update_property_short_code
 
 
 class SendReminderEmailsTestCase(TestCase):
@@ -74,3 +79,94 @@ class SendReminderEmailsTestCase(TestCase):
 
         # when email is sent this is updated to false
         self.assertEqual(False, self.user_profile.received_notif)
+
+
+class TestUpdatePropertyShortCode(TestCase):
+    """Update Property Short Code test case."""
+
+    def setUp(self):
+        self.province, created = Province.objects.get_or_create(
+                    name="Limpopo"
+        )
+        self.organization = organisationFactory(
+            name='CapeNature',
+            province=self.province
+        )
+
+    def test_update_short_code_from_organisation(self):
+        """Test updating property short code when organization is updated."""
+        self.assertEqual(
+            self.organization.short_code,
+            'LICA0001'
+        )
+        property_1 = PropertyFactory.create(
+            organisation=self.organization,
+            province=self.province
+        )
+        property_2 = PropertyFactory.create(
+            organisation=self.organization,
+            province=self.province
+        )
+        self.organization.name = 'test'
+        self.organization.national = True
+        self.organization.province = self.province
+        self.organization.save()
+
+        # call task function
+        update_property_short_code(self.organization.id)
+
+        property_1.refresh_from_db()
+        property_2.refresh_from_db()
+
+        self.assertEqual(
+            self.organization.short_code,
+            'LITE0002'
+        )
+        self.assertEqual(
+            property_1.short_code,
+            'LITEPR0001'
+        )
+        self.assertEqual(
+            property_2.short_code,
+            'LITEPR0002'
+        )
+
+    def test_update_short_code_from_province(self):
+        """
+        Test updating property and organisaition short code when provincr is updated.
+        """
+        province, created = Province.objects.get_or_create(
+            name="Western Cape"
+        )
+        property_1 = PropertyFactory.create(
+            organisation=self.organization,
+            province=self.province
+        )
+        property_2 = PropertyFactory.create(
+            organisation=self.organization,
+            province=self.province
+        )
+        self.organization.name = 'test'
+        self.organization.national = True
+        self.organization.province = province
+        self.organization.save()
+
+        # call task function
+        update_property_short_code(self.organization.id)
+
+        property_1.refresh_from_db()
+        property_2.refresh_from_db()
+
+        self.assertEqual(
+            self.organization.short_code,
+            'WCTE0001'
+        )
+        self.assertEqual(
+            property_1.short_code,
+            'LITEPR0001'
+        )
+        self.assertEqual(
+            property_2.short_code,
+            'LITEPR0002'
+        )
+
