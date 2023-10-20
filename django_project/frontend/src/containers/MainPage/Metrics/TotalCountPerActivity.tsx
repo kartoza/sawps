@@ -140,7 +140,7 @@ interface SpeciesDataItem {
           text: chartTitle,
           align: 'start' as 'start',
           font: {
-            size: 16,
+            size: 20,
             weight: 'bold' as 'bold',
           },
         },
@@ -152,7 +152,7 @@ interface SpeciesDataItem {
         position: "relative",
         backgroundImage: `url(${backgroundImageUrl})`,
         backgroundSize: "18% 20%", // width and height of image
-        backgroundPosition: "19.6% 57%", //horizontal and vertical position respectively
+        backgroundPosition: "19.5% 57%", //horizontal and vertical position respectively
         backgroundRepeat: "no-repeat",
         whiteSpace: "pre-wrap", // Allow text to wrap
     };
