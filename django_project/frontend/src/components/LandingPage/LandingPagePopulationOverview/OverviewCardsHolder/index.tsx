@@ -9,7 +9,7 @@ interface IOverviewCardsHolder{
     speciesListUrl?: string;
 }
 
-interface FrontPageSpecies {
+export interface FrontPageSpecies {
     id: number;
     species_name: string;
     icon?: string;
