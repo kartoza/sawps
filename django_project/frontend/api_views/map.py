@@ -104,14 +104,10 @@ class MapSessionBase(APIView):
         return self.request.data.get('species', None)
 
     def can_view_properties_layer(self):
-        # TODO: check if user can view properties layer
-        return True
+        return self.request.user.has_perm('can_view_map_properties_layer')
 
     def can_view_province_layer(self):
-        if self.request.user.is_superuser:
-            return True
-        # TODO: check if user can view province layer
-        return False
+        return self.request.user.has_perm('can_view_map_province_layer')
 
     def get_current_session_or_404(self):
         session_uuid = self.request.GET.get('session', None)

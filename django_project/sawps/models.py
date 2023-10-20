@@ -44,6 +44,14 @@ class ExtendedGroup(models.Model):
                 "can_view_population_estimate_as_percentage",
                 "Can view population estimate as percentage",
             ),
+            (
+                "can_view_map_province_layer",
+                "Can view province layer in the map",
+            ),
+            (
+                "can_view_map_properties_layer",
+                "Can view properties layer in the map",
+            ),
         ]
 
 
