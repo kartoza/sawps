@@ -78,12 +78,13 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
 9. **Activity List**: Show the name of the selected activities.
 
-     ##### Activity Report Filter
+     **Activity Report Filter**
 
      ![Reports Type Filter](./img/reports-4.png)
 
      1. **Activity Report**: Selected `Activity report`.
-     ##### Activity Report Tables
+
+     **Activity Report Tables**
 
      ![Activity Reports Table](./img/reports-5.png)
 
@@ -194,6 +195,38 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
      ##### Summary
 
      The Species Report is a vital filter for reporting on various species. It provides comprehensive information on species-specific data, including counts, age groups, and associated property details. This report is essential for detailed analysis and management of species-related information.
+
+     **Sampling Report Documentation**
+
+     ![Sampling Report](./img/reports-8.png)
+
+     1. **Sampling Report**: Selected `Sampling report`.
+
+     2. **Sampling Table**: Sampling report table displays data of the species for the property.
+
+     **Report Columns**
+
+     The Sampling Report includes the following columns:
+
+     - **Property Name**: The name of the property where the sampling and population estimates were conducted.
+
+     - **Scientific Name**: The scientific name of the species under consideration.
+
+     - **Common Name**: The common name of the species.
+
+     - **Population Status**: Indicates the status of the species population such as `Migratory` or `Resident`.
+
+     - **Population Estimate Category**: Categorizes the population estimate.
+
+     - **Survey Method**: Describes the method used for surveying and data collection.
+
+     - **Sampling Effort Coverage**: Indicates the extent to which the sampling effort covered the entire population or habitat.
+
+     - **Population Estimate Certainty**: Represents the level of certainty of estimated population.
+
+     **Summary**
+
+     The Sampling Report is a crucial tool for documenting and reporting on sampling efforts and population estimates for different species. It provides detailed information on property details, species information, and key metrics related to the population and the methods used for data collection. This report is essential for assessing population health and the effectiveness of conservation and management efforts.
 
 ### Summary
 
