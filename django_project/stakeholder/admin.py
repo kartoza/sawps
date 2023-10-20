@@ -18,6 +18,7 @@ admin.site.register(UserRoleType)
 admin.site.register(UserTitle)
 admin.site.register(LoginStatus)
 
+
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
     list_display = ("name", "short_code", "province", "national")

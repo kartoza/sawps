@@ -277,6 +277,10 @@ class OrganizationUserTestCase(TestCase):
         """Test creating organisation user."""
         self.assertEqual(OrganisationUser.objects.count(), 1)
         self.assertTrue(isinstance(self.organizationUser, OrganisationUser))
+        self.assertTrue(
+            self.organizationUser.user.groups.first().name,
+            'Data contributor'
+        )
 
     def test_update_organisation_user(self):
         """ Test updating organisation user."""
@@ -289,8 +293,26 @@ class OrganizationUserTestCase(TestCase):
 
     def test_delete_organisation_user(self):
         """Test deleting organisation user."""
+        user = self.organizationUser.user
+        organisation_user_2 = organisationUserFactory(
+            user=user
+        )
+        # delete organizationUser
+        # user would still be in group Data contributor
+        # because he still belongs to other organisation
         self.organizationUser.delete()
+        self.assertEqual(OrganisationUser.objects.count(), 1)
+        self.assertTrue(len(user.groups.all()), 1)
+        self.assertTrue(user.groups.first().name, 'Data contributpr')
+
+        # delete organisation_user_2
+        # user would be removed from group Data contributor
+        # because he no longer belongs any organisation
+        organisation_user_2.delete()
         self.assertEqual(OrganisationUser.objects.count(), 0)
+        self.assertFalse(
+            user.groups.exists()
+        )
 
 
 class OrganizationRepresentativeTestCase(TestCase):

@@ -1,8 +1,5 @@
-from typing import Union, List
-
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
-from django.db.models import QuerySet
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
@@ -93,7 +90,12 @@ class Property(models.Model):
         province_name = self.province.name if self.province else ''
         organisation_name = self.organisation.name if self.organisation else ''
         property_name = self.name
-        return get_property_short_code(province_name, organisation_name, property_name, with_digit)
+        return get_property_short_code(
+            province_name,
+            organisation_name,
+            property_name,
+            with_digit
+        )
 
 
 @receiver(pre_save, sender=Property)
@@ -109,7 +111,9 @@ def property_pre_save(
         is_province_changed = old_property.province != instance.province
         if any([is_province_changed, is_org_changed, is_name_changed]):
             instance.short_code = get_property_short_code(
-                province_name=instance.province.name if instance.province else '',
+                province_name=(
+                    instance.province.name if instance.province else ''
+                ),
                 organisation_name=instance.organisation.name,
                 property_name=instance.name,
                 with_digit=True

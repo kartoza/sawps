@@ -452,6 +452,31 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
         return age_groups_totals
 
 
+class AnnualPopulationSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for serializing AnnualPopulation.
+    """
+    class Meta:
+        model = AnnualPopulation
+        fields = (
+            'year',
+            'survey_method'
+        )
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['owned_species'] = instance.owned_species
+        data['owned_species__taxon'] = instance.owned_species.taxon
+        data['owned_species__property'] = instance.owned_species.property
+        data['owned_species__property__province'] = (
+            instance.owned_species.property.province
+        )
+        data['owned_species__property__property_type'] = (
+            instance.owned_species.property.property_type
+        )
+        return data
+
+
 class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
     """
     Serializer class for serializing total area and available area.

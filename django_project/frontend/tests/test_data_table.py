@@ -12,6 +12,7 @@ from frontend.static_mapping import (
     REGIONAL_DATA_CONSUMER
 )
 from population_data.models import AnnualPopulationPerActivity
+from population_data.factories import AnnualPopulationPerActivityFactory
 from property.factories import PropertyFactory
 from rest_framework import status
 
@@ -103,24 +104,76 @@ class OwnedSpeciesTestCase(OwnedSpeciesTestMixins, TestCase):
         url = self.url
         value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
-            'species': 'SpeciesA',
-            'activity': str(value.activity_type.id),
-            'reports': 'Property_report'
+            "species": "SpeciesA",
+            "activity": str(value.activity_type.id),
+            "reports": "Property_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(len(response.data[0]["Property_report"]), 1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]["Property_report"][0]["scientific_name"],
             "SpeciesA"
         )
 
+    # def test_data_table_filter_by_species_name_all_activity(self) -> None:
+    #     """Test data table filter by species name"""
+    #     url = self.url
+    #     data = {
+    #         "species": "SpeciesA",
+    #         "activity": 'all',
+    #         "reports": "Property_report"
+    #     }
+    #     response = self.client.get(url, data, **self.auth_headers)
+    #     self.assertEqual(len(response.data[0]["Property_report"]), 5)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(
+    #         response.data[0]["Property_report"][0]["scientific_name"],
+    #         "SpeciesA"
+    #     )
+    #
+    # def test_data_table_filter_by_species_name_no_activity(self) -> None:
+    #     """Test data table filter by species name"""
+    #     url = self.url
+    #     data = {
+    #         "species": "SpeciesA",
+    #         "activity": '',
+    #         "reports": "Property_report"
+    #     }
+    #     response = self.client.get(url, data, **self.auth_headers)
+    #     self.assertEqual(len(response.data), 0)
+
+    def test_filter_all_reports_by_all_activity_type(self) -> None:
+        """Test data table filter by activity name"""
+        url = self.url
+        self.owned_species[0].annualpopulationperactivity_set.all().delete()
+        self.owned_species[1].annualpopulationperactivity_set.all().delete()
+
+        data = {
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report"
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # We delete 2 population per activity records, now it remains only 3
+        self.assertEqual(len(response.data[0]["Activity_report"]), 3)
+
+        # Show all property report (5)
+        self.assertEqual(len(response.data[1]["Property_report"]), 5)
+        # Show all sampling report (5)
+        self.assertEqual(len(response.data[2]["Sampling_report"]), 5)
+        # Show all species report (5)
+        self.assertEqual(len(response.data[3]["Species_report"]), 5)
+
     def test_data_table_filter_by_activity_type(self) -> None:
         """Test data table filter by activity type"""
         url = self.url
         value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
-            'activity': str(value.activity_type.id),
-            'reports': 'Property_report'
+            "activity": str(value.activity_type.id),
+            "reports": "Property_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -133,13 +186,13 @@ class OwnedSpeciesTestCase(OwnedSpeciesTestMixins, TestCase):
         """Test data table filter by property"""
         value = self.owned_species[0].annualpopulationperactivity_set.first()
         data = {
-            'species': self.taxon.scientific_name,
-            'property': self.property.id,
-            'start_year': self.owned_species[0].annualpopulation_set.first().year,
-            'end_year': self.owned_species[0].annualpopulation_set.first().year,
-            'spatial_filter_values': 'spatial filter test',
-            'activity': str(value.activity_type.id),
-            'reports': 'Property_report'
+            "species": self.taxon.scientific_name,
+            "property": self.property.id,
+            "start_year": self.owned_species[0].annualpopulation_set.first().year,
+            "end_year": self.owned_species[0].annualpopulation_set.first().year,
+            "spatial_filter_values": "spatial filter test",
+            "activity": str(value.activity_type.id),
+            "reports": "Property_report"
         }
         response = self.client.get(self.url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -198,7 +251,7 @@ class OwnedSpeciesTestCase(OwnedSpeciesTestMixins, TestCase):
         data = {
             "species": "SpeciesA",
             "start_year": year,
-            "end_year":year,
+            "end_year": year,
             "reports": "Activity_report",
         }
         response = self.client.get(url, data, **self.auth_headers)

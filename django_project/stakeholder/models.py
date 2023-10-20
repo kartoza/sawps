@@ -1,11 +1,10 @@
-from typing import Union, List
-from django.db.models import QuerySet
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
+
 from property.models import Province
 
 MEMBER = 'Member'
@@ -141,7 +140,9 @@ def organisation_pre_save(
         is_province_changed = old_org.province != instance.province
         if any([is_province_changed, is_name_changed]):
             instance.short_code = get_organisation_short_code(
-                province_name=instance.province.name if instance.province else '',
+                province_name=(
+                    instance.province.name if instance.province else ''
+                ),
                 organisation_name=instance.name
             )
             instance.skip_post_save = False
@@ -209,8 +210,8 @@ class UserProfile(models.Model):
     def picture_url(self):
         if self.picture.url:
             return '{media}/{url}'.format(
-                media=settings.MEDIA_ROOT,
-                url=self.picture,
+                    media=settings.MEDIA_ROOT,
+                    url=self.picture,
             )
 
     class Meta:
@@ -360,7 +361,6 @@ class OrganisationPersonnel(models.Model):
 
 class OrganisationRepresentative(OrganisationPersonnel):
     """Organisation representative model."""
-
     class Meta:
         verbose_name = 'Organisation representative'
         verbose_name_plural = 'Organisation representatives'
@@ -369,8 +369,43 @@ class OrganisationRepresentative(OrganisationPersonnel):
 
 class OrganisationUser(OrganisationPersonnel):
     """Organisation user model."""
-
     class Meta:
         verbose_name = 'Organisation user'
         verbose_name_plural = 'Organisation users'
         db_table = 'organisation_user'
+
+
+@receiver(post_save, sender=OrganisationUser)
+def post_create_organisation_user(
+    sender,
+    instance: OrganisationUser,
+    created,
+    **kwargs
+):
+    """
+    Handle OrganisationUser creation by
+    automatically add them to Data contributor group.
+    """
+
+    if created:
+        group, _ = Group.objects.get_or_create(name='Data contributor')
+        instance.user.groups.add(group)
+
+
+@receiver(post_delete, sender=OrganisationUser)
+def post_delete_organisation_user(
+    sender,
+    instance: OrganisationUser,
+    *args,
+    **kwargs
+):
+    """
+    Handle OrganisationUser deletion by removing them
+    from Data contributor group, if they are no longer
+    part of any organisation.
+    """
+
+    organisation_users = OrganisationUser.objects.filter(user=instance.user)
+    if not organisation_users.exists():
+        group, _ = Group.objects.get_or_create(name='Data contributor')
+        instance.user.groups.remove(group)

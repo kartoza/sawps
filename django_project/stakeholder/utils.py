@@ -9,7 +9,9 @@ def get_organisation_short_code(
     from frontend.utils.organisation import get_abbreviation
     from stakeholder.models import Organisation
 
-    OrganisationModel = OrganisationModel if OrganisationModel else Organisation
+    OrganisationModel = (
+        OrganisationModel if OrganisationModel else Organisation
+    )
     province_name = province_name if province_name else ''
     organisation_name = organisation_name if organisation_name else ''
 

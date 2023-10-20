@@ -1,8 +1,7 @@
 from typing import Union, List
 
-from django.contrib.auth.models import User
-from django.contrib.gis.db import models
 from django.db.models import QuerySet
+
 from property.models import Property
 
 
@@ -19,7 +18,9 @@ def batch_short_code_update(
     ).order_by('id')
     for idx, property_obj in enumerate(properties):
         short_code_prefix = get_property_short_code(
-            province_name=property_obj.province.name if property_obj.province else '',
+            province_name=(
+                property_obj.province.name if property_obj.province else ''
+            ),
             organisation_name=property_obj.organisation.name,
             property_name=property_obj.name,
             with_digit=False

@@ -20,7 +20,9 @@ def update_organisation_property_short_code(
     from property.utils import batch_short_code_update
 
     ProvinceModel = ProvinceModel if ProvinceModel else Province
-    OrganisationModel = OrganisationModel if OrganisationModel else Organisation
+    OrganisationModel = (
+        OrganisationModel if OrganisationModel else Organisation
+    )
     PropertyModel = PropertyModel if PropertyModel else Property
 
     try:
@@ -29,10 +31,15 @@ def update_organisation_property_short_code(
         return
 
     if update_organisation:
-        organisations: Union[QuerySet, List[OrganisationModel]] = instance.organisation_set.all().order_by('id')
+        organisations: Union[
+            QuerySet,
+            List[OrganisationModel]
+        ] = instance.organisation_set.all().order_by('id')
         for idx, organisation in enumerate(organisations):
             short_code_prefix = get_organisation_short_code(
-                province_name=organisation.province.name if organisation.province else '',
+                province_name=(
+                    organisation.province.name if organisation.province else ''
+                ),
                 organisation_name=organisation.name,
                 with_digit=False
             )
