@@ -335,7 +335,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <SpeciesCountAsPercentage
@@ -359,7 +359,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <TotalCountPerActivity
@@ -382,7 +382,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <ActivityCountAsPercentage
@@ -404,7 +404,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <PopulationEstimateCategoryCount
@@ -428,7 +428,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <PopulationEstimateAsPercentage
