@@ -16,6 +16,7 @@ from frontend.serializers.metrics import (
     TotalCountPerActivitySerializer,
     PopulationPerAgeGroupSerialiser,
     TotalAreaVSAvailableAreaSerializer,
+    TotalCountPerPopulationEstimateSerializer
 )
 from frontend.utils.metrics import (
     calculate_population_categories,
@@ -101,6 +102,21 @@ class ActivityPercentageAPIView(APIView):
             queryset, many=True, context={"request": request}
         )
         return Response(calculate_base_population_of_species(serializer.data))
+
+
+class TotalCountPerPopulationEstimateAPIView(APIView):
+    """
+    API view to retrieve total counts per population
+    estimate category for species.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs) -> Response:
+        serializer = TotalCountPerPopulationEstimateSerializer(
+            context={"request": request}
+        )
+        result = serializer.get_total_counts_per_population_estimate()
+        return Response(result)
 
 
 class TotalCountPerActivityAPIView(APIView):

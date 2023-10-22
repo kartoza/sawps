@@ -138,8 +138,12 @@ class UploadSpeciesStatus(APIView):
             error_file = '{}{}'.format(
                         MEDIA_URL, upload_species.error_file.name)
 
-        if not upload_species.success_notes:
-            message = "Please check the error in error file."
+        if not upload_species.success_notes and not upload_species.error_file:
+            message = "There is something wrong with the " \
+                      "data please check again."
+
+        if not upload_species.success_notes and upload_species.error_file:
+            message = "There is an error, please check the error file."
 
         if upload_species.processed:
 

@@ -22,7 +22,7 @@ class TaxonListAPIView(APIView):
                 ownedspecies__property__organisation_id__in=(
                     [int(id) for id in _organisation]
                 ),
-                ownedspecies__taxon__taxon_rank__name = "Species"
+                ownedspecies__taxon__taxon_rank__name__iexact="Species"
             ).order_by("scientific_name").distinct()
         else:
             taxon = Taxon.objects.filter(
