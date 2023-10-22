@@ -1,4 +1,4 @@
-
+from property.tasks import update_organisation_property_short_code
 
 def get_organisation_short_code(
     province_name: str = None,
@@ -25,7 +25,7 @@ def get_organisation_short_code(
     if with_digit:
         # instead of using DB count, take next digit based on
         # the latest digit
-        obj_latest_code = Organisation.objects.filter(
+        obj_latest_code = OrganisationModel.objects.filter(
             province__name=province_name
         ).order_by('short_code').last()
 
@@ -36,3 +36,24 @@ def get_organisation_short_code(
         return f"{province}{organisation}{digit}"
     else:
         return f"{province}{organisation}"
+
+
+def forward_func_0015(Province, Organisation):
+    for province in Province.objects.all():
+        update_organisation_property_short_code(
+            province_id=province.id,
+            update_organisation=True,
+            update_property=False,
+            ProvinceModel=Province,
+            OrganisationModel=Organisation
+        )
+
+    for org in Organisation.objects.filter(province__isnull=True):
+        short_code = get_organisation_short_code(
+            province_name='',
+            organisation_name=org.name,
+            with_digit=True,
+            OrganisationModel=Organisation
+        )
+        org.short_code = short_code
+        org.save()

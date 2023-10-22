@@ -3,6 +3,7 @@ from typing import Union, List
 from django.db.models import QuerySet
 
 from property.models import Property
+from stakeholder.utils import update_organisation_property_short_code
 
 
 def batch_short_code_update(
@@ -64,3 +65,14 @@ def get_property_short_code(
         return f"{province}{organisation}{property_abr}{digit}"
     else:
         return f"{province}{organisation}{property_abr}"
+
+
+def forward_func_0007(Province, Property):
+    for province in Province.objects.all():
+        update_organisation_property_short_code(
+            province_id=province.id,
+            update_organisation=False,
+            update_property=True,
+            ProvinceModel=Province,
+            PropertyModel=Property
+        )

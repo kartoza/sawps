@@ -3,16 +3,13 @@ import base64
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
-from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from frontend.static_mapping import (
     NATIONAL_DATA_SCIENTIST,
-    NATIONAL_DATA_CONSUMER,
     REGIONAL_DATA_SCIENTIST,
     REGIONAL_DATA_CONSUMER
 )
 from population_data.models import AnnualPopulationPerActivity
-from population_data.factories import AnnualPopulationPerActivityFactory
 from property.factories import PropertyFactory
 from rest_framework import status
 

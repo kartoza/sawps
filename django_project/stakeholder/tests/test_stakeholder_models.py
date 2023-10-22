@@ -12,7 +12,6 @@ from stakeholder.factories import (
     organisationRepresentativeFactory,
     organisationUserFactory,
     userLoginFactory,
-    userProfileFactory,
     userRoleTypeFactory,
     userTitleFactory,
 )
