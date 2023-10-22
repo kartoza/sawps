@@ -35,6 +35,7 @@ from frontend.api_views.metrics import (
     TotalAreaAvailableToSpeciesAPIView,
     PopulationPerAgeGroupAPIView,
     TotalAreaVSAvailableAreaAPIView,
+    TotalCountPerPopulationEstimateAPIView
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -54,7 +55,10 @@ from frontend.api_views.property import (
 from frontend.api_views.spatial_filter import (
     SpatialFilterList
 )
-from frontend.api_views.statistical import SpeciesNationalTrend
+from frontend.api_views.statistical import (
+    SpeciesNationalTrend,
+    SpeciesTrend
+)
 from frontend.api_views.upload import (
     BoundaryFileList,
     BoundaryFileRemove,
@@ -212,6 +216,11 @@ urlpatterns = [
         name='species-national-trend'
     ),
     path(
+        'api/species/population_trend/',
+        SpeciesTrend.as_view(),
+        name='species-population-trend'
+    ),
+    path(
         'api/upload/population/draft/<uuid:draft_uuid>/',
         FetchDraftPopulationUpload.as_view(),
         name='fetch-draft-upload-species'
@@ -282,6 +291,11 @@ urlpatterns = [
         'api/species-population-total-density/',
         SpeciesPopulationDensityPerPropertyAPIView.as_view(),
         name='species_population_total_density'
+    ),
+    path(
+        'api/total-count-per-population-estimate/',
+        TotalCountPerPopulationEstimateAPIView.as_view(),
+        name='total-count-per-population-estimate'
     ),
     path(
         'api/species-count-per-province/',

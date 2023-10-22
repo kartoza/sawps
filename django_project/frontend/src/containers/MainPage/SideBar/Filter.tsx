@@ -1,50 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, {useEffect, useState} from 'react';
+import {v4 as uuidv4} from 'uuid';
 import axios from "axios";
 import {
+    Autocomplete,
     Box,
-    Checkbox,
-    Accordion,
-    AccordionSummary,
-    Typography,
-    AccordionDetails,
-    Chip,
-    FormControlLabel,
-    Radio,
-    InputBase,
+    TextField,
+    Typography
 } from '@mui/material';
 import List from '@mui/material/List';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
-import Autocomplete from '@mui/material/Autocomplete';
-import { debounce } from '@mui/material/utils';
+import {debounce} from '@mui/material/utils';
 import SearchIcon from '@mui/icons-material/Search';
-import { RootState } from '../../../app/store';
-import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import {RootState} from '../../../app/store';
+import {useAppDispatch, useAppSelector} from '../../../app/hooks';
 import Slider from '@mui/material/Slider';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Loading from '../../../components/Loading';
-import SpeciesLayer from '../../../models/SpeciesLayer';
 import {
-        selectedOrganisationId, selectedPropertyId, setEndYear,
-        setSelectedInfoList, setSpeciesFilter, setStartYear,
-        toggleSpecies, selectedActivityId, setSpatialFilterValues } from '../../../reducers/SpeciesFilter';
+    selectedActivityId,
+    selectedOrganisationId,
+    selectedPropertyId,
+    setEndYear,
+    setSelectedInfoList,
+    setSpatialFilterValues,
+    selectedOrganisationName,
+    selectedPropertyName,
+    setStartYear,
+    toggleSpecies,
+    selectedActivityName
+} from '../../../reducers/SpeciesFilter';
 import './index.scss';
-import PropertyInterface from '../../../models/Property';
-import { MapEvents } from '../../../models/Map';
-import { triggerMapEvent } from '../../../reducers/MapState';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import {MapEvents} from '../../../models/Map';
+import {triggerMapEvent} from '../../../reducers/MapState';
 import SpatialFilter from "./SpatialFilter";
-import {useGetUserInfoQuery} from "../../../services/api";
+import {
+    useGetUserInfoQuery,
+    useGetActivityQuery,
+    useGetOrganisationQuery,
+    useGetPropertyQuery,
+    useGetSpeciesQuery,
+    Organisation,
+    Activity,
+    Property
+} from "../../../services/api";
+import {isMapDisplayed} from "../../../utils/Helpers";
+import Button from "@mui/material/Button";
+import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
-const FETCH_AVAILABLE_SPECIES = '/species/'
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const SEARCH_PROPERTY_URL = '/api/property/search'
-const FETCH_ORGANISATION_LIST_URL = '/api/organisation/'
-const FETCH_ACTIVITY_LIST_URL = '/api/activity-type/'
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
 interface SearchPropertyResult {
@@ -55,36 +61,57 @@ interface SearchPropertyResult {
     fclass?: string;
 }
 
-
 function Filter(props: any) {
-    const { containsCharts } = props;
     const dispatch = useAppDispatch()
-    const SpeciesFilterList = useAppSelector((state: RootState) => state.SpeciesFilter.SpeciesFilterList)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
-    const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
-    const [propertyList, setPropertyList] = useState<PropertyInterface[]>([])
     const [selectedProperty, setSelectedProperty] = useState([]);
-    const [selectedActivity, setSelectedActivity] = useState<string>('');
+    const [selectAllProperty, setSelectAllProperty] = useState(true);
+    const [selectedActivity, setSelectedActivity] = useState<number[]>([]);
+    const [selectAllActivity, setSelectAllActivity] = useState<boolean>(true);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
-    const [selectedInfo, setSelectedInfo] = useState<string>('');
+    const [selectedInfo, setSelectedInfo] = useState<string[]>(['Species report']);
+    const [selectAllInfo, setSelectAllInfo] = useState(null);
     const [searchOpen, setSearchOpen] = useState(false)
     const [searchInputValue, setSearchInputValue] = useState<string>('')
     const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
-    const [organisationList, setOrganisationList] = useState([]);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
+    const [selectAllOrganisation, setSelectAllOrganisation] = useState(true);
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
     const [nominatimResults, setNominatimResults] = useState([]);
-    const [filteredProperties, setFilteredProperties] = useState([])
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
+    const {
+        data: organisationList,
+        isLoading: isOrganisationLoading,
+        isSuccess: isOrganisationSuccess
+    } = useGetOrganisationQuery()
+    const {
+        data: activityList,
+        isLoading: isActivityLoading,
+        isSuccess: isActivitySuccess
+    } = useGetActivityQuery()
+    const {
+        data: propertyList,
+        isLoading: isPropertyLoading,
+        isSuccess: isPropertySuccess
+    } = useGetPropertyQuery(selectedOrganisation.join(','))
+    const {
+        data: SpeciesFilterList,
+        isLoading: isSpeciesLoading,
+        isSuccess: isSpeciesSuccess
+    } = useGetSpeciesQuery(selectedOrganisation.join(','))
 
-    let informationList: string[] = []
+    type Information = {
+        id?: string,
+        name?: string
+    }
+    let informationList: Information[] = []
 
     const roleExists = (role: string) => {
         if (!userInfoData || !userInfoData.user_roles) return false;
@@ -93,70 +120,71 @@ function Filter(props: any) {
 
     if (userInfoData) {
         informationList = [
-            "Activity report",
-            "Property report",
-            roleExists("National data consumer") ? "Province report" :  roleExists("Regional data consumer") ? "" : "Sampling report",
-            "Species report",
-        ].filter(item => item !== "")
+            {
+                id: "Activity report",
+                name: "Activity report",
+            },
+            {
+                id: "Property report",
+                name: "Property report"
+            },
+            {
+                id: "Species report",
+                name: "Species report"
+            },
+        ]
+
+        const provinceReportRoles = [
+            'National data scientist',
+            'Regional data scientist',
+            'Organisation member',
+            'Organisation manager'
+        ]
+        if (provinceReportRoles.some(roleExists)) {
+            informationList.push({
+                id: "Province report",
+                name: "Province report"
+            })
+        }
+
+        const samplingReportRoles = [
+            'National data consumer',
+            'National data scientist'
+        ]
+        if (samplingReportRoles.some(roleExists)) {
+            informationList.push({
+                id: "Sampling report",
+                name: "Sampling report"
+            })
+        }
+        informationList = informationList.sort((a, b) => a.id > b.id ? 1 : -1)
+
     }
 
-    // Function to filter properties based on selected organizations
-    const filterPropertiesByOrganisations = () => {
-        // If no organizations are selected
-        if (selectedOrganisation.length === 0) {
-            setFilteredProperties([]);
-            adjustMapToBoundingBox(boundingBox)
-            setSelectedProperty([])
-            return;
-        }
-
-        // Filter properties that match selected organizations
-        const filtered = propertyList.filter((property) =>
-        selectedOrganisation.includes(property.organisation_id)
-        );
-
-        setFilteredProperties(filtered);
-    };
-
+    // Select all organisations by default
     useEffect(() => {
-        let fetchedProperties: any[] = [];
+        if (organisationList) {
+            setSelectedOrganisation(organisationList.map((organisation: Organisation) => organisation.id))
+        }
+    }, [organisationList]);
 
-        if(selectedOrganisation.length === 0){
-            // reset
-            if (selectedOrganisation.length === 0) {
-                setFilteredProperties([]);
-                adjustMapToBoundingBox(boundingBox)
+    // Select all properties by default
+    useEffect(() => {
+        if (propertyList) {
+            if (selectedOrganisation.length > 0) {
+                setSelectedProperty(propertyList.map(property => property.id))
+            } else {
                 setSelectedProperty([])
-                return;
             }
         }
+    }, [propertyList]);
 
-        const requests = selectedOrganisation.map((orgId) => {
-            return axios.get(`${FETCH_PROPERTY_LIST_URL}${orgId ? `${orgId}` : ""}`)
-            .then((response) => response.data)
-            .catch((error) => {
-                console.log(error);
-                return []; // Return an empty array in case of an error
-            });
-        });
-
-        // Use Promise.all to wait for all requests to complete
-        Promise.all(requests)
-            .then((results) => {
-            // Concatenate the results from all requests into a single array
-            const fetchedProperties = results.flat();
-
-            // Set filteredProperties once all requests are done
-            setFilteredProperties(fetchedProperties);
-            setLoading(false);
-            })
-            .catch((error) => {
-            console.log(error);
-            setLoading(false);
-            });
-
-      }, [selectedOrganisation]);
-
+    // Select all activities by default
+    useEffect(() => {
+        if (activityList) {
+            setSelectedActivity(activityList.map((activity: Activity) => activity.id))
+        }
+    }, [activityList]);
 
     // intial map state vars for zoom out
     const center = [25.86, -28.52]; // Center point in backend
@@ -211,13 +239,6 @@ function Filter(props: any) {
         }
       };
 
-    const [activityList,setActivityList]= useState<string[]>([
-        "Planned euthanasia",
-        "Planned hunt/cull",
-        "Planned translocation",
-        "Unplanned/illegal hunting",
-        "Unplanned/natural deaths"])
-
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
         setTab(pathname)
@@ -232,68 +253,6 @@ function Filter(props: any) {
         }
     };
 
-    const fetchSpeciesList = () => {
-        setLoading(true)
-        axios.get(FETCH_AVAILABLE_SPECIES).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                let _species = response.data as SpeciesLayer[]
-                _species = _species.map((species) => {
-                    return species
-                })
-                dispatch(setSpeciesFilter(_species))
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-
-    const fetchPropertyList = () => {
-        setLoading(true)
-        axios.get(FETCH_PROPERTY_LIST_URL).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                setPropertyList(response.data as PropertyInterface[])
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-    const fetchOrganisationList = () => {
-        setLoading(true)
-        axios.get(FETCH_ORGANISATION_LIST_URL).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                setOrganisationList(response.data)
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-
-    const fetchActivityList = () => {
-        setLoading(true)
-        axios.get(FETCH_ACTIVITY_LIST_URL).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                setActivityList(response.data.map((activity: any) => activity.name))
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-
-    useEffect(() => {
-        fetchSpeciesList();
-        fetchPropertyList();
-        fetchOrganisationList();
-        fetchActivityList();
-    }, [])
-
     const handleSelectedSpecies = (value: string) => {
         setSelectedSpecies(value);
     };
@@ -302,13 +261,18 @@ function Filter(props: any) {
         dispatch(toggleSpecies(selectedSpecies));
     }, [selectedSpecies])
 
-    const handleSelectedInfo = (e: SelectChangeEvent) => {
-        setSelectedInfo(e.target.value);
-    };
+    useEffect(() => {
+        const values = selectedInfo.join(',')
+        dispatch(setSelectedInfoList(values));
+    }, [selectedInfo])
 
     useEffect(() => {
-        dispatch(setSelectedInfoList(selectedInfo));
-    }, [selectedInfo])
+        if (selectAllInfo) {
+            setSelectedInfo(informationList.map((info) => info.id));
+        } else if (selectAllInfo === false) {
+            setSelectedInfo([]);
+        }
+    }, [selectAllInfo])
 
     const mergeBoundingBoxes = (boundingBoxes: number[][]): number[] => {
         let minLeft: number = 180;
@@ -346,8 +310,6 @@ function Filter(props: any) {
             // Merge the collected bounding boxes
             const combinedBoundingBox = mergeBoundingBoxes(propertyBoundingBoxes);
 
-            // LEVEL 1 DEBUG
-            // console.log('navigation to bounding box', combinedBoundingBox);
 
             adjustMapToBoundingBox(combinedBoundingBox)
           } else {
@@ -360,31 +322,6 @@ function Filter(props: any) {
           console.error(error);
         }
       };
-
-
-      const handleSelectedProperty = (id: number) => () => {
-        const propertyExists = selectedProperty.includes(id);
-        let updatedSelectedProperty: number[] = [];
-
-        if (propertyExists) {
-          updatedSelectedProperty = selectedProperty.filter((item) => item !== id);
-        } else {
-          updatedSelectedProperty = [...selectedProperty, id];
-        }
-
-        // LEVEL 3 DEBUG
-        // console.log('selected properties', updatedSelectedProperty);
-
-        setSelectedProperty(updatedSelectedProperty);
-        if (updatedSelectedProperty.length === 0) {
-            adjustMapToBoundingBox(boundingBox)
-        } else {
-          // Call zoomToCombinedBoundingBox with the updated list of selected properties
-          zoomToCombinedBoundingBox(updatedSelectedProperty);
-        }
-      };
-
-
 
       const adjustMapToBoundingBox = (boundingBox: any[]) => {
         dispatch(
@@ -400,42 +337,74 @@ function Filter(props: any) {
 
     // Handle selecting all properties
     const handleSelectAllProperty = () => {
-        if (selectedProperty.length === propertyList.length) {
-            setSelectedProperty([]);
-            adjustMapToBoundingBox(boundingBox)
-        } else {
-            const propertyIds = propertyList.map((property) => property.id);
+        if (propertyList) {
+            let propertyIds = selectAllProperty ? propertyList.map((property: Property) => property.id) : []
             setSelectedProperty(propertyIds);
-            zoomToCombinedBoundingBox(propertyIds);
+            if (propertyIds.length > 0) {
+                zoomToCombinedBoundingBox(propertyIds);
+            } else {
+                adjustMapToBoundingBox(boundingBox)
+            }
         }
     };
 
     useEffect(() => {
-        dispatch(selectedPropertyId(selectedProperty.length > 0 ? selectedProperty.join(',') : ''));
+        handleSelectAllProperty()
+    }, [selectAllProperty])
+
+    useEffect(() => {
+        if (propertyList) {
+            dispatch(selectedPropertyId(selectedProperty.join(',')));
+            const selectedPropertyNames = propertyList.filter(
+              propertyObj => selectedProperty.includes(propertyObj.id)
+            ).map(propertyObj => propertyObj.name)
+            dispatch(selectedPropertyName(selectedPropertyNames.length > 0 ? selectedPropertyNames.join(', ') : ''));
+        }
     }, [selectedProperty])
 
-    const handleSelectedOrganisation = (id: number) => () => {
-        const organisationExists = selectedOrganisation.includes(id);
-        if (organisationExists) {
-            const updatedSelectedOrganisation = selectedOrganisation.filter((item) => item !== id);
-            setSelectedOrganisation(updatedSelectedOrganisation);
-        } else {
-            const updatedSelectedOrganisation = [...selectedOrganisation, id];
-            setSelectedOrganisation(updatedSelectedOrganisation);
+    // Handle selecting all organisation
+    const handleSelectAllOrganisation = () => {
+        if (organisationList) {
+            let organisationIds = selectAllOrganisation ? organisationList.map((organisation: Organisation) => organisation.id) : []
+            setSelectedOrganisation(organisationIds);
         }
     };
 
     useEffect(() => {
-        dispatch(selectedOrganisationId(selectedOrganisation.length > 0 ? selectedOrganisation.join(',') : ''));
+        handleSelectAllOrganisation()
+    }, [selectAllOrganisation])
+
+    useEffect(() => {
+        if (organisationList) {
+            dispatch(selectedOrganisationId(selectedOrganisation.join(',')))
+            const selectedOrganisationNames = organisationList.filter(
+              organisationObj => selectedOrganisation.includes(organisationObj.id)
+            ).map(organisationObj => organisationObj.name)
+            dispatch(selectedOrganisationName(selectedOrganisationNames.length > 0 ? selectedOrganisationNames.join(', ') : ''));
+        }
     }, [selectedOrganisation])
 
-    const handleSelectedActivity =(value: string) => {
-        setSelectedActivity(value);
+    useEffect(() => {
+        if (activityList) {
+            dispatch(selectedActivityId(selectedActivity.join(',')));
+            const selectedActivityNames = activityList.filter(
+              activityObj => selectedActivity.includes(activityObj.id)
+            ).map(activityObj => activityObj.name)
+            dispatch(selectedActivityName(selectedActivityNames.length > 0 ? selectedActivityNames.join(',') : ''));
+        }
+    }, [selectedActivity])
+
+    // Handle selecting all activities
+    const handleSelectAllActivity = () => {
+        if (activityList) {
+            let activityIds = selectAllActivity ? activityList.map((activity: Activity) => activity.id) : []
+            setSelectedActivity(activityIds);
+        }
     };
 
     useEffect(() => {
-        dispatch(selectedActivityId(selectedActivity));
-    }, [selectedActivity])
+        handleSelectAllActivity()
+    }, [selectAllActivity])
 
     const handleStartYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
@@ -485,6 +454,18 @@ function Filter(props: any) {
         [],
     )
 
+    const clearFilter = () => {
+        setSelectAllProperty(false)
+        setSelectAllOrganisation(false)
+        setSelectedSpecies('')
+        setSelectAllActivity(false)
+        setSelectAllInfo(false)
+        setLocalStartYear(yearRangeStart)
+        setLocalEndYear(yearRangeEnd)
+        dispatch(setStartYear(yearRangeStart));
+        dispatch(setEndYear(yearRangeEnd));
+    }
+
     useEffect(() => {
         let active = true;
         if (searchInputValue.length <= 1) {
@@ -513,43 +494,25 @@ function Filter(props: any) {
     }, [searchInputValue])
 
 
-    const handleSelectAllOrganisation = () => {
-        const organisationId = organisationList.map(data => data.id)
-        setSelectedOrganisation(organisationId)
-        if (selectedOrganisation.length === organisationList.length) {
-            setSelectedOrganisation([]);
-        }
-    }
-
-
     useEffect(() => {
-        const sList: any = []
-        SpeciesFilterList.map((item: any) => {
-            sList.push(item.scientific_name)
-        })
-        setSearchSpeciesList(sList)
-    }, [SpeciesFilterList])
-
-    // Function to filter properties based on the current organization
-    const filterPropertiesByOrganisation = (currentOrganisation: string | number) => {
-        if (currentOrganisation) {
-            const filtered = propertyList.filter((property) =>
-                property.organisation_id === currentOrganisation
-            );
-
-            setFilteredProperties(filtered);
-        } else {
-            setFilteredProperties([]);
+        if (SpeciesFilterList) {
+            const sList: any = []
+            SpeciesFilterList.map((item: any) => {
+                sList.push(item.scientific_name)
+            })
+            if (selectedOrganisation.length === 0) {
+                setSearchSpeciesList([])
+            } else {
+                setSearchSpeciesList(sList)
+            }
         }
-    };
+    }, [SpeciesFilterList])
 
     useEffect(() => {
         if (!isSuccess) return;
 
         const userRoles = userInfoData.user_roles
         if (userRoles.length === 0) return;
-
-        const currentOrganisationId = userInfoData.current_organisation_id;
 
         // TODO : Update to use permissions
         const allowedRoles = new Set(["National data scientist", "Regional data scientist", "Super user"]);
@@ -559,35 +522,39 @@ function Filter(props: any) {
         ){
             setOrganisationSelection(true)
             setPropertiesSelection(true)
+            return;
         }
 
         const organisationRoles = new Set(['Organisation member', 'Organisation manager'])
         if (
             userRoles.some(userRole => organisationRoles.has(userRole))
         ) {
-          filterPropertiesByOrganisation(currentOrganisationId);
           setPropertiesSelection(true)
           setOrganisationSelection(false)
         }
-
-        fetchSpeciesList();
-        fetchPropertyList();
-        fetchOrganisationList();
     }, [isSuccess, userInfoData]);
 
     return (
-        <Box>
-            <Box className='sidebarBox'>
-                {!containsCharts && (
+        <Box sx={{position: 'relative'}}>
+            {isLoading ?
+                <div
+                    className='sidepanel-loading-container'
+                >
+                    <CircularProgress color="inherit" />
+                </div> : null }
+            <Box className='sidebarBox' style={{ marginTop: 10 }}>
+                <Box className='clear-button-container'>
+                    <Button onClick={clearFilter}>Clear All</Button>
+                </Box>
+                {isMapDisplayed() && (
                 <Box style={{marginTop: '5%', marginBottom: '10%'}} >
-                    <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center' ,marginBottom: '5%'}}>
+                    <Box className="sidebarBoxHeading" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px'}}>
                         <SearchIcon
                             style={{
                                 color: '#70B276',
-                                marginLeft: '15px',
                             }}
                         />
-                        <Typography color='#75B37A' fontSize='medium' style={{ marginLeft: '5px' }}>Search place</Typography>
+                        <Typography color='#75B37A' fontSize='medium'>Search place</Typography>
                     </Box>
                     <Autocomplete
                         disablePortal={false}
@@ -662,58 +629,25 @@ function Filter(props: any) {
                     />
                 </Box>
                 )}
-                {
-                    allowOrganisationSelection && <Box>
-                    <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/organisation.svg" alt='Organisation image' />
-                        <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
-                    </Box>
-                    <List className='ListItem' component="nav" aria-label="">
-                        {loading ? <Loading /> :
-                            <Accordion>
-                                <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                    {selectedOrganisation.length > 0 ? (
-                                        <Box >
-                                            {`${selectedOrganisation.length} ${selectedOrganisation.length > 1 ? 'Organisations' : 'Organisation'} Selected`}
-                                        </Box>
-                                    ) : (
-                                        <Typography>Select</Typography>
-                                    )}
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Box className="selectBox">
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        checked={selectedOrganisation.length === organisationList.length}
-                                                        onChange={handleSelectAllOrganisation}
-                                                    />
-                                                }
-                                                label="Select All"
-                                            />
-                                        </Box>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            {organisationList.map((data: any) => (
-                                                <FormControlLabel
-                                                    key={data.name}
-                                                    control={
-                                                        <Checkbox
-                                                            checked={selectedOrganisation.includes(data.id)}
-                                                            onChange={handleSelectedOrganisation(data.id)}
-                                                        />
-                                                    }
-                                                    label={data.name}
-                                                />
-                                            ))}
-                                        </Box>
-                                    </Box>
-                                </AccordionDetails>
-                            </Accordion>
-                        }
-                    </List>
+                <Box className='sidebarBoxHeading'>
+                    <img src="/static/images/species/Elephant.svg" alt='species image' />
+                    <Typography color='#75B37A' fontSize='medium'>Species</Typography>
                 </Box>
-                }
+                <List className='ListItem' component="nav" aria-label="">
+                    {loading || isSpeciesLoading ? <Loading /> :
+                        (
+                            <Autocomplete
+                                id="combo-box-demo"
+                                disableClearable={true}
+                                value={selectedSpecies}
+                                options={searchSpeciesList}
+                                sx={{ width: '100%' }}
+                                onChange={(event, value) => handleSelectedSpecies(value)}
+                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                            />
+                        )
+                    }
+                </List>
                 {tab === 'reports' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
@@ -722,20 +656,63 @@ function Filter(props: any) {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading ? <Loading /> :
-                                (
-                                    <Select
-                                        displayEmpty
-                                        sx={{ width: '100%', textAlign: 'start' }}
-                                        value={selectedInfo}
-                                        onChange={handleSelectedInfo}
-                                        renderValue={
-                                            selectedInfo !== "" ? undefined : () => <div style={{ color: '#282829' }}>Select</div>
-                                        }
-                                    >
-                                        {informationList.map((info: any, index) => (
-                                            <MenuItem value={info} key={index}>{info}</MenuItem>
-                                        ))}
-                                    </Select>)
+                              (
+                                <AutoCompleteCheckbox
+                                    options={informationList}
+                                    selectedOption={selectedInfo}
+                                    singleTerm={'Report'}
+                                    pluralTerms={'Reports'}
+                                    selectAllFlag={selectAllInfo}
+                                    setSelectAll={(val) => setSelectAllInfo(val)}
+                                    setSelectedOption={setSelectedInfo}
+                                  />
+                              )
+                            }
+                        </List>
+                    </Box>
+                }
+                <Box>
+                    <Box className='sidebarBoxHeading'>
+                        <img src="/static/images/Activity.svg" alt='Property image' />
+                        <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
+                    </Box>
+                    <List className='ListItem' component="nav" aria-label="">
+                        {loading || isActivityLoading ? <Loading /> :
+                            (
+                                <AutoCompleteCheckbox
+                                    options={activityList}
+                                    selectedOption={selectedActivity}
+                                    singleTerm={'Activity'}
+                                    pluralTerms={'Activities'}
+                                    selectAllFlag={selectAllActivity}
+                                    setSelectAll={(val) => {
+                                        setSelectAllActivity(val)
+                                    }}
+                                    setSelectedOption={setSelectedActivity}
+                                  />
+                            )
+                        }
+                    </List>
+                </Box>
+                {
+                    allowOrganisationSelection && <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/organisation.svg" alt='Organisation image' />
+                            <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isLoading || isOrganisationLoading? <Loading /> :
+                                <AutoCompleteCheckbox
+                                    options={organisationList}
+                                    selectedOption={selectedOrganisation}
+                                    singleTerm={'Organisation'}
+                                    pluralTerms={'Organisations'}
+                                    selectAllFlag={selectAllOrganisation}
+                                    setSelectAll={(val) => {
+                                        setSelectAllOrganisation(val)
+                                    }}
+                                    setSelectedOption={setSelectedOrganisation}
+                                  />
                             }
                         </List>
                     </Box>
@@ -748,93 +725,30 @@ function Filter(props: any) {
                             <Typography color='#75B37A' fontSize='medium'>Property</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
-                            {loading ? (
+                            {loading || isPropertyLoading ? (
                                 <Loading />
                             ) : (
-                                <Accordion>
-                                    <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                                        {selectedProperty.length > 0 ? (
-                                            <Box>
-                                                {`${selectedProperty.length} ${
-                                                    selectedProperty.length > 1 ? 'Properties' : 'Property'
-                                                } Selected`}
-                                            </Box>
-                                        ) : (
-                                            <Typography>Select</Typography>
-                                        )}
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <Box className="selectBox">
-                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Checkbox
-                                                            checked={selectedProperty.length === propertyList.length}
-                                                            onChange={handleSelectAllProperty}
-                                                        />
-                                                    }
-                                                    label="Select All"
-                                                />
-                                            </Box>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                {propertyList.map((property: any) => (
-                                                    <FormControlLabel
-                                                        key={property.name}
-                                                        control={
-                                                            <Checkbox
-                                                                checked={selectedProperty.includes(property.id)}
-                                                                onChange={handleSelectedProperty(property.id)}
-                                                            />
-                                                        }
-                                                        label={property.name}
-                                                    />
-                                                ))}
-                                            </Box>
-                                        </Box>
-                                    </AccordionDetails>
-                                </Accordion>
+                              <AutoCompleteCheckbox
+                                options={propertyList}
+                                selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
+                                singleTerm={'Property'}
+                                pluralTerms={'Properties'}
+                                selectAllFlag={selectAllProperty}
+                                setSelectAll={(val) => setSelectAllProperty(val)}
+                                setSelectedOption={(newValues) => {
+                                    setSelectedProperty(newValues)
+                                    if (newValues.length === 0) {
+                                        adjustMapToBoundingBox(boundingBox)
+                                    } else {
+                                      // Call zoomToCombinedBoundingBox with the updated list of selected properties
+                                      zoomToCombinedBoundingBox(newValues);
+                                    }
+                                }}
+                              />
                             )}
                         </List>
                     </Box>
                 }
-                <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/species/Elephant.svg" alt='species image' />
-                    <Typography color='#75B37A' fontSize='medium'>Species</Typography>
-                </Box>
-                <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
-                        (
-                            <Autocomplete
-                                id="combo-box-demo"
-                                disableClearable={true}
-                                options={searchSpeciesList}
-                                sx={{ width: '100%' }}
-                                onChange={(event, value) => handleSelectedSpecies(value)}
-                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
-                            />
-                        )
-                    }
-                </List>
-                <Box>
-                    <Box className='sidebarBoxHeading'>
-                        <img src="/static/images/Activity.svg" alt='Property image' />
-                        <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
-                    </Box>
-                    <List className='ListItem' component="nav" aria-label="">
-                    {loading ? <Loading /> :
-                        (
-                            <Autocomplete
-                                id="combo-box-demo"
-                                disableClearable={true}
-                                options={activityList}
-                                sx={{ width: '100%' }}
-                                onChange={(event, value) => handleSelectedActivity(value)}
-                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
-                            />
-                        )
-                    }
-                    </List>
-                </Box>
                 <Box className='sidebarBoxHeading'>
                     <img src="/static/images/Clock.svg" alt='watch image' />
                     <Typography color='#75B37A' fontSize='medium'>Year</Typography>
