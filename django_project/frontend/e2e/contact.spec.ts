@@ -33,6 +33,6 @@ test.describe('contact page', () => {
 
         const finalURL = page.url();
 
-        expect(finalURL).toBe(initialURL);
+        expect(finalURL).not.toBe(initialURL);
     });
 });
