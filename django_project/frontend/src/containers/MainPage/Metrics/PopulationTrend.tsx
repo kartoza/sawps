@@ -69,7 +69,7 @@ const PopulationTrend= (props: any) => {
                     }),
                     datasets: [
                       {
-                        label: props.species_name,
+                        label: props.selectedSpecies,
                         data: _data,
                         borderColor: props.lineColor,
                         fill: false,

@@ -756,8 +756,7 @@ function Filter(props: any) {
                     </Box>
                 }
 
-                {tab != 'trends' &&
-                  <Box>
+                <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Clock.svg" alt='watch image'/>
                           <Typography color='#75B37A' fontSize='medium'>Year</Typography>
@@ -785,7 +784,10 @@ function Filter(props: any) {
                               <Typography className='formtext'>To</Typography>
                           </Box>
                       </Box>
+                </Box>
 
+                {tab != 'trends' &&
+                  <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Layers.svg" alt='Filter image'/>
                           <Typography color='#75B37A' fontSize='medium'>Spatial filters</Typography>

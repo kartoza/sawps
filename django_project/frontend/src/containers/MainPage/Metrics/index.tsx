@@ -460,9 +460,7 @@ const Metrics = () => {
                         </Grid>
                     </Grid>
                 )}
-
-
-        </Box>
+            </Box>
             {/* for decision makers only */}
             {/* {userRole === 'decision maker' && (
                 <GenerateChartImages />

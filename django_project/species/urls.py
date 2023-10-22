@@ -8,15 +8,15 @@ from species.api_views.upload_species import (
 from .views import (
     TaxonFrontPageListAPIView,
     TaxonListAPIView,
-    TaxonTrendPageListAPIView
+    TaxonTrendPageAPIView
 )
 
 urlpatterns = [
     path('api/species/front-page/list/', TaxonFrontPageListAPIView.as_view(),
          name='species-front-page'),
     re_path(r'^api/species/trend-page/?$',
-            TaxonTrendPageListAPIView.as_view(),
-            name='species-trend-page'),
+            TaxonTrendPageAPIView.as_view(),
+            name='taxon-trend-page'),
     path('species/', TaxonListAPIView.as_view(),
          name='species'),
     path('api/upload-species/', SpeciesUploader.as_view(),
