@@ -118,7 +118,6 @@ class DataTableAPIView(APIView):
                         reports.append({
                             PROVINCE_REPORT: province_reports
                         })
-
             return Response(reports)
         else:
             return Response(

@@ -106,33 +106,6 @@ class OwnedSpeciesTestCase(TestCase):
             "SpeciesA"
         )
 
-    # def test_data_table_filter_by_species_name_all_activity(self) -> None:
-    #     """Test data table filter by species name"""
-    #     url = self.url
-    #     data = {
-    #         "species": "SpeciesA",
-    #         "activity": 'all',
-    #         "reports": "Property_report"
-    #     }
-    #     response = self.client.get(url, data, **self.auth_headers)
-    #     self.assertEqual(len(response.data[0]["Property_report"]), 5)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(
-    #         response.data[0]["Property_report"][0]["scientific_name"],
-    #         "SpeciesA"
-    #     )
-    #
-    # def test_data_table_filter_by_species_name_no_activity(self) -> None:
-    #     """Test data table filter by species name"""
-    #     url = self.url
-    #     data = {
-    #         "species": "SpeciesA",
-    #         "activity": '',
-    #         "reports": "Property_report"
-    #     }
-    #     response = self.client.get(url, data, **self.auth_headers)
-    #     self.assertEqual(len(response.data), 0)
-
     def test_filter_all_reports_by_all_activity_type(self) -> None:
         """Test data table filter by activity name"""
         url = self.url
@@ -142,7 +115,7 @@ class OwnedSpeciesTestCase(TestCase):
         data = {
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Activity_report,Property_report,Sampling_report,Species_report"
+            "reports": "Activity_report,Property_report,Province_report,Sampling_report,Species_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -156,6 +129,19 @@ class OwnedSpeciesTestCase(TestCase):
         self.assertEqual(len(response.data[2]["Sampling_report"]), 5)
         # Show all species report (5)
         self.assertEqual(len(response.data[3]["Species_report"]), 5)
+        # Show province report
+        taxon = self.owned_species[0].taxon
+        province_name = self.owned_species[0].property.province.name
+        self.assertEqual(
+            response.data[4]["Province_report"],
+            [
+                {
+                    "common_name": taxon.common_name_varbatim,
+                    "scientific_name": taxon.scientific_name,
+                    f"total_population_{province_name}": 300,
+                }
+            ]
+        )
 
     def test_data_table_filter_by_activity_type(self) -> None:
         """Test data table filter by activity type"""
