@@ -98,12 +98,13 @@ def calculate_population_categories(
         owned_species__property__id__in=property_ids,
         owned_species__taxon__scientific_name=species_name
     ).values(
-        'year'
+        'year',
+        'owned_species__property__id'  # Include property_id in grouping
     ).annotate(
-        # Calculate the sum of total populations for each year
+        # Calculate the sum of total populations for each year and property
         population_total=Sum('total')
     ).order_by(
-        'year'
+        'year', 'owned_species__property__id'
     )
 
     # Handle the case where annual_population_data is empty
