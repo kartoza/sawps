@@ -1,5 +1,6 @@
 from property.tasks import update_organisation_property_short_code
 
+
 def get_organisation_short_code(
     province_name: str = None,
     organisation_name: str = None,
