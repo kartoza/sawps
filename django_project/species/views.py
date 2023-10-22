@@ -4,7 +4,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Taxon
-from .serializers import FrontPageTaxonSerializer, TaxonSerializer, TrendPageTaxonSerializer
+from .serializers import (
+    FrontPageTaxonSerializer,
+    TaxonSerializer,
+    TrendPageTaxonSerializer
+)
 
 # Create your views here.
 
