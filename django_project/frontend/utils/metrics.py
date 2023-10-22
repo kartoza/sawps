@@ -223,9 +223,8 @@ def calculate_total_area_available_to_species(
 
 
 def calculate_total_area_per_property_type(
-        queryset: QuerySet,
-        species_name: str
-    ) -> List[dict]:
+    queryset: QuerySet,
+    species_name: str) -> List[dict]:
     """
     Calculate the total area per property type
     for a given queryset of properties.
