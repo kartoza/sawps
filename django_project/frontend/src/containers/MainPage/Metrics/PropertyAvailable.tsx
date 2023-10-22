@@ -21,6 +21,35 @@ interface PropertyAreaAvailableData {
     year: number;
 }
 
+interface ApiResponse {
+  species: string;
+  property_name: string;
+  year: number;
+  organisation_name: string;
+  province_name: string;
+  area: number | null | undefined;
+}
+
+function filterApiResponse(
+  data: ApiResponse[],
+  startYear: number,
+  endYear: number
+): ApiResponse[] {
+  return data.filter((item) => {
+    // Filter out items with zero, null, undefined, or empty area
+    if (item.area === 0 || item.area === null || item.area === undefined) {
+      return false;
+    }
+
+    // Filter out items with years outside the startYear and endYear bounds
+    if (item.year < startYear || item.year > endYear) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
 interface PropertyAvailableBarChartProps {
     selectedSpecies: string;
     propertyId: string;
@@ -59,7 +88,8 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
                      if(response.data.length > 0){
                     onEmptyDatasets(true)
                   }else onEmptyDatasets(false)
-                    setPropertyAreaAvailableData(response.data);
+                  const filteredData = filterApiResponse(response.data, startYear, endYear);
+                  setPropertyAreaAvailableData(filteredData);
                 }
             })
             .catch((error) => {
