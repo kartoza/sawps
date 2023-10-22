@@ -63,7 +63,21 @@ const SpeciesCountPerProvinceChart = (props: any) => {
       )
       .then((response) => {
         if (response.data) {
-          setSpeciesData(response.data);
+          const filteredData = response.data.filter((item: { count: number; year: number; }) => {
+            // Filter out objects with "count" as 0, null, or undefined
+            if (item.count === 0 || item.count === null || item.count === undefined) {
+              return false;
+            }
+          
+            // Filter out objects where "year" does not fall within the bounds
+            if (item.year < startYear || item.year > endYear) {
+              return false;
+            }
+          
+            return true;
+          });
+          
+          setSpeciesData(filteredData);
           setLoading(false);
         }
       })
