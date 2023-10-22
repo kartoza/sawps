@@ -23,29 +23,37 @@ const AreaAvailableLineChart = (props: any) => {
     // Extract the species name
     const speciesName = species_name ? species_name : '';
 
+        const filteredAreaData = areaData.filter((item: { annualpopulation__year: number; }) => {
+        return (
+        item?.annualpopulation__year >= startYear &&
+        item?.annualpopulation__year <= endYear
+        );
+    });
+    
+    // Create labels and datasets
     const AreaDataValue = {
-        labels: areaData.map((item: any) => item?.annualpopulation__year),
+        labels: filteredAreaData.map((item: { annualpopulation__year: any; }) => item?.annualpopulation__year),
         datasets: [
-            {
-                label: "Area available to species",
-                data: areaData.map((item: any) => item?.area_available),
-                borderColor: "#F9A95D",
-                backgroundColor: "#F9A95D",
-                fill: {
-                    target: "origin",
-                    above: "#F9A95D"
-                }
+        {
+            label: "Area available to species",
+            data: filteredAreaData.map((item: { area_available: any; }) => item?.area_available),
+            borderColor: "#F9A95D",
+            backgroundColor: "#F9A95D",
+            fill: {
+            target: "origin",
+            above: "#F9A95D",
             },
-            {
-                label: "Total area of property",
-                data: areaData.map((item: any) => item?.area_total),
-                borderColor: "#FF5252",
-                backgroundColor: "#FF5252",
-                fill: "origin",
-                above: "#FF5252"
-            }
-        ]
-    }
+        },
+        {
+            label: "Total area of property",
+            data: filteredAreaData.map((item: { area_total: any; }) => item?.area_total),
+            borderColor: "#FF5252",
+            backgroundColor: "#FF5252",
+            fill: "origin",
+            above: "#FF5252",
+        },
+        ],
+    };
 
     // incase there is a single label and single value
     interface AreaDataValueB {
