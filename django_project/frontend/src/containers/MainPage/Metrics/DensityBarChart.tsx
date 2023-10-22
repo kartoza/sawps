@@ -7,6 +7,42 @@ import axios from 'axios';
 
 const FETCH_SPECIES_DENSITY = "/api/species-population-total-density/";
 
+interface DensityData {
+    property_name: string;
+    density: number;
+    species_name: string;
+    year: number;
+  }
+
+  
+interface ApiResponse {
+    density: DensityData[];
+    province_name: string;
+    organisation_name: string;
+  }
+  
+  function filterApiResponse(
+    data: ApiResponse[],
+    startYear: number,
+    endYear: number
+  ): ApiResponse[] {
+    return data
+      .filter((item) => {
+        // Filter out items with density array as null or empty
+        if (!item.density || item.density.length === 0) {
+          return false;
+        }
+  
+        // Filter out items in the density array where year is outside the startYear and endYear bounds
+        item.density = item.density.filter((densityItem) => {
+          return densityItem.year >= startYear && densityItem.year <= endYear;
+        });
+  
+        return item.density.length > 0;
+      })
+      .filter((item) => item.density.length > 0);
+  }
+
 const DensityBarChart = (props: any) => {
     const {
         selectedSpecies,
@@ -31,7 +67,7 @@ const DensityBarChart = (props: any) => {
                 .then((response) => {
                     setLoading(false);
                     if (response.data) {
-                        const filteredData = response.data.filter((item: any) => (item.density.density !== null || item.density.density.length !== 0));
+                        const filteredData = filterApiResponse(response.data, startYear, endYear);
                         if(filteredData.length > 0){
                             onEmptyDatasets(true)
                         }else onEmptyDatasets(false)
