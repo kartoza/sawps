@@ -5,9 +5,11 @@
     color: #000000;
   }
 
-  hr {
-    border-top: solid black;
+  .ChartHolder {
+    min-width: 700px;
+    min-height: 350px;
   }
+
 }
 
 .downloadBtn-Trend {
