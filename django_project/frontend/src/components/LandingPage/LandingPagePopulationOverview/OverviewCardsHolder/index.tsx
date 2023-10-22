@@ -5,11 +5,9 @@ import axios from 'axios';
 import Grid from '@mui/material/Grid';
 import { alpha } from '@mui/material';
 
-interface IOverviewCardsHolder{
-    speciesListUrl?: string;
-}
+interface IOverviewCardsHolder{}
 
-export interface FrontPageSpecies {
+interface FrontPageSpecies {
     id: number;
     species_name: string;
     icon?: string;
@@ -21,12 +19,11 @@ export interface FrontPageSpecies {
 const FETCH_FRONT_PAGE_SPECIES_LIST = '/api/species/front-page/list/'
 
 
-const OverviewCardsHolder = (props: IOverviewCardsHolder) => {
-    const speciesListUrl = props.speciesListUrl ? props.speciesListUrl : FETCH_FRONT_PAGE_SPECIES_LIST
+const OverviewCardsHolder:FC<IOverviewCardsHolder> = ()=>{
     const [species, setSpecies] = useState<FrontPageSpecies[]>([])
 
     const fetchSpeciesList = () => {
-        axios.get(speciesListUrl).then((response) => {
+        axios.get(FETCH_FRONT_PAGE_SPECIES_LIST).then((response) => {
             if (response) {
                 setSpecies(response.data as FrontPageSpecies[])
             }

@@ -49,57 +49,53 @@ const SPECIES_NATIONAL_TREND_URL = '/api/species/{species_id}/trend/national/'
 const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
     const [chartData, setChartData] = useState(null)
 
-    const getChartData = (_data: NationalTrendInterface[]) => {
-        return {
-            labels: _data.map((a) => {
-                if (a.year % 2 === 0) return a.year
-                return ""
-            }),
-            datasets:[
-                {
-                    label: props.species_name,
-                    data: _data,
-                    borderColor: props.lineColor,
-                    fill: false,
-                    parsing: {
-                        xAxisKey: 'year',
-                        yAxisKey: 'fit'
-                    },
-                    pointRadius: 0
-                },
-                {
-                    label: 'upper_ci',
-                    data: _data,
-                    fill: 1,
-                    parsing: {
-                        xAxisKey: 'year',
-                        yAxisKey: 'upper_ci'
-                    },
-                    backgroundColor: props.areaFillColor,
-                    showLine: false,
-                    pointRadius: 0,
-                },
-                {
-                    label: 'lower_ci',
-                    data: _data,
-                    fill: 1,
-                    parsing: {
-                        xAxisKey: 'year',
-                        yAxisKey: 'lower_ci'
-                    },
-                    backgroundColor: props.areaFillColor,
-                    showLine: false,
-                    pointRadius: 0,
-                },
-            ]
-        }
-    }
-
     const fetchChartData = () => {
         axios.get(SPECIES_NATIONAL_TREND_URL.replace('{species_id}', props.species_id.toString())).then((response) => {
             if (response) {
                 let _data = response.data as NationalTrendInterface[]
-                setChartData(getChartData(_data))
+                setChartData({
+                    labels: _data.map((a) => {
+                        if (a.year % 2 === 0) return a.year
+                        return ""
+                    }),
+                    datasets:[
+                        {
+                            label: props.species_name,
+                            data: _data,
+                            borderColor: props.lineColor,
+                            fill: false,
+                            parsing: {
+                                xAxisKey: 'year',
+                                yAxisKey: 'fit'
+                            },
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'upper_ci',
+                            data: _data,
+                            fill: 1,
+                            parsing: {
+                                xAxisKey: 'year',
+                                yAxisKey: 'upper_ci'
+                            },
+                            backgroundColor: props.areaFillColor,
+                            showLine: false,
+                            pointRadius: 0,
+                        },
+                        {
+                            label: 'lower_ci',
+                            data: _data,
+                            fill: 1,
+                            parsing: {
+                                xAxisKey: 'year',
+                                yAxisKey: 'lower_ci'
+                            },
+                            backgroundColor: props.areaFillColor,
+                            showLine: false,
+                            pointRadius: 0,
+                        },
+                    ]
+                })
             }
         }).catch((error) => {
             console.log(error)
@@ -133,11 +129,11 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
            }
         }
     }
-    
+
     return(
         <>
             <div className="species-chart-container" data-testid="species-chart">
-                {chartData ? 
+                {chartData ?
                     <Line
                         data={chartData}
                         options={options}
