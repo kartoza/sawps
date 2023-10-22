@@ -46,7 +46,15 @@ const PopulationCategoryChart = (props: any) => {
             } else {
                 onEmptyDatasets(true)
             }
-            setPopulationData(response.data);
+            
+            const filteredData: any = {};
+
+            for (const key in response.data) {
+                if (response.data[key].year >= startYear && response.data[key].year <= endYear) {
+                    filteredData[key] = response.data[key];
+                }
+            }
+            setPopulationData(filteredData);
           }
         })
         .catch((error) => {
@@ -59,6 +67,7 @@ const PopulationCategoryChart = (props: any) => {
       fetchPopulationCategoryData();
     }, [propertyId, startYear, endYear, selectedSpecies]);
 
+
     // Extract years from the population data for legend labels
     const populationCategoriesB = Object.keys(populationData);
 
@@ -67,8 +76,8 @@ const PopulationCategoryChart = (props: any) => {
 
     // Iterate through populationCategories to add unique labels to the Set
     populationCategoriesB.forEach((category) => {
-    const [year, label] = category.split('_');
-    uniqueLabels.add(label);
+        const [year, label] = category.split('_');
+        uniqueLabels.add(label);
     });
 
     // Convert the Set back to an array
@@ -77,41 +86,88 @@ const PopulationCategoryChart = (props: any) => {
     // Extract years from the population data for legend labels
     const populationCategories = Object.keys(populationData);
   
+    // CREATE DATASETS FOR THE CHART
     const newDatasets: {
         label: string;
         backgroundColor: string;
         data: number[];
     }[] = [];
 
-    const firstAppearanceIndex: Record<string, number> = {};
+    const firstOccurrenceIndex : Record<string, number> = {};
+    let zerosToAdd = 0;
+    let trackZerosToAdd = 0;
 
     for (const category in populationData) {
-        const index = populationCategories.indexOf(category);
+      const index = populationCategories.indexOf(category);
+    
+      const [year, label] = category.split('_');
+    
+      let dataValue: number[] = [];
 
-        const [year, label] = category.split('_');
-
-        if (firstAppearanceIndex[label] === undefined) {
-            firstAppearanceIndex[label] = index;
+      for (let i = 0; i <= index; i++) {
+        if (!(label in firstOccurrenceIndex)) {
+            firstOccurrenceIndex[label] = index;
         }
+      }
 
-        let dataValue: number[] = [];
-        if (index > 0) {
-            for (let i = 0; i < firstAppearanceIndex[label]; i++) {
-                dataValue.push(0);
+
+      if (label in firstOccurrenceIndex) {
+        // determine the number of leading zeros to add 
+        // based on the number of times a category repeated before the current one
+        if(index === firstOccurrenceIndex[label]){
+            if((index - trackZerosToAdd) !== 0){
+                for (let i = 0; i < index - trackZerosToAdd; i++) {
+                    dataValue.push(0);
+                }
+            }  
+        }
+        else {
+            zerosToAdd = firstOccurrenceIndex[label]
+            if(zerosToAdd !== 0){
+                for (let i = 0; i < zerosToAdd; i++) {
+                    dataValue.push(0);
+                } 
             }
+            trackZerosToAdd+=1
         }
+      }
+      
+    
+      dataValue.push(populationData[category].property_count);
 
-        dataValue.push(populationData[category].property_count);
 
-        newDatasets.push({
-            label: year,
-            backgroundColor: availableColors[index % availableColors.length],
-            data: dataValue,
-        });
+      newDatasets.push({
+        label: year,
+        backgroundColor: availableColors[index % availableColors.length],
+        data: dataValue,
+       });
+  
     }
 
-    // Sort labels in ascending order (lowest year first)
-    // Custom sorting function to handle numerical ranges
+    // JOIN LEGEND LABELS AND COLORS WITH THE SAME YEAR
+    const resultObject: Record<string, { label: string; backgroundColor: string; data: number[] }> = {};
+
+    newDatasets.forEach((item) => {
+    const { label, data } = item;
+
+    if (resultObject[label]) {
+        // If the year already exists, append the non-zero values
+        for (let i = 0; i < data.length; i++) {
+        if (data[i] !== 0) {
+            resultObject[label].data[i] = data[i];
+        }
+        }
+    } else {
+        // If the year is unique, create a new entry
+        resultObject[label] = { label, backgroundColor: item.backgroundColor, data };
+    }
+    });
+
+    // Convert the result object back to an array
+    const resultArray = Object.values(resultObject);
+
+
+    // SORT THE LABELS AND CATEGORIES FROM LOWEST TO HIGHEST
     const customSort = (a: string, b: string): number => {
         const [minA, maxA] = a.split(/-|>/).map((num) => parseInt(num, 10) || 0);
         const [minB, maxB] = b.split(/-|>/).map((num) => parseInt(num, 10) || 0);
@@ -122,14 +178,32 @@ const PopulationCategoryChart = (props: any) => {
 
     labels.sort(customSort);
 
-    // Sort datasets in descending order
-    newDatasets.sort((a, b) => parseInt(b.label) - parseInt(a.label));
+    // Find the maximum size of the data arrays
+    const maxSize = Math.max(...resultArray.map((item) => item.data.length));
+      
+    // Pad the other arrays to match the maximum size by adding zeros at the end
+    resultArray.forEach((item) => {
+        const { data } = item;
+        const sizeDifference = maxSize - data.length;
+      
+        if (sizeDifference > 0) {
+          // Create an array of zeros with the size difference
+          const zeros = new Array(sizeDifference).fill(0);
+          // Append zeros to the end of the data array
+          item.data = [...data, ...zeros];
+        }
+    });
+      
+    // Reverse the order of the data arrays
+    resultArray.forEach((item) => {
+        item.data.reverse();
+    });
 
 
-
+    // ADD PROCESSED DATA TO CHART AND DEFINE CHART BEHAVIOUR
     const data = {
         labels: labels,
-        datasets: newDatasets
+        datasets: resultArray
     };
 
   const options = {
