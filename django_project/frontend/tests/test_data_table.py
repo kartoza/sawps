@@ -106,6 +106,17 @@ class OwnedSpeciesTestCase(TestCase):
             "SpeciesA"
         )
 
+    def test_data_table_filter_by_no_activity(self) -> None:
+        """Test data table filter by species name"""
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "activity": '',
+            "reports": "Property_report"
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(len(response.data), 0)
+
     def test_filter_all_reports_by_all_activity_type(self) -> None:
         """Test data table filter by activity name"""
         url = self.url
