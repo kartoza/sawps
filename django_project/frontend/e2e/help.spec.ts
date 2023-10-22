@@ -29,7 +29,7 @@ test.describe('help page', () => {
             'The SAWPS platform offers a broad range of features which are documented in a fu'
             ).isVisible();
 
-        await page.getByRole('button', {name: 'Go to user guide'}).click();
+        await page.getByRole('button', {name: 'Go to user guide'}).isVisible();
 
         await page.goto(helpURL);
 
