@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useCallback, useState} from "react";
 import {Box, Button, Checkbox, Grid, ListItemText, Typography} from "@mui/material";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -35,6 +35,7 @@ const MenuProps = {
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
 
 const DataList = () => {
+    const [width, setWidth] = useState(0);
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -92,6 +93,12 @@ const DataList = () => {
         return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
     }
 
+    const measuredRef = useCallback((node: any) => {
+        if (node !== null) {
+          setWidth(node.getBoundingClientRect().width)
+        }
+    }, [data])
+
     useEffect(() => {
         if (activityList) {
             setCustomColorWidth({
@@ -124,7 +131,6 @@ const DataList = () => {
     useEffect(() => {
       const getData = setTimeout(() => {
         fetchDataList()
-        setShowReports(true)
       }, 500)
 
       return () => clearTimeout(getData)
@@ -147,11 +153,6 @@ const DataList = () => {
         );
     };
 
-    const filteredColumns = columns.filter((column) =>
-        selectedColumns.length > 0 ?
-            selectedColumns.includes(column.headerName) : []
-    );
-
     const handleExportCsv = (): void => {
         const csvData = [
             columns.map((column) => column.headerName).join(','),
@@ -169,6 +170,18 @@ const DataList = () => {
         const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         saveAs(blob, 'data.xlsx');
     };
+
+    const getUniqueColumn = () => {
+        const uniqueColumns = [];
+        const seenFields = new Set();
+        for (const column of columns) {
+            if (!seenFields.has(column.field)) {
+                uniqueColumns.push(column);
+                seenFields.add(column.field);
+            }
+        }
+        return uniqueColumns
+    }
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -192,9 +205,13 @@ const DataList = () => {
                                 headerName: getTitle(key),
                                 width: (customColorWidth as any)[each]?.width,
                             }));
+                            const filteredColumns = generatedColumns.filter((column) =>
+                                selectedColumns.length > 0 ?
+                                    selectedColumns.includes(column.headerName) : []
+                            );
                             for (const value of generatedColumns) {
-                                if (filteredColumns.length === 0) {
-                                    columns.push(value);
+                                if (!columns.includes(value)) {
+                                    columns.push(value)
                                 }
                             }
                             const cellRows = cellData.map((row: any, rowIndex: any) => ({
@@ -205,7 +222,13 @@ const DataList = () => {
                                 <DataGrid
                                     key={index}
                                     rows={cellRows}
-                                    columns={selectedColumns.length > 0 ? filteredColumns : generatedColumns}
+                                    columns={selectedColumns.length > 0 ? filteredColumns.map(col => {
+                                        return {
+                                            field: col.field,
+                                            headerName: col.headerName,
+                                            width: width/filteredColumns.length
+                                        }
+                                    }) : generatedColumns}
                                     disableRowSelectionOnClick
                                     components={{
                                         Pagination: null,
@@ -239,13 +262,12 @@ const DataList = () => {
                                 const generatedColumns: GridColDef[] = cellKeys.length > 0 && cellKeys.map((key) => ({
                                     field: key,
                                     headerName: getTitle(key),
-                                    width: (customColorWidth as any)[each]?.width,
+                                    width: width/cellKeys.length,
                                 }));
-                                for (const value of generatedColumns) {
-                                    if (filteredColumns.length === 0) {
-                                        columns.push(value);
-                                    }
-                                }
+                                const filteredColumns = generatedColumns.filter((column) =>
+                                    selectedColumns.length > 0 ?
+                                        selectedColumns.includes(column.headerName) : []
+                                );
                                 const cellRows = cellData.map((row: any, rowIndex: any) => ({
                                     id: rowIndex,
                                     ...row,
@@ -254,8 +276,15 @@ const DataList = () => {
                                     <DataGrid
                                         key={index}
                                         rows={cellRows}
-                                        columns={generatedColumns}
+                                        columns={selectedColumns.length > 0 ? filteredColumns.map(col => {
+                                            return {
+                                                field: col.field,
+                                                headerName: col.headerName,
+                                                width: width/filteredColumns.length
+                                            }
+                                        }) : generatedColumns}
                                         disableRowSelectionOnClick
+                                        getRowHeight={() => 'auto'}
                                         components={{
                                             Pagination: null,
                                         }}
@@ -267,21 +296,25 @@ const DataList = () => {
                 )}
             </>)
         setActivityTable(activityDataGrid)
-        const uniqueColumns = [];
-        const seenFields = new Set();
-        for (const column of columns) {
-            if (!seenFields.has(column.field)) {
-                uniqueColumns.push(column);
-                seenFields.add(column.field);
-            }
-        }
+
+        const uniqueColumns = getUniqueColumn()
         setColumns(uniqueColumns)
         setTableData(dataGrid)
     }, [data, selectedColumns, isSuccess])
 
+    useEffect(() => {
+        const uniqueColumns = getUniqueColumn()
+        setSelectedColumns(
+          uniqueColumns
+            .filter(col => !['Common Name', 'Scientific Name'].includes(col.headerName))
+            .map(col => col.headerName)
+        )
+    }, [data])
+
+
     return (
           showReports ? (
-            <Box className='dataContainer'>
+            <Box className='dataContainer' ref={measuredRef}>
                 <Topper></Topper>
                 <Box className="bgGreen">
                     <Box className="selectBox">

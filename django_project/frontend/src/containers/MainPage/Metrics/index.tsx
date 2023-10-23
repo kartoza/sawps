@@ -344,7 +344,6 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
-
                             
                             {
                             constants.canViewPropertyAvailable && 
@@ -364,7 +363,6 @@ const Metrics = () => {
                             )}
 
 
-                            
                             {
                             constants.canViewAgeGroup && 
                             ageGroupData.map((data) => (
@@ -378,7 +376,6 @@ const Metrics = () => {
                                     />
                                 </Grid>
                             ))}
-                           
 
                             
                             {
@@ -429,7 +426,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <SpeciesCountAsPercentage
@@ -456,7 +453,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <TotalCountPerActivity
@@ -482,7 +479,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <ActivityCountAsPercentage
@@ -507,7 +504,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <PopulationEstimateCategoryCount
@@ -534,7 +531,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                 >
                                     <PopulationEstimateAsPercentage
@@ -566,9 +563,7 @@ const Metrics = () => {
                         </Grid>
                     </Grid>
                 )}
-
-
-        </Box>
+            </Box>
             {/* for decision makers only */}
             {/* {userRole === 'decision maker' && (
                 <GenerateChartImages />
