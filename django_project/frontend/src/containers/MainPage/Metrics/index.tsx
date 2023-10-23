@@ -134,21 +134,16 @@ const Metrics = () => {
         setHasEmptyAreaAvailable(isEmpty);
     };
 
-    const imageUrl = 'http://localhost:8000/static/images/icons/download.svg';
-
     // Get the current window location (i.e., the full URL)
     let currentLocation = window.location.href;
 
     // Remove '/charts' from the current URL
     currentLocation = currentLocation.replace('/charts', '');
 
-    // Replace 'localhost:8000' with the current full URL
-    const imageUrlWithDomain = imageUrl.replace('http://localhost:8000', currentLocation);
+    const downloadImageUrl = currentLocation + '/static/images/icons/download.svg'
 
-    const informationIconUrl = 'http://localhost:8000/static/images/icons/information.svg';
+    const informationIconUrl = currentLocation + '/static/images/icons/information.svg';
 
-    // Replace 'localhost:8000' with the current full URL
-    const informationIconUrlWithDomain = informationIconUrl.replace('http://localhost:8000', currentLocation);
 
 
     const fetchActivityPercentageData = () => {
@@ -388,7 +383,7 @@ const Metrics = () => {
                                     <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
                                         <Tooltip title="Information Tooltip" arrow placement="top">
                                             <img
-                                            src={informationIconUrlWithDomain}
+                                            src={informationIconUrl}
                                             alt="Information Icon"
                                             width="24"
                                             height="24"
@@ -402,7 +397,7 @@ const Metrics = () => {
                                             style={{ cursor: 'pointer' }}
                                         >
                                             <img
-                                            src={imageUrlWithDomain}
+                                            src={downloadImageUrl}
                                             alt="Image Icon"
                                             width="24"
                                             height="24"
@@ -437,7 +432,7 @@ const Metrics = () => {
                                         {/* Information Icon with Tooltip */}
                                         <Tooltip title="Information Tooltip" arrow placement="top">
                                             <img
-                                            src={informationIconUrlWithDomain}
+                                            src={informationIconUrl}
                                             alt="Information Icon"
                                             width="24"
                                             height="24"
@@ -452,7 +447,7 @@ const Metrics = () => {
                                             style={{ cursor: 'pointer' }}
                                         >
                                             <img
-                                            src={imageUrlWithDomain}
+                                            src={downloadImageUrl}
                                             alt="Image Icon"
                                             width="24"
                                             height="24"
@@ -481,7 +476,7 @@ const Metrics = () => {
                                         {/* Information Icon with Tooltip */}
                                         <Tooltip title="Information Tooltip" arrow placement="top">
                                             <img
-                                            src={informationIconUrlWithDomain}
+                                            src={informationIconUrl}
                                             alt="Information Icon"
                                             width="24"
                                             height="24"
@@ -496,7 +491,7 @@ const Metrics = () => {
                                             style={{ cursor: 'pointer' }}
                                         >
                                             <img
-                                            src={imageUrlWithDomain}
+                                            src={downloadImageUrl}
                                             alt="Image Icon"
                                             width="24"
                                             height="24"
@@ -529,7 +524,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -544,7 +539,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
@@ -576,7 +571,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -591,7 +586,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
@@ -620,7 +615,7 @@ const Metrics = () => {
                                         {/* Information Icon with Tooltip */}
                                         <Tooltip title="Information Tooltip" arrow placement="top">
                                             <img
-                                            src={informationIconUrlWithDomain}
+                                            src={informationIconUrl}
                                             alt="Information Icon"
                                             width="24"
                                             height="24"
@@ -635,7 +630,7 @@ const Metrics = () => {
                                             style={{ cursor: 'pointer' }}
                                         >
                                             <img
-                                            src={imageUrlWithDomain}
+                                            src={downloadImageUrl}
                                             alt="Image Icon"
                                             width="24"
                                             height="24"
@@ -666,7 +661,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -681,7 +676,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
@@ -712,7 +707,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -727,7 +722,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
@@ -769,7 +764,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -784,7 +779,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
@@ -824,7 +819,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -839,7 +834,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
@@ -878,7 +873,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -893,7 +888,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
@@ -934,7 +929,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -949,7 +944,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
@@ -990,7 +985,7 @@ const Metrics = () => {
                                             {/* Information Icon with Tooltip */}
                                             <Tooltip title="Information Tooltip" arrow placement="top">
                                                 <img
-                                                src={informationIconUrlWithDomain}
+                                                src={informationIconUrl}
                                                 alt="Information Icon"
                                                 width="24"
                                                 height="24"
@@ -1005,7 +1000,7 @@ const Metrics = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img
-                                                src={imageUrlWithDomain}
+                                                src={downloadImageUrl}
                                                 alt="Image Icon"
                                                 width="24"
                                                 height="24"
