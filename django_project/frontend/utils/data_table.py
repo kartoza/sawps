@@ -528,6 +528,11 @@ def write_report_to_rows(queryset, request):
                     os.remove(path_file)
                 dataframe.to_csv(path_file)
                 csv_reports.append(path_file)
+        if len(csv_reports) < 1:
+            return
+        elif len(csv_reports) == 1:
+            return settings.MEDIA_URL + 'download_data/' \
+                   + os.path.basename(csv_reports[0])
         path_zip = os.path.join(path, 'data_report.zip')
         if os.path.exists(path_zip):
             os.remove(path_zip)

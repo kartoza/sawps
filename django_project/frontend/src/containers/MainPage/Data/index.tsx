@@ -35,8 +35,6 @@ const MenuProps = {
 };
 
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
-const DOWNLOAD_DATA_URL ='/api/download-data/'
-
 
 const DataList = () => {
     const [width, setWidth] = useState(0);
@@ -158,7 +156,7 @@ const DataList = () => {
     };
 
     const handleExportCsv = (): void => {
-        axios.get(`${DOWNLOAD_DATA_URL}?file=csv&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?file=csv&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
@@ -170,7 +168,7 @@ const DataList = () => {
     };
 
     const handleExportExcel = (): void => {
-        axios.get(`${DOWNLOAD_DATA_URL}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        axios.get(`${FETCH_AVAILABLE_DATA}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
