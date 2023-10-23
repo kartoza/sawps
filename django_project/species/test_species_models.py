@@ -19,7 +19,6 @@ from species.factories import (
 from species.models import OwnedSpecies, Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
 from stakeholder.factories import organisationFactory
-from stakeholder.models import UserProfile
 
 
 def mocked_clear_cache(self, *args, **kwargs):

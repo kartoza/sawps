@@ -3,16 +3,13 @@ import base64
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
-from django_otp.plugins.otp_totp.models import TOTPDevice
 
 from frontend.static_mapping import (
     NATIONAL_DATA_SCIENTIST,
-    NATIONAL_DATA_CONSUMER,
     REGIONAL_DATA_SCIENTIST,
     REGIONAL_DATA_CONSUMER
 )
 from population_data.models import AnnualPopulationPerActivity
-from population_data.factories import AnnualPopulationPerActivityFactory
 from property.factories import PropertyFactory
 from rest_framework import status
 
@@ -29,6 +26,7 @@ from stakeholder.factories import (
     organisationUserFactory,
     userRoleTypeFactory,
 )
+from property.factories import ProvinceFactory
 from frontend.tests.model_factories import (
     SpatialDataModelF,
     SpatialDataModelValueF
@@ -36,7 +34,8 @@ from frontend.tests.model_factories import (
 from stakeholder.models import OrganisationInvites, MANAGER
 
 
-class OwnedSpeciesTestCase(TestCase):
+class OwnedSpeciesTestMixins:
+
     def setUp(self):
         taxon_rank = TaxonRank.objects.filter(
             name='Species'
@@ -50,10 +49,14 @@ class OwnedSpeciesTestCase(TestCase):
             scientific_name='SpeciesA'
         )
         user = User.objects.create_user(
-                username='testuserd',
-                password='testpasswordd'
-            )
-        self.organisation_1 = organisationFactory.create()
+            username='testuserd',
+            password='testpasswordd'
+        )
+        self.province = ProvinceFactory.create(name='Western Cape')
+        self.organisation_1 = organisationFactory.create(
+            name='OrganisationA',
+            province=self.province
+        )
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
             user=user,
@@ -66,7 +69,8 @@ class OwnedSpeciesTestCase(TestCase):
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
-            name='PropertyA'
+            name='PropertyA',
+            province=self.province
         )
 
         self.owned_species = OwnedSpeciesFactory.create_batch(
@@ -75,7 +79,7 @@ class OwnedSpeciesTestCase(TestCase):
 
         self.auth_headers = {
             'HTTP_AUTHORIZATION': 'Basic ' +
-            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+                                  base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
         }
         self.client = Client()
         session = self.client.session
@@ -88,6 +92,9 @@ class OwnedSpeciesTestCase(TestCase):
             spatial_data=self.spatial_data,
             context_layer_value='spatial filter test'
         )
+
+
+class OwnedSpeciesTestCase(OwnedSpeciesTestMixins, TestCase):
 
     def test_data_table_filter_by_species_name(self) -> None:
         """Test data table filter by species name"""

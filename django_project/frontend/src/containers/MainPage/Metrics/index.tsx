@@ -263,7 +263,6 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
-
                             
                             {selectedSpecies && hasEmptyPropertyAvailable && (
                                 <Grid item xs={12} md={6}>
@@ -280,7 +279,6 @@ const Metrics = () => {
                             )}
 
 
-                            
                             {ageGroupData.map((data) => (
                                 <Grid container key={data.id} item xs={12} md={6}>
                                     <AgeGroupBarChart
@@ -292,7 +290,6 @@ const Metrics = () => {
                                     />
                                 </Grid>
                             ))}
-                           
 
                             
                             {hasEmptyAreaAvailable && areaData.map((data, index) => (
