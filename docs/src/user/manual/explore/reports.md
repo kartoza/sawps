@@ -35,6 +35,7 @@ The main area of the page displays your dataset in a tabular format. Each row re
 
 
 ### Report Type
+
 * **Activity Report:** Report on activity basis.
 * **Property Report:** Report on property basis.
 * **Species Report:** Report on species basis.
@@ -106,15 +107,15 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      Each of the tables associated with the activity types contains the following columns:
 
-     - **Property Name**: The name of the property where the activity took place.
-     - **Scientific Name**: The scientific name of the species involved in the activity.
-     - **Common Name**: The common name of the species.
-     - **Year**: The year in which the activity occurred.
-     - **Total**: The total count of the species involved in the activity.
-     - **Adult Male**: The count of adult male individuals.
-     - **Adult Female**: The count of adult female individuals.
-     - **Juvenile Male**: The count of juvenile male individuals.
-     - **Juvenile Female**: The count of juvenile female individuals.
+     * **Property Name**: The name of the property where the activity took place.
+     * **Scientific Name**: The scientific name of the species involved in the activity.
+     * **Common Name**: The common name of the species.
+     * **Year**: The year in which the activity occurred.
+     * **Total**: The total count of the species involved in the activity.
+     * **Adult Male**: The count of adult male individuals.
+     * **Adult Female**: The count of adult female individuals.
+     * **Juvenile Male**: The count of juvenile male individuals.
+     * **Juvenile Female**: The count of juvenile female individuals.
 
      **Summary**
 
@@ -132,29 +133,29 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      The Property Report includes the following columns:
 
-     - **Property Name**: The name of the property being reported on.
+     * **Property Name**: The name of the property being reported on.
 
-     - **Scientific Name**: The scientific name of the species associated with the property.
+     * **Scientific Name**: The scientific name of the species associated with the property.
 
-     - **Common Name**: The common name of the species related to the property.
+     * **Common Name**: The common name of the species related to the property.
 
-     - **Owner**: The name of the owner of the property.
+     * **Owner**: The name of the owner of the property.
 
-     - **Owner Email**: The email address of the property owner.
+     * **Owner Email**: The email address of the property owner.
 
-     - **Property Type**: The type of the property.
+     * **Property Type**: The type of the property.
 
-     - **Province**: The province where the property is situated.
+     * **Province**: The province where the property is situated.
 
-     - **Property Size (Ha)**: The size of the property in hectares.
+     * **Property Size (Ha)**: The size of the property in hectares.
 
-     - **Area Available To Species**: The portion of the property that is available for species habitat.
+     * **Area Available To Species**: The portion of the property that is available for species habitat.
 
-     - **Open/Close Systems**: Indicates whether the property employs open or closed systems for wildlife management.
+     * **Open/Close Systems**: Indicates whether the property employs open or closed systems for wildlife management.
 
      **Summary**
 
-     The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analyzing and managing property-related information in an organized and structured manner.
+     The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analysing and managing property-related information in an organized and structured manner.
 
      **Species Report**
 
@@ -168,29 +169,29 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      The Species Report includes the following columns:
 
-     - **Property Name**: The name of the property associated with the species data.
+     * **Property Name**: The name of the property associated with the species data.
 
-     - **Scientific Name**: The scientific name of the species.
+     * **Scientific Name**: The scientific name of the species.
 
-     - **Common Name**: The common name of the species.
+     * **Common Name**: The common name of the species.
 
-     - **Year**: The specific year for which the data is recorded.
+     * **Year**: The specific year for which the data is recorded.
 
-     - **Group**: Information about the group which the species belongs.
+     * **Group**: Information about the group which the species belongs.
 
-     - **Total**: The total count of the species in the specified year.
+     * **Total**: The total count of the species in the specified year.
 
-     - **Adult Males**: The count of adult male individuals within the species.
+     * **Adult Males**: The count of adult male individuals within the species.
 
-     - **Adult Females**: The count of adult female individuals within the species.
+     * **Adult Females**: The count of adult female individuals within the species.
 
-     - **Juvenile Males**: The count of juvenile male individuals within the species.
+     * **Juvenile Males**: The count of juvenile male individuals within the species.
 
-     - **Juvenile Females**: The count of juvenile female individuals within the species.
+     * **Juvenile Females**: The count of juvenile female individuals within the species.
 
-     - **Sub-Adult Males**: The count of sub-adult male individuals within the species.
+     * **Sub-Adult Males**: The count of sub-adult male individuals within the species.
 
-     - **Sub-Adult Females**: The count of sub-adult female individuals within the species.
+     * **Sub-Adult Females**: The count of sub-adult female individuals within the species.
 
      **Summary**
 
@@ -208,21 +209,21 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      The Sampling Report includes the following columns:
 
-     - **Property Name**: The name of the property where the sampling and population estimates were conducted.
+     * **Property Name**: The name of the property where the sampling and population estimates were conducted.
 
-     - **Scientific Name**: The scientific name of the species under consideration.
+     * **Scientific Name**: The scientific name of the species under consideration.
 
-     - **Common Name**: The common name of the species.
+     * **Common Name**: The common name of the species.
 
-     - **Population Status**: Indicates the status of the species population such as `Migratory` or `Resident`.
+     * **Population Status**: Indicates the status of the species population such as `Migratory` or `Resident`.
 
-     - **Population Estimate Category**: Categorizes the population estimate.
+     * **Population Estimate Category**: Categorizes the population estimate.
 
-     - **Survey Method**: Describes the method used for surveying and data collection.
+     * **Survey Method**: Describes the method used for surveying and data collection.
 
-     - **Sampling Effort Coverage**: Indicates the extent to which the sampling effort covered the entire population or habitat.
+     * **Sampling Effort Coverage**: Indicates the extent to which the sampling effort covered the entire population or habitat.
 
-     - **Population Estimate Certainty**: Represents the level of certainty of estimated population.
+     * **Population Estimate Certainty**: Represents the level of certainty of estimated population.
 
      **Summary**
 
