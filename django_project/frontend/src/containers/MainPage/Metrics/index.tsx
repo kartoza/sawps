@@ -550,7 +550,6 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
-
                             
                             {
                             constants.canViewPropertyAvailable && 
@@ -598,7 +597,6 @@ const Metrics = () => {
                             )}
 
 
-                            
                             {
                             constants.canViewAgeGroup && 
                             ageGroupData.map((data) => (
@@ -640,7 +638,6 @@ const Metrics = () => {
                                     )}
                                 </Grid>
                             ))}
-                           
 
                             
                             {
@@ -745,7 +742,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                     ref={contentRefProvinceCountPercentage}
                                 >
@@ -801,7 +798,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                     ref={contentRefTotalCountPerActivity}
                                 >
@@ -856,7 +853,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                     ref={contentRefTotalCountPerActivityPercentage}
                                 >
@@ -910,7 +907,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                     ref={contentRefPopulationEstimateCategoryCount}
                                 >
@@ -966,7 +963,7 @@ const Metrics = () => {
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center',
-                                        maxHeight: '370px'
+                                        maxHeight: '380px'
                                     }}
                                     ref={contentRefPopulationEstimateCategoryCountPercentage}
                                 >
@@ -1027,9 +1024,7 @@ const Metrics = () => {
                         </Grid>
                     </Grid>
                 )}
-
-
-        </Box>
+            </Box>
             {/* for decision makers only */}
             {/* {userRole === 'decision maker' && (
                 <GenerateChartImages />
