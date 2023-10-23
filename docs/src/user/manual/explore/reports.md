@@ -155,7 +155,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      **Summary**
 
-     The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analysing and managing property-related information in an organized and structured manner.
+     The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analysing and managing property-related information in an organised and structured manner.
 
      **Species Report**
 
@@ -217,7 +217,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      * **Population Status**: Indicates the status of the species population such as `Migratory` or `Resident`.
 
-     * **Population Estimate Category**: Categorizes the population estimate.
+     * **Population Estimate Category**: Categorises the population estimate.
 
      * **Survey Method**: Describes the method used for surveying and data collection.
 
