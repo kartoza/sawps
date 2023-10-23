@@ -38,7 +38,7 @@ ChartJS.register(
 );
 
 // National trend structure
-interface NationalTrendInterface {
+export interface NationalTrendInterface {
     year: number;
     fit: number;
     'se.fit': number;
@@ -62,6 +62,8 @@ const PopulationTrend= (props: any) => {
                 if(_data.length > 0){
                   onEmptyDatasets(true)
                 }else onEmptyDatasets(false)
+
+                if (props.setResult) props.setResult(response.data)
                 setChartData({
                     labels: _data.map((a) => {
                       if (a.year % 2 === 0) return a.year;
@@ -69,7 +71,7 @@ const PopulationTrend= (props: any) => {
                     }),
                     datasets: [
                       {
-                        label: props.species_name,
+                        label: props.selectedSpecies,
                         data: _data,
                         borderColor: props.lineColor,
                         fill: false,

@@ -41,7 +41,7 @@ SPECIES_REPORT = 'Species_report'
 PROVINCE_REPORT = 'Province_report'
 
 
-def data_table_reports(queryset: QuerySet, request) -> List[Dict]:
+def data_table_reports(queryset: QuerySet, request, user_roles) -> List[Dict]:
     """
     Generate data table reports based on the user's request.
     Params:
@@ -305,11 +305,16 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
             })
         )
 
-    activity = request.GET.get("activity")
-    if activity:
+    activity = request.GET.get("activity", "")
+    activity = urllib.parse.unquote(activity)
+    if activity == 'all':
         filters[
-            "annualpopulationperactivity__activity_type_id"
-        ] = urllib.parse.unquote(activity)
+            "annualpopulationperactivity__activity_type_id__in"
+        ] = ActivityType.objects.values_list('id', flat=True)
+    else:
+        filters['annualpopulationperactivity__activity_type_id__in'] = [
+            int(act) for act in activity.split(',')
+        ] if activity else []
 
     if REGIONAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
