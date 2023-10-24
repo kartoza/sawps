@@ -484,11 +484,13 @@ def write_report_to_rows(queryset, request):
 
     if reports_list:
         reports_list = reports_list.split(",")
+
         report_functions = {
             ACTIVITY_REPORT: activity_report_rows,
             PROPERTY_REPORT: property_report,
             SAMPLING_REPORT: sampling_report,
             SPECIES_REPORT: species_report,
+            # PROVINCE_REPORT: province_reports
         }
 
         if request.GET.get('file') == 'xlsx':
