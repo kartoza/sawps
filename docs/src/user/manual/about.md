@@ -3,6 +3,7 @@
 Welcome to the about page of the `South African Wildlife Population System (SAWPS)`. This page provides you with essential information about our platform, its purpose, and how to make the most of your experience here.
 
 ## About Page
+
 ![About Page](./img/about-page-1.png)
 
 1. **About**: In the navigation bar at the top of the page, you'll find `ABOUT` navigation link to navigate about page.
@@ -23,11 +24,11 @@ The footer section, located at the bottom of the `About Page`, offers links to a
 
 1. **SANBI Logo**: By clicking on the `SANBI LOGO` you will navigate to the `SANBI (South African National Biodiversity Institute)` platform. The South African National Biodiversity Institute (SANBI) contributes to South Africa’s sustainable development by facilitating access to biodiversity data, generating information and knowledge, building capacity, providing policy advice, showcasing and conserving biodiversity in its national botanical and zoological gardens.
 
-    ### SANBI
+    **SANBI**
 
     ![SANBI](./img/about-page-3.png)
 
-2. **Additional Pages**: Usefull Pages links.
+2. **Additional Pages**: Useful Pages links.
 
     * **Home:** The `HOME` link returns you to the main `Landing Page`, providing an easy way to start your journey within our platform.
 
@@ -39,13 +40,13 @@ The footer section, located at the bottom of the `About Page`, offers links to a
 
 3. **IDS Logo**: By clicking on the `IDS LOGO` you will navigate to the `IDS (Information Decision Systems)` platform. Information Decision Systems (IDS) is a progressive Geographical Information Systems, Environmental Consulting and Disaster Management service provider.
 
-    ### IDS
+    **IDS**
 
     ![IDS](./img/about-page-4.png)
 
 4. **KARTOZA Logo**: By clicking on the `KARTOZA LOGO` you will navigate to the `KARTOZA` platform. Kartoza is a South Africa-based Free and Open Source GIS service provider. Kartoza develop and maintain geographic information systems and train teams to use geospatial software to its full potential.
 
-    ### KARTOZA
+    **KARTOZA**
 
     ![KARTOZA](./img/about-page-5.png)
 
