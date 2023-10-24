@@ -5,6 +5,7 @@ import "./index.scss";
 import Loading from '../../../components/Loading';
 import axios from 'axios';
 
+
 const FETCH_SPECIES_DENSITY = "/api/species-population-total-density/";
 
 interface DensityData {
