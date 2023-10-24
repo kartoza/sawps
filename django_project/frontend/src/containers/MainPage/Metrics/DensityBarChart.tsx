@@ -70,8 +70,9 @@ const DensityBarChart = (props: any) => {
                         const filteredData = filterApiResponse(response.data, startYear, endYear);
                         if(filteredData.length > 0){
                             onEmptyDatasets(true)
+                            setDensityData(filteredData);
                         }else onEmptyDatasets(false)
-                        setDensityData(filteredData.length > 0 ? filteredData : []);
+                        
                     }
                 })
                 .catch((error) => {
@@ -159,31 +160,30 @@ const DensityBarChart = (props: any) => {
     const datasets = uniqueYears.map((year: any, index: number) => {
         const backgroundColor = colors[index % colors.length];
         const data = filteredArray.map((each: any) => {
-            // Check if the density array exists, is an array, and has at least one item
-            if (each.density && Array.isArray(each.density) && each.density.length > 0) {
-                // Find the density data object with the matching year, if it exists
-                const densityItem = each.density.find((densityDataItem: any) => densityDataItem.year === year);
-                if (densityItem) {
-                    // Access the density value from the found density data object
-                    return densityItem.density;
-                }
+        // Check if the density array exists, is an array, and has at least one item
+        if (each.density && Array.isArray(each.density) && each.density.length > 0) {
+            // Find the density data object with the matching year, if it exists
+            const densityItem = each.density.find((densityDataItem: any) => densityDataItem.year === year);
+            if (densityItem) {
+            // Access the density value from the found density data object
+            return densityItem.density;
             }
-            return null; // Return null if density data is missing or invalid for the given year
+        }
+        return null; // Return null if density data is missing or invalid for the given year
         });
-
-
+    
         if (data.some((value: any) => value !== null)) {
-            // Create the dataset
-            return {
-              label: `${year}`,
-              data: data,
-              backgroundColor: backgroundColor,
-            };
-          }
-          
-
-        
-    });
+        // Create the dataset
+        return {
+            label: `${year}`,
+            data: data,
+            backgroundColor: backgroundColor,
+        };
+        }
+    }).filter(dataset => dataset); // Remove any null datasets
+    
+    // Reverse the order of datasets
+    datasets.reverse();
 
 
 
