@@ -64,14 +64,10 @@ const Metrics = () => {
     const [hasEmptyAreaAvailable, setHasEmptyAreaAvailable] = useState(true);
 
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery();
-    const [userRoles, setUserRoles] = useState([]);
     const [userPermissions, setUserPermissions] = useState([]);
 
     useEffect(() => {
         if (isSuccess) {
-            // Preprocess user roles to make them lowercase and remove spaces
-            setUserRoles(userInfoData?.user_roles.map((role) => role.toLowerCase().replace(/\s/g, '')) || []);
-
             // Extract user permissions
             setUserPermissions(userInfoData?.user_permissions.map((permission) => permission.toLowerCase().replace(/\s/g, '')) || []);
         }
@@ -235,35 +231,23 @@ const Metrics = () => {
     };
     
 
-    // update constants based on user roles and permissions
-    function updateConstants(
-        userRoles: string[],
-        userPermissions: string[],
-        constants: Constants
-    ) {
-        for (const role of userRoles) {
-            for (const permission of userPermissions) {
-                userRolesHavePermission(permission)
+    function updateConstants(userPermissions: string[], constants: Constants) {
+        for (const permission of userPermissions) {
+            for (const key in constants) {
+              if (constants.hasOwnProperty(key) && key.toLowerCase() === permission) {
+                constants[key] = true;
+              }
             }
         }
     }
-
-    function userRolesHavePermission(permission: string) {
-        // Check if the permission matches any of the constants and set it to true
-        for (const key in constants) {
-          if (constants.hasOwnProperty(key) && key.toLowerCase() === permission) {
-            constants[key] = true;
-          }
-        }
-      }
-      
+    
     // Example usage:
-    //   userRolesHavePermission('CanViewPopulationCategory');
-    //   console.log(constants.canViewPopulationCategory);
+    // userPermissions is an array of permission strings
+    // Example: ['CanViewPopulationCategory', 'CanEditData', ...]
     
-    
-    // Call the function with user roles and permissions
-    updateConstants(userRoles, userPermissions, constants);
+    // Call the function with user permissions
+    updateConstants(userPermissions, constants);
+
 
     return (
         <Box>
