@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
+
 from property.models import Province
 
 MEMBER = 'Member'
@@ -77,6 +78,11 @@ class Organisation(models.Model):
     """Organisation model."""
 
     name = models.CharField(unique=True, max_length=250)
+    short_code = models.CharField(
+        max_length=50,
+        null=False,
+        blank=True
+    )
     data_use_permission = models.ForeignKey(
         'regulatory_permit.dataUsePermission',
         on_delete=models.DO_NOTHING
@@ -105,6 +111,53 @@ class Organisation(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_short_code(
+        self,
+        with_digit: bool = True
+    ) -> str:
+        from stakeholder.utils import get_organisation_short_code
+
+        province_name = self.province.name if self.province else ''
+        organisation_name = self.name
+        return get_organisation_short_code(
+            province_name=province_name,
+            organisation_name=organisation_name,
+            with_digit=with_digit,
+            OrganisationModel=Organisation
+        )
+
+
+@receiver(pre_save, sender=Organisation)
+def organisation_pre_save(
+    sender, instance: Organisation, *args, **kwargs
+):
+    from stakeholder.utils import get_organisation_short_code
+
+    if instance.id:
+        old_org: Organisation = Organisation.objects.get(id=instance.id)
+        is_name_changed = old_org.name != instance.name
+        is_province_changed = old_org.province != instance.province
+        if any([is_province_changed, is_name_changed]):
+            instance.short_code = get_organisation_short_code(
+                province_name=(
+                    instance.province.name if instance.province else ''
+                ),
+                organisation_name=instance.name
+            )
+            instance.skip_post_save = False
+    else:
+        instance.short_code = instance.get_short_code()
+
+
+@receiver(post_save, sender=Organisation)
+def organisation_post_save(
+    sender, instance: Organisation, created, *args, **kwargs
+):
+    from stakeholder.tasks import update_property_short_code
+
+    if not created and not getattr(instance, 'skip_post_save', True):
+        update_property_short_code.delay(instance.id)
 
 
 class UserProfile(models.Model):
