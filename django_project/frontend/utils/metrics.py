@@ -104,7 +104,7 @@ def calculate_population_categories(
         # Calculate the sum of total populations for each year and property
         population_total=Sum('total')
     ).order_by(
-        'year', 'owned_species__property__id'
+        'year'
     )
 
     # Handle the case where annual_population_data is empty
