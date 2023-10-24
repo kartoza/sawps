@@ -199,6 +199,8 @@ const PopulationCategoryChart = (props: any) => {
         item.data.reverse();
     });
 
+    // Reverse the order of datasets
+    newDatasets.reverse();
 
     // ADD PROCESSED DATA TO CHART AND DEFINE CHART BEHAVIOUR
     const data = {
