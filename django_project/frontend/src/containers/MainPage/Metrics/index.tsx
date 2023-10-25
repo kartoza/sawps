@@ -24,6 +24,7 @@ import {
 import Tooltip from '@mui/material/Tooltip';
 import Topper from "../Data/Topper";
 
+
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
@@ -80,22 +81,16 @@ const Metrics = () => {
     const [hasEmptyAreaAvailable, setHasEmptyAreaAvailable] = useState(true);
 
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery();
-    const [userRoles, setUserRoles] = useState([]);
     const [userPermissions, setUserPermissions] = useState([]);
 
     useEffect(() => {
         if (isSuccess) {
-            // Preprocess user roles to make them lowercase and remove spaces
-            setUserRoles(userInfoData?.user_roles.map((role) => role.toLowerCase().replace(/\s/g, '')) || []);
-
             // Extract user permissions
             setUserPermissions(userInfoData?.user_permissions.map((permission) => permission.toLowerCase().replace(/\s/g, '')) || []);
         }
     }, [isSuccess, userInfoData]);
 
 
-
-    
     // Pass callback functions to each child component for the specific type
     const handleEmptyPopulationTrend = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyPopulationTrend(isEmpty);
@@ -224,6 +219,8 @@ const Metrics = () => {
         setHasEmptyAreaAvailable(true)
     }, [propertyId, startYear, endYear, selectedSpecies])
 
+
+    // downloads all charts rendered on page
     const handleDownloadPdf = async () => {
         setIconsHidden(true);
         const content = contentRefAllCharts.current;
@@ -244,61 +241,9 @@ const Metrics = () => {
     }
 
 
-    type Constants = {
-        [key: string]: boolean;
-    };
-    
-    const constants: Constants = {
-        canViewPopulationTrend: false,
-        canViewPopulationCategory: false,
-        canViewPropertyType: false,
-        canViewDensityBar: false,
-        canViewPropertyAvailable: false,
-        canViewAgeGroup: false,
-        canViewAreaAvailable: false,
-        canViewProvinceSpeciesCount: false,
-        canViewProvinceSpeciesCountAsPercentage: false,
-        canViewTotalCount: false,
-        canViewCountAsPercentage: false,
-        canViewPopulationEstimate: false,
-        canViewPopulationEstimateAsPercentage: false,
-    };
-    
-
-    // update constants based on user roles and permissions
-    function updateConstants(
-        userRoles: string[],
-        userPermissions: string[],
-        constants: Constants
-    ) {
-        for (const role of userRoles) {
-            for (const permission of userPermissions) {
-                userRolesHavePermission(permission)
-            }
-        }
-    }
-
-    function userRolesHavePermission(permission: string) {
-        // Check if the permission matches any of the constants and set it to true
-        for (const key in constants) {
-          if (constants.hasOwnProperty(key) && key.toLowerCase() === permission) {
-            constants[key] = true;
-          }
-        }
-      }
-      
-    // Example usage:
-    //   userRolesHavePermission('CanViewPopulationCategory');
-    //   console.log(constants.canViewPopulationCategory);
-    
-    
-    // Call the function with user roles and permissions
-    updateConstants(userRoles, userPermissions, constants);
-
 
     const [iconsHidden, setIconsHidden] = useState(false);
 
-    
     const handleDownload = async (contentRef: any) => {
         setIconsHidden(true);
         const content = contentRef.current;
@@ -348,9 +293,46 @@ const Metrics = () => {
         setIconsHidden(false);
       };
       
+
+    type Constants = {
+        [key: string]: boolean;
+    };
+
+    // TODO: Improve this, we don't need constants here, we can simply check the permissions directly
+    const constants: Constants = {
+        canViewPopulationTrend: false,
+        canViewPopulationCategory: false,
+        canViewPropertyType: false,
+        canViewDensityBar: false,
+        canViewPropertyAvailable: false,
+        canViewAgeGroup: false,
+        canViewAreaAvailable: false,
+        canViewProvinceSpeciesCount: false,
+        canViewProvinceSpeciesCountAsPercentage: false,
+        canViewTotalCount: false,
+        canViewCountAsPercentage: false,
+        canViewPopulationEstimate: false,
+        canViewPopulationEstimateAsPercentage: false,
+    };
     
 
+    function updateConstants(userPermissions: string[], constants: Constants) {
+        for (const permission of userPermissions) {
+            for (const key in constants) {
+              if (constants.hasOwnProperty(key) && key.toLowerCase() === permission) {
+                constants[key] = true;
+              }
+            }
+        }
+    }
     
+    // Example usage:
+    // userPermissions is an array of permission strings
+    // Example: ['CanViewPopulationCategory', 'CanEditData', ...]
+    
+    // Call the function with user permissions
+    updateConstants(userPermissions, constants);
+
 
     return (
         <Box>
@@ -358,7 +340,6 @@ const Metrics = () => {
                 
 
                 {showCharts ? (
-                    
                         <Grid container spacing={2} ref={contentRefAllCharts}>
                             <div ref={topperRef}>
                                 <Topper title="SAWPS CHARTS SUMMARY" on_charts={true}/>
@@ -641,7 +622,7 @@ const Metrics = () => {
 
                             
                             {
-                            constants.canViewAreaAvailable && 
+                            constants.canViewAreaAvailable &&
                             hasEmptyAreaAvailable && 
                             areaData.map((data, index) => (
                                 <Grid container key={index} item xs={12} md={6} ref={contentRefAreaAvailable}>
