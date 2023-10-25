@@ -16,7 +16,7 @@ function LegendPlaceholder(props: LegendPlaceholderInterface) {
     return (
       <div className='legend-placeholder'>
         <div className='legend-header'>
-          {props.species} Population
+          {props.species} population
         </div>
         {props.data.map((item: PopulationCountLegend, index: number) => {
           return (
