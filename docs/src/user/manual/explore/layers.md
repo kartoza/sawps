@@ -16,27 +16,27 @@ Welcome to the documentation for map layers avalable in application. This docume
 
 ![Layers with map](./img/layers-2.png)
 
-1. **Rivers Layer**: The Rivers layer displays the major rivers and water bodies across South Africa. This layer is useful for understanding the hydrography of the region.
+1. **Rivers Layer**: The `Rivers Layer` displays the major rivers and water bodies across South Africa. This layer is useful for understanding the hydrography of the region.
 
     ![Rivers layer with map](./img/layers-3.png)
 
     1. **Rivers**: `Rivers` layer allows user to see the rivers on map.
 
-    2. **Rivers In Map**: Blue lines displays the rivers on map.
+    2. **Rivers On Map**: Blue lines displays the rivers on map.
 
     * **Layer Visibility**: You can control the visibility of the Rivers layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to rivers.
 
-2. **Roads Layer**: The Roads layer provides information about the road network in South Africa. It can be valuable for assessing how transportation infrastructure impacts species distribution and conservation efforts.
+2. **Roads Layer**: The `Roads Layer` provides information about the road network in South Africa. It can be valuable for assessing how transportation infrastructure impacts species distribution and conservation efforts.
 
     ![Roads layer with map](./img/layers-4.png)
 
     1. **Roads**: `Roads` layer allows user to see the roads on map.
 
-    2. **Roads In Map**: Thin white lines displays the roads on map.
+    2. **Roads On Map**: Thin white lines displays the roads on map.
 
     * **Layer Visibility**: You can control the visibility of the roads layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to roads.
 
-3. **Biome Type Layer**: The Biome Type layer illustrates the various biomes and ecosystems in South Africa. This layer is essential for understanding the different habitats where species are found.
+3. **Biome Type Layer**: The `Biome Type Layer` illustrates the various biomes and ecosystems in South Africa. This layer is essential for understanding the different habitats where species are found.
 
     ![Biome Type layer with map](./img/layers-5.png)
 
