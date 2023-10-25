@@ -1,6 +1,7 @@
 """Common functions for parcel."""
 from django.db import connection
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.db.models.functions import Centroid
 from frontend.models.parcels import (
     Erf,
     Holding,
@@ -33,26 +34,41 @@ def find_parcel_base(cls, serialize_cls,
                      other: GEOSGeometry, parcel_keys=[]):
     """Base function to find parcel."""
     used_parcels = []
-    parcels = cls.objects.filter(geom__intersects=other)
+    results = []
+    cname_list = []
+    parcels = cls.objects.filter(geom__bboverlaps=other)
     if parcel_keys:
         parcels = parcels.exclude(
             cname__in=parcel_keys
         )
-    parcels = parcels.order_by('cname').distinct('cname')
-    if parcels:
-        cname_list = [a.cname for a in parcels]
+    parcels = parcels.annotate(
+        centroid=Centroid('geom')).order_by('cname').distinct('cname')
+    if parcels.exists():
+        selected_parcels = []
+        if other.num_geom > 1:
+            for i in range(other.num_geom):
+                geom_part = other[i]
+                for parcel in parcels:
+                    centroid = parcel.centroid
+                    if centroid.within(geom_part):
+                        selected_parcels.append(parcel)
+        else:
+            for parcel in parcels:
+                centroid = parcel.centroid
+                if centroid.within(other):
+                    selected_parcels.append(parcel)
+        cname_list = [a.cname for a in selected_parcels]
         used_parcels = Parcel.objects.filter(
             sg_number__in=cname_list
         ).values_list('sg_number', flat=True)
-        filtered_parcels = [a for a in parcels if
+        filtered_parcels = [a for a in selected_parcels if
                             a.cname not in used_parcels]
         if filtered_parcels:
             results = serialize_cls(
                 filtered_parcels,
                 many=True
             ).data
-            return results, cname_list, used_parcels
-    return [], [], used_parcels
+    return results, cname_list, used_parcels
 
 
 def find_province(geom: GEOSGeometry, default: Province):
