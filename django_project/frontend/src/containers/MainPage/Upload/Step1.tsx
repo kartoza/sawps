@@ -13,6 +13,7 @@ import './index.scss';
 
 
 const PROPERTY_UPDATE_INFORMATION_URL = '/api/property/detail/update/'
+const PROPERTY_CHECK_AVAILABLE_NAME_URL = '/api/property/check-available-name/'
 
 interface Step1Interface {
     initialProperty?: PropertyInterface;
@@ -52,26 +53,46 @@ export default function Step1(props: Step1Interface) {
             setPropertyValidation(_error_validation)
             return
         }
-        if (property.id) {
-            // if it has property.id, then this is to update property
-            let _data:PropertyInterface = {
-                ...property
-            }
-            setSavingProperty(true)
-            postData(`${PROPERTY_UPDATE_INFORMATION_URL}`, _data).then(
-                response => {
-                    setSavingProperty(false)
-                    // trigger to next step
-                    props.onSave({...property})
-                }
-              ).catch(error => {
-                setSavingProperty(false)
-                console.log('error ', error)
-                alert('Error saving property...')
-              })
-        } else {
-            props.onSave({...property})
+        // validate property name
+        let _checkNameData: any = {
+            'name': property.name.trim()
         }
+        if (property.id) {
+            _checkNameData['id'] = property.id
+        }
+        postData(`${PROPERTY_CHECK_AVAILABLE_NAME_URL}`, _checkNameData).then(
+            response => {
+                let _isAvailable = response.data['available']
+                if (_isAvailable) {
+                    if (property.id) {
+                        // if it has property.id, then this is to update property
+                        let _data:PropertyInterface = {
+                            ...property
+                        }
+                        setSavingProperty(true)
+                        postData(`${PROPERTY_UPDATE_INFORMATION_URL}`, _data).then(
+                            response => {
+                                setSavingProperty(false)
+                                // trigger to next step
+                                props.onSave({...property})
+                            }
+                          ).catch(error => {
+                            setSavingProperty(false)
+                            console.log('error ', error)
+                            alert('Error saving property...')
+                          })
+                    } else {
+                        props.onSave({...property})
+                    }
+                } else {
+                    setAlertMessage(`Error! Property with name ${_checkNameData['name']} already exists! Please choose different name!`)
+                }
+            }
+          ).catch(error => {
+            setSavingProperty(false)
+            console.log('error ', error)
+            alert('Error saving property...')
+          })
     }
 
     return (
