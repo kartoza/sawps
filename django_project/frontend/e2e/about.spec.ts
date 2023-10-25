@@ -39,7 +39,7 @@ test.describe('about page', () => {
 
         await page.getByRole('heading', { name: 'Support National Decision making' }).isVisible();
 
-        await page.getByText('SOUTH AFRICAN WILDLIFE POPULATION SYSTEM (SAWPS)').click();
+        await page.locator('div.about-content-title:has-text("SOUTH AFRICAN WILDLIFE POPULATION SYSTEM (SAWPS)")').click();
 
         const finalURL = page.url();
 
