@@ -213,7 +213,8 @@ const Metrics = () => {
     type Constants = {
         [key: string]: boolean;
     };
-    
+
+    // TODO: Improve this, we don't need constants here, we can simply check the permissions directly
     const constants: Constants = {
         canViewPopulationTrend: false,
         canViewPopulationCategory: false,
