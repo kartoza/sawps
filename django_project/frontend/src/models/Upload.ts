@@ -118,7 +118,8 @@ const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
         note: '',
         population_estimate_certainty: 0,
         population_estimate_category_id: 0,
-        population_estimate_certainty_name: ''
+        population_estimate_certainty_name: '',
+        survey_method_other: ''
     }
 }
 
