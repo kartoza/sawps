@@ -30,6 +30,28 @@ def find_layer_by_cname(cname: str):
     return None, None
 
 
+def select_parcel_by_centroid(parcels, other: GEOSGeometry):
+    """Select parcel by using its centroid."""
+    selected_parcels = []
+    cnames = []
+    if other.num_geom > 1:
+        # if multipart, then search for each polygon
+        for i in range(other.num_geom):
+            geom_part = other[i]
+            for parcel in parcels:
+                centroid = parcel.centroid
+                if centroid.within(geom_part) and parcel.cname not in cnames:
+                    selected_parcels.append(parcel)
+                    cnames.append(parcel.cname)
+    else:
+        for parcel in parcels:
+            centroid = parcel.centroid
+            if centroid.within(other) and parcel.cname not in cnames:
+                selected_parcels.append(parcel)
+                cnames.append(parcel.cname)
+    return selected_parcels, cnames
+
+
 def find_parcel_base(cls, serialize_cls,
                      other: GEOSGeometry, parcel_keys=[]):
     """Base function to find parcel."""
@@ -44,20 +66,9 @@ def find_parcel_base(cls, serialize_cls,
     parcels = parcels.annotate(
         centroid=Centroid('geom')).order_by('cname').distinct('cname')
     if parcels.exists():
-        selected_parcels = []
-        if other.num_geom > 1:
-            for i in range(other.num_geom):
-                geom_part = other[i]
-                for parcel in parcels:
-                    centroid = parcel.centroid
-                    if centroid.within(geom_part):
-                        selected_parcels.append(parcel)
-        else:
-            for parcel in parcels:
-                centroid = parcel.centroid
-                if centroid.within(other):
-                    selected_parcels.append(parcel)
-        cname_list = [a.cname for a in selected_parcels]
+        selected_parcels, cname_list = select_parcel_by_centroid(
+            parcels, other)
+        # check if cnames are already used in property parcels
         used_parcels = Parcel.objects.filter(
             sg_number__in=cname_list
         ).values_list('sg_number', flat=True)
