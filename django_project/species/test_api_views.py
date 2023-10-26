@@ -13,6 +13,7 @@ from population_data.models import (
     AnnualPopulationPerActivity,
     OpenCloseSystem,
 )
+from property.models import Property
 from property.factories import PropertyFactory
 from rest_framework import status
 from rest_framework.test import APIClient, APIRequestFactory
@@ -40,6 +41,9 @@ class TestUploadSpeciesApiView(TestCase):
         self.user = UserF()
         self.property = PropertyFactory(
             name="Luna"
+        )
+        Property.objects.filter(id=self.property.id).update(
+            short_code='Luna'
         )
         self.token = '8f1c1181-982a-4286-b2fe-da1abe8f7174'
         self.api_url = '/api/upload-species/'
@@ -94,7 +98,7 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertTrue(upload_session.canceled)
         self.assertEqual(upload_session.process_file.name, '')
         self.assertEqual(upload_session.error_notes,
-                         "The 'Property_name' field is missing. "
+                         "The 'Property_code' field is missing. "
                          "Please check that all the compulsory fields "
                          "are in the CSV file headers."
                          )
@@ -404,7 +408,7 @@ class TestUploadSpeciesApiView(TestCase):
             errors = []
             for row in error_file:
                 errors.append(row['error_message'])
-            self.assertTrue("Property name Luna's Reserve doesn't match "
+            self.assertTrue("Property code Luna's Reserve doesn't match "
                             "the selected property. Please replace "
                             "it with Luna." in errors)
             self.assertTrue("Lemurs doesn't exist in the database. "
@@ -488,7 +492,7 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertTrue(upload_session.canceled)
         self.assertEqual(upload_session.process_file.name, '')
         self.assertEqual(upload_session.error_notes,
-                         "The 'Property_name' field is missing. Please check "
+                         "The 'Property_code' field is missing. Please check "
                          "that all the compulsory fields are in the "
                          "CSV file headers."
                          )
@@ -529,11 +533,11 @@ class TestUploadSpeciesApiView(TestCase):
         dataset = xl.parse(SHEET_TITLE)
         self.assertEqual(
             dataset.iloc[0]['error_message'],
-            "Property name Venetia Limpopo doesn't match the selected "
+            "Property code Venetia Limpopo doesn't match the selected "
             "property. Please replace it with {}. Loxodonta africana "
             "doesn't exist in the database. Please select species "
             "available in the dropdown only.".format(
-                upload_session.property.name
+                upload_session.property.short_code
             )
         )
 
