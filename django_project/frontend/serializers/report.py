@@ -5,7 +5,6 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
-from species.models import OwnedSpecies
 
 
 class BaseNationalReportSerializer(serializers.Serializer):
@@ -141,44 +140,44 @@ class PropertyReportSerializer(
     property_size_ha = serializers.SerializerMethodField()
     open_close_systems = serializers.SerializerMethodField()
 
-    def get_property_name(self, obj: OwnedSpecies) -> str:
+    def get_property_name(self, obj: AnnualPopulation) -> str:
         return obj.property.name
 
-    def get_property_short_code(self, obj: OwnedSpecies) -> str:
+    def get_property_short_code(self, obj: AnnualPopulation) -> str:
         return obj.property.short_code
 
-    def get_organisation_name(self, obj: OwnedSpecies) -> str:
+    def get_organisation_name(self, obj: AnnualPopulation) -> str:
         return obj.property.organisation.name
 
-    def get_organisation_short_code(self, obj: OwnedSpecies) -> str:
+    def get_organisation_short_code(self, obj: AnnualPopulation) -> str:
         return obj.property.organisation.short_code
 
-    def get_scientific_name(self, obj: OwnedSpecies) -> str:
+    def get_scientific_name(self, obj: AnnualPopulation) -> str:
         return obj.taxon.scientific_name
 
-    def get_common_name(self, obj: OwnedSpecies) -> str:
+    def get_common_name(self, obj: AnnualPopulation) -> str:
         return obj.taxon.common_name_varbatim
 
-    def get_owner(self, obj: OwnedSpecies) -> str:
+    def get_owner(self, obj: AnnualPopulation) -> str:
         return obj.property.created_by.first_name
 
-    def get_owner_email(self, obj: OwnedSpecies) -> str:
+    def get_owner_email(self, obj: AnnualPopulation) -> str:
         return obj.property.owner_email
 
-    def get_property_type(self, obj: OwnedSpecies) -> str:
+    def get_property_type(self, obj: AnnualPopulation) -> str:
         return obj.property.property_type.name
 
-    def get_province(self, obj: OwnedSpecies) -> str:
+    def get_province(self, obj: AnnualPopulation) -> str:
         return obj.property.province.name
 
-    def get_property_size_ha(self, obj: OwnedSpecies) -> str:
+    def get_property_size_ha(self, obj: AnnualPopulation) -> str:
         return obj.property.property_size_ha
 
-    def get_open_close_systems(self, obj: OwnedSpecies) -> str:
+    def get_open_close_systems(self, obj: AnnualPopulation) -> str:
         return obj.property.open.name if obj.property.open else ""
 
     class Meta:
-        model = OwnedSpecies
+        model = AnnualPopulation
         fields = [
             "property_name",
             "property_short_code",
@@ -253,7 +252,7 @@ class NationalLevelPropertyReport(serializers.Serializer):
             "scientific_name": instance.scientific_name,
         }
 
-        property_data = OwnedSpecies.objects.values(
+        property_data = AnnualPopulation.objects.values(
             "property__property_type__name",
         ).filter(**self.context['filters'], taxon=instance).annotate(
             population=Sum("annualpopulation__total"),
@@ -280,7 +279,7 @@ class NationalLevelActivityReport(serializers.Serializer):
             "scientific_name": instance.scientific_name,
         }
 
-        activity_data = OwnedSpecies.objects.values(
+        activity_data = AnnualPopulation.objects.values(
             "annualpopulationperactivity__activity_type__name",
         ).filter(**self.context['filters'], taxon=instance).annotate(
             population=Sum("annualpopulationperactivity__total"),
@@ -305,7 +304,7 @@ class NationalLevelProvinceReport(serializers.Serializer):
             "scientific_name": instance.scientific_name,
         }
 
-        province_data = OwnedSpecies.objects.values(
+        province_data = AnnualPopulation.objects.values(
             "property__province__name",
         ).filter(**self.context['filters'], taxon=instance).annotate(
             population=Sum("annualpopulation__total"),

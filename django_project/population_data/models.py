@@ -8,8 +8,11 @@ class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
     year = models.PositiveIntegerField()
-    owned_species = models.ForeignKey("species.OwnedSpecies",
-                                      on_delete=models.CASCADE)
+    owned_species = models.ForeignKey(
+        "species.OwnedSpecies",
+        on_delete=models.CASCADE,
+        null=True
+    )
     total = models.IntegerField()
     adult_male = models.IntegerField(null=True, blank=True)
     adult_female = models.IntegerField(null=True, blank=True)

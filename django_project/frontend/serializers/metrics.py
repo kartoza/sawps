@@ -8,7 +8,7 @@ from django.db.models import (
 from population_data.models import AnnualPopulation
 from property.models import Property
 from rest_framework import serializers
-from species.models import OwnedSpecies, Taxon
+from species.models import Taxon
 
 
 class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
@@ -55,9 +55,9 @@ class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
                     year__range=(start_year, end_year)
                 ) if start_year and end_year else Q(),
                 Q(
-                    owned_species__property__id__in=property.split(",")
+                    property__id__in=property.split(",")
                 ) if property else Q(),
-                owned_species__taxon=obj
+                taxon=obj
             )
             .values("year")
             .annotate(year_total=Sum("total"))
@@ -90,17 +90,17 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
         """
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
-        owned_species = OwnedSpecies.objects.values(
+        populations = AnnualPopulation.objects.values(
             "taxon__common_name_varbatim").filter(taxon=obj)
         if property_list:
-            owned_species = owned_species.filter(
+            populations = populations.filter(
                 property__id__in=property_list,
             )
-        owned_species = owned_species.annotate(
-            total=Sum("annualpopulation__total")
+        populations = populations.annotate(
+            total=Sum("total")
         )
-        if owned_species.exists():
-            return owned_species[0].get("total")
+        if populations.exists():
+            return populations[0].get("total")
         else:
             return None
 
@@ -116,23 +116,23 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
         """
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
-        owned_species = OwnedSpecies.objects.values(
+        populations = AnnualPopulation.objects.values(
             "taxon__common_name_varbatim"
         ).filter(taxon=obj)
 
         if property_list:
-            owned_species = owned_species.filter(
+            populations = populations.filter(
                 property__id__in=property_list
             )
 
-        owned_species = owned_species.annotate(
+        populations = populations.annotate(
             total=Sum("annualpopulationperactivity__total")
         ).values("annualpopulationperactivity__activity_type__name", "total")
 
         total_count = self.get_total(obj)
         activities_list = []
 
-        for item in owned_species:
+        for item in populations:
             activity_type = item[
                 "annualpopulationperactivity__activity_type__name"
             ]
@@ -193,15 +193,15 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
         annual_populations = (
             AnnualPopulation.objects.filter(
                 Q(
-                    owned_species__property__id__in=property_ids
+                    property__id__in=property_ids
                 ) if property_ids else Q(),
                 Q(
                     Q(
-                        owned_species__taxon__common_name_varbatim=(
+                        taxon__common_name_varbatim=(
                             species_name
                         )
                     ) |
-                    Q(owned_species__taxon__scientific_name=species_name)
+                    Q(taxon__scientific_name=species_name)
                 ) if species_name else Q(),
                 year=max_year,
             )
@@ -280,17 +280,17 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         """
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
-        owned_species = OwnedSpecies.objects.values(
+        populations = AnnualPopulation.objects.values(
             "taxon__common_name_varbatim").filter(taxon=obj)
         if property_list:
-            owned_species = owned_species.filter(
+            populations = populations.filter(
                 property__id__in=property_list,
             )
-        owned_species = owned_species.annotate(
+        populations = populations.annotate(
             total=Sum("annualpopulationperactivity__total")
         )
-        if owned_species.exists():
-            return owned_species[0].get("total")
+        if populations.exists():
+            return populations[0].get("total")
         else:
             return None
 
@@ -312,7 +312,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         if property_list:
             q_filters &= Q(property__id__in=property_list)
 
-        owned_species = OwnedSpecies.objects.values(
+        populations = AnnualPopulation.objects.values(
             activity_type=F(
                 "annualpopulationperactivity__activity_type__name"),
             year=F("annualpopulationperactivity__year"),
@@ -325,7 +325,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
                 "year": item["year"],
                 "total": item["total"],
             }
-            for item in owned_species
+            for item in populations
             if item["activity_type"] and item["total"]
         ]
         return activities_list
@@ -360,22 +360,22 @@ class SpeciesPopulationDensityPerPropertySerializer(
         if not species_name:
             return None
 
-        owned_species_data = (
-            OwnedSpecies.objects.filter(
+        populations = (
+            AnnualPopulation.objects.filter(
                 property=obj,
                 taxon__scientific_name=species_name
             )
             .values("property__name")
             .annotate(
-                total=Sum("annualpopulation__total"),
-                property_in_ha=Sum("property__property_size_ha"),
-                year=F("annualpopulation__year"),
+                "year",
+                total=Sum("total"),
+                property_in_ha=Sum("property__property_size_ha")
             )
         )
 
         # Calculate density and format data
         result_data = []
-        for data in owned_species_data:
+        for data in populations:
             total = data.get("total")
             property_in_ha = data.get("property_in_ha")
             year = data.get("year")
@@ -422,13 +422,13 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
         ]
 
         filters = {
-            "owned_species__taxon": obj
+            "taxon": obj
         }
 
         property_list = self.context['request'].GET.get("property")
         if property_list:
             property_ids = property_list.split(",")
-            filters["owned_species__property__id__in"] = property_ids
+            filters["property__id__in"] = property_ids
 
         start_year = self.context['request'].GET.get("start_year")
         if start_year:
@@ -437,7 +437,7 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
 
         age_groups_totals = (
             AnnualPopulation.objects
-            .values("owned_species__taxon__common_name_varbatim")
+            .values("taxon__common_name_varbatim")
             .filter(**filters)
             .annotate(
                 **{
@@ -465,14 +465,13 @@ class AnnualPopulationSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['owned_species'] = instance.owned_species
-        data['owned_species__taxon'] = instance.owned_species.taxon
-        data['owned_species__property'] = instance.owned_species.property
-        data['owned_species__property__province'] = (
-            instance.owned_species.property.province
+        data['taxon'] = instance.owned_species.taxon
+        data['property'] = instance.owned_species.property
+        data['property__province'] = (
+            instance.property.province
         )
-        data['owned_species__property__property_type'] = (
-            instance.owned_species.property.property_type
+        data['property__property_type'] = (
+            instance.property.property_type
         )
         return data
 
@@ -503,18 +502,18 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
             end_year = self.context['request'].GET.get("end_year")
             filters["annualpopulation__year__range"] = (start_year, end_year)
 
-        owned_species = OwnedSpecies.objects.values(
-            "annualpopulation__year",
+        populations = AnnualPopulation.objects.values(
+            "year",
         ).filter(**filters, taxon=obj).annotate(
             area_total=Sum("property__property_size_ha"),
             area_available=Sum("area_available_to_species")
         )
         data = {
-            "owned_species": owned_species
+            "owned_species": populations
         }
-        if len(owned_species) > YEAR_DATA_LIMIT:
+        if len(populations) > YEAR_DATA_LIMIT:
             data = {
-                "owned_species": owned_species[:YEAR_DATA_LIMIT],
+                "owned_species": populations[:YEAR_DATA_LIMIT],
                 "message": "Only last 10 years data are displayed \
                 for search with >10 years data returned"
             }

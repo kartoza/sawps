@@ -2,7 +2,7 @@
 
 from django.contrib import admin, messages
 from django.utils.html import format_html
-from species.models import TaxonRank, Taxon, OwnedSpecies
+from species.models import TaxonRank, Taxon
 from species.forms import TaxonForm
 
 
@@ -43,4 +43,4 @@ class TaxonAdmin(admin.ModelAdmin):
 
 admin.site.register(TaxonRank)
 admin.site.register(Taxon, TaxonAdmin)
-admin.site.register(OwnedSpecies)
+

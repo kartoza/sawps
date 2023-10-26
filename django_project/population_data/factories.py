@@ -21,7 +21,7 @@ class AnnualPopulationAbstractFactory(factory.django.DjangoModelFactory):
         abstract = True
 
     year = factory.Sequence(lambda n: f"{n}")
-    owned_species = factory.SubFactory("species.factories.OwnedSpeciesFactory")
+    # owned_species = factory.SubFactory("species.factories.OwnedSpeciesFactory")
     total = factory.Faker("random_int")
     adult_male = factory.Faker("random_int")
     adult_female = factory.Faker("random_int")
@@ -35,6 +35,10 @@ class AnnualPopulationF(AnnualPopulationAbstractFactory):
     class Meta:
         model = AnnualPopulation
 
+    user = factory.SubFactory('species.factories.UserFactory')
+    taxon = factory.SubFactory('species.factories.TaxonFactory')
+    property = factory.SubFactory('property.factories.PropertyFactory')
+    area_available_to_species = 2
     sub_adult_total = factory.Faker("random_int")
     sub_adult_male = factory.Faker("random_int")
     sub_adult_female = factory.Faker("random_int")
@@ -47,6 +51,7 @@ class AnnualPopulationPerActivityFactory(AnnualPopulationAbstractFactory):
     class Meta:
         model = AnnualPopulationPerActivity
 
+    annual_population = factory.SubFactory(AnnualPopulation)
     activity_type = factory.SubFactory(
         "activity.factories.ActivityTypeFactory"
     )

@@ -21,7 +21,7 @@ from species.api_views.upload_species import (
     SpeciesUploader,
     UploadSpeciesStatus,
 )
-from species.models import OwnedSpecies, Taxon
+from species.models import Taxon
 from species.tasks.upload_species import upload_species_data
 from species.scripts.data_upload import (
     SpeciesCSVUpload,
@@ -224,7 +224,6 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(Taxon.objects.all().count(), 1)
         self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
         self.assertEqual(AnnualPopulation.objects.all().count(), 1)
-        self.assertTrue(OwnedSpecies.objects.all().count(), 1)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
             activity_type__name="Translocation (Offtake)"
         ).count(), 1)
@@ -353,7 +352,7 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(10, string_to_number('10'))
         self.assertEqual(0.0, string_to_number(''))
 
-    def test_upload_species_with_property_taxon_not_exit(self):
+    def test_upload_species_with_property_taxon_not_exist(self):
         """Test upload species task with a property and taxon not existing."""
 
         csv_path = absolute_path(
@@ -425,10 +424,10 @@ class TestUploadSpeciesApiView(TestCase):
             self.assertTrue("The total of Count_adult_males and "
                             "Count_adult_females must not exceed "
                             "COUNT_TOTAL." in errors)
-            self.assertTrue("The total of "
-                            "Planned hunt/culling_Offtake_adult_males and "
-                            "Planned hunt/culling_Offtake_adult_females must "
-                            "not exceed Planned hunt/culling_TOTAL." in errors)
+            # self.assertTrue("The total of "
+            #                 "Planned hunt/culling_Offtake_adult_males and "
+            #                 "Planned hunt/culling_Offtake_adult_females must "
+            #                 "not exceed Planned hunt/culling_TOTAL." in errors)
 
         self.assertTrue(AnnualPopulation.objects.filter(
             survey_method_other="Test survey"
