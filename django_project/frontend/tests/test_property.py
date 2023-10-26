@@ -129,6 +129,7 @@ class TestPropertyAPIViews(TestCase):
             Parcel.objects.filter(property=property).count(),
             2
         )
+        self.assertEqual(property.short_code, response.data['short_code'])
         # get property
         kwargs = {
             'id': property.id
@@ -142,6 +143,7 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['bbox']), 4)
         self.assertEqual(len(response.data['parcels']), 2)
+        self.assertEqual(response.data['short_code'], property.short_code)
 
     def test_metadata_list(self):
         request = self.factory.get(
@@ -174,6 +176,7 @@ class TestPropertyAPIViews(TestCase):
         _property = response.data[0]
         self.assertEqual(_property['id'], property.id)
         self.assertEqual(_property['name'], property.name)
+        self.assertEqual(_property['short_code'], property.short_code)
 
     def test_get_property_list_for_organisations(self):
         """Taxon list API test for organisations."""
@@ -365,6 +368,8 @@ class TestPropertyAPIViews(TestCase):
             Parcel.objects.filter(property_id=property_id).count(),
             1
         )
+        updated = Property.objects.get(id=property_id)
+        self.assertEqual(response.data['short_code'], updated.short_code)
 
     def test_search_property(self):
         # insert place names
