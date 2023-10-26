@@ -31,6 +31,8 @@ test.describe('about page', () => {
 
         await page.frameLocator('[data-testid="about-page-video-frame"]').locator('video').click();
 
+        await page.waitForTimeout(5000);
+
         await page.getByRole('heading', { name: 'Secure species data storage' }).isVisible();
 
         await page.getByRole('heading', { name: 'automated reporting' }).isVisible();
