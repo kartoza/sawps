@@ -5,24 +5,27 @@ let
 in pkgs.mkShell rec {
   name = "R";
   buildInputs = [
-    curl 
-    fontconfig 
-    fribidi 
-    harfbuzz 
-    libtiff 
-    pkg-config 
     rstudio
-    rPackages.googledrive 
-    rPackages.googlesheets4 
-    rPackages.httr 
-    rPackages.openssl 
-    rPackages.ragg 
-    rPackages.rvest
-    rPackages.systemfonts 
     rPackages.tidyverse
-    rPackages.xml2 
-    rstudio 
-    xml2 
+    # The rest of these should probably not
+    # be needed since tidyverse would pull them in
+    # anyway
+    curl
+    fontconfig
+    fribidi
+    harfbuzz
+    libtiff
+    pkg-config
+    rPackages.googledrive
+    rPackages.googlesheets4
+    rPackages.httr
+    rPackages.openssl
+    rPackages.ragg
+    rPackages.rvest
+    rPackages.systemfonts
+    rPackages.xml2
+    rstudio
+    xml2
   ];
 
 }
