@@ -26,6 +26,24 @@ export default function Step1(props: Step1Interface) {
     const [propertyValidation, setPropertyValidation] = useState<PropertyValidation>({})
     const [alertMessage, setAlertMessage] = useState<string>('')
 
+    const updatePropertyInformation = () => {
+        let _data:PropertyInterface = {
+            ...property
+        }
+        setSavingProperty(true)
+        postData(`${PROPERTY_UPDATE_INFORMATION_URL}`, _data).then(
+            response => {
+                setSavingProperty(false)
+                // trigger to next step
+                props.onSave({...property})
+            }
+          ).catch(error => {
+            setSavingProperty(false)
+            console.log('error ', error)
+            alert('Error saving property...')
+          })
+    }
+
     const onSaveProperty = () => {
         let _error_messages = []
         let _error_validation = {}
@@ -66,21 +84,7 @@ export default function Step1(props: Step1Interface) {
                 if (_isAvailable) {
                     if (property.id) {
                         // if it has property.id, then this is to update property
-                        let _data:PropertyInterface = {
-                            ...property
-                        }
-                        setSavingProperty(true)
-                        postData(`${PROPERTY_UPDATE_INFORMATION_URL}`, _data).then(
-                            response => {
-                                setSavingProperty(false)
-                                // trigger to next step
-                                props.onSave({...property})
-                            }
-                          ).catch(error => {
-                            setSavingProperty(false)
-                            console.log('error ', error)
-                            alert('Error saving property...')
-                          })
+                        updatePropertyInformation()
                     } else {
                         props.onSave({...property})
                     }
