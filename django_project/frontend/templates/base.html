@@ -314,6 +314,18 @@
 {% block content %}
 {% endblock %}
 {% block footer %}
+<script>
+  document.addEventListener('DOMContentLoaded',async function() {
+    var userIsAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+    var exploreLink = document.getElementById('explore-link');
+   if(exploreLink !== null && userIsAuthenticated ){
+     exploreLink.style.display = '';
+   }
+   else if(exploreLink !== null && !userIsAuthenticated){
+      exploreLink.style.display = 'none'
+   }
+  });
+</script>
 <div class='footer' data-testid='footer'>
   <div class='sanbi-footer-logo-container'>
     <a href="https://biodiversityadvisor.sanbi.org/" target="_blank">
@@ -322,7 +334,7 @@
   </div>
     <div class='footer-nav' data-testid='footer-navigation'>
         <a href='/' target='_self'>HOME</a>
-        <a href='/map' target='_self'>EXPLORE</a>
+        <a id="explore-link" href='/map' target='_self'>EXPLORE</a>
         <a href='https://kartoza.github.io/sawps/' target='_blank'>DOCUMENTATION</a>
         <a href='/contact' target='_self'>CONTACT</a>
   </div>
