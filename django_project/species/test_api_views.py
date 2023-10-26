@@ -594,3 +594,47 @@ class TestUploadSpeciesApiView(TestCase):
         file_upload.upload_session = upload_session
         file_upload.start('utf-8-sig')
         self.assertTrue('error' in upload_session.error_file.path)
+
+    def test_upload_species_status_empty_file(self):
+        """Test upload with empty file."""
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_empty.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'Error')
+        self.assertFalse(response.data['error_file'])
