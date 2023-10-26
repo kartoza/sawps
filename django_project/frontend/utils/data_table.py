@@ -93,7 +93,7 @@ def get_report_filter(request, report_type):
         filters[species_fields[report_type]] = species_list
 
     start_year = request.GET.get("start_year")
-    if start_year and report_type != PROPERTY_REPORT:
+    if start_year:
         start_year = int(start_year)
         end_year = int(request.GET.get("end_year"))
         filters[year_fields[report_type]] = (start_year, end_year)
@@ -102,14 +102,6 @@ def get_report_filter(request, report_type):
         'annualpopulationperactivity__'
         'activity_type_id__in'
     )
-    # activity_fields = {
-    #     SPECIES_REPORT: default_activity_field,
-    #     PROPERTY_REPORT: (
-    #         'annualpopulationperactivity__activity_type_id__in'
-    #     ),
-    #     SAMPLING_REPORT: default_activity_field,
-    #     ACTIVITY_REPORT: default_activity_field,
-    # }
 
     activity = request.GET.get("activity", "")
     activity = urllib.parse.unquote(activity)

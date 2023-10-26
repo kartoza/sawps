@@ -209,7 +209,6 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
                 year=max_year,
             )
         )
-        print(annual_populations)
 
         # Iterate through filtered records
         for record in annual_populations:
@@ -228,7 +227,7 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
                     "count": 1,
                     "years": [year],
                     "total": total,
-                    "percentage": percentage
+                    "percentage": percentage * 100
                 }
             elif year in result[population_estimate_category]["years"]:
                 result[population_estimate_category]["count"] += 1
@@ -254,7 +253,7 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
                 "count": count,
                 "years": data["years"],
                 "total": total,
-                "percentage": percentage,
+                "percentage": int(percentage * 100) / 100,
             }
 
         return final_result

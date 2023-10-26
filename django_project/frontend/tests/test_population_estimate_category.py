@@ -32,21 +32,21 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
         )
 
     def test_get_total_counts_per_population_estimate(self):
-        self.data_use_permission = DataUsePermission.objects.create(
+        data_use_permission = DataUsePermission.objects.create(
             name="test"
         )
-        self.organisation = Organisation.objects.create(
+        organisation = Organisation.objects.create(
             name="test_organisation",
-            data_use_permission=self.data_use_permission
+            data_use_permission=data_use_permission
         )
 
         taxon_rank = TaxonRank.objects.filter(name="Species").first()
         if not taxon_rank:
             taxon_rank = TaxonRankFactory.create(name="Species")
 
-        self.taxon = Taxon.objects.create(
+        taxon = Taxon.objects.create(
             taxon_rank=taxon_rank, common_name_varbatim="Lion",
-            scientific_name = "Penthera leo"
+            scientific_name="Penthera leo"
         )
 
         self.user = User.objects.create_user(
@@ -55,17 +55,18 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
         )
 
         # Create test data, including properties and owned species
-        self.property1 = PropertyFactory.create(name="Property 1", organisation=self.organisation)
-        self.property2 = PropertyFactory.create(name="Property 2", organisation=self.organisation)
+        property1 = PropertyFactory.create(name="Property 1", organisation=organisation)
+        property2 = PropertyFactory.create(name="Property 2", organisation=organisation)
+        property3 = PropertyFactory.create(name="Property 3", organisation=organisation)
 
-        self.category_a = PopulationEstimateCategory.objects.create(name="Category A")
-        self.category_b = PopulationEstimateCategory.objects.create(name="Category B")
+        category_a = PopulationEstimateCategory.objects.create(name="Category A")
+        category_b = PopulationEstimateCategory.objects.create(name="Category B")
 
         AnnualPopulationF.create(
             year=2020,
-            property=self.property1,
+            property=property1,
             user=self.user,
-            taxon=self.taxon,
+            taxon=taxon,
             total=100,
             adult_male=10,
             adult_female=10,
@@ -75,14 +76,14 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
             sub_adult_male=10,
             sub_adult_female=10,
             juvenile_total=10,
-            population_estimate_category=self.category_a
+            population_estimate_category=category_a
         )
 
         AnnualPopulationF.create(
             year=2022,
-            property=self.property1,
+            property=property1,
             user=self.user,
-            taxon=self.taxon,
+            taxon=taxon,
             total=100,
             adult_male=10,
             adult_female=10,
@@ -92,14 +93,14 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
             sub_adult_male=10,
             sub_adult_female=10,
             juvenile_total=10,
-            population_estimate_category=self.category_a
+            population_estimate_category=category_a
         )
 
         AnnualPopulationF.create(
             year=2020,
-            property=self.property2,
+            property=property2,
             user=self.user,
-            taxon=self.taxon,
+            taxon=taxon,
             total=100,
             adult_male=10,
             adult_female=10,
@@ -109,14 +110,14 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
             sub_adult_male=10,
             sub_adult_female=10,
             juvenile_total=10,
-            population_estimate_category=self.category_a
+            population_estimate_category=category_a
         )
 
         AnnualPopulationF.create(
-            year=2021,
-            property=self.property2,
+            year=2022,
+            property=property3,
             user=self.user,
-            taxon=self.taxon,
+            taxon=taxon,
             total=200,
             adult_male=10,
             adult_female=10,
@@ -126,14 +127,14 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
             sub_adult_male=10,
             sub_adult_female=10,
             juvenile_total=10,
-            population_estimate_category=self.category_a
+            population_estimate_category=category_a
         )
-        
+
         AnnualPopulationF.create(
             year=2022,
-            property=self.property2,
+            property=property2,
             user=self.user,
-            taxon=self.taxon,
+            taxon=taxon,
             total=100,
             adult_male=10,
             adult_female=10,
@@ -143,28 +144,26 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
             sub_adult_male=10,
             sub_adult_female=10,
             juvenile_total=10,
-            population_estimate_category=self.category_b
+            population_estimate_category=category_b
         )
 
-        self.auth_headers = {
+        auth_headers = {
             "HTTP_AUTHORIZATION": "Basic "
-            + base64.b64encode(b"testuserd:testpasswordd").decode("ascii"),
+                                  + base64.b64encode(b"testuserd:testpasswordd").decode("ascii"),
         }
-        self.client = Client()
+        client = Client()
 
-        session = self.client.session
+        session = client.session
         session.save()
 
-        self.url = reverse("total-count-per-population-estimate")
-
-        url = self.url
+        url = reverse("total-count-per-population-estimate")
         data = {
-                'species': "Penthera leo",
-                'property': f"{self.property1.id},{self.property2.id}",
-                'start_year': "2020",
-                'end_year': "2022"
+            'species': "Penthera leo",
+            'property': f"{property1.id},{property2.id},{property3.id}",
+            'start_year': "2020",
+            'end_year': "2022"
         }
-        response = self.client.get(url, data, **self.auth_headers)
+        response = client.get(url, data, **auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Call the method you want to test
@@ -174,7 +173,7 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
         expected_result = {
             'Category A': {
                 'count': 2,
-                'percentage': 0.6666666666666667,
+                'percentage': 0.66,
                 'total': 300,
                 'years': [2022],
             },
@@ -185,12 +184,9 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
                 'years': [2022],
             },
         }
-        print(result)
-        print(expected_result)
 
         # Assert that the result matches the expected result
         self.assertEqual(result, expected_result)
-
 
     def test_empty_data(self):
         # Test when there's no data

@@ -109,9 +109,9 @@ class DataTableAPIView(APIView):
             if report_list:
                 report_list = report_list.split(",")
                 if PROVINCE_REPORT in report_list:
-                    queryset = self.get_taxon_queryset()
+                    taxon_queryset = self.get_taxon_queryset()
                     province_reports = national_level_province_report(
-                        queryset,
+                        taxon_queryset,
                         request,
                         user_roles
                     )

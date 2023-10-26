@@ -179,6 +179,7 @@ class PropertyReportSerializer(
 
     def get_area_available_to_species(self, obj: AnnualPopulation) -> str:
         data = AnnualPopulation.objects.filter(
+            taxon=obj.taxon,
             property=obj.property,
             year=obj.year
         ).aggregate(Sum('area_available_to_species'))
