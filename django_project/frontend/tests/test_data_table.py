@@ -171,11 +171,11 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(len(response.data[1]["Property_report"]), 5)
         for row in response.data[1]["Property_report"]:
             # For this year, we have 2 records for the property.
-            # total area_available_to_species is 7.0
+            # total area_available_to_species is 15.0
             if row['year'] == int(self.annual_populations[0].year):
-                self.assertEqual(row['area_available_to_species'], 7.0)
+                self.assertEqual(row['area_available_to_species'], 15.0)
             else:
-                self.assertEqual(row['area_available_to_species'], 2)
+                self.assertEqual(row['area_available_to_species'], 10)
 
         # Show all sampling report (5)
         self.assertEqual(len(response.data[2]["Sampling_report"]), 5)

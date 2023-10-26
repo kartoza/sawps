@@ -9,6 +9,7 @@ from species.factories import (
     TaxonFactory,
     TaxonRankFactory,
 )
+from population_data.models import PopulationEstimateCategory
 from population_data.factories import AnnualPopulationF
 from species.models import TaxonRank
 from stakeholder.factories import organisationFactory, organisationUserFactory
@@ -48,12 +49,14 @@ class BaseTestCase(TestCase):
         self.property = PropertyFactory.create(
             organisation=self.organisation_1, name="PropertyA"
         )
+        category_a = PopulationEstimateCategory.objects.create(name="Category A")
 
         self.annual_populations = AnnualPopulationF.create_batch(
             5,
             taxon=self.taxon,
             user=self.user,
-            property=self.property
+            property=self.property,
+            population_estimate_category=category_a
         )
 
         self.auth_headers = {
@@ -162,7 +165,7 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         self.assertEqual(
             int(response.data[0]['annualpopulation_count'][0].
                 get('year')),
-            year
+            int(year)
         )
 
 
@@ -503,13 +506,12 @@ class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
         Test total area versus area available filtered by year.
         """
         year = self.annual_populations[1].year
-        data = {'start_year': year, "end_year":year}
+        data = {'start_year': year, "end_year": year}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
-        print(response.json())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]['area']['owned_species'][0] \
                 ['annualpopulation__year'],
-            year
+            int(year)
         )

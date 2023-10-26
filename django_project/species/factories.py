@@ -1,12 +1,6 @@
-from random import randint
-
 import factory
 from django.contrib.auth.models import User
-from population_data.factories import (
-    AnnualPopulationF,
-    AnnualPopulationPerActivityFactory,
-)
-from population_data.models import AnnualPopulation
+
 from species.models import Taxon, TaxonRank, TaxonSurveyMethod
 
 

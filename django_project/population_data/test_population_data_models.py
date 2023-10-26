@@ -124,8 +124,8 @@ class AnnualPopulationPerActivityTestCase(TestCase):
             AnnualPopulationPerActivity.objects.get(year=self.population_count.year).total, 100
         )
 
-    def test_year_ownedspecies_activity_type_fields_unique_toghter_constraint(self):
-        """Test year, ownedspecies and activity_type are unique togther."""
+    def test_year_activity_type_fields_unique_toghter_constraint(self):
+        """Test year, annual population, and activity_type are unique togther."""
         with self.assertRaises(IntegrityError) as raised:
             AnnualPopulationPerActivityFactory(
                 annual_population=self.population_count.annual_population,

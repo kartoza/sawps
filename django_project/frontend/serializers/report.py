@@ -232,7 +232,10 @@ class ActivityReportSerializer(
     def get_organisation_name(self, obj: AnnualPopulationPerActivity) -> str:
         return obj.annual_population.property.organisation.name
 
-    def get_organisation_short_code(self, obj: AnnualPopulationPerActivity) -> str:
+    def get_organisation_short_code(
+        self,
+        obj: AnnualPopulationPerActivity
+    ) -> str:
         return obj.annual_population.property.organisation.short_code
 
     def __init__(self, *args, **kwargs):

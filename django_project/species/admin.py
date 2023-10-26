@@ -43,4 +43,3 @@ class TaxonAdmin(admin.ModelAdmin):
 
 admin.site.register(TaxonRank)
 admin.site.register(Taxon, TaxonAdmin)
-

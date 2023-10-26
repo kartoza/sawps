@@ -5,7 +5,10 @@ from django.db.models import (
     Q,
     Sum
 )
-from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
+from population_data.models import (
+    AnnualPopulation,
+    AnnualPopulationPerActivity
+)
 from property.models import Property
 from rest_framework import serializers
 from species.models import Taxon
@@ -206,6 +209,7 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
                 year=max_year,
             )
         )
+        print(annual_populations)
 
         # Iterate through filtered records
         for record in annual_populations:
@@ -364,7 +368,12 @@ class SpeciesPopulationDensityPerPropertySerializer(
                 property=obj,
                 taxon__scientific_name=species_name
             )
-            .values("property__name", "year", "total", "property__property_size_ha")
+            .values(
+                "property__name",
+                "year",
+                "total",
+                "property__property_size_ha"
+            )
         )
 
         # Calculate density and format data
@@ -502,7 +511,7 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
             area_total=Sum("property__property_size_ha"),
             area_available=Sum("area_available_to_species"),
             annualpopulation__year=F('year')
-        ).values('')
+        ).values('annualpopulation__year', 'area_total', 'area_available')
         data = {
             "owned_species": populations
         }

@@ -1,6 +1,9 @@
 from typing import List
 from activity.models import ActivityType
-from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
+from population_data.models import (
+    AnnualPopulation,
+    AnnualPopulationPerActivity
+)
 from frontend.utils.metrics import calculate_population_categories
 from frontend.filters.metrics import PropertyFilter
 from property.models import Property
