@@ -210,7 +210,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         //         }
         //     }
         // }
-        if (data.annual_population.area_available_to_species === 0 || data.annual_population.area_available_to_species > propertyItem.size) {
+        if (data.annual_population.area_available_to_species <= 0 || data.annual_population.area_available_to_species > propertyItem.size) {
             _error_validation = {
                 ..._error_validation,
                 annual_population: {
