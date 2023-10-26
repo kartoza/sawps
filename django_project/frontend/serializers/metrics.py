@@ -5,7 +5,7 @@ from django.db.models import (
     Q,
     Sum
 )
-from population_data.models import AnnualPopulation
+from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
 from property.models import Property
 from rest_framework import serializers
 from species.models import Taxon
@@ -308,15 +308,14 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         property_param = self.context['request'].GET.get('property')
         property_list = property_param.split(',') if property_param else []
 
-        q_filters = Q(taxon=obj)
+        q_filters = Q(annual_population__taxon=obj)
         if property_list:
-            q_filters &= Q(property__id__in=property_list)
+            q_filters &= Q(annual_population__property_id__in=property_list)
 
-        populations = AnnualPopulation.objects.values(
-            activity_type=F(
-                "annualpopulationperactivity__activity_type__name"),
-            year=F("annualpopulationperactivity__year"),
-            total=Sum("annualpopulationperactivity__total"),
+        populations = AnnualPopulationPerActivity.objects.values(
+            'year',
+            'activity_type',
+            'total',
         ).filter(q_filters)
 
         activities_list = [
@@ -365,19 +364,14 @@ class SpeciesPopulationDensityPerPropertySerializer(
                 property=obj,
                 taxon__scientific_name=species_name
             )
-            .values("property__name")
-            .annotate(
-                "year",
-                total=Sum("total"),
-                property_in_ha=Sum("property__property_size_ha")
-            )
+            .values("property__name", "year", "total", "property__property_size_ha")
         )
 
         # Calculate density and format data
         result_data = []
         for data in populations:
             total = data.get("total")
-            property_in_ha = data.get("property_in_ha")
+            property_in_ha = data.get("property__property_size_ha")
             year = data.get("year")
 
             if total and property_in_ha:
@@ -500,14 +494,15 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
         start_year = self.context['request'].GET.get("start_year")
         if start_year:
             end_year = self.context['request'].GET.get("end_year")
-            filters["annualpopulation__year__range"] = (start_year, end_year)
+            filters["year__range"] = (start_year, end_year)
 
-        populations = AnnualPopulation.objects.values(
-            "year",
-        ).filter(**filters, taxon=obj).annotate(
+        populations = AnnualPopulation.objects.filter(
+            **filters, taxon=obj
+        ).annotate(
             area_total=Sum("property__property_size_ha"),
-            area_available=Sum("area_available_to_species")
-        )
+            area_available=Sum("area_available_to_species"),
+            annualpopulation__year=F('year')
+        ).values('')
         data = {
             "owned_species": populations
         }

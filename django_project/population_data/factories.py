@@ -1,6 +1,7 @@
 """Test factories for population data package.
 """
 import factory
+from random import randint
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationAbstract,
@@ -22,11 +23,11 @@ class AnnualPopulationAbstractFactory(factory.django.DjangoModelFactory):
 
     year = factory.Sequence(lambda n: f"{n}")
     # owned_species = factory.SubFactory("species.factories.OwnedSpeciesFactory")
-    total = factory.Faker("random_int")
-    adult_male = factory.Faker("random_int")
-    adult_female = factory.Faker("random_int")
-    juvenile_male = factory.Faker("random_int")
-    juvenile_female = factory.Faker("random_int")
+    total = 100
+    adult_male = 50
+    adult_female = 50
+    juvenile_male = 30
+    juvenile_female = 30
 
 
 class AnnualPopulationF(AnnualPopulationAbstractFactory):
@@ -39,10 +40,25 @@ class AnnualPopulationF(AnnualPopulationAbstractFactory):
     taxon = factory.SubFactory('species.factories.TaxonFactory')
     property = factory.SubFactory('property.factories.PropertyFactory')
     area_available_to_species = 2
-    sub_adult_total = factory.Faker("random_int")
-    sub_adult_male = factory.Faker("random_int")
-    sub_adult_female = factory.Faker("random_int")
-    juvenile_total = factory.Faker("random_int")
+    sub_adult_total = 20
+    sub_adult_male = 10
+    sub_adult_female = 10
+    juvenile_total = 40
+
+    @factory.post_generation
+    def create_annual_population_per_activity(self, create, *args):
+        year = randint(1960, 2000)
+        if len(AnnualPopulation.objects.filter(year=year)) > 0:
+            year = randint(2001, 2023)
+        AnnualPopulationPerActivityFactory.create(
+            year=self.year,
+            annual_population=self,
+            total=100,
+            adult_male=50,
+            adult_female=50,
+            juvenile_male=30,
+            juvenile_female=30,
+        )
 
 
 class AnnualPopulationPerActivityFactory(AnnualPopulationAbstractFactory):
@@ -51,7 +67,7 @@ class AnnualPopulationPerActivityFactory(AnnualPopulationAbstractFactory):
     class Meta:
         model = AnnualPopulationPerActivity
 
-    annual_population = factory.SubFactory(AnnualPopulation)
+    annual_population = factory.SubFactory(AnnualPopulationF)
     activity_type = factory.SubFactory(
         "activity.factories.ActivityTypeFactory"
     )

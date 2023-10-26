@@ -154,7 +154,7 @@ def property_report(queryset: QuerySet, request) -> List:
     area_available_values = AnnualPopulation.objects.filter(
         property__in=queryset,
         **filters
-    ).distinct('property')
+    ).distinct('property', 'year')
 
     property_reports = PropertyReportSerializer(
         area_available_values, many=True
@@ -173,7 +173,7 @@ def sampling_report(queryset: QuerySet, request) -> List:
     filters = get_report_filter(request, SAMPLING_REPORT)
 
     sampling_reports_data = AnnualPopulation.objects.filter(
-        roperty__in=queryset,
+        property__in=queryset,
         **filters
     )
     sampling_reports = SamplingReportSerializer(
@@ -276,7 +276,7 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     start_year = request.GET.get("start_year")
     if start_year:
         end_year = request.GET.get("end_year")
-        filters["annualpopulation__year__range"] = (
+        filters["year__range"] = (
             start_year, end_year
         )
 

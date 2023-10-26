@@ -5,7 +5,7 @@ from frontend.serializers.report import (
     PropertyReportSerializer,
     SpeciesReportSerializer
 )
-from frontend.tests.test_data_table import OwnedSpeciesTestMixins
+from frontend.tests.test_data_table import AnnualPopulationTestMixins
 from population_data.factories import AnnualPopulationF
 from population_data.models import (
     AnnualPopulation
@@ -13,7 +13,7 @@ from population_data.models import (
 from species.models import OwnedSpecies
 
 
-class TestReportSerializer(OwnedSpeciesTestMixins, TestCase):
+class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
 
     def setUp(self) -> None:
         super().setUp()

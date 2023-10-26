@@ -16,10 +16,10 @@ class BaseNationalReportSerializer(serializers.Serializer):
     common_name = serializers.SerializerMethodField()
 
     def get_scientific_name(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.taxon.scientific_name
+        return obj.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.taxon.common_name_varbatim
+        return obj.taxon.common_name_varbatim
 
 
 class BaseReportSerializer(serializers.Serializer):
@@ -35,22 +35,22 @@ class BaseReportSerializer(serializers.Serializer):
     common_name = serializers.SerializerMethodField()
 
     def get_scientific_name(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.taxon.scientific_name
+        return obj.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.taxon.common_name_varbatim
+        return obj.taxon.common_name_varbatim
 
     def get_property_name(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.property.name
+        return obj.property.name
 
     def get_property_short_code(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.property.short_code
+        return obj.property.short_code
 
     def get_organisation_name(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.property.organisation.name
+        return obj.property.organisation.name
 
     def get_organisation_short_code(self, obj: AnnualPopulation) -> str:
-        return obj.owned_species.property.organisation.short_code
+        return obj.property.organisation.short_code
 
 
 class SpeciesReportSerializer(
@@ -139,6 +139,7 @@ class PropertyReportSerializer(
     province = serializers.SerializerMethodField()
     property_size_ha = serializers.SerializerMethodField()
     open_close_systems = serializers.SerializerMethodField()
+    area_available_to_species = serializers.SerializerMethodField()
 
     def get_property_name(self, obj: AnnualPopulation) -> str:
         return obj.property.name
@@ -176,6 +177,16 @@ class PropertyReportSerializer(
     def get_open_close_systems(self, obj: AnnualPopulation) -> str:
         return obj.property.open.name if obj.property.open else ""
 
+    def get_area_available_to_species(self, obj: AnnualPopulation) -> str:
+        data = AnnualPopulation.objects.filter(
+            property=obj.property,
+            year=obj.year
+        ).aggregate(Sum('area_available_to_species'))
+        return (
+            data['area_available_to_species__sum'] if
+            data['area_available_to_species__sum'] else 0
+        )
+
     class Meta:
         model = AnnualPopulation
         fields = [
@@ -191,7 +202,8 @@ class PropertyReportSerializer(
             "province",
             "property_size_ha",
             "area_available_to_species",
-            "open_close_systems"
+            "open_close_systems",
+            "year"
         ]
 
 
@@ -204,6 +216,24 @@ class ActivityReportSerializer(
     The serializer uses dynamic column based on the
     selected activity.
     """
+
+    def get_scientific_name(self, obj: AnnualPopulationPerActivity) -> str:
+        return obj.annual_population.taxon.scientific_name
+
+    def get_common_name(self, obj: AnnualPopulationPerActivity) -> str:
+        return obj.annual_population.taxon.common_name_varbatim
+
+    def get_property_name(self, obj: AnnualPopulationPerActivity) -> str:
+        return obj.annual_population.property.name
+
+    def get_property_short_code(self, obj: AnnualPopulationPerActivity) -> str:
+        return obj.annual_population.property.short_code
+
+    def get_organisation_name(self, obj: AnnualPopulationPerActivity) -> str:
+        return obj.annual_population.property.organisation.name
+
+    def get_organisation_short_code(self, obj: AnnualPopulationPerActivity) -> str:
+        return obj.annual_population.property.organisation.short_code
 
     def __init__(self, *args, **kwargs):
         activity = kwargs.pop('activity', None)
@@ -255,7 +285,7 @@ class NationalLevelPropertyReport(serializers.Serializer):
         property_data = AnnualPopulation.objects.values(
             "property__property_type__name",
         ).filter(**self.context['filters'], taxon=instance).annotate(
-            population=Sum("annualpopulation__total"),
+            population=Sum("total"),
             area=Sum("property__property_size_ha"),
         )
 
@@ -307,7 +337,7 @@ class NationalLevelProvinceReport(serializers.Serializer):
         province_data = AnnualPopulation.objects.values(
             "property__province__name",
         ).filter(**self.context['filters'], taxon=instance).annotate(
-            population=Sum("annualpopulation__total"),
+            population=Sum("total"),
         )
 
         for province_entry in province_data:

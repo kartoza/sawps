@@ -424,6 +424,8 @@ class TestUploadSpeciesApiView(TestCase):
             self.assertTrue("The total of Count_adult_males and "
                             "Count_adult_females must not exceed "
                             "COUNT_TOTAL." in errors)
+
+            # TODO: Check why this test is failing
             # self.assertTrue("The total of "
             #                 "Planned hunt/culling_Offtake_adult_males and "
             #                 "Planned hunt/culling_Offtake_adult_females must "

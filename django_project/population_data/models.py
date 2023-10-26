@@ -8,6 +8,9 @@ class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
     year = models.PositiveIntegerField()
+    # This field is no longer used,
+    # but will be deleted after data
+    # migration success.
     owned_species = models.ForeignKey(
         "species.OwnedSpecies",
         on_delete=models.CASCADE,
@@ -96,7 +99,7 @@ class AnnualPopulation(AnnualPopulationAbstract):
 
     def __str__(self):
         return "{} {}".format(
-            self.owned_species.property.name,
+            self.property.name,
             self.year
         )
 
@@ -144,7 +147,7 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
 
     def __str__(self):
         return "{} {} {}".format(
-            self.owned_species.property.name,
+            self.annual_population.property.name,
             self.year,
             self.activity_type.name)
 
