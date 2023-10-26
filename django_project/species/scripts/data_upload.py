@@ -269,15 +269,17 @@ class SpeciesCSVUpload(object):
             self.error_file(row)
         self.finish(self.csv_dict_reader.fieldnames)
 
-    def get_property(self, property_name):
+    def get_property(self, property_code):
 
-        property_selected = self.upload_session.property.name
-        if property_name == property_selected:
+        property_selected = self.upload_session.property.short_code
+        if property_code == property_selected:
             try:
                 property = Property.objects.get(
-                        name=property_selected,
+                        short_code=property_selected,
                 )
             except Property.DoesNotExist:
+                return
+            except Property.MultipleObjectsReturned:
                 return
 
             return property
@@ -381,16 +383,16 @@ class SpeciesCSVUpload(object):
         # check compulsory fields
         self.check_compulsory_fields(row)
         property = taxon = None
-        property_name = self.row_value(row, PROPERTY)
-        if property_name:
-            property = self.get_property(property_name)
+        property_code = self.row_value(row, PROPERTY)
+        if property_code:
+            property = self.get_property(property_code)
 
             if not property:
                 self.error_row(
-                    message="Property name {} doesn't match the selected "
+                    message="Property code {} doesn't match the selected "
                             "property. Please replace it with {}.".format(
                                 self.row_value(row, PROPERTY),
-                                self.upload_session.property.name)
+                                self.upload_session.property.short_code)
                 )
 
         scientific_name = self.row_value(row, SCIENTIFIC_NAME)
