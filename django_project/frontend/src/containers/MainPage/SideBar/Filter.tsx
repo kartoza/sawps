@@ -131,25 +131,15 @@ function Filter(props: any) {
             {
                 id: "Species report",
                 name: "Species report"
-            },
-            {
-                id: "Province report",
-                name: "Province report"
             }
         ]
 
-        // const provinceReportRoles = [
-        //     'National data scientist',
-        //     'Regional data scientist',
-        //     'Organisation member',
-        //     'Organisation manager'
-        // ]
-        // if (provinceReportRoles.some(roleExists)) {
-        //     informationList.push({
-        //         id: "Province report",
-        //         name: "Province report"
-        //     })
-        // }
+        if (userInfoData.user_permissions.includes("Can view province report")) {
+            informationList.push({
+                id: "Province report",
+                name: "Province report"
+            })
+        }
 
         if (userInfoData.user_permissions.includes("Can view sampling report")) {
             informationList.push({
