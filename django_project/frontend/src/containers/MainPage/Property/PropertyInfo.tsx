@@ -157,7 +157,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
 
                     <TableRow key='open'>
                         <TableCell component="th" scope="row">
-                            Open/Close System
+                            Open/Closed System
                         </TableCell>
                         <TableCell>
                             <FormControl fullWidth size="small">
