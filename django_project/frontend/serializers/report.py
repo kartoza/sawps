@@ -109,6 +109,7 @@ class SamplingReportSerializer(
             "property_short_code",
             "organisation_name",
             "organisation_short_code",
+            "year",
             "scientific_name",
             "common_name",
             "population_status",
@@ -195,6 +196,7 @@ class PropertyReportSerializer(
             "property_short_code",
             "organisation_name",
             "organisation_short_code",
+            "year",
             "scientific_name",
             "common_name",
             "owner",
@@ -203,8 +205,7 @@ class PropertyReportSerializer(
             "province",
             "property_size_ha",
             "area_available_to_species",
-            "open_close_systems",
-            "year"
+            "open_close_systems"
         ]
 
 

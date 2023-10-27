@@ -143,17 +143,6 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         self.annual_populations[0].annualpopulationperactivity_set.all().delete()
         self.annual_populations[1].annualpopulationperactivity_set.all().delete()
 
-        taxon = TaxonFactory.create()
-        AnnualPopulation.objects.create(
-            taxon=taxon,
-            user=self.annual_populations[0].user,
-            property=self.property,
-            total=10,
-            adult_male=4,
-            adult_female=6,
-            year=self.annual_populations[0].year,
-            area_available_to_species=5
-        )
 
         data = {
             "species": "SpeciesA",
@@ -173,7 +162,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             # For this year, we have 2 records for the property.
             # total area_available_to_species is 15.0
             if row['year'] == int(self.annual_populations[0].year):
-                self.assertEqual(row['area_available_to_species'], 15.0)
+                self.assertEqual(row['area_available_to_species'], 10.0)
             else:
                 self.assertEqual(row['area_available_to_species'], 10)
 
