@@ -147,7 +147,6 @@ class UploadSpeciesStatus(APIView):
 
         if not upload_species.success_notes and upload_species.error_file:
             message = "There is an error, please check the error file."
-            success = False
 
         if upload_species.processed:
 

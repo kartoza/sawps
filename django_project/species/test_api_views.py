@@ -497,7 +497,7 @@ class TestUploadSpeciesApiView(TestCase):
                          "CSV file headers."
                          )
 
-    def test_upload_species_with_excel_property_not_exit(self):
+    def test_upload_species_with_excel_property_not_exist(self):
         """Test upload Excel file with a property not existing."""
 
         csv_path = absolute_path(
@@ -521,6 +521,36 @@ class TestUploadSpeciesApiView(TestCase):
         view = SpeciesUploader.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+        self.assertTrue('error' in upload_session.error_file.path)
+
+        xl = pd.ExcelFile(upload_session.error_file.path)
+        dataset = xl.parse(SHEET_TITLE)
+        self.assertEqual(
+            dataset.iloc[0]['error_message'],
+            "Property code Venetia Limpopo doesn't match the selected "
+            "property. Please replace it with {}. Loxodonta africana "
+            "doesn't exist in the database. Please select species "
+            "available in the dropdown only.".format(
+                upload_session.property.short_code
+            )
+        )
+        # create two properties with code Venetia Limpopo
+        # should return same error
+        property1 = PropertyFactory(
+            name="Venetia Limpopo"
+        )
+        property2 = PropertyFactory(
+            name="Venetia Limpopo 2"
+        )
+        Property.objects.filter(id__in=[property1.id, property2.id]).update(
+            short_code='Venetia Limpopo'
+        )
         upload_session = UploadSpeciesCSV.objects.get(token=self.token)
         upload_session.progress = 'Processing'
         upload_session.save()
