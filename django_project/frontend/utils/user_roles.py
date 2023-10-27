@@ -104,11 +104,11 @@ def get_user_permissions(user: User) -> List[str]:
     ext_group_permissions = Permission.objects.filter(
         content_type=content_type
     )
-    if user.is_superuser or user.is_staff:
-        ext_group_permissions_set = set(
-            ext_group_permissions.values_list('name', flat=True)
-        )
-        permissions = permissions.union(ext_group_permissions_set)
+    # if user.is_superuser:
+    #     ext_group_permissions_set = set(
+    #         ext_group_permissions.values_list('name', flat=True)
+    #     )
+    #     permissions = permissions.union(ext_group_permissions_set)
 
     for group in groups:
         allowed_permission = set(
