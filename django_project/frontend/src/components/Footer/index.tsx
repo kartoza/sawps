@@ -3,6 +3,7 @@ import './index.scss';
 
 interface IFooter{}
 
+const isLoggedIn = (window as any).isLoggedIn;
 
 const Footer:FC<IFooter>=()=>{
     return (
@@ -15,7 +16,7 @@ const Footer:FC<IFooter>=()=>{
             </div>
             <div className='footer-nav' data-testid='footer-navigation'>
                 <a href='/' target='_self'>HOME</a>
-                <a href='/map' target='_self'>EXPLORE</a>
+                {isLoggedIn ? <a href="/map"target='_self' > EXPLORE</a> :""}
                 <a href='https://kartoza.github.io/sawps/' target='_blank'>DOCUMENTATION</a>
                 <a href='/contact' target='_self'>CONTACT</a>
           </div>
