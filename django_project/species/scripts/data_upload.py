@@ -409,6 +409,22 @@ class SpeciesCSVUpload(object):
                 )
 
         area_available_to_species = self.row_value(row, AREA)
+        # validate area_available_to_species must be greater than 0 and
+        # less than property size
+        area_available_to_species_num = int(
+            string_to_number(area_available_to_species))
+        if (
+            area_available_to_species_num <= 0 or
+            area_available_to_species_num >
+            self.upload_session.property.property_size_ha
+        ):
+            self.error_row(
+                message="Area available to species must be greater than 0 "
+                        "and less than property area size "
+                        "({:.2f} ha).".format(
+                            self.upload_session.property.property_size_ha
+                        )
+            )
 
         survey = self.row_value(row, SURVEY_METHOD)
         survey_method = self.survey_method(survey)

@@ -668,3 +668,48 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'Error')
         self.assertFalse(response.data['error_file'])
+
+    def test_upload_excel_invalid_area_available(self):
+        """Test upload species with a csv file that has invalid
+        area available to species."""
+
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_invalid_area_available.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+        upload_session.refresh_from_db()
+        self.assertTrue('error' in upload_session.error_file.path)
+        with open(upload_session.error_file.path, encoding='utf-8-sig') as csv_file:
+            error_file = csv.DictReader(csv_file)
+            headers = error_file.fieldnames
+            self.assertTrue('error_message' in headers)
+            errors = []
+            for row in error_file:
+                errors.append(row['error_message'])
+            self.assertTrue(
+                "Area available to species must be greater than 0 "
+                "and less than property area size ({:.2f} ha).".format(
+                    self.property.property_size_ha) in errors)
