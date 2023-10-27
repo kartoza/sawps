@@ -136,7 +136,7 @@ def calculate_population_categories(
         category = None
         for i in range(len(categories) - 1):
             if categories[i] <= population < categories[i + 1]:
-                category = f'{categories[i]}-{categories[i+1]}'
+                category = f'{categories[i]}-{categories[i + 1]}'
                 break
         else:
             category = f'>{categories[-1]}'
