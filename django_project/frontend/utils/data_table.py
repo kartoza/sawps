@@ -342,7 +342,8 @@ def national_level_species_report(
         filter(**filters, taxon__in=queryset). \
         values(
             'taxon__common_name_varbatim',
-            'taxon__scientific_name'
+            'taxon__scientific_name',
+            'year'
         ). \
         annotate(
             property_area=Sum("property__property_size_ha"),

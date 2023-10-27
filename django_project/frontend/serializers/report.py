@@ -287,11 +287,16 @@ class NationalLevelPropertyReport(serializers.Serializer):
             "scientific_name": instance.scientific_name,
         }
 
-        property_data = AnnualPopulation.objects.values(
-            "property__property_type__name",
-        ).filter(**self.context['filters'], taxon=instance).annotate(
+        property_data = AnnualPopulation.objects.filter(
+            **self.context['filters'], taxon=instance
+        ).annotate(
             population=Sum("total"),
             area=Sum("property__property_size_ha"),
+        ).values(
+            "property__property_type__name",
+            "population",
+            "area",
+            "year"
         )
 
         for property_entry in property_data:
@@ -302,6 +307,7 @@ class NationalLevelPropertyReport(serializers.Serializer):
             data[
                 f"total_area_{property_name}_property"
             ] = property_entry["area"]
+            data["year"] = property_entry["year"]
 
         return data
 
@@ -316,6 +322,7 @@ class NationalLevelActivityReport(serializers.Serializer):
 
         activity_data = AnnualPopulation.objects.values(
             "annualpopulationperactivity__activity_type__name",
+            "year"
         ).filter(**self.context['filters'], taxon=instance).annotate(
             population=Sum("annualpopulationperactivity__total"),
         )
@@ -327,6 +334,7 @@ class NationalLevelActivityReport(serializers.Serializer):
             data[
                 f"total_population_{activity_name}"
             ] = activity_entry["population"]
+            data["year"] = activity_entry["year"]
 
         return data
 
