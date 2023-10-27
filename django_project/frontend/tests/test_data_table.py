@@ -170,10 +170,8 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         # We only have 1 property with 5 years of data
         self.assertEqual(len(response.data[1]["Property_report"]), 5)
         for row in response.data[1]["Property_report"]:
-            # For this year, we have 2 records for the property.
-            # total area_available_to_species is 15.0
             if row['year'] == int(self.annual_populations[0].year):
-                self.assertEqual(row['area_available_to_species'], 10)
+                self.assertEqual(row['area_available_to_species'], 10.0)
             else:
                 self.assertEqual(row['area_available_to_species'], 10)
 
@@ -369,10 +367,10 @@ class NationalUserTestCase(TestCase):
             context_layer_value='spatial filter test'
         )
 
-    def test_national_property_report(self) -> None:
+    def test_national_property_report_all_activity(self) -> None:
         """Test property report for national data consumer"""
         url = self.url
-        response = self.client.get(url, **self.auth_headers)
+        response = self.client.get(url, {'activity': 'all'}, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 

@@ -82,6 +82,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "property_short_code": self.property.short_code,
             "organisation_name": self.organisation_1.name,
             "organisation_short_code": self.organisation_1.short_code,
+            "year": annual_population.year,
             "scientific_name": self.taxon.scientific_name,
             "common_name": self.taxon.common_name_varbatim,
             "population_status": "",
