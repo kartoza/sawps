@@ -46,20 +46,12 @@ import {
 import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
 import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
+import { SeachPlaceResult } from '../../../utils/SearchPlaces';
+import SearchPlace from '../../../components/SearchPlace';
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
-const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
-const SEARCH_PROPERTY_URL = '/api/property/search'
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
-
-interface SearchPropertyResult {
-    name: string;
-    bbox: any;
-    id: string;
-    type: string;
-    fclass?: string;
-}
 
 function Filter(props: any) {
     const dispatch = useAppDispatch()
@@ -75,14 +67,10 @@ function Filter(props: any) {
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string[]>(['Species report']);
     const [selectAllInfo, setSelectAllInfo] = useState(null);
-    const [searchOpen, setSearchOpen] = useState(false)
-    const [searchInputValue, setSearchInputValue] = useState<string>('')
-    const [searchResults, setSearchResults] = useState<SearchPropertyResult[]>([])
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [selectAllOrganisation, setSelectAllOrganisation] = useState(true);
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
-    const [nominatimResults, setNominatimResults] = useState([]);
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
@@ -200,44 +188,6 @@ function Filter(props: any) {
         center[0] + halfWidth,
         center[1] + halfHeight,
     ];
-
-
-    const handleInputChange = (value: string) => {
-        setSearchInputValue(value);
-
-        // Update searchResults with the results from existing search
-        searchProperty({ input: value }, (results) => {
-          if (results) {
-            setSearchResults(results.data as SearchPropertyResult[]);
-          } else {
-            setSearchResults([]);
-          }
-        });
-
-        // Perform Nominatim-based search and update nominatimResults
-        performNominatimSearch(value);
-    };
-
-    const performNominatimSearch = async (value: string) => {
-        try {
-            setNominatimResults([]);
-            const encodedValue = encodeURIComponent(value);
-            const response = await axios.get(
-              `https://nominatim.openstreetmap.org/search?format=json&q=${encodedValue}&countrycodes=AFR`
-            );
-            const updatedNominatimResults = response.data
-            .filter((result: { display_name: string | string[]; }) => result.display_name.includes("South Africa"))
-            .map((result: { place_id: any; }, index: any) => ({
-                ...result,
-                key: `nominatim_${result.place_id}`,
-            }));
-
-            setNominatimResults(updatedNominatimResults);
-
-        } catch (error) {
-          console.error('Error fetching Nominatim address suggestions:', error);
-        }
-      };
 
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
@@ -436,28 +386,6 @@ function Filter(props: any) {
         }
     }
 
-    const searchProperty = React.useMemo(
-        () =>
-            debounce(
-                (
-                    request: { input: string },
-                    callback: (results?: any) => void,
-                ) => {
-                    let _queryParam = `search_text=${request.input}`
-                    axios.get(`${SEARCH_PROPERTY_URL}?${_queryParam}`).then(
-                        response => {
-                            callback(response)
-                        }
-                    ).catch(error => {
-                        console.log('Failed search property ', error)
-                        callback(null)
-                    })
-                },
-                400,
-            ),
-        [],
-    )
-
     const clearFilter = () => {
         setSelectAllProperty(false)
         setSelectAllOrganisation(false)
@@ -469,34 +397,6 @@ function Filter(props: any) {
         dispatch(setStartYear(yearRangeStart));
         dispatch(setEndYear(yearRangeEnd));
     }
-
-    useEffect(() => {
-        let active = true;
-        if (searchInputValue.length <= 1) {
-            setSearchResults([])
-            return undefined;
-        }
-        searchProperty({ input: searchInputValue }, (results: any) => {
-            if (active) {
-                if (results) {
-                    setSearchResults(results.data as SearchPropertyResult[])
-                } else {
-                    setSearchResults([])
-                }
-            }
-        })
-        return () => {
-            active = false
-        };
-    }, [searchInputValue, searchProperty])
-
-    useEffect(() => {
-        setSearchOpen(searchInputValue.length > 1)
-        if (searchInputValue.length <= 1) {
-            setSearchResults([])
-        }
-    }, [searchInputValue])
-
 
     useEffect(() => {
         if (SpeciesFilterList) {
@@ -560,77 +460,18 @@ function Filter(props: any) {
                         />
                         <Typography color='#75B37A' fontSize='medium'>Search place</Typography>
                     </Box>
-                    <Autocomplete
-                        disablePortal={false}
-                        id="search-property-autocomplete"
-                        open={searchOpen}
-                        onOpen={() => setSearchOpen(searchInputValue.length > 1)}
-                        onClose={() => setSearchOpen(false)}
-                        options={[
-                            ...searchResults.map((result) => ({
-                            ...result,
-                            key: `searchResult_${result.id}`,
-                            })),
-                            ...nominatimResults.map((result) => ({
-                            ...result,
-                            key: `nominatim_${result.place_id}`,
-                            display_name: result.display_name,
-                            })),
-                        ]}
-                        getOptionLabel={(option) => {
-                            if (option.fclass) {
-                            return `${option.name} (${option.fclass})`;
-                            } else if (option.display_name) {
-                            return option.display_name;
-                            }
-                            return ''; // Return an empty string if neither fclass nor display_name exists
-                        }}
-                        renderInput={(params) => (
-                            <TextField
-                            variant="outlined"
-                            placeholder="Search place"
-                            {...params}
-                            InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                <InputAdornment position="end">
-                                    <SearchIcon />
-                                </InputAdornment>
-                                ),
-                            }}
-                            />
-                        )}
-                        onChange={(event, newValue) => {
-                            if (newValue && newValue.bbox && newValue.bbox.length === 4) {
+                    <SearchPlace onPlaceSelected={(place: SeachPlaceResult) => {
+                        if (place && place.bbox && place.bbox.length === 4) {
                             // trigger zoom to property
-                            let _bbox = newValue.bbox.map(String);
+                            let _bbox = place.bbox.map(String)
                             dispatch(triggerMapEvent({
                                 'id': uuidv4(),
                                 'name': MapEvents.ZOOM_INTO_PROPERTY,
                                 'date': Date.now(),
                                 'payload': _bbox
-                            }));
-                            setSearchInputValue('');
-                            }
-                            else if (newValue && newValue.boundingbox && newValue.boundingbox.length === 4) {
-                                let _bbox = newValue.boundingbox.map(String);
-                                dispatch(triggerMapEvent({
-                                    'id': uuidv4(),
-                                    'name': MapEvents.ZOOM_INTO_PROPERTY,
-                                    'date': Date.now(),
-                                    'payload': _bbox
-                                }));
-                                setSearchInputValue('');
-                            }
-                        }}
-
-                        onInputChange={(event, newInputValue) => {
-                            setSearchInputValue(newInputValue);
-                            handleInputChange(newInputValue);
-                        }}
-                        filterOptions={(x) => x}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                    />
+                            }))
+                        }
+                    }} />
                 </Box>
                 )}
                 <Box className='sidebarBoxHeading'>
