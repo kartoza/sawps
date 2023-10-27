@@ -1,9 +1,8 @@
-from property.tasks import update_organisation_property_short_code
 from frontend.static_mapping import (
     ORGANISATION_MANAGER,
-    ORGANISATION_MEMBER,
-    DATA_CONTRIBUTORS
+    ORGANISATION_MEMBER
 )
+from property.tasks import update_organisation_property_short_code
 
 
 def get_organisation_short_code(
@@ -67,7 +66,7 @@ def forward_func_0015(Province, Organisation):
 
 def add_user_to_organisation_group(
     instance,
-    OrganisationInvitesModel=None,
+    OrgInvModel=None,
     GroupModel=None,
 ):
     """
@@ -76,20 +75,22 @@ def add_user_to_organisation_group(
     from stakeholder.models import OrganisationInvites, MANAGER
     from django.contrib.auth.models import Group
 
-    OrganisationInvitesModel = OrganisationInvitesModel if OrganisationInvitesModel else OrganisationInvites
+    OrgInvModel = OrgInvModel if OrgInvModel else OrganisationInvites
     GroupModel = GroupModel if GroupModel else Group
 
     # check Organisation Invites.
     # If it exists as Manager, assign to Organisation Manager group.
     # Otherwise assign to Organisation Member
-    invitation: OrganisationInvitesModel = OrganisationInvitesModel.objects.filter(
+    invitation: OrgInvModel = OrgInvModel.objects.filter(
         email=instance.user.email,
         organisation=instance.organisation,
         joined=True
     ).first()
     if invitation:
         if invitation.assigned_as == MANAGER:
-            group, _ = GroupModel.objects.get_or_create(name=ORGANISATION_MANAGER)
+            group, _ = GroupModel.objects.get_or_create(
+                name=ORGANISATION_MANAGER
+            )
             instance.user.groups.add(group)
             return
     group, _ = GroupModel.objects.get_or_create(name=ORGANISATION_MEMBER)
@@ -101,7 +102,9 @@ def remove_organisation_user_from_group(instance):
     Remove user to Organisation Member/Manager group.
     """
 
-    from stakeholder.models import OrganisationInvites, OrganisationUser, MANAGER
+    from stakeholder.models import (
+        OrganisationInvites, OrganisationUser, MANAGER
+    )
     from django.contrib.auth.models import Group
 
     organisation_users = OrganisationUser.objects.filter(user=instance.user)
@@ -120,7 +123,8 @@ def remove_organisation_user_from_group(instance):
             group, _ = Group.objects.get_or_create(name=ORGANISATION_MANAGER)
             instance.user.groups.remove(group)
     else:
-        # Remove from these groups if user is no longer assigned to any organisation
+        # Remove from these groups if user is
+        # no longer assigned to any organisation
         try:
             group = Group.objects.get(name='Data contributor')
         except Group.DoesNotExist:

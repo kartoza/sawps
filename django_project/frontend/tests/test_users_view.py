@@ -370,6 +370,7 @@ class UserApiTest(TestCase):
         )
         device.save()
 
+        # Test with no organisation
         response = client.get('/api/user-info/')
         self.assertEqual(response.status_code, 200)
 
@@ -377,9 +378,12 @@ class UserApiTest(TestCase):
         data_use_permission = DataUsePermission.objects.create(
             name="test"
         )
+
+        # Test with organisation
         organisation = Organisation.objects.create(
             name="test_organisation",
-            data_use_permission=data_use_permission
+            data_use_permission=data_use_permission,
+            national=True
         )
         user.user_profile.current_organisation = organisation
         user.save()
@@ -393,5 +397,5 @@ class UserApiTest(TestCase):
         # - It is not allowed for organisation member or manager
         self.assertEqual(
             sorted(response.data['user_permissions']),
-            [all_permissions[0].name]
+            sorted([all_permissions[0].name, 'Can view province report'])
         )

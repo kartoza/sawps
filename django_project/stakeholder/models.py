@@ -406,4 +406,3 @@ def post_delete_organisation_user(
     part of any organisation.
     """
     remove_organisation_user_from_group(instance)
-

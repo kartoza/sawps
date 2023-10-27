@@ -106,9 +106,10 @@ def get_user_permissions(user: User) -> List[str]:
         content_type=content_type
     )
     organisation_id = get_current_organisation_id(user)
-    organisation = Organisation.objects.get(id=organisation_id)
-    if organisation.national:
-        permissions.add('Can view province report')
+    if organisation_id:
+        organisation = Organisation.objects.get(id=organisation_id)
+        if organisation.national:
+            permissions.add('Can view province report')
 
     if user.is_superuser:
         ext_group_permissions_set = set(
