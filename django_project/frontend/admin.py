@@ -262,7 +262,7 @@ class StatisticalModelAdmin(admin.ModelAdmin):
     """
     change_form_template = "admin/statistical_model_change_form.html"
     list_display = ('taxon', 'name')
-    search_fields = ['taxon', 'name']
+    search_fields = ['taxon__scientific_name', 'name']
     actions = [restart_plumber_process]
     inlines = [StatisticalModelOutputInline]
 
