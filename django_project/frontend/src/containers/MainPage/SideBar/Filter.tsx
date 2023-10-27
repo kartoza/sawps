@@ -49,7 +49,6 @@ import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 
 const yearRangeStart = 1960;
 const yearRangeEnd = new Date().getFullYear();
-const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const SEARCH_PROPERTY_URL = '/api/property/search'
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
