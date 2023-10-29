@@ -7,7 +7,6 @@ from population_data.models import AnnualPopulation
 from frontend.utils.metrics import calculate_population_categories
 import unittest
 from species.factories import (
-    OwnedSpeciesFactory,
     TaxonRankFactory
 )
 from species.models import Taxon, TaxonRank
@@ -46,17 +45,11 @@ class TestCalculatePopulationCategories(TestCase):
             organisation=self.organisation, name="PropertyA"
         )
 
-        self.owned_species = OwnedSpeciesFactory.create(
-             taxon=self.taxon, user=self.user, property=self.property
-        )
-
-        self.owned_species1 = OwnedSpeciesFactory.create(
-             taxon=self.taxon1, user=self.user, property=self.property
-        )
-
         AnnualPopulationF.create(
+            taxon=self.taxon,
+            user=self.user,
+            property=self.property,
             year=2020,
-            owned_species=self.owned_species,
             total=100,
             adult_male=50,
             adult_female=50,
@@ -69,8 +62,10 @@ class TestCalculatePopulationCategories(TestCase):
         )
 
         AnnualPopulationF.create(
-            year=2020,
-            owned_species=self.owned_species,
+            taxon=self.taxon,
+            user=self.user,
+            property=self.property,
+            year=2021,
             total=200,
             adult_male=50,
             adult_female=50,
@@ -83,8 +78,10 @@ class TestCalculatePopulationCategories(TestCase):
         )
 
         AnnualPopulationF.create(
+            taxon=self.taxon1,
+            user=self.user,
+            property=self.property,
             year=2021,
-            owned_species=self.owned_species1,
             total=300,
             adult_male=50,
             adult_female=50,

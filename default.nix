@@ -1,31 +1,13 @@
 with import <nixpkgs> { };
-
+# See https://discourse.nixos.org/t/how-to-install-rstudio-wrapper-packages-declaratively/30269/7
 let
   pkgs = import <nixpkgs> {};
+  RStudio-with-my-packages = rstudioWrapper.override{
+      packages = with rPackages; [ tidyverse snakecase ]; };
 in pkgs.mkShell rec {
   name = "R";
   buildInputs = [
-    rstudio
-    rPackages.tidyverse
-    # The rest of these should probably not
-    # be needed since tidyverse would pull them in
-    # anyway
-    curl
-    fontconfig
-    fribidi
-    harfbuzz
-    libtiff
-    pkg-config
-    rPackages.googledrive
-    rPackages.googlesheets4
-    rPackages.httr
-    rPackages.openssl
-    rPackages.ragg
-    rPackages.rvest
-    rPackages.systemfonts
-    rPackages.xml2
-    rstudio
-    xml2
+    RStudio-with-my-packages
   ];
 
 }
