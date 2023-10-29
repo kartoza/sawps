@@ -4,7 +4,6 @@ from population_data.models import AnnualPopulation
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
 from django.db.models import QuerySet, Sum, Q
 from property.models import Property
-from species.models import OwnedSpecies
 
 
 def calculate_species_count_per_province(
@@ -19,16 +18,16 @@ def calculate_species_count_per_province(
 
         # Retrieve species data per property and province
         species_data = (
-            OwnedSpecies.objects.filter(
+            AnnualPopulation.objects.filter(
                 property__in=queryset,
                 taxon__scientific_name=species_name
             )
             .values(
                 "property__province__name",
                 "taxon__scientific_name",
-                "annualpopulation__year"
+                "year"
             )
-            .annotate(total=Sum("annualpopulation__total"))
+            .annotate(total=Sum("total"))
         )
 
         # Group the data by province, species, and year
@@ -36,7 +35,7 @@ def calculate_species_count_per_province(
         for item in species_data:
             province_name = item["property__province__name"]
             species_name = item["taxon__scientific_name"]
-            year = item["annualpopulation__year"]
+            year = item["year"]
             total = item["total"]
 
             key = (province_name, species_name, year)
@@ -136,7 +135,7 @@ def calculate_population_categories(
         category = None
         for i in range(len(categories) - 1):
             if categories[i] <= population < categories[i + 1]:
-                category = f'{categories[i]}-{categories[i+1]}'
+                category = f'{categories[i]}-{categories[i + 1]}'
                 break
         else:
             category = f'>{categories[-1]}'
@@ -180,19 +179,20 @@ def calculate_total_area_available_to_species(
 
         # Check if species_name is provided
         if species_name:
-            owned_species_query = OwnedSpecies.objects.filter(
+            owned_species_query = AnnualPopulation.objects.filter(
                 Q(property=property),
                 Q(taxon__common_name_varbatim=species_name) |
                 Q(taxon__scientific_name=species_name)
             )
         else:
-            owned_species_query = OwnedSpecies.objects.filter(
+            owned_species_query = AnnualPopulation.objects.filter(
                 property=property
             )
 
         for owned_species in owned_species_query:
             annual_population_data = AnnualPopulation.objects.filter(
-                owned_species__property=property)
+                property=property
+            )
             for annual_population in annual_population_data:
                 year = annual_population.year
                 area_available = owned_species.area_available_to_species
@@ -222,23 +222,32 @@ def calculate_total_area_available_to_species(
     return properties
 
 
-def calculate_total_area_per_property_type(queryset: QuerySet) -> List[dict]:
+def calculate_total_area_per_property_type(
+    queryset: QuerySet,
+    species_name: str) -> List[dict]:
     """
     Calculate the total area per property type
     for a given queryset of properties.
     Params:
         queryset (QuerySet): The queryset of Property objects.
+        species_name: filter results by species
     Returns:
         list[dict]: A list of dictionaries, each containing property_type
                     and total_area keys representing the property type name
                     and the aggregated total area respectively.
     """
-    property_ids = queryset.values_list('id', flat=True)
+    # Filter the properties based on the owned species
+    property_ids = AnnualPopulation.objects.filter(
+        taxon__scientific_name=species_name
+    ).values_list('property_id', flat=True)
+
+    # Calculate the total area for each property type
     properties_type_area = Property.objects.filter(
         id__in=property_ids
     ).values('property_type__name').annotate(
         total_area=Sum('property_size_ha')
     ).values('property_type__name', 'created_at', 'name', 'total_area')
+
     return properties_type_area
 
 

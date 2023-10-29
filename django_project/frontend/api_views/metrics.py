@@ -50,7 +50,7 @@ class SpeciesPopuationCountPerYearAPIView(APIView):
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
-            ownedspecies__property__organisation_id=organisation_id,
+            annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
         filtered_queryset = BaseMetricsFilter(
@@ -84,7 +84,7 @@ class ActivityPercentageAPIView(APIView):
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
-            ownedspecies__property__organisation_id=organisation_id,
+            annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
         filtered_queryset = ActivityBaseMetricsFilter(
@@ -133,7 +133,7 @@ class TotalCountPerActivityAPIView(APIView):
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
-            ownedspecies__property__organisation_id=organisation_id,
+            annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
         filtered_queryset = ActivityBaseMetricsFilter(
@@ -306,8 +306,12 @@ class TotalAreaPerPropertyTypeAPIView(APIView):
         """
         Handle GET request to retrieve total area per property type.
         """
+        species_name = request.GET.get("species")
         queryset = self.get_queryset()
-        return Response(calculate_total_area_per_property_type(queryset))
+        return Response(
+            calculate_total_area_per_property_type(
+                queryset, species_name)
+        )
 
 
 class PopulationPerAgeGroupAPIView(APIView):
@@ -322,9 +326,10 @@ class PopulationPerAgeGroupAPIView(APIView):
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
-            ownedspecies__property__organisation_id=organisation_id,
+            annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
+        print(queryset)
         filtered_queryset = BaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
@@ -355,7 +360,7 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
-            ownedspecies__property__organisation_id=organisation_id,
+            annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
         filtered_queryset = BaseMetricsFilter(

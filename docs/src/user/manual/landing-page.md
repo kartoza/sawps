@@ -1,92 +1,115 @@
-# Landing Page Documentation Before Login
+# Landing Page Prior to Login
 
-## Description
+Welcome to the SAWPS `Landing Page`. The landing page is the entry point to your data exploration journey. The `Landing Page` provides a user-friendly interface to view agrigated species population data trends for South africa and acess features like log in, register a new account, or learn more about our platform.
 
-Welcome to our `Landing Page`, the entry point to your data exploration journey. Our `Landing Page` provides a user-friendly interface for accessing and managing your data. Whether you're here to log in, create a new account, or learn more about our platform, this page offers easy access to all these features.
+### Landing Page Header and Navigation Bar
 
-### Landing Page
 ![Landing Page](./img/landing-page-1.png)
 
 In the navigation bar at the top of the page, you'll find several options:
 
-1. **About**: Click the `ABOUT` button to learn more about our platform, its features, and its mission.
+1. **About**: The `ABOUT` navigation link navigates to the [about page](about.md).
 
-2. **Help**: The `HELP` button provides access to our comprehensive help and support resources. Whether you have questions or need assistance, you'll find valuable information here.
+2. **Help**: The `HELP` navigation link provides access to the [help page](help-contact.md) and support resources.
 
-3. **Contact**: If you need to get in touch with us, simply click the `CONTACT` button. Our team is ready to assist you with any inquiries or issues you may have.
+3. **Contact**:  The `CONTACT` navigation link navigates to the [contact page](contact.md) where the SAWPS team is ready to assist with any inquiries or issues.
 
-4. **Login**: To access your account, click the `LOGIN` button. If you're already a registered user, you can log in here.
+4. **Login**: The `LOGIN` button opens the [login form](login-page.md) for registered users.
 
-5. **Register**: If you're new to our platform, you can click `REGISTER` to create a new account. Registration is quick and easy, and it will give you full access of platform.
+5. **Register**: The `REGISTER` button opens the [registration form](register-page.md) where users can register for acess to the full platform.
 
-## Central Buttons
+## Quick Navigation Buttons
 
 In the middle of the landing page, you'll find three prominent buttons:
 
-6. **About**: Click `ABOUT` to access detailed information about our platform, its features, and how it can benefit you. Learn more about what we offer and why our data solutions are invaluable.
+6. **About**: The `ABOUT` button navigates to the [about page](about.md).
 
-7. **Login**: If you already have an account with us, clicking `LOGIN` will take you to the login page where you can securely access your data.
+7. **Login**: The `LOGIN` button navigates to the [login form](login-page.md) where registered useres can securely access the platform using their credentials.
 
-8. **Register**: If you're new to our platform, click `REGISTER` to begin the registration process. Becoming a registered user opens up a world of data exploration and manipulation.
+8. **Register**: The `REGISTER` button navigates to the [registration form](register-page.md) where new users can register on the platform. Becoming a registered user opens up a world of data contribution and exploration.
 
-## National Population Trends
-
-On our `Landing Page`, you'll find an interactive chart that displays national population trends. This chart provides valuable insights into demographic changes and trends over time.
 ### National Population Trends
+
+On the `Landing Page`, useres can view interactive charts that display national population trends. The charts provide valuable insights into demographic changes and trends over time.
+
 ![National Population Trends](./img/landing-page-2.png)
 
-1. **Image**: Image of the species.
+1. **Icon**: Representative image of the species.
 
 2. **Scientific Name**: Scientific name of the species.
 
-3. **Chart**: Chart showing the data of the species over the year.
+3. **Chart**: Chart showing the population trend for the species over time.
 
-## Footer Buttons
+## Footer Navigation
 
-In the footer of the `Landing Page`, you'll find four buttons for easy navigation:
+The footer of the `Landing Page`, contains usefull site map links and links to the SWAPS platform partenrs:
 
-4. **HOME**: Click `HOME` to return to the main landing page and access the national population trends chart and other features.
+4. **HOME**: The `HOME` link to returnnavigates to the main landing page.
 
-5. **MAP**: The `MAP` will redirect you to the login page because login is requred to see the `map` data.
+6. **DOCUMENTATION**: The `DOCUMENTATION` link naviagtes the user to the SAWPS documentation site in a new tab.
 
-6. **DOCUMENTATION**: Click `DOCUMENTATION` you'll redirect to the landing page.
+7. **CONTACT**: The `CONTACT` link navigates to the [contact page](contact.md) where a user can use the contact form to ask any questions, or wish to provide feedback to the SAWPS support team.
 
-7. **CONTACT**: If you have any questions, require assistance, or wish to provide feedback, clicking `CONTACT` will allow you to get in touch with our support team.
+## Additional Resources and Pages
 
-# Landing Page Documentation After Login
+![Additional Resources and Pages](./img/landing-page-4.png)
 
-### Landing Page
+The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
+
+1. **SANBI Logo**: By clicking on the `SANBI LOGO` you will navigate to the `SANBI (South African National Biodiversity Institute)` platform. The South African National Biodiversity Institute (SANBI) contributes to South Africa’s sustainable development by facilitating access to biodiversity data, generating information and knowledge, building capacity, providing policy advice, showcasing and conserving biodiversity in its national botanical and zoological gardens.
+
+    **SANBI**
+
+    ![SANBI](./img/landing-page-5.png)
+
+2. **IDS Logo**: By clicking on the `IDS LOGO` you will navigate to the `IDS (Information Decision Systems)` platform. Information Decision Systems (IDS) is a progressive Geographical Information Systems, Environmental Consulting and Disaster Management service provider.
+
+    **IDS**
+
+    ![IDS](./img/landing-page-6.png)
+
+3. **KARTOZA Logo**: By clicking on the `KARTOZA LOGO` you will navigate to the `KARTOZA` platform. Kartoza is a South Africa-based Free and Open Source GIS service provider. Kartoza develop and maintain geographic information systems and train teams to use geospatial software to its full potential.
+
+    **KARTOZA**
+
+    ![KARTOZA](./img/landing-page-7.png)
+
+# Landing Page Once logged In
+
+Once the user has logged in to the SAWPS platfrom the landing page updates. In the header there are new navigation links to features of the site that users with credentials have acess to, their user profile, and the Quick links provide acess to site fetuers that users will need frequently.
+
 ![Landing Page After Login](./img/landing-page-3.png)
 
-## Navigation Bar
+### Navigation Bar
 
-The navigation bar at the top of the `Landing Page` offers convenient access to key sections and actions within our platform. It includes the following elements:
+The navigation bar at the top of the `Landing Page` offers convenient access to key sections and actions within the SAWPS platform. It includes the following elements:
 
-1. **About:** Click the `ABOUT` link to learn more about our platform, its mission, and the team behind it.
+1. **About**: The `ABOUT` navigation link navigates to the [about page](about.md).
 
-2. **Explore:** The `EXPLORE` link takes you to the explore page, where you can delve into your datasets and perform in-depth analysis.
+2. **Explore:** The `EXPLORE` link navigates to the [explore page](map.md), where users can delve into the data and perform analysis.
 
-3. **Upload Data:** Use the `UPLOAD DATA` link to add new datasets to your account, expanding your data resources.
+3. **Upload Data:** The `UPLOAD DATA` link navigates to the [upload data page](./data-upload/index.md), where the user can start the data upload process.
 
-4. **Help:** Click on `HELP` for assistance and guidance on using our platform effectively.
+4. **Help:** The `HELP` link navigates to the help system and documentation built into the site.
 
-5. **Contact:** If you have questions or need support, select the `CONTACT` option to reach out to our dedicated support team.
+5. **Contact:** The `CONTACT` link navigates to the contact page where users can reach out to the SAWPS support team.
 
-6. **My Profile:** Access your user profile by clicking on `MY PROFILE.` Here, you can customize your settings and view your user information, including your profile image.
+6. **Profile Name and Icon:** Access your user profile by clicking on `MY PROFILE.` Here, you can customise your settings and view your user information, including your profile image.
 
 7. **Logout:** The `LOGOUT` button allows you to securely log out of your account when you're done using our platform.
 
-## Main Content
+### Main Content
 
 In the central part of the `Landing Page`, you'll find three prominent buttons that guide you to key areas of our platform:
 
 8. **About:** The `ABOUT` button here serves as a quick link to the detailed information about our platform and its objectives.
 
-9. **Explore:** Clicking `EXPLORE` will take you directly to the explore page, where you can view, manipulate, and analyze your datasets with various tools and filters.
+9. **Explore:** Clicking `EXPLORE` will take you directly to the explore page, where you can view, manipulate, and analyse your datasets with various tools and filters.
 
 10. **Upload Data:** Select `UPLOAD DATA` to initiate the process of adding new datasets to your account, making them accessible for further analysis.
 
-### National Population Trends
+#### National Population Trends
+
 ![National Population Trends](./img/landing-page-2.png)
 
 1. **Image**: Image of the species.
@@ -94,17 +117,43 @@ In the central part of the `Landing Page`, you'll find three prominent buttons t
 2. **Scientific Name**: Scientific name of the species.
 
 3. **Chart**: Chart showing the data of the species over the year.
-## Footer
+
+#### Footer
 
 The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
 
 4. **Home:** The `HOME` link returns you to the main `Landing Page`, providing an easy way to start your journey within our platform.
 
-5. **Map:** By choosing `MAP,` you can access geographical data visualization and exploration features within our platform, also you can see the reports for the data.
+5. **Map:** By choosing `MAP,` you can access geographical data visualisation and exploration features within our platform, also you can see the reports for the data.
 
 6. **Documentation:** Click `DOCUMENTATION` to access comprehensive documentation, like this page, which provides detailed information on various aspects of our platform.
 
 7. **Contact:** If you need to get in touch with us for any reason, the `CONTACT` link provides access to our support and communication channels.
+
+
+## Additional Resources and Pages
+
+![Additional Resources and Pages](./img/landing-page-4.png)
+
+The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
+
+1. **SANBI Logo**: By clicking on the `SANBI LOGO` you will navigate to the `SANBI (South African National Biodiversity Institute)` platform. The South African National Biodiversity Institute (SANBI) contributes to South Africa’s sustainable development by facilitating access to biodiversity data, generating information and knowledge, building capacity, providing policy advice, showcasing and conserving biodiversity in its national botanical and zoological gardens.
+
+    **SANBI**
+
+    ![SANBI](./img/landing-page-5.png)
+
+2. **IDS Logo**: By clicking on the `IDS LOGO` you will navigate to the `IDS (Information Decision Systems)` platform. Information Decision Systems (IDS) is a progressive Geographical Information Systems, Environmental Consulting and Disaster Management service provider.
+
+    **IDS**
+
+    ![IDS](./img/landing-page-6.png)
+
+3. **KARTOZA Logo**: By clicking on the `KARTOZA LOGO` you will navigate to the `KARTOZA` platform. Kartoza is a South Africa-based Free and Open Source GIS service provider. Kartoza develop and maintain geographic information systems and train teams to use geospatial software to its full potential.
+
+    **KARTOZA**
+
+    ![KARTOZA](./img/landing-page-7.png)
 
 ## Summary
 

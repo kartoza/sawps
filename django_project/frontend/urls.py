@@ -51,7 +51,8 @@ from frontend.api_views.property import (
     PropertyMetadataList,
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
-    PropertySearch
+    PropertySearch,
+    CheckPropertyNameIsAvailable
 )
 from frontend.api_views.spatial_filter import (
     SpatialFilterList
@@ -68,6 +69,7 @@ from frontend.api_views.upload import (
     BoundaryFileUpload,
 )
 from frontend.views.base_view import get_user_notifications
+
 from .api_views.user import UserInfoAPIView
 
 from .views.about import AboutView
@@ -78,6 +80,7 @@ from .views.map import (
     MapView,
     redirect_to_reports,
     redirect_to_charts,
+    redirect_to_trends,
     redirect_to_upload,
     redirect_to_explore
 )
@@ -150,6 +153,11 @@ urlpatterns = [
         r'^api/property/create/?$',
         CreateNewProperty.as_view(),
         name='property-create'
+    ),
+    re_path(
+        r'^api/property/check-available-name/?$',
+        CheckPropertyNameIsAvailable.as_view(),
+        name='property-check-available-name'
     ),
     re_path(
         r'^api/property/list/(?P<organisation_id>\d+)?/?$',
@@ -251,6 +259,11 @@ urlpatterns = [
         'charts/',
         redirect_to_charts,
         name='charts'
+    ),
+    path(
+        'trends/',
+        redirect_to_trends,
+        name='trends'
     ),
     path(
         'upload/',
