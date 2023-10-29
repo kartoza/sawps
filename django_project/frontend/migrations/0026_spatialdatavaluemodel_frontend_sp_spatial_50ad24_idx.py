@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("frontend", "0024_add_idx_province_layer"),
+        ("frontend", "0025_add_idx_province_layer"),
     ]
 
     operations = [

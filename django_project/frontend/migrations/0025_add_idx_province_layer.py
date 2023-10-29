@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("frontend", "0023_alter_layer_options_layer_display_order_and_more"),
+        ("frontend", "0024_alter_statisticalmodeloutput_type"),
     ]
 
     operations = [

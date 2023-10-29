@@ -6,7 +6,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("property", "0007_alter_province_name"),
+        ("property", "0008_alter_province_name"),
     ]
 
     operations = [

@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("property", "0006_alter_property_open"),
+        ("property", "0007_property_short_code"),
     ]
 
     operations = [
