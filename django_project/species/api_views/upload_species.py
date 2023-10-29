@@ -141,8 +141,11 @@ class UploadSpeciesStatus(APIView):
             success = False
 
         if not upload_species.success_notes and not upload_species.error_file:
-            message = "There is something wrong with the " \
-                      "data please check again."
+            message = (
+                "There is something wrong with the "
+                "data please check again." if
+                not upload_species.error_notes else upload_species.error_notes
+            )
             success = False
 
         if not upload_species.success_notes and upload_species.error_file:

@@ -222,6 +222,11 @@ class SpeciesCSVUpload(object):
         if success_message:
             self.upload_session.success_notes = success_message
 
+        if self.total_rows == 0:
+            self.upload_session.error_notes = (
+                'You have uploaded empty spreadsheet, please check again.'
+            )
+
         self.upload_session.processed = True
         self.upload_session.progress = 'Finished'
         self.upload_session.save()

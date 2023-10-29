@@ -669,6 +669,15 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'Error')
         self.assertFalse(response.data['error_file'])
+        self.assertEqual(
+            response.data['message'],
+            'You have uploaded empty spreadsheet, please check again.'
+        )
+        upload_session.refresh_from_db()
+        self.assertEqual(
+            upload_session.error_notes,
+            'You have uploaded empty spreadsheet, please check again.'
+        )
 
     def test_upload_excel_invalid_area_available(self):
         """Test upload species with a csv file that has invalid
