@@ -347,6 +347,9 @@ class OrganisationUsersViewTest(TestCase):
 class UserApiTest(TestCase):
 
     def test_get_user_info(self):
+        """
+        Test getting non superuser user info.
+        """
         client = Client()
         user = User.objects.create_user(
             username='testuser',
@@ -398,4 +401,37 @@ class UserApiTest(TestCase):
         self.assertEqual(
             sorted(response.data['user_permissions']),
             sorted([all_permissions[0].name, 'Can view province report'])
+        )
+
+    def test_get_user_info_superuser(self):
+        """
+        Test getting superuser user info. All permissions should be assigned.
+        """
+        client = Client()
+        user = User.objects.create_user(
+            username='testuser',
+            password='testpassword',
+            email='test@gmail.com',
+            is_superuser=True
+        )
+        content_type = ContentType.objects.get_for_model(ExtendedGroup)
+        all_permissions = Permission.objects.filter(content_type=content_type)
+
+        login = client.login(
+            username='testuser',
+            password='testpassword'
+        )
+        self.assertTrue(login, True)
+        device = TOTPDevice(
+            user=user,
+            name='device_name'
+        )
+        device.save()
+
+        # Test with no organisation
+        response = client.get('/api/user-info/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()['user_permissions'],
+            sorted(list(all_permissions.values_list('name', flat=True)))
         )

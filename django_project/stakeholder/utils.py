@@ -125,23 +125,14 @@ def remove_organisation_user_from_group(instance):
     else:
         # Remove from these groups if user is
         # no longer assigned to any organisation
-        try:
-            group = Group.objects.get(name='Data contributor')
-        except Group.DoesNotExist:
-            pass
-        else:
+        group = Group.objects.filter(name='Data contributor').first()
+        if group:
             instance.user.groups.remove(group)
 
-        try:
-            group = Group.objects.get(name=ORGANISATION_MEMBER)
-        except Group.DoesNotExist:
-            pass
-        else:
+        group = Group.objects.filter(name=ORGANISATION_MEMBER).first()
+        if group:
             instance.user.groups.remove(group)
 
-        try:
-            group = Group.objects.get(name=ORGANISATION_MANAGER)
-        except Group.DoesNotExist:
-            pass
-        else:
+        group = Group.objects.filter(name=ORGANISATION_MANAGER).first()
+        if group:
             instance.user.groups.remove(group)

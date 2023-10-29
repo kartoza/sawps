@@ -6,8 +6,8 @@ from stakeholder.utils import add_user_to_organisation_group
 
 def assign_organisation_user_to_group(apps, schema_editor):
     Group = apps.get_model('auth', 'Group')
-    OrganisationUser = apps.get_model('stakeholder', 'OrganisationUser')
     OrganisationInvites = apps.get_model('stakeholder', 'OrganisationInvites')
+    OrganisationUser = apps.get_model('stakeholder', 'OrganisationUser')
 
     for organisation_user in OrganisationUser.objects.all():
         add_user_to_organisation_group(
@@ -24,6 +24,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ("sawps", "0002_alter_extendedgroup_options"),
+        ("stakeholder", "0015_organisation_short_code"),
     ]
 
     operations = [
@@ -58,4 +59,5 @@ class Migration(migrations.Migration):
                 ]
             },
         ),
+        migrations.RunPython(assign_organisation_user_to_group, reverse_func)
     ]
