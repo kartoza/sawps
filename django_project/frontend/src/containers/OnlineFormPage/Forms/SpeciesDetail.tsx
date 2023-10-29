@@ -508,13 +508,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         <TextField
                                             id='subpopulation_total_adult'
                                             label='Total Adult'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             variant="standard"
                                             fullWidth
@@ -569,13 +562,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         <TextField
                                             id='subpopulation_total_subadult'
                                             label='Total Subadult'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             variant="standard"
                                             fullWidth
@@ -630,13 +616,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                         <TextField
                                             id='subpopulation_total_juvenile'
                                             label='Total Juvenile'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             variant="standard"
                                             fullWidth

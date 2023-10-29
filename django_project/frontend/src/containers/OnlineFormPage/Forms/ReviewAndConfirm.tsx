@@ -135,13 +135,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                         <TextField
                                             id='subpopulation_total_adult'
                                             label='Total Adult'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
                                             variant="standard"
                                             fullWidth
                                             defaultValue={displayNumber(subpopulationTotal.adult)}
@@ -190,13 +183,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                         <TextField
                                             id='subpopulation_total_sub_adult'
                                             label='Total Subadult'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
                                             variant="standard"
                                             fullWidth
                                             defaultValue={displayNumber(subpopulationTotal.sub_adult)}
@@ -245,13 +231,6 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                         <TextField
                                             id='subpopulation_total_juvenile'
                                             label='Total Juvenile'
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MaleIcon />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
                                             variant="standard"
                                             fullWidth
                                             defaultValue={displayNumber(subpopulationTotal.juvenile)}
