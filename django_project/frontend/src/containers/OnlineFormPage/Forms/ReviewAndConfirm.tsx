@@ -15,7 +15,8 @@ import {
 } from '@mui/x-data-grid';
 import {
     UploadSpeciesDetailInterface,
-    AnnualPopulationPerActivityInterface
+    AnnualPopulationPerActivityInterface,
+    SubpopulationTotal
 } from '../../../models/Upload';
 import Loading from '../../../components/Loading';
 import {EventType} from './EventDetailForm';
@@ -49,6 +50,11 @@ const displayBoolean = (value: Boolean):string => {
 
 function SpeciesDetailReview(props: ReviewItemInterface) {
     const { data } = props;
+    const [subpopulationTotal, setSubpopulationTotal] = useState<SubpopulationTotal>({
+        adult: data.annual_population.adult_male + data.annual_population.adult_female,
+        sub_adult: data.annual_population.sub_adult_male + data.annual_population.sub_adult_female,
+        juvenile: data.annual_population.juvenile_male + data.annual_population.juvenile_female
+    })
     return (
         <Grid container className='DataPreview' flexDirection={'column'} rowSpacing={2}>
             <Grid item>
@@ -125,7 +131,24 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                         <Grid container flexDirection={'column'} rowSpacing={1}>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id='subpopulation_total_adult'
+                                            label='Total Adult'
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <MaleIcon />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            variant="standard"
+                                            fullWidth
+                                            defaultValue={displayNumber(subpopulationTotal.adult)}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
                                         <TextField
                                             id='adult_male'
                                             label='Adult Males'
@@ -142,7 +165,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}>
                                         <TextField
                                             id='adult_female'
                                             label='Adult Females'
@@ -163,7 +186,24 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id='subpopulation_total_sub_adult'
+                                            label='Total Subadult'
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <MaleIcon />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            variant="standard"
+                                            fullWidth
+                                            defaultValue={displayNumber(subpopulationTotal.sub_adult)}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
                                         <TextField
                                             id='subadult_male'
                                             label='Subadult Males'
@@ -180,7 +220,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}>
                                         <TextField
                                             id='subadult_female'
                                             label='Subadult Females'
@@ -201,7 +241,24 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                             </Grid>
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            id='subpopulation_total_juvenile'
+                                            label='Total Juvenile'
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <MaleIcon />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            variant="standard"
+                                            fullWidth
+                                            defaultValue={displayNumber(subpopulationTotal.juvenile)}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
                                         <TextField
                                             id='juvenile_male'
                                             label='Juvenile Males'
@@ -218,7 +275,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}>
                                         <TextField
                                             id='juvenile_female'
                                             label='Juvenile Females'
