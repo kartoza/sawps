@@ -17,10 +17,6 @@ def assign_organisation_user_to_group(apps, schema_editor):
         )
 
 
-def reverse_func(apps, schema_editor):
-    pass
-
-
 class Migration(migrations.Migration):
     dependencies = [
         ("sawps", "0002_alter_extendedgroup_options"),
@@ -59,5 +55,5 @@ class Migration(migrations.Migration):
                 ]
             },
         ),
-        migrations.RunPython(assign_organisation_user_to_group, reverse_func)
+        migrations.RunPython(assign_organisation_user_to_group, lambda a, b: None)
     ]

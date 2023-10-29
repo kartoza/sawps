@@ -31,6 +31,7 @@ from stakeholder.models import (
     MANAGER,
     MEMBER
 )
+from sawps.tests.model_factories import GroupF
 from frontend.static_mapping import (
     ORGANISATION_MANAGER,
     ORGANISATION_MEMBER
@@ -333,6 +334,8 @@ class OrganizationUserTestCase(TestCase):
     def test_delete_organisation_user(self):
         """Test deleting organisation user."""
         user = self.organizationUser.user
+        group = GroupF.create(name='Data contributor')
+        user.groups.add(group)
         organisation_user_2 = organisationUserFactory.create(
             user=user
         )

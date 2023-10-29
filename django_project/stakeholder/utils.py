@@ -108,6 +108,13 @@ def remove_organisation_user_from_group(instance):
     from django.contrib.auth.models import Group
 
     organisation_users = OrganisationUser.objects.filter(user=instance.user)
+
+    # Remove from Data Contributor groups if user is
+    # no longer assigned to any organisation
+    group = Group.objects.filter(name='Data contributor').first()
+    if group:
+        instance.user.groups.remove(group)
+
     if organisation_users.exists():
         organisations = organisation_users.values_list('organisation')
         # check invitation as manager for the user, for
@@ -123,12 +130,6 @@ def remove_organisation_user_from_group(instance):
             group, _ = Group.objects.get_or_create(name=ORGANISATION_MANAGER)
             instance.user.groups.remove(group)
     else:
-        # Remove from these groups if user is
-        # no longer assigned to any organisation
-        group = Group.objects.filter(name='Data contributor').first()
-        if group:
-            instance.user.groups.remove(group)
-
         group = Group.objects.filter(name=ORGANISATION_MEMBER).first()
         if group:
             instance.user.groups.remove(group)
