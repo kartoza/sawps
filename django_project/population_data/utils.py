@@ -44,6 +44,7 @@ def assign_annual_population(
         )
         total = sum([pop_act.total for pop_act in population_activity])
         annual_population = AnnualPopModel.objects.create(
+            owned_species=instance.owned_species,
             year=instance.year,
             taxon=instance.owned_species.taxon,
             property=instance.owned_species.property,
