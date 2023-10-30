@@ -6,14 +6,35 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     OpenCloseSystem,
-    SamplingEffortCoverage,
+    PopulationEstimateCategory,
     PopulationStatus,
-    PopulationEstimateCategory
+    SamplingEffortCoverage,
 )
 
 
 class AnnualPopulationAdmin(admin.ModelAdmin):
+    list_display = [
+        'property_name',
+        'year',
+        'scientific_name',
+        'common_name'
+    ]
+    search_fields = [
+        'property_name',
+        'year',
+        'scientific_name',
+        'common_name'
+    ]
     form = AnnualPopulationForm
+
+    def property_name(self, obj: AnnualPopulation):
+        return obj.owned_species.property.name
+
+    def scientific_name(self, obj: AnnualPopulation):
+        return obj.owned_species.taxon.scientific_name
+
+    def common_name(self, obj: AnnualPopulation):
+        return obj.owned_species.taxon.common_name_varbatim
 
 
 admin.site.register(OpenCloseSystem)
