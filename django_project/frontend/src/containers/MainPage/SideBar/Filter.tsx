@@ -27,7 +27,10 @@ import {
     selectedPropertyName,
     setStartYear,
     toggleSpecies,
-    selectedActivityName
+    selectedActivityName,
+    setOrganisationCount,
+    setPropertyCount,
+    setActivityCount
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import {MapEvents} from '../../../models/Map';
@@ -303,6 +306,7 @@ function Filter(props: any) {
               propertyObj => selectedProperty.includes(propertyObj.id)
             ).map(propertyObj => propertyObj.name)
             dispatch(selectedPropertyName(selectedPropertyNames.length > 0 ? selectedPropertyNames.join(', ') : ''));
+            dispatch(setPropertyCount(selectedProperty.length));
         }
     }, [selectedProperty])
 
@@ -325,6 +329,7 @@ function Filter(props: any) {
               organisationObj => selectedOrganisation.includes(organisationObj.id)
             ).map(organisationObj => organisationObj.name)
             dispatch(selectedOrganisationName(selectedOrganisationNames.length > 0 ? selectedOrganisationNames.join(', ') : ''));
+            dispatch(setOrganisationCount(selectedOrganisation.length));
         }
     }, [selectedOrganisation])
 
@@ -335,6 +340,7 @@ function Filter(props: any) {
               activityObj => selectedActivity.includes(activityObj.id)
             ).map(activityObj => activityObj.name)
             dispatch(selectedActivityName(selectedActivityNames.length > 0 ? selectedActivityNames.join(',') : ''));
+            dispatch(setActivityCount(selectedActivity.length));
         }
     }, [selectedActivity])
 
