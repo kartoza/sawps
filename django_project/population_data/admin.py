@@ -31,11 +31,6 @@ class AnnualPopulationPerActivityAdmin(admin.ModelAdmin):
         'activity_type',
         'total'
     ]
-    # list_filter = [
-    #     'owned_species__property',
-    #     'year',
-    #     'activity_type'
-    # ]
     search_fields = [
         'owned_species__property__name',
         'owned_species__taxon__scientific_name',
