@@ -1,4 +1,4 @@
-![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--f8c28e3--sta-blue.svg)
+![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--3d10f3b--sta-blue.svg)
 ![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Build%20Status:-SUCCESS-green.svg)
 [![codecov](https://codecov.io/gh/kartoza/sawps/branch/main/graph/badge.svg)](https://codecov.io/gh/kartoza/sawps/)
 
