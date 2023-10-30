@@ -73,6 +73,7 @@ class ParcelTypeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     search_fields = ['name']
 
+
 admin.site.register(PropertyType, PropertyTypeAdmin)
 admin.site.register(Province, ProvinceAdmin)
 admin.site.register(ParcelType, ParcelTypeAdmin)

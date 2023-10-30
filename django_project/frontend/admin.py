@@ -292,7 +292,7 @@ class LayerAdmin(admin.ModelAdmin):
     search_fields = [
         'name',
         'context_layer__name'
-        ]
+    ]
 
 
 class SpatialDataValueModelAdmin(admin.StackedInline):

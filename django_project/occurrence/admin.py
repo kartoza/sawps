@@ -17,4 +17,5 @@ class SurveyMethodAdmin(admin.ModelAdmin):
         'sort_id'
     ]
 
+
 admin.site.register(SurveyMethod, SurveyMethodAdmin)

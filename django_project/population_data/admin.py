@@ -112,4 +112,7 @@ class PopulationEstimateCategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(SamplingEffortCoverage, SamplingEffortCoverageAdmin)
 admin.site.register(PopulationStatus, PopulationStatusAdmin)
-admin.site.register(PopulationEstimateCategory, PopulationEstimateCategoryAdmin)
+admin.site.register(
+    PopulationEstimateCategory,
+    PopulationEstimateCategoryAdmin
+)

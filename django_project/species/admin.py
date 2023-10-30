@@ -47,7 +47,7 @@ class TaxonRankAdmin(admin.ModelAdmin):
     """
     list_display = ('id', 'name')
     search_fields = ['name']
-    
+
 
 class OwnedSpeciesAdmin(admin.ModelAdmin):
     """Admin page for OwnedSpecies model
