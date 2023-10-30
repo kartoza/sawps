@@ -13,6 +13,7 @@ from population_data.models import (
     AnnualPopulationPerActivity,
     OpenCloseSystem,
 )
+from property.models import Property
 from property.factories import PropertyFactory
 from rest_framework import status
 from rest_framework.test import APIClient, APIRequestFactory
@@ -40,6 +41,9 @@ class TestUploadSpeciesApiView(TestCase):
         self.user = UserF()
         self.property = PropertyFactory(
             name="Luna"
+        )
+        Property.objects.filter(id=self.property.id).update(
+            short_code='Luna'
         )
         self.token = '8f1c1181-982a-4286-b2fe-da1abe8f7174'
         self.api_url = '/api/upload-species/'
@@ -94,7 +98,7 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertTrue(upload_session.canceled)
         self.assertEqual(upload_session.process_file.name, '')
         self.assertEqual(upload_session.error_notes,
-                         "The 'Property_name' field is missing. "
+                         "The 'Property_code' field is missing. "
                          "Please check that all the compulsory fields "
                          "are in the CSV file headers."
                          )
@@ -403,7 +407,7 @@ class TestUploadSpeciesApiView(TestCase):
             errors = []
             for row in error_file:
                 errors.append(row['error_message'])
-            self.assertTrue("Property name Luna's Reserve doesn't match "
+            self.assertTrue("Property code Luna's Reserve doesn't match "
                             "the selected property. Please replace "
                             "it with Luna." in errors)
             self.assertTrue("Lemurs doesn't exist in the database. "
@@ -489,12 +493,12 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertTrue(upload_session.canceled)
         self.assertEqual(upload_session.process_file.name, '')
         self.assertEqual(upload_session.error_notes,
-                         "The 'Property_name' field is missing. Please check "
+                         "The 'Property_code' field is missing. Please check "
                          "that all the compulsory fields are in the "
                          "CSV file headers."
                          )
 
-    def test_upload_species_with_excel_property_not_exit(self):
+    def test_upload_species_with_excel_property_not_exist(self):
         """Test upload Excel file with a property not existing."""
 
         csv_path = absolute_path(
@@ -530,11 +534,41 @@ class TestUploadSpeciesApiView(TestCase):
         dataset = xl.parse(SHEET_TITLE)
         self.assertEqual(
             dataset.iloc[0]['error_message'],
-            "Property name Venetia Limpopo doesn't match the selected "
+            "Property code Venetia Limpopo doesn't match the selected "
             "property. Please replace it with {}. Loxodonta africana "
             "doesn't exist in the database. Please select species "
             "available in the dropdown only.".format(
-                upload_session.property.name
+                upload_session.property.short_code
+            )
+        )
+        # create two properties with code Venetia Limpopo
+        # should return same error
+        property1 = PropertyFactory(
+            name="Venetia Limpopo"
+        )
+        property2 = PropertyFactory(
+            name="Venetia Limpopo 2"
+        )
+        Property.objects.filter(id__in=[property1.id, property2.id]).update(
+            short_code='Venetia Limpopo'
+        )
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+        self.assertTrue('error' in upload_session.error_file.path)
+
+        xl = pd.ExcelFile(upload_session.error_file.path)
+        dataset = xl.parse(SHEET_TITLE)
+        self.assertEqual(
+            dataset.iloc[0]['error_message'],
+            "Property code Venetia Limpopo doesn't match the selected "
+            "property. Please replace it with {}. Loxodonta africana "
+            "doesn't exist in the database. Please select species "
+            "available in the dropdown only.".format(
+                upload_session.property.short_code
             )
         )
 
@@ -591,6 +625,59 @@ class TestUploadSpeciesApiView(TestCase):
         file_upload.upload_session = upload_session
         file_upload.start('utf-8-sig')
         self.assertTrue('error' in upload_session.error_file.path)
+
+    def test_upload_species_status_empty_file(self):
+        """Test upload with empty file."""
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_empty.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'Error')
+        self.assertFalse(response.data['error_file'])
+        self.assertEqual(
+            response.data['message'],
+            'You have uploaded empty spreadsheet, please check again.'
+        )
+        upload_session.refresh_from_db()
+        self.assertEqual(
+            upload_session.error_notes,
+            'You have uploaded empty spreadsheet, please check again.'
+        )
 
     def test_upload_excel_invalid_area_available(self):
         """Test upload species with a csv file that has invalid
