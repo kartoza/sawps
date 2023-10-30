@@ -47,13 +47,21 @@ Once user will successfully verify the 2FA, user will able to add device, delete
 
     2. **Delete Icon**: User can delete the specific device by clicking on the delete icon.
 
-3. **Add Device**: Button to add new device. By clicking on the `ADD DEVICE` button user will see the popup to add new device.
+        By clicking on the delete icon user will see popup for device delete confirmation.
+
+        ![Delete Confirmation](./img/setup-2fa-6.png)
+
+        1. **Cancel**: `CANCEL` button to cancel device deletion.
+
+        2. **Delete**: `DELETE` button to delete device.
+
+3. **Add Device**: `ADD DEVICE` button to add new device. By clicking on the `ADD DEVICE` button user will see the popup to add new device.
 
     ![Add Device](./img/setup-2fa-3.png)
 
     1. **Device Name**: Input field to insert device name.
 
-    2. **ADD**: Button to add new device.
+    2. **ADD**: `ADD` button to add new device.
 
         ![QR Scan](./img/setup-2fa-4.png)
 
@@ -61,9 +69,9 @@ Once user will successfully verify the 2FA, user will able to add device, delete
 
         1. **QR Code**: QR code to scan and generate token.
 
-        2. **Close**: Button to close the popup.
+        2. **Close**: `CLOSE` button to close the popup.
 
-    3. **Cancel**: Button to cancel adding new device process.
+    3. **Cancel**: `CANCEL` button to cancel adding new device process.
 
 4. **Two-factor authentication recovery tokens**: Information text for token generation.
 
