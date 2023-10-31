@@ -6,9 +6,9 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     OpenCloseSystem,
-    SamplingEffortCoverage,
+    PopulationEstimateCategory,
     PopulationStatus,
-    PopulationEstimateCategory
+    SamplingEffortCoverage,
 )
 
 
@@ -25,15 +25,12 @@ class AnnualPopulationPerActivityAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'property_name',
+        'scientific_name',
+        'common_name',
         'year',
         'activity_type',
         'total'
     ]
-    # list_filter = [
-    #     'owned_species__property',
-    #     'year',
-    #     'activity_type'
-    # ]
     search_fields = [
         'owned_species__property__name',
         'owned_species__taxon__scientific_name',
@@ -42,6 +39,12 @@ class AnnualPopulationPerActivityAdmin(admin.ModelAdmin):
 
     def property_name(self, obj: AnnualPopulationPerActivity):
         return obj.owned_species.property.name
+
+    def scientific_name(self, obj: AnnualPopulationPerActivity):
+        return obj.owned_species.taxon.scientific_name
+
+    def common_name(self, obj: AnnualPopulationPerActivity):
+        return obj.owned_species.taxon.common_name_varbatim
 
 
 admin.site.register(SamplingEffortCoverage)
