@@ -37,7 +37,15 @@ class AnnualPopulationAdmin(admin.ModelAdmin):
         return obj.taxon.common_name_varbatim
 
 
-admin.site.register(OpenCloseSystem)
+class OpenCloseSystemAdmin(admin.ModelAdmin):
+    """Admin page for OpenCloseSystem model
+
+    """
+    list_display = ('id', 'name',)
+    search_fields = ['name']
+
+
+admin.site.register(OpenCloseSystem, OpenCloseSystemAdmin)
 admin.site.register(AnnualPopulation, AnnualPopulationAdmin)
 
 
@@ -46,15 +54,12 @@ class AnnualPopulationPerActivityAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'property_name',
+        'scientific_name',
+        'common_name',
         'year',
         'activity_type',
         'total'
     ]
-    # list_filter = [
-    #     'owned_species__property',
-    #     'year',
-    #     'activity_type'
-    # ]
     search_fields = [
         'owned_species__property__name',
         'owned_species__taxon__scientific_name',
@@ -64,7 +69,40 @@ class AnnualPopulationPerActivityAdmin(admin.ModelAdmin):
     def property_name(self, obj: AnnualPopulationPerActivity):
         return obj.owned_species.property.name
 
+    def scientific_name(self, obj: AnnualPopulationPerActivity):
+        return obj.owned_species.taxon.scientific_name
 
-admin.site.register(SamplingEffortCoverage)
-admin.site.register(PopulationStatus)
-admin.site.register(PopulationEstimateCategory)
+    def common_name(self, obj: AnnualPopulationPerActivity):
+        return obj.owned_species.taxon.common_name_varbatim
+
+
+class SamplingEffortCoverageAdmin(admin.ModelAdmin):
+    """Admin page for SamplingEffortCoverage model
+
+    """
+    list_display = ('id', 'name', 'sort_order')
+    search_fields = ['name', 'sort_order']
+
+
+class PopulationStatusAdmin(admin.ModelAdmin):
+    """Admin page for PopulationStatus model
+
+    """
+    list_display = ('id', 'name')
+    search_fields = ['name']
+
+
+class PopulationEstimateCategoryAdmin(admin.ModelAdmin):
+    """Admin page for PopulationEstimateCategory model
+
+    """
+    list_display = ('id', 'name')
+    search_fields = ['name']
+
+
+admin.site.register(SamplingEffortCoverage, SamplingEffortCoverageAdmin)
+admin.site.register(PopulationStatus, PopulationStatusAdmin)
+admin.site.register(
+    PopulationEstimateCategory,
+    PopulationEstimateCategoryAdmin
+)
