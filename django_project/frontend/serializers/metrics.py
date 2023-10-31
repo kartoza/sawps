@@ -467,8 +467,6 @@ class AnnualPopulationSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['taxon'] = instance.owned_species.taxon
-        data['property'] = instance.owned_species.property
         data['property__province'] = (
             instance.property.province
         )

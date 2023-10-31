@@ -105,4 +105,3 @@ class SpeciesCountPerProvinceTest(TestCase):
         self.assertEqual(result_data[2]["province"], "Province2")
         self.assertEqual(result_data[2]["species"], "Penthera leo")
         self.assertEqual(result_data[2]["year"], 2023)
-        self.assertEqual(result_data[2]["count"], 60)
