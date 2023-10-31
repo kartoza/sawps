@@ -28,13 +28,13 @@ class AnnualPopulationAdmin(admin.ModelAdmin):
     form = AnnualPopulationForm
 
     def property_name(self, obj: AnnualPopulation):
-        return obj.owned_species.property.name
+        return obj.property.name
 
     def scientific_name(self, obj: AnnualPopulation):
-        return obj.owned_species.taxon.scientific_name
+        return obj.taxon.scientific_name
 
     def common_name(self, obj: AnnualPopulation):
-        return obj.owned_species.taxon.common_name_varbatim
+        return obj.taxon.common_name_varbatim
 
 
 admin.site.register(OpenCloseSystem)
