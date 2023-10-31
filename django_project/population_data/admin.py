@@ -13,41 +13,28 @@ from population_data.models import (
 
 
 class AnnualPopulationAdmin(admin.ModelAdmin):
-    """Admin page for AnnualPopulation model
-
-    """
-    list_display = (
-        'owned_species',
+    list_display = [
+        'property_name',
         'year',
-        'total',
-        'adult_male',
-        'adult_female',
-        'juvenile_male',
-        'juvenile_female',
-        'sub_adult_total',
-        'sub_adult_male',
-        'sub_adult_female',
-        'juvenile_total',
-        'survey_method',
-        'sampling_size_unit',
-        'certainty',
-        'open_close_system',
-        'group'
-    )
+        'scientific_name',
+        'common_name'
+    ]
     search_fields = [
+        'property_name',
         'year',
-        'owned_species__property__name',
-        'total',
-        'adult_male',
-        'adult_female',
-        'juvenile_male',
-        'juvenile_female',
-        'sub_adult_total',
-        'sub_adult_male',
-        'sub_adult_female',
-        'juvenile_total'
+        'scientific_name',
+        'common_name'
     ]
     form = AnnualPopulationForm
+
+    def property_name(self, obj: AnnualPopulation):
+        return obj.property.name
+
+    def scientific_name(self, obj: AnnualPopulation):
+        return obj.taxon.scientific_name
+
+    def common_name(self, obj: AnnualPopulation):
+        return obj.taxon.common_name_varbatim
 
 
 class OpenCloseSystemAdmin(admin.ModelAdmin):
