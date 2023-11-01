@@ -34,14 +34,14 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    //{ name: 'setup', testMatch: /.*\.auth.spec\.ts/ },
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'],
       // Use prepared auth state.
-      //storageState: 'e2e/.auth/adminAuth.json',
+      storageState: 'tests/.auth/sawps-auth.json',
      },
-     //dependencies: ['setup'],
+     dependencies: ['setup'],
     },
     //
     // {
