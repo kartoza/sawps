@@ -59,7 +59,7 @@ After successfully changing the password, user will receive a confirmation messa
 
 6. **Site Administration**: Site Administration this section provides links to various models and apps registered with the admin panel. It serves as the primary navigation point for managing your project's data. Clicking on any of the available links will take user to the respective model's management page.
 
-7. **Add**: This button is used to create a new item of the associated model. Clicking on it will open a form where you can enter the details of the new item.
+7. **Add**: This button is used to create a new item of the associated model. Clicking on `Add` link will open a form where you can enter the details of the new record.
 
 8. **Change**: This button is used to edit an existing item from the list. When user click the `Change` button user will be redirected to a page where user can see all the associate data of that model and can select data to change.
 
@@ -75,6 +75,6 @@ After successfully changing the password, user will receive a confirmation messa
 
 * Click on the [table](django-table.md) to see the tables documentation
 
-* Click on the [add](django-add-data.md) to see how to add new data.
+* Click on the [add](django-add-data.md) to see how to add a new data.
 
 * Click on the [edit](django-change-data.md) to see how to edit data.

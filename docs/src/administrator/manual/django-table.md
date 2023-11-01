@@ -2,7 +2,7 @@
 
 ![Django Admin Table](./img/django-table-1.png)
 
-1. **Add button**: Clicking on this button will allow user to add new record in the table. Clicking on [add](django-add-data.md) will navigate you to add data record documentation.
+1. **Add button**: Clicking on this button will allow user to add a new record in the table. Clicking on [add](django-add-data.md) will navigate you to add data record documentation.
 
 2. **Search**: Search feature to search specific record of the table.
 
@@ -23,6 +23,6 @@ You can assign a user to groups in the User Table.
 
 1. **Toggle sorting**: Clicking on this icon will allow user to toggle data.
 
-2. **Add Group**: Clicking on `ADD GROUP` button will allow user to add new group. Click on [add group](django-add-data.md) to see detailed documentation on adding a new group.
+2. **Add Group**: Clicking on the `ADD GROUP` button will allow user to add a new group. Click on [add group](django-add-data.md) to see detailed documentation about adding a new group.
 
-3. **Edit Record**: Clicking on the object will allow user to change/edit the particular record. Click on [change group](django-change-data.md) to see detailed documentation on editing a group.
+3. **Edit Record**: Clicking on the object will allow user to change/edit the particular record. Click on [change group](django-change-data.md) to see detailed documentation about editing a group.

@@ -17,7 +17,7 @@
 
     3. **No, take me back**: Button to cancel deletion of the object.
 
-3. **Save and add another**: Save current record, then redirect to a new page to add new record.
+3. **Save and add another**: Save current record, then redirect to a new page to add a new record.
 
 4. **Save and continue editing**: Save current record while still showing current record.
 

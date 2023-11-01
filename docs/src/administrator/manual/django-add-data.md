@@ -24,7 +24,7 @@
     Any update on this table will be reflected on the [Activity Report](../../user/manual/explore/reports.md).
 
 
-3. **Save and add another**: Save current record, then redirect to a new page to add new record.
+3. **Save and add another**: Save current record, then redirect to a new page to add a new record.
 
 4. **Save and continue editing**: Save current record while still showing current record.
 
@@ -38,7 +38,7 @@
 
 2. **Arrow**: Using this arrow admin can move the permissions here and there.
 
-3. **Plus icon**: Clicking on plus icon will allow admin to add new permission. Popup will open for creating new permission.
+3. **Plus icon**: Clicking on plus icon will allow admin to add a new permission. Popup will open for creating a new permission.
 
     ![Add Permission](./img/django-add-data-2.png)
 
@@ -51,7 +51,7 @@
 
 5. **Remove All**: Button to choose all permissions and remove from user.
 
-6. **Save and add another**: Save current record, then redirect to a new page to add new record.
+6. **Save and add another**: Save current record, then redirect to a new page to add a new record.
 
 7. **Save and continue editing**: Save current record while still showing current record.
 
