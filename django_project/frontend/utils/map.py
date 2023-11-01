@@ -25,14 +25,14 @@ CHOROPLETH_NUMBER_OF_BREAKS = 5
 DEFAULT_BASE_COLOR = '#FF5252'
 
 
-class PopulationQueryEnum(Enum):
-    PROVINCE_LAYER = 'Province Layer'
-    PROPERTIES_LAYER = 'Properties Layer'
-    PROPERTIES_POINTS_LAYER = 'Properties Points Layer'
-    SUMMARY_COUNT = 'SUMMARY COUNT'
+class MapQueryEnum(Enum):
+    # show properties layer using active organisation 
+    MAP_DEFAULT = 'MAP_DEFAULT'
+    # show properties/province layers using filters
+    MAP_USING_SESSION = 'MAP_SESSION'
 
 
-def get_map_template_style(request, session, theme_choice: int = 0,
+def get_map_template_style(request, session = None, theme_choice: int = 0,
                            token: str = None):
     """
     Fetch map template style from file.
@@ -97,20 +97,31 @@ def get_map_template_style(request, session, theme_choice: int = 0,
         styles['sources']['NGI Aerial Imagery']['tiles'] = [url]
     # add properties layer
     if 'sources' in styles:
-        url = (
-            reverse('properties-map-layer', kwargs={
-                'z': 0,
-                'x': 0,
-                'y': 0
-            })
-        )
+        if session:
+            url = (
+                reverse('session-properties-map-layer', kwargs={
+                    'z': 0,
+                    'x': 0,
+                    'y': 0
+                })
+            )
+        else:
+            url = (
+                reverse('default-properties-map-layer', kwargs={
+                    'z': 0,
+                    'x': 0,
+                    'y': 0
+                })
+            )
         url = request.build_absolute_uri(url)
         url = url.replace('/0/0/0', '/{z}/{x}/{y}')
         if not settings.DEBUG:
             # if not dev env, then replace with https
             url = url.replace('http://', schema)
         # add epoch datetime
-        url = url + f'?t={int(time.time())}&session={session}'
+        url = url + f'?t={int(time.time())}'
+        if session:
+            url = url + f'&session={session}'
         styles['sources']['sanbi-dynamic'] = {
             "type": "vector",
             "tiles": [url],
@@ -366,6 +377,7 @@ def get_properties_population_query(
         where_sql=f'where {where_sql_properties}' if where_sql_properties else ''
     )
     return sql_view, query_values
+
 
 def get_properties_query(
         filter_organisation: str,

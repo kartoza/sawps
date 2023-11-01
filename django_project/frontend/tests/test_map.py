@@ -21,7 +21,7 @@ from frontend.tests.model_factories import UserF
 from frontend.api_views.map import (
     ContextLayerList,
     MapStyles,
-    PropertiesLayerMVTTiles,
+    DefaultPropertiesLayerMVTTiles,
     FindParcelByCoord,
     FindPropertyByCoord,
     MapAuthenticate
@@ -116,18 +116,18 @@ class TestMapAPIViews(TestCase):
             'y': 9454
         }
         request = self.factory.get(
-            reverse('properties-map-layer', kwargs=kwargs)
+            reverse('default-properties-map-layer', kwargs=kwargs)
         )
         request.user = self.user_1
-        view = PropertiesLayerMVTTiles.as_view()
+        view = DefaultPropertiesLayerMVTTiles.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
         # test superuser
         request = self.factory.get(
-            reverse('properties-map-layer', kwargs=kwargs)
+            reverse('default-properties-map-layer', kwargs=kwargs)
         )
         request.user = self.superuser
-        view = PropertiesLayerMVTTiles.as_view()
+        view = DefaultPropertiesLayerMVTTiles.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
 

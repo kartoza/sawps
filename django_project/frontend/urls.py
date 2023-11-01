@@ -22,7 +22,8 @@ from frontend.api_views.map import (
     FindPropertyByCoord,
     MapAuthenticate,
     MapStyles,
-    PropertiesLayerMVTTiles,
+    SessionPropertiesLayerMVTTiles,
+    DefaultPropertiesLayerMVTTiles,
     PopulationCountLegends
 )
 from frontend.api_views.metrics import (
@@ -139,10 +140,16 @@ urlpatterns = [
         name='aerial-map-layer'
     ),
     re_path(
+        r'^api/map/layer/properties-session/'
+        r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
+        SessionPropertiesLayerMVTTiles.as_view(),
+        name='session-properties-map-layer'
+    ),
+    re_path(
         r'^api/map/layer/properties/'
         r'(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/?$',
-        PropertiesLayerMVTTiles.as_view(),
-        name='properties-map-layer'
+        DefaultPropertiesLayerMVTTiles.as_view(),
+        name='default-properties-map-layer'
     ),
     re_path(
         r'^api/map/legends/properties/?$',

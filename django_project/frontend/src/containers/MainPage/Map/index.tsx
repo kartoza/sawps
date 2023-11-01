@@ -128,6 +128,12 @@ export default function Map(props: MapInterface) {
   const propertiesCounts = useAppSelector((state: RootState) => state.mapState.propertiesCounts)
   const dynamicMapSession = useAppSelector((state: RootState) => state.mapState.dynamicMapSession)
   const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
+  // for properties legend API
+  const axiosSource = useRef(null)
+  const newCancelToken = useCallback(() => {
+      axiosSource.current = axios.CancelToken.source();
+      return axiosSource.current.token;
+    }, [])
 
   const onMapMouseEnter = () => {
     if (!map.current) return;
@@ -395,20 +401,24 @@ export default function Map(props: MapInterface) {
   useEffect(() => {
     if (mapTheme === MapTheme.None) return;
     if (!isSuccess) return;
+    let _styleURL = `${MAP_STYLE_URL}?theme=${mapTheme}`
+    if (dynamicMapSession) {
+      _styleURL = _styleURL + `&session=${dynamicMapSession}`
+    }
     if (map.current) {
       dispatch(setMapReady(false))
       map.current.on('styledata', mapStyleOnLoaded)
-      map.current.setStyle(`${MAP_STYLE_URL}?theme=${mapTheme}&session=${dynamicMapSession}`)
+      map.current.setStyle(_styleURL, {diff: false})
       if (mapNavControl.current) {
         mapNavControl.current.updateThemeSwitcherIcon(mapTheme)
       }
       if (mapLegendControlRef.current) {
         mapLegendControlRef.current.onThemeChanged(mapTheme)
       }
-    } else if (dynamicMapSession) {
+    } else {
       map.current = new maplibregl.Map({
         container: mapContainer.current,
-        style: `${MAP_STYLE_URL}?theme=${mapTheme}&session=${dynamicMapSession}`,
+        style: _styleURL,
         minZoom: 5
       })
       // add exporter dialog
@@ -547,8 +557,11 @@ export default function Map(props: MapInterface) {
         // add query param to properties layer to refresh it
         let _sanbiDynamicSource = _mapObj.getSource('sanbi-dynamic') as any;
         let _url = _sanbiDynamicSource['tiles'][0]
-        _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}&session=${dynamicMapSession}`)
-
+        if (!props.isDataUpload) {
+          _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}&session=${dynamicMapSession}`)
+        } else {
+          _url = _url.replace(TIME_QUERY_PARAM_REGEX, `?t=${Date.now()}`)
+        }
         // Set the tile url to a cache-busting url (to circumvent browser caching behaviour):
         _sanbiDynamicSource.tiles = [ _url ]
 
@@ -616,40 +629,31 @@ export default function Map(props: MapInterface) {
 
   /* Called when filters are changed */
   useEffect(() => {
-    // rebuild query parameters to enable choropleth layers
-    let _queryParams = ''
-    let _data = {}
-    if (dynamicMapSession) {
-      _queryParams = `session=${dynamicMapSession}`
+    let _data = {
+      'start_year': startYear,
+      'end_year': endYear,
+      'species': selectedSpecies,
+      'organisation': organisationId,
+      'activity': activityId,
+      'spatial_filter_values': spatialFilterValues,
+      'property': propertyId 
     }
-    if (props.isDataUpload) {
-      _data = {
-        'start_year': startYear,
-        'end_year': endYear,
-        'species': '',
-        'organisation': 'all',
-        'activity': 'all',
-        'spatial_filter_values': '',
-        'property': 'all' 
+    if (!props.isDataUpload) {
+      // rebuild query parameters to enable choropleth layers
+      let _queryParams = ''
+      if (dynamicMapSession) {
+        _queryParams = `session=${dynamicMapSession}`
       }
-    } else {
-      _data = {
-        'start_year': startYear,
-        'end_year': endYear,
-        'species': selectedSpecies,
-        'organisation': organisationId,
-        'activity': activityId,
-        'spatial_filter_values': spatialFilterValues,
-        'property': propertyId 
-      }
+      fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies)
     }
-    fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies)
-  }, [mapTheme, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
+  }, [props.isDataUpload, dynamicMapSession, mapTheme, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
   /* Use debounce+UseMemo to avoid updating filter (materialized view) frequently when filter is changed */
   /* useMemo is used to avoid the debounce function is recreated during each render (unless MapTheme is changed) */
   const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, bodyData: any, speciesFilters: string) => {
-    axios.post(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`, bodyData).then((response) => {
+    if (axiosSource.current) axiosSource.current.cancel()
+    let cancelPostToken = newCancelToken()
+    axios.post(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`, bodyData, {cancelToken: cancelPostToken }).then((response) => {
       if (response.data) {
         let _session = response.data['session']
         if (map.current && _session !== dynamicMapSession) {
@@ -666,12 +670,11 @@ export default function Map(props: MapInterface) {
           if (speciesFilters && speciesFilters.length > 0) {
             _provinceCounts = response.data['province'] as PopulationCountLegend[]
             _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
-            dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
             drawPropertiesLayer(true, map.current, mapTheme, true, _propertiesCounts, _provinceCounts)
           } else {
-            dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
             drawPropertiesLayer(false, map.current, mapTheme, true)
           }
+          dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
           dispatch(triggerMapEvent({
             'id': uuidv4(),
             'name': MapEvents.REFRESH_PROPERTIES_LAYER,
@@ -684,9 +687,11 @@ export default function Map(props: MapInterface) {
         }
       }
     }).catch((error) => {
-      console.log(error)
+      if (!axios.isCancel(error)) {
+        console.log(error)
+      }
     })
-  }, 400), [mapTheme, dynamicMapSession])
+  }, 300), [mapTheme, dynamicMapSession])
 
   return (
       <div className="map-wrap">

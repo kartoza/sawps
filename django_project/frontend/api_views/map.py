@@ -28,8 +28,8 @@ from frontend.serializers.context_layer import ContextLayerSerializer
 from frontend.utils.map import (
     get_map_template_style,
     generate_population_count_categories,
-    PopulationQueryEnum,
-    generate_map_view
+    generate_map_view,
+    MapQueryEnum
 )
 from frontend.models import (
     Erf,
@@ -47,6 +47,7 @@ from frontend.serializers.property import (
     PropertySerializer
 )
 from stakeholder.models import OrganisationUser
+from frontend.utils.organisation import get_current_organisation_id
 
 
 User = get_user_model()
@@ -61,6 +62,12 @@ def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
 
 
 class MapSessionBase(APIView):
+
+    def can_view_properties_layer(self):
+        return self.request.user.has_perm('can_view_map_properties_layer')
+
+    def can_view_province_layer(self):
+        return self.request.user.has_perm('can_view_map_province_layer')
 
     def generate_session(self):
         session_uuid = self.request.GET.get('session', None)
@@ -101,18 +108,19 @@ class MapSessionBase(APIView):
     def get_species_filter(self):
         return self.request.data.get('species', None)
 
-    def can_view_properties_layer(self):
-        return self.request.user.has_perm('can_view_map_properties_layer')
-
-    def can_view_province_layer(self):
-        return self.request.user.has_perm('can_view_map_province_layer')
-
     def get_current_session_or_404(self):
         session_uuid = self.request.GET.get('session', None)
         session = MapSession.objects.filter(uuid=session_uuid).first()
         if session is None:
             raise Http404()
         return session
+
+    def get_map_query_type(self):
+        session_uuid = self.request.GET.get('session', None)
+        type = MapQueryEnum.MAP_DEFAULT
+        if session_uuid:
+            type = MapQueryEnum.MAP_USING_SESSION
+        return type
 
 
 class ContextLayerList(APIView):
@@ -142,10 +150,14 @@ class MapStyles(MapSessionBase):
     def get(self, *args, **kwargs):
         """Retrieve map styles."""
         theme = self.request.GET.get('theme', 'light')
-        session = self.get_current_session_or_404()
+        map_query_type = self.get_map_query_type()
+        session = None
+        if map_query_type == MapQueryEnum.MAP_USING_SESSION:
+            session_obj = self.get_current_session_or_404()
+            session = str(session_obj.uuid) if session_obj else None
         styles = get_map_template_style(
             self.request,
-            str(session.uuid),
+            session=session,
             theme_choice=(
                 0 if theme == 'light' else 1
             ),
@@ -158,8 +170,8 @@ class MapStyles(MapSessionBase):
         )
 
 
-class PropertiesLayerMVTTiles(MapSessionBase):
-    """Dynamic Vector Tile for properties layer."""
+class LayerMVTTilesBase(APIView):
+    """Base class for generating dynamic VT."""
     permission_classes = [IsAuthenticated]
 
     def gzip_tile(self, data):
@@ -193,25 +205,46 @@ class PropertiesLayerMVTTiles(MapSessionBase):
                 tile = row[0]
             return tile
         except ProgrammingError:
-            # view is deleted
             return []
 
-    def generate_properties_layer(
+    def generate_queries_for_vector_tiles(self):
+        raise NotImplementedError()
+
+    def get(self, *args, **kwargs):
+        sql, query_values = self.generate_queries_for_vector_tiles()
+        tile = self.generate_tile(sql, query_values)
+        if not len(tile):
+            raise Http404()
+        tile_bytes = self.gzip_tile(tile)
+        response = HttpResponse(
+            tile_bytes,
+            status=200,
+            content_type='application/vnd.mapbox-vector-tile'
+        )
+        response['Content-Encoding'] = 'gzip'
+        response['Content-Length'] = len(tile_bytes)
+        y = kwargs.get('y')
+        response['Content-Disposition'] = (
+            f'attachment; filename={y}.pbf'
+        )
+        return response
+
+
+class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
+    """Dynamic Vector Tile for properties layer based on filter session."""
+    permission_classes = [IsAuthenticated]
+
+    def get_properties_layer_query(
             self,
-            type: PopulationQueryEnum,
+            is_points_layer: bool,
             session: MapSession,
-            z: int,
-            x: int,
-            y: int,) -> Tuple[str, List[str]]:
+            z: int, x: int, y: int) -> Tuple[str, List[str]]:
+        """Generate SQL query for properties/points using filter session."""
         geom_field = (
-            'centroid' if
-            type == PopulationQueryEnum.PROPERTIES_POINTS_LAYER else
-            'geometry'
+            'centroid' if is_points_layer else 'geometry'
         )
         layer_name = (
-            'properties-points' if
-            type == PopulationQueryEnum.PROPERTIES_POINTS_LAYER else
-            'properties'
+            'properties-points' if is_points_layer else 'properties'
         )
         sql = (
             """
@@ -234,7 +267,7 @@ class PropertiesLayerMVTTiles(MapSessionBase):
         ]
         return self.get_mvt_sql(layer_name, sql), query_values
 
-    def generate_province_layer(
+    def get_province_layer_query(
             self, session: MapSession,
             z: int, x: int, y: int):
         sql = (
@@ -251,12 +284,12 @@ class PropertiesLayerMVTTiles(MapSessionBase):
         query_values = [z, x, y, z, x, y]
         return self.get_mvt_sql('province_population', sql), query_values
 
-    def generate_query_for_map(
+    def generate_queries_for_map_session(
             self,
             session: MapSession,
             z: int, x: int, y: int) -> Tuple[str, List[str]]:
         """
-        Generate layer queries for vector tile.
+        Generate layer queries for vector tile using filter session.
 
         Possible layers: province_population, properties, properties-point.
         """
@@ -267,28 +300,20 @@ class PropertiesLayerMVTTiles(MapSessionBase):
             should_generate_layer(z, PROVINCE_LAYER_ZOOMS)
         ):
             province_sql, province_val = (
-                self.generate_province_layer(
-                    session, z, x, y
-                )
+                self.get_province_layer_query(session, z, x, y)
             )
             sqls.append(province_sql)
             query_values.extend(province_val)
         if self.can_view_properties_layer():
             if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
                 properties_sql, properties_val = (
-                    self.generate_properties_layer(
-                        PopulationQueryEnum.PROPERTIES_LAYER,
-                        session, z, x, y
-                    )
+                    self.get_properties_layer_query(False, session, z, x, y)
                 )
                 sqls.append(properties_sql)
                 query_values.extend(properties_val)
             if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
                 propertie_points_sql, properties_points_val = (
-                    self.generate_properties_layer(
-                        PopulationQueryEnum.PROPERTIES_POINTS_LAYER,
-                        session, z, x, y
-                    )
+                    self.get_properties_layer_query(True, session, z, x, y)
                 )
                 sqls.append(propertie_points_sql)
                 query_values.extend(properties_points_val)
@@ -298,32 +323,97 @@ class PropertiesLayerMVTTiles(MapSessionBase):
         output_sql = '||'.join(sqls)
         return output_sql, query_values
 
-    def get(self, *args, **kwargs):
+    def generate_queries_for_vector_tiles(self):
         session = self.get_current_session_or_404()
-        sql, query_values = (
-            self.generate_query_for_map(
+        return (
+            self.generate_queries_for_map_session(
                 session,
-                int(kwargs.get('z')),
-                int(kwargs.get('x')),
-                int(kwargs.get('y'))
+                int(self.kwargs.get('z')),
+                int(self.kwargs.get('x')),
+                int(self.kwargs.get('y'))
             )
         )
-        tile = self.generate_tile(sql, query_values)
-        if not len(tile):
-            raise Http404()
-        tile_bytes = self.gzip_tile(tile)
-        response = HttpResponse(
-            tile_bytes,
-            status=200,
-            content_type='application/vnd.mapbox-vector-tile'
+
+
+class DefaultPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
+    """Dynamic Vector Tile for properties layer based on active org."""
+    permission_classes = [IsAuthenticated]
+
+    def get_user_organisation_id(self):
+        # get active organisation ids
+        current_organisation_id = get_current_organisation_id(
+            self.request.user
+        ) or 0
+        return current_organisation_id
+
+    def get_default_properties_layer_query(
+            self,
+            is_points_layer: bool,
+            z: int, x: int, y: int) -> Tuple[str, List[str]]:
+        """Generate SQL query for properties/points using active org."""
+        geom_field = (
+            'centroid' if is_points_layer else 'geometry'
         )
-        response['Content-Encoding'] = 'gzip'
-        response['Content-Length'] = len(tile_bytes)
-        y = kwargs.get('y')
-        response['Content-Disposition'] = (
-            f'attachment; filename={y}.pbf'
+        layer_name = (
+            'properties-points' if is_points_layer else 'properties'
         )
-        return response
+        sql = (
+            """
+            SELECT p.id, p.name, 0 as count,
+            ST_AsMVTGeom(
+              ST_Transform(p.{geom_field}, 3857),
+              TileBBox(%s, %s, %s, 3857)) as geom
+            from property p
+            where p.{geom_field} && TileBBox(%s, %s, %s, 4326)
+            AND p.organisation_id=%s
+            """
+        ).format(
+            geom_field=geom_field
+        )
+        query_values = [
+            z, x, y,
+            z, x, y,
+            self.get_user_organisation_id()
+        ]
+        return self.get_mvt_sql(layer_name, sql), query_values
+
+    def generate_queries_for_map_default(
+            self, z: int, x: int, y: int) -> Tuple[str, List[str]]:
+        """
+        Generate layer queries for vector tile using active organisation.
+        
+        Possible layers: properties, properties-point.
+        """
+        sqls = []
+        query_values = []
+        if not self.can_view_properties_layer():
+            return None, None
+        if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
+            properties_sql, properties_val = (
+                self.get_default_properties_layer_query(False, z, x, y)
+            )
+            sqls.append(properties_sql)
+            query_values.extend(properties_val)
+        if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
+            propertie_points_sql, properties_points_val = (
+                self.get_default_properties_layer_query(True, z, x, y)
+            )
+            sqls.append(propertie_points_sql)
+            query_values.extend(properties_points_val)
+        if len(sqls) == 0:
+            return None, None
+        # construct output_sql
+        output_sql = '||'.join(sqls)
+        return output_sql, query_values
+
+    def generate_queries_for_vector_tiles(self):
+        return (
+            self.generate_queries_for_map_default(
+                int(self.kwargs.get('z')),
+                int(self.kwargs.get('x')),
+                int(self.kwargs.get('y'))
+            )
+        )
 
 
 class AerialTile(APIView):
