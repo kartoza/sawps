@@ -123,5 +123,5 @@ Welcome to the documentation for map layers available in application. This docum
 
     3. **Names**: Popup displaying names of ecosystem type, critical biodiversity area, and protected area of pointed property.
 
-# Summary
+## Summary
 This documentation provides a comprehensive overview of the map layers available in our application. These layers serve as essential tools for exploring South Africa's geography and ecological data. From rivers and roads to critical biodiversity areas, each layer offers unique insights into the region's natural and infrastructural features. Users can select and display multiple layers simultaneously, facilitating in-depth research and analysis. By leveraging these map layers, researchers, conservationists, environmentalists, and geospatial analysts can better understand and protect South Africa's diverse landscapes and ecosystems.
