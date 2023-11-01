@@ -62,7 +62,11 @@ export default class LegendControl<IControl> {
 
     onUpdateLegends(zoom: number, species: string, data: PopulationCountLegend[]) {
       this._currentZoom = zoom;
-      this._divRoot.render(<LegendPlaceholder species={species} data={data}/>);
+      if (data.length === 0) {
+        this.onClearLegends();
+      } else {
+        this._divRoot.render(<LegendPlaceholder species={species} data={data}/>);
+      }
     }
 
     onClearLegends() {

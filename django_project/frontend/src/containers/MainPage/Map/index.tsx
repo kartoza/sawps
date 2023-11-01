@@ -127,8 +127,6 @@ export default function Map(props: MapInterface) {
   const provinceCounts = useAppSelector((state: RootState) => state.mapState.provinceCounts)
   const propertiesCounts = useAppSelector((state: RootState) => state.mapState.propertiesCounts)
   const dynamicMapSession = useAppSelector((state: RootState) => state.mapState.dynamicMapSession)
-  // Map Legends reference
-
   const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
 
   const onMapMouseEnter = () => {
@@ -279,6 +277,25 @@ export default function Map(props: MapInterface) {
   }
   /* End of Map Draw (Digitise) Mode  */
 
+  /* Map Legend functions */
+  const updateMapLegends = (currentZoom: number, species: string, provinceCountData: PopulationCountLegend[], propertiesCountData: PopulationCountLegend[]) => {
+    if (!mapLegendControlRef.current) return;
+    let _legendObj: LegendControl<IControl> = mapLegendControlRef.current
+    if (species) {
+      if (currentZoom >= MIN_PROVINCE_ZOOM_LEVEL && currentZoom <= MAX_PROVINCE_ZOOM_LEVEL && provinceCountData) {
+        _legendObj.onUpdateLegends(currentZoom, species, provinceCountData)
+      } else if (currentZoom > MIN_SELECT_PROPERTY_ZOOM_LEVEL && propertiesCountData) {
+        _legendObj.onUpdateLegends(currentZoom, species, propertiesCountData)
+      } else {
+        _legendObj.onClearLegends()
+      }
+    } else {
+      _legendObj.onClearLegends()
+    }
+  }
+  /* End of Map Legend functions */
+
+
   /* Listen to context layers change (isSelected) */
   useEffect(() => {
     if (!isMapReady) return;
@@ -363,6 +380,7 @@ export default function Map(props: MapInterface) {
     }
   }, [mapTheme, selectedSpecies, provinceCounts, propertiesCounts])
 
+  /* Called when zoom is changed */
   useEffect(() => {
     if (!map.current) return;
     if (!isMapReady) return;
@@ -370,19 +388,9 @@ export default function Map(props: MapInterface) {
     if (mapLegendControlRef.current) {
       let _legendObj: LegendControl<IControl> = mapLegendControlRef.current
       if (_legendObj.getCurrentZoom() === zoom) return;
-      if (selectedSpecies) {
-        if (zoom >= MIN_PROVINCE_ZOOM_LEVEL && zoom <= MAX_PROVINCE_ZOOM_LEVEL && provinceCounts) {
-          _legendObj.onUpdateLegends(zoom, selectedSpecies, provinceCounts)
-        } else if (zoom > MIN_SELECT_PROPERTY_ZOOM_LEVEL && propertiesCounts) {
-          _legendObj.onUpdateLegends(zoom, selectedSpecies, propertiesCounts)
-        } else {
-          _legendObj.onClearLegends()
-        }
-      } else {
-        _legendObj.onClearLegends()
-      }
+      updateMapLegends(zoom, selectedSpecies, provinceCounts, propertiesCounts)
     }
-  }, [zoom, provinceCounts, propertiesCounts])
+  }, [zoom])
 
   useEffect(() => {
     if (mapTheme === MapTheme.None) return;
@@ -635,28 +643,33 @@ export default function Map(props: MapInterface) {
         'property': propertyId 
       }
     }
-    fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies.length > 0)
+    fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies)
   }, [mapTheme, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
   /* Use debounce+UseMemo to avoid updating filter (materialized view) frequently when filter is changed */
   /* useMemo is used to avoid the debounce function is recreated during each render (unless MapTheme is changed) */
-  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, bodyData: any, showPopulationCount: boolean) => {
+  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, bodyData: any, speciesFilters: string) => {
     axios.post(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`, bodyData).then((response) => {
       if (response.data) {
         let _session = response.data['session']
         if (map.current && _session !== dynamicMapSession) {
           let _provinceCounts = response.data['province'] as PopulationCountLegend[]
           let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
+          let _zoom = Math.trunc(map.current.getZoom())
           dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
           dispatch(setDynamicMapSession(_session))
+          updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
         } else if (map.current) {
-          if (showPopulationCount) {
-            let _provinceCounts = response.data['province'] as PopulationCountLegend[]
-            let _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
+          let _zoom = Math.trunc(map.current.getZoom())
+          let _provinceCounts:PopulationCountLegend[] = []
+          let _propertiesCounts:PopulationCountLegend[] = []
+          if (speciesFilters && speciesFilters.length > 0) {
+            _provinceCounts = response.data['province'] as PopulationCountLegend[]
+            _propertiesCounts = response.data['properties'] as PopulationCountLegend[]
             dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
             drawPropertiesLayer(true, map.current, mapTheme, true, _propertiesCounts, _provinceCounts)
           } else {
-            dispatch(setPopulationCountLegends([[], []]))
+            dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
             drawPropertiesLayer(false, map.current, mapTheme, true)
           }
           dispatch(triggerMapEvent({
@@ -664,6 +677,7 @@ export default function Map(props: MapInterface) {
             'name': MapEvents.REFRESH_PROPERTIES_LAYER,
             'date': Date.now()
           }))
+          updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
         } else {
           // initial map state will not have DynamicMapSession, hence map initialization depends on filters/mapTheme changed
           dispatch(setDynamicMapSession(_session))
