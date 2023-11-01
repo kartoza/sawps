@@ -366,7 +366,7 @@ export default function Map(props: MapInterface) {
 
   /* Called when mapTheme is changed */
   const mapStyleOnLoaded = useCallback(() => {
-    if (map.current.isStyleLoaded()) {
+    if (map.current.style._loaded) {
       dispatch(setMapReady(true))
       if (selectedSpecies.length > 0) {
         drawPropertiesLayer(true, map.current, mapTheme, false, propertiesCounts, provinceCounts)
@@ -408,7 +408,7 @@ export default function Map(props: MapInterface) {
     if (map.current) {
       dispatch(setMapReady(false))
       map.current.on('styledata', mapStyleOnLoaded)
-      map.current.setStyle(_styleURL, {diff: false})
+      map.current.setStyle(_styleURL)
       if (mapNavControl.current) {
         mapNavControl.current.updateThemeSwitcherIcon(mapTheme)
       }
@@ -547,9 +547,10 @@ export default function Map(props: MapInterface) {
 
   /* Render/Respond to mapEvents */
   useEffect(() => {
-    if (!isMapReady) return;
-    if (!map.current) return;
     if (mapEvents.length === 0) return
+    if (!isMapReady || !map.current) {
+      return;
+    }
     let _mapObj: maplibregl.Map = map.current
     for (let i=0; i < mapEvents.length; ++i) {
       let _event = mapEvents[i]
@@ -615,7 +616,7 @@ export default function Map(props: MapInterface) {
       }
     }
     dispatch(onMapEventProcessed([...mapEvents]))
-  }, [mapEvents, isMapReady])
+  }, [mapEvents])
 
   /* Check Digitise Boundary Processing status every 3s */
   useEffect(() => {
@@ -675,11 +676,13 @@ export default function Map(props: MapInterface) {
             drawPropertiesLayer(false, map.current, mapTheme, true)
           }
           dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
-          dispatch(triggerMapEvent({
-            'id': uuidv4(),
-            'name': MapEvents.REFRESH_PROPERTIES_LAYER,
-            'date': Date.now()
-          }))
+          if (isMapReady) {
+            dispatch(triggerMapEvent({
+              'id': uuidv4(),
+              'name': MapEvents.REFRESH_PROPERTIES_LAYER,
+              'date': Date.now()
+            }))
+          }
           updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
         } else {
           // initial map state will not have DynamicMapSession, hence map initialization depends on filters/mapTheme changed
@@ -691,7 +694,7 @@ export default function Map(props: MapInterface) {
         console.log(error)
       }
     })
-  }, 300), [mapTheme, dynamicMapSession])
+  }, 300), [mapTheme, dynamicMapSession, isMapReady])
 
   return (
       <div className="map-wrap">

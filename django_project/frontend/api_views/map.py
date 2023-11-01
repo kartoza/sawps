@@ -77,7 +77,7 @@ class MapSessionBase(APIView):
             session = MapSession.objects.create(
                 user=self.request.user,
                 created_date=timezone.now(),
-                expired_date=timezone.now() + datetime.timedelta(days=2)
+                expired_date=timezone.now() + datetime.timedelta(days=1)
             )
         session.species = filter_species
         session.save(update_fields=['species'])
