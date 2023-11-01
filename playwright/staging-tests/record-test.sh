@@ -31,7 +31,7 @@ npx playwright \
   codegen \
   --load-storage=tests/.auth/sawps-auth.json \
   -o tests/$TESTNAME.spec.ts \
-  http://sawps.sta.do.kartoza.com/
+  http://sawps.sta.do.kartoza.com
 
 echo "Test recording completed."
 echo "You can then run your test by doing:"

@@ -28,15 +28,19 @@ test.describe('Data Upload page', () => {
 
         await page.getByRole('button', { name: 'CREATE A NEW PROPERTY' }).click();
 
-        await page.locator('#input_propertyname').fill('admin1');
+        await page.locator('#input_propertyname').fill('admin2');
+
+        await page.getByRole('row', { name: 'Open/Closed System ​' }).getByLabel('​').click();
+  
+        await page.getByRole('option', { name: 'Open', exact: true }).click();
 
         await page.getByRole('row', { name: 'Property Type ​' }).getByLabel('​').click();  
 
         await page.getByRole('option', { name: 'Private', exact: true }).click();
 
-        await page.getByLabel('STEP 1').getByLabel('​', { exact: true }).click();
+        //await page.getByLabel('STEP 1').getByLabel('​', { exact: true }).click();
 
-        await page.getByRole('option', { name: 'Gauteng' }).click();
+        //await page.getByRole('option', { name: 'Gauteng' }).click();
 
         await page.getByRole('button', { name: 'SAVE PROPERTY INFORMATION' }).click();
 

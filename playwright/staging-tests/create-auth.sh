@@ -19,8 +19,8 @@ esac
 npx playwright \
   codegen \
   --save-storage=tests/.auth/sawps-auth.json \
-  -o tests/deleteme.ts \
-  http://sawps.sta.do.kartoza.com/
+  -o tests/deleteme.spec.ts \
+  http://sawps.sta.do.kartoza.com
 
 # We are only interested in sawps-auth.json
 rm tests/deleteme.spec.ts
