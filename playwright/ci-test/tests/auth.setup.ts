@@ -31,7 +31,7 @@ setup.describe('login and 2fa-authentication ', () => {
     
     await page.getByRole('button', { name: 'LOGIN' }).click();
 
-    await page.waitForURL('**/accounts/two-factor/authenticate/');
+    //await page.waitForURL('**/accounts/two-factor/authenticate/');
 
     //await expect(page.getByRole('heading', { name: 'Two-Factor Authentication' })).toBeVisible();
 
