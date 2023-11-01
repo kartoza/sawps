@@ -475,7 +475,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             "type": "symbol",
             "source": "sanbi-dynamic",
             "source-layer": "properties-points",
-            "minzoom": 8,
+            "minzoom": 7,
             "maxzoom": 24,
             "layout": {
               "text-field": "{name}",
@@ -495,7 +495,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             "type": "symbol",
             "source": "sanbi-dynamic",
             "source-layer": "properties-points",
-            "minzoom": 8,
+            "minzoom": 7,
             "maxzoom": 24,
             "layout": {
               "text-field": "{name}",
