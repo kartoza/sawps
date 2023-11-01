@@ -84,21 +84,6 @@ export function AutoCompleteCheckbox(props: AutoCompleteCheckboxProps) {
                 const valueIds = value.map(val => val.id)
                 setSelectedOption(valueIds);
             }
-            // else if (
-            //   reason === "selectOption" && value.length === options.length
-            // )
-            //   setSelectedOption(value.map(val => val.id));
-            // else if (
-            //   reason === "removeOption" && value.length === 0
-            // ) {
-            //     setSelectedOption([]);
-            // }
-            // else if (
-            //   reason === "removeOption" || reason === "selectOption"
-            // ) {
-            //     const valueIds = value.map(val => val.id)
-            //     setSelectedOption(valueIds);
-            // }
           }}
           renderInput={(params) => (
             <TextField {...params} placeholder={selectedOption.length > 0 ? '' : 'Select'}/>

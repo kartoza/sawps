@@ -1,17 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import axios from "axios";
-import {
-    Autocomplete,
-    Box,
-    TextField,
-    Typography,
-} from '@mui/material';
+import {Autocomplete, Box, TextField, Typography,} from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import List from '@mui/material/List';
 import CircularProgress from '@mui/material/CircularProgress';
-import InputAdornment from '@mui/material/InputAdornment';
-import {debounce} from '@mui/material/utils';
 import SearchIcon from '@mui/icons-material/Search';
 import {RootState} from '../../../app/store';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
@@ -19,38 +12,38 @@ import Slider from '@mui/material/Slider';
 import Loading from '../../../components/Loading';
 import {
     selectedActivityId,
-    selectedOrganisationId,
-    selectedPropertyId,
-    setEndYear,
-    setSelectedInfoList,
-    setSpatialFilterValues,
-    selectedOrganisationName,
-    selectedPropertyName,
-    setStartYear,
-    toggleSpecies,
     selectedActivityName,
+    selectedOrganisationId,
+    selectedOrganisationName,
+    selectedPropertyId,
+    selectedPropertyName,
+    setActivityCount,
+    setEndYear,
     setOrganisationCount,
     setPropertyCount,
-    setActivityCount
+    setSelectedInfoList,
+    setSpatialFilterValues,
+    setStartYear,
+    toggleSpecies
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import {MapEvents} from '../../../models/Map';
 import {triggerMapEvent} from '../../../reducers/MapState';
 import SpatialFilter from "./SpatialFilter";
 import {
-    useGetUserInfoQuery,
+    Activity,
+    Organisation,
+    Property,
     useGetActivityQuery,
     useGetOrganisationQuery,
     useGetPropertyQuery,
     useGetSpeciesQuery,
-    Organisation,
-    Activity,
-    Property
+    useGetUserInfoQuery
 } from "../../../services/api";
 import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
 import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
-import { SeachPlaceResult } from '../../../utils/SearchPlaces';
+import {SeachPlaceResult} from '../../../utils/SearchPlaces';
 import SearchPlace from '../../../components/SearchPlace';
 
 const yearRangeStart = 1960;
