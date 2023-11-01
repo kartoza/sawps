@@ -63,88 +63,18 @@ After successfully changing the password, user will receive a confirmation messa
 
 8. **Change**: This button is used to edit an existing item from the list. When user click the `Change` button user will be redirected to a page where user can see all the associate data of that model and can select data to change.
 
-To see data in a table, click on the table name.
+* **Table**: To see data in a table, click on the table name.
 
 ## Django Admin Table
 
-![Django Admin Table](./img/admin-3.png)
+![Django Admin Table](./img/admin-11.png)
 
-1. **Add button**: Clicking on this button will allow user to add new record in the table.
+1. **Table Name**: Clicking on the table name will allow user to see table.
 
-    ![Add record](./img/admin-10.png)
+2. **Table**: Displays the table with the data.
 
-    1. **Form fields**: Form where user can input values for record.
+* Click on the [table](django-table.md) to see the tables documentation
 
-    3. **Save and add another**: Save current record, then redirect to a new page to add new record.
+* Click on the [add](django-add-data.md) to see how to add new data.
 
-    4. **Save and continue editing**: Save current record while still showing current record.
-
-    5. **Save**: Save current record, then redirect to Django Admin Table/record list.
-
-2. **Search**: Search feature to search specific record of the table.
-
-3. **Toggle select records**: Checkbox to select/deselect records.
-
-4. **Action**: Action dropdown user can choose the action from this dropdown and perform on selected object.
-
-5. **Go**: Clicking on this button will allow user to perform selected option on selected object.
-
-6. **Objects**: Available objects containing records. User can see the details of the object by clicking on the link.
-
-To edit a record, click on the record.
-
-## Django Admin Form
-
-_![Django Admin Form](./img/admin-4.png)_
-
-1. **Form fields**: Form where we can input values for our record.
-
-2. **Delete button**: Delete currently opened record. It will take you to confirmation page.
-
-3. **Save and add another**: Save current record, then redirect to a new page to add new record.
-
-4. **Save and continue editing**: Save current record while still showing current record.
-
-5. **Save**: Save current record, then redirect to Django Admin Table/record list.
-
-6. **History**: Button to see actions applied to current record.
-
-## Activities Table
-
-_![Activities Table](./img/admin-5.png)_
-
-This table is used to store existing activity types e.g. `Unplanned/natural deaths`.
-
-1. **Colour**: Used as color identifier in reports and charts. The default is black (`#000000`).
-2. **Width**: Column width in the Activity Report.
-3. **Export fields**: Used as export fields in Activity Report. The value should be an array/list, containing
-`Annual Population Per Activity` field to export. Currently available fields are:
-    * founder_population
-    * reintroduction_source
-    * intake_permit
-    * offtake_permit
-    * translocation_destination
-
-This is an example of correct **Export fields** value:
-`["translocation_destination", "founder_population"]`
-
-Any update on this table will be reflected on the [Activity Report](../../user/manual/explore/reports.md).
-
-## Group Table
-
-_![Group Table](./img/admin-6.png)_
-
-This table is used to store existing user groups, that will affect available options in the [Report](../../user/manual/explore/reports.md).
-You can assign a user to groups in the User Table.
-
-## User Table
-
-_![User Table](./img/admin-7.png)_
-
-This table is used to store existing users. Some of the fields are:
-
-1. **Active**: A flag to indicate active user. When a user is no longer active, unselect this instead of deleting the user.
-2. **Staff status**: A flag to indicate whether user can log into Django admin page.
-3. **Superuser status**: A flag to indicate whether user has all permissions without explicitly assigning them in **5**.
-4. **Groups**: Group that a user belong to. Double click on the available groups (left panel) to add into chosen group (right panel). To remove user from a group, double click on chosen group (right panel). Group will affect user menu on the frontend page, such as in [Report](../../user/manual/explore/reports.md).
-5. **User permissions**: Specific permission for users, if they are not superuser.
+* Click on the [edit](django-change-data.md) to see how to edit data.
