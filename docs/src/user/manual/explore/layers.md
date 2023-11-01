@@ -1,6 +1,6 @@
 # Layers
 
-Welcome to the documentation for map layers avalable in application. This document provides an overview of the map layers, how to access them, and how to interact with and customise their appearance.
+Welcome to the documentation for map layers available in application. This document provides an overview of the map layers, how to access them, and how to interact with and customise their appearance.
 
 **Layers**
 
@@ -12,7 +12,7 @@ Welcome to the documentation for map layers avalable in application. This docume
 
 3. **Available Layers**: Available layers side panel, user can use this layers for better visualisation.
 
-# Layers with map
+## Map layers
 
 ![Layers with map](./img/layers-2.png)
 
