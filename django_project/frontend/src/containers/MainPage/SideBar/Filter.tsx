@@ -5,8 +5,9 @@ import {
     Autocomplete,
     Box,
     TextField,
-    Typography
+    Typography,
 } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 import List from '@mui/material/List';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -63,19 +64,16 @@ function Filter(props: any) {
     const [loading, setLoading] = useState(false)
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [selectedProperty, setSelectedProperty] = useState([]);
-    const [selectAllProperty, setSelectAllProperty] = useState(true);
     const [selectedActivity, setSelectedActivity] = useState<number[]>([]);
-    const [selectAllActivity, setSelectAllActivity] = useState<boolean>(true);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
     const [selectedInfo, setSelectedInfo] = useState<string[]>(['Species report']);
-    const [selectAllInfo, setSelectAllInfo] = useState(null);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
-    const [selectAllOrganisation, setSelectAllOrganisation] = useState(true);
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
+    const [shownPropertyOptions, setShownPropertyOptions] = useState([])
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
     const {
         data: organisationList,
@@ -139,7 +137,6 @@ function Filter(props: any) {
             })
         }
         informationList = informationList.sort((a, b) => a.id > b.id ? 1 : -1)
-
     }
 
     // Select all organisations by default
@@ -149,16 +146,18 @@ function Filter(props: any) {
         }
     }, [organisationList]);
 
-    // Select all properties by default
+
     useEffect(() => {
         if (propertyList) {
-            if (selectedOrganisation.length > 0) {
-                setSelectedProperty(propertyList.map(property => property.id))
-            } else {
+            if (selectedOrganisation.length === 0) {
+                setShownPropertyOptions([])
                 setSelectedProperty([])
+            } else {
+                setShownPropertyOptions(propertyList)
+                setSelectedProperty(propertyList.map(property => property.id))
             }
         }
-    }, [propertyList]);
+    }, [propertyList])
 
     // Select all activities by default
     useEffect(() => {
@@ -212,14 +211,6 @@ function Filter(props: any) {
         const values = selectedInfo.join(',')
         dispatch(setSelectedInfoList(values));
     }, [selectedInfo])
-
-    useEffect(() => {
-        if (selectAllInfo) {
-            setSelectedInfo(informationList.map((info) => info.id));
-        } else if (selectAllInfo === false) {
-            setSelectedInfo([]);
-        }
-    }, [selectAllInfo])
 
     const mergeBoundingBoxes = (boundingBoxes: number[][]): number[] => {
         let minLeft: number = 180;
@@ -281,24 +272,6 @@ function Filter(props: any) {
         );
       };
 
-
-    // Handle selecting all properties
-    const handleSelectAllProperty = () => {
-        if (propertyList) {
-            let propertyIds = selectAllProperty ? propertyList.map((property: Property) => property.id) : []
-            setSelectedProperty(propertyIds);
-            if (propertyIds.length > 0) {
-                zoomToCombinedBoundingBox(propertyIds);
-            } else {
-                adjustMapToBoundingBox(boundingBox)
-            }
-        }
-    };
-
-    useEffect(() => {
-        handleSelectAllProperty()
-    }, [selectAllProperty])
-
     useEffect(() => {
         if (propertyList) {
             dispatch(selectedPropertyId(selectedProperty.join(',')));
@@ -309,18 +282,6 @@ function Filter(props: any) {
             dispatch(setPropertyCount(selectedProperty.length));
         }
     }, [selectedProperty])
-
-    // Handle selecting all organisation
-    const handleSelectAllOrganisation = () => {
-        if (organisationList) {
-            let organisationIds = selectAllOrganisation ? organisationList.map((organisation: Organisation) => organisation.id) : []
-            setSelectedOrganisation(organisationIds);
-        }
-    };
-
-    useEffect(() => {
-        handleSelectAllOrganisation()
-    }, [selectAllOrganisation])
 
     useEffect(() => {
         if (organisationList) {
@@ -343,18 +304,6 @@ function Filter(props: any) {
             dispatch(setActivityCount(selectedActivity.length));
         }
     }, [selectedActivity])
-
-    // Handle selecting all activities
-    const handleSelectAllActivity = () => {
-        if (activityList) {
-            let activityIds = selectAllActivity ? activityList.map((activity: Activity) => activity.id) : []
-            setSelectedActivity(activityIds);
-        }
-    };
-
-    useEffect(() => {
-        handleSelectAllActivity()
-    }, [selectAllActivity])
 
     const handleStartYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
@@ -383,11 +332,14 @@ function Filter(props: any) {
     }
 
     const clearFilter = () => {
-        setSelectAllProperty(false)
-        setSelectAllOrganisation(false)
+        if (allowOrganisationSelection) {
+            setSelectedOrganisation([]);
+            setShownPropertyOptions([]);
+        }
+        setSelectedProperty([])
         setSelectedSpecies('')
-        setSelectAllActivity(false)
-        setSelectAllInfo(false)
+        setSelectedActivity([])
+        setSelectedInfo([])
         setLocalStartYear(yearRangeStart)
         setLocalEndYear(yearRangeEnd)
         dispatch(setStartYear(yearRangeStart));
@@ -411,26 +363,12 @@ function Filter(props: any) {
     useEffect(() => {
         if (!isSuccess) return;
 
-        const userRoles = userInfoData.user_roles
-        if (userRoles.length === 0) return;
-
-        // TODO : Update to use permissions
-        const allowedRoles = new Set(["National data scientist", "Regional data scientist", "Super user"]);
-
-        if(
-            userRoles.some(userRole => allowedRoles.has(userRole))
-        ){
-            setOrganisationSelection(true)
-            setPropertiesSelection(true)
-            return;
+        if (userInfoData.user_permissions.includes("Can view organisation filter")) {
+            setOrganisationSelection(true);
         }
 
-        const organisationRoles = new Set(['Organisation member', 'Organisation manager'])
-        if (
-            userRoles.some(userRole => organisationRoles.has(userRole))
-        ) {
-          setPropertiesSelection(true)
-          setOrganisationSelection(false)
+        if (userInfoData.user_permissions.includes("Can view property filter")) {
+            setPropertiesSelection(true);
         }
     }, [isSuccess, userInfoData]);
 
@@ -470,25 +408,32 @@ function Filter(props: any) {
                     }} />
                 </Box>
                 )}
-                <Box className='sidebarBoxHeading'>
-                    <img src="/static/images/species/Elephant.svg" alt='species image' />
-                    <Typography color='#75B37A' fontSize='medium'>Species</Typography>
-                </Box>
-                <List className='ListItem' component="nav" aria-label="">
-                    {loading || isSpeciesLoading ? <Loading /> :
-                        (
-                            <Autocomplete
-                                id="combo-box-demo"
-                                disableClearable={true}
-                                value={selectedSpecies}
-                                options={searchSpeciesList}
-                                sx={{ width: '100%' }}
-                                onChange={(event, value) => handleSelectedSpecies(value)}
-                                renderInput={(params) => <TextField {...params} placeholder="Select" />}
-                            />
-                        )
-                    }
-                </List>
+                <Tooltip
+                  title={selectedOrganisation.length === 0 ? "Select Organisation to show Species options!" : ""}
+                  placement="top-start"
+                >
+                    <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/species/Elephant.svg" alt='species image' />
+                            <Typography color='#75B37A' fontSize='medium'>Species</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isSpeciesLoading ? <Loading /> :
+                                (
+                                    <Autocomplete
+                                        id="combo-box-demo"
+                                        disableClearable={true}
+                                        value={selectedSpecies}
+                                        options={searchSpeciesList}
+                                        sx={{ width: '100%' }}
+                                        onChange={(event, value) => handleSelectedSpecies(value)}
+                                        renderInput={(params) => <TextField {...params} placeholder="Select" />}
+                                    />
+                                )
+                            }
+                        </List>
+                    </Box>
+                </Tooltip>
                 {tab === 'reports' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
@@ -503,8 +448,6 @@ function Filter(props: any) {
                                     selectedOption={selectedInfo}
                                     singleTerm={'Report'}
                                     pluralTerms={'Reports'}
-                                    selectAllFlag={selectAllInfo}
-                                    setSelectAll={(val) => setSelectAllInfo(val)}
                                     setSelectedOption={setSelectedInfo}
                                   />
                               )
@@ -526,10 +469,6 @@ function Filter(props: any) {
                                         selectedOption={selectedActivity}
                                         singleTerm={'Activity'}
                                         pluralTerms={'Activities'}
-                                        selectAllFlag={selectAllActivity}
-                                        setSelectAll={(val) => {
-                                            setSelectAllActivity(val)
-                                        }}
                                         setSelectedOption={setSelectedActivity}
                                       />
                                 )
@@ -550,10 +489,6 @@ function Filter(props: any) {
                                     selectedOption={selectedOrganisation}
                                     singleTerm={'Organisation'}
                                     pluralTerms={'Organisations'}
-                                    selectAllFlag={selectAllOrganisation}
-                                    setSelectAll={(val) => {
-                                        setSelectAllOrganisation(val)
-                                    }}
                                     setSelectedOption={setSelectedOrganisation}
                                   />
                             }
@@ -562,6 +497,10 @@ function Filter(props: any) {
                 }
                 {
                     allowPropertiesSelection &&
+                  <Tooltip
+                    title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
+                    placement="top-start"
+                  >
                     <Box>
                         <Box className='sidebarBoxHeading'>
                             <img src="/static/images/Property.svg" alt='Property image' />
@@ -572,12 +511,10 @@ function Filter(props: any) {
                                 <Loading />
                             ) : (
                               <AutoCompleteCheckbox
-                                options={propertyList}
+                                options={shownPropertyOptions}
                                 selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
                                 singleTerm={'Property'}
                                 pluralTerms={'Properties'}
-                                selectAllFlag={selectAllProperty}
-                                setSelectAll={(val) => setSelectAllProperty(val)}
                                 setSelectedOption={(newValues) => {
                                     setSelectedProperty(newValues)
                                     if (newValues.length === 0) {
@@ -591,6 +528,7 @@ function Filter(props: any) {
                             )}
                         </List>
                     </Box>
+                  </Tooltip>
                 }
 
                 <Box>

@@ -140,9 +140,11 @@ const DataList = () => {
 
     useEffect(() => {
         setColumns([])
+        fetchDataList()
         if (selectedSpecies) {
-            fetchDataList()
             setShowReports(true);
+        } else {
+            setShowReports(false);
         }
     }, [selectedSpecies, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
 
