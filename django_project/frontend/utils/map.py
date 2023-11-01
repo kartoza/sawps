@@ -16,6 +16,7 @@ from species.models import Taxon
 from frontend.models.map_session import MapSession
 from frontend.utils.color import linear_gradient
 from stakeholder.models import OrganisationUser
+from activity.models import ActivityType
 
 
 User = get_user_model()
@@ -162,87 +163,107 @@ def get_highlighted_layer(layer_name):
     }
 
 
+def get_query_condition_for_properties_query(
+        filter_organisation: str,
+        filter_spatial: str,
+        filter_property: str,
+        property_alias_name: str = 'p'):
+    """
+    Generate query condition from properties filters.
+    """
+    sql_conditions = []
+    query_values = []
+    if filter_organisation:
+        if filter_organisation != 'all':
+            sql_conditions.append(f'{property_alias_name}.organisation_id IN %s')
+            query_values.append(
+                ast.literal_eval('(' + filter_organisation + ',)'))
+    else:
+        sql_conditions.append(
+            f'{property_alias_name}.organisation_id = any(ARRAY[]::bigint[])')
+    if filter_property:
+        if filter_property != 'all':
+            sql_conditions.append(f'{property_alias_name}.id IN %s')
+            query_values.append(
+                ast.literal_eval('(' + filter_property + ',)'))
+    else:
+        sql_conditions.append(f'{property_alias_name}.id = any(ARRAY[]::bigint[])')
+    if filter_spatial:
+        spatial_filter_values = tuple(
+            filter(None, filter_spatial.split(','))
+        )
+        if spatial_filter_values:
+            spatial_sql = (
+                """
+                select 1 from frontend_spatialdatavaluemodel fs2
+                inner join frontend_spatialdatamodel fs3 on
+                fs3.id = fs2.spatial_data_id
+                where fs3.property_id={property_alias_name}.id and
+                fs2.context_layer_value in %s
+                """
+            ).format(property_alias_name=property_alias_name)
+            sql_conditions.append(
+                'exists({spatial_sql})'.format(spatial_sql=spatial_sql)
+            )
+            query_values.append(spatial_filter_values)
+    return sql_conditions, query_values
+
+
 def get_query_condition_for_population_query(
-        is_province_layer: bool,
         filter_start_year: int,
         filter_end_year: int,
         filter_species_name: str,
-        filter_organisation: str,
-        filter_activity: str,
-        filter_spatial: str,
-        filter_property: str):
-    """Generate query condition from filters dynamic VT."""
+        filter_activity: str):
+    """
+    Generate query condition from filters dynamic VT.
+    
+    Filters that are used for choropleth:
+    - species
+    - start + end years
+    - activity
+    - organisation
+    - property
+    - spatial
+    Filters that are used for properties layer (no species):
+    - organisation
+    - property
+    - spatial
+    """
     sql_conditions = []
     query_values = []
-    if filter_species_name:
-        sql_conditions.append('t.scientific_name=%s')
-        query_values.append(filter_species_name)
+    sql_conditions.append('t.scientific_name=%s')
+    query_values.append(filter_species_name)
     if filter_activity and filter_activity != 'all':
-        filter_years = ''
-        if filter_start_year and filter_end_year and not is_province_layer:
-            filter_years = (
-                """AND appa.year between %s and %s"""
+        activities = ast.literal_eval('(' + filter_activity + ',)')
+        if ActivityType.objects.count() != len(activities):
+            filter_years = ''
+            if filter_start_year and filter_end_year:
+                filter_years = (
+                    """AND appa.year between %s and %s"""
+                )
+            activity_sql = (
+                """
+                SELECT 1 FROM annual_population_per_activity appa
+                WHERE appa.annual_population_id=ap.id
+                AND appa.activity_type_id IN %s
+                {filter_years}
+                """
+            ).format(filter_years=filter_years)
+            sql_conditions.append(
+                'exists({activity_sql})'.format(activity_sql=activity_sql)
             )
-        activity_sql = (
-            """
-            SELECT 1 FROM annual_population_per_activity appa
-            WHERE appa.owned_species_id=os.id
-            AND appa.activity_type_id IN %s
-            {filter_years}
-            """
-        ).format(filter_years=filter_years)
-        sql_conditions.append(
-            'exists({activity_sql})'.format(activity_sql=activity_sql)
-        )
-        query_values.append(ast.literal_eval('(' + filter_activity + ',)'))
-        if filter_years:
-            query_values.append(filter_start_year)
-            query_values.append(filter_end_year)
+            query_values.append(activities)
+            if filter_years:
+                query_values.append(filter_start_year)
+                query_values.append(filter_end_year)
     if filter_start_year and filter_end_year:
         sql_conditions.append('ap.year between %s and %s')
         query_values.append(filter_start_year)
         query_values.append(filter_end_year)
-    if not is_province_layer:
-        # Province layer for Data Consumer does not use below filters
-        if filter_organisation:
-            if filter_organisation != 'all':
-                sql_conditions.append('p.organisation_id IN %s')
-                query_values.append(
-                    ast.literal_eval('(' + filter_organisation + ',)'))
-        else:
-            sql_conditions.append(
-                'p.organisation_id = any(ARRAY[]::bigint[])')
-        if filter_property:
-            if filter_property != 'all':
-                sql_conditions.append('p.id IN %s')
-                query_values.append(
-                    ast.literal_eval('(' + filter_property + ',)'))
-        else:
-            sql_conditions.append('p.id = any(ARRAY[]::bigint[])')
-        if filter_spatial:
-            spatial_filter_values = tuple(
-                filter(None, filter_spatial.split(','))
-            )
-            if spatial_filter_values:
-                spatial_sql = (
-                    """
-                    select 1 from frontend_spatialdatavaluemodel fs2
-                    inner join frontend_spatialdatamodel fs3 on
-                    fs3.id = fs2.spatial_data_id
-                    where fs3.property_id=p.id and
-                    fs2.context_layer_value in %s
-                    """
-                )
-                sql_conditions.append(
-                    'exists({spatial_sql})'.format(spatial_sql=spatial_sql)
-                )
-                query_values.append(spatial_filter_values)
-    sql = ' AND '.join(sql_conditions)
-    return sql, query_values
+    return sql_conditions, query_values
 
 
-def get_population_query(
-        is_province_view: bool,
+def get_province_population_query(
         filter_start_year: int,
         filter_end_year: int,
         filter_species_name: str,
@@ -251,26 +272,127 @@ def get_population_query(
         filter_spatial: str,
         filter_property: str):
     """Generate query for population count."""
-    where_sql, query_values = get_query_condition_for_population_query(
-        is_province_view, filter_start_year, filter_end_year,
-        filter_species_name, filter_organisation, filter_activity,
-        filter_spatial, filter_property
+    sql_view = ''
+    query_values = []
+    sql_conds_pop, query_values_pop = get_query_condition_for_population_query(
+        filter_start_year, filter_end_year,
+        filter_species_name, filter_activity
     )
-    id_field = 'province_id' if is_province_view else 'id'
+    sql_conds_properties, query_values_properties = (
+        get_query_condition_for_properties_query(
+            filter_organisation, filter_spatial, filter_property
+        )
+    )
+    sql_conds = []
+    if sql_conds_pop:
+        sql_conds.extend(sql_conds_pop)
+        query_values.extend(query_values_pop)
+    if sql_conds_properties:
+        sql_conds.extend(sql_conds_properties)
+        query_values.extend(query_values_properties)
+    where_sql = ' AND '.join(sql_conds)
     sql = (
         """
-        select p.{id_field} as id, sum(ap.total) as count
+        select p.province_id as id, sum(ap.total) as count
         from annual_population ap
-        inner join owned_species os on os.id=ap.owned_species_id
-        inner join taxon t on os.taxon_id=t.id
-        inner join property p on os.property_id=p.id
-        {where_sql} group by p.{id_field}
+        inner join taxon t on ap.taxon_id=t.id
+        inner join property p on ap.property_id=p.id
+        {where_sql} group by p.province_id
         """
     ).format(
-        where_sql=f'where {where_sql}' if where_sql else '',
-        id_field=id_field
+        where_sql=f'where {where_sql}' if where_sql else ''
     )
-    return sql, query_values
+    sql_view = (
+        """
+        select p2.id, p2.name, COALESCE(population_summary.count, 0) as count
+        from province p2 left join ({sub_sql}) as population_summary
+        on p2.id=population_summary.id
+        """
+    ).format(
+        sub_sql=sql
+    )
+    return sql_view, query_values
+
+
+def get_properties_population_query(
+        filter_start_year: int,
+        filter_end_year: int,
+        filter_species_name: str,
+        filter_organisation: str,
+        filter_activity: str,
+        filter_spatial: str,
+        filter_property: str):
+    """Generate query for population count."""
+    sql_view = ''
+    query_values = []
+    sql_conds_pop, query_values_pop = get_query_condition_for_population_query(
+        filter_start_year, filter_end_year,
+        filter_species_name, filter_activity
+    )
+    sql_conds_properties, query_values_properties = (
+        get_query_condition_for_properties_query(
+            filter_organisation, filter_spatial, filter_property,
+            property_alias_name='p2'
+        )
+    )
+    where_sql = ''
+    if sql_conds_pop:
+        where_sql = ' AND '.join(sql_conds_pop)
+        query_values.extend(query_values_pop)
+    sql = (
+        """
+        select ap.property_id as id, sum(ap.total) as count
+        from annual_population ap
+        inner join taxon t on ap.taxon_id=t.id
+        inner join property p on ap.property_id=p.id
+        {where_sql} group by ap.property_id
+        """
+    ).format(
+        where_sql=f'where {where_sql}' if where_sql else ''
+    )
+    where_sql_properties = ''
+    if sql_conds_properties:
+        where_sql_properties = ' AND '.join(sql_conds_properties)
+        query_values.extend(query_values_properties)
+    sql_view = (
+        """
+        select p2.id, p2.name, COALESCE(population_summary.count, 0) as count
+        from property p2 left join ({sub_sql}) as population_summary
+        on p2.id=population_summary.id
+        {where_sql}
+        """
+    ).format(
+        sub_sql=sql,
+        where_sql=f'where {where_sql_properties}' if where_sql_properties else ''
+    )
+    return sql_view, query_values
+
+def get_properties_query(
+        filter_organisation: str,
+        filter_spatial: str,
+        filter_property: str):
+    """Generate query for population count."""
+    sql_view = ''
+    query_values = []
+    sql_conds_properties, query_values_properties = (
+        get_query_condition_for_properties_query(
+            filter_organisation, filter_spatial, filter_property
+        )
+    )
+    where_sql_properties = ''
+    if sql_conds_properties:
+        where_sql_properties = ' AND '.join(sql_conds_properties)
+        query_values.extend(query_values_properties)
+    sql_view = (
+        """
+        select p.id, p.name, 0 as count
+        from property p
+        {where_sql}
+        """
+    ).format(
+        where_sql=f'where {where_sql_properties}' if where_sql_properties else ''
+    )
+    return sql_view, query_values
 
 
 def get_count_summary_of_population(
@@ -442,6 +564,11 @@ def generate_map_view(
         filter_activity: str = None,
         filter_spatial: str = None,
         filter_property: str = None):
+    """
+    Generate materialized view of results from filtering.
+
+    is_province_view: True only if there is filter_species_name and user can view province layer.
+    """
     if is_province_view:
         drop_map_materialized_view(session.province_view_name)
     else:
@@ -452,27 +579,24 @@ def generate_map_view(
             user=session.user
         ).values_list('organisation_id', flat=True).distinct()
         filter_organisation = ','.join(map(str, org_ids))
-    sub_sql, query_values = get_population_query(
-        is_province_view, filter_start_year,
-        filter_end_year, filter_species_name, filter_organisation,
-        filter_activity, filter_spatial, filter_property
-    )
-    table_name = 'province' if is_province_view else 'property'
-    pop_join = 'inner join'
-    if is_province_view:
-        pop_join = 'left join'
-    sql_view = (
-        """
-        select p2.id, p2.name, COALESCE(population_summary.count, 0) as count
-        from {table_name} p2
-        {pop_join} ({sub_sql}) as population_summary
-        on p2.id=population_summary.id
-        """
-    ).format(
-        table_name=table_name,
-        sub_sql=sub_sql,
-        pop_join=pop_join
-    )
+    is_choropleth_layer = True if filter_species_name else False
+    if is_choropleth_layer:
+        if is_province_view:
+            sql_view, query_values = get_province_population_query(
+                filter_start_year, filter_end_year, filter_species_name,
+                filter_organisation, filter_activity, filter_spatial,
+                filter_property
+            )
+        else:
+            sql_view, query_values = get_properties_population_query(
+                filter_start_year, filter_end_year, filter_species_name,
+                filter_organisation, filter_activity, filter_spatial,
+                filter_property
+            )
+    else:
+        sql_view, query_values = get_properties_query(
+            filter_organisation, filter_spatial, filter_property
+        )
     create_map_materialized_view(
         session.province_view_name if is_province_view else
         session.properties_view_name, sql_view, query_values
