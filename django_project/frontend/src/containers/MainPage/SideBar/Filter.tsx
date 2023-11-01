@@ -27,7 +27,10 @@ import {
     selectedPropertyName,
     setStartYear,
     toggleSpecies,
-    selectedActivityName
+    selectedActivityName,
+    setOrganisationCount,
+    setPropertyCount,
+    setActivityCount
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import {MapEvents} from '../../../models/Map';
@@ -119,27 +122,17 @@ function Filter(props: any) {
             {
                 id: "Species report",
                 name: "Species report"
-            },
+            }
         ]
 
-        const provinceReportRoles = [
-            'National data scientist',
-            'Regional data scientist',
-            'Organisation member',
-            'Organisation manager'
-        ]
-        if (provinceReportRoles.some(roleExists)) {
+        if (userInfoData.user_permissions.includes("Can view province report")) {
             informationList.push({
                 id: "Province report",
                 name: "Province report"
             })
         }
 
-        const samplingReportRoles = [
-            'National data consumer',
-            'National data scientist'
-        ]
-        if (samplingReportRoles.some(roleExists)) {
+        if (userInfoData.user_permissions.includes("Can view sampling report")) {
             informationList.push({
                 id: "Sampling report",
                 name: "Sampling report"
@@ -313,6 +306,7 @@ function Filter(props: any) {
               propertyObj => selectedProperty.includes(propertyObj.id)
             ).map(propertyObj => propertyObj.name)
             dispatch(selectedPropertyName(selectedPropertyNames.length > 0 ? selectedPropertyNames.join(', ') : ''));
+            dispatch(setPropertyCount(selectedProperty.length));
         }
     }, [selectedProperty])
 
@@ -335,6 +329,7 @@ function Filter(props: any) {
               organisationObj => selectedOrganisation.includes(organisationObj.id)
             ).map(organisationObj => organisationObj.name)
             dispatch(selectedOrganisationName(selectedOrganisationNames.length > 0 ? selectedOrganisationNames.join(', ') : ''));
+            dispatch(setOrganisationCount(selectedOrganisation.length));
         }
     }, [selectedOrganisation])
 
@@ -345,6 +340,7 @@ function Filter(props: any) {
               activityObj => selectedActivity.includes(activityObj.id)
             ).map(activityObj => activityObj.name)
             dispatch(selectedActivityName(selectedActivityNames.length > 0 ? selectedActivityNames.join(',') : ''));
+            dispatch(setActivityCount(selectedActivity.length));
         }
     }, [selectedActivity])
 

@@ -3,37 +3,6 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-from population_data.utils import (
-    copy_owned_species_fields,
-    assign_annual_population
-)
-
-
-def annual_population_forward_func(apps, schema_editor):
-    AnnualPopulation = apps.get_model('population_data', 'AnnualPopulation')
-
-    for annual_population in AnnualPopulation.objects.all():
-        copy_owned_species_fields(annual_population)
-
-
-def annual_population_reverse_func(apps, schema_editor):
-    pass
-
-
-def annual_population_activity_forward_func(apps, schema_editor):
-    AnnualPopulationPerActivity = apps.get_model('population_data', 'AnnualPopulationPerActivity')
-    AnnualPopulation = apps.get_model('population_data', 'AnnualPopulation')
-
-    for annual_population_pa in AnnualPopulationPerActivity.objects.all():
-        assign_annual_population(
-            annual_population_pa,
-            AnnualPopulation,
-            AnnualPopulationPerActivity
-        )
-
-
-def annual_population_activity_reverse_func(apps, schema_editor):
-    pass
 
 
 class Migration(migrations.Migration):
@@ -106,6 +75,4 @@ class Migration(migrations.Migration):
                 name="unique_population_count_per_activity",
             ),
         ),
-        migrations.RunPython(annual_population_forward_func, annual_population_reverse_func),
-        migrations.RunPython(annual_population_activity_forward_func, annual_population_activity_reverse_func)
     ]
