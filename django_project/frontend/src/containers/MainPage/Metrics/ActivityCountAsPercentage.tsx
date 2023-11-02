@@ -88,9 +88,10 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
       }
     });
 
+    // TODO: Confirm rule
     // Rule 3: If the year doesn't match startYear or endYear, use the most recent year
     if (year !== null && (year < startYear || year > endYear)) {
-      year = null;
+      year = year;
     }
 
     // Rule 2: Only save the activities with the most recent year

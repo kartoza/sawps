@@ -442,9 +442,9 @@ const Metrics = () => {
 
 
                             {
-                            constants.canViewCountAsPercentage &&
+                            userInfoData?.user_permissions.includes('Can view count as percentage') &&
                             selectedSpecies &&
-                            hasEmptyTotalCountPerActivityPercentage && (
+                            totalCoutData.length > 0 && (
                                 <Grid item xs={12} md={6}
                                     style={{
                                         textAlign: 'center',
