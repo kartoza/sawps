@@ -4,8 +4,13 @@
   background-color: white;
   justify-content: center;
   box-shadow: 0 0 6px -2px rgba(0, 0, 0, 0.3);
+  width: 100%;
 
   .TextBox {
     position: absolute;
+  }
+
+  .bar-chart {
+    margin-top: 30px;
   }
 }

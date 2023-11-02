@@ -344,7 +344,7 @@ const Metrics = () => {
 
 
                             {
-                            constants.canViewAgeGroup &&
+                            userInfoData?.user_permissions.includes('Can view age group') &&
                             ageGroupData.map((data) => (
                                 <Grid container key={data.id} item xs={12} md={6}>
                                     <AgeGroupBarChart

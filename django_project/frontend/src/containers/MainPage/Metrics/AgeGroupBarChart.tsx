@@ -3,7 +3,6 @@ import {Bar} from 'react-chartjs-2';
 import "./index.scss";
 import Loading from '../../../components/Loading';
 import ChartContainer from "../../../components/ChartContainer";
-import DoughnutChart from "../../../components/DoughnutChart";
 
 type AvailableColors = {
   [key: string]: string;
@@ -68,6 +67,7 @@ const AgeGroupBarChart = (props: any) => {
   for (const ageGroup of ageGroups) {
     // Map the data for the current age group
     const data = filteredData.map((dataItem: any) => dataItem[ageGroup.dataProperty] || 0);
+    // const data = filteredData.map((dataItem: any) => dataItem[ageGroup.dataProperty] || dataItem['total_total'] / 6);
 
     // Rearrange the data to match the sorted labels
     const sortedData = labels.map((year: any) => {
@@ -79,12 +79,42 @@ const AgeGroupBarChart = (props: any) => {
     const dataset = {
       label: ageGroup.label,
       data: sortedData,
-      backgroundColor: availableColors[ageGroup.label],
+      backgroundColor: availableColors[ageGroup.label]
+      // backgroundColor: filteredData[0][ageGroup.dataProperty] ? availableColors[ageGroup.label] : 'rgba(204, 204, 204, 1)'
     };
 
     datasets.push(dataset);
   }
 
+  const addUnspecifiedData = () => {
+    let unspecifiedData: number[] = [];
+    for (let i = 0; i < filteredData.length; i++) {
+      let total = 0;
+      for (const ageGroup of ageGroups) {
+        // Map the data for the current age group
+        total += filteredData[i][ageGroup.dataProperty] || 0;
+      }
+      if (total === 0) {
+        unspecifiedData.push(filteredData[i]['total_total'])
+      } else {
+        unspecifiedData.push(0)
+      }
+    }
+
+    // Rearrange the data to match the sorted labels
+    const sortedData = labels.map((year: any) => {
+      const index = filteredData.findIndex((item: { total_year: any }) => item.total_year === year);
+      return unspecifiedData[index];
+    });
+
+    datasets.push({
+      label: 'Unspecified',
+      data: sortedData,
+      backgroundColor: 'rgba(204, 204, 204, 1)'
+    });
+  }
+
+  addUnspecifiedData();
 
   let data = null;
 
@@ -149,14 +179,14 @@ const AgeGroupBarChart = (props: any) => {
           }
         },
       },
-      title: {
-        display: true,
-        text: `Population per age group for ${species}`,
-        font: {
-          size: 16,
-          weight: 'bold' as 'bold',
-        },
-      },
+      // title: {
+      //   display: true,
+      //   text: `Population per age group for ${species}`,
+      //   font: {
+      //     size: 16,
+      //     weight: 'bold' as 'bold',
+      //   },
+      // },
     },
   } as const;
 
@@ -164,12 +194,13 @@ const AgeGroupBarChart = (props: any) => {
   return (
     <>
       {!loading ? (
-        <ChartContainer title={''} chart={
-            <Bar
-                data={data}
-                options={options}
-              />
-            }/>
+        <ChartContainer title={`Population per age group for ${species}`} chart={
+          <Bar
+            data={data}
+            options={options}
+            className={'bar-chart'}
+          />
+        }/>
       ) : (
         <Loading containerStyle={{minHeight: 160}}/>
       )}
