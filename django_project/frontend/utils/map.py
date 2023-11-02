@@ -181,6 +181,17 @@ def get_query_condition_for_properties_query(
         property_alias_name: str = 'p'):
     """
     Generate query condition from properties filters.
+
+    Filters that are used for properties layer:
+    - organisation
+    - property
+    - spatial
+
+    :param filter_organisation: filter by organisation id list
+    :param spatial: property spatial filter list
+    :param property: filter by property id list
+    :param property_alias_name: alias for property table in the query
+    :return: list of SQL conditions and list of query values
     """
     sql_conditions = []
     query_values = []
@@ -229,16 +240,15 @@ def get_query_condition_for_population_query(
     Generate query condition from filters dynamic VT.
     
     Filters that are used for choropleth:
-    - species
+    - species (mandatory)
     - start + end years
     - activity
-    - organisation
-    - property
-    - spatial
-    Filters that are used for properties layer (no species):
-    - organisation
-    - property
-    - spatial
+
+    :param filter_start_year: filter by start year
+    :param filter_end_year: filter by end year
+    :param filter_species_name: filter by species name
+    :param filter_activity: filter by activity list
+    :return: list of SQL conditions and list of query values
     """
     sql_conditions = []
     query_values = []
@@ -487,6 +497,15 @@ def generate_population_count_categories(
         is_province_layer: bool,
         session: MapSession,
         filter_species_name: str):
+    """
+    Generate population count categories from species.
+    This function will read from materialized view from MapSession.
+
+    :param is_province_layer: True if this is for province layer
+    :param session: map filter session
+    :param filter_species_name: map filter by species name
+    :return: list of dict of minLabel, maxLabel, value and color
+    """
     min, max = get_count_summary_of_population(is_province_layer, session)
     base_color = DEFAULT_BASE_COLOR
     taxon = Taxon.objects.filter(scientific_name=filter_species_name).first()
@@ -536,17 +555,6 @@ def drop_map_materialized_view(view_name: str):
         cursor.execute(view_sql)
 
 
-def refresh_map_materialized_view(view_name: str):
-    """Execute sql to refresh materialized view."""
-    view_sql = (
-        """
-        REFRESH MATERIALIZED VIEW "{view_name}"
-        """
-    ).format(view_name=view_name)
-    with connection.cursor() as cursor:
-        cursor.execute(view_sql)
-
-
 def delete_expired_map_materialized_view():
     """Remove expired materialized view."""
     sessions = MapSession.objects.filter(
@@ -569,9 +577,18 @@ def generate_map_view(
         filter_spatial: str = None,
         filter_property: str = None):
     """
-    Generate materialized view of results from filtering.
+    Generate materialized view from map filter session.
 
-    is_province_view: True only if there is filter_species_name and user can view province layer.
+    :param session: map filter session
+    :param is_province_view: True only if there is filter_species_name
+    and user can view province layer
+    :param filter_start_year: filter by start year
+    :param filter_end_year: filter by end year
+    :param filter_species_name: filter by species name
+    :param filter_organisation: filter by organisation id list
+    :param filter_activity: filter by activity list
+    :param spatial: property spatial filter list
+    :param property: filter by property id list
     """
     if is_province_view:
         drop_map_materialized_view(session.province_view_name)

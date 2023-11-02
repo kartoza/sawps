@@ -62,6 +62,7 @@ def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
 
 
 class MapSessionBase(APIView):
+    """Base class for map filter session."""
 
     def can_view_properties_layer(self):
         return self.request.user.has_perm('can_view_map_properties_layer')
@@ -70,6 +71,7 @@ class MapSessionBase(APIView):
         return self.request.user.has_perm('can_view_map_province_layer')
 
     def generate_session(self):
+        """Generate map filter session from POST data."""
         session_uuid = self.request.GET.get('session', None)
         session = MapSession.objects.filter(uuid=session_uuid).first()
         filter_species = self.get_species_filter()
@@ -77,10 +79,10 @@ class MapSessionBase(APIView):
             session = MapSession.objects.create(
                 user=self.request.user,
                 created_date=timezone.now(),
-                expired_date=timezone.now() + datetime.timedelta(days=1)
+                expired_date=timezone.now() + datetime.timedelta(hours=6)
             )
         session.species = filter_species
-        session.expired_date = timezone.now() + datetime.timedelta(days=1)
+        session.expired_date = timezone.now() + datetime.timedelta(hours=6)
         session.save(update_fields=['species', 'expired_date'])
         if self.can_view_properties_layer():
             generate_map_view(
@@ -107,9 +109,11 @@ class MapSessionBase(APIView):
         return session
 
     def get_species_filter(self):
+        """Return species filter if any from POST data."""
         return self.request.data.get('species', None)
 
     def get_current_session_or_404(self):
+        """Retrieve map filter session or return 404."""
         session_uuid = self.request.GET.get('session', None)
         session = MapSession.objects.filter(uuid=session_uuid).first()
         if session is None:
@@ -117,6 +121,7 @@ class MapSessionBase(APIView):
         return session
 
     def get_map_query_type(self):
+        """Check map query type: default (by active org) or filter session."""
         session_uuid = self.request.GET.get('session', None)
         type = MapQueryEnum.MAP_DEFAULT
         if session_uuid:
@@ -176,12 +181,14 @@ class LayerMVTTilesBase(APIView):
     permission_classes = [IsAuthenticated]
 
     def gzip_tile(self, data):
+        """Apply gzip to vector tiles bytes."""
         bytesbuffer = io.BytesIO()
         with gzip.GzipFile(fileobj=bytesbuffer, mode='w') as w:
             w.write(data)
         return bytesbuffer.getvalue()
 
     def get_mvt_sql(self, mvt_name, sql):
+        """Generate ST_MVT sql for single query."""
         fsql = (
             '(SELECT ST_AsMVT(q,\'{mvt_name}\',4096,\'geom\',\'id\') '
             'AS data '
@@ -193,6 +200,7 @@ class LayerMVTTilesBase(APIView):
         return fsql
 
     def generate_tile(self, sql, query_values):
+        """Execute sql to generate vector tile bytes array."""
         if sql is None:
             return []
         try:
@@ -271,6 +279,7 @@ class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
     def get_province_layer_query(
             self, session: MapSession,
             z: int, x: int, y: int):
+        """Generate SQL query for province layer using filter session."""
         sql = (
             """
             select zpss.id, zpss.adm1_en, population_summary.count,
@@ -290,7 +299,7 @@ class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
             session: MapSession,
             z: int, x: int, y: int) -> Tuple[str, List[str]]:
         """
-        Generate layer queries for vector tile using filter session.
+        Generate layer queries for vector tiles using filter session.
 
         Possible layers: province_population, properties, properties-point.
         """
@@ -382,7 +391,7 @@ class DefaultPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
             self, z: int, x: int, y: int) -> Tuple[str, List[str]]:
         """
         Generate layer queries for vector tile using active organisation.
-        
+
         Possible layers: properties, properties-point.
         """
         sqls = []
