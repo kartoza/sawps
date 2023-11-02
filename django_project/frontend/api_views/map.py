@@ -71,7 +71,12 @@ class MapSessionBase(APIView):
         return self.request.user.has_perm('can_view_map_province_layer')
 
     def generate_session(self):
-        """Generate map filter session from POST data."""
+        """
+        Generate map filter session from POST data.
+
+        Session will have expiry in 6 hours after creation and
+        this expiry date is updated when the session filter is changed.        
+        """
         session_uuid = self.request.GET.get('session', None)
         session = MapSession.objects.filter(uuid=session_uuid).first()
         filter_species = self.get_species_filter()

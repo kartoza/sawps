@@ -188,8 +188,8 @@ def get_query_condition_for_properties_query(
     - spatial
 
     :param filter_organisation: filter by organisation id list
-    :param spatial: property spatial filter list
-    :param property: filter by property id list
+    :param filter_spatial: property spatial filter list
+    :param filter_property: filter by property id list
     :param property_alias_name: alias for property table in the query
     :return: list of SQL conditions and list of query values
     """
@@ -237,8 +237,8 @@ def get_query_condition_for_population_query(
         filter_species_name: str,
         filter_activity: str):
     """
-    Generate query condition from filters dynamic VT.
-    
+    Generate query condition from species filters.
+
     Filters that are used for choropleth:
     - species (mandatory)
     - start + end years
@@ -292,7 +292,18 @@ def get_province_population_query(
         filter_activity: str,
         filter_spatial: str,
         filter_property: str):
-    """Generate query for population count."""
+    """
+    Generate query for population count in province level.
+
+    :param filter_start_year: filter by start year
+    :param filter_end_year: filter by end year
+    :param filter_species_name: filter by species name
+    :param filter_organisation: filter by organisation id list
+    :param filter_activity: filter by activity list
+    :param filter_spatial: property spatial filter list
+    :param filter_property: filter by property id list
+    :return: SQL for materialized view and query values
+    """
     sql_view = ''
     query_values = []
     sql_conds_pop, query_values_pop = get_query_condition_for_population_query(
@@ -343,7 +354,18 @@ def get_properties_population_query(
         filter_activity: str,
         filter_spatial: str,
         filter_property: str):
-    """Generate query for population count."""
+    """
+    Generate query for population count in properties level.
+
+    :param filter_start_year: filter by start year
+    :param filter_end_year: filter by end year
+    :param filter_species_name: filter by species name
+    :param filter_organisation: filter by organisation id list
+    :param filter_activity: filter by activity list
+    :param filter_spatial: property spatial filter list
+    :param filter_property: filter by property id list
+    :return: SQL for materialized view and query values
+    """
     sql_view = ''
     query_values = []
     sql_conds_pop, query_values_pop = get_query_condition_for_population_query(
@@ -393,7 +415,14 @@ def get_properties_query(
         filter_organisation: str,
         filter_spatial: str,
         filter_property: str):
-    """Generate query for population count."""
+    """
+    Generate query for properties layer.
+
+    :param filter_organisation: filter by organisation id list
+    :param filter_spatial: property spatial filter list
+    :param filter_property: filter by property id list
+    :return: SQL for materialized view and query values
+    """
     sql_view = ''
     query_values = []
     sql_conds_properties, query_values_properties = (
@@ -424,6 +453,8 @@ def get_count_summary_of_population(
     Return (Min, Max) for population query count.
     Materialized view for current session must be created.
 
+    :param is_province_layer: True if the summary is for province layer
+    :param session: map filter session
     :return: Tuple[int, int]: A tuple of (Min, Max) population count
     """
     where_sql = ''
@@ -463,7 +494,7 @@ def generate_population_count_categories_base(
 
     :param min: minimum population count
     :param max: maximum population count
-    :param base_color: base color in ex to calculate color gradient
+    :param base_color: base color in hex to calculate color gradient
     :return: list of dict of minLabel, maxLabel, value and color.
     """
     result = []
@@ -515,7 +546,13 @@ def generate_population_count_categories(
 
 
 def create_map_materialized_view(view_name: str, sql: str, query_values):
-    """Execute sql to create materialized view."""
+    """
+    Execute sql to create materialized view.
+    
+    :param view_name: name of the materialized view
+    :param sql: the SQL for the materialized view
+    :param query_values: list of query values
+    """
     view_sql = (
         """
         CREATE MATERIALIZED VIEW "{view_name}"
@@ -545,7 +582,11 @@ def create_map_materialized_view(view_name: str, sql: str, query_values):
 
 
 def drop_map_materialized_view(view_name: str):
-    """Execute sql to drop materialized view."""
+    """
+    Execute sql to drop materialized view.
+
+    :param view_name: name of the materialized view
+    """
     view_sql = (
         """
         DROP MATERIALIZED VIEW IF EXISTS "{view_name}"
@@ -587,8 +628,8 @@ def generate_map_view(
     :param filter_species_name: filter by species name
     :param filter_organisation: filter by organisation id list
     :param filter_activity: filter by activity list
-    :param spatial: property spatial filter list
-    :param property: filter by property id list
+    :param filter_spatial: property spatial filter list
+    :param filter_property: filter by property id list
     """
     if is_province_view:
         drop_map_materialized_view(session.province_view_name)
