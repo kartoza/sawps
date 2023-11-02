@@ -26,7 +26,7 @@ DEFAULT_BASE_COLOR = '#FF5252'
 
 
 class MapQueryEnum(Enum):
-    # show properties layer using active organisation 
+    # show properties layer using active organisation
     MAP_DEFAULT = 'MAP_DEFAULT'
     # show properties/province layers using filters
     MAP_USING_SESSION = 'MAP_SESSION'
@@ -197,7 +197,8 @@ def get_query_condition_for_properties_query(
     query_values = []
     if filter_organisation:
         if filter_organisation != 'all':
-            sql_conditions.append(f'{property_alias_name}.organisation_id IN %s')
+            sql_conditions.append(
+                f'{property_alias_name}.organisation_id IN %s')
             query_values.append(
                 ast.literal_eval('(' + filter_organisation + ',)'))
     else:
@@ -209,7 +210,8 @@ def get_query_condition_for_properties_query(
             query_values.append(
                 ast.literal_eval('(' + filter_property + ',)'))
     else:
-        sql_conditions.append(f'{property_alias_name}.id = any(ARRAY[]::bigint[])')
+        sql_conditions.append(
+            f'{property_alias_name}.id = any(ARRAY[]::bigint[])')
     if filter_spatial:
         spatial_filter_values = tuple(
             filter(None, filter_spatial.split(','))
@@ -406,7 +408,9 @@ def get_properties_population_query(
         """
     ).format(
         sub_sql=sql,
-        where_sql=f'where {where_sql_properties}' if where_sql_properties else ''
+        where_sql=(
+            f'where {where_sql_properties}' if where_sql_properties else ''
+        )
     )
     return sql_view, query_values
 
@@ -441,7 +445,9 @@ def get_properties_query(
         {where_sql}
         """
     ).format(
-        where_sql=f'where {where_sql_properties}' if where_sql_properties else ''
+        where_sql=(
+            f'where {where_sql_properties}' if where_sql_properties else ''
+        )
     )
     return sql_view, query_values
 
@@ -548,7 +554,7 @@ def generate_population_count_categories(
 def create_map_materialized_view(view_name: str, sql: str, query_values):
     """
     Execute sql to create materialized view.
-    
+
     :param view_name: name of the materialized view
     :param sql: the SQL for the materialized view
     :param query_values: list of query values

@@ -44,7 +44,9 @@ class PropertyAdmin(admin.ModelAdmin):
     )
     def run_patch_property_centroid(self, request, queryset):
         """Admin action to patch property without centroid."""
-        from django_project.property.tasks.generate_property_centroid import generate_property_centroid
+        from property.tasks.generate_property_centroid import (
+            generate_property_centroid
+        )
         generate_property_centroid.delay()
 
     actions = [generate_spatial_filters_for_properties,

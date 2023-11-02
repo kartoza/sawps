@@ -65,7 +65,8 @@ class MapSessionBase(APIView):
     """Base class for map filter session."""
 
     def can_view_properties_layer(self):
-        return self.request.user.has_perm('sawps.can_view_map_properties_layer')
+        return self.request.user.has_perm(
+            'sawps.can_view_map_properties_layer')
 
     def can_view_province_layer(self):
         return self.request.user.has_perm('sawps.can_view_map_province_layer')
@@ -75,7 +76,7 @@ class MapSessionBase(APIView):
         Generate map filter session from POST data.
 
         Session will have expiry in 6 hours after creation and
-        this expiry date is updated when the session filter is changed.        
+        this expiry date is updated when the session filter is changed.
         """
         session_uuid = self.request.GET.get('session', None)
         session = MapSession.objects.filter(uuid=session_uuid).first()
