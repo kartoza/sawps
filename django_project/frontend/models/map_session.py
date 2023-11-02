@@ -46,7 +46,7 @@ class MapSession(models.Model):
 
 
 @receiver(pre_delete, sender=MapSession)
-def api_key_on_delete(sender, instance, using, **kwargs):
+def map_session_pre_delete(sender, instance, using, **kwargs):
     from frontend.utils.map import drop_map_materialized_view
     drop_map_materialized_view(instance.properties_view_name)
     drop_map_materialized_view(instance.province_view_name)
