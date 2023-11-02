@@ -505,7 +505,7 @@ def generate_population_count_categories_base(
     break_val = math.ceil((max - min) / CHOROPLETH_NUMBER_OF_BREAKS)
     if break_val == 0:
         # case min = max
-        break_val = 1
+        break_val = 20
     val = min
     for t in range(0, CHOROPLETH_NUMBER_OF_BREAKS):
         result.append({
