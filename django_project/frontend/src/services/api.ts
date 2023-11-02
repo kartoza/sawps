@@ -13,6 +13,7 @@ export interface UserInfo {
 
 export interface Property {
   id: number
+  short_code: string
   name: string
   owner: string
   owner_email: string
