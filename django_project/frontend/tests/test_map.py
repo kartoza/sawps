@@ -6,12 +6,16 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from core.settings.utils import absolute_path
 from frontend.utils.map import get_map_template_style
 from property.factories import PropertyFactory
+from stakeholder.models import OrganisationUser
 from stakeholder.factories import (
     organisationFactory,
-    userRoleTypeFactory
+    userRoleTypeFactory,
+    organisationUserFactory
 )
 from frontend.models.parcels import (
     Erf,
@@ -24,9 +28,13 @@ from frontend.api_views.map import (
     DefaultPropertiesLayerMVTTiles,
     FindParcelByCoord,
     FindPropertyByCoord,
-    MapAuthenticate
+    MapAuthenticate,
+    SessionPropertiesLayerMVTTiles,
+    PopulationCountLegends
 )
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
+from sawps.models import ExtendedGroup
+from sawps.tests.model_factories import GroupF
 
 
 def mocked_set_cache(cache_key, allowed, redis_time_cache):
@@ -36,14 +44,33 @@ def mocked_set_cache(cache_key, allowed, redis_time_cache):
 class TestMapAPIViews(TestCase):
 
     def setUp(self) -> None:
+        self.group_1 = GroupF.create()
         self.organisation_1 = organisationFactory.create()
         self.factory = OrganisationAPIRequestFactory(self.organisation_1)
         self.middleware = SessionMiddleware(lambda x: None)
         self.user_1 = UserF.create(username='test_1')
+        # add user_1 to org_1
+        self.user_1.user_profile.current_organisation = self.organisation_1
+        self.user_1.user_profile.save()
+        organisationUserFactory.create(
+            user=self.user_1,
+            organisation=self.organisation_1
+        )
+        # assign perm user_1 with can_view_map_properties_layer
+        self.group_1.user_set.add(self.user_1)
+        content_type = ContentType.objects.get_for_model(ExtendedGroup)
+        view_properties_perm = Permission.objects.filter(
+            content_type=content_type,
+            codename='can_view_map_properties_layer'
+        ).first()
+        self.group_1.permissions.add(view_properties_perm)
         self.superuser = UserF.create(
             username='test_2',
             is_superuser=True
         )
+        # set active org for superuser
+        self.superuser.user_profile.current_organisation = self.organisation_1
+        self.superuser.user_profile.save()
         self.user_2 = UserF.create(username='test_3')
         # insert geom 1 and 2
         geom_path = absolute_path(
@@ -60,6 +87,13 @@ class TestMapAPIViews(TestCase):
             self.holding_1 = Holding.objects.create(
                 geom=GEOSGeometry(geom_str),
                 cname='C1235DEF'
+            )
+            self.property_1 = PropertyFactory.create(
+                geometry=self.holding_1.geom,
+                name='Property ABC',
+                created_by=self.user_1,
+                organisation=self.organisation_1,
+                centroid=self.holding_1.geom.point_on_surface
             )
 
     def test_get_context_layers(self):
@@ -150,13 +184,6 @@ class TestMapAPIViews(TestCase):
         self.user_1.user_profile.current_organisation = self.organisation_1
         self.user_1.save()
 
-        # insert property
-        property = PropertyFactory.create(
-            geometry=self.holding_1.geom,
-            name='Property A',
-            created_by=self.user_1,
-            organisation=self.organisation_1
-        )
         lat = -26.71998940486352
         lng = 27.763781680455708
         request = self.factory.get(
@@ -170,16 +197,20 @@ class TestMapAPIViews(TestCase):
         view = FindPropertyByCoord.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['name'], property.name)
-        self.assertEqual(response.data['short_code'], property.short_code)
-        # set current organisation_2 in the request
+        self.assertEqual(response.data['name'], self.property_1.name)
+        self.assertEqual(response.data['short_code'],
+                         self.property_1.short_code)
+        # remove org1 from user1
+        OrganisationUser.objects.filter(
+            organisation=self.organisation_1,
+            user=self.user_1
+        ).delete()
         request = self.factory.get(
             reverse('find-property') + (
                 f'/?lat={lat}&lng={lng}'
             ),
             organisation_id=self.organisation_1.id
         )
-        property.organisation.id=55
         request.user = self.user_1
         # should find 0
         response = view(request)
@@ -202,3 +233,48 @@ class TestMapAPIViews(TestCase):
         mocked_cache.return_value = True
         response = view(request)
         self.assertEqual(response.status_code, 200)
+
+    def test_get_properties_map_tile_by_session(self):
+        pass
+
+    def test_population_count_legends(self):
+        pass
+
+    def test_generate_population_count_categories_base(self):
+        # test with normal case
+        # test with min=max > 0
+        # test with min=max = 0
+        pass
+
+    def test_get_query_condition_for_properties_query(self):
+        pass
+
+    def test_get_query_condition_for_population_query(self):
+        pass
+
+    def test_get_province_population_query(self):
+        pass
+
+    def test_get_properties_population_query(self):
+        pass
+
+    def test_get_properties_query(self):
+        pass
+
+    def test_get_count_summary_of_population(self):
+        pass
+
+    def test_generate_population_count_categories(self):
+        pass
+
+    def test_create_map_materialized_view(self):
+        pass
+
+    def test_drop_map_materialized_view(self):
+        pass
+
+    def test_delete_expired_map_materialized_view(self):
+        pass
+
+    def test_generate_map_view(self):
+        pass

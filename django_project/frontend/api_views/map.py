@@ -65,10 +65,10 @@ class MapSessionBase(APIView):
     """Base class for map filter session."""
 
     def can_view_properties_layer(self):
-        return self.request.user.has_perm('can_view_map_properties_layer')
+        return self.request.user.has_perm('sawps.can_view_map_properties_layer')
 
     def can_view_province_layer(self):
-        return self.request.user.has_perm('can_view_map_province_layer')
+        return self.request.user.has_perm('sawps.can_view_map_province_layer')
 
     def generate_session(self):
         """
