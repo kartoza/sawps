@@ -103,11 +103,11 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 In the central part of the `Landing Page`, the user will find three prominent buttons that guide the user to key areas of the platform:
 
-8. **About:** The `ABOUT` button here serves as a quick link to the detailed information about the platform and its objectives.
+8. **About:** The `ABOUT` button here serves as a quick link to the detailed information about the platform and its objectives. Click on the [about page](about.md) to navigate to the about page.
 
-9. **Explore:** Clicking `EXPLORE` will take the user directly to the explore page, where the user can view, manipulate, and analyse the users datasets with various tools and filters.
+9. **Explore:** Clicking `EXPLORE` will take the user directly to the explore page, where the user can view, manipulate, and analyse the users datasets with various tools and filters. Click on the [explore page](./explore/index.md) to navigate to the explore page.
 
-10. **Upload Data:** Select `UPLOAD DATA` to initiate the process of adding new datasets to the users account, making them accessible for further analysis.
+10. **Upload Data:** Select `UPLOAD DATA` to initiate the process of adding new datasets to the users account, making them accessible for further analysis. Click on the [data upload](./data-upload/index.md) to navigate to the data upload page.
 
 #### National Population Trends
 
@@ -125,7 +125,7 @@ The footer section, located at the bottom of the `Landing Page`, offers links to
 
 4. **Home:** The `HOME` link returns the user to the main `Landing Page`, providing an easy way to start the users journey within the platform.
 
-5. **Explore:** By choosing `MAP,` the user can access geographical data visualisation and exploration features within the platform, also the user can see the reports for the data. Click on the [explore page](./explore/index.md) to navigate to the explore page.
+5. **Explore:** By choosing `EXPLORE` the user can access geographical data visualisation and exploration features within the platform, also the user can see the reports for the data. Click on the [explore page](./explore/index.md) to navigate to the explore page.
 
 
 6. **Documentation:** Click on the `DOCUMENTATION` to access comprehensive documentation, like this page, which provides detailed information on various aspects of the platform.
