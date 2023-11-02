@@ -29,10 +29,11 @@ interface PropertyAvailableBarChartProps {
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     onEmptyDatasets: any;
+    activity: string
 }
 
 const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (props) => {
-    const { selectedSpecies, propertyId, startYear, endYear, loading, setLoading, onEmptyDatasets } = props;
+    const { selectedSpecies, propertyId, startYear, endYear, loading, setLoading, onEmptyDatasets, activity } = props;
     const [propertyAreaAvailableData, setPropertyAreaAvailableData] = useState<PropertyAreaAvailableData[]>([]);
     const [ renderChart, setRenderChart] = useState(false);
 
@@ -52,7 +53,7 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
 
     const fetchAreaAvailable = () => {
         setLoading(true);
-        axios.get(`${FETCH_SPECIES_AREA_AVAILABLE}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`)
+        axios.get(`${FETCH_SPECIES_AREA_AVAILABLE}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activity}&property=${propertyId}`)
             .then((response) => {
                 setLoading(false);
                 if (response.data) {
