@@ -46,8 +46,8 @@ def create_clear_expired_map_session():
             import_module('django_celery_beat.models').PeriodicTask
         )
         schedule, created = IntervalSchedule.objects.get_or_create(
-            every=1,
-            period=IntervalSchedule.DAYS
+            every=2,
+            period=IntervalSchedule.HOURS
         )
     except Exception as e:
         print(e)

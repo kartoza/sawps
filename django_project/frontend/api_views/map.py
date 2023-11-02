@@ -80,7 +80,8 @@ class MapSessionBase(APIView):
                 expired_date=timezone.now() + datetime.timedelta(days=1)
             )
         session.species = filter_species
-        session.save(update_fields=['species'])
+        session.expired_date = timezone.now() + datetime.timedelta(days=1)
+        session.save(update_fields=['species', 'expired_date'])
         if self.can_view_properties_layer():
             generate_map_view(
                 session, False,
