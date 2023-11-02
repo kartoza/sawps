@@ -11,6 +11,7 @@ from frontend.static_mapping import (
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
 )
+from frontend.utils.organisation import get_current_organisation_id
 from sawps.models import ExtendedGroup
 
 
@@ -21,6 +22,10 @@ def is_organisation_member(user: User) -> bool:
     :param user: The user object
     :return:  True if the user is a member, otherwise False
     """
+
+    # TODO: Update organisation member checking to use group
+    # Since user with OrganisationUser record will be added to
+    # organisation member/manager group.
     if not UserProfile.objects.filter(
         user=user
     ).exists():
@@ -45,6 +50,11 @@ def is_organisation_manager(
     :return: True if the user is a manager of the organisation,
         otherwise False.
     """
+
+    # TODO: Update organisation member checking to use group
+    # Since user with OrganisationUser record will be added to
+    # organisation member/manager group.
+
     if not UserProfile.objects.filter(
             user=user
     ).exists():
@@ -104,11 +114,18 @@ def get_user_permissions(user: User) -> List[str]:
     ext_group_permissions = Permission.objects.filter(
         content_type=content_type
     )
-    if user.is_superuser or user.is_staff:
+    organisation_id = get_current_organisation_id(user)
+    if organisation_id:
+        organisation = Organisation.objects.get(id=organisation_id)
+        if organisation.national:
+            permissions.add('Can view province report')
+
+    if user.is_superuser:
         ext_group_permissions_set = set(
             ext_group_permissions.values_list('name', flat=True)
         )
         permissions = permissions.union(ext_group_permissions_set)
+        permissions.add('Can view province report')
 
     for group in groups:
         allowed_permission = set(
