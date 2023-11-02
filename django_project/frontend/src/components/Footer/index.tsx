@@ -11,7 +11,7 @@ const Footer:FC<IFooter>=()=>{
           {/* Made with <img className='heart' src='/static/images/heart-icon.png'/> by&nbsp;
           <a href='https://kartoza.com' target='_blank' style={{ color: "var(--white)"}}>Kartoza</a> */}
             <div className='sanbi-footer-logo-container'>
-              <a href="https://biodiversityadvisor.sanbi.org/" target="_blank">
+              <a href="https://www.sanbi.org/" target="_blank">
                 <img className='footer-logo' data-testid='sanbi-footer-logo' src='/static/images/footer/sanbi-footer-logo.png' />
               </a>
             </div>

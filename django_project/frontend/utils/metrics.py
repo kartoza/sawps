@@ -2,8 +2,12 @@ from typing import Dict, List, Any
 from population_data.models import AnnualPopulation
 
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
-from django.db.models import QuerySet, Sum, Q
+from django.db.models import QuerySet, Sum, Q, Min, Max
 from property.models import Property
+
+CATEGORY_LABELS = 'category_labels'
+YEAR_LABELS = 'years'
+CATEGORY_DATA = 'data'
 
 
 def calculate_species_count_per_province(
@@ -61,9 +65,8 @@ def calculate_species_count_per_province(
 
 
 def calculate_population_categories(
-    queryset,
-    species_name: str,
-    categories: list = None
+        queryset,
+        species_name: str
 ) -> Dict[str, int]:
     """
     Calculate population categories for a given queryset of properties.
@@ -73,87 +76,85 @@ def calculate_population_categories(
         species_name (str): The name of the species.
 
     Returns:
-        Dict[str, int]: A dictionary containing population categories
-        as keys and their corresponding counts as values.
+        Dict[str, Any]: A dictionary containing:
+        - CATEGORY_LABELS: List of population category labels.
+        - YEAR_LABELS: List of years for which the data is available.
+        - CATEGORY_DATA: List of dictionaries with year, property count,
+            and population category details.
 
-    This function takes a queryset of properties and calculates
-    population categories based on annual population data.
-    It retrieves the annual population data for the
-    specified properties and species provided, calculates
+    This function takes a queryset of properties and the name of a species.
+    It calculates population categories based on annual population
+    data for the specified species across
+    the provided properties.
+    It retrieves the annual population data, calculates
     the minimum and maximum populations,
     creates 6 population categories, and counts
-    the properties in each category.
-
-    The result is a dictionary
-    with population categories as keys and
-    their counts as values.
+    the number of properties in each category for each year.
     """
 
     # Extract property IDs from the queryset
-    property_ids = [query.id for query in queryset]
+    property_ids = list(set(
+        queryset.values_list('id', flat=True)
+    ))
 
     # Fetch the annual population data for the specified property IDs
     annual_population_data = AnnualPopulation.objects.filter(
-        owned_species__property__id__in=property_ids,
-        owned_species__taxon__scientific_name=species_name
-    ).values(
-        'year'
-    ).annotate(
-        # Calculate the sum of total populations for each year
-        population_total=Sum('total')
-    ).order_by(
-        'year'
-    )
+        property__in=property_ids,
+        taxon__scientific_name=species_name
+    ).distinct()
 
-    # Handle the case where annual_population_data is empty
-    try:
-        # Calculate the minimum and maximum for category boundaries
-        min_population = min(
-            item['population_total'] for item in annual_population_data
-        )
-        max_population = max(
-            item['population_total'] for item in annual_population_data
-        )
-    except ValueError:
+    if not annual_population_data.exists():
         return {}
+
+    min_population, max_population = annual_population_data.aggregate(
+        Min('total'), Max('total')
+    ).values()
 
     # Calculate the category width (create 6 groups minimum)
     category_width = (max_population - min_population) / 6
 
     # Create the population categories
     categories = [int(min_population + category_width * i) for i in range(6)]
+    category_labels = []
 
-    results = {}
+    results = []
 
-    # Iterate through the annual_population_data
-    # and count properties in each category
-    for item in annual_population_data:
-        population = item['population_total']
-        year = item['year']
-
-        # Assign the category based on the population
-        category = None
-        for i in range(len(categories) - 1):
-            if categories[i] <= population < categories[i + 1]:
-                category = f'{categories[i]}-{categories[i + 1]}'
-                break
+    for index, category in enumerate(categories):
+        if len(categories) - 1 > index:
+            max_category = categories[index + 1]
+            category_key = f'{category}-{max_category}'
         else:
-            category = f'>{categories[-1]}'
+            max_category = max_population
+            category_key = f'>{category}'
 
-        # Create a unique key for each year and category
-        key = f'{year}_{category}'
+        category_labels.append(category_key)
 
-        # Increment the count for the key
-        if key in results:
-            results[key]['property_count'] += 1
-        else:
-            results[key] = {'year': year, 'property_count': 1}
+        for year in annual_population_data.values_list(
+                'year', flat=True).distinct():
+            annual_population_data_by_category = annual_population_data.filter(
+                total__gte=category,
+                total__lte=max_category,
+                year=year
+            )
+            property_count = (
+                annual_population_data_by_category.values(
+                    'property').distinct().count()
+            )
 
-    # Convert the results dictionary to the final format
-    result = {key: value for key, value in results.items()}
+            results.append({
+                'year': year,
+                'category': category_key,
+                'property_count': property_count
+            })
 
-    return result
-
+    return {
+        CATEGORY_LABELS: category_labels,
+        YEAR_LABELS: sorted(set(
+            int(year) for year in annual_population_data.values_list(
+                'year', flat=True)
+        )),
+        CATEGORY_DATA: results
+    }
 
 
 def calculate_total_area_available_to_species(
