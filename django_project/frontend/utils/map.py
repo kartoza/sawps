@@ -457,16 +457,10 @@ def generate_population_count_categories_base(
     :return: list of dict of minLabel, maxLabel, value and color.
     """
     result = []
-    if max == 0 and min == 0:
-        result.append({
-            'minLabel': 0,
-            'maxLabel': 0,
-            'value': 0,
-            'color': '#ffffff'
-        })
-        return result
     colors = linear_gradient(base_color, n=CHOROPLETH_NUMBER_OF_BREAKS)['hex']
     colors = colors[::-1]
+    if max == 0 and min == 0:
+        max = 100
     break_val = math.ceil((max - min) / CHOROPLETH_NUMBER_OF_BREAKS)
     if break_val == 0:
         # case min = max
@@ -480,8 +474,6 @@ def generate_population_count_categories_base(
             'color': ''
         })
         val += break_val
-        if val > max:
-            break
     t = CHOROPLETH_NUMBER_OF_BREAKS - 1
     for element in reversed(result):
         element['color'] = colors[t]
