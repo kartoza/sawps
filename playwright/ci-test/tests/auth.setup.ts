@@ -31,7 +31,11 @@ setup.describe('login and 2fa-authentication ', () => {
     
     await page.getByRole('button', { name: 'LOGIN' }).click();
 
-    await page.waitForURL('/');
+    const exploreSelector = 'div.landing-page-banner-text-btns button:text("EXPLORE")';
+
+    await page.waitForSelector(exploreSelector, {timeout: 2000});
+
+    await page.click(exploreSelector);
 
     const finalURL = page.url();
 
