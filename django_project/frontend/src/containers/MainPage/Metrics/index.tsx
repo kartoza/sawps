@@ -56,7 +56,6 @@ const Metrics = () => {
     const [hasEmptyProvinceCount, setHasEmptyProvinceCount] = useState(true);
     const [hasEmptyProvinceCountPercentage, setHasEmptyProvinceCountPercentage] = useState(true);
     const [hasEmptyTotalCountPerActivity, setHasEmptyTotalCountPerActivity] = useState(true);
-    const [hasEmptyTotalCountPerActivityPercentage, setHasEmptyTotalCountPerActivityPercentage] = useState(true);
     const [hasEmptyPopulationEstimateCategoryCount, setHasEmptyPopulationEstimateCategoryCount] = useState(true);
     const [hasEmptyPopulationEstimateCategoryCountPercentage, setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage] = useState(true);
     const [hasEmptyPropertyAvailable, setHasEmptyPropertyAvailable] = useState(true);
@@ -96,9 +95,6 @@ const Metrics = () => {
     };
     const handleEmptyTotalCountPerActivity = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyTotalCountPerActivity(isEmpty);
-    };
-    const handleEmptyTotalCountPerActivityPercentage = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
-        setHasEmptyTotalCountPerActivityPercentage(isEmpty);
     };
     const handleEmptyTopulationEstimateCategoryCount = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyPopulationEstimateCategoryCount(isEmpty);
@@ -183,7 +179,6 @@ const Metrics = () => {
         setHasEmptyPropertyAvailable(true)
         setHasEmptyProvinceCountPercentage(true)
         setHasEmptyTotalCountPerActivity(true)
-        setHasEmptyTotalCountPerActivityPercentage(true)
         setHasEmptyPopulationEstimateCategoryCount(true)
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
         handleHasEmptyAreaAvailable(true)
@@ -446,13 +441,6 @@ const Metrics = () => {
                             selectedSpecies &&
                             totalCoutData.length > 0 && (
                                 <Grid item xs={12} md={6}
-                                    style={{
-                                        textAlign: 'center',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        maxHeight: '380px'
-                                    }}
                                 >
                                     <ActivityCountAsPercentage
                                         selectedSpecies={selectedSpecies}
@@ -460,7 +448,6 @@ const Metrics = () => {
                                         endYear={endYear}
                                         loading={loading}
                                         activityData={totalCoutData}
-                                        onEmptyDatasets={handleEmptyTotalCountPerActivityPercentage}
                                     />
                                 </Grid>
                                 )}
@@ -487,15 +474,7 @@ const Metrics = () => {
                             constants.canViewPopulationEstimateAsPercentage &&
                             selectedSpecies &&
                             hasEmptyPopulationEstimateCategoryCountPercentage && (
-                                <Grid item xs={12} md={6}
-                                    style={{
-                                        textAlign: 'center',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        maxHeight: '380px'
-                                    }}
-                                >
+                                <Grid item xs={12} md={6}>
                                     <PopulationEstimateAsPercentage
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}

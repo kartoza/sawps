@@ -166,14 +166,14 @@ const SpeciesCountPerProvinceChart = (props: any) => {
                 },
             },
         },
-        title: {
-            display: true,
-            text: chartTitle,
-            font: {
-                size: 16,
-                weight: 'bold' as 'bold',
-            },
-        },
+        // title: {
+        //     display: true,
+        //     text: chartTitle,
+        //     font: {
+        //         size: 16,
+        //         weight: 'bold' as 'bold',
+        //     },
+        // },
     },
     layout: {
         padding: {
@@ -214,10 +214,11 @@ const SpeciesCountPerProvinceChart = (props: any) => {
   return (
     <Grid>
       {!loading ? (
-          <ChartContainer title={''} chart={
+          <ChartContainer title={chartTitle} chart={
             <Bar
               data={data}
               options={options}
+              className={'bar-chart'}
             />
           }/>
       ) : (

@@ -126,60 +126,9 @@ const PopulationEstimateAsPercentage = (props: any) => {
     chartTitle = "No data available for current filter selections";
   }
 
-  const options = {
-    cutout: "54%",
-    plugins: {
-      legend: {
-        position: "right" as "right",
-        display: true,
-        labels: {
-          boxWidth: 20,
-          boxHeight: 13,
-          padding: 12,
-          font: {
-            size: 12,
-          },
-        },
-      },
-      datalabels: {
-        color: "#fff",
-        formatter: (value: number) => {
-          return `${value.toFixed(2)}%`;
-        },
-        font: {
-          size: 12,
-        },
-      },
-      title: {
-        display: true,
-        text: chartTitle,
-        align: 'start' as 'start',
-        font: {
-          size: 20,
-          weight: 'bold' as 'bold',
-        },
-      },
-    },
-  };
-
- // custom styling for donut charts
- const chartContainerStyle: React.CSSProperties = {
-  position: "relative",
-  backgroundImage: `url(${backgroundImageUrl})`,
-  backgroundSize: "18% 20%", // width and height of image
-  backgroundPosition: "19.5% 57%", //horizontal and vertical position respectively
-  backgroundRepeat: "no-repeat",
-  whiteSpace: "pre-wrap", // Allow text to wrap
-};
-
     return (
       <>
         {!loading ? (
-            // <Doughnut
-            //   data={chartData}
-            //   options={options}
-            //   style={chartContainerStyle}
-            // />
           <ChartContainer title={chartTitle} chart={
               <DoughnutChart
                   chartData={chartData}
