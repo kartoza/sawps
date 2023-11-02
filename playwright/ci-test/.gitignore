@@ -5,3 +5,4 @@ node_modules/
 states
 package-lock.json
 playwright-results
+*auth.json
