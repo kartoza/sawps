@@ -4,6 +4,8 @@ import axios from "axios";
 import Loading from "../../../components/Loading";
 import { Bar } from 'react-chartjs-2';
 import { Grid } from "@mui/material";
+import ChartContainer from "../../../components/ChartContainer";
+import DoughnutChart from "../../../components/DoughnutChart";
 
 const FETCH_ACTVITY_COUNT = "/api/species-count-per-province/";
 
@@ -142,6 +144,8 @@ const SpeciesCountPerProvinceChart = (props: any) => {
     labels: horizontalLabels,
     datasets: datasets
   };
+
+  const chartTitle = `Total count of ${selectedSpecies} per province`;
   
   const options = {
     plugins: {
@@ -164,7 +168,7 @@ const SpeciesCountPerProvinceChart = (props: any) => {
         },
         title: {
             display: true,
-            text: `Total count of ${selectedSpecies} per province`,
+            text: chartTitle,
             font: {
                 size: 16,
                 weight: 'bold' as 'bold',
@@ -210,10 +214,12 @@ const SpeciesCountPerProvinceChart = (props: any) => {
   return (
     <Grid>
       {!loading ? (
-        <Bar
-          data={data}
-          options={options}
-        />
+          <ChartContainer title={''} chart={
+            <Bar
+              data={data}
+              options={options}
+            />
+          }/>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

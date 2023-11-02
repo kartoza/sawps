@@ -6,6 +6,8 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import Loading from "../../../components/Loading";
 import axios from "axios";
 import "./index.scss";
+import ChartContainer from "../../../components/ChartContainer";
+import DoughnutChart from "../../../components/DoughnutChart";
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -173,11 +175,18 @@ const PopulationEstimateAsPercentage = (props: any) => {
     return (
       <>
         {!loading ? (
-            <Doughnut
-              data={chartData}
-              options={options}
-              style={chartContainerStyle}
-            />
+            // <Doughnut
+            //   data={chartData}
+            //   options={options}
+            //   style={chartContainerStyle}
+            // />
+          <ChartContainer title={chartTitle} chart={
+              <DoughnutChart
+                  chartData={chartData}
+                  chartId={'population-estimate-category-as-percentage'}
+                  icon={backgroundImageUrl}
+              />
+            } icon={backgroundImageUrl}/>
         ) : (
           <Loading containerStyle={{ minHeight: 160 }} />
         )}
