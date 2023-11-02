@@ -21,6 +21,7 @@ import PopulationTrend from "./PopulationTrend";
 import {
     useGetUserInfoQuery,
 } from "../../../services/api";
+import Topper from "../Data/Topper";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
@@ -254,6 +255,8 @@ const Metrics = () => {
             <Box className="charts-container">
 
                 {showCharts ? (
+                        <>
+                        <Topper></Topper>
                         <Grid container spacing={2} ref={contentRef}>
                             {
                             constants.canViewPopulationTrend &&
@@ -510,6 +513,7 @@ const Metrics = () => {
                             )}
 
                     </Grid>
+                        </>
                 ): (
                     // Render message to user
                     <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
