@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography, Modal } from "@mui/material";
 import DensityBarChart from "./DensityBarChart";
 import PopulationCategoryChart from "./PopulationCategoryChart";
 import { useAppSelector } from "../../../app/hooks";
@@ -23,6 +23,7 @@ import {
     useGetUserInfoQuery,
 } from "../../../services/api";
 import Topper from "../Data/Topper";
+import Loading from "../../../components/Loading";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
@@ -41,6 +42,7 @@ const Metrics = () => {
     const [activityType, setActivityType] = useState({})
     const [totalCoutData, setTotalCountData] = useState([])
     const [ageGroupData, setAgeGroupData] = useState([])
+    const [open, setOpen] = useState(false)
     const labels = Object.keys(activityType);
     const totalCountLabel = labels.filter(item => item !== "Base population");
     const [areaData, setAreaData] = useState([])
@@ -202,20 +204,27 @@ const Metrics = () => {
 
     // downloads all charts rendered on page
     const handleDownloadPdf = async () => {
-        const content = contentRef.current;
-        if (!content) return;
-        const totalHeight = content.scrollHeight;
-        const windowHeight = window.innerHeight;
-        const pdf = new jsPDF();
-        for (let offsetY = 0; offsetY < totalHeight; offsetY += windowHeight) {
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            const canvas = await html2canvas(content);
-            const imageDataUrl = canvas.toDataURL('image/png');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            pdf.addImage(imageDataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        }
-        pdf.save('metrics.pdf');
+        setOpen(true)
+        const data = document.getElementById('charts-container');
+        html2canvas(data, {scale: 2}).then((canvas:any) => {
+          const imgWidth = 208;
+          const pageHeight = 295;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+          heightLeft -= pageHeight;
+          const doc = new jsPDF('p', 'mm');
+          doc.setFillColor('245');
+          doc.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            doc.addPage();
+            doc.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
+            heightLeft -= pageHeight;
+          }
+          setOpen(false)
+          doc.save(`${selectedSpecies} - metrics.pdf`);
+        });
     }
 
     type Constants = {
@@ -260,7 +269,23 @@ const Metrics = () => {
 
     return (
         <Box>
-            <Box className="charts-container">
+            <Box>
+                <Modal
+                  id={'pdf-modal'}
+                  open={open}
+                >
+                    <Box>
+                        <Typography variant="h6" component="h2">
+                            Generating PDF!
+                        </Typography>
+                        <Typography id="modal-modal-description" sx={{mt: 2}}>
+                            This might take a while.
+                        </Typography>
+                        <Loading />
+                    </Box>
+                </Modal>
+            </Box>
+            <Box className="charts-container" id={'charts-container'}>
 
                 {showCharts ? (
                         <>
