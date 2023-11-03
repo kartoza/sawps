@@ -10,6 +10,8 @@ LOGGING_LOG_SQL = DEBUG
 
 CRISPY_FAIL_SILENTLY = not DEBUG
 
+DISABLE_2FA=True
+
 ALLOWED_HOSTS = ['*']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
