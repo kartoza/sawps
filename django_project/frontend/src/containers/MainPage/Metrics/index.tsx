@@ -411,7 +411,7 @@ const Metrics = () => {
                             {
                             constants.canViewProvinceSpeciesCountAsPercentage &&
                             selectedSpecies &&
-                             (
+                            (
                                 <Grid item xs={12} md={6}>
                                     <SpeciesCountAsPercentage
                                         selectedSpecies={selectedSpecies}
@@ -429,8 +429,7 @@ const Metrics = () => {
 
                             {
                             constants.canViewTotalCount &&
-                            selectedSpecies &&
-                            hasEmptyTotalCountPerActivity && (
+                            selectedSpecies && (
                                 <Grid item xs={12} md={6}>
                                     <TotalCountPerActivity
                                         selectedSpecies={selectedSpecies}
