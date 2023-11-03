@@ -411,16 +411,8 @@ const Metrics = () => {
                             {
                             constants.canViewProvinceSpeciesCountAsPercentage &&
                             selectedSpecies &&
-                            hasEmptyProvinceCountPercentage && (
-                                <Grid item xs={12} md={6}
-                                    style={{
-                                        textAlign: 'center',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        maxHeight: '380px'
-                                    }}
-                                >
+                             (
+                                <Grid item xs={12} md={6}>
                                     <SpeciesCountAsPercentage
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}

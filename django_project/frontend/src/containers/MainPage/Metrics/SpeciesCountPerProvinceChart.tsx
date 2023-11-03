@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, responsiveFontSizes } from "@mui/material";
 import axios from "axios";
 import Loading from "../../../components/Loading";
 import { Bar } from 'react-chartjs-2';
 import { Grid } from "@mui/material";
 import ChartContainer from "../../../components/ChartContainer";
-import DoughnutChart from "../../../components/DoughnutChart";
 
 const FETCH_ACTVITY_COUNT = "/api/species-count-per-province/";
 
@@ -166,14 +164,6 @@ const SpeciesCountPerProvinceChart = (props: any) => {
                 },
             },
         },
-        // title: {
-        //     display: true,
-        //     text: chartTitle,
-        //     font: {
-        //         size: 16,
-        //         weight: 'bold' as 'bold',
-        //     },
-        // },
     },
     layout: {
         padding: {

@@ -1,5 +1,6 @@
 """API Views related to metrics.
 """
+import datetime
 from typing import List
 
 from django.db.models.query import QuerySet
@@ -180,8 +181,8 @@ class SpeciesPopulationCountPerProvinceAPIView(APIView):
         """
         species_name = request.GET.get("species")
         queryset = self.get_queryset()
-        start_year = request.GET.get("start_year", 1960)
-        end_year = request.GET.get("end_year", start_year)
+        start_year = request.GET.get("start_year", 0)
+        end_year = request.GET.get("end_year", datetime.datetime.now().year)
         year_range = (int(start_year), int(end_year))
         return Response(
             calculate_species_count_per_province(queryset, species_name, year_range)
@@ -252,8 +253,8 @@ class PropertiesPerPopulationCategoryAPIView(APIView):
         Handle GET request to retrieve population categories for properties.
         """
         species_name = request.GET.get("species")
-        start_year = request.GET.get("start_year", 1960)
-        end_year = request.GET.get("end_year", start_year)
+        start_year = request.GET.get("start_year", 0)
+        end_year = request.GET.get("end_year", datetime.datetime.now().year)
         year_range = (int(start_year), int(end_year))
         queryset = self.get_queryset()
         return Response(
@@ -286,6 +287,8 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
         user_roles = get_user_roles(request.user)
         queryset = get_queryset(user_roles, request)
         filters = get_report_filter(request, SPECIES_REPORT)
+        if 'annualpopulationperactivity__activity_type_id__in' in filters:
+            del filters['annualpopulationperactivity__activity_type_id__in']
         species_population_data = AnnualPopulation.objects.filter(
             property__in=queryset,
             **filters
@@ -340,7 +343,6 @@ class PopulationPerAgeGroupAPIView(APIView):
             annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
-        print(queryset)
         filtered_queryset = BaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs

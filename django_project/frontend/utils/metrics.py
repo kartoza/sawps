@@ -1,3 +1,4 @@
+import datetime
 from typing import Dict, List, Any, Tuple
 from population_data.models import AnnualPopulation
 
@@ -13,9 +14,11 @@ CATEGORY_DATA = 'data'
 def calculate_species_count_per_province(
         queryset,
         species_name: str,
-        year_range: Tuple[int]
+        year_range: Tuple[int] = None
 ) -> Dict[str, int]:
     property_ids = [query.id for query in queryset]
+    if not year_range:
+        year_range = (1960, datetime.datetime.now().year)
 
     # Filter properties by the provided property ids
     if property_ids:
@@ -69,7 +72,7 @@ def calculate_species_count_per_province(
 def calculate_population_categories(
         queryset,
         species_name: str,
-        year_range: Tuple[int]
+        year_range: Tuple[int] = None
 ) -> Dict[str, int]:
     """
     Calculate population categories for a given queryset of properties.
@@ -77,6 +80,7 @@ def calculate_population_categories(
     Args:
         queryset (QuerySet): A queryset of properties.
         species_name (str): The name of the species.
+        year_range (Tuple[int]): Start year and end year.
 
     Returns:
         Dict[str, Any]: A dictionary containing:
@@ -94,6 +98,9 @@ def calculate_population_categories(
     creates 6 population categories, and counts
     the number of properties in each category for each year.
     """
+
+    if not year_range:
+        year_range = (1960, datetime.datetime.now().year)
 
     # Extract property IDs from the queryset
     property_ids = list(set(

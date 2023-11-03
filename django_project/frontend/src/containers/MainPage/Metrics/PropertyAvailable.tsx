@@ -7,6 +7,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
 import Loading from "../../../components/Loading";
 import "./index.scss";
+import ChartContainer from "../../../components/ChartContainer";
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -207,15 +208,7 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
             };
           });
         },
-      },
-      title: {
-        display: true,
-        text: `Total area available to ${selectedSpecies}`,
-        font: {
-          size: 16,
-          weight: 'bold' as 'bold',
-        },
-      },
+      }
     },
     scales: {
       x: {
@@ -250,10 +243,14 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
     return (
         <Grid>
             {!loading ? (
-                <Bar 
-                    data={data} 
-                    options={options}
-                />
+              <ChartContainer title={`Total area available to ${selectedSpecies}`} chart={
+                    <Bar
+                        data={data}
+                        options={options}
+                        className={'bar-chart'}
+                    />
+              }/>
+
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
             )}
