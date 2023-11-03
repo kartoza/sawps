@@ -71,8 +71,6 @@ jobs:
           make dev-runserver
           make sleep
           echo $DISABLE_2FA
-          DJANGO_SUPERUSER_PASSWORD=admin
-          python manage.py createsuperuser --no-input --username admin --email 'admin@example.com'
       - name: Test django endpoint
         run: |
           curl http://localhost:61100/
