@@ -368,11 +368,13 @@ export default function Map(props: MapInterface) {
   const mapStyleOnLoaded = useCallback(() => {
     if (map.current.style._loaded) {
       dispatch(setMapReady(true))
-      if (selectedSpecies.length > 0) {
-        drawPropertiesLayer(true, map.current, mapTheme, false, propertiesCounts, provinceCounts)
-      } else {
-        drawPropertiesLayer(false, map.current, mapTheme, false)
-      }
+      setTimeout(() => {  
+        if (selectedSpecies.length > 0) {
+          drawPropertiesLayer(true, map.current, mapTheme, false, propertiesCounts, provinceCounts)
+        } else {
+          drawPropertiesLayer(false, map.current, mapTheme, false)
+        }
+      }, 300)
       let enableParcelLayers = true;
       if (userInfoData) {
         for (let userRole of userInfoData.user_roles) {
@@ -647,7 +649,7 @@ export default function Map(props: MapInterface) {
       }
       fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies)
     }
-  }, [props.isDataUpload, dynamicMapSession, mapTheme, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
+  }, [props.isDataUpload, dynamicMapSession, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
   /* Use debounce+UseMemo to avoid updating filter (materialized view) frequently when filter is changed */
   /* useMemo is used to avoid the debounce function is recreated during each render (unless MapTheme is changed) */
@@ -677,11 +679,13 @@ export default function Map(props: MapInterface) {
           }
           dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
           if (isMapReady) {
-            dispatch(triggerMapEvent({
-              'id': uuidv4(),
-              'name': MapEvents.REFRESH_PROPERTIES_LAYER,
-              'date': Date.now()
-            }))
+            setTimeout(() => {
+              dispatch(triggerMapEvent({
+                'id': uuidv4(),
+                'name': MapEvents.REFRESH_PROPERTIES_LAYER,
+                'date': Date.now()
+              }))
+            }, 300)
           }
           updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
         } else {
