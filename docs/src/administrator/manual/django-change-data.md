@@ -5,9 +5,9 @@
 
 ![Django Admin Form](./img/django-change-data-4.png)
 
-1. **Form fields**: Form where we can input values for our record.
+1. **Form fields**: Form where users can input values for their record.
 
-2. **Delete button**: Delete currently opened record. It will take you to confirmation page.
+2. **Delete button**: Delete currently opened record. It will take users to confirmation page.
 
     ![Confirmation](./img/django-change-data-1.png)
 
@@ -31,6 +31,6 @@
 
 ![Confirmation](./img/django-change-data-3.png)
 
-Admin can update the field of the object by changing the value of the fields. Eg change the permisions of the group and update the description of the group.
+Administrators can update the field of the object by changing the value of the fields. E.g. change the permissions of the group and update the description of the group.
 
 The other options(`History`, `Delete`, `Save and add another`, `Save and continue editing`, `Save`) work same as they are working for the other objects.

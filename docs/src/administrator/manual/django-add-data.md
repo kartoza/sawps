@@ -4,11 +4,11 @@
 
 ![Add Activity](./img/django-add-data-3.png)
 
-1. **Form fields**: Form where user can input values for record.
+1. **Form fields**: Form where users can input values for record.
 
     This table is used to store existing activity types e.g. `Unplanned/natural deaths`.
 
-    * **Colour**: Used as color identifier in reports and charts. The default is black (`#000000`).
+    * **Colour**: Used as colour identifier in reports and charts. The default is black (`#000000`).
     * **Width**: Column width in the Activity Report.
     * **Export fields**: Used as export fields in Activity Report. The value should be an array/list, containing
     `Annual Population Per Activity` field to export. Currently available fields are:
@@ -34,15 +34,15 @@
 
 ![Group Permissions](./img/django-add-data-1.png)
 
-1. **Permissions**: Available permission for the user. Admin can choose permission from the list and assign to the user.
+1. **Permissions**: Available permissions for the user. Administrators can choose permissions from the list and assign them to a user.
 
-2. **Arrow**: Using this arrow admin can move the permissions here and there.
+2. **Arrow**: Using this arrow administrators can move the permissions.
 
-3. **Plus icon**: Clicking on plus icon will allow admin to add a new permission. Popup will open for creating a new permission.
+3. **Plus icon**: Clicking on plus icon will allow administrators to add a new permission. The popup for creating a new permission will open.
 
     ![Add Permission](./img/django-add-data-2.png)
 
-    1. **Form Fields**: Form where user can input values for record.
+    1. **Form Fields**: Form where users can input values for record.
 
     2. **Save**: Button to save permission.
 
