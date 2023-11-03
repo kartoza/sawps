@@ -70,8 +70,7 @@ jobs:
           make build-react
           make dev-runserver
           make sleep
-          docker-compose $(ARGS) exec -T dev bash -c "echo $DISABLE_2FA"
-          docker-compose $(ARGS) exec -T dev bash -c "echo $ADMIN_EMAIL"
+          make print
       - name: Test django endpoint
         run: |
           curl http://localhost:61100/
