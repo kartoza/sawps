@@ -315,7 +315,7 @@
     flex-wrap: wrap; /* Allow charts to wrap to the next line if there's not enough space */
 }
 
-  
+
   .charts-container  > * {
     flex: 1;
     margin: 8px;
@@ -335,7 +335,7 @@
         grid-template-columns: repeat(auto-fill, minmax(90vw, 1fr));
     }
 }
-  
+
 
 #pdf-modal {
     display: flex;

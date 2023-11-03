@@ -57,6 +57,7 @@ const SpeciesCountAsPercentage = (props: any) => {
   } = props;
   const [speciesData, setSpeciesData] = useState<SpeciesDataItem[]>([]);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+  console.debug(activityData)
 
   const fetchActivityCount = () => {
     setLoading(true);
