@@ -43,7 +43,9 @@ import {
   addParcelInvisibleFillLayers,
   drawPropertiesLayer,
   MAX_PROVINCE_ZOOM_LEVEL,
-  MIN_PROVINCE_ZOOM_LEVEL
+  MIN_PROVINCE_ZOOM_LEVEL,
+  showExtrudeLayer,
+  removeExtrudeLayer
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -106,6 +108,7 @@ export default function Map(props: MapInterface) {
   const mapEvents = useAppSelector((state: RootState) => state.mapState.mapEvents)
   const mapTheme = useAppSelector((state: RootState) => state.mapState.theme)
   const [zoom, setZoom] = useState(5)
+  const [show3dLayer, setShow3dLayer] = useState(false)
   const mapContainer = useRef(null);
   const map = useRef(null);
   const mapDraw = useRef(null);
@@ -290,7 +293,7 @@ export default function Map(props: MapInterface) {
     if (species) {
       if (currentZoom >= MIN_PROVINCE_ZOOM_LEVEL && currentZoom <= MAX_PROVINCE_ZOOM_LEVEL && provinceCountData) {
         _legendObj.onUpdateLegends(currentZoom, species, provinceCountData)
-      } else if (currentZoom > MIN_SELECT_PROPERTY_ZOOM_LEVEL && propertiesCountData) {
+      } else if (currentZoom > MAX_PROVINCE_ZOOM_LEVEL && propertiesCountData) {
         _legendObj.onUpdateLegends(currentZoom, species, propertiesCountData)
       } else {
         _legendObj.onClearLegends()
@@ -401,6 +404,15 @@ export default function Map(props: MapInterface) {
   }, [zoom])
 
   useEffect(() => {
+    if (!selectedSpecies) return;
+    if (show3dLayer) {
+      showExtrudeLayer(map.current, provinceCounts, propertiesCounts)
+    } else {
+      removeExtrudeLayer(map.current)
+    }
+  }, [show3dLayer, selectedSpecies, provinceCounts, propertiesCounts])
+
+  useEffect(() => {
     if (mapTheme === MapTheme.None) return;
     if (!isSuccess) return;
     let _styleURL = `${MAP_STYLE_URL}?theme=${mapTheme}`
@@ -425,8 +437,8 @@ export default function Map(props: MapInterface) {
       })
       // add exporter dialog
       mapNavControl.current = new CustomNavControl({
-        showCompass: false,
-        showZoom: true
+        showZoom: true,
+        visualizePitch: true
       }, {
         initialTheme: mapTheme,
         onThemeSwitched: () => { dispatch(toggleMapTheme()) }
@@ -448,6 +460,9 @@ export default function Map(props: MapInterface) {
           mapPopupRef.current = null
         }
         setZoom(_zoom)
+      })
+      map.current.on('pitchend', () => {
+        setShow3dLayer(map.current.getPitch() > 0)
       })
     }
     return () => {

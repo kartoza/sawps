@@ -463,6 +463,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             "minzoom": 5,
             "maxzoom": 10
         }
+        
         addLayerToMap('province-count', mapObj, _provinceLayer, 'NGI aerial imagery')
         addLayerToMap('properties', mapObj, _propertiesLayer, 'erf-highlighted')
         addLayerToMap('properties-points', mapObj, _propertiesPointsLayer, 'NGI aerial imagery')
@@ -523,4 +524,74 @@ export const removePropertiesLayer = (mapObj: maplibregl.Map) => {
     removeLayerFromMap('province-count', mapObj)
     removeLayerFromMap('properties-points', mapObj)
     removeLayerFromMap('properties-label', mapObj)
+    removeLayerFromMap('province-extrude', mapObj)
+    removeLayerFromMap('properties-extrude', mapObj)
+}
+
+const addProvinceExtrudeLayer = (mapObj: maplibregl.Map, provinceCount?: PopulationCountLegend[]) => {
+    if (!provinceCount || provinceCount.length === 0) return;
+    // TODO: Determine max height of province extrude 3d layer
+    const PROVINCE_MAX_HEIGHT = 75000
+    let _maxValue = Math.max(...provinceCount.map(o => o.value))
+    let _provinceExtrudeLayer = {
+        "id": "province-extrude",
+        "type": "fill-extrusion",
+        "source": "sanbi-dynamic",
+        "source-layer": "province_population",
+        "paint": {
+            "fill-extrusion-color": {
+                "property": "count",
+                "type": "interval",
+                "stops": getMapPopulationStops(provinceCount),
+                "base": 1,
+                "default": "rgba(0, 0, 0, 0)"
+            },
+            "fill-extrusion-opacity": 1,
+            "fill-extrusion-height": ["*", ["/", ['get', 'count'], _maxValue], PROVINCE_MAX_HEIGHT],
+            "fill-extrusion-base": 0
+        },
+        "minzoom": 5,
+        "maxzoom": 8
+    }
+    addLayerToMap('province-extrude', mapObj, _provinceExtrudeLayer, 'provinces_small_scale')
+}
+
+const addPropertiesExtrudeLayer = (mapObj: maplibregl.Map, propertiesCount?: PopulationCountLegend[]) => {
+    if (!propertiesCount || propertiesCount.length === 0) return;
+    // TODO: Determine max height of properties extrude 3d layer
+    const PROPERTIES_MAX_HEIGHT = 2000
+    let _maxValue = Math.max(...propertiesCount.map(o => o.value))
+    let _propertiesExtrudeLayer = {
+        "id": "properties-extrude",
+        "type": "fill-extrusion",
+        "source": "sanbi-dynamic",
+        "source-layer": "properties",
+        "paint": {
+            "fill-extrusion-color": {
+                "property": "count",
+                "type": "interval",
+                "stops": getMapPopulationStops(propertiesCount),
+                "base": 1,
+                "default": "rgba(0, 0, 0, 0)"
+            },
+            "fill-extrusion-opacity": 1,
+            "fill-extrusion-height": ["*", ["/", ['get', 'count'], _maxValue], PROPERTIES_MAX_HEIGHT],
+            "fill-extrusion-base": 0
+        },
+        "minzoom": 10,
+        "maxzoom": 24
+    }
+    addLayerToMap('properties-extrude', mapObj, _propertiesExtrudeLayer, 'properties-label')
+}
+
+
+export const showExtrudeLayer = (mapObj: maplibregl.Map, provinceCount?: PopulationCountLegend[], propertiesCount?: PopulationCountLegend[]) => {
+    removeExtrudeLayer(mapObj)
+    addProvinceExtrudeLayer(mapObj, provinceCount)
+    addPropertiesExtrudeLayer(mapObj, propertiesCount)
+}
+
+export const removeExtrudeLayer = (mapObj: maplibregl.Map) => {
+    removeLayerFromMap('province-extrude', mapObj)
+    removeLayerFromMap('properties-extrude', mapObj)
 }
