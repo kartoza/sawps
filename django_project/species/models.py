@@ -2,6 +2,7 @@
 """
 from django.contrib.auth.models import User
 from django.db import models
+from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
 
 
@@ -44,21 +45,27 @@ class Taxon(models.Model):
         verbose_name="Front page order", null=False, blank=True, default=0
     )
     colour = models.CharField(max_length=20, null=True, blank=True)
-    icon = models.ImageField(upload_to="taxon_icons", null=True, blank=True)
-    graph_icon = models.ImageField(
+    icon = models.ImageField(
+        upload_to="taxon_icons",
+        null=True, blank=True
+    )
+    graph_icon = models.FileField(
         upload_to="taxon_graph_icons",
         null=True, blank=True,
         validators=[FileExtensionValidator(['svg'])],
         help_text=(
-            'Use SVG file. It will be used as species icon in graph/charts.'
+            'Use SVG file with black fill and transparent background. '
+            'It will be used as species icon in graph/charts.'
         )
     )
-    topper_icon = models.ImageField(
+    topper_icon = models.FileField(
         upload_to="taxon_topper_icons",
         null=True, blank=True,
         validators=[FileExtensionValidator(['svg'])],
         help_text=(
-            'Will be generated automatically from graph_icon'
+            'Will be generated automatically from graph_icon to be used in '
+            'Report and Charts topper. Pleae re-upload graph_icon to '
+            'regenerate topper_icon.'
         )
     )
 
@@ -69,6 +76,14 @@ class Taxon(models.Model):
         verbose_name = "Taxon"
         verbose_name_plural = "Taxa"
         db_table = "taxon"
+
+    def save(self, *args, **kwargs):
+        svg_content = self.graph_icon.read()
+        svg_content = svg_content.replace(b'fill="#000000"', b'fill="#75B37A"')
+        svg_content = svg_content.replace(b'fill="black"', b'fill="#75B37A"')
+        topper_icon = ContentFile(svg_content, name=f"{self.scientific_name}-topper.svg")
+        self.topper_icon = topper_icon
+        return super().save(*args, **kwargs)
 
 
 class OwnedSpecies(models.Model):
