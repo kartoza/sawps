@@ -679,13 +679,11 @@ export default function Map(props: MapInterface) {
           }
           dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
           if (isMapReady) {
-            setTimeout(() => {
-              dispatch(triggerMapEvent({
-                'id': uuidv4(),
-                'name': MapEvents.REFRESH_PROPERTIES_LAYER,
-                'date': Date.now()
-              }))
-            }, 300)
+            dispatch(triggerMapEvent({
+              'id': uuidv4(),
+              'name': MapEvents.REFRESH_PROPERTIES_LAYER,
+              'date': Date.now()
+            }))
           }
           updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
         } else {
