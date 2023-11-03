@@ -87,6 +87,7 @@ jobs:
           python manage.py createsuperuser --no-input --username admin --email 'admin@example.com'
           python manage.py collectstatic --noinput --verbosity 0
           export DJANGO_SETTINGS_MODULE=core.settings.dev && coverage run manage.py test && coverage xml
+          export DISABLE_2FA=True
           EOF
           docker cp sanbi_dev_1:/home/web/django_project/coverage.xml ../coverage.xml
       - name: Update dependencies
