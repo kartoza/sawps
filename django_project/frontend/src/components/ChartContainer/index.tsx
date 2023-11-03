@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import {Box, Typography} from "@mui/material";
+import {Box, Typography, Tooltip} from "@mui/material";
 import html2canvas from "html2canvas";
 import './style.scss';
 
@@ -9,6 +9,9 @@ interface ChartContainerInterface {
     chart: any;
     icon?: string;
 }
+
+const INFO_CHART_ICON = '/static/images/information-chart-icon.svg'
+const DOWNLOAD_CHART_ICON = '/static/images/download-chart-icon.svg'
 
 export default function ChartContainer(props: ChartContainerInterface) {
     const chartRef = useRef(null);
@@ -32,7 +35,10 @@ export default function ChartContainer(props: ChartContainerInterface) {
                 {props.chart}
             </Box>
             <Box className={'DownloadChartContainer'}>
-                <img src={'/static/images/download-chart-icon.svg'} width={25} onClick={downloadChart}/>
+                <Tooltip title={props.title} arrow placement={'left'}>
+                    <img src={INFO_CHART_ICON} width={25}/>
+                </Tooltip>
+                <img src={DOWNLOAD_CHART_ICON} width={25} onClick={downloadChart}/>
             </Box>
         </Box>
     )
