@@ -2,6 +2,7 @@
 """
 from django.contrib.auth.models import User
 from django.db import models
+from django.core.validators import FileExtensionValidator
 
 
 class TaxonRank(models.Model):
@@ -46,7 +47,19 @@ class Taxon(models.Model):
     icon = models.ImageField(upload_to="taxon_icons", null=True, blank=True)
     graph_icon = models.ImageField(
         upload_to="taxon_graph_icons",
-        null=True, blank=True
+        null=True, blank=True,
+        validators=[FileExtensionValidator(['svg'])],
+        help_text=(
+            'Use SVG file. It will be used as species icon in graph/charts.'
+        )
+    )
+    topper_icon = models.ImageField(
+        upload_to="taxon_topper_icons",
+        null=True, blank=True,
+        validators=[FileExtensionValidator(['svg'])],
+        help_text=(
+            'Will be generated automatically from graph_icon'
+        )
     )
 
     def __str__(self):
