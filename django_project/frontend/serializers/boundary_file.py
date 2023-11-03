@@ -1,6 +1,7 @@
 """Serializer for BoundaryFile model."""
 from rest_framework import serializers
-from frontend.models.boundary_search import BoundaryFile
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from frontend.models.boundary_search import BoundaryFile, BoundarySearchRequest
 
 
 class BoundaryFileSerializer(serializers.ModelSerializer):
@@ -9,3 +10,11 @@ class BoundaryFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoundaryFile
         fields = '__all__'
+
+
+class BoundarySearchRequestGeoJsonSerializer(GeoFeatureModelSerializer):
+
+    class Meta:
+        model = BoundarySearchRequest
+        geo_field = 'geometry'
+        fields = ['session']

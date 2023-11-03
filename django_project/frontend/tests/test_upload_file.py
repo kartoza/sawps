@@ -1,6 +1,7 @@
 import json
 import uuid
 import fiona
+import datetime
 from django.contrib.gis.geos import GEOSGeometry, Polygon, MultiPolygon
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -12,10 +13,13 @@ from frontend.models.parcels import (
 from frontend.tests.model_factories import UserF
 from frontend.tests.model_factories import BoundaryFileF
 from frontend.models.boundary_search import (
-    BoundarySearchRequest
+    BoundarySearchRequest, BoundaryFile
 )
 from frontend.utils.upload_file import (
     search_parcels_by_boundary_files
+)
+from frontend.tasks.parcel import (
+    clear_uploaded_boundary_files
 )
 
 
@@ -156,4 +160,32 @@ class TestUploadFileUtils(TestCase):
             len(find_parcel_in_result_list(
                 search_request.parcels, '3', 'erf')),
             0
+        )
+
+    def test_clear_uploaded_boundary_files(self):
+        session = str(uuid.uuid4())
+        shapefile_path = absolute_path(
+            'frontend', 'tests',
+            'shapefile', 'muti_polygon_search.zip')
+        with open(shapefile_path, 'rb') as infile:
+            _file = SimpleUploadedFile(
+                'muti_polygon_search.zip', infile.read())
+            BoundaryFileF.create(
+                session=session,
+                file_type='SHAPEFILE',
+                file=_file,
+                uploader=self.user_1,
+                upload_date=datetime.datetime(2000, 8, 14, 8, 8, 8)
+            )
+        BoundarySearchRequest.objects.create(
+            type='File',
+            session=session,
+            request_by=self.user_1
+        )
+        clear_uploaded_boundary_files()
+        self.assertFalse(
+            BoundaryFile.objects.filter(session=session).exists()
+        )
+        self.assertFalse(
+            BoundarySearchRequest.objects.filter(session=session).exists()
         )

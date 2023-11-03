@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from fiona.crs import from_epsg
+from frontend.models.base_task import DONE
 from frontend.models.boundary_search import (
     BoundaryFile,
     GEOJSON,
@@ -23,7 +24,8 @@ from frontend.utils.upload_file import (
     get_uploaded_file_crs
 )
 from frontend.serializers.boundary_file import (
-    BoundaryFileSerializer
+    BoundaryFileSerializer,
+    BoundarySearchRequestGeoJsonSerializer
 )
 from frontend.tasks.parcel import boundary_files_search
 
@@ -183,4 +185,25 @@ class BoundaryFileSearchStatus(APIView):
                     search_request.geometry else []
                 )
             }
+        )
+
+
+class BoundaryFileGeoJson(APIView):
+    """Get geojson from search request."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        session = kwargs.get('session')
+        search_request = BoundarySearchRequest.objects.filter(
+            session=session
+        ).order_by('-id').first()
+        if not search_request:
+            return Response(status=404)
+        if search_request.status != DONE:
+            return Response(status=404)
+        if not search_request.geometry:
+            return Response(status=404)
+        return Response(
+            status=200,
+            data=BoundarySearchRequestGeoJsonSerializer(search_request).data
         )

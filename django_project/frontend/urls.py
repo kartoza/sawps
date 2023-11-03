@@ -68,6 +68,7 @@ from frontend.api_views.upload import (
     BoundaryFileSearch,
     BoundaryFileSearchStatus,
     BoundaryFileUpload,
+    BoundaryFileGeoJson
 )
 from frontend.views.base_view import get_user_notifications
 
@@ -215,6 +216,11 @@ urlpatterns = [
         r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/status/?$',
         BoundaryFileSearchStatus.as_view(),
         name='boundary-file-status'
+    ),
+    re_path(
+        r'^api/upload/boundary-file/(?P<session>[\da-f-]+)/geojson/?$',
+        BoundaryFileGeoJson.as_view(),
+        name='boundary-file-geojson'
     ),
     re_path(
         r'^api/upload/boundary-file/?$',
