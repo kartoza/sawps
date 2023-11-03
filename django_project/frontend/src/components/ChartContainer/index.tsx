@@ -30,9 +30,13 @@ export default function ChartContainer(props: ChartContainerInterface) {
 
     return (
         <Box className={'ChartContainerBox'}>
-            <Box ref={chartRef}>
-                <Typography className={'TextBox'}>{props.title}</Typography>
-                {props.chart}
+            <Box className={'ChartContainer'} ref={chartRef}>
+                <Box className={'ChartTitleBox'}>
+                    <Typography className={'ChartTitle'}>{props.title}</Typography>
+                </Box>
+                <Box className={'ChartBox'}>
+                    {props.chart}
+                </Box>
             </Box>
             <Box className={'DownloadChartContainer'}>
                 <Tooltip title={props.title} arrow placement={'left'}>
