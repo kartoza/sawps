@@ -436,7 +436,8 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
             "sub_adult_female",
             "juvenile_male",
             "juvenile_female",
-            "year"
+            "year",
+            "total"
         ]
 
         filters = {
