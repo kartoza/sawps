@@ -98,3 +98,4 @@ print:
 	@echo "Execute echo DISABLE_2FA"
 	@echo "------------------------------------------------------------------"
 	@docker-compose ${ARGS} exec -T dev bash -c "echo ${DISABLE_2FA}"
+	@docker-compose ${ARGS} exec -T dev bash -c "echo ${ADMIN_EMAIL}"
