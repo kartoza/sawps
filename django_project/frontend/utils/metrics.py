@@ -3,7 +3,7 @@ from typing import Dict, List, Any, Tuple
 from population_data.models import AnnualPopulation
 
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
-from django.db.models import QuerySet, Sum, Q, Min, Max
+from django.db.models import QuerySet, Sum, Min, Max
 from property.models import Property
 
 CATEGORY_LABELS = 'category_labels'
@@ -114,8 +114,6 @@ def calculate_population_categories(
         year__range=year_range
     ).distinct()
 
-    print(annual_population_data.values('year', 'property_id', 'total'))
-
     if not annual_population_data.exists():
         return {}
 
@@ -123,17 +121,15 @@ def calculate_population_categories(
         Min('total'), Max('total')
     ).values()
 
-    print(min_population)
-    print(max_population)
-
     # Calculate the category width (create 6 groups minimum)
     category_width = (max_population - min_population) / 6
-    print(category_width)
 
     # Create the population categories
     category_count = 1 if category_width == 0 else 6
-    categories = [int(min_population + category_width * i) for i in range(category_count)]
-    print(categories)
+    categories = [
+        int(min_population + category_width * i)
+        for i in range(category_count)
+    ]
     category_labels = []
 
     results = []

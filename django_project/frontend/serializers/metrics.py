@@ -286,7 +286,9 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
         start_year = self.context['request'].GET.get("start_year", 0)
-        end_year = self.context['request'].GET.get("end_year", datetime.datetime.now().year)
+        end_year = self.context['request'].GET.get(
+            "end_year", datetime.datetime.now().year
+        )
         year_range = (int(start_year), int(end_year))
         populations = AnnualPopulation.objects.values(
             "taxon__common_name_varbatim").filter(
@@ -320,7 +322,9 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         property_param = self.context['request'].GET.get('property')
         property_list = property_param.split(',') if property_param else []
         start_year = self.context['request'].GET.get("start_year", 0)
-        end_year = self.context['request'].GET.get("end_year", datetime.datetime.now().year)
+        end_year = self.context['request'].GET.get(
+            "end_year", datetime.datetime.now().year
+        )
         year_range = (int(start_year), int(end_year))
 
         q_filters = Q(annual_population__taxon=obj, year__range=year_range)
@@ -375,7 +379,9 @@ class SpeciesPopulationDensityPerPropertySerializer(
             return None
 
         start_year = self.context['request'].GET.get("start_year", 0)
-        end_year = self.context['request'].GET.get("end_year", datetime.datetime.now().year)
+        end_year = self.context['request'].GET.get(
+            "end_year", datetime.datetime.now().year
+        )
         year_range = (int(start_year), int(end_year))
 
         populations = (

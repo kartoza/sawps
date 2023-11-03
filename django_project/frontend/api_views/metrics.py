@@ -33,7 +33,9 @@ from species.models import Taxon
 from frontend.utils.organisation import (
     get_current_organisation_id
 )
-from frontend.utils.data_table import get_queryset, get_report_filter, SPECIES_REPORT
+from frontend.utils.data_table import (
+    get_queryset, get_report_filter, SPECIES_REPORT
+)
 from frontend.utils.user_roles import get_user_roles
 from frontend.serializers.metrics import AreaAvailablePerSpeciesSerializer
 from population_data.models import AnnualPopulation
@@ -185,7 +187,9 @@ class SpeciesPopulationCountPerProvinceAPIView(APIView):
         end_year = request.GET.get("end_year", datetime.datetime.now().year)
         year_range = (int(start_year), int(end_year))
         return Response(
-            calculate_species_count_per_province(queryset, species_name, year_range)
+            calculate_species_count_per_province(
+                queryset, species_name, year_range
+            )
         )
 
 
@@ -294,7 +298,9 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
             **filters
         )
         return Response(
-            AreaAvailablePerSpeciesSerializer(species_population_data, many=True).data
+            AreaAvailablePerSpeciesSerializer(
+                species_population_data, many=True
+            ).data
         )
 
 

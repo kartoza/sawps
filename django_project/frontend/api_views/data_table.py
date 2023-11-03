@@ -7,7 +7,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
 from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS
 from frontend.utils.data_table import (
@@ -20,7 +19,6 @@ from frontend.utils.data_table import (
 )
 from frontend.utils.organisation import get_current_organisation_id
 from frontend.utils.user_roles import get_user_roles
-from property.models import Property
 from species.models import Taxon
 
 
