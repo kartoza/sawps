@@ -6,9 +6,9 @@ The `Charts` is a powerful tool for visualising data through various charts and 
 
 ![Charts Page](./img/charts-1.png)
 
-1. **Explore**: Click on the `EXPLORE` on the navigation bar the user will be able to see the option for the Charts.
+1. **Explore**: By clicking on the `EXPLORE` on the navigation bar the user will be able to see the option for the Charts.
 
-2. **Charts**: Click on the `CHARTS` tab, the user will be able to see the various charts. The `Charts` tab offers a variety of charts for data visualisation.
+2. **Charts**: By clicking on the `CHARTS` tab, the user will be able to see the various charts. The `Charts` tab offers a variety of charts for data visualisation.
 
 3. **Download Data Visualisation**: The `DOWNLOAD DATA VISUALISATION` button is a convenient feature that enables the user to download the charts and visualisations displayed on the page.
 
@@ -16,7 +16,7 @@ The `Charts` is a powerful tool for visualising data through various charts and 
 
 To utilise the `Download Data Visualisation` functionality, follow these steps:
 
-- Navigate to the `Charts Page` where the user have visualised the users data using charts and graphs.
+- Navigate to the `Charts Page` where the user can visualised their data using charts and graphs.
 
 - Locate the `DOWNLOAD DATA VISUALISATION` button, usually placed in a prominent position on the page.
 

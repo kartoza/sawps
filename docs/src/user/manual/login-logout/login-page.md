@@ -6,27 +6,28 @@ The Login Page is the entry point to access the users account within the applica
 
 ![Login Form](./img/login-page-1.png)
 
-1. **Email**: Enter the users registered email address in this field. This is the email associated with the users account.
+1. **Email**: Enter a user's registered email address in this field. This is the email associated with the user's account.
 
-2. **Password**: Input the users password in this field. Passwords are case-sensitive, so ensure the user enter it correctly.
+2. **Password**: Input the user's password in this field. Passwords are case-sensitive, so users must ensure that they enter it correctly.
 
-3. **Remember Me**: Check this box if the user want the application to remember the users login credentials for future sessions. This feature is optional and can be useful for quick and convenient access.
+3. **Remember Me**: Users should check this box if they want the application to remember their login credentials for future sessions. This feature is optional and can be useful for quick and convenient access.
 
-4. **Login Button**: Click the `LOGIN` button to submit the users credentials and access the users account.
+4. **Login Button**: Click the `LOGIN` button to submit the user's credentials and access their account.
 
 5. **Forgot Password**: The `Forgot Password` link opens the [forgot password](forgot-password.md) for reset password.
+
 ### Remember Me
 
-The `Remember Me` checkbox allows the user to opt for the application to remember the users login information. When checked, the user won't need to re-enter the users email and password each time the user visit the login page. This is particularly convenient for returning users who want a seamless login experience.
+The `Remember Me` checkbox allows users to opt for the application to remember the users login information. When checked, users won't need to re-enter their email and password each time they visit the login page. This is particularly convenient for returning users who want a seamless login experience.
 
 ### Security
 
-The `Login Page` is designed with security in mind to protect the users account and sensitive information. It uses encryption protocols and best practices to ensure that the users login credentials are kept secure.
+The `Login Page` is designed with security in mind to protect user accounts and sensitive information. It uses encryption protocols and best practices to ensure that users' login credentials are kept secure.
 
 
 ### Logging In
 
-Please ensure that the user enter the users email and password correctly to access the users account. After clicking the `LOGIN` button, the user will be redirected to the two factor authentication page within the application.
+Please ensure that users enter their email and password correctly to access their account. After clicking the `LOGIN` button, users will be redirected to the two factor authentication page within the application.
 
 ## Summary
-The Login Page serves as the gateway to the users account, providing a secure and user-friendly way to access the application's features and functionality.
+The Login Page serves as the gateway to users' accounts, providing a secure and user-friendly way to access the application's features and functionality.

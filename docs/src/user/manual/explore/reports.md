@@ -1,18 +1,18 @@
 # Reports Table Page Documentation
 
-The Reports Table Page is the central hub for viewing and interacting with the users data. This page offers a user-friendly interface for exploring and manipulating the users dataset. User can use a variety of features to customise the users data view, including filters, column search, and data export options.
+The Reports Table Page is the central hub for viewing and interacting with the user's data. This page offers a user-friendly interface for exploring and manipulating the user's dataset. Users can use a variety of features to customise their data view, including filters, column search, and data export options.
 
 ## Reports Display
 
-The main area of the page displays the users dataset in a tabular format. Each row represents a record, and each column represents a data attribute.
+The main area of the page displays the user's dataset in a tabular format. Each row represents a record, and each column represents a data attribute.
 
 ### Reports table
 
 ![Reports table](./img/reports-1.png)
 
-1. **Explore**: Click on the `EXPLORE` link available on the navbar to open explore page.
+1. **Explore**: Click on the `EXPLORE` link available on the navigation bar to open explore page.
 2. **Reports**: Click on the `REPORTS` link to view the data.
-3. **Filters**: Utilise the filters provided on the page to refine the users data view. These filters include:
+3. **Filters**: Utilise the filters provided on the page to refine the user's data view. These filters include:
      * **Organisation Filter:** Filter data by organisation.
      * **Report Type Filter:** Filter data by report type.
      * **Property Filter:** Filter data by property.
@@ -24,10 +24,10 @@ The main area of the page displays the users dataset in a tabular format. Each r
      * **Applying Filters:**
          * Click on the respective filter dropdowns.
          * Set filter criteria.
-         * Click on the filter to update the data display based on the users filter selections.
-     * Each filter is designed to help the user narrow down the users dataset to view only the data that's relevant to the users analysis.
+         * Click on the filter to update the data display based on the user's filter selections.
+     * Each filter is designed to help the user narrow down their dataset to view only the data that's relevant to their analysis.
 
-4. **Column Search**: User can search for specific values within columns by selecting the column. This feature is especially useful when the user need to locate specific data points within a large dataset. The table will dynamically filter to display selected column.
+4. **Column Search**: Users can search for specific values within columns by selecting the column. This feature is especially useful when the user needs to locate specific data points within a large dataset. The table will dynamically filter to display selected column.
 5. **XLSX Format:** Click on the `DOWNLOAD DATA REPORT` button to download the current dataset in XLSX format.
 6. **CSV Format:** Click on the `DOWNLOAD DATA CSV` button to download the current dataset in CSV format.
 
@@ -230,4 +230,4 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
 ### Summary
 
-The reports table page is a comprehensive platform for exploring, analysing, and interacting with the users data. With filters, column search, and data export options, the user have the tools necessary to customise the users data view, find specific information, and export data in the format that suits the users needs.
+The reports table page is a comprehensive platform for exploring, analysing, and interacting with the user's data. With filters, column search, and data export options, the user has the tools necessary to customise their data view, find specific information, and export data in the format that suits their needs.

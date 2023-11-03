@@ -29,7 +29,7 @@ Functionalities offered on the Notifications Page:
       * When the delete icon is clicked a popup modal is evoked prompting if the user is sure of the actions they wish to take.
 
 6. Rows per page: The user is able to choose the number of notifications they prefer to see on a page (The minimum is 5).
-7. Pagination Link: The user is able to see the current page they are own. They are also able to navigate to previous and next pages using the nav links.
+7. Pagination Link: The user is able to see the current page they are on. They are also able to navigate to previous and next pages using the navigation links.
 
 ### Notification information popup modal
 

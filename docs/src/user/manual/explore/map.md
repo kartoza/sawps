@@ -1,6 +1,6 @@
 # Map Functionalities Documentation
 
-This documentation outlines the functionalities available in the map view, including features that allow the user to interact with and customise the map display for the users needs.
+This documentation outlines the functionalities available in the map view, including features that allow the user to interact with and customise the map display for their needs.
 
 ### Map
 
@@ -12,7 +12,7 @@ This documentation outlines the functionalities available in the map view, inclu
 
 3. **Zooming Out Icon**: The zooming out icon is represented by a minus sign (-). Click on this icon to zoom out on the map, reducing the size of the displayed area and providing a broader view.
 
-4. **Toggle Between Dark and Light Mode**: The map view offers the option to toggle between dark and light modes, enhancing the viewing experience based on the users preference.
+4. **Toggle Between Dark and Light Mode**: The map view offers the option to toggle between dark and light modes, enhancing the viewing experience based on the user's preference.
 
     **Dark Mode**
 
@@ -30,4 +30,4 @@ This documentation outlines the functionalities available in the map view, inclu
 
 ## Summary
 
-The map functionalities provide the user with options to adjust the map's view and appearance to best suit the users needs. User can zoom in or out to focus on specific details or gain a broader perspective. Additionally, the ability to toggle between dark and light modes enhances viewing comfort. The print functionality allows the user to create a hard or digital copy of the current map view for the users convenience.
+The map functionalities provide the user with options to adjust the map's view and appearance to best suit their needs. Users can zoom in or out to focus on specific details or gain a broader perspective. Additionally, the ability to toggle between dark and light modes enhances viewing comfort. The print functionality allows the user to create a hard or digital copy of the current map view for their convenience.
