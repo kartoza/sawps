@@ -29,10 +29,9 @@
 
 # Test Case
 
-::: django_project.property.test_property_models
+::: django_project.property.tests.test_property_models
     handler: python
     options:
         docstring_style: sphinx
         heading_level: 1
         show_source: true
-

@@ -1,14 +1,14 @@
-# Help
+# Help and Contact
 
 ## What do I do if I need help?
 
-Navigate to the `HELP` button on the home page. This will prompt you to either `GO TO USER GUIDE` where you can find relevant information and commonly asked questions or `CONTACT US` button in which you can log a query to the SAWPS team.
+Once logged in, navigate to the `HELP` button on the navigation bar. This will redirect you to the help page of the platform. Here you will see 1️⃣ the help desk system that displays some of the documentation. If you would like to view the full documentation site you can click on 2️⃣ `Visit our Documentation` or you can click on 3️⃣ the `CONTACT US` button to be redirected to the `Contact Us` page.
 
 ![Help 1](./img/help-1.png) <!-- Image to be updated when site is finished -->
 
 ## How do I make contact with the SAWPS team?
 
-Navigate to the `CONTACT` button on the `Home` page (or from the `Help` page) and fill out the prompted information so the team can get back to you.
+Navigate to the `CONTACT` button on the `Home` page (or the `CONTACT US` button from the `Help` page) and fill out the prompted information so the team can get back to you.
 
 ![Help 2](./img/help-2.png)
 

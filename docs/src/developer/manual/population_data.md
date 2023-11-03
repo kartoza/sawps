@@ -39,7 +39,7 @@
 
 # Test Case
 
-::: django_project.population_data.test_population_data_models
+::: django_project.population_data.tests.test_population_data_models
     handler: python
     options:
         docstring_style: sphinx

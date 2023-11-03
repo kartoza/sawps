@@ -30,7 +30,7 @@
 
 # Test Case
 
-::: django_project.stakeholder.test_stakeholder_models
+::: django_project.stakeholder.tests.test_stakeholder_models
     handler: python
     options:
         docstring_style: sphinx

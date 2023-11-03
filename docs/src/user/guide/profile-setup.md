@@ -81,3 +81,23 @@ Once the `Add button` has been clicked, the popup will change to display a QR Im
 The `Cancel` button 1️⃣ will prevent the device from being removed (This is in case the user isn't sure or clicked the icon by accident). The `Delete` button 2️⃣ will remove the device from the platform meaning the user will no longer be able to login using that device.
 
 ![Delete Device 1](./img/2fa-delete-device-1.png)
+
+## Organisation settings
+
+In the `ORGANISATIONS` tab, you can apply for a new organisation or can switch your active organisation.
+
+### Joining a new organisation
+
+If you didn't apply to be in an organisation when you registered, you can still apply to be added to one or have an organisation created. Navigate to the `ORGANISATIONS` tab on the `Profile Configuration` page. Then click on the `+REQUEST ORGANISATION` button, this will cause a popup to appear.
+
+![Registering 10](./img/registering-10.png)
+
+In the pop up, you need to fill in the name of the organisation that you would like to be added to (or have created for you) and a message to the administrator with any additional information you think is necessary. Once you have filled in everything, click on the `SEND` button.
+
+![Registering 11](./img/registering-11.png)
+
+This will send your request to the admin team for verification.
+
+![Registering 12](./img/registering-12.png)
+
+### Switching organisations

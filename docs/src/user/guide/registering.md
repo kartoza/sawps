@@ -9,6 +9,8 @@ Navigate to the `REGISTER` button on the home page and fill in your details in t
 
 You will be redirected to the registration page where you will be prompted to fill in some information. Namely; your first name, Last name (surname), Email address you'd like associated with your account, and the password you will use to log in to the platform. Once you have filled in all of the information click on the `REGISTER` button at the bottom of the registration window.
 
+> **Hint:** Read the descriptor beneath the password fields to ensure you have a strong password for security reasons, or use a password manages to generate a password of 14 characters.
+
 ![Registering 2](./img/registering-2.png)
 
 A popup will appear letting you know that a verification email will then be sent to the address you have provided.
@@ -39,7 +41,7 @@ You can use these in future to login to your profile. Additional devices can als
 
 ![Registering 9](./img/registering-9.png)
 
-The next step is to request to be added to the ‘Organisation’ in which you belong. Navigate to the `ORGANISATIONS` tab on the `Profile COnfiguration` page. Then click on the `+REQUEST ORGANISATION` button, this will cause a popup to appear.
+The next step is to request to be added to the ‘Organisation’ in which you belong. Navigate to the `ORGANISATIONS` tab on the `Profile Configuration` page. Then click on the `+REQUEST ORGANISATION` button, this will cause a popup to appear.
 
 ![Registering 10](./img/registering-10.png)
 
