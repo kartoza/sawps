@@ -28,19 +28,6 @@ const availableColors: AvailableColors = {
 const AgeGroupBarChart = (props: any) => {
   const {loading, ageGroupData} = props;
 
-
-  // const filteredData = ageGroupData.filter((item: ageGroup) => {
-  //     // Check if any of the specified numeric properties are empty or equal to 0
-  //     return (
-  //       item.total_adult_female !== 0 &&
-  //       item.total_adult_male !== 0 &&
-  //       item.total_juvenile_female !== 0 &&
-  //       item.total_juvenile_male !== 0 &&
-  //       item.total_sub_adult_female !== 0 &&
-  //       item.total_sub_adult_male !== 0
-  //     );
-  //   });
-
   const filteredData = ageGroupData;
 
   // Extract the species name
@@ -67,7 +54,6 @@ const AgeGroupBarChart = (props: any) => {
   for (const ageGroup of ageGroups) {
     // Map the data for the current age group
     const data = filteredData.map((dataItem: any) => dataItem[ageGroup.dataProperty] || 0);
-    // const data = filteredData.map((dataItem: any) => dataItem[ageGroup.dataProperty] || dataItem['total_total'] / 6);
 
     // Rearrange the data to match the sorted labels
     const sortedData = labels.map((year: any) => {
@@ -80,7 +66,6 @@ const AgeGroupBarChart = (props: any) => {
       label: ageGroup.label,
       data: sortedData,
       backgroundColor: availableColors[ageGroup.label]
-      // backgroundColor: filteredData[0][ageGroup.dataProperty] ? availableColors[ageGroup.label] : 'rgba(204, 204, 204, 1)'
     };
 
     datasets.push(dataset);
@@ -179,14 +164,6 @@ const AgeGroupBarChart = (props: any) => {
           }
         },
       },
-      // title: {
-      //   display: true,
-      //   text: `Population per age group for ${species}`,
-      //   font: {
-      //     size: 16,
-      //     weight: 'bold' as 'bold',
-      //   },
-      // },
     },
   } as const;
 
