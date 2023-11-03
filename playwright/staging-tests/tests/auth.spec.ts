@@ -1,9 +1,9 @@
 import { test as setup, expect } from '@playwright/test';
 
-let url = '/';
+let url = process.env.STAGING;
 
-let user_email = 'admin@example.com';
-let password = 'admin';
+let user_email = process.env.EMAIL;
+let password = process.env.PASSWORD;
 const authFile = 'tests/.auth/sawps-auth.json';
 
 
@@ -31,9 +31,9 @@ setup.describe('login and 2fa-authentication ', () => {
     
     await page.getByRole('button', { name: 'LOGIN' }).click();
 
-    //await page.waitForURL('**/accounts/two-factor/authenticate/');
+    await page.waitForURL('**/accounts/two-factor/authenticate/');
 
-    //await expect(page.getByRole('heading', { name: 'Two-Factor Authentication' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Two-Factor Authentication' })).toBeVisible();
 
     //await page.locator('input[id="id_otp_token"]').fill(token);
 
@@ -41,7 +41,7 @@ setup.describe('login and 2fa-authentication ', () => {
 
     const finalURL = page.url();
 
-    expect(finalURL).not.toBe(initialURL);
+    expect(finalURL).toBe(initialURL);
 
     await page.context().storageState({ path: authFile });
     
