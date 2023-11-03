@@ -19,8 +19,10 @@ import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
 import PopulationTrend from "./PopulationTrend";
 import {
+    useGetActivityAsObjQuery,
     useGetUserInfoQuery,
 } from "../../../services/api";
+import Topper from "../Data/Topper";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
@@ -30,6 +32,7 @@ const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -56,7 +59,6 @@ const Metrics = () => {
     const [hasEmptyProvinceCount, setHasEmptyProvinceCount] = useState(true);
     const [hasEmptyProvinceCountPercentage, setHasEmptyProvinceCountPercentage] = useState(true);
     const [hasEmptyTotalCountPerActivity, setHasEmptyTotalCountPerActivity] = useState(true);
-    const [hasEmptyTotalCountPerActivityPercentage, setHasEmptyTotalCountPerActivityPercentage] = useState(true);
     const [hasEmptyPopulationEstimateCategoryCount, setHasEmptyPopulationEstimateCategoryCount] = useState(true);
     const [hasEmptyPopulationEstimateCategoryCountPercentage, setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage] = useState(true);
     const [hasEmptyPropertyAvailable, setHasEmptyPropertyAvailable] = useState(true);
@@ -64,6 +66,17 @@ const Metrics = () => {
 
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery();
     const [userPermissions, setUserPermissions] = useState([]);
+
+    const {
+        data: activityList,
+        isLoading: isActivityLoading,
+        isSuccess: isActivitySuccess
+    } = useGetActivityAsObjQuery()
+    
+    let activityParams = activityId;
+    if (activityList) {
+        activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
+    }
 
     useEffect(() => {
         if (isSuccess) {
@@ -97,9 +110,6 @@ const Metrics = () => {
     const handleEmptyTotalCountPerActivity = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyTotalCountPerActivity(isEmpty);
     };
-    const handleEmptyTotalCountPerActivityPercentage = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
-        setHasEmptyTotalCountPerActivityPercentage(isEmpty);
-    };
     const handleEmptyTopulationEstimateCategoryCount = (isEmpty: boolean | ((prevState: boolean) => boolean)) => {
         setHasEmptyPopulationEstimateCategoryCount(isEmpty);
     };
@@ -112,7 +122,7 @@ const Metrics = () => {
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
-        axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+        axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setActivityData(response.data.data)
@@ -126,7 +136,7 @@ const Metrics = () => {
 
     const fetchActivityTotalCount = () => {
         setLoading(true)
-        axios.get(`${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+        axios.get(`${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setTotalCountData(response.data)
@@ -183,7 +193,6 @@ const Metrics = () => {
         setHasEmptyPropertyAvailable(true)
         setHasEmptyProvinceCountPercentage(true)
         setHasEmptyTotalCountPerActivity(true)
-        setHasEmptyTotalCountPerActivityPercentage(true)
         setHasEmptyPopulationEstimateCategoryCount(true)
         setHasEmptyhasEmptyPopulationEstimateCategoryCountPercentage(true)
         handleHasEmptyAreaAvailable(true)
@@ -254,6 +263,8 @@ const Metrics = () => {
             <Box className="charts-container">
 
                 {showCharts ? (
+                        <>
+                        <Topper></Topper>
                         <Grid container spacing={2} ref={contentRef}>
                             {
                             constants.canViewPopulationTrend &&
@@ -336,6 +347,7 @@ const Metrics = () => {
                                         startYear={startYear}
                                         endYear={endYear}
                                         loading={loading}
+                                        activity={activityParams}
                                         setLoading={setLoading}
                                         onEmptyDatasets={handleEmptyPropertyAvailable}
                                     />
@@ -344,7 +356,7 @@ const Metrics = () => {
 
 
                             {
-                            constants.canViewAgeGroup &&
+                            userInfoData?.user_permissions.includes('Can view age group') &&
                             ageGroupData.map((data) => (
                                 <Grid container key={data.id} item xs={12} md={6}>
                                     <AgeGroupBarChart
@@ -399,16 +411,8 @@ const Metrics = () => {
                             {
                             constants.canViewProvinceSpeciesCountAsPercentage &&
                             selectedSpecies &&
-                            hasEmptyProvinceCountPercentage && (
-                                <Grid item xs={12} md={6}
-                                    style={{
-                                        textAlign: 'center',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        maxHeight: '380px'
-                                    }}
-                                >
+                            (
+                                <Grid item xs={12} md={6}>
                                     <SpeciesCountAsPercentage
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -425,8 +429,7 @@ const Metrics = () => {
 
                             {
                             constants.canViewTotalCount &&
-                            selectedSpecies &&
-                            hasEmptyTotalCountPerActivity && (
+                            selectedSpecies && (
                                 <Grid item xs={12} md={6}>
                                     <TotalCountPerActivity
                                         selectedSpecies={selectedSpecies}
@@ -442,17 +445,10 @@ const Metrics = () => {
 
 
                             {
-                            constants.canViewCountAsPercentage &&
+                            userInfoData?.user_permissions.includes('Can view count as percentage') &&
                             selectedSpecies &&
-                            hasEmptyTotalCountPerActivityPercentage && (
+                            totalCoutData.length > 0 && (
                                 <Grid item xs={12} md={6}
-                                    style={{
-                                        textAlign: 'center',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        maxHeight: '380px'
-                                    }}
                                 >
                                     <ActivityCountAsPercentage
                                         selectedSpecies={selectedSpecies}
@@ -460,7 +456,6 @@ const Metrics = () => {
                                         endYear={endYear}
                                         loading={loading}
                                         activityData={totalCoutData}
-                                        onEmptyDatasets={handleEmptyTotalCountPerActivityPercentage}
                                     />
                                 </Grid>
                                 )}
@@ -487,15 +482,7 @@ const Metrics = () => {
                             constants.canViewPopulationEstimateAsPercentage &&
                             selectedSpecies &&
                             hasEmptyPopulationEstimateCategoryCountPercentage && (
-                                <Grid item xs={12} md={6}
-                                    style={{
-                                        textAlign: 'center',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        maxHeight: '380px'
-                                    }}
-                                >
+                                <Grid item xs={12} md={6}>
                                     <PopulationEstimateAsPercentage
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -510,6 +497,7 @@ const Metrics = () => {
                             )}
 
                     </Grid>
+                        </>
                 ): (
                     // Render message to user
                     <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
