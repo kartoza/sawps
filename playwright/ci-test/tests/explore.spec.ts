@@ -15,11 +15,9 @@ test.describe('Explore page', () => {
 
         await page.locator('#navbarNav').isVisible();
 
-        const buttonSelector = 'div.landing-page-banner-text-btns button:text("EXPLORE")';
+        await page.locator('#navbarNav').getByRole('link', { name: 'EXPLORE' }).isVisible();
 
-        await page.waitForSelector(buttonSelector, {timeout: 2000});
-
-        await page.click(buttonSelector);
+        await page.locator('#navbarNav').getByRole('link', { name: 'EXPLORE' }).click();
 
         await page.waitForURL('**/map/');
 
