@@ -27,9 +27,13 @@ test.describe('about page', () => {
 
         await page.locator('div').filter({ hasText: 'SAWPS is a centralised wildlife population and trade monitoring system for assessing popu' }).nth(3).click();
 
-        await page.frameLocator('[data-testid="about-page-video-frame"]').getByLabel('Play', { exact: true}).isVisible();
+        // Ensure the frame is available
+        const frame = await page.frameLocator('[data-testid="about-page-video-frame"]').locator('video');
 
-        await page.frameLocator('[data-testid="about-page-video-frame"]').locator('video').click();
+        // Wait for the video element to be visible
+        await page.waitForSelector('video', { state: 'visible' });
+
+        await frame.click();
 
         await page.waitForTimeout(5000);
 
