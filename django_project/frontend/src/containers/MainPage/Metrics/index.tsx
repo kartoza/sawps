@@ -19,6 +19,7 @@ import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
 import PopulationTrend from "./PopulationTrend";
 import {
+    useGetActivityAsObjQuery,
     useGetUserInfoQuery,
 } from "../../../services/api";
 import Topper from "../Data/Topper";
@@ -31,6 +32,7 @@ const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -64,6 +66,17 @@ const Metrics = () => {
 
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery();
     const [userPermissions, setUserPermissions] = useState([]);
+
+    const {
+        data: activityList,
+        isLoading: isActivityLoading,
+        isSuccess: isActivitySuccess
+    } = useGetActivityAsObjQuery()
+    
+    let activityParams = activityId;
+    if (activityList) {
+        activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
+    }
 
     useEffect(() => {
         if (isSuccess) {
@@ -109,7 +122,7 @@ const Metrics = () => {
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
-        axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+        axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setActivityData(response.data.data)
@@ -123,7 +136,7 @@ const Metrics = () => {
 
     const fetchActivityTotalCount = () => {
         setLoading(true)
-        axios.get(`${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+        axios.get(`${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`).then((response) => {
             setLoading(false)
             if (response.data) {
                 setTotalCountData(response.data)
@@ -334,6 +347,7 @@ const Metrics = () => {
                                         startYear={startYear}
                                         endYear={endYear}
                                         loading={loading}
+                                        activity={activityParams}
                                         setLoading={setLoading}
                                         onEmptyDatasets={handleEmptyPropertyAvailable}
                                     />
@@ -397,16 +411,8 @@ const Metrics = () => {
                             {
                             constants.canViewProvinceSpeciesCountAsPercentage &&
                             selectedSpecies &&
-                            hasEmptyProvinceCountPercentage && (
-                                <Grid item xs={12} md={6}
-                                    style={{
-                                        textAlign: 'center',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        maxHeight: '380px'
-                                    }}
-                                >
+                            (
+                                <Grid item xs={12} md={6}>
                                     <SpeciesCountAsPercentage
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -423,8 +429,7 @@ const Metrics = () => {
 
                             {
                             constants.canViewTotalCount &&
-                            selectedSpecies &&
-                            hasEmptyTotalCountPerActivity && (
+                            selectedSpecies && (
                                 <Grid item xs={12} md={6}>
                                     <TotalCountPerActivity
                                         selectedSpecies={selectedSpecies}
