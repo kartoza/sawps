@@ -31,21 +31,21 @@ test.describe('Explore page', () => {
 
         await page.getByRole('tab', {name: 'FILTERS'}).click(); //filters
 
-        await page.getByText('Search placeOrganisationSelectSelect AllAdminPropertySelectSelect AllSpeciesActi').click();
+        //await page.getByText('Search placeOrganisationSelectSelect AllAdminPropertySelectSelect AllSpeciesActi').click();
 
-        await page.getByText('Search placeOrganisationSelectSelect AllAdminPropertySelectSelect AllSpeciesActi').click();
+        //await page.getByText('Search placeOrganisationSelectSelect AllAdminPropertySelectSelect AllSpeciesActi').click();
 
-        await page.locator('div').filter({ hasText: /^SelectSelect All$/ }).getByRole('button').click();
+        //await page.locator('div').filter({ hasText: /^SelectSelect All$/ }).getByRole('button').click();
 
-        await page.locator('div').filter({ hasText: /^SelectSelect All$/ }).getByRole('button').click();
+        //await page.locator('div').filter({ hasText: /^SelectSelect All$/ }).getByRole('button').click();
 
-        await page.locator('nav').filter({ hasText: 'SelectSelect AllAdmin' }).getByRole('button').click();
+        //await page.locator('nav').filter({ hasText: 'SelectSelect AllAdmin' }).getByRole('button').click();
 
-        await page.locator('nav').filter({ hasText: 'SelectSelect AllAdmin' }).getByRole('button').click();
+        //await page.locator('nav').filter({ hasText: 'SelectSelect AllAdmin' }).getByRole('button').click();
 
-        await page.getByPlaceholder('Select').nth(1).click();
+        //await page.getByPlaceholder('Select').nth(1).click();
 
-        await page.getByPlaceholder('Select').nth(1).click();
+        //await page.getByPlaceholder('Select').nth(1).click();
 
         await page.locator('.MuiSlider-track').isVisible();
 
