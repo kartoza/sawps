@@ -539,14 +539,16 @@ class FindPropertyByCoord(APIView):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
         point = Point(float(lng), float(lat), srid=4326)
-        org_ids = OrganisationUser.objects.filter(
-            user=self.request.user
-        ).values_list('organisation_id', flat=True).distinct()
         properties = Property.objects.filter(
             geometry__contains=point
-        ).filter(
-            organisation_id__in=org_ids
         )
+        if not self.request.user.is_superuser:
+            org_ids = OrganisationUser.objects.filter(
+                user=self.request.user
+            ).values_list('organisation_id', flat=True).distinct()
+            properties = properties.filter(
+                organisation_id__in=org_ids
+            )
         property = properties.order_by('id').first()
         if not property:
             return Response(status=404)
