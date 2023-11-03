@@ -6,8 +6,6 @@ services:
 
   dev:
     image: kartoza/sanbi:test
-    environment:
-      - DISABLE_2FA=${DISABLE_2FA=True}
     volumes:
       - ../django_project:/home/web/django_project
     ports:
