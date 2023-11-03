@@ -279,6 +279,16 @@ class TestMapAPIViews(TestCase):
         # should find 0
         response = view(request)
         self.assertEqual(response.status_code, 404)
+        # superuser should be able to access it
+        request = self.factory.get(
+            reverse('find-property') + (
+                f'/?lat={lat}&lng={lng}'
+            ),
+            organisation_id=self.organisation_1.id
+        )
+        request.user = self.superuser
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
 
     @mock.patch('frontend.api_views.map.cache.get')
     def test_map_authenticate(self, mocked_cache):
