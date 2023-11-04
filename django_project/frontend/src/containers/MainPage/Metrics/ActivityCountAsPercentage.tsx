@@ -30,6 +30,7 @@ interface Props {
   endYear: number;
   loading: boolean;
   activityData: ActivityDataItem[];
+  icon: string;
 }
 
 const availableColors = [
@@ -51,7 +52,8 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   startYear,
   endYear,
   loading,
-  activityData
+  activityData,
+  icon
 }: Props) => {
   // Initialize variables
   let labels: string[] = [];
@@ -60,16 +62,15 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   let year: number | null = null; //use effect to update this guy
   const recentActivitiesMap: Record<string, any> = {};
 
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (activityData && activityData.length > 0) {
-      const firstItem = activityData[0];
-      if (firstItem.graph_icon) {
-        setBackgroundImageUrl(firstItem.graph_icon);
-      }
-    }
-  }, [activityData, selectedSpecies,startYear,endYear]);
+  // const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+  //
+  // useEffect(() => {
+  //   if (activityData && activityData.length > 0) {
+  //     setBackgroundImageUrl(icon)
+  //   } else {
+  //     setBackgroundImageUrl("/static/images/default-species-graph.svg")
+  //   }
+  // }, [activityData]);
 
   // Iterate through activityData
   activityData.forEach((speciesData: ActivityDataItem) => {
@@ -152,9 +153,9 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
               <DoughnutChart
                   chartData={chartData}
                   chartId={'activity-count-as-percentage'}
-                  icon={backgroundImageUrl}
+                  icon={icon}
               />
-            } icon={backgroundImageUrl}/>
+            } icon={icon}/>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

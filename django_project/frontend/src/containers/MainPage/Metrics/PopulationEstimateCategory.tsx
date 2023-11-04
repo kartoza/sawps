@@ -35,26 +35,23 @@ const PopulationEstimateCategoryCount = (props: any) => {
     startYear,
     endYear,
     activityData,
-    onEmptyDatasets
+    onEmptyDatasets,
+    icon
   } = props;
   let year: number | null = null;
   const [speciesData, setSpeciesData] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (activityData && activityData.length > 0) {
-      const firstItem = activityData[0];
-      if (firstItem.graph_icon) {
-        setBackgroundImageUrl(firstItem.graph_icon);
-      } else {
-        setBackgroundImageUrl(undefined);
-      }
-    } else {
-      setBackgroundImageUrl(undefined)
-    }
-  }, [activityData]);
+  //
+  // const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+  //
+  // useEffect(() => {
+  //   if (activityData && activityData.length > 0) {
+  //     setBackgroundImageUrl(icon)
+  //   } else {
+  //     setBackgroundImageUrl("/static/images/default-species-graph.svg")
+  //   }
+  // }, [activityData]);
+  console.debug(icon)
 
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
@@ -64,11 +61,11 @@ const PopulationEstimateCategoryCount = (props: any) => {
       )
       .then((response) => {
         if (response.data) {
-          if (Object.keys(response.data).length === 0) {
-              onEmptyDatasets(false)
-          } else {
-              onEmptyDatasets(true)
-          }
+          // if (Object.keys(response.data).length === 0) {
+          //     onEmptyDatasets(false)
+          // } else {
+          //     onEmptyDatasets(true)
+          // }
           setSpeciesData(response.data);
           setLoading(false);
         }
@@ -140,9 +137,9 @@ const PopulationEstimateCategoryCount = (props: any) => {
             <DoughnutChart
                 chartId={'population-estimate-category'}
                 chartData={chartData}
-                icon={backgroundImageUrl}
+                icon={icon}
             />
-          }/>
+          } icon={icon}/>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

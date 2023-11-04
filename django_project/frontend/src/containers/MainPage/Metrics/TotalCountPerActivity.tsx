@@ -62,22 +62,18 @@ const TotalCountPerActivity = (props: any) => {
     endYear,
     loading,
     activityData,
-    onEmptyDatasets
+    onEmptyDatasets,
+    icon
   } = props;
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (activityData && activityData.length > 0) {
-      const firstItem = activityData[0];
-      if (firstItem.graph_icon) {
-        setBackgroundImageUrl(firstItem.graph_icon);
-      } else {
-        setBackgroundImageUrl(undefined)
-      }
-    }else {
-      setBackgroundImageUrl(undefined)
-    }
-  }, [propertyId,startYear,endYear,activityData, selectedSpecies]);
+  // const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+  //
+  // useEffect(() => {
+  //   if (activityData && activityData.length > 0) {
+  //     setBackgroundImageUrl(icon)
+  //   } else {
+  //     setBackgroundImageUrl("/static/images/default-species-graph.svg")
+  //   }
+  // }, [activityData]);
 
   // Initialize variables
   const labels: string[] = [];
@@ -136,9 +132,9 @@ const TotalCountPerActivity = (props: any) => {
               <DoughnutChart
                   chartData={chartData}
                   chartId={'total-count-per-activity'}
-                  icon={backgroundImageUrl}
+                  icon={icon}
               />
-            } icon={backgroundImageUrl}/>
+            } icon={icon}/>
         ) : (
             <Loading containerStyle={{ minHeight: 160 }} />
         )}

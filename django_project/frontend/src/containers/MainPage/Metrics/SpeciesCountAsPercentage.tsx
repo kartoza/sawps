@@ -53,11 +53,19 @@ const SpeciesCountAsPercentage = (props: any) => {
     loading,
     setLoading,
     activityData,
-    onEmptyDatasets
+    onEmptyDatasets,
+    icon
   } = props;
   const [speciesData, setSpeciesData] = useState<SpeciesDataItem[]>([]);
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-  console.debug(activityData)
+  // const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+  //
+  // useEffect(() => {
+  //   if (activityData && activityData.length > 0) {
+  //     setBackgroundImageUrl(icon)
+  //   } else {
+  //     setBackgroundImageUrl("/static/images/default-species-graph.svg")
+  //   }
+  // }, [activityData]);
 
   const fetchActivityCount = () => {
     setLoading(true);
@@ -80,16 +88,6 @@ const SpeciesCountAsPercentage = (props: any) => {
   useEffect(() => {
     fetchActivityCount();
   }, [propertyId, startYear, endYear, selectedSpecies]);
-
-  useEffect(() => {
-    if (activityData && activityData.length > 0) {
-      const firstItem = activityData[0];
-      if (firstItem.graph_icon) {
-        setBackgroundImageUrl(firstItem.graph_icon);
-      }
-
-    }else setBackgroundImageUrl('')
-  }, [activityData]);
 
   // Filter speciesData based on the most recent year
   const legendLabels: number[] = Array.from(new Set(speciesData.map((item) => item.year)))
@@ -159,9 +157,9 @@ const SpeciesCountAsPercentage = (props: any) => {
               <DoughnutChart
                   chartData={chartData}
                   chartId={'species-count-as-percentage'}
-                  icon={backgroundImageUrl}
+                  icon={icon}
               />
-            } icon={backgroundImageUrl}/>
+            } icon={icon}/>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

@@ -37,15 +37,15 @@ const Topper = () => {
     const todayYear = today.getFullYear()
     const todayStr = [todayDate, todayMonth, todayYear].join('/')
     const {data: taxonDetail, isLoading: isTaxonDetailLoading, isSuccess} = useGetTaxonDetailQuery(selectedSpecies)
-    const [speciesIcon, setSpeciesIcon] = useState("/static/images/lion.svg")
+    const [speciesIcon, setSpeciesIcon] = useState("/static/images/default-species-topper.svg")
 
 
     useEffect(() => {
         if (taxonDetail) {
-            if (taxonDetail.graph_icon) {
-                setSpeciesIcon(taxonDetail.graph_icon)
+            if (taxonDetail.topper_icon) {
+                setSpeciesIcon(taxonDetail.topper_icon)
             } else {
-                setSpeciesIcon("/static/images/lion.svg")
+                setSpeciesIcon("/static/images/default-species-topper.svg")
             }
         }
     }, [isSuccess, taxonDetail])
