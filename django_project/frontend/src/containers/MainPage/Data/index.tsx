@@ -280,7 +280,7 @@ const DataList = () => {
                                     selectedColumns.length > 0 ?
                                         selectedColumns.includes(column.headerName) : []
                                 );
-                                 for (const value of generatedColumns) {
+                                for (const value of generatedColumns) {
                                     if (!columns.includes(value)) {
                                         columns.push(value)
                                     }
