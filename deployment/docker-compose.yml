@@ -30,7 +30,6 @@ x-common-django:
     - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
     - SENTRY_DSN=${SENTRY_DSN}
     - MAPTILER_API_KEY=${MAPTILER_API_KEY:-''}
-    - DISABLE_2FA=${DISABLE_2FA:-True}
 
     # Email where alters should be sent. This will be used by let's encrypt and as the django admin email.
     - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}

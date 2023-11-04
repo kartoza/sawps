@@ -91,11 +91,3 @@ serve:
 	@echo "Execute webpack serve command"
 	@echo "------------------------------------------------------------------"
 	@docker-compose ${ARGS} exec -T dev npm --prefix /home/web/django_project/frontend run serve
-
-print:
-	@echo
-	@echo "------------------------------------------------------------------"
-	@echo "Execute echo DISABLE_2FA"
-	@echo "------------------------------------------------------------------"
-	@docker-compose ${ARGS} exec -T dev bash -c "echo ${DISABLE_2FA}"
-	@docker-compose ${ARGS} exec -T dev bash -c "echo ${ADMIN_EMAIL}"
