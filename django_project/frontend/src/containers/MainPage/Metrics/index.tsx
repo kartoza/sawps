@@ -426,65 +426,66 @@ const Metrics = () => {
                             )}
 
 
-                            {/*{*/}
-                            {/*constants.canViewProvinceSpeciesCountAsPercentage &&*/}
-                            {/*selectedSpecies &&*/}
-                            {/*(*/}
-                            {/*    <Grid item xs={12} md={6}>*/}
-                            {/*        <SpeciesCountAsPercentage*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            setLoading={setLoading}*/}
-                            {/*            activityData={activityData}*/}
-                            {/*            onEmptyDatasets={handleEmptyProvinceCountPercentage}*/}
-                            {/*            icon={speciesIcon}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                            {
+                            constants.canViewProvinceSpeciesCountAsPercentage &&
+                            selectedSpecies &&
+                            (
+                                <Grid item xs={12} md={6}>
+                                    <SpeciesCountAsPercentage
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        activityData={activityData}
+                                        onEmptyDatasets={handleEmptyProvinceCountPercentage}
+                                        icon={speciesIcon}
+                                    />
+                                </Grid>
+                            )}
 
 
-                            {/*{*/}
-                            {/*constants.canViewTotalCount &&*/}
-                            {/*selectedSpecies && (*/}
-                            {/*    <Grid item xs={12} md={6}>*/}
-                            {/*        <TotalCountPerActivity*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            activityData={totalCoutData}*/}
-                            {/*            onEmptyDatasets={handleEmptyTotalCountPerActivity}*/}
-                            {/*            icon={speciesIcon}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                            {
+                            constants.canViewTotalCount &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={6}>
+                                    <TotalCountPerActivity
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        activityData={totalCoutData}
+                                        onEmptyDatasets={handleEmptyTotalCountPerActivity}
+                                        icon={speciesIcon}
+                                    />
+                                </Grid>
+                            )}
 
 
-                            {/*{*/}
-                            {/*userInfoData?.user_permissions.includes('Can view count as percentage') &&*/}
-                            {/*selectedSpecies &&*/}
-                            {/*totalCoutData.length > 0 && (*/}
-                            {/*    <Grid item xs={12} md={6}*/}
-                            {/*    >*/}
-                            {/*        <ActivityCountAsPercentage*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            activityData={totalCoutData}*/}
-                            {/*            icon={speciesIcon}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*    )}*/}
+                            {
+                            userInfoData?.user_permissions.includes('Can view count as percentage') &&
+                            selectedSpecies &&
+                            totalCoutData.length > 0 && (
+                                <Grid item xs={12} md={6}
+                                >
+                                    <ActivityCountAsPercentage
+                                        selectedSpecies={selectedSpecies}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        activityData={totalCoutData}
+                                        icon={speciesIcon}
+                                    />
+                                </Grid>
+                                )}
 
 
                             {
                             constants.canViewPopulationEstimate &&
-                            selectedSpecies && (
+                            selectedSpecies &&
+                            hasEmptyPopulationEstimateCategoryCount && (
                                 <Grid item xs={12} md={6}>
                                     <PopulationEstimateCategoryCount
                                         selectedSpecies={selectedSpecies}
@@ -499,24 +500,24 @@ const Metrics = () => {
                                 )}
 
 
-                            {/*{*/}
-                            {/*constants.canViewPopulationEstimateAsPercentage &&*/}
-                            {/*selectedSpecies &&*/}
-                            {/*hasEmptyPopulationEstimateCategoryCountPercentage && (*/}
-                            {/*    <Grid item xs={12} md={6}>*/}
-                            {/*        <PopulationEstimateAsPercentage*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            setLoading={setLoading}*/}
-                            {/*            activityData={activityData}*/}
-                            {/*            onEmptyDatasets={handleEmptyPopulationEstimateCategoryCountPercentage}*/}
-                            {/*            icon={speciesIcon}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                            {
+                            constants.canViewPopulationEstimateAsPercentage &&
+                            selectedSpecies &&
+                            hasEmptyPopulationEstimateCategoryCountPercentage && (
+                                <Grid item xs={12} md={6}>
+                                    <PopulationEstimateAsPercentage
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        activityData={activityData}
+                                        onEmptyDatasets={handleEmptyPopulationEstimateCategoryCountPercentage}
+                                        icon={speciesIcon}
+                                    />
+                                </Grid>
+                            )}
 
                     </Grid>
                         </>

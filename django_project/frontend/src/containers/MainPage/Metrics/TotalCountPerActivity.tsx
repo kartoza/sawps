@@ -65,15 +65,6 @@ const TotalCountPerActivity = (props: any) => {
     onEmptyDatasets,
     icon
   } = props;
-  // const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-  //
-  // useEffect(() => {
-  //   if (activityData && activityData.length > 0) {
-  //     setBackgroundImageUrl(icon)
-  //   } else {
-  //     setBackgroundImageUrl("/static/images/default-species-graph.svg")
-  //   }
-  // }, [activityData]);
 
   // Initialize variables
   const labels: string[] = [];

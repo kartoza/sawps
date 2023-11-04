@@ -42,19 +42,6 @@ const PopulationEstimateAsPercentage = (props: any) => {
   } = props;
 
   const [speciesData, setSpeciesData] = useState<any>({});
-  // const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-  //
-  // useEffect(() => {
-  //   if (activityData && activityData.length > 0) {
-  //     const firstItem = activityData[0];
-  //     if (firstItem.graph_icon) {
-  //       setBackgroundImageUrl(firstItem.graph_icon);
-  //     } else {
-  //       setBackgroundImageUrl("/static/images/default-species-graph.svg")
-  //     }
-  //
-  //   }
-  // }, [activityData]);
 
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);

@@ -62,16 +62,6 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   let year: number | null = null; //use effect to update this guy
   const recentActivitiesMap: Record<string, any> = {};
 
-  // const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
-  //
-  // useEffect(() => {
-  //   if (activityData && activityData.length > 0) {
-  //     setBackgroundImageUrl(icon)
-  //   } else {
-  //     setBackgroundImageUrl("/static/images/default-species-graph.svg")
-  //   }
-  // }, [activityData]);
-
   // Iterate through activityData
   activityData.forEach((speciesData: ActivityDataItem) => {
     const speciesActivities = speciesData.activities;
