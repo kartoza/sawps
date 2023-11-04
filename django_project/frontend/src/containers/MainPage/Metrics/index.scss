@@ -326,3 +326,14 @@
 }
 
 
+#pdf-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .MuiBox-root {
+        background-color: white;
+        width: 20%;
+        text-align: center;
+    }
+}
