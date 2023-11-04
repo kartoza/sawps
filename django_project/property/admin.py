@@ -49,8 +49,18 @@ class PropertyAdmin(admin.ModelAdmin):
         )
         generate_property_centroid.delay()
 
+    @admin.action(
+        description="Patch province in properties"
+    )
+    def run_patch_property_province(self, request, queryset):
+        """Admin action to patch province in properties."""
+        from frontend.tasks.patch_province import (
+            patch_province_in_properties
+        )
+        patch_province_in_properties.delay()
+
     actions = [generate_spatial_filters_for_properties,
-               run_patch_property_centroid]
+               run_patch_property_centroid, run_patch_property_province]
 
 
 class ParcelAdmin(admin.ModelAdmin):
