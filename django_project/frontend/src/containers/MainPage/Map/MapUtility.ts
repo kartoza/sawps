@@ -482,7 +482,15 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
               "text-field": "{name}",
               "text-font": ["Open Sans Bold"],
               "text-size": 12,
-              "text-letter-spacing": 0.05
+              "text-letter-spacing": 0.05,
+              "text-offset": [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                7, ["literal", [0, -1.25]],
+                10, ["literal", [0, -1]],
+                12, ["literal", [0, 0]]
+              ]
             },
             "paint": {
               "text-halo-color": "rgba(0, 0, 0, 1)",
@@ -502,7 +510,15 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
               "text-field": "{name}",
               "text-font": ["Open Sans Bold"],
               "text-size": 12,
-              "text-letter-spacing": 0.05
+              "text-letter-spacing": 0.05,
+              "text-offset": [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                7, ["literal", [0, -1.25]],
+                10, ["literal", [0, -1]],
+                12, ["literal", [0, 0]]
+              ]
             },
             "paint": {
               "text-halo-color": "rgba(191, 191, 191, 1)",
