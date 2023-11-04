@@ -72,7 +72,7 @@ const Metrics = () => {
         isLoading: isActivityLoading,
         isSuccess: isActivitySuccess
     } = useGetActivityAsObjQuery()
-    
+
     let activityParams = activityId;
     if (activityList) {
         activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
@@ -265,12 +265,12 @@ const Metrics = () => {
                 {showCharts ? (
                         <>
                         <Topper></Topper>
-                        <Grid container spacing={2} ref={contentRef}>
+                        <Grid container spacing={1} ref={contentRef}>
                             {
                             constants.canViewPopulationTrend &&
                             selectedSpecies &&
                             hasEmptyPopulationTrend && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <PopulationTrend
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -288,7 +288,7 @@ const Metrics = () => {
                             constants.canViewPopulationCategory &&
                             selectedSpecies &&
                             hasEmptyPopulationCategory && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <PopulationCategoryChart
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -302,7 +302,7 @@ const Metrics = () => {
                              {
                              constants.canViewPropertyType &&
                              hasEmptyPropertyType && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <PropertyTypeBarChart
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -320,7 +320,7 @@ const Metrics = () => {
                             constants.canViewDensityBar &&
                             selectedSpecies &&
                             hasEmptyDensity && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <DensityBarChart
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -340,7 +340,7 @@ const Metrics = () => {
                             constants.canViewPropertyAvailable &&
                             selectedSpecies &&
                             hasEmptyPropertyAvailable && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <PropertyAvailableBarChart
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -358,7 +358,7 @@ const Metrics = () => {
                             {
                             userInfoData?.user_permissions.includes('Can view age group') &&
                             ageGroupData.map((data) => (
-                                <Grid container key={data.id} item xs={12} md={6}>
+                                <Grid item key={data.id} xs={12} md={12} lg={6}>
                                     <AgeGroupBarChart
                                         loading={loading}
                                         ageGroupData={data?.age_group}
@@ -373,7 +373,7 @@ const Metrics = () => {
                             {
                             constants.canViewAreaAvailable &&
                             hasEmptyAreaAvailable && areaData.map((data, index) => (
-                                <Grid container key={index} item xs={12} md={6}>
+                                <Grid item key={index} xs={12} md={12} lg={6}>
                                     {data?.area?.owned_species ? (
                                         <AreaAvailableLineChart
                                             selectedSpecies={selectedSpecies}
@@ -394,7 +394,7 @@ const Metrics = () => {
                             constants.canViewProvinceSpeciesCount &&
                             selectedSpecies &&
                             hasEmptyProvinceCount && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <SpeciesCountPerProvinceChart
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -412,7 +412,7 @@ const Metrics = () => {
                             constants.canViewProvinceSpeciesCountAsPercentage &&
                             selectedSpecies &&
                             (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <SpeciesCountAsPercentage
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -430,7 +430,7 @@ const Metrics = () => {
                             {
                             constants.canViewTotalCount &&
                             selectedSpecies && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <TotalCountPerActivity
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -448,7 +448,7 @@ const Metrics = () => {
                             userInfoData?.user_permissions.includes('Can view count as percentage') &&
                             selectedSpecies &&
                             totalCoutData.length > 0 && (
-                                <Grid item xs={12} md={6}
+                                <Grid item xs={12} md={12} lg={6}
                                 >
                                     <ActivityCountAsPercentage
                                         selectedSpecies={selectedSpecies}
@@ -465,7 +465,7 @@ const Metrics = () => {
                             constants.canViewPopulationEstimate &&
                             selectedSpecies &&
                             hasEmptyPopulationEstimateCategoryCount && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <PopulationEstimateCategoryCount
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
@@ -482,7 +482,7 @@ const Metrics = () => {
                             constants.canViewPopulationEstimateAsPercentage &&
                             selectedSpecies &&
                             hasEmptyPopulationEstimateCategoryCountPercentage && (
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={12} lg={6}>
                                     <PopulationEstimateAsPercentage
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
