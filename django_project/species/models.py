@@ -59,7 +59,8 @@ class Taxon(models.Model):
         null=True, blank=True,
         validators=[FileExtensionValidator(['svg'])],
         help_text=(
-            'Use SVG file with black (#000000) fill and transparent background. '
+            'Use SVG file with black (#000000) '
+            'fill and transparent background. '
             'It will be used as species icon in graph/charts.'
         )
     )
@@ -83,18 +84,36 @@ class Taxon(models.Model):
         db_table = "taxon"
 
     def save(self, *args, **kwargs):
-        graph_icon = self.graph_icon.read()
-        topper_icon = graph_icon.replace(b'fill="#000000"', b'fill="#75B37A"')
-        topper_icon = topper_icon.replace(b'fill="#000"', b'fill="#75B37A"')
-        topper_icon = topper_icon.replace(b'fill="black"', b'fill="#75B37A"')
-        topper_icon = ContentFile(topper_icon, name=f"{self.scientific_name}-topper.svg")
-        self.topper_icon = topper_icon
+        print(self.graph_icon)
+        if self.graph_icon:
+            graph_icon = self.graph_icon.read()
+            topper_icon = graph_icon.replace(
+                b'fill="#000000"', b'fill="#75B37A"'
+            )
+            topper_icon = topper_icon.replace(
+                b'fill="#000"', b'fill="#75B37A"'
+            )
+            topper_icon = topper_icon.replace(
+                b'fill="black"', b'fill="#75B37A"'
+            )
+            topper_icon = ContentFile(
+                topper_icon, name=f"{self.scientific_name}-topper.svg"
+            )
+            self.topper_icon = topper_icon
 
-        icon = graph_icon.replace(b'fill="#000000"', b'fill="#FFFFFF"')
-        icon = icon.replace(b'fill="#000"', b'fill="#FFFFFF"')
-        icon = icon.replace(b'fill="black"', b'fill="#FFFFFF"')
-        icon = ContentFile(icon, name=f"{self.scientific_name}-icon.svg")
-        self.icon = icon
+            icon = graph_icon.replace(
+                b'fill="#000000"', b'fill="#FFFFFF"'
+            )
+            icon = icon.replace(
+                b'fill="#000"', b'fill="#FFFFFF"'
+            )
+            icon = icon.replace(
+                b'fill="black"', b'fill="#FFFFFF"'
+            )
+            icon = ContentFile(
+                icon, name=f"{self.scientific_name}-icon.svg"
+            )
+            self.icon = icon
         return super().save(*args, **kwargs)
 
 
