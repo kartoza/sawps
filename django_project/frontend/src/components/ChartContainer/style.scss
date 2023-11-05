@@ -6,8 +6,27 @@
   box-shadow: 0 0 6px -2px rgba(0, 0, 0, 0.3);
   width: 100%;
   flex-direction: column;
+  height: 400px;
+
+  .ChartContainer {
+    height: 320px;
+
+    .ChartBox {
+      height: 270px;
+    }
+
+    .ChartTitleBox {
+      height: 50px;
+
+      .ChartTitle {
+        font-weight: bold;
+      }
+    }
+
+  }
 
   .DownloadChartContainer {
+    height: 20px;
     text-align: right;
 
     img:hover {
