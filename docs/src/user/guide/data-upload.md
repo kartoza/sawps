@@ -172,6 +172,8 @@ Once you have fixed the error in the file you want to upload, click on 1️⃣ t
 
 ![Data Upload Issue 4](./img/data-upload-issue-4.png)
 
+This Section Will Be Updated.
+
 ###### Empty sheet uploaded
 
 If you try to upload an empty data file, the site will return an error message. Fill in all the mandatory fields in the file and try uploading again.

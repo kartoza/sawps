@@ -4,7 +4,7 @@ This documentation explains how to use the map on the platform as well as how to
 
 ![Explore 1](./img/explore-1.png)
 
-## Switching between dark and light mode on the map
+## Switching between dark and light mode on the map <!-- To Be Updated... AGAIN -->
 
 When you first load the explore page, the map is in dark mode. If you wish to change to light mode you can switch by simply clicking on 1️⃣ the `Toggle Light Mode` button.
 
@@ -43,6 +43,10 @@ By default, the NGI Aerial Imagery layer is disabled and when you enable it, it 
 ![Map Layers 4](./img/map-layers-4.png)
 
 ![Map Layers 5](./img/map-layers-5.png)
+
+## Changing map orientation
+
+To Be Populated.
 
 ## Printing your current map view
 
@@ -104,5 +108,49 @@ Unless you choose an `Ecosystem` filter that intersects your properties.
 
 ![Filters 9](img/filters-9.png)
 
-<!-- ## Reports 
-To be added -->
+## Reports
+
+If you would like reports about different species you will need to navigate to the `REPORTS` tab of the `EXPLORE` page. To get there, click on the `EXPLORE` link in the navigation bar and then click on the `REPORTS` tab.
+
+![Reports 1](img/reports-1.png)
+
+If you navigate directly to the `REPORTS` tab, having not implemented any filters on the map, you will be greeted by a prompt asking you select a species to begin.
+
+![Reports 2](img/reports-2.png)
+
+If you had already been exploring the map and using a species filter (as shown in [Using the Filters Panel](#using-the-filters-panel)), then you will see all data on the platform associated with that species (from your active organisation). This example chose *Connochaetes taurinus* (i.e. the Blue Wildebeest), but you are free to choose whatever species you would like to get a report for.
+
+![Reports 3](img/reports-3.png)
+
+Depending on the `Report Type` option(s) selected, the platform will adapt and automatically update the report to contain the other field types in the displayed table.
+
+![Reports 4](img/reports-4.png)
+
+Depending on the `Activity` type(s) selected, the platform will adapt and automatically update the report to contain the other field types in the displayed table.
+
+![Reports 5](img/reports-5.png)
+
+Adjusting the year slider the `Year` slider, or the year interval using the `From` and `To` fields, will also cause the platform to adapt and only display fields that are within the specified time frame.
+
+![Reports 6](img/reports-6.png)
+
+Applying any of, or a combination of, the spatial filters ( `Critical Biodiversity Areas` and/or `Ecosystems`) will cause the platform to only display records that overlap the desired sub-section of either of the spatial layers. For example if you choose the *Critical Biodiversity Area 2* as the `Critical Biodiversity Areas` filter, then a report of all of your properties that overlap that critical biodiversity area type will appear on the tables.
+
+![Reports 7](img/reports-7.png)
+
+You can customise which columns will be displayed in the report by clicking on 1️⃣ the columns dropdown menu, and then ticking or unticking the various columns you would like to have as part of your report. Keep in mind there are multiple columns so you can scroll up and down on the dropdown menu.
+
+![Reports 8](img/reports-8.png)
+
+<!-- Unsure if this is correct. Buttons have the same functionality? -->
+Once you have customised the report to your preferred specifications, scroll down on the reports page and click on either 1️⃣ `DOWNLOAD DATA` to then be prompted to download the data currently displayed as either a CSV or an XLSX file, or 2️⃣ `DOWNLOAD DATA REPORT` to download the report as PDF file.
+
+![Reports 9](img/reports-9.png)
+
+## Charts
+
+To Be Updated.
+
+## Trends
+
+To Be Updated.
