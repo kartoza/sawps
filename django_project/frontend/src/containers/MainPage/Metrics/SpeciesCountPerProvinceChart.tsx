@@ -41,8 +41,7 @@ const SpeciesCountPerProvinceChart = (props: any) => {
     startYear,
     endYear,
     loading,
-    setLoading,
-    onEmptyDatasets
+    setLoading
   } = props;
   const [speciesData, setSpeciesData] = useState<SpeciesDataItem[]>([]);
 
@@ -63,12 +62,12 @@ const SpeciesCountPerProvinceChart = (props: any) => {
                 break;
               }
             }
-          }else onEmptyDatasets(false)
-          if(!render_chart) onEmptyDatasets(false)
-          else onEmptyDatasets(true)
+          }
           setSpeciesData(response.data);
           setLoading(false);
-        }else onEmptyDatasets(false)
+        } else {
+          setSpeciesData([])
+        }
       })
       .catch((error) => {
         console.log(error);

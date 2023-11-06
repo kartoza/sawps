@@ -18,8 +18,7 @@ const DensityBarChart = (props: any) => {
         loading,
         setLoading,
         densityData,
-        setDensityData,
-        onEmptyDatasets
+        setDensityData
     } = props;
 
 
@@ -38,12 +37,9 @@ const DensityBarChart = (props: any) => {
                             const hasNonNullDensity = item.density.some((densityItem) => densityItem.density !== null);
                             return hasNonNullDensity;
                         });
-
-                        if(filteredData.length > 0){
-                            onEmptyDatasets(true)
-                            setDensityData(filteredData);
-                        }else onEmptyDatasets(false)
-
+                        setDensityData(filteredData);
+                    } else {
+                        setDensityData([]);
                     }
                 })
                 .catch((error) => {

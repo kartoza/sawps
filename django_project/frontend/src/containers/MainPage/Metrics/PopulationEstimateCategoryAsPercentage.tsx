@@ -36,8 +36,7 @@ const PopulationEstimateAsPercentage = (props: any) => {
     endYear,
     loading,
     setLoading,
-    activityData,
-    onEmptyDatasets
+    activityData
   } = props;
 
   const [speciesData, setSpeciesData] = useState<any>({});
@@ -60,14 +59,11 @@ const PopulationEstimateAsPercentage = (props: any) => {
         `${FETCH_POPULATION_ESTIMATE_CATEGORY_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`
       )
       .then((response) => {
+        setLoading(false);
         if (response.data) {
-          if (Object.keys(response.data).length === 0) {
-              onEmptyDatasets(false)
-          } else {
-              onEmptyDatasets(true)
-          }
           setSpeciesData(response.data);
-          setLoading(false);
+        } else {
+          setSpeciesData([])
         }
       })
       .catch((error) => {

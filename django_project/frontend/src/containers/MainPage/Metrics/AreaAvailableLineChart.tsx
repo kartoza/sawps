@@ -19,8 +19,7 @@ const AreaAvailableLineChart = (props: any) => {
         endYear,
         loading,
         areaData,
-        species_name,
-        onEmptyDatasets
+        species_name
     } = props
 
     // Extract the species name
@@ -77,8 +76,6 @@ const AreaAvailableLineChart = (props: any) => {
                 override_render_chart = true
             }
         });
-        if (!render_chart && !override_render_chart) onEmptyDatasets(false)
-        else onEmptyDatasets(true)
       }, [propertyId, startYear, endYear, selectedSpecies,areaData]);
 
       areaDataB.datasets.forEach(dataset => {

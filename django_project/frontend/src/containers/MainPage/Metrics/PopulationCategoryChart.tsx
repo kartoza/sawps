@@ -61,8 +61,7 @@ const PopulationCategoryChart = (props: any) => {
       selectedSpecies,
       propertyId,
       startYear,
-      endYear,
-      onEmptyDatasets
+      endYear
     } = props;
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -76,12 +75,6 @@ const PopulationCategoryChart = (props: any) => {
         .then((response) => {
           setLoading(false);
           if (response.data) {
-              console.log(response.data);
-            if (Object.keys(response.data).length === 0) {
-                onEmptyDatasets(false)
-            } else {
-                onEmptyDatasets(true)
-            }
             setPopulationData(response.data);
           }
         })

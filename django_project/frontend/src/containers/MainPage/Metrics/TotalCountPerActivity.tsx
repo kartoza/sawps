@@ -61,8 +61,7 @@ const TotalCountPerActivity = (props: any) => {
     startYear,
     endYear,
     loading,
-    activityData,
-    onEmptyDatasets
+    activityData
   } = props;
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
 

@@ -30,7 +30,7 @@ const colors = [
 const FETCH_SPECIES_DENSITY = '/api/total-area-per-property-type/';
 
 const PropertyTypeBarChart = (props: any) => {
-  const { selectedSpecies, propertyId, startYear, endYear, loading, setLoading, onEmptyDatasets } = props;
+  const { selectedSpecies, propertyId, startYear, endYear, loading, setLoading } = props;
   const [propertyTypeData, setPropertyTypeData] = useState<PropertyTypeData[]>([]);
   const labels: string[] = [];
   const legend_labels: string[] = [];
@@ -44,11 +44,6 @@ const PropertyTypeBarChart = (props: any) => {
       .then((response) => {
         setLoading(false);
         if (response.data) {
-          if(response.data.length > 0){
-            onEmptyDatasets(true)
-          }else {
-            onEmptyDatasets(false)
-          }
           const uniquePropertyTypes: Record<string, number> = {};
           const uniqueColors: Record<string, string> = {};
 
