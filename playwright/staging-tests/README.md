@@ -13,7 +13,9 @@ The are intended to verify basic functionality is working after a deployment is 
 
 Before you can run or record tests, you need to set up your environment.
 
-Running these tests require playwright set up on your local machine, as well as python.
+Running these tests require playwright set up on your local machine, as well as NodeJS.
+
+**NixOS**
 
 If you are a NixOS user, you can set up direnv and then cd into this directory in your shell.
 
@@ -25,6 +27,23 @@ direnv allow
 ```
 
 >  This may take a while the first time as NixOS builds you a sandbox environment.
+
+**NON-NixOS**
+
+For a non-NixOS user(Debian/Ubuntu) set up your environment by the following commands:
+
+```bash
+npm install
+```
+
+To install playwright browsers with OS-level dependencies use:
+
+
+```bash
+npm playwright install --with-deps chromium
+```
+
+**NOTE:** This only works with Debian/Ubuntu as they recieve official support from playwright. It will also request your master password to install the dependencies.
 
 ## Recording a test
 
@@ -51,6 +70,9 @@ You can then run your test by doing:
 ```
 ./run-tests.sh
 ```
+
+**NON-NixOS**
+
 
 ---
 Tim Sutton
