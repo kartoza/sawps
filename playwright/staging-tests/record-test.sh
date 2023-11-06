@@ -30,7 +30,7 @@ source base-url.sh
 
 playwright \
   codegen \
-  -- target playwright-test \
+  --target playwright-test \
   --load-storage=.auth/auth.json \
   -o tests/$TESTNAME.spec.ts \
   $BASE_URL
