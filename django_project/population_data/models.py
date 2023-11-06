@@ -5,6 +5,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+TOTAL_POPULATION_ERROR_MESSAGE = (
+    'The sum of adult males and adult '
+    'females cannot be '
+    'greater than the total population.',
+)
+
+
 class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
@@ -32,10 +39,8 @@ class AnnualPopulationAbstract(models.Model):
         if self.adult_male is not None and self.adult_female is not None:
             if self.adult_male + self.adult_female > self.total:
                 raise ValidationError({
-                    'adult_male': 'The sum of adult males and adult females cannot be '
-                                  'greater than the total population.',
-                    'adult_female': 'The sum of adult males and adult females cannot be '
-                                    'greater than the total population.',
+                    'adult_male': TOTAL_POPULATION_ERROR_MESSAGE,
+                    'adult_female': TOTAL_POPULATION_ERROR_MESSAGE,
                 })
 
         super().clean()
