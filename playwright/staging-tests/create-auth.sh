@@ -18,12 +18,24 @@ esac
 
 source base-url.sh
 
-playwright \
-  codegen \
-  --target playwright-test \
-  --save-storage=.auth/auth.json \
-  -o tests/deleteme.spec.ts \
-  $BASE_URL
+echo "Choose OS"
+echo "1. NixOS
+2. Debian\Ubuntu"
+read option
+case $option in
+  1   ) playwright \
+          codegen \
+          --target playwright-test \
+          --save-storage=.auth/auth.json \
+          -o tests/deleteme.spec.ts \
+          $BASE_URL;;
+  2   ) npx playwright \
+          codegen \
+          --target playwright-test \
+          --save-storage=.auth/auth.json \
+          -o tests/deleteme.spec.ts \
+          $BASE_URL;;
+esac
 
 # We are only interested in sawps-auth.json
 rm tests/deleteme.spec.ts

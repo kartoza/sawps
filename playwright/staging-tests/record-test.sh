@@ -28,12 +28,26 @@ fi
 TESTNAME=$1
 source base-url.sh
 
-playwright \
-  codegen \
-  --target playwright-test \
-  --load-storage=.auth/auth.json \
-  -o tests/$TESTNAME.spec.ts \
-  $BASE_URL
+echo "Choose OS"
+echo "1. NixOS
+2. Debian\Ubuntu"
+read option
+case $option in
+  1   ) echo "Recording test..."
+        playwright \
+          codegen \
+          --target playwright-test \
+          --save-storage=.auth/auth.json \
+          -o tests/$TESTNAME.spec.ts \
+          $BASE_URL;;
+  2   ) echo "Recording test..."
+        npx playwright \
+          codegen \
+          --target playwright-test \
+          --save-storage=.auth/auth.json \
+          -o tests/$TESTNAME.spec.ts \
+          $BASE_URL;;
+esac
 
 echo "Test recording completed."
 echo "You can then run your test by doing:"

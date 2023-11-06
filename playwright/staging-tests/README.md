@@ -33,12 +33,13 @@ There is a bash helper script that will let you quickly create a new test:
 ```
 Usage: ./record-test.sh TESTNAME
 e.g. ./record-test.sh mytest
-will write a new test to tests/mytest.ts
+will write a new test to tests/mytest.spec.ts
 Do not use spaces in your test name.
+Test files MUST END in .spec.ts
 
 After recording your test, close the test browser.
 You can then run your test by doing:
-playwright test tests/mytest.ts
+./run-tests.sh
 ```
 
 
@@ -48,7 +49,7 @@ playwright test tests/mytest.ts
 
 
 ```
-pytest test/mytest.py
+./run-tests.sh
 ```
 
 ---
