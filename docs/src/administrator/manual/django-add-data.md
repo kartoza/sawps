@@ -58,7 +58,9 @@
 
 ## Add User
 
-The administrator will be presented with a form to enter the user's information. Here are the fields to fill in:
+![Add user](./img/django-add-data-4.png)
+
+The administrators will be presented with a form to enter the user's information. Here are the fields to fill in:
 
 1. **Username**: Enter a unique username for the new user. It should be 150 characters or fewer and may contain only letters, digits, and the characters '@', '.', '+', '-', and '_'.
 
@@ -75,26 +77,26 @@ The administrator will be presented with a form to enter the user's information.
 
 4. **Title Id**: Enter the title from the dropdown.
 
-5. **Choose File**: Choose profile picture.
+5. **Icons**: By using these icons, the administrators can add a new user role, and delete, edit, and view details of the chosen user role.
 
-6. **Icons**: By using these icons, the administrator can add, delete, edit, and view details of the chosen object.
-
-    - **Edit Icon**: Clicking on `Edit` icon allows the administrators to edit the object. After clicking on the icon a popup will open to edit the object.
+    - **Edit Icon**: Clicking on the `Edit` icon allows the administrators to edit the user role. After clicking on the icon, a popup will open for editing the user role.
         - ![Edit](./img/django-add-data-5.png)
 
-    - **Plus Icon**: Clicking on `Plus` icon allows the administrators to add a new object. After clicking on the icon a popup will open to add the object.
+    - **Plus Icon**: Clicking on the `Plus` icon allows the administrators to add a new user role. After clicking on the icon, a popup will open for adding a new user role.
         - ![Add](./img/django-add-data-6.png)
 
 
-    - **Cross Icon**: Clicking on `Cross` icon allows the administrators to delete the object. After clicking on the icon a popup will open to delete the object.
+    - **Cross Icon**: Clicking on the `Cross` icon allows the administrators to delete the user role. After clicking on the icon, a popup will open for deleting the user role.
         - ![Delete](./img/django-add-data-7.png)
 
 
-    - **Eye Icon**: Clicking on `Eye` icon allows the administrators to view the details of the object. After clicking on the icon a popup will open to see the details of the object.
+    - **Eye Icon**: Clicking on the `Eye` icon allows administrators to view the details of the user role. After clicking on the icon, a popup will open for viewing the details of the user role.
         - ![Detail](./img/django-add-data-8.png)
 
-6. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+6. **Choose File**: Choose a profile picture for the user.
 
-7. **Save and continue editing**: Save the current record while still showing the current record.
+7. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
 
-8. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
+8. **Save and continue editing**: Save the current record while still showing the current record.
+
+9. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
