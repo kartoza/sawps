@@ -37,7 +37,7 @@ module.exports = defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'],
       // Use prepared auth state.
-      storageState: '.auth/auth.json',
+      storageState: 'auth.json',
       },
       // dependencies: ['setup'],
     },

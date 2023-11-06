@@ -37,14 +37,14 @@ case $option in
         playwright \
           codegen \
           --target playwright-test \
-          --save-storage=.auth/auth.json \
+          --load-storage=auth.json \
           -o tests/$TESTNAME.spec.ts \
           $BASE_URL;;
   2   ) echo "Recording test..."
         npx playwright \
           codegen \
           --target playwright-test \
-          --save-storage=.auth/auth.json \
+          --load-storage=auth.json \
           -o tests/$TESTNAME.spec.ts \
           $BASE_URL;;
 esac
