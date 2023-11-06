@@ -30,12 +30,13 @@ test.describe('about page', () => {
         // Ensure the frame is available
         const frame = await page.frameLocator('[data-testid="about-page-video-frame"]').locator('video');
 
-        // Wait for the video element to be visible
-        await page.waitForSelector('video', { state: 'visible' });
+        // Wait for the video element to play
+        await page.waitForTimeout(5000);
 
+        //pause video element
         await frame.click();
 
-        await page.waitForTimeout(5000);
+        await page.waitForTimeout(3000);
 
         await page.getByRole('heading', { name: 'Secure species data storage' }).isVisible();
 
