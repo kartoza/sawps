@@ -316,7 +316,9 @@ class SpeciesCSVUpload(object):
                     name=open_close_sys
                 )
             except OpenCloseSystem.DoesNotExist:
-                self.error_row(f"Open/Close system '{open_close_sys}' does not exist")
+                self.error_row(
+                    f"Open/Close system '{open_close_sys}' does not exist"
+                )
                 return None
             return open_sys
         return None
