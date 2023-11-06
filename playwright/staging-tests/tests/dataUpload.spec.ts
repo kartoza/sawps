@@ -6,7 +6,7 @@ let url = process.env.STAGING;
 
 test.describe('Data Upload page', () => {
     
-    test.use({ storageState: "tests/.auth/sawps-auth.json" });
+    test.use({ storageState: ".auth/auth.json" });
 
     test('user interaction', async ({page}) => {
 

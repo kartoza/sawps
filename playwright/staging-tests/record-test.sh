@@ -26,13 +26,15 @@ if [ -w "tests/${1}.spec.ts" ]; then
    esac
 fi
 TESTNAME=$1
+source base-url.sh
 
-npx playwright \
+playwright \
   codegen \
-  --load-storage=tests/.auth/sawps-auth.json \
+  -- target playwright-test \
+  --load-storage=.auth/auth.json \
   -o tests/$TESTNAME.spec.ts \
-  http://sawps.sta.do.kartoza.com
+  $BASE_URL
 
 echo "Test recording completed."
 echo "You can then run your test by doing:"
-echo "npx playwright test tests/$1.spec.ts"
+echo "./run-tests.sh"
