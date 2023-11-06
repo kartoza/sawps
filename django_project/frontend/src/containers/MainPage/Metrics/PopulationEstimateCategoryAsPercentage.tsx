@@ -79,7 +79,7 @@ const PopulationEstimateAsPercentage = (props: any) => {
   useEffect(() => {
     fetchPopulationEstimateCategoryCount();
   }, [propertyId, startYear, endYear, selectedSpecies]);
- 
+
   // Initialize variables
   const labels: string[] = [];
   const data: number[] = [];
@@ -98,7 +98,7 @@ const PopulationEstimateAsPercentage = (props: any) => {
       if (category.length > 25){
         paddedLabel = category.substring(0, 22) + '...';
       }
-          
+
       labels.push(paddedLabel.padEnd(50, ' ')); // Use the padded label
 
       data.push(percentage);
@@ -129,13 +129,13 @@ const PopulationEstimateAsPercentage = (props: any) => {
     return (
       <>
         {!loading ? (
-          <ChartContainer title={chartTitle} chart={
+          <ChartContainer title={chartTitle}>
               <DoughnutChart
                   chartData={chartData}
                   chartId={'population-estimate-category-as-percentage'}
                   icon={backgroundImageUrl}
               />
-            } icon={backgroundImageUrl}/>
+          </ChartContainer>
         ) : (
           <Loading containerStyle={{ minHeight: 160 }} />
         )}

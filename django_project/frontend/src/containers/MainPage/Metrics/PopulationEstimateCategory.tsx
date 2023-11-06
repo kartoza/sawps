@@ -136,13 +136,13 @@ const PopulationEstimateCategoryCount = (props: any) => {
   return (
     <>
       {!loading ? (
-          <ChartContainer title={chartTitle} chart={
+          <ChartContainer title={chartTitle}>
             <DoughnutChart
                 chartId={'population-estimate-category'}
                 chartData={chartData}
                 icon={backgroundImageUrl}
             />
-          }/>
+          </ChartContainer>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

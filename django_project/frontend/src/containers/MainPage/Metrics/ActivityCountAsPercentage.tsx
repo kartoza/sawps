@@ -148,13 +148,13 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   return (
     <>
       {!loading ? (
-        <ChartContainer title={chartTitle} chart={
+        <ChartContainer title={chartTitle}>
               <DoughnutChart
                   chartData={chartData}
                   chartId={'activity-count-as-percentage'}
                   icon={backgroundImageUrl}
               />
-            } icon={backgroundImageUrl}/>
+        </ChartContainer>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

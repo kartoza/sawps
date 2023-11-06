@@ -13,10 +13,10 @@ type ProvinceData = {
 };
 
 const availableColors = [
-  'rgba(112, 178, 118, 1)', 
-  'rgba(250, 167, 85, 1)', 
-  'rgba(157, 133, 190, 1)', 
-  '#FF5252', 
+  'rgba(112, 178, 118, 1)',
+  'rgba(250, 167, 85, 1)',
+  'rgba(157, 133, 190, 1)',
+  '#FF5252',
   '#616161',
   // additional transparency colors for years
   'rgba(112, 178, 118, 0.5)',  // 50% transparency
@@ -116,7 +116,7 @@ const SpeciesCountAsPercentage = (props: any) => {
     }
     return item.province.padEnd(50, ' ');
   });
-  
+
   const percentages = calculatedPercentageValues.map((item) => item.percentage);
 
   const uniqueBackgroundColors = Array.from(new Set(labels)).map(
@@ -139,7 +139,7 @@ const SpeciesCountAsPercentage = (props: any) => {
   if (filteredSpeciesData.length === 0) {
     return null;
   }
-  
+
   // Define chart title based on conditions
   let chartTitle = "Please select a species for the chart to show available data";
 
@@ -155,13 +155,13 @@ const SpeciesCountAsPercentage = (props: any) => {
   return (
     <>
       {!loading ? (
-            <ChartContainer title={chartTitle} chart={
+            <ChartContainer title={chartTitle}>
               <DoughnutChart
                   chartData={chartData}
                   chartId={'species-count-as-percentage'}
                   icon={backgroundImageUrl}
               />
-            } icon={backgroundImageUrl}/>
+            </ChartContainer>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

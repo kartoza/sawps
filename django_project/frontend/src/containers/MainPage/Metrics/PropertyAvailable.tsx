@@ -8,6 +8,7 @@ import axios from "axios";
 import Loading from "../../../components/Loading";
 import "./index.scss";
 import ChartContainer from "../../../components/ChartContainer";
+import BarChart from "../../../components/BarChart";
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -40,10 +41,10 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
 
     // Define colors for each year
     const availableColors = [
-      'rgba(112, 178, 118, 1)', 
-      'rgba(250, 167, 85, 1)', 
-      'rgba(157, 133, 190, 1)', 
-      '#FF5252', 
+      'rgba(112, 178, 118, 1)',
+      'rgba(250, 167, 85, 1)',
+      'rgba(157, 133, 190, 1)',
+      '#FF5252',
       '#616161',
       'rgba(112, 178, 118, 0.5)',
       'rgba(250, 167, 85, 0.5)',
@@ -75,7 +76,7 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
             fetchAreaAvailable();
             setRenderChart(true)
         }
-            
+
         else {
             setRenderChart(false);
             setPropertyAreaAvailableData([])
@@ -149,14 +150,14 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
         }, [])
         )
     ).sort((a, b) => b - a); // Sort in descending order
-    
+
     // Generate legend labels based on uniqueYears in descending order
     const year_labels = uniqueYears.map((year) => year.toString());
-    
+
     const backgroundColors: string[] = uniqueYears.map((year, index) => {
         return availableColors[index % availableColors.length]; // Assign colors based on year
     });
-  
+
   // Create data for each year to stack the areas
   const datasets = uniqueYears.map((year, index) => {
     const dataForYear = groupedData.map((group) => {
@@ -180,77 +181,17 @@ const PropertyAvailableBarChart: React.FC<PropertyAvailableBarChartProps> = (pro
     labels: labelsB,
     datasets: datasets,
   };
-  
-  const options = {
-    indexAxis: 'y' as const,
-    plugins: {
-      responsive: true,
-      maintainAspectRatio: false,
-      datalabels: {
-        display: false,
-      },
-      legend: {
-        display: true,
-        position: 'right' as 'right',
-        labels: {
-            boxWidth: 20,
-            boxHeight: 13,
-            padding: 12,
-            font: {
-                size: 10,
-            },
-        },
-        generateLabels: (chart: { data: { labels: any[] } }) => {
-          return year_labels.map((label, index) => {
-            return {
-              text: label, // Use the year as the legend label
-              fillStyle: backgroundColors[index], // Assign the corresponding background color
-            };
-          });
-        },
-      }
-    },
-    scales: {
-      x: {
-        beginAtZero: true,
-        stacked: true, // Enable stacking on the x-axis
-        title: {
-          display: true,
-          text: 'Area (Ha)', // X-axis label
-          font: {
-            size: 14,
-          },
-        },
-      },
-      y: {
-        beginAtZero: true,
-        stacked: true, // Enable stacking on the y-axis
-        ticks: {
-          stepSize: 50,
-          max: 200,
-        },
-        title: {
-          display: true,
-          text: 'Properties', // Y-axis label
-          font: {
-            size: 14,
-          },
-        },
-      },
-    },
-  };
 
     return (
         <Grid>
             {!loading ? (
-              <ChartContainer title={`Total area available to ${selectedSpecies}`} chart={
-                    <Bar
-                        data={data}
-                        options={options}
-                        className={'bar-chart'}
-                    />
-              }/>
-
+                <BarChart
+                    chartData={data}
+                    chartId={'property-available-chart'}
+                    chartTitle={`Total area available to ${selectedSpecies}`}
+                    xLabel={'Area (Ha)'}
+                    yLabel={'Properties'}
+                />
             ) : (
                 <Loading containerStyle={{ minHeight: 160 }} />
             )}
