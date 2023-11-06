@@ -37,7 +37,7 @@
 
 2. **Arrow**: Using these arrows, administrators can add or remove the permissions from the group.
 
-3. **Plus icon**: Clicking on plus icon will allow administrators to add a new permission. The popup for creating a new permission will open.
+3. **Plus icon**: Clicking on the plus icon allows the administrators to add a new permission. The popup for creating a new permission will open.
 
     ![Add Permission](./img/django-add-data-2.png)
 
@@ -55,3 +55,46 @@
 7. **Save and continue editing**: Save the current record while still showing the current record.
 
 8. **Save**: Save the current record and then be redirected to the Django Admin Table/record list.
+
+## Add User
+
+The administrator will be presented with a form to enter the user's information. Here are the fields to fill in:
+
+1. **Username**: Enter a unique username for the new user. It should be 150 characters or fewer and may contain only letters, digits, and the characters '@', '.', '+', '-', and '_'.
+
+2. **Password**: Create a strong password for the user. The password must meet these criteria:
+    - Be at least 12 characters long.
+    - Should not resemble the user's personal information.
+    - Should not be a commonly used password.
+    - Should not be entirely numeric.
+    - Must include at least one numeric character.
+    - Must include at least one uppercase letter.
+    - Must include at least one special character (e.g., @, #, %, or ;).
+
+3. **Password Confirmation**: Re-enter the same password for verification.
+
+4. **Title Id**: Enter the title from the dropdown.
+
+5. **Choose File**: Choose profile picture.
+
+6. **Icons**: By using these icons, the administrator can add, delete, edit, and view details of the chosen object.
+
+    - **Edit Icon**: Clicking on `Edit` icon allows the administrators to edit the object. After clicking on the icon a popup will open to edit the object.
+        - ![Edit](./img/django-add-data-5.png)
+
+    - **Plus Icon**: Clicking on `Plus` icon allows the administrators to add a new object. After clicking on the icon a popup will open to add the object.
+        - ![Add](./img/django-add-data-6.png)
+
+
+    - **Cross Icon**: Clicking on `Cross` icon allows the administrators to delete the object. After clicking on the icon a popup will open to delete the object.
+        - ![Delete](./img/django-add-data-7.png)
+
+
+    - **Eye Icon**: Clicking on `Eye` icon allows the administrators to view the details of the object. After clicking on the icon a popup will open to see the details of the object.
+        - ![Detail](./img/django-add-data-8.png)
+
+6. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+7. **Save and continue editing**: Save the current record while still showing the current record.
+
+8. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
