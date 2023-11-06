@@ -64,6 +64,7 @@ function Filter(props: any) {
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
+    const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const [shownPropertyOptions, setShownPropertyOptions] = useState([])
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
@@ -358,6 +359,10 @@ function Filter(props: any) {
         if (userInfoData.user_permissions.includes("Can view organisation filter")) {
             setOrganisationSelection(true);
         }
+
+        if (userInfoData.user_permissions.includes("Can view property filter")) {
+            setPropertiesSelection(true);
+        }
     }, [isSuccess, userInfoData]);
 
     return (
@@ -483,18 +488,20 @@ function Filter(props: any) {
                         </List>
                     </Box>
                 }
-                <Tooltip
-                  title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
-                  placement="top-start"
-                >
+                {
+                    allowPropertiesSelection &&
+                  <Tooltip
+                    title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
+                    placement="top-start"
+                  >
                     <Box>
                         <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/Property.svg" alt='Property image'/>
+                            <img src="/static/images/Property.svg" alt='Property image' />
                             <Typography color='#75B37A' fontSize='medium'>Property</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading || isPropertyLoading ? (
-                              <Loading/>
+                                <Loading />
                             ) : (
                               <AutoCompleteCheckbox
                                 options={shownPropertyOptions}
@@ -506,15 +513,16 @@ function Filter(props: any) {
                                     if (newValues.length === 0) {
                                         adjustMapToBoundingBox(boundingBox)
                                     } else {
-                                        // Call zoomToCombinedBoundingBox with the updated list of selected properties
-                                        zoomToCombinedBoundingBox(newValues);
+                                      // Call zoomToCombinedBoundingBox with the updated list of selected properties
+                                      zoomToCombinedBoundingBox(newValues);
                                     }
                                 }}
                               />
                             )}
                         </List>
                     </Box>
-                </Tooltip>
+                  </Tooltip>
+                }
 
                 <Box>
                       <Box className='sidebarBoxHeading'>
