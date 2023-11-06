@@ -20,7 +20,7 @@ source base-url.sh
 
 playwright \
   codegen \
-  -- target playwright-test \
+  --target playwright-test \
   --save-storage=.auth/auth.json \
   -o tests/deleteme.spec.ts \
   $BASE_URL
