@@ -1,5 +1,6 @@
 """Models for population data package.
 """
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -22,6 +23,22 @@ class AnnualPopulationAbstract(models.Model):
     juvenile_male = models.IntegerField(null=True, blank=True)
     juvenile_female = models.IntegerField(null=True, blank=True)
     note = models.TextField(null=True, blank=True)
+
+    def clean(self):
+        """
+        Custom validation to ensure the sum of adult_male and adult_female
+        is not greater than total.
+        """
+        if self.adult_male is not None and self.adult_female is not None:
+            if self.adult_male + self.adult_female > self.total:
+                raise ValidationError({
+                    'adult_male': 'The sum of adult males and adult females cannot be '
+                                  'greater than the total population.',
+                    'adult_female': 'The sum of adult males and adult females cannot be '
+                                    'greater than the total population.',
+                })
+
+        super().clean()
 
     class Meta:
         abstract = True
@@ -108,14 +125,6 @@ class AnnualPopulation(AnnualPopulationAbstract):
         verbose_name_plural = "Annual Populations"
         db_table = "annual_population"
         constraints = [
-            models.CheckConstraint(
-                name="Adult male and adult female"
-                     " must not be greater than total",
-                check=models.Q(
-                    total__gte=
-                    models.F("adult_male") + models.F("adult_female")
-                ),
-            ),
             models.UniqueConstraint(
                 fields=["year",
                         "taxon",
