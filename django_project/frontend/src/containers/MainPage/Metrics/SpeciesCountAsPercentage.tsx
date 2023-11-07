@@ -103,7 +103,7 @@ const SpeciesCountAsPercentage = (props: any) => {
 
   const calculatedPercentageValues = filteredSpeciesData.map((item) => ({
     ...item,
-    percentage: (item.count / total) * 100,
+    percentage: ((item.count / total) * 100).toFixed(3),
   }));
 
   const labels = calculatedPercentageValues.map((item) => {

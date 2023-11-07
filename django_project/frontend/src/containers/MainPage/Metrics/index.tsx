@@ -345,7 +345,7 @@ const Metrics = () => {
 
 
                             {
-                            constants.canViewProvinceSpeciesCountAsPercentage &&
+                            userInfoData?.user_permissions.includes('Can view province species count as percentage') &&
                             selectedSpecies &&
                             (
                                 <Grid item xs={12} md={12} lg={6}>
