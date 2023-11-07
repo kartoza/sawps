@@ -13,10 +13,10 @@ type ProvinceData = {
 };
 
 const availableColors = [
-  'rgba(112, 178, 118, 1)', 
-  'rgba(250, 167, 85, 1)', 
-  'rgba(157, 133, 190, 1)', 
-  '#FF5252', 
+  'rgba(112, 178, 118, 1)',
+  'rgba(250, 167, 85, 1)',
+  'rgba(157, 133, 190, 1)',
+  '#FF5252',
   '#616161',
   // additional transparency colors for years
   'rgba(112, 178, 118, 0.5)',  // 50% transparency
@@ -52,11 +52,10 @@ const SpeciesCountAsPercentage = (props: any) => {
     endYear,
     loading,
     setLoading,
-    activityData,
-    onEmptyDatasets,
-    icon
+    activityData
   } = props;
   const [speciesData, setSpeciesData] = useState<SpeciesDataItem[]>([]);
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
 
   const fetchActivityCount = () => {
     setLoading(true);
@@ -80,6 +79,16 @@ const SpeciesCountAsPercentage = (props: any) => {
     fetchActivityCount();
   }, [propertyId, startYear, endYear, selectedSpecies]);
 
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      }
+
+    }else setBackgroundImageUrl('')
+  }, [activityData]);
+
   // Filter speciesData based on the most recent year
   const legendLabels: number[] = Array.from(new Set(speciesData.map((item) => item.year)))
     .filter((year) => year !== null) as number[];
@@ -94,7 +103,7 @@ const SpeciesCountAsPercentage = (props: any) => {
 
   const calculatedPercentageValues = filteredSpeciesData.map((item) => ({
     ...item,
-    percentage: (item.count / total) * 100,
+    percentage: ((item.count / total) * 100).toFixed(3),
   }));
 
   const labels = calculatedPercentageValues.map((item) => {
@@ -105,7 +114,7 @@ const SpeciesCountAsPercentage = (props: any) => {
     }
     return item.province.padEnd(50, ' ');
   });
-  
+
   const percentages = calculatedPercentageValues.map((item) => item.percentage);
 
   const uniqueBackgroundColors = Array.from(new Set(labels)).map(
@@ -128,7 +137,7 @@ const SpeciesCountAsPercentage = (props: any) => {
   if (filteredSpeciesData.length === 0) {
     return null;
   }
-  
+
   // Define chart title based on conditions
   let chartTitle = "Please select a species for the chart to show available data";
 
@@ -144,13 +153,13 @@ const SpeciesCountAsPercentage = (props: any) => {
   return (
     <>
       {!loading ? (
-            <ChartContainer title={chartTitle} chart={
+            <ChartContainer title={chartTitle}>
               <DoughnutChart
                   chartData={chartData}
                   chartId={'species-count-as-percentage'}
-                  icon={icon}
+                  icon={backgroundImageUrl}
               />
-            } icon={icon}/>
+            </ChartContainer>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

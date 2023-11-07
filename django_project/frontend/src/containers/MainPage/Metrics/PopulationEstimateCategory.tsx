@@ -8,7 +8,6 @@ import axios from "axios";
 import "./index.scss";
 import ChartContainer from "../../../components/ChartContainer";
 import DoughnutChart from "../../../components/DoughnutChart";
-import {useGetTaxonDetailQuery} from "../../../services/api";
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -35,9 +34,7 @@ const PopulationEstimateCategoryCount = (props: any) => {
     propertyId,
     startYear,
     endYear,
-    activityData,
-    onEmptyDatasets,
-    icon
+    activityData
   } = props;
   let year: number | null = null;
   const [speciesData, setSpeciesData] = useState([]);
@@ -45,23 +42,18 @@ const PopulationEstimateCategoryCount = (props: any) => {
 
   const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
 
-    const {
-        data: taxonDetail,
-        isLoading: isTaxonDetailLoading,
-        isSuccess: isTaxonDetailSuccess
-    } = useGetTaxonDetailQuery(selectedSpecies)
-    const [speciesIcon, setSpeciesIcon] = useState(undefined)
-
-
-    useEffect(() => {
-        if (taxonDetail) {
-            if (taxonDetail.graph_icon) {
-                setSpeciesIcon(taxonDetail.graph_icon)
-            } else {
-                setSpeciesIcon("/static/images/default-species-graph.svg")
-            }
-        }
-    }, [isTaxonDetailSuccess, taxonDetail])
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      } else {
+        setBackgroundImageUrl(undefined);
+      }
+    } else {
+      setBackgroundImageUrl(undefined)
+    }
+  }, [activityData]);
 
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
@@ -70,15 +62,11 @@ const PopulationEstimateCategoryCount = (props: any) => {
         `${FETCH_POPULATION_ESTIMATE_CATEGORY_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`
       )
       .then((response) => {
+        setLoading(false);
         if (response.data) {
-          if (Object.keys(response.data).length === 0) {
-              onEmptyDatasets(false)
-          } else {
-              onEmptyDatasets(true)
-          }
-          setBackgroundImageUrl(icon)
           setSpeciesData(response.data);
-          setLoading(false);
+        } else {
+          setSpeciesData([])
         }
       })
       .catch((error) => {
@@ -144,13 +132,13 @@ const PopulationEstimateCategoryCount = (props: any) => {
   return (
     <>
       {!loading ? (
-          <ChartContainer title={chartTitle} chart={
+          <ChartContainer title={chartTitle}>
             <DoughnutChart
                 chartId={'population-estimate-category'}
                 chartData={chartData}
-                icon={speciesIcon}
+                icon={backgroundImageUrl}
             />
-          } icon={speciesIcon}/>
+          </ChartContainer>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

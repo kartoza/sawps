@@ -30,7 +30,6 @@ interface Props {
   endYear: number;
   loading: boolean;
   activityData: ActivityDataItem[];
-  icon: string;
 }
 
 const availableColors = [
@@ -52,8 +51,7 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   startYear,
   endYear,
   loading,
-  activityData,
-  icon
+  activityData
 }: Props) => {
   // Initialize variables
   let labels: string[] = [];
@@ -61,6 +59,17 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   const uniqueColors: string[] = [];
   let year: number | null = null; //use effect to update this guy
   const recentActivitiesMap: Record<string, any> = {};
+
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      }
+    }
+  }, [activityData, selectedSpecies,startYear,endYear]);
 
   // Iterate through activityData
   activityData.forEach((speciesData: ActivityDataItem) => {
@@ -72,12 +81,6 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
         year = activity.year;
       }
     });
-
-    // TODO: confirm rule
-    // Rule 3: If the year doesn't match startYear or endYear, use the most recent year
-    // if (year !== null && (year < startYear || year > endYear)) {
-    //   year = year;
-    // }
 
     // Rule 2: Only save the activities with the most recent year
     const recentActivities = speciesActivities.filter(
@@ -139,13 +142,13 @@ const ActivityCountAsPercentage: React.FC<Props> = ({
   return (
     <>
       {!loading ? (
-        <ChartContainer title={chartTitle} chart={
+        <ChartContainer title={chartTitle}>
               <DoughnutChart
                   chartData={chartData}
                   chartId={'activity-count-as-percentage'}
-                  icon={icon}
+                  icon={backgroundImageUrl}
               />
-            } icon={icon}/>
+        </ChartContainer>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}

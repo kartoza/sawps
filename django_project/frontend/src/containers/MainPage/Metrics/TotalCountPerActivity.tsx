@@ -61,10 +61,22 @@ const TotalCountPerActivity = (props: any) => {
     startYear,
     endYear,
     loading,
-    activityData,
-    onEmptyDatasets,
-    icon
+    activityData
   } = props;
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (activityData && activityData.length > 0) {
+      const firstItem = activityData[0];
+      if (firstItem.graph_icon) {
+        setBackgroundImageUrl(firstItem.graph_icon);
+      } else {
+        setBackgroundImageUrl(undefined)
+      }
+    }else {
+      setBackgroundImageUrl(undefined)
+    }
+  }, [propertyId,startYear,endYear,activityData, selectedSpecies]);
 
   // Initialize variables
   const labels: string[] = [];
@@ -119,13 +131,13 @@ const TotalCountPerActivity = (props: any) => {
   return (
       <>
         {!loading ? (
-            <ChartContainer title={chartTitle} chart={
+            <ChartContainer title={chartTitle}>
               <DoughnutChart
                   chartData={chartData}
                   chartId={'total-count-per-activity'}
-                  icon={icon}
+                  icon={backgroundImageUrl}
               />
-            } icon={icon}/>
+            </ChartContainer>
         ) : (
             <Loading containerStyle={{ minHeight: 160 }} />
         )}
