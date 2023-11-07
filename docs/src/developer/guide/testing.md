@@ -2,9 +2,10 @@
 
 End-to-end testing.
 
-## Essential reading:
+## Essential reading
 
-* https://playwright.dev/
+* <https://playwright.dev/>
+* <https://direnv.net/docs/installation.html>
 
 ## Setting up a testing environment
 
@@ -16,8 +17,10 @@ The primary framework used is [playwright](https://playwright.dev/).
 
 ### Setting up playwright
 
+**Note:** Playwright is installed locally on your device and NOT in the container.
+
 Navigate to the `playwright` directory, there are two other directories present:
-    
+
     1. ci-tests
     2. staging-tests
 
@@ -41,11 +44,13 @@ npm playwright install --with-deps
 
 **Note:**
 
-- By default it uses TypeScript(`*.ts`).
+* By default it uses TypeScript(`*.ts`).
 
 This command will install all the required browsers and other dependencies. The [directory structure](https://playwright.dev/docs/intro#whats-installed) will be as follows:
 
 ### Running tests
+
+**Note:** To run tests locally ensure the django project is being served up locally. For tests on [staging/production](./testing.md/#setting-up-environment), ensure the website is up.
 
 By default, tests will run on three browsers in headless mode.
 
@@ -120,12 +125,13 @@ Reports: It will generate a report as HTML document and it will be retained for 
 
 #### Setting up environment
 
+Navigate to `staging-tests`.
+
 **NixOS**
 
 If you are a NixOS user, you can set up direnv and then cd into this directory in your shell.
 
 When you do so the first time, you will be prompted to allow direnv which you can do using this command:
-
 
 ```bash
 direnv allow
@@ -153,11 +159,9 @@ You can then run your test by doing:
 ./run-tests.sh
 ```
 
-
 >  The first time you record a test, it will store your session credentials in a file ending in ``auth.json``. This file should **NEVER** be committed to git / shared publicly. There is a gitignore rule to ensure this.
 
 #### Running a test
-
 
 ```bash
 ./run-tests.sh
