@@ -5,6 +5,7 @@ import copy
 import tempfile
 import pandas as pd
 from django.db import IntegrityError
+from django.utils import timezone
 from frontend.models.upload import UploadSpeciesCSV
 from activity.models import ActivityType
 from occurrence.models import SurveyMethod
@@ -464,6 +465,10 @@ class SpeciesCSVUpload(object):
             pop_other = population_other
 
         year = self.row_value(row, YEAR)
+        if year > timezone.now().year:
+            self.error_row(
+                message=f"'{YEAR}' with value {year} exceed current year."
+            )
         count_total = self.row_value(row, COUNT_TOTAL)
         presence = self.row_value(row, PRESENCE)
         pop_certainty = self.row_value(row, POPULATION_ESTIMATE_CERTAINTY)
