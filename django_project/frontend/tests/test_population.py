@@ -201,6 +201,103 @@ class TestPopulationAPIViews(TestCase):
         ).first()
         self.assertTrue(annual_offtake)
 
+    @mock.patch(
+        'frontend.api_views.population.'
+        'clear_statistical_model_output_cache',
+        mock.Mock(side_effect=mocked_clear_cache)
+    )
+    def test_upload_population_data_future_year(self):
+        property = PropertyFactory.create(
+            organisation=self.organisation
+        )
+        taxon = TaxonF.create()
+        data = {
+            'taxon_id': taxon.id,
+            'year': 2080,
+            'property_id': property.id,
+            'month': 7,
+            'annual_population': {
+                'present': True,
+                'total': 20,
+                'adult_male': 5,
+                'adult_female': 7,
+                'sub_adult_male': 8,
+                'group': 1,
+                'open_close_id': 1,
+                'area_available_to_species': 5.5,
+                'survey_method_id': 1,
+                'area_covered': 1.2,
+                'note': 'This is notes',
+                'sampling_effort_coverage_id': self.coverage.id,
+                'population_status_id': self.population_status.id,
+                'population_estimate_category_id': self.estimate.id
+            },
+            'intake_populations': [{
+                'activity_type_id': 1,
+                'total': 12,
+                'adult_male': 5,
+                'adult_female': 7,
+                'founder_population': True,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is intake notes'
+            },
+            {
+                'activity_type_id': 100,
+                'total': 12,
+                'adult_male': 5,
+                'adult_female': 7,
+                'founder_population': True,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is intake notes'
+            }],
+            'offtake_populations': [{
+                'activity_type_id': 2,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'translocation_destination': 'Dest A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            },
+            {
+                'activity_type_id': 100,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'translocation_destination': 'Dest A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            },
+            {
+                'activity_type_id': 3,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            }]
+        }
+        kwargs = {
+            'property_id': property.id
+        }
+        request = self.factory.post(
+            reverse('population-upload', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = self.user_1
+        view = UploadPopulationAPIVIew.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(
+            response.status_code, 400
+        )
+        self.assertEqual(
+            response.data,
+            {'detail': 'Year should not exceed current year!'}
+        )
+
     def test_save_draft(self):
         # save draft
         property = PropertyFactory.create(
