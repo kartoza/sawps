@@ -1,5 +1,6 @@
 """Species models.
 """
+import re
 from django.contrib.auth.models import User
 from django.db import models
 from django.core.files.base import ContentFile
@@ -83,37 +84,33 @@ class Taxon(models.Model):
         verbose_name_plural = "Taxa"
         db_table = "taxon"
 
+    def replace_fill_color(self, data, new_color):
+        fill_pattern = re.compile(br'fill="[^"]*"', re.IGNORECASE)
+        return fill_pattern.sub(br'fill="' + new_color.encode() + br'"', data)
+
     def save(self, *args, **kwargs):
-        print(self.graph_icon)
         if self.graph_icon:
-            graph_icon = self.graph_icon.read()
-            topper_icon = graph_icon.replace(
-                b'fill="#000000"', b'fill="#75B37A"'
+            graph_icon_original = self.graph_icon.read()
+
+            # Edit graph icon fill to be black
+            graph_icon = self.replace_fill_color(graph_icon_original, '#000000')
+            graph_icon = ContentFile(
+                graph_icon, name=f"{self.scientific_name}-graph.svg"
             )
-            topper_icon = topper_icon.replace(
-                b'fill="#000"', b'fill="#75B37A"'
-            )
-            topper_icon = topper_icon.replace(
-                b'fill="black"', b'fill="#75B37A"'
-            )
+            self.graph_icon = graph_icon
+
+            topper_icon = self.replace_fill_color(graph_icon_original, '#75B37A')
             topper_icon = ContentFile(
                 topper_icon, name=f"{self.scientific_name}-topper.svg"
             )
             self.topper_icon = topper_icon
 
-            icon = graph_icon.replace(
-                b'fill="#000000"', b'fill="#FFFFFF"'
-            )
-            icon = icon.replace(
-                b'fill="#000"', b'fill="#FFFFFF"'
-            )
-            icon = icon.replace(
-                b'fill="black"', b'fill="#FFFFFF"'
-            )
+            icon = self.replace_fill_color(graph_icon_original, '#FFFFFF')
             icon = ContentFile(
                 icon, name=f"{self.scientific_name}-icon.svg"
             )
             self.icon = icon
+
         return super().save(*args, **kwargs)
 
 
