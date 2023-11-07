@@ -93,13 +93,17 @@ class Taxon(models.Model):
             graph_icon_original = self.graph_icon.read()
 
             # Edit graph icon fill to be black
-            graph_icon = self.replace_fill_color(graph_icon_original, '#000000')
+            graph_icon = self.replace_fill_color(
+                graph_icon_original, '#000000'
+            )
             graph_icon = ContentFile(
                 graph_icon, name=f"{self.scientific_name}-graph.svg"
             )
             self.graph_icon = graph_icon
 
-            topper_icon = self.replace_fill_color(graph_icon_original, '#75B37A')
+            topper_icon = self.replace_fill_color(
+                graph_icon_original, '#75B37A'
+            )
             topper_icon = ContentFile(
                 topper_icon, name=f"{self.scientific_name}-topper.svg"
             )
