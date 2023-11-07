@@ -36,7 +36,7 @@ To install dependencies defined in `package.json` file:
 npm install
 ```
 
-To install playwright browsers and OS secific depndencies:
+To install playwright browsers and OS specific depndencies:
 
 ```bash
 npm playwright install --with-deps
@@ -86,7 +86,7 @@ To generate test reports:
 npx playwright show-report
 ```
 
-### Continuous intergration testing
+### Continuous integration testing
 
 Use of [continuous integration and playwright](https://playwright.dev/docs/ci-intro).
 
