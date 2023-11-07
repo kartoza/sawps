@@ -465,10 +465,11 @@ class SpeciesCSVUpload(object):
             pop_other = population_other
 
         year = self.row_value(row, YEAR)
-        if year > timezone.now().year:
-            self.error_row(
-                message=f"'{YEAR}' with value {year} exceed current year."
-            )
+        if year.isdigit():
+            if int(year) > timezone.now().year:
+                self.error_row(
+                    message=f"'{YEAR}' with value {year} exceeds current year."
+                )
         count_total = self.row_value(row, COUNT_TOTAL)
         presence = self.row_value(row, PRESENCE)
         pop_certainty = self.row_value(row, POPULATION_ESTIMATE_CERTAINTY)
