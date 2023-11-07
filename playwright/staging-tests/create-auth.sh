@@ -26,13 +26,13 @@ case $option in
   1   ) playwright \
           codegen \
           --target playwright-test \
-          --save-storage=.auth/auth.json \
+          --save-storage=auth.json \
           -o tests/deleteme.spec.ts \
           $BASE_URL;;
   2   ) npx playwright \
           codegen \
           --target playwright-test \
-          --save-storage=.auth/auth.json \
+          --save-storage=auth.json \
           -o tests/deleteme.spec.ts \
           $BASE_URL;;
 esac

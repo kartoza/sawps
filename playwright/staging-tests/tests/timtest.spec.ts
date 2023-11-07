@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.use({
-  storageState: '.auth/auth.json'
+  storageState: 'auth.json'
 });
 
 test('test', async ({ page }) => {
