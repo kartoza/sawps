@@ -2,8 +2,8 @@ import { test as setup, expect } from '@playwright/test';
 
 let url = '/';
 
-let user_email = 'admin@example.com';
-let password = 'admin';
+let user_email = 'admin1@example.com';
+let password = 'admin1';
 const authFile = 'tests/.auth/sawps-auth.json';
 
 
