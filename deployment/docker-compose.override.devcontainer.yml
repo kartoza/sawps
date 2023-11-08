@@ -25,6 +25,8 @@ services:
 
   dev:
     image: kartoza/sanbi_dev
+    environment:
+      - DISABLE_2FA=${DISABLE_2FA:-'True'}
     build:
       context: ../
       dockerfile: deployment/docker/Dockerfile
