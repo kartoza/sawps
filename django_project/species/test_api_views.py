@@ -369,6 +369,61 @@ class TestUploadSpeciesApiView(TestCase):
                 "Open/Close system 'Close' does not exist" in errors
             )
 
+    def test_upload_species_future_year(self):
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_future_year.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('media' in response.data['error_file'])
+
+        self.assertTrue('error' in upload_session.error_file.path)
+        with open(upload_session.error_file.path, encoding='utf-8-sig') as csv_file:
+            error_file = csv.DictReader(csv_file)
+            headers = error_file.fieldnames
+            self.assertTrue('error_message' in headers)
+            errors = []
+            for row in error_file:
+                errors.append(row['error_message'])
+                print(errors)
+            self.assertTrue(
+                "'Year_of_estimate' with value 2080 exceeds current year."
+                in errors
+            )
+
     def test_upload_species_status_not_processed(self):
         csv_path = absolute_path(
             'frontend', 'tests',

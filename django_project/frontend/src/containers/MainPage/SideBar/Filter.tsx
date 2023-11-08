@@ -146,7 +146,12 @@ function Filter(props: any) {
                 setShownPropertyOptions([])
                 setSelectedProperty([])
             } else {
-                setShownPropertyOptions(propertyList)
+                setShownPropertyOptions(propertyList.map(property => {
+                    return {
+                        id: property.id,
+                        name: `${property.name} (${property.short_code})`
+                    }
+                }))
                 setSelectedProperty(propertyList.map(property => property.id))
             }
         }
