@@ -1,6 +1,6 @@
 # Login Page Documentation
 
-The Login Page is the entry point to access the users account within the application. This page provides a secure way for users to log in using their credentials. It offers a straightforward interface for entering the users email address, password, and includes an optional `Remember Me` checkbox for convenience.
+The Login Page is the entry point to access the user's account within the application. This page provides a secure way for users to log in using their credentials. It offers a straightforward interface for entering the user's email address, password, and includes an optional `Remember Me` checkbox for convenience.
 
 ## Login Form
 

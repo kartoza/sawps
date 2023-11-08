@@ -23,11 +23,11 @@ The User Guide is a valuable resource for users seeking in-depth guidance.
 
 ## Contact Page
 
-The Contact Page serves as a means for the users to get in touch with different organisations or platforms. Users can use this page to send messages, inquiries, or feedback. This documentation provides an overview of the fields and features available on the Contact Page.
+The Contact Page serves as a means for users to get in touch with different organisations or platforms. Users can use this page to send messages, inquiries, or feedback. This documentation provides an overview of the fields and features available on the Contact Page.
 
 ### Contact Form
 
-The Contact Page features a user-friendly contact form where users can provide their information and message. Here are the key components of the contact form:
+The Contact Page features a user-friendly contact form where users can provide their information and message. The key components of the contact form are:
 
 ![Contact us](./img/help-contact-3.png)
 
@@ -45,4 +45,4 @@ The Contact Page features a user-friendly contact form where users can provide t
 
 ## Summary
 
-The Contact Page offers a straightforward and user-friendly contact form for users to get in touch. Users can provide their name, email, specify the subject, and compose their message. Additionally, there is an option to request a copy of the message they are sending. The `SEND` button is used to send the message to the platform. This page is an essential communication channel for the users to connect with the organisation.
+The Contact Page offers a straightforward and user-friendly contact form for users to get in touch. Users can provide their name, email, specify the subject, and compose their message. Additionally, there is an option to request a copy of the message they are sending. The `SEND` button is used to send the message to the platform. This page is an essential communication channel for users to connect with the organisation.

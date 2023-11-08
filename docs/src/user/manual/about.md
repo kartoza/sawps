@@ -18,4 +18,4 @@ Welcome to the about page of the `South African Wildlife Population System (SAWP
 
 Now that the user has a better understanding of SAWPS and its features, it is time for the user to embark on a data exploration journey. Whether the user is interested in the latest population trends, contributing their own data, or simply learning more about South Africa's wildlife, SAWPS is here to facilitate the user.
 
-Thank you for choosing SAWPS as the your platform for exploring and contributing to South African wildlife population data.
+Thank you for choosing SAWPS as the platform for exploring and contributing to South African wildlife population data.

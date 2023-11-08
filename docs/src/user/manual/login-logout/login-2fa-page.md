@@ -1,6 +1,6 @@
 # Two-Factor Authentication Page Documentation
 
-The Two-Factor Authentication (2FA) Page is a critical security feature that adds an extra layer of protection to the user's account. With 2FA, the user will be required to enter a OTP (One-Time Password) code in addition to the users regular login credentials. This documentation provides an explanation of the 2FA page.
+The Two-Factor Authentication (2FA) Page is a critical security feature that adds an extra layer of protection to the user's account. With 2FA, the user will be required to enter a OTP (One-Time Password) code in addition to their regular login credentials. This documentation provides an explanation of the 2FA page.
 
 ![Two-Factor Authentication Page](./img/login-2fa-page-1.png)
 
@@ -12,7 +12,7 @@ The Two-Factor Authentication (2FA) Page is a critical security feature that add
 
 ## Two-Factor Authentication Security
 
-Two-Factor Authentication (2FA) is a critical security measure that significantly reduces the risk of unauthorized access to the user's account. It is highly recommended to enable and use 2FA to protect users data and ensure the integrity of their account.
+Two-Factor Authentication (2FA) is a critical security measure that significantly reduces the risk of unauthorized access to the user's account. It is highly recommended to enable and use 2FA to protect a user's data and ensure the integrity of their account.
 
 ## Summary
-By following the instructions provided in this documentation, the user can effectively use the 2FA page to enhance the security of their account and maintain control, even in the event of a lost device.
+Users can effectively use the 2FA page to enhance the security of their account and maintain control, even in the event of a lost device.

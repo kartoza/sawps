@@ -1,6 +1,6 @@
 # Template upload Documentation
 
-The data upload feature enables the user to seamlessly upload the user's data for analysis and integration into the system. When the user clicks on the `DATA UPLOAD` option, a upload data popup window will appear, providing the user with easy-to-use tools for uploading their data. The supported file formats for upload are CSV and XLSX.
+The data upload feature enables the user to seamlessly upload their data for analysis and integration into the system. When the user clicks on the `DATA UPLOAD` option, an upload data popup window will appear, providing the user with easy-to-use tools for uploading their data. The supported file formats for upload are CSV and XLSX.
 
 ## Uploading Data
 
@@ -8,7 +8,7 @@ The data upload feature enables the user to seamlessly upload the user's data fo
 
 1. **Download Template**: Click on the `DOWNLOAD TEMPLATE` button to obtain a blank template that the user can use as a starting point for entering the user's species population data. This template is designed to assist the user in organising the user's data correctly.
 
-2. **Upload data**: Click on the `UPLOAD DATA` button, a upload data popup window will appear, providing the user with easy-to-use tools for uploading the users data.
+2. **Upload data**: Click on the `UPLOAD DATA` button, a upload data popup window will appear, providing the user with easy-to-use tools for uploading the user's data.
 
 3. **Browse Button**: Click on the `Browse` button to select the file that the user wishes to upload. A user can choose a file from the user's local storage that is in either CSV or XLSX format. This file should contain the data the user wants to integrate into the system for further analysis.
 

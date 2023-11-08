@@ -1,6 +1,6 @@
 # Charts Page: Download Data Visualisation Functionality Documentation
 
-The `Charts` is a powerful tool for visualising data through various charts and graphs. This documentation outlines the functionality of the `Download Data Visualisation` feature, which allows the user to download the charts presented on the page.
+The `Charts` tab is a powerful tool for visualising data through various charts and graphs. This documentation outlines the functionality of the `Download Data Visualisation` feature, which allows the user to download the charts presented on the page.
 
 ## Charts Page
 
@@ -16,7 +16,7 @@ The `Charts` is a powerful tool for visualising data through various charts and 
 
 To utilise the `Download Data Visualisation` functionality, follow these steps:
 
-- Navigate to the `Charts Page` where the user can visualised their data using charts and graphs.
+- Navigate to the `Charts Page` where the user can visualise their data using charts and graphs.
 
 - Locate the `DOWNLOAD DATA VISUALISATION` button, usually placed in a prominent position on the page.
 

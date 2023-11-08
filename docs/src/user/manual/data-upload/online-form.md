@@ -56,13 +56,13 @@ The data upload online form provides a convenient and structured way to enter sp
 
 24. **Lower Confidence Level**: Enter the lower confidence level.
 
-25. **SAVE DRAFT**: Click on this button to save the current form as a draft, allowing the user to return to it later and continue data entry.
+25. **SAVE DRAFT**: Click on this button to save the current form as a draft, allowing the user to return to it later and continue with data entry.
 
 26. **NEXT**: Click on this button to proceed to the next step of the data upload process.
 
 ### Summary
 
-The data upload online form streamlines the process of entering detailed species population data for the users selected property. Ensure that mandatory fields are filled in and that the user has provided accurate information before saving the user's draft or moving to the next step in the data upload process.
+The data upload online form streamlines the process of entering detailed species population data for the user's selected property. Ensure that mandatory fields are filled in and that the user has provided accurate information before saving the user's draft or moving to the next step in the data upload process.
 
 ## Online Form Step 2 (Activity detail)
 
@@ -86,7 +86,7 @@ The second step introduces the `Introduction/Reintroduction` and `Off-take` sect
 
     3. **Delete Icon**: This icon allows the user to delete the data of the row
 
-    4. **Rows per page**: This is a dropdown for choosing the number of row to display in the table.
+    4. **Rows per page**: This is a dropdown for choosing the number of rows to display in the table.
 
     5. **Adult Males**: Enter the count of adult males.
 
@@ -128,7 +128,7 @@ The second step introduces the `Introduction/Reintroduction` and `Off-take` sect
 
 ### Summary
 
-Step 2 of the data upload online form  introduces the `Introduction/Reintroduction` and `Off-take` sections, each comprising a table and a form for data entry. These sections are critical for recording and managing information related to species introduction or reintroduction and off-take. The provided navigation buttons, including `SAVE DRAFT`, `BACK`, and `NEXT`, give the user control over the users data entry process and progression through the data management steps.
+Step 2 of the data upload online form  introduces the `Introduction/Reintroduction` and `Off-take` sections, each comprising a table and a form for data entry. These sections are critical for recording and managing information related to species introduction or reintroduction and off-take. The provided navigation buttons, including `SAVE DRAFT`, `BACK`, and `NEXT`, give the user control over the user's data entry process and progression through the data management steps.
 
 ## Online Form Step 3 (Review & Submit)
 
