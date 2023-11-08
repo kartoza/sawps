@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+source base-url.sh
+
+source playwright-path.sh
+
 echo "This script will write a new test to tests/deleteme.spec.ts"
 echo "then delete it, leaving only the auth config."
 echo ""
@@ -15,10 +19,6 @@ case $ANSWER in
   [yY] ) echo "Writing auth.json" ;;
   [nN] ) echo "Cancelled."; exit ;;
 esac
-
-source base-url.sh
-
-source playwright-path.sh
 
 $PLAYWRIGHT \
 	codegen \
