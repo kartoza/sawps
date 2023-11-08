@@ -2,13 +2,13 @@
 
 ## Description
 
-The Django Admin is the central hub to create, read, update, or delete your data. Only user with staff status can enter the admin page.
+The Django Admin is the central hub to create, read, update, or delete SAWPS data. Only users with staff status (i.e. administrators) can enter the administration page.
 
 ## Heading to Django Admin
 
-_![Django Admin](./img/admin-1.png)_
+![Django Admin](./img/admin-1.png)
 
-1. Click on your profile icon, then click **Django Admin**.
+1. Click on the profile icon, then click **Django Admin**.
 
 ## Django Admin Layout
 
@@ -62,8 +62,6 @@ After successfully changing the password, the administrator will receive a confi
 7. **Add**: This button is used to create a new item for the associated model. Clicking on `Add` link will open a form where administrators can enter the details of the new record.
 
 8. **Change**: This button is used to edit an existing item from the list. When administrators click the `Change` button, they will be redirected to a page where they can see all the associated data for that model and can select the data to change.
-
-* **Table**: To see data in a table, click on the table name.
 
 ## Django Admin Table
 
