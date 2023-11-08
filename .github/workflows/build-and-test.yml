@@ -83,11 +83,8 @@ jobs:
           cat << EOF | docker-compose exec -T dev bash
           python manage.py makemigrations
           python manage.py migrate
-          echo $DISABLE_2FA
-          DJANGO_SUPERUSER_USERNAME=admin1
           DJANGO_SUPERUSER_PASSWORD=admin1
-          DJANGO_SUPERUSER_EMAIL='admin1@example.com'
-          python manage.py createsuperuser --noinput
+          python manage.py createsuperuser --no-input --username admin1 --email 'admin1@example.com'
           python manage.py collectstatic --noinput --verbosity 0
           export DJANGO_SETTINGS_MODULE=core.settings.dev && coverage run manage.py test && coverage xml
           EOF
