@@ -1,15 +1,16 @@
 from django.test import TestCase
 
+from frontend.serializers.property import PropertySerializer
 from frontend.serializers.report import (
     SamplingReportSerializer,
     PropertyReportSerializer,
     SpeciesReportSerializer
 )
 from frontend.tests.test_data_table import AnnualPopulationTestMixins
-from population_data.factories import AnnualPopulationF
 from population_data.models import (
     AnnualPopulation
 )
+from property.factories import PropertyFactory
 
 
 class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
@@ -95,4 +96,20 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(
             serializer.data,
             expected_value
+        )
+
+class TestPropertySerializer(TestCase):
+    def setUp(self) -> None:
+        self.property = PropertyFactory.create()
+
+    def test_serializer(self):
+        serializer = PropertySerializer(self.property)
+        expected_value = [
+            'id', 'name', 'owner', 'owner_email', 'property_type', 'property_type_id',
+            'province', 'province_id', 'open', 'open_id', 'size', 'organisation',
+            'organisation_id', 'short_code'
+        ]
+        self.assertEqual(
+            sorted(list(serializer.data.keys())),
+            sorted(expected_value)
         )
