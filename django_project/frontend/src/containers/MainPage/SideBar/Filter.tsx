@@ -67,6 +67,8 @@ function Filter(props: any) {
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const [shownPropertyOptions, setShownPropertyOptions] = useState([])
+    const isStartYearValid = localStartYear >= yearRangeStart && localStartYear <= yearRangeEnd
+    const isEndYearValid = localEndYear >= yearRangeStart && localEndYear <= yearRangeEnd
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
     const {
         data: organisationList,
@@ -301,12 +303,7 @@ function Filter(props: any) {
     const handleStartYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
         setLocalStartYear(newValue);
-        if (newValue < yearRangeStart || newValue > yearRangeEnd) {
-            setTimeout(() => {
-                setLocalStartYear(yearRangeStart)
-                dispatch(setStartYear(yearRangeStart));
-            }, 3000);
-        } else {
+        if (newValue >= yearRangeStart && newValue <= yearRangeEnd) {
             dispatch(setStartYear(newValue));
         }
     }
@@ -314,12 +311,7 @@ function Filter(props: any) {
     const handleEndYearChange = (value: string) => {
         const newValue = parseInt(value, 10);
         setLocalEndYear(newValue);
-        if (newValue > yearRangeEnd || newValue < yearRangeStart) {
-            setTimeout(() => {
-                setLocalEndYear(yearRangeEnd);
-                dispatch(setEndYear(yearRangeEnd));
-            }, 3000);
-        } else {
+        if (newValue >= yearRangeStart && newValue <= yearRangeEnd) {
             dispatch(setEndYear(newValue));
         }
     }
@@ -542,13 +534,28 @@ function Filter(props: any) {
 
                       <Box className='formboxInput'>
                           <Box className='form-inputFild'>
-                              <TextField type="number" size='small' value={localStartYear}
-                                         onChange={(e: any) => handleStartYearChange(e.target.value)}/>
-                              <Typography className='formtext'>From</Typography>
+                            <Tooltip
+                                title={isStartYearValid ? '' : `Year should range from ${yearRangeStart} to ${yearRangeEnd}`}
+                                placement="top-start"
+                              >
+                                  <TextField
+                                    type="number" size='small' value={localStartYear}
+                                    onChange={(e: any) => handleStartYearChange(e.target.value)}
+                                    className={isStartYearValid ? '': 'yearFilter-red'}
+                                  />
+                            </Tooltip>
+                            <Typography className='formtext'>From</Typography>
                           </Box>
                           <Box className='form-inputFild right-flids'>
-                              <TextField type="number" size='small' value={localEndYear}
-                                         onChange={(e: any) => handleEndYearChange(e.target.value)}/>
+                              <Tooltip
+                                title={isEndYearValid ? '' : `Year should range from ${yearRangeStart} to ${yearRangeEnd}`}
+                                placement="top-start"
+                              >
+                                  <TextField type="number" size='small' value={localEndYear}
+                                             onChange={(e: any) => handleEndYearChange(e.target.value)}
+                                             className={isEndYearValid ? '': 'yearFilter-red'}
+                                  />
+                              </Tooltip>
                               <Typography className='formtext'>To</Typography>
                           </Box>
                       </Box>
