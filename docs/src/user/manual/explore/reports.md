@@ -228,6 +228,32 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      The Sampling Report is a crucial tool for documenting and reporting on sampling efforts and population estimates for different species. It provides detailed information on property details, species information, and key metrics related to the population and the methods used for data collection. This report is essential for assessing population health and the effectiveness of conservation and management efforts.
 
+     **Province Report**
+
+     ![Province Report](./img/reports-9.png)
+
+     1. **Province Report**: Select the `Province Report` option to generate a report specifically for provinces.
+
+     2. **Province Table**: The Province report table displays data related to the provinces, including population information.
+
+     **Report Columns**
+
+     The Province Report includes the following columns:
+
+     * **Year**: The specific year for which the data is recorded.
+
+     * **Common Name**: The common name of the species associated with the province.
+
+     * **Scientific Name**: The scientific name of the species.
+
+     * **Total Population**: The total population of the species within the province for the specified year.
+
+     * **Total Population Province Name**: The total population of the species within the respective province. This column is repeated for each province, and each entry represents the total population of the species in that specific province for the given year.
+
+     **Summary**
+
+     The Province Report serves as a valuable filter for reporting on provincial data related to species. It provides essential information on the total population of species within each province, as well as details about the species' common name, scientific name, and the year of data collection. This report is indispensable for in-depth analysis and management of species-related information at the provincial level.
+
 ### Summary
 
 The reports table page is a comprehensive platform for exploring, analysing, and interacting with the user's data. With filters, column search, and data export options, the user has the tools necessary to customise their data view, find specific information, and export data in the format that suits their needs.
