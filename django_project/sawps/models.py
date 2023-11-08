@@ -59,6 +59,14 @@ class ExtendedGroup(models.Model):
             (
                 "can_view_province_report",
                 "Can view province report",
+            ),
+            (
+                "can_view_organisation_filter",
+                "Can view organisation filter",
+            ),
+            (
+                "can_view_property_filter",
+                "Can view property filter",
             )
         ]
 

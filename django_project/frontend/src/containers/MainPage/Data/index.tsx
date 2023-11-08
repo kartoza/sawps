@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {Box, Button, Checkbox, Grid, ListItemText, Typography} from "@mui/material";
+import {Box, Button, Checkbox, Grid, ListItemText, Modal, Typography} from "@mui/material";
 import InputLabel from '@mui/material/InputLabel';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -13,8 +13,10 @@ import {RootState} from "../../../app/store";
 import {getTitle} from "../../../utils/Helpers";
 import {Activity, useGetActivityAsObjQuery, useGetUserInfoQuery, UserInfo} from "../../../services/api";
 import Topper from "./Topper";
-import './index.scss';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import './index.scss';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -42,6 +44,7 @@ const DataList = () => {
     const [columns, setColumns] = useState([])
     const [rows, setRows] = useState([])
     const [tableData, setTableData] = useState<any>()
+    const [modalOpen, setModalOpen] = useState(false)
     const [activityTableGrid, setActivityTable] = useState<any>()
     const activityDataSet = data ? data.filter(item => item?.Activity_report).flatMap((each) => Object.keys(each)) : [];
     const dataTableList = data ? data.map((data, index) => ({ ...data, id: index })) : [];
@@ -280,6 +283,11 @@ const DataList = () => {
                                     selectedColumns.length > 0 ?
                                         selectedColumns.includes(column.headerName) : []
                                 );
+                                for (const value of generatedColumns) {
+                                    if (!columns.includes(value)) {
+                                        columns.push(value)
+                                    }
+                                }
                                 const cellRows = cellData.map((row: any, rowIndex: any) => ({
                                     id: rowIndex,
                                     ...row,
@@ -323,49 +331,92 @@ const DataList = () => {
         )
     }, [data])
 
+        // downloads all charts rendered on page
+    const handleDownloadPdf = async () => {
+        setModalOpen(true)
+        const data = document.getElementById('dataContainer');
+        html2canvas(data, {scale: 2}).then((canvas:any) => {
+          const imgWidth = 208;
+          const pageHeight = 295;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+          heightLeft -= pageHeight;
+          const doc = new jsPDF('p', 'mm');
+          doc.setFillColor('245');
+          doc.addImage(canvas, 'PNG', 1, position, imgWidth, imgHeight, '', 'FAST');
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            doc.addPage();
+            doc.addImage(canvas, 'PNG', 1, position, imgWidth, imgHeight, '', 'FAST');
+            heightLeft -= pageHeight;
+          }
+          setModalOpen(false)
+          doc.save(`${selectedSpecies} - reports.pdf`);
+        });
+    }
+
 
     return (
           showReports ? (
-            <Box className='dataContainer' ref={measuredRef}>
-                <Topper></Topper>
-                <Box className="bgGreen">
-                    <Box className="selectBox">
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label" shrink={false}>Filter columns</InputLabel>
-                            <Select
-                              labelId="demo-multiple-checkbox-label"
-                              id="demo-multiple-checkbox"
-                              multiple
-                              value={selectedColumns}
-                              onChange={handleChange}
-                              renderValue={(selected: any) => selected.join(', ')}
-                              MenuProps={MenuProps}
-                            >
-                                {columns.map((column) => (
-                                  <MenuItem key={column.headerName} value={column.headerName}>
-                                      <Checkbox checked={selectedColumns.indexOf(column.headerName) > -1} />
-                                      <ListItemText primary={column.headerName} />
-                                  </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Box>
+            <Box>
+                <Box>
+                    <Modal
+                      id={'pdf-modal'}
+                      open={modalOpen}
+                    >
+                        <Box>
+                            <Typography variant="h6" component="h2">
+                                Generating PDF!
+                            </Typography>
+                            <Typography id="modal-modal-description" sx={{mt: 2}}>
+                                This might take a while.
+                            </Typography>
+                            <Loading />
+                        </Box>
+                    </Modal>
                 </Box>
-                {loading ? <Loading /> :
-                  <Box className="dataTable-auto">
-                      <Box className="dataTable">
-                          {data.length > 0 ?
-                            <Box>{tableData}
-                                {activityTableGrid}
-                            </Box> :
-                            <Typography>
-                                No Data To Show
-                            </Typography>}
-                      </Box>
-                  </Box>}
+                <Box className='dataContainer' id={'dataContainer'} ref={measuredRef}>
+                    <Topper></Topper>
+                    <Box className="bgGreen">
+                        <Box className="selectBox">
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label" shrink={false}>Filter columns</InputLabel>
+                                <Select
+                                  labelId="demo-multiple-checkbox-label"
+                                  id="demo-multiple-checkbox"
+                                  multiple
+                                  value={selectedColumns}
+                                  onChange={handleChange}
+                                  renderValue={(selected: any) => selected.join(', ')}
+                                  MenuProps={MenuProps}
+                                >
+                                    {columns.map((column) => (
+                                      <MenuItem key={column.headerName} value={column.headerName}>
+                                          <Checkbox checked={selectedColumns.indexOf(column.headerName) > -1} />
+                                          <ListItemText primary={column.headerName} />
+                                      </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
+                    </Box>
+                    {loading ? <Loading /> :
+                      <Box className="dataTable-auto">
+                          <Box className="dataTable">
+                              {data.length > 0 ?
+                                <Box>{tableData}
+                                    {activityTableGrid}
+                                </Box> :
+                                <Typography>
+                                    No Data To Show
+                                </Typography>}
+                          </Box>
+                      </Box>}
+                </Box>
                 {loading ? <Loading/> : (
                   <Box className="downlodBtn">
-                    <Button onClick={handleExportExcel} variant="contained" color="primary">
+                    <Button onClick={handleDownloadPdf} variant="contained" color="primary">
                         Download data Report
                     </Button>
                     <Button id="download-data"

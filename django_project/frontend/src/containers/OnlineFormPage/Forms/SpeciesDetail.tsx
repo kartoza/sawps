@@ -346,6 +346,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 slotProps={{ textField: { size: 'small', variant: 'standard', className: 'Calendar', required: true } }}
                                                 value={moment({'year': data.year})}
                                                 onChange={(newValue: Moment) => updateYearDetail(newValue.year())}
+                                                maxDate={moment({'year': new Date().getFullYear()})}
                                             />
                                             <FormHelperText>{' '}</FormHelperText>
                                         </LocalizationProvider>

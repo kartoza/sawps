@@ -6,6 +6,7 @@ from activity.models import ActivityType
 from activity.serializers import ActivityTypeSerializer
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from frontend.models.upload import DraftSpeciesUpload
 from frontend.utils.statistical_model import (
     clear_statistical_model_output_cache
@@ -114,10 +115,19 @@ class UploadPopulationAPIVIew(APIView):
         taxon_id = request.data.get("taxon_id")
         property_id = kwargs.get("property_id")
         year = request.data.get("year")
-        property = get_object_or_404(Property, id=property_id)
+        if year > timezone.now().year:
+            return Response(
+                status=400,
+                data={
+                    "detail": (
+                        "Year should not exceed current year!"
+                    )
+                },
+            )
+        property_obj = get_object_or_404(Property, id=property_id)
         taxon = get_object_or_404(Taxon, id=taxon_id)
         # validate can add data
-        if not self.can_add_data(property):
+        if not self.can_add_data(property_obj):
             return Response(
                 status=403,
                 data={
@@ -127,7 +137,7 @@ class UploadPopulationAPIVIew(APIView):
                     )
                 },
             )
-        if self.check_existing_data(property, taxon, year):
+        if self.check_existing_data(property_obj, taxon, year):
             return Response(
                 status=400,
                 data={
@@ -172,7 +182,7 @@ class UploadPopulationAPIVIew(APIView):
         annual_population_obj = AnnualPopulation.objects.create(
             year=year,
             taxon=taxon,
-            property=property,
+            property=property_obj,
             user=self.request.user,
             area_available_to_species=area_available_to_species,
             total=annual_population.get("total"),
