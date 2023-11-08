@@ -112,7 +112,7 @@ MIDDLEWARE += (
     'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
 )
 
-DISABLE_2FA = ast.literal_eval(os.environ.get('DISABLE_2FA', 'True'))
+DISABLE_2FA = ast.literal_eval(os.environ.get('DISABLE_2FA', ''))
 if DISABLE_2FA:
     MIDDLEWARE = [m for m in MIDDLEWARE if m != 'sawps.middleware.RequireSuperuser2FAMiddleware']
 
