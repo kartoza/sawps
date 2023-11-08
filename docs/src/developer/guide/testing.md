@@ -39,7 +39,7 @@ npm install
 To install playwright browsers and OS specific depndencies:
 
 ```bash
-npm playwright install --with-deps
+npx playwright install --with-deps
 ```
 
 **Note:**
