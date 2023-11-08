@@ -31,6 +31,8 @@ setup.describe('login and 2fa-authentication ', () => {
     
     await page.getByRole('button', { name: 'LOGIN' }).click();
 
+    await page.waitForURL('/');
+
     const finalURL = page.url();
 
     expect(finalURL).toBe(initialURL);
