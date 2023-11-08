@@ -106,12 +106,6 @@
     }
 }
 
-.dataContainer {
-    padding: 5px;
-    height: 88vh;
-    overflow: auto;
-}
-
 .topper-container {
     width: 100%;
     text-align: left;
@@ -147,5 +141,17 @@
                 width: 113px;
             }
         }
+    }
+}
+
+#pdf-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .MuiBox-root {
+        background-color: white;
+        width: 20%;
+        text-align: center;
     }
 }
