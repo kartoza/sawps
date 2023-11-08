@@ -74,36 +74,6 @@ const AgeGroupBarChart = (props: any) => {
 
     datasets.push(dataset);
   }
-  //
-  // const addUnspecifiedData = () => {
-  //   let unspecifiedData: number[] = [];
-  //   for (let i = 0; i < filteredData.length; i++) {
-  //     let total = 0;
-  //     for (const ageGroup of ageGroups) {
-  //       // Map the data for the current age group
-  //       total += filteredData[i][ageGroup.dataProperty] || 0;
-  //     }
-  //     if (total === 0) {
-  //       unspecifiedData.push(filteredData[i]['total_total'])
-  //     } else {
-  //       unspecifiedData.push(0)
-  //     }
-  //   }
-  //
-  //   // Rearrange the data to match the sorted labels
-  //   const sortedData = labels.map((year: any) => {
-  //     const index = filteredData.findIndex((item: { total_year: any }) => item.total_year === year);
-  //     return unspecifiedData[index];
-  //   });
-  //
-  //   datasets.push({
-  //     label: 'Unspecified',
-  //     data: sortedData,
-  //     backgroundColor: 'rgba(204, 204, 204, 1)'
-  //   });
-  // }
-  //
-  // addUnspecifiedData();
 
   let data = null;
 
