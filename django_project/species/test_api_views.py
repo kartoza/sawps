@@ -235,6 +235,9 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(Taxon.objects.all().count(), 1)
         self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
         self.assertEqual(AnnualPopulation.objects.all().count(), 1)
+        population_data = AnnualPopulation.objects.all().first()
+        self.assertEqual(population_data.total, 190)
+        self.assertEqual(population_data.adult_total, 150)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
             activity_type__name="Translocation (Offtake)"
         ).count(), 1)
