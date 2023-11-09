@@ -4,23 +4,25 @@ This documentation explains how to use the map on the platform as well as how to
 
 ![Explore 1](./img/explore-1.png)
 
-## Switching between dark and light mode on the map <!-- To Be Updated... AGAIN -->
+## Switching between dark and light mode on the map
 
-When you first load the explore page, the map is in dark mode. If you wish to change to light mode you can switch by simply clicking on 1️⃣ the `Toggle Light Mode` button.
+When you first load the explore page, the map is in light mode. If you wish to change to light mode you can switch by simply clicking on 1️⃣ the `Toggle Dark Mode` button.
 
 ![Dark Mode 1](img/dark-mode-1.png)
 
-This will switch your map from dark mode to light mode.
+This will switch your map from light mode to dark mode.
 
 ![Dark Mode 2](img/dark-mode-2.png)
 
-To switch your map from light mode to dark mode, click on 1️⃣ the `Toggle Dark Mode` button.
+To switch your map from dark mode to light mode, click on 1️⃣ the `Toggle Light Mode` button.
 
 ![Dark Mode 3](img/dark-mode-3.png)
 
-This will switch your map from light mode to dark mode.
+This will switch your map from dark mode to light mode.
 
 ![Dark Mode 4](img/dark-mode-4.png)
+
+> This guide is done mostly in Dark mode, so the visuals will look slightly different to if you are working in light mode.
 
 ## Working with map layers
 
@@ -46,7 +48,17 @@ By default, the NGI Aerial Imagery layer is disabled and when you enable it, it 
 
 ## Changing map orientation
 
-To Be Populated.
+When you first view the map, it will be in an overhead 2D view. If you right click and drag your mouse pointer on the map, you can change the view orientation and in turn visualise your data in a 3D manner.
+
+![Change Orientation 1](./img/change-orientation-1.png)
+
+When viewing the data in a 3D view, the different intervals are represented at different heights (i.e. the interval with the highest upper bound would be the tallest column).
+
+![Change Orientation 2](./img/change-orientation-2.png)
+
+If you want to reset the map view back to the standard overhead view, click on 1️⃣ the `Reset bearing to North` button and this will return the map to the 2D overhead view.
+
+![Change Orientation 3](./img/change-orientation-3.png)
 
 ## Printing your current map view
 
@@ -142,7 +154,7 @@ You can customise which columns will be displayed in the report by clicking on 1
 
 ![Reports 8](img/reports-8.png)
 
-<!-- Unsure if this is correct. Buttons have the same functionality? -->
+<!-- To Be Updated with new screenshots. -->
 Once you have customised the report to your preferred specifications, scroll down on the reports page and click on either 1️⃣ `DOWNLOAD DATA` to then be prompted to download the data currently displayed as either a CSV or an XLSX file, or 2️⃣ `DOWNLOAD DATA REPORT` to download the report as PDF file.
 
 ![Reports 9](img/reports-9.png)
