@@ -41,7 +41,7 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'],
       // Use prepared auth state.
-      storageState: 'tests/.auth/sawps-auth.json',
+      storageState: 'auth.json',
      },
      dependencies: ['setup'],
     },

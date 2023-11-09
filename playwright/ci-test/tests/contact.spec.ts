@@ -29,6 +29,8 @@ test.describe('contact page', () => {
 
         await page.locator('textarea[id="id_message"]').fill('Good');
 
+        await page.getByText('Contact Us Name Email Subject Message Send me a copy Send').click();
+
         await page.getByRole('button', { name: 'Send' }).click();
 
         const finalURL = page.url();
