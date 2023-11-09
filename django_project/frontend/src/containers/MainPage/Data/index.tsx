@@ -454,18 +454,22 @@ const DataList = () => {
                 )}
             </Box>
           ) : (
-            <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
-                <Grid item>
-                    <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                        Ready to explore?
-                    </Typography>
+            <Box>
+               <Box className='dataContainer' id={'dataContainer'} ref={measuredRef}>
+                    <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
+                    <Grid item>
+                        <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                            Ready to explore?
+                        </Typography>
+                    </Grid>
+                    <Grid>
+                        <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                            Choose a species to view the data as table.
+                        </Typography>
+                    </Grid>
                 </Grid>
-                <Grid>
-                    <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                        Choose a species to view the data as table.
-                    </Typography>
-                </Grid>
-            </Grid>
+               </Box>
+            </Box>
           )
     )
 }

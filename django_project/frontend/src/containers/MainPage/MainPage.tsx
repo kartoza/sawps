@@ -125,43 +125,56 @@ function MainPage() {
     <div className="App">
       <div className="MainPage">
         <Grid container flexDirection={'row'}>
-          <Grid item>
+          <Grid item
+                xs={12} md={12} lg={2}
+          >
             { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} additionalProps={{
               'selectedMainTabIdx': selectedTab
             }} />}
           </Grid>
-          <Grid item flex={1} className="grayBg customWidth">
-            <Grid container className="Content" flexDirection={'column'}>
-              <Grid item>
-              <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                {rightSideBarMode === RightSideBarMode.Upload || isUploadUrl ? null : (
-                  <Tabs
-                    value={selectedTab}
-                    onChange={(event: React.SyntheticEvent, newValue: number) => {
-                      const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
-                      const selectedTabName = tabNames[newValue];
-                      setSelectedTab(newValue);
-                      if (selectedTabName === 'upload') {
-                        setRightSideBarMode(RightSideBarMode.Upload);
-                        dispatch(setUploadState(UploadMode.SelectProperty));
-                      } else {
-                        setRightSideBarMode(RightSideBarMode.None);
-                      }
-                      navigate(`/${selectedTabName}`);
-                    }}
-                    aria-label="Main Page Tabs"
-                  >
-                    <Tab key={0} label={'MAP'} {...a11yProps(0)} />
-                    <Tab key={1} label={'REPORTS'} {...a11yProps(1)} />
-                    <Tab key={2} label={'CHARTS'} {...a11yProps(2)} />
-                    <Tab key={3} label={'TRENDS'} {...a11yProps(3)} />
-                  </Tabs>
-                )}
-                <div style={{ flex: 1 }}></div>
-              </Box>
+          <Grid item flex={1}
+                xs={12} md={12} lg={10}
+                className="grayBg customWidth">
+            <Grid container className="Content" flexDirection={'row'}>
+              <Grid item
+                    xs={12} md={12} lg={12}
+              >
+                <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {rightSideBarMode === RightSideBarMode.Upload || isUploadUrl ? null : (
+                    <Tabs
+                      value={selectedTab}
+                      onChange={(event: React.SyntheticEvent, newValue: number) => {
+                        const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
+                        const selectedTabName = tabNames[newValue];
+                        setSelectedTab(newValue);
+                        if (selectedTabName === 'upload') {
+                          setRightSideBarMode(RightSideBarMode.Upload);
+                          dispatch(setUploadState(UploadMode.SelectProperty));
+                        } else {
+                          setRightSideBarMode(RightSideBarMode.None);
+                        }
+                        navigate(`/${selectedTabName}`);
+                      }}
+                      aria-label="Main Page Tabs"
+                      sx={{
+                        '& .MuiTabs-flexContainer': {
+                          flexWrap: 'wrap',
+                        },
+                      }}
+                    >
+                      <Tab key={0} label={'MAP'} {...a11yProps(0)} />
+                      <Tab key={1} label={'REPORTS'} {...a11yProps(1)} />
+                      <Tab key={2} label={'CHARTS'} {...a11yProps(2)} />
+                      <Tab key={3} label={'TRENDS'} {...a11yProps(3)} />
+                    </Tabs>
+                  )}
+                  <div style={{ flex: 1 }}></div>
+                </Box>
 
               </Grid>
-              <Grid item className="TabPanels">
+              <Grid item
+                    xs={12} md={12} lg={12}
+                    className="TabPanels">
                 <TabPanel key={0} value={selectedTab} index={-1} indexList={[0, 4]} noPadding>
                   <Map isDataUpload={isUploadUrl || selectedTab === 4} />
                 </TabPanel>
