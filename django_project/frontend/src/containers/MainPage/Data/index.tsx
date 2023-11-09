@@ -166,7 +166,11 @@ const DataList = () => {
     };
 
     const handleExportExcel = (): void => {
-        axios.get(`${FETCH_AVAILABLE_DATA}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        let activityParams = activityId;
+        if (activityList) {
+            activityParams = activityId.split(',').length === activityList.length ? 'all': activityId;
+        }
+        axios.get(`${FETCH_AVAILABLE_DATA}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityParams}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
