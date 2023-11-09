@@ -1,11 +1,13 @@
 import uuid
 import mock
 from django.test import TestCase
+from django.contrib.gis.geos import GEOSGeometry
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.settings.utils import absolute_path
 from rest_framework.test import APIRequestFactory
 from frontend.tests.model_factories import UserF
+from frontend.models.base_task import DONE
 from frontend.models.boundary_search import (
     BoundaryFile,
     BoundarySearchRequest,
@@ -16,7 +18,8 @@ from frontend.api_views.upload import (
     BoundaryFileRemove,
     BoundaryFileList,
     BoundaryFileSearch,
-    BoundaryFileSearchStatus
+    BoundaryFileSearchStatus,
+    BoundaryFileGeoJson
 )
 from frontend.tests.model_factories import BoundaryFileF
 
@@ -169,3 +172,32 @@ class TestUploadAPIViews(TestCase):
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'PENDING')
+
+    def test_file_search_geojson(self):
+        search_request = BoundarySearchRequest.objects.create(
+            type='File',
+            session=str(uuid.uuid4()),
+            request_by=self.user_1,
+        )
+        kwargs = {
+            'session': search_request.session
+        }
+        request = self.factory.get(
+            reverse('boundary-file-geojson', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = BoundaryFileGeoJson.as_view()
+        # unfinished task
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 404)
+        search_request.status = DONE
+        search_request.save()
+        # empty geometry
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 404)
+        search_request.geometry = GEOSGeometry("MULTIPOLYGON(((0 0, 0 1, 1 1, 1 0, 0 0)), ((2 2, 2 3, 3 3, 3 2, 2 2)))", srid=4326)
+        search_request.save()
+        # has geometry
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('geometry', response.data)

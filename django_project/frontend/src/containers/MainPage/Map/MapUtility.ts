@@ -3,9 +3,11 @@ import ContextLayerInterface from '../../../models/ContextLayer';
 import ParcelInterface from '../../../models/Parcel';
 import PropertyInterface from "../../../models/Property";
 import { MapTheme, PopulationCountLegend } from "../../../models/Map";
+import { GeoJSONSource } from "maplibre-gl";
 
 const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
 const SEARCH_PROPERTY_URL = '/api/map/search/property/'
+const BOUNDARY_FILE_GEOJSON_URL = '/api/upload/boundary-file/'
 export const MIN_SELECT_PARCEL_ZOOM_LEVEL = 12
 export const MIN_SELECT_PROPERTY_ZOOM_LEVEL = 10
 const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
@@ -648,4 +650,49 @@ export const showExtrudeLayer = (mapObj: maplibregl.Map, provinceCount?: Populat
 export const removeExtrudeLayer = (mapObj: maplibregl.Map) => {
     removeLayerFromMap('province-extrude', mapObj)
     removeLayerFromMap('properties-extrude', mapObj)
+}
+
+
+/**
+ * Draw geojson layer for uploaded shapefile or polygon from drawing tools
+ * @param mapObj 
+ * @param geojsonData geojson object
+ */
+const drawGeojsonLayer = (mapObj: maplibregl.Map, geojsonData: any) => {
+    let _sourceName = `geojson-upload`
+    let _source = mapObj.getSource(_sourceName) as GeoJSONSource
+    if (!_source) {
+        mapObj.addSource(_sourceName, {
+            'type': 'geojson',
+            'data': geojsonData
+        })
+        let _layer = {
+            'id': 'geojson-upload-layer',
+            'type': 'line',
+            'source': _sourceName,
+            'layout': {'visibility': 'visible'},
+            "paint": {
+                "line-color": '#fff',
+                "line-width": 6
+            }
+        }
+        addLayerToMap('geojson-upload-layer', mapObj, _layer)
+    } else {
+        _source.setData(geojsonData)
+    }
+}
+
+/**
+ * Retrieve and draw geojson shapefile or polygon from drawing tools
+ * @param mapObj 
+ * @param session search boundary session 
+ */
+export const fetchAndDrawGeojsonLayerFromUpload = (mapObj: maplibregl.Map, session: string) => {
+    axios.get(`${BOUNDARY_FILE_GEOJSON_URL}${session}/geojson/`).then((response) => {
+        if (response.data && mapObj) {
+            drawGeojsonLayer(mapObj, response.data)
+        }
+    }).catch((error) => {
+        console.log('Failed to fetch geojson layer ', error)
+    })
 }
