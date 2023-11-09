@@ -4,7 +4,7 @@
 
 ![Django Admin Table](./img/django-table-1.png)
 
-1. **Add button**: Clicking on this button will allow administrators to add a new record in the table. Clicking [here](django-add-data.md) will redirect users to add data record documentation.
+1. **Add button**: Clicking on this button will allow administrators to add a new record in the table. Clicking [here](django-add-data.md) will redirect users to the add data record documentation.
 
 2. **Search**: Feature to allow for searching of a specific object in the table using keywords.
 
