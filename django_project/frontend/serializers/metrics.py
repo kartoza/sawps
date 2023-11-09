@@ -475,6 +475,19 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
             )
         )
 
+        fields = set(sum_fields).difference({'year', 'total'})
+        total_unspecified = F('total_total') - sum(
+            [F(f'total_{field}') for field in fields]
+        )
+        age_groups_totals = age_groups_totals.annotate(
+            total_unspecified=
+            total_unspecified if
+            total_unspecified else F('total_total')
+        )
+        for age_group in age_groups_totals:
+            if age_group['total_unspecified'] is None:
+                age_group['total_unspecified'] = age_group['total_total']
+
         return age_groups_totals
 
 
