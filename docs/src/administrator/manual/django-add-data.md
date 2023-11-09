@@ -62,9 +62,9 @@
 
 The administrators will be presented with a form to enter the user's information. Here are the fields to fill in:
 
-1. **Username**: Enter a unique username for the new user. It should be 150 characters or fewer and may contain only letters, digits, and the characters '@', '.', '+', '-', and '_'.
+1. **Username**: Administrators should enter a unique username for the new user. It should be 150 characters, or less, and may contain only letters, digits, and the characters '@', '.', '+', '-', and '_'.
 
-2. **Password**: Create a strong password for the user. The password must meet these criteria:
+2. **Password**: Administrators should create a strong password for the user. The password must meet these criteria:
     - Be at least 12 characters long.
     - Should not resemble the user's personal information.
     - Should not be a commonly used password.
@@ -73,9 +73,9 @@ The administrators will be presented with a form to enter the user's information
     - Must include at least one uppercase letter.
     - Must include at least one special character (e.g., @, #, %, or ;).
 
-3. **Password Confirmation**: Re-enter the same password for verification.
+3. **Password Confirmation**: Administrators should re-enter the same password for verification.
 
-4. **Title Id**: Enter the title from the dropdown.
+4. **Title Id**: Administrators should choose the title from the dropdown.
 
 5. **Icons**: By using these icons, the administrators can add a new user role, and delete, edit, and view details of the chosen user role.
 
