@@ -36,7 +36,7 @@ To install dependencies defined in `package.json` file:
 npm install
 ```
 
-To install playwright browsers and OS specific depndencies:
+To install playwright browsers and OS specific dependencies:
 
 ```bash
 npx playwright install --with-deps
@@ -90,7 +90,7 @@ npx playwright show-report
 
 Use of [continuous integration and playwright](https://playwright.dev/docs/ci-intro).
 
-The CI  for this project is present in the directory `.github/workflows` in the `build-and-test.yml` file.
+The CI for this project is present in the directory `.github/workflows` in the `build-and-test.yml` file.
 
 The action builds and tests for and push or a pull request is made into the main repository.
 
