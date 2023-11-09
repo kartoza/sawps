@@ -1,7 +1,5 @@
 # Django Admin Page Documentation
 
-## Description
-
 The Django Admin is the central hub to create, read, update, or delete SAWPS data. Only users with staff status (i.e. administrators) can enter the administration page.
 
 ## Heading to Django Admin

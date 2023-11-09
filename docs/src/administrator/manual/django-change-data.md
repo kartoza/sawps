@@ -13,9 +13,9 @@
 
     1. **Detail**: Details about the object.
 
-    2. **Yes, I'm sure**: Button for confirm deletion of the object.
+    2. **Yes, I'm sure**: Button for confirming the deletion of the object.
 
-    3. **No, take me back**: Button to cancel deletion of the object.
+    3. **No, take me back**: Button to cancel the deletion of the object.
 
 3. **Save and add another**: Save the current record and then be redirected to a new page to add a new record.
 
