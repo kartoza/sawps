@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 echo "This script will discover the path to your playwright install"
-echo "If you are not in  a NixOS environment and it is not installed,"
-echo "it will try to install it."
+echo "If you are not in a NixOS environment and it is not installed,"
+echo "playwright will be installed."
 echo ""
-echo "At the end of calling this script , you should have a PLAYWRIGHT"
+echo "At the end of calling this script, you should have a PLAYWRIGHT"
 echo ""
 
 # Are we on nixos or a distro with Nix installed for packages
@@ -23,16 +23,25 @@ PLAYWRIGHT="playwright"
 if [ $HAS_PLAYWRIGHT -eq 0 ]; then
   PLAYWRIGHT="npx playwright"
   
-  # check if it is a deb based distro
+  # check if OS is a deb based distro and uses apt
   USES_APT=$(which apt | grep -w "apt" | wc -l)
-  NPM="npm"
-
   if [ $USES_APT -eq 1 ]; then
-    PLAYWRIGHT_INSTALL=$($NPM ls --depth 1 playwright | grep -w "@playwright/test" | wc -l)
+    # check if nodejs is installed
+    HAS_NODEJS=$(which node | grep -w "node" | wc -l)
+    # if nodejs is present then
+    if [ $HAS_NODEJS -eq 0 ]; then
+      source nodesource-install.sh
+    fi
+    # check if npm is present
+    HAS_NPM=$(which npm | grep -w "npm" | wc -l)
+    if [ $HAS_NPM -eq 1 ]; then
+      NPM="npm"
+      PLAYWRIGHT_INSTALL=$($NPM ls --depth 1 playwright | grep -w "@playwright/test" | wc -l)
 
-    if [ $PLAYWRIGHT_INSTALL -eq 0 ]; then
-      $NPM install
-      $PLAYWRIGHT install --with-deps chromium
+      if [ $PLAYWRIGHT_INSTALL -eq 0 ]; then
+        $NPM install
+        $PLAYWRIGHT install --with-deps chromium
+      fi
     fi
 
   fi
