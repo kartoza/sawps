@@ -111,11 +111,27 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
         maintainAspectRatio: true,
         aspectRatio: 1.5,
         scales: {
-            y: {grace:50},
+            y: {
+                grace:50,
+                ticks: {
+                    color: "#fff"
+                }
+            },
+            x: {
+                ticks: {
+                    color: "#fff"
+                }
+            }
         },
         plugins: {
             legend: {
                 labels: {
+                    color: "#fff",
+                    font: {
+                        family: "'Inter', sans-serif",
+                        size: 12,
+                        lineHeight: 18
+                    },
                     filter: function(item: LegendItem, chart: ChartJS) {
                         if (item.text && typeof item.text === 'string') {
                             return !item.text.includes('_ci');
