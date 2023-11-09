@@ -29,16 +29,11 @@ const ActivityBarChart = (props: {
 }) => {
     const [loading, setLoading] = useState(false);
     const [activityData, setActivityData] = useState([]);
-    const [activityMethods, setActivityMethods] = useState([]);
-    const [animals, setAnimals] = useState([]);
     const propertyId = props.property;
     var selectedSpecies = props.selectedSpecies;
     var startYear = props.from;
     var endYear = props.to;
     const [noData, setNoData] = useState(false);
-    const labels: any[] = [];
-    const data: any[] = [];
-    const datasets: any[] = [];
 
     useEffect(() => {
         if (
@@ -60,38 +55,32 @@ const ActivityBarChart = (props: {
             );
 
             const speciesColors: { [key: string]: string } = {};
-            const transformedData: React.SetStateAction<any[]> = [];
+            const activityTypeData: { [key: string]: number } = {};
 
-
+            let datasets: any[] = [];
             response.data.forEach((species: { activities: any; species_name: string | number; colour: any; }) => {
                 const activities = species.activities;
-                const filteredActivities = activities.filter((activity: { year: number; }) => activity.year === endYear);
-                transformedData.push(filteredActivities);
+                for (let {activity_type, total} of activities) {
+                  if (activity_type in activityTypeData) {
+                    activityTypeData[activity_type] += total
+                  } else {
+                    activityTypeData[activity_type] = total
+                  }
+                }
                 const color = typeof species.colour === 'string' ? species.colour : '';
                 speciesColors[species.species_name] = color;
             });
-            
 
-            transformedData.flat().forEach((activity, index) => {
-            const { activity_type, total } = activity;
-            labels.push(activity_type);
-            data.push(total);
-            datasets.push({
-                label: activity_type,
-                data: [total],
-                backgroundColor: availableColors[index % availableColors.length],
-            });
-            });
-
+            for (const [index, activityType] of Object.keys(activityTypeData).entries()) {
+                datasets.push({
+                  label: activityType,
+                  data: [activityTypeData[activityType]],
+                  backgroundColor: availableColors[index % availableColors.length],
+              });
+            }
 
             setActivityData(datasets)
-
-            if (data.length === 0) {
-                setNoData(true);
-            } else {
-                setNoData(false);
-            }
-            
+            setNoData(datasets.length === 0)            
             setLoading(false);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -103,9 +92,9 @@ const ActivityBarChart = (props: {
     const BarData = {
         labels: ['labels'],
         datasets: activityData
-      };
+    };
     
-      const options = {
+    const options = {
       indexAxis: 'x' as const,
       scales: {
         x: {
@@ -130,9 +119,6 @@ const ActivityBarChart = (props: {
             font: {
               size: 14,
             },
-          },
-          callback: (value: string, index: number) => {
-            return labels[index];
           },
         },
       },

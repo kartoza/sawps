@@ -50,10 +50,11 @@
 
 .downlodBtn {
 	display: flex;
-    position: relative;
+    position: fixed;
 	gap: 15px;
 	flex-direction: row-reverse;
-    margin: 5px;
+    bottom: 10px;
+    right: 10px;
 }
 
 .dataTable {
@@ -105,12 +106,6 @@
     }
 }
 
-.dataContainer {
-    padding: 5px;
-    height: 88vh;
-    overflow: auto;
-}
-
 .topper-container {
     width: 100%;
     text-align: left;
@@ -136,10 +131,27 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
 
             img {
                 margin: auto;
             }
+
+            .species-image {
+                width: 113px;
+            }
         }
+    }
+}
+
+#pdf-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .MuiBox-root {
+        background-color: white;
+        width: 20%;
+        text-align: center;
     }
 }

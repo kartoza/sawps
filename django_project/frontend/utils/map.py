@@ -464,8 +464,6 @@ def get_count_summary_of_population(
     :return: Tuple[int, int]: A tuple of (Min, Max) population count
     """
     where_sql = ''
-    if not is_province_layer:
-        where_sql = 'WHERE count > 0'
     sql = (
         """
         select min(count), max(count) from "{view_name}"

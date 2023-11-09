@@ -626,11 +626,11 @@ def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
     rows = []
 
     for year in list(years):
-        activity_report_one_row = {}
-        for property in list(properties):
+        for property_name in list(properties):
+            activity_report_one_row = {}
             for activity in valid_activities:
                 activity_data = AnnualPopulationPerActivity.objects.filter(
-                    annual_population__property__name=property,
+                    annual_population__property__name=property_name,
                     activity_type=activity,
                     year=year,
                     **filters
@@ -663,6 +663,7 @@ def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
                         activity_data['juvenile_male']
                     activity_report_one_row[juvenile_female_field] = \
                         activity_data['juvenile_female']
-        rows.append(activity_report_one_row)
 
+            if activity_report_one_row:
+                rows.append(activity_report_one_row)
     return rows

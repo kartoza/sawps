@@ -44,11 +44,13 @@ class SpeciesUploader(APIView):
                 }
             )
 
-        upload_session = UploadSpeciesCSV.objects.create(
-            uploader=self.request.user,
-            uploaded_at=datetime.now(),
+        upload_session, _ = UploadSpeciesCSV.objects.update_or_create(
             token=request.POST['token'],
-            property=Property.objects.get(id=request.POST['property'])
+            defaults={
+                'uploaded_at': datetime.now(),
+                'uploader': self.request.user,
+                'property': Property.objects.get(id=request.POST['property'])
+            }
         )
 
         if species_file.name.endswith('.xlsx'):
@@ -135,24 +137,24 @@ class UploadSpeciesStatus(APIView):
         success = True
         error_file = None
         message = upload_species.success_notes
-        if upload_species.error_file:
-            error_file = '{}{}'.format(
-                        MEDIA_URL, upload_species.error_file.name)
-            success = False
-
-        if not upload_species.success_notes and not upload_species.error_file:
-            message = (
-                "There is something wrong with the "
-                "data please check again." if
-                not upload_species.error_notes else upload_species.error_notes
-            )
-            success = False
-
-        if not upload_species.success_notes and upload_species.error_file:
-            message = "There is an error, please check the error file."
-
         if upload_species.processed:
-
+            if upload_species.error_file:
+                error_file = '{}{}'.format(
+                            MEDIA_URL, upload_species.error_file.name)
+                success = False
+            if (
+                not upload_species.success_notes and
+                not upload_species.error_file
+            ):
+                message = (
+                    "There is something wrong with the "
+                    "data please check again." if
+                    not upload_species.error_notes else
+                    upload_species.error_notes
+                )
+                success = False
+            if not upload_species.success_notes and upload_species.error_file:
+                message = "There is an error, please check the error file."
             return Response(
                 status=200,
                 data={
@@ -161,12 +163,13 @@ class UploadSpeciesStatus(APIView):
                     'message': message
                 }
             )
-
         else:
             return Response(
                 status=200,
                 data={
-                    'status': upload_species.canceled,
+                    'status': (
+                        'Cancelled' if upload_species.canceled else False
+                    ),
                     'error_file': error_file,
                     'message': message
                 }
