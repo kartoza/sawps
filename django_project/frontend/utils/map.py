@@ -234,8 +234,7 @@ def get_query_condition_for_properties_query(
 
 
 def get_query_condition_for_population_query(
-        filter_start_year: int,
-        filter_end_year: int,
+        filter_year: int,
         filter_species_name: str,
         filter_activity: str):
     """
@@ -243,11 +242,10 @@ def get_query_condition_for_population_query(
 
     Filters that are used for choropleth:
     - species (mandatory)
-    - start + end years
+    - end year
     - activity
 
-    :param filter_start_year: filter by start year
-    :param filter_end_year: filter by end year
+    :param filter_year: filter by year
     :param filter_species_name: filter by species name
     :param filter_activity: filter by activity list
     :return: list of SQL conditions and list of query values
@@ -260,9 +258,9 @@ def get_query_condition_for_population_query(
         activities = ast.literal_eval('(' + filter_activity + ',)')
         if ActivityType.objects.count() != len(activities):
             filter_years = ''
-            if filter_start_year and filter_end_year:
+            if filter_year:
                 filter_years = (
-                    """AND appa.year between %s and %s"""
+                    """AND appa.year=%s"""
                 )
             activity_sql = (
                 """
@@ -277,18 +275,15 @@ def get_query_condition_for_population_query(
             )
             query_values.append(activities)
             if filter_years:
-                query_values.append(filter_start_year)
-                query_values.append(filter_end_year)
-    if filter_start_year and filter_end_year:
-        sql_conditions.append('ap.year between %s and %s')
-        query_values.append(filter_start_year)
-        query_values.append(filter_end_year)
+                query_values.append(filter_year)
+    if filter_year:
+        sql_conditions.append('ap.year=%s')
+        query_values.append(filter_year)
     return sql_conditions, query_values
 
 
 def get_province_population_query(
-        filter_start_year: int,
-        filter_end_year: int,
+        filter_year: int,
         filter_species_name: str,
         filter_organisation: str,
         filter_activity: str,
@@ -297,8 +292,7 @@ def get_province_population_query(
     """
     Generate query for population count in province level.
 
-    :param filter_start_year: filter by start year
-    :param filter_end_year: filter by end year
+    :param filter_year: filter by year
     :param filter_species_name: filter by species name
     :param filter_organisation: filter by organisation id list
     :param filter_activity: filter by activity list
@@ -309,8 +303,7 @@ def get_province_population_query(
     sql_view = ''
     query_values = []
     sql_conds_pop, query_values_pop = get_query_condition_for_population_query(
-        filter_start_year, filter_end_year,
-        filter_species_name, filter_activity
+        filter_year, filter_species_name, filter_activity
     )
     sql_conds_properties, query_values_properties = (
         get_query_condition_for_properties_query(
@@ -349,8 +342,7 @@ def get_province_population_query(
 
 
 def get_properties_population_query(
-        filter_start_year: int,
-        filter_end_year: int,
+        filter_year: int,
         filter_species_name: str,
         filter_organisation: str,
         filter_activity: str,
@@ -359,8 +351,7 @@ def get_properties_population_query(
     """
     Generate query for population count in properties level.
 
-    :param filter_start_year: filter by start year
-    :param filter_end_year: filter by end year
+    :param filter_year: filter by year
     :param filter_species_name: filter by species name
     :param filter_organisation: filter by organisation id list
     :param filter_activity: filter by activity list
@@ -371,8 +362,7 @@ def get_properties_population_query(
     sql_view = ''
     query_values = []
     sql_conds_pop, query_values_pop = get_query_condition_for_population_query(
-        filter_start_year, filter_end_year,
-        filter_species_name, filter_activity
+        filter_year, filter_species_name, filter_activity
     )
     sql_conds_properties, query_values_properties = (
         get_query_condition_for_properties_query(
@@ -614,8 +604,7 @@ def delete_expired_map_materialized_view():
 def generate_map_view(
         session: MapSession,
         is_province_view: bool,
-        filter_start_year: int = None,
-        filter_end_year: int = None,
+        filter_year: int = None,
         filter_species_name: str = None,
         filter_organisation: str = None,
         filter_activity: str = None,
@@ -627,8 +616,7 @@ def generate_map_view(
     :param session: map filter session
     :param is_province_view: True only if there is filter_species_name
     and user can view province layer
-    :param filter_start_year: filter by start year
-    :param filter_end_year: filter by end year
+    :param filter_year: filter by year
     :param filter_species_name: filter by species name
     :param filter_organisation: filter by organisation id list
     :param filter_activity: filter by activity list
@@ -649,13 +637,13 @@ def generate_map_view(
     if is_choropleth_layer:
         if is_province_view:
             sql_view, query_values = get_province_population_query(
-                filter_start_year, filter_end_year, filter_species_name,
+                filter_year, filter_species_name,
                 filter_organisation, filter_activity, filter_spatial,
                 filter_property
             )
         else:
             sql_view, query_values = get_properties_population_query(
-                filter_start_year, filter_end_year, filter_species_name,
+                filter_year, filter_species_name,
                 filter_organisation, filter_activity, filter_spatial,
                 filter_property
             )
@@ -670,13 +658,12 @@ def generate_map_view(
     # store queryparams
     query_params = (
         """
-        start_year={start_year}&end_year={end_year}&species={species}&
+        end_year={end_year}&species={species}&
         organisation={organisation}&activity={activity}&
         spatial_filter_values={spatial_filter_values}&property={property}
         """
     ).format(
-        start_year=filter_start_year,
-        end_year=filter_end_year,
+        end_year=filter_year,
         species=filter_species_name,
         organisation=filter_organisation,
         activity=filter_activity,
