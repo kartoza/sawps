@@ -42,7 +42,7 @@ The user table within the Django Admin interface allows administrators to manage
 
     - ![Filters](./img/django-table-5.png)
 
-    1. **Clear All Filters**: Clicking on `clear all filters` allows administrators to clear all the filters.
+    1. **Clear All Filters**: Clicking on the `clear all filters` allows administrators to clear all the filters.
 
     2. **Filter Field**: The names of the filter field and attributes for filtering the records.
 
@@ -50,4 +50,4 @@ The user table within the Django Admin interface allows administrators to manage
 
 4. **User Table**: The user table with records.
 
-5. **Edit User**: Clicking on the object allows the administrators to change or edit a particular record. Click on [change user](django-change-data.md) to see detailed documentation on editing a user.
+5. **Edit User**: Clicking on the object allows the administrators to change or edit a particular record. Click [here](django-change-data.md) to view detailed documentation on editing a user.

@@ -41,13 +41,13 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 
 1. **History**: Button to view actions applied to the current record.
 
-2. **Change Password**: The administrators can change the user's password, by clicking on `this form` link the popup will open to change the user's password.
+2. **Change Password**: The administrators can change the user's password by clicking on `this form` link. A popup will open to change the user's password.
 
     - ![Change Password Form](./img/django-change-data-6.png)
 
     1. **Change Password Form**: Form to change the user's password.
 
-    2. **Change Password Button**: The administrators can change the user's password by clicking on `CHANGE PASSWORD` button.
+    2. **Change Password Button**: The administrators can change the user's password by clicking on the `CHANGE PASSWORD` button.
 
 ### Change User Permission
 
@@ -67,9 +67,9 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 
 ![Change dates and User Info](./img/django-change-data-5.png)
 
-1. **Dates**: The administrators can edit last login date-time and date joined date-time of a user from this section.
+1. **Dates**: The administrators can edit the last login date-time and date joined date-time of a user from this section.
 
-2. **User**: The administrators can edit user's details.
+2. **User**: The administrators can edit the user's details.
 
 3. **Delete**: The administrators can delete the user by clicking on this button. The popup will open for the confirmation to delete the user.
 
