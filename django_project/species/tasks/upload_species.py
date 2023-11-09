@@ -3,10 +3,18 @@
 import logging
 
 from celery import shared_task
+from django.db.models.fields.files import FieldFile
 from frontend.models import UploadSpeciesCSV
 from species.scripts.data_upload import SpeciesCSVUpload
 
 logger = logging.getLogger('sawps')
+
+
+def try_delete_uploaded_file(file: FieldFile):
+    try:
+        file.delete(save=False)
+    except Exception:
+        logger.error('Failed to delete file!')
 
 
 @shared_task(name='upload_species_data')
@@ -26,8 +34,16 @@ def upload_species_data(upload_session_id):
         return
 
     encoding = 'utf-8-sig'
-
     upload_session.progress = 'Processing'
+    upload_session.processed = False
+    upload_session.success_notes = None
+    upload_session.error_notes = None
+    if upload_session.success_file:
+        try_delete_uploaded_file(upload_session.success_file)
+        upload_session.success_file = None
+    if upload_session.error_file:
+        try_delete_uploaded_file(upload_session.error_file)
+        upload_session.error_file = None
     upload_session.save()
     file_upload = SpeciesCSVUpload()
     file_upload.upload_session = upload_session
