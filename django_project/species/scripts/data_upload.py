@@ -431,7 +431,7 @@ class SpeciesCSVUpload(object):
         ):
             self.error_row(
                 message="Area available to species must be greater than 0 "
-                        "and less than property area size "
+                        "and less than or equal to property area size "
                         "({:.2f} ha).".format(
                             self.upload_session.property.property_size_ha
                         )

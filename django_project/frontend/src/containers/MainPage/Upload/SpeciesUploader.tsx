@@ -162,6 +162,9 @@ export default function Uploader(props: UploaderInterface) {
 
     const saveSpeciesFiles = () => {
         setLoading(true)
+        setIsError(false)
+        setAlertMessage('')
+        setErrorFile('')
         fetch(PROCESS_FILE_URL, {
             method: 'POST',
             headers: {
@@ -193,7 +196,7 @@ export default function Uploader(props: UploaderInterface) {
                     setSavingSpeciesCSV(false)
                     setCloseButton('CLOSE')
                     setLoading(false)
-                } else {
+                } else if (status === 'Error') {
                     setIsError(true)
                     setAlertMessage(response.data['message'])
                     setErrorFile(response.data['error_file'])
@@ -201,8 +204,15 @@ export default function Uploader(props: UploaderInterface) {
                     setSavingSpeciesCSV(false)
                     setCloseButton('CLOSE')
                     setLoading(false)
+                } else if (status === 'Cancelled') {
+                    setIsError(false)
+                    setAlertMessage('The process has been cancelled!')
+                    setErrorFile('')
+                    setTotalFile(0)
+                    setSavingSpeciesCSV(false)
+                    setCloseButton('CLOSE')
+                    setLoading(false)
                 }
-
             } else {
                 setIsError(true)
                 setAlertMessage('There is something wrong with the data please check again.')

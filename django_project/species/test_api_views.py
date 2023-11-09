@@ -836,5 +836,5 @@ class TestUploadSpeciesApiView(TestCase):
                 errors.append(row['error_message'])
             self.assertTrue(
                 "Area available to species must be greater than 0 "
-                "and less than property area size ({:.2f} ha).".format(
+                "and less than or equal to property area size ({:.2f} ha).".format(
                     self.property.property_size_ha) in errors)

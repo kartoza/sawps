@@ -700,7 +700,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             fullWidth
                                             value={data.annual_population.area_available_to_species.toString()}
                                             onChange={(e) => updateAnnualPopulation('area_available_to_species', parseFloat(e.target.value))}
-                                            helperText={validation.annual_population?.area_available_to_species ? 'Area available to species must be greater than 0 and less than property area size' : ' '}
+                                            helperText={validation.annual_population?.area_available_to_species ? 'Area available to species must be greater than 0 and less than or equal to property area size' : ' '}
                                             error={validation.annual_population?.area_available_to_species}
                                         />
                                     </Grid>
