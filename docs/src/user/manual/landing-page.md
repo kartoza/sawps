@@ -1,16 +1,16 @@
 # Landing Page
 
-Welcome to the SAWPS `Landing Page`. The landing page is the entry point to your data exploration journey. The `Landing Page` provides a user-friendly interface to view aggregated species population data trends for South africa and access features like log in, register a new account, or learn more about our platform.
+Welcome to the SAWPS `Landing Page`. The landing page is the entry point to users' data exploration journey. The `Landing Page` provides a user-friendly interface to view aggregated species population data trends for South africa and access features like log in, register a new account, or learn more about the platform.
 
 ## Prior to Login
 
-Upon initial interaction with the platform you will be greeted by the landing page
+Upon initial interaction with the platform users will be greeted by the landing page
 
 ### Landing Page Header and Navigation Bar
 
 ![Landing Page](./img/landing-page-1.png)
 
-In the navigation bar at the top of the page, you'll find several options:
+In the navigation bar at the top of the page, users will find several options:
 
 1. **About**: The `ABOUT` navigation link navigates to the [about page](about.md).
 
@@ -40,7 +40,7 @@ On the `Landing Page`, users can view interactive charts that display national p
 
 3. **Chart**: Chart showing the population trend for the species over time.
 
-4. **HOME**: The `HOME` link to return to the main landing page.
+4. **HOME**: The `HOME` link to return to the main [landing page](#prior-to-login).
 
 5. **EXPLORE**: The `EXPLORE` link navigates the user to the explore page.
 
@@ -54,19 +54,19 @@ On the `Landing Page`, users can view interactive charts that display national p
 
 The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
 
-1. **SANBI Logo**: By clicking on the `SANBI LOGO` you will navigate to the `SANBI (South African National Biodiversity Institute)` platform. The South African National Biodiversity Institute (SANBI) contributes to South Africa’s sustainable development by facilitating access to biodiversity data, generating information and knowledge, building capacity, providing policy advice, showcasing and conserving biodiversity in its national botanical and zoological gardens.
+1. **SANBI Logo**: By clicking on the `SANBI LOGO`, users will be redirected to the `SANBI (South African National Biodiversity Institute)` platform. The South African National Biodiversity Institute (SANBI) contributes to South Africa’s sustainable development by facilitating access to biodiversity data, generating information and knowledge, building capacity, providing policy advice, showcasing and conserving biodiversity in its national botanical and zoological gardens.
 
     **SANBI**
 
     ![SANBI](./img/landing-page-5.png)
 
-2. **IDS Logo**: By clicking on the `IDS LOGO` you will navigate to the `IDS (Information Decision Systems)` platform. Information Decision Systems (IDS) is a progressive Geographical Information Systems, Environmental Consulting and Disaster Management service provider.
+2. **IDS Logo**: By clicking on the `IDS LOGO`, users will be redirected to the `IDS (Information Decision Systems)` platform. Information Decision Systems (IDS) is a progressive Geographical Information Systems, Environmental Consulting and Disaster Management service provider.
 
     **IDS**
 
     ![IDS](./img/landing-page-6.png)
 
-3. **KARTOZA Logo**: By clicking on the `KARTOZA LOGO` you will navigate to the `KARTOZA` platform. Kartoza is a South Africa-based Free and Open Source GIS service provider. Kartoza develop and maintain geographic information systems and train teams to use geospatial software to its full potential.
+3. **KARTOZA Logo**: By clicking on the `KARTOZA LOGO`, users will be redirected to the `KARTOZA` platform. Kartoza is a South Africa-based Free and Open Source GIS service provider. Kartoza develop and maintain geographic information systems and train teams to use geospatial software to its full potential.
 
     **KARTOZA**
 
@@ -84,23 +84,23 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 1. **About**: The `ABOUT` navigation link navigates to the [about page](about.md).
 
-2. **Explore:** The `EXPLORE` link navigates to the [explore page](./explore/map.md), where users can delve into the data and perform analysis.
+2. **Explore:** The `EXPLORE` link navigates to the [explore page](./explore/index.md), where users can delve into the data and perform analyses.
 
 3. **Upload Data:** The `UPLOAD DATA` link navigates to the [upload data page](./data-upload/index.md), where the user can start the data upload process.
 
-4. **Help:** The `HELP` link navigates to the help system and documentation built into the site.
+4. **Help:** The `HELP` link navigates to the [help system](./help-contact.md) and documentation built into the site.
 
-5. **Contact:** The `CONTACT` link navigates to the contact page where users can reach out to the SAWPS support team.
+5. **Contact:** The `CONTACT` link navigates to the [contact page](./help-contact.md) where users can reach out to the SAWPS support team.
 
-6. **Profile Name and Icon:** Access your user profile by clicking on `MY PROFILE.` Here, you can customise your settings and view your user information, including your profile image.
+6. **Profile Name and Icon:** Users can access their user [profile](./user-profile/index.md) by clicking on `MY PROFILE.` Here, users can customise their settings and view their user information, including their profile image.
 
-7. **Logout:** The `LOGOUT` button allows you to securely log out of your account when you're done using our platform.
+7. **Logout:** The `LOGOUT` button allows users to securely [log out](./login-logout/logout.md) of their account when they are done using the platform.
 
-8. **About:** The `ABOUT` button here serves as a quick link to the detailed information about our platform and its objectives.
+8. **About:** The `ABOUT` button serves as a link to the [about page](./about.md) for the platform and its objectives.
 
-9. **Explore:** Clicking `EXPLORE` will take you directly to the explore page, where you can view, manipulate, and analyse your datasets with various tools and filters.
+9. **Explore:** Clicking `EXPLORE` will take users directly to the [explore page](./explore/index.md), where they can view, manipulate, and analyse their datasets with various tools and filters.
 
-10. **Upload Data:** Select `UPLOAD DATA` to initiate the process of adding new datasets to your account, making them accessible for further analysis.
+10. **Upload Data:** Clicking `UPLOAD DATA` will take users to the [data upload](./data-upload/index.md) process.
 
 #### National Population Trends
 
@@ -112,13 +112,13 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 3. **Chart**: Chart showing the data of the species over the year.
 
-4. **Home:** The `HOME` link returns you to the main `Landing Page`, providing an easy way to start your journey within our platform.
+4. **Home:** The `HOME` link returns users to the main [`Landing Page`](#landing-page-once-logged-in), providing an easy way to start their journey on the platform.
 
-5. **EXPLORE**: The `EXPLORE` link navigates the user to the explore page.
+5. **EXPLORE**: The `EXPLORE` link navigates the user to the [explore page](./explore/index.md).
 
-6. **Documentation:** Click `DOCUMENTATION` to access comprehensive documentation, like this page, which provides detailed information on various aspects of our platform.
+6. **Documentation:** Click `DOCUMENTATION` to access comprehensive documentation, like this page you are viewing, which provides detailed information on various aspects of the platform.
 
-7. **Contact:** If you need to get in touch with us for any reason, the `CONTACT` link provides access to our support and communication channels.
+7. **Contact:** If users need to get in touch with the team for any reason, the `CONTACT` link provides access to the support and communication channels.
 
 ### Additional Resources and Pages
 
@@ -126,19 +126,19 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
 
-1. **SANBI Logo**: By clicking on the `SANBI LOGO` you will navigate to the `SANBI (South African National Biodiversity Institute)` platform. The South African National Biodiversity Institute (SANBI) contributes to South Africa’s sustainable development by facilitating access to biodiversity data, generating information and knowledge, building capacity, providing policy advice, showcasing and conserving biodiversity in its national botanical and zoological gardens.
+1. **SANBI Logo**: By clicking on the `SANBI LOGO`, users will navigate to the `SANBI (South African National Biodiversity Institute)` platform. The South African National Biodiversity Institute (SANBI) contributes to South Africa’s sustainable development by facilitating access to biodiversity data, generating information and knowledge, building capacity, providing policy advice, showcasing and conserving biodiversity in its national botanical and zoological gardens.
 
     **SANBI**
 
     ![SANBI](./img/landing-page-5.png)
 
-2. **IDS Logo**: By clicking on the `IDS LOGO` you will navigate to the `IDS (Information Decision Systems)` platform. Information Decision Systems (IDS) is a progressive Geographical Information Systems, Environmental Consulting and Disaster Management service provider.
+2. **IDS Logo**: By clicking on the `IDS LOGO`, users will navigate to the `IDS (Information Decision Systems)` platform. Information Decision Systems (IDS) is a progressive Geographical Information Systems, Environmental Consulting and Disaster Management service provider.
 
     **IDS**
 
     ![IDS](./img/landing-page-6.png)
 
-3. **KARTOZA Logo**: By clicking on the `KARTOZA LOGO` you will navigate to the `KARTOZA` platform. Kartoza is a South Africa-based Free and Open Source GIS service provider. Kartoza develop and maintain geographic information systems and train teams to use geospatial software to its full potential.
+3. **KARTOZA Logo**: By clicking on the `KARTOZA LOGO`, users will navigate to the `KARTOZA` platform. Kartoza is a South Africa-based Free and Open Source GIS service provider. Kartoza develop and maintain geographic information systems and train teams to use geospatial software to its full potential.
 
     **KARTOZA**
 
@@ -146,4 +146,4 @@ The footer section, located at the bottom of the `Landing Page`, offers links to
 
 ## Summary
 
-Our enhanced `Landing Page` is your starting point for data exploration and interaction. With easy access to national population trends, a user-friendly interface, and convenient navigation options, you can seamlessly embark on your data journey and explore demographic insights while enjoying comprehensive support.
+The enhanced `Landing Page` is the starting point for data exploration and interaction. With easy access to national population trends, a user-friendly interface, and convenient navigation options, users can seamlessly embark on their data journey and explore demographic insights while enjoying comprehensive support.
