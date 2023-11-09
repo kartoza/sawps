@@ -122,7 +122,6 @@ export default function Map(props: MapInterface) {
   const [highlightedParcel, setHighlightedParcel] = useState<FeatureIdentifier>(getEmptyFeature())
   // Map Properties Filters
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-  const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
   const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
   const spatialFilterValues = useAppSelector((state: RootState) => state.SpeciesFilter.spatialFilterValues)
   const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
@@ -659,7 +658,6 @@ export default function Map(props: MapInterface) {
   /* Called when filters are changed */
   useEffect(() => {
     let _data = {
-      'start_year': startYear,
       'end_year': endYear,
       'species': selectedSpecies,
       'organisation': organisationId,
@@ -675,7 +673,7 @@ export default function Map(props: MapInterface) {
       }
       fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies)
     }
-  }, [props.isDataUpload, dynamicMapSession, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
+  }, [props.isDataUpload, dynamicMapSession, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
   /* Use debounce+UseMemo to avoid updating filter (materialized view) frequently when filter is changed */
   /* useMemo is used to avoid the debounce function is recreated during each render (unless MapTheme is changed) */
