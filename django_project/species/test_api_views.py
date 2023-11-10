@@ -65,7 +65,7 @@ class TestUploadSpeciesApiView(TestCase):
             name="Translocation (Intake)")
         ActivityType.objects.create(
             name="Translocation (Offtake)")
-        Taxon.objects.create(
+        self.lion = Taxon.objects.create(
             scientific_name='Panthera leo',
             common_name_varbatim='Lion'
         )
@@ -557,7 +557,8 @@ class TestUploadSpeciesApiView(TestCase):
             #                 "Planned hunt/culling_Offtake_adult_males and "
             #                 "Planned hunt/culling_Offtake_adult_females must "
             #                 "not exceed Planned hunt/culling_TOTAL." in errors)
-
+        self.assertEqual(AnnualPopulation.objects.count(), 5)
+        self.assertEqual(upload_session.success_notes, "5 rows uploaded successfully.")
         self.assertTrue(AnnualPopulation.objects.filter(
             survey_method_other="Test survey"
         ).count(), 1)
@@ -888,3 +889,141 @@ class TestUploadSpeciesApiView(TestCase):
         upload_session.refresh_from_db()
         self.assertFalse(upload_session.success_file)
         self.assertFalse(upload_session.error_file)
+
+    def test_overwrite_annual_population(self):
+        """Test upload species multiple times to overwrite data."""
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_first_upload.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'Finished')
+        self.assertEqual(AnnualPopulation.objects.count(), 3)
+        self.assertEqual(upload_session.success_notes, "3 rows uploaded successfully.")
+        annual_2010 = AnnualPopulation.objects.filter(
+            property=self.property,
+            taxon=self.lion,
+            year=2010
+        ).first()
+        self.assertTrue(annual_2010)
+        self.assertEqual(annual_2010.total, 190)
+        self.assertEqual(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_2010
+        ).count(), 5)
+        annual_2011 = AnnualPopulation.objects.filter(
+            property=self.property,
+            taxon=self.lion,
+            year=2011
+        ).first()
+        self.assertTrue(annual_2011)
+        self.assertEqual(annual_2011.total, 190)
+        self.assertEqual(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_2011
+        ).count(), 5)
+        annual_2012 = AnnualPopulation.objects.filter(
+            property=self.property,
+            taxon=self.lion,
+            year=2012
+        ).first()
+        self.assertTrue(annual_2012)
+        self.assertEqual(annual_2012.total, 190)
+        self.assertEqual(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_2012
+        ).count(), 4)
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_second_upload.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'Finished')
+        self.assertEqual(AnnualPopulation.objects.count(), 3)
+        self.assertEqual(upload_session.success_notes,
+                         "2 rows already exist and have been overwritten "
+                         "in the database.")
+        annual_2010.refresh_from_db()
+        annual_2011.refresh_from_db()
+        annual_2012.refresh_from_db()
+        # ensure no change for 2010
+        self.assertEqual(annual_2010.total, 190)
+        self.assertEqual(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_2010
+        ).count(), 5)
+        self.assertEqual(annual_2011.total, 240)
+        self.assertEqual(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_2011
+        ).count(), 0)
+        self.assertEqual(annual_2012.total, 160)
+        self.assertEqual(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_2012
+        ).count(), 1)
+        self.assertTrue(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_2012,
+            activity_type__name="Translocation (Offtake)",
+            total=20
+        ).exists())
