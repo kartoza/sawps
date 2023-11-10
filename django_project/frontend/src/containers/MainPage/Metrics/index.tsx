@@ -243,12 +243,49 @@ const Metrics = () => {
                                         year={endYear}
                                         loading={loading}
                                         setLoading={setLoading}
-                                        chartId={'population-count-per-population-category-chart'}
+                                        chartId={'property-count-per-population-category-chart'}
                                         chartTitle={'Number of properties per population category (count) of {species} for {year}'}
                                         xLabel={'Population size category (Count)'}
+                                        url={'/api/property-count-per-population-category-size/'}
                                     />
                                 </Grid>
                             )}
+
+                            {
+                            userInfoData?.user_permissions.includes('Can view property count per area category') &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <PropertyCountPerCategoryChart
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        year={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        chartId={'property-count-per-area-category-chart'}
+                                        chartTitle={'Number of properties per categories of area (ha) for {species} for {year}'}
+                                        xLabel={'Area size category (ha)'}
+                                        url={'/api/property-count-per-area-category/'}
+                                    />
+                                </Grid>
+                            )}
+
+                            {/*{*/}
+                            {/*userInfoData?.user_permissions.includes('Can view property count per area available to species category') &&*/}
+                            {/*selectedSpecies && (*/}
+                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
+                            {/*        <PropertyCountPerCategoryChart*/}
+                            {/*            selectedSpecies={selectedSpecies}*/}
+                            {/*            propertyId={propertyId}*/}
+                            {/*            year={endYear}*/}
+                            {/*            loading={loading}*/}
+                            {/*            setLoading={setLoading}*/}
+                            {/*            chartId={'property-count-per-area-available-to-species-category-chart'}*/}
+                            {/*            chartTitle={'Number of properties per categories of area (ha) available to {species} for {year}'}*/}
+                            {/*            xLabel={'Area size category (ha)'}*/}
+                            {/*            url={'/api/property-count-per-area-available-to-species-category/'}*/}
+                            {/*        />*/}
+                            {/*    </Grid>*/}
+                            {/*)}*/}
 
                              {
                              constants.canViewPropertyType && (

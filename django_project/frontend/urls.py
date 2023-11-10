@@ -38,7 +38,8 @@ from frontend.api_views.metrics import (
     PopulationPerAgeGroupAPIView,
     TotalAreaVSAvailableAreaAPIView,
     TotalCountPerPopulationEstimateAPIView,
-    PropertyCountPerPopulationSizeCategoryAPIView
+    PropertyCountPerPopulationSizeCategoryAPIView,
+    PropertyCountPerAreaCategoryAPIView
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -364,6 +365,11 @@ urlpatterns = [
         'api/property-count-per-population-category-size/',
         PropertyCountPerPopulationSizeCategoryAPIView.as_view(),
         name='property-count-per-population-category-size'
+    ),
+    path(
+        'api/property-count-per-area-category/',
+        PropertyCountPerAreaCategoryAPIView.as_view(),
+        name='property-count-per-area-category'
     ),
     path(
         'add_totp_devices/',

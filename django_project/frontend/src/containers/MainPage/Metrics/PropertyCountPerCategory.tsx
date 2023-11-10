@@ -17,10 +17,17 @@ const availableColors: AvailableColors = {
   'State and Private': 'rgba(157, 133, 190, 0.5)', // 50% transparency for female
 };
 
-const FETCH_PROPERTY_COUNT = "/api/property-count-per-population-category-size/";
 
 const PropertyCountPerCategoryChart = (props: any) => {
-  const {propertyId, year, selectedSpecies, chartId, chartTitle, xLabel} = props;
+  const {
+    propertyId,
+    year,
+    selectedSpecies,
+    chartId,
+    chartTitle,
+    xLabel,
+    url
+  } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [propertyData, setPropertyData] = useState([]);
 
@@ -34,7 +41,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
     setLoading(true);
     axios
       .get(
-        `${FETCH_PROPERTY_COUNT}?year=${year}&species=${selectedSpecies}&property=${propertyId}`
+        `${url}?year=${year}&species=${selectedSpecies}&property=${propertyId}`
       )
       .then((response) => {
         setLoading(false);

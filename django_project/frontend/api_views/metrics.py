@@ -398,16 +398,15 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
         return Response(serializer.data)
 
 
-class PropertyCountPerPopulationSizeCategoryAPIView(APIView):
+class BasePropertyCountAPIView(APIView):
     """
-    API endpoint to property count per population size category
+    Base class for property count APIView
     """
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self) -> List[Taxon]:
+    def get_queryset(self) -> List[AnnualPopulation]:
         """
-        Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        Returns a filtered queryset of Taxon objects
         """
         property_list = self.request.GET.get("property")
 
@@ -425,9 +424,28 @@ class PropertyCountPerPopulationSizeCategoryAPIView(APIView):
         ).distinct()
         return queryset
 
+    def get_upper_lower_bound(self, categories, idx, category):
+        lower_bound = category
+        upper_bound = categories[idx + 1]
+        if lower_bound == upper_bound:
+            lower_bound -= 2
+            upper_bound -= 1
+        else:
+            upper_bound -= 1
+
+        if idx == len(categories) - 2:
+            upper_bound = categories[idx + 1]
+        return lower_bound, upper_bound
+
+
+class PropertyCountPerPopulationSizeCategoryAPIView(BasePropertyCountAPIView):
+    """
+    API endpoint to property count per population size category
+    """
+
     def get(self, request, *args, **kwargs) -> Response:
         """
-        Handle GET request to retrieve total area and available area.
+        Handle GET request to retrieve property count per population size category.
         """
         results = []
         queryset = self.get_queryset()
@@ -437,7 +455,7 @@ class PropertyCountPerPopulationSizeCategoryAPIView(APIView):
 
         common_name = queryset.first().taxon.common_name_varbatim
 
-        population_categories = jenkspy.jenks_breaks(
+        categories = jenkspy.jenks_breaks(
             data,
             n_classes=data.count() if data.count() < 6 else 6
         )
@@ -445,18 +463,13 @@ class PropertyCountPerPopulationSizeCategoryAPIView(APIView):
         base_dict = {property_type: 0 for property_type in property_types}
         base_dict['common_name_varbatim'] = common_name
 
-        for idx, category in enumerate(population_categories):
-            if idx != len(population_categories) - 1:
-                lower_bound = category
-                upper_bound = population_categories[idx + 1]
-                if lower_bound == upper_bound:
-                    lower_bound -= 2
-                    upper_bound -= 1
-                else:
-                    upper_bound -= 1
-
-                if idx == len(population_categories) - 2:
-                    upper_bound = population_categories[idx + 1]
+        for idx, category in enumerate(categories):
+            if idx != len(categories) - 1:
+                lower_bound, upper_bound = self.get_upper_lower_bound(
+                    categories,
+                    idx,
+                    category
+                )
 
                 counts = queryset.filter(
                     total__range=(lower_bound, upper_bound)
@@ -475,3 +488,113 @@ class PropertyCountPerPopulationSizeCategoryAPIView(APIView):
                 results.append(result)
 
         return Response(results)
+
+
+class PropertyCountPerAreaCategoryAPIView(BasePropertyCountAPIView):
+    """
+    API endpoint to property count per area category
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve property count per area category.
+        """
+        results = []
+        annual_populations = self.get_queryset()
+        if not annual_populations.exists():
+            return Response(results)
+        queryset = Property.objects.filter(id__in=annual_populations.values_list('property_id', flat=True))
+
+        data = queryset.values_list('property_size_ha', flat=True).distinct()
+
+        common_name = annual_populations.first().taxon.common_name_varbatim
+
+        categories = jenkspy.jenks_breaks(
+            data,
+            n_classes=data.count() if data.count() < 6 else 6
+        )
+        property_types = PropertyType.objects.values_list('name', flat=True)
+        base_dict = {property_type: 0 for property_type in property_types}
+        base_dict['common_name_varbatim'] = common_name
+
+        for idx, category in enumerate(categories):
+            if idx != len(categories) - 1:
+                lower_bound, upper_bound = self.get_upper_lower_bound(
+                    categories,
+                    idx,
+                    category
+                )
+
+                counts = queryset.filter(
+                    property_size_ha__range=(lower_bound, upper_bound)
+                ).values('property_type__name').annotate(
+                    count=Count('property_type__name'),
+                    category=Value(f'{lower_bound} - {upper_bound}')
+                )
+                result = {
+                    'category': f'{lower_bound} - {upper_bound}'
+                }
+                result.update(base_dict)
+                for count in counts:
+                    result[
+                        count['property_type__name'].lower().replace(' ', ' ')
+                    ] = count['count']
+                results.append(result)
+
+        return Response(results)
+
+
+# class PropertyCountPerAreaCategoryAPIView(BasePropertyCountAPIView):
+#     """
+#     API endpoint to property count per area category
+#     """
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, request, *args, **kwargs) -> Response:
+#         """
+#         Handle GET request to retrieve property count per area category.
+#         """
+#         results = []
+#         annual_populations = self.get_queryset()
+#         if not annual_populations.exists():
+#             return Response(results)
+#         queryset = Property.objects.filter(id__in=annual_populations.values_list('property_id', flat=True))
+#
+#         data = queryset.values_list('property_size_ha', flat=True).distinct()
+#
+#         common_name = annual_populations.first().taxon.common_name_varbatim
+#
+#         categories = jenkspy.jenks_breaks(
+#             data,
+#             n_classes=data.count() if data.count() < 6 else 6
+#         )
+#         property_types = PropertyType.objects.values_list('name', flat=True)
+#         base_dict = {property_type: 0 for property_type in property_types}
+#         base_dict['common_name_varbatim'] = common_name
+#
+#         for idx, category in enumerate(categories):
+#             if idx != len(categories) - 1:
+#                 lower_bound, upper_bound = self.get_upper_lower_bound(
+#                     categories,
+#                     idx,
+#                     category
+#                 )
+#
+#                 counts = queryset.filter(
+#                     property_size_ha__range=(lower_bound, upper_bound)
+#                 ).values('property_type__name').annotate(
+#                     count=Count('property_type__name'),
+#                     category=Value(f'{lower_bound} - {upper_bound}')
+#                 )
+#                 result = {
+#                     'category': f'{lower_bound} - {upper_bound}'
+#                 }
+#                 result.update(base_dict)
+#                 for count in counts:
+#                     result[
+#                         count['property_type__name'].lower().replace(' ', ' ')
+#                     ] = count['count']
+#                 results.append(result)
+#
+#         return Response(results)
