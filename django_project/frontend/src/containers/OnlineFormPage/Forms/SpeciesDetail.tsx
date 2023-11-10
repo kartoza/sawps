@@ -34,6 +34,7 @@ import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
 import ConfidenceRating from './ConfidenceRating';
 
 interface SpeciesDetailInterface {
+    isEdit: boolean;
     propertyItem: PropertyInterface;
     initialData: UploadSpeciesDetailInterface;
     taxonMetadataList: TaxonMetadata[];
@@ -59,7 +60,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
         setIsConfidenceRatingOpen(true);
     };
     const { 
-        propertyItem, initialData, taxonMetadataList,
+        isEdit, propertyItem, initialData, taxonMetadataList,
         surveyMethodMetadataList, sampling_effort_coverages,
         population_statuses, population_estimate_categories,
         setIsDirty, handleNext, handleSaveDraft
@@ -312,7 +313,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                         <Grid container flexDirection={'column'} rowSpacing={1}>
                             <Grid item className='InputContainer'>
                                 <FormControl variant="standard" required className='DropdownInput' fullWidth
-                                        error={validation.taxon_id}>
+                                        error={validation.taxon_id} disabled={isEdit}>
                                     <InputLabel id="scientific-name-label">Scientific Name</InputLabel>
                                     <Select
                                         labelId="scientific-name-label"
@@ -347,6 +348,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 value={moment({'year': data.year})}
                                                 onChange={(newValue: Moment) => updateYearDetail(newValue.year())}
                                                 maxDate={moment({'year': new Date().getFullYear()})}
+                                                disabled={isEdit}
                                             />
                                             <FormHelperText>{' '}</FormHelperText>
                                         </LocalizationProvider>
