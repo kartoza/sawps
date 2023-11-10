@@ -44,6 +44,8 @@ from frontend.api_views.population import (
     FetchDraftPopulationUpload,
     PopulationMetadataList,
     UploadPopulationAPIVIew,
+    CheckExistingPopulationData,
+    FetchPopulationData
 )
 from frontend.api_views.property import (
     CreateNewProperty,
@@ -231,6 +233,16 @@ urlpatterns = [
         r'^api/population/metadata/list/?$',
         PopulationMetadataList.as_view(),
         name='population-metadata'
+    ),
+    re_path(
+        r'^api/upload/population/check/(?P<property_id>\d+)/(?P<year>\d+)/(?P<taxon_id>\d+)/?$',
+        CheckExistingPopulationData.as_view(),
+        name='check-population-data'
+    ),
+    re_path(
+        r'^api/upload/population/fetch/(?P<id>\d+)/?$',
+        FetchPopulationData.as_view(),
+        name='fetch-population-data'
     ),
     re_path(
         r'^api/upload/population/(?P<property_id>\d+)/?$',

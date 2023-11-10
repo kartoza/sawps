@@ -13,7 +13,9 @@ from frontend.api_views.population import (
     PopulationMetadataList,
     UploadPopulationAPIVIew,
     FetchDraftPopulationUpload,
-    DraftPopulationUpload
+    DraftPopulationUpload,
+    CheckExistingPopulationData,
+    FetchPopulationData
 )
 from property.factories import (
     PropertyFactory
@@ -393,3 +395,29 @@ class TestPopulationAPIViews(TestCase):
         view = FetchDraftPopulationUpload.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 204)
+
+    def test_check_existing_population_data(self):
+        kwargs = {
+            'property_id': 1,
+            'year': 2023,
+            'taxon_id': 1
+        }
+        request = self.factory.get(
+            reverse('check-population-data', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = CheckExistingPopulationData.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+
+    def test_fetch_existing_population_data(self):
+        kwargs = {
+            'id': 1000
+        }
+        request = self.factory.get(
+            reverse('fetch-population-data', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = FetchPopulationData.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 404)

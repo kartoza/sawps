@@ -33,16 +33,18 @@ interface FormWizardInterface {
     propertyItem: PropertyInterface;
     metadata: FormMetadata;
     draftUUID?: string;
+    initialData?: UploadSpeciesDetailInterface
 }
 
 const steps = ['SPECIES DETAIL', 'ACTIVITY DETAIL', 'REVIEW & SUBMIT']
 const SUBMIT_SPECIES_DATA = '/api/upload/population/'
 const SAVE_DRAFT_SPECIES_DATA = '/api/upload/population/draft/'
+const CHECK_EXISTING_POPULATION_DATA = '/api/upload/population/check/'
 
 function FormWizard(props: FormWizardInterface) {
     const [loading, setLoading] = useState<boolean>(false)
     const [isDirty, setIsDirty] = useState(false)
-    const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(props.propertyItem.id))
+    const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(props.propertyItem.id, props.initialData))
     const [activeStep, setActiveStep] = React.useState(0);
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean
