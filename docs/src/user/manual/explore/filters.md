@@ -53,6 +53,7 @@ to make user group e.g. `National data scientist` able to see the organisation f
     * Uncheck the "Select All" option if it is selected.
     * A list of available organisations will be displayed.
     * Check the checkboxes next to the organisations the user wants to include in the filter.
+3. **Cross Icon**: Click on the `Cross` icon to clear organisation filter.
 
 #### 3. Report Type Filter
 
@@ -75,6 +76,7 @@ to make user group e.g. `National data scientist` able to see the property filte
 
 1. **Select all:** Select all selects all the properties.
 2. **Show selected property count:** A user will see the count of the property selected.
+3. **Cross Icon**: Click on the `Cross` icon to clear property filter.
 
 #### 5. Species Filter
 
@@ -120,3 +122,4 @@ It means, the options will be based on the selected Organisations.
 ## Summary
 
 The Data Table Page is a comprehensive platform for exploring, analysing, and interacting with the user's data. With filters, column search, and data export options, the user has the tools necessary to customise their data view, find specific information, and export data in the format that suits their needs.
+ 
