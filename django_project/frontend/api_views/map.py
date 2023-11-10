@@ -93,7 +93,6 @@ class MapSessionBase(APIView):
         if self.can_view_properties_layer():
             generate_map_view(
                 session, False,
-                self.request.data.get('start_year', None),
                 self.request.data.get('end_year', None),
                 self.request.data.get('species', None),
                 self.request.data.get('organisation', None),
@@ -104,7 +103,6 @@ class MapSessionBase(APIView):
         if self.can_view_province_layer() and filter_species:
             generate_map_view(
                 session, True,
-                self.request.data.get('start_year', None),
                 self.request.data.get('end_year', None),
                 self.request.data.get('species', None),
                 self.request.data.get('organisation', None),
