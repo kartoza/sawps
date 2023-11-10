@@ -14,7 +14,7 @@ The Data Upload Page is a key component for managing and uploading user data. Th
 
 ## Interactive Map
 
-On the Data Upload Page, the user will find an interactive map that allows the user to visualize spatial data. In the bottom left corner of the map there are buttons that provide several options:
+On the Data Upload Page, the user will find an interactive map that allows the user to visualise spatial data. In the bottom left corner of the map there are buttons that provide several options:
 
 ## Map Visualisation
 
@@ -32,7 +32,7 @@ The map enhances the user's ability to work with spatial data and provides valua
 
 ## Summary
 
-The Data Upload Page is an essential tool for managing the user's data, allowing the user to input new records, categorize them with properties, and visualize spatial data using the interactive map. Whether the user is adding new information or searching for existing records, this page provides a user-friendly experience to help the user effectively handle their data.
+The Data Upload Page is an essential tool for managing the user's data, allowing the user to input new records, categorise them with properties, and visualise spatial data using the interactive map. Whether the user is adding new information or searching for existing records, this page provides a user-friendly experience to help the user effectively handle their data.
 
 ## Step 1
 
@@ -58,7 +58,7 @@ The Property Information Form is the initial stage of data upload. It's designed
 
 7. **Province**: Select the province or region where the property is located from the `Province` dropdown. This information is vital for geographic referencing.
 
-8. **Organisation**: The `Organisation` displays the name of the organization.
+8. **Organisation**: The `Organisation` displays the name of the organisation.
 
 9. **SAVE PROPERTY INFORMATION**: Once the user has filled in all the necessary details, they can click the `SAVE PROPERTY INFORMATION` button to store this information and proceed with the data upload process.
 
@@ -80,7 +80,7 @@ The second step of the data upload process on the Data upload involves working w
 
 2. **Parcel ID**: The Parcel ID is a unique identifier for each parcel within the property.
 
-3. **Parcel Type**: Parcel Type categorizes the parcels based on their purpose or characteristics.
+3. **Parcel Type**: Parcel Type categorises the parcels based on their purpose or characteristics.
 
 4. **SELECT**: The `SELECT` button allows the user to choose specific parcels from the map.
 
@@ -160,7 +160,7 @@ The `DATA UPLOAD` feature is crucial for geospatial data and mapping application
 
 ## Step 3
 
-Step 3 of the data upload process is a crucial phase that allows the user to upload species population data. In this step, the user will find two buttons for uploading the users data, along with an option to download a template for the users convenience. Additionally, there is a button to update property boundaries, which leads the user to Step 2 where the user can make property boundary modifications.
+Step 3 of the data upload process is a crucial phase that allows the user to upload species population data. In this step, the user will find two buttons for uploading their data, along with an option to download a template for the user's convenience. Additionally, there is a button to update property boundaries, which leads the user to Step 2 where they can make property boundary modifications.
 
 ### Data Upload step 3
 
@@ -174,11 +174,10 @@ Click [here](./online-form.md) to see the detailed documentation for online form
 
 3. **Download Template**: Clicking on the `DOWNLOAD TEMPLATE` button allows users to obtain a blank template that they can use as a starting point for entering their species population data. This template is designed to assist the user in organising their data correctly.
 
-4. **Upload Template**: Using the `UPLOAD DATA` button let's users upload a pre-prepared template containing species population data. Templates are useful for bulk data uploads or when the user has data formatted in a specific way. Ensure the user's template adheres to the required format and guidelines for a successful upload.
+4. **Upload Template**: Using the `UPLOAD DATA` button lets users upload a pre-prepared template containing species population data. Templates are useful for bulk data uploads or when the user has data formatted in a specific way. Ensure the user's template adheres to the required format and guidelines for a successful upload.
 ![Upload template](./img/panel-11.png)
 Click [here](./template-upload.md) to see the detailed documentation of template upload.
 
-#### Updating Property Boundary
 
 5. **Update Property Boundary**: By clicking the `UPDATE PROPERTY BOUNDARY` button, the user will be redirected to Step 2 of the data upload process. In this step, the user can modify property boundaries.
 
