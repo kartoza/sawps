@@ -17,7 +17,7 @@ import TotalCountPerActivity from "./TotalCountPerActivity";
 import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
-import PopulationTrend from "./PopulationTrend";
+import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
 import {
     useGetActivityAsObjQuery,
     useGetUserInfoQuery,
@@ -237,11 +237,15 @@ const Metrics = () => {
                             constants.canViewPopulationCategory &&
                             selectedSpecies && (
                                 <Grid item xs={12} md={12} lg={6}>
-                                    <PopulationCategoryChart
+                                    <PropertyCountPerCategoryChart
                                         selectedSpecies={selectedSpecies}
                                         propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
+                                        year={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        chartId={'population-count-per-population-category-chart'}
+                                        chartTitle={'Number of properties per population category (count) of {species} for {year}'}
+                                        xLabel={'Population size category (Count)'}
                                     />
                                 </Grid>
                             )}
@@ -343,7 +347,6 @@ const Metrics = () => {
                                     />
                                 </Grid>
                             )}
-
 
                             {
                             userInfoData?.user_permissions.includes('Can view province species count as percentage') &&
