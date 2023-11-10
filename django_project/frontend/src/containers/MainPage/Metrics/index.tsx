@@ -35,7 +35,8 @@ const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
+    // start year on charts is taken from Filter's endYear.
+    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
     const [activityData, setActivityData] = useState([])

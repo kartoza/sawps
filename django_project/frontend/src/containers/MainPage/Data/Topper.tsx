@@ -19,6 +19,8 @@ interface TopperProps {
 
 
 const Topper = () => {
+    const [tab, setTab] = useState<string>('')
+    const startYearDisabled = ['map', 'charts'].includes(tab);
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -38,6 +40,11 @@ const Topper = () => {
     const todayStr = [todayDate, todayMonth, todayYear].join('/')
     const {data: taxonDetail, isLoading: isTaxonDetailLoading, isSuccess} = useGetTaxonDetailQuery(selectedSpecies)
     const [speciesIcon, setSpeciesIcon] = useState("/static/images/default-species-topper.svg")
+
+    useEffect(() => {
+        const pathname = window.location.pathname.replace(/\//g, '');
+        setTab(pathname)
+    }, [window.location.pathname])
 
 
     useEffect(() => {
@@ -93,7 +100,7 @@ const Topper = () => {
                               <Grid item xs>
                                   <Box><img src="/static/images/clock-topper.svg" alt='Clock image'/></Box>
                                   <Box className={'text-content'}>
-                                      <b>{startYear} - {endYear}</b>
+                                      <b>{startYearDisabled ? `${endYear} - ${endYear}` : `${startYear} - ${endYear}`}</b>
                                   </Box>
                               </Grid>
                               <Grid item xs>
