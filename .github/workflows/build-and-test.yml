@@ -85,10 +85,15 @@ jobs:
           python manage.py migrate
           python manage.py collectstatic --noinput --verbosity 0
           export DJANGO_SETTINGS_MODULE=core.settings.dev && coverage run manage.py test && coverage xml
+          EOF
+          docker cp sanbi_dev_1:/home/web/django_project/coverage.xml ../coverage.xml
+      - name: Create superuser
+        working-directory: deployment
+        run: |
+          cat << EOF | docker-compose exec -T dev bash
           export DJANGO_SUPERUSER_PASSWORD=admin
           python manage.py createsuperuser --no-input --username admin --email 'admin@example.com'
           EOF
-          docker cp sanbi_dev_1:/home/web/django_project/coverage.xml ../coverage.xml
       - name: Update dependencies
         working-directory: ./playwright/ci-test
         run: npm install
