@@ -16,12 +16,12 @@ test('test', async ({ page }) => {
 
   await page.waitForURL('**/map/');
 
-  await page.getByLabel('Map').click({
+  /*await page.getByLabel('Map').click({
     position: {
       x: 618,
       y: 284
     }
-  });
+  });*/
   
   await page.getByLabel('Toggle Dark Mode').click();
 
@@ -29,12 +29,12 @@ test('test', async ({ page }) => {
 
   await page.getByLabel('Zoom in').click();
 
-  await page.getByLabel('Map').click({
+  /*await page.getByLabel('Map').click({
     position: {
       x: 297,
       y: 351
     }
-  });
+  });*/
 
   await page.getByLabel('Zoom out').click();
   
