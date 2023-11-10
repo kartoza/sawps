@@ -13,8 +13,6 @@ context_id: 7G6gfGwMPjwqzeFDc9JVFh
 
 # Organisation page
 
-## Description
-
 Every organisation can manage their organisation members via this page.
 
 This page offers the following functionality:
@@ -61,5 +59,5 @@ This page offers the following functionality:
 ![Organisation Page 6](./img/organisation-page-6.png)
 
 * **New member on platform**: if the individual is a new member on the platform, they will be taken through the normal registration and added to the organisation.
-* **Member already registered on platform**: if the individual is not new on the platform they will just be registered on to the organisation they're being invited.
+* **Member already registered on platform**: if the individual is not new on the platform they will just be registered on to the organisation they are being invited.
 * **Registration Complete**: Once the registration is complete the individual invited will be be able to login and see their new organisation under accessible organisations.

@@ -14,9 +14,7 @@ context_id: Bov9ysSsFG8VhSLC6oQdRF
 
 # User Roles Documentation
 
-## Description
-
-User roles are type of users in SAWPS affecting what they can do in the system. 
+User roles are type of users in SAWPS affecting what they can do in the system.
 There are currently 10 roles:
 
 | Role                          | Description                                                                                                                                      |

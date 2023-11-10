@@ -13,8 +13,6 @@ context_id: JFiPsPZYj8bYp4UWa643gU
 
 # Reminders Feature
 
-## Description
-
 The Reminders feature enables a user or organisation to do the following:
 
 * Organisation: Set a reminder for everyone within the organisation.
@@ -46,7 +44,7 @@ Other functionalities offered on the Reminders Page:
       * When the delete icon is clicked a popup modal is evoked prompting if the user is sure of the actions they wish to take.
 
 7. **Rows per page**: The user is able to choose the number of reminders they prefer to see on a page (The minimum is 5).
-8. **Pagination Link**: The user is able to see the current page they're own. They are also able to navigate to previous and next pages using the nav links.
+8. **Pagination Link**: The user is able to see the current page they are on. They are also able to navigate to previous and next pages using the navigation links.
 
 ### Add reminder form
 
@@ -55,7 +53,7 @@ Other functionalities offered on the Reminders Page:
 1. **Title**: The user should provide the reminder title.
 2. **Date and Time**: The user should schedule the reminder.
 3. **Reminder**: The user should provide the description of the reminder.
-4. **Reminder Type**: Based on the user role within that specific organisation the user is able to specify if the reminder is for all organisation members or it's a personal reminder.
+4. **Reminder Type**: Based on the user role within that specific organisation the user is able to specify if the reminder is for all organisation members or if it is a personal reminder.
 5. **Add button**: When clicked creates the reminder.
 
 ### Reminder popup modal
@@ -65,7 +63,7 @@ Other functionalities offered on the Reminders Page:
 1. **Title**: the user can change the reminder title.
 2. **Date and Time**: the user can change scheduled time for the reminder.
 3. **Reminder**: the user can change the description of the reminder.
-4. **Reminder Type**: Based on the user role within that specific organisation the user is able to specify if the reminder is for all organisation members or if it's a personal reminder.
+4. **Reminder Type**: Based on the user role within that specific organisation the user is able to specify if the reminder is for all organisation members or if it is a personal reminder.
 5. **Reminder Status**: the user is able to change the state of the reminder. If set to active the reminder is still scheduled, if set to draft the reminder is on pause, if set to passed the reminder will be moved to the notifications section but no email is sent.
 6. **Save button**: when clicked saves the new edited details.
 

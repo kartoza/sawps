@@ -13,8 +13,6 @@ context_id: 2H9jexnK8NYkp5keW7YoDf
 
 # Notifications Feature
 
-## Description
-
 * The notifications feature allows for the user to receive push notifications of the reminders they have set via the platform.
 * When a notification comes in, a small bell icon appears on the user profile icon.
 * Also a navigation link for notifications becomes available in main navigation dropdown. This allows for the user to view the notifications from any page on the system.
@@ -44,7 +42,7 @@ Functionalities offered on the Notifications Page:
       * When the delete icon is clicked a popup modal is evoked prompting if the user is sure of the actions they wish to take.
 
 6. Rows per page: The user is able to choose the number of notifications they prefer to see on a page (The minimum is 5).
-7. Pagination Link: The user is able to see the current page they're own. They are also able to navigate to previous and next pages using the nav links.
+7. Pagination Link: The user is able to see the current page they are on. They are also able to navigate to previous and next pages using the navigation links.
 
 ### Notification information popup modal
 

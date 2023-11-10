@@ -39,6 +39,7 @@ class AnnualPopulationF(AnnualPopulationAbstractFactory):
     taxon = factory.SubFactory('species.factories.TaxonFactory')
     property = factory.SubFactory('property.factories.PropertyFactory')
     area_available_to_species = 10
+    adult_total = 10
     sub_adult_total = 20
     sub_adult_male = 10
     sub_adult_female = 10

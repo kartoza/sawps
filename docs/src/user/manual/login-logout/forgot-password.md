@@ -14,8 +14,6 @@ context_id: Ca8Fcipg5T8nhidMoqfiS2
 # Forgot Password Feature
 <!-- These are instructions the user should take when they wish to reset their password -->
 
-## Description
-
 When the user has forgotten their password, they can use this feature to reset it.
 The steps involve:
 

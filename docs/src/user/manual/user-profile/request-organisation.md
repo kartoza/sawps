@@ -13,8 +13,6 @@ context_id: D8iDsgCfuAwq2Zy8A63Cry
 
 # Request organisation feature
 
-## Description
-
 * When a user on the platform wishes to have an organisation. They can request for one.
 * The SANBI administrator will review the request and if they approve will create the organisation for the user and notify them via email.
 
