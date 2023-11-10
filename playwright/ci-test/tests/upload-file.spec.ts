@@ -6,7 +6,7 @@ test.use({
   storageState: 'auth.json'
 });
 
-test('test', async ({ page }) => {
+test('upload geojson', async ({ page }) => {
   
   await page.goto(url);
 
@@ -27,6 +27,8 @@ test('test', async ({ page }) => {
   await page.getByRole('option', { name: 'Provincial' }).click();
 
   await page.getByRole('button', { name: 'SAVE PROPERTY INFORMATION' }).click();
+
+  await expect(page.getByRole('button', { name: 'UPLOAD' })).toBeVisible();
 
   const upload = page.getByRole('button', { name: 'UPLOAD' });
 
