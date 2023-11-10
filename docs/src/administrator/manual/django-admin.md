@@ -72,20 +72,20 @@ After successfully changing the password, the administrator will receive a confi
 2. **ACTIVITY**: The administrators can use this section to perform operations related to activities.
 
     - **Activities**: The `Activity` table is designed to capture and track various activities related to the management and conservation of wildlife or specific areas. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing activities.
-        - **Add**: Click on the [add](django-add-data.md) to view how to add a new activity.
-        - **Edit**: Click on the [edit](django-change-data.md) to view how to edit an activity.
+        - **Add**: Click [here](django-add-data.md) to view how to add a new activity.
+        - **Edit**: Click [here](django-change-data.md) to view how to edit an activity.
 
 3. **AUTHENTICATION AND AUTHORISATION**: The administrators can use this section to perform operations related to authentication and authorisation.
 
     - **Groups**: The `Groups` table is designed to organise and categorise users into distinct groups or roles within a web application. This table serves as a fundamental component of the application's access control and permission management system. It provides administrators with the capability to perform various operations, including creating, modifying, and viewing user groups.
-        - **Add**: Click on the [add](django-add-data.md) to view how to add a new group.
-        - **Edit**: Click on the [edit](django-change-data.md) to view how to edit a group.
+        - **Add**: Click [here](django-add-data.md) to view how to add a new group.
+        - **Edit**: Click [here](django-change-data.md) to view how to edit a group.
 
     - **Permissions**: The `Permissions` table is a core element of a web application's access control and authorisation system. It is designed to manage and regulate the rights and privileges of users within the application, allowing administrators to create, modify, and oversee user permissions.
 
     - **Users**: The `Users` table is a foundational component of a web application, designed to represent and manage individual user accounts. This table plays a central role in user authentication, identity management, and access control. It empowers administrators to perform a range of essential operations, including user creation, modification, and access management.
-        - **Add**: Click on the [add](django-add-data.md) to view how to add a new user.
-        - **Edit**: Click on the [edit](django-change-data.md) to view how to edit a user.
+        - **Add**: Click [here](django-add-data.md) to view how to add a new user.
+        - **Edit**: Click [here](django-change-data.md) to view how to edit a user.
 
 4. **CELERY RESULTS**: The administrators can use this section to perform operations related to celery.
 
@@ -242,8 +242,8 @@ After successfully changing the password, the administrator will receive a confi
 
     - **User roles**: The `User roles` table is used for storing the user roles records. User roles define the permissions and access levels for different users within the SAWPS. By adding user roles, administrators can control what users can and cannot do in the system. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing user roles.
 
-* For more information, click on the [table](django-table.md) to view the table's documentation.
+* For more information, click [here](django-table.md) to view the table documentation.
 
-* For more information, click on the [add](django-add-data.md) to view how to add new data.
+* For more information, click [here](django-add-data.md) to view how to add new data.
 
 * For more information, click [here](django-change-data.md) to view how to edit data.
