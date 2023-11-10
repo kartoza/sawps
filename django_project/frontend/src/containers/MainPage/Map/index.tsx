@@ -45,7 +45,8 @@ import {
   MAX_PROVINCE_ZOOM_LEVEL,
   MIN_PROVINCE_ZOOM_LEVEL,
   showExtrudeLayer,
-  removeExtrudeLayer
+  removeExtrudeLayer,
+  fetchAndDrawGeojsonLayerFromUpload
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
@@ -121,7 +122,6 @@ export default function Map(props: MapInterface) {
   const [highlightedParcel, setHighlightedParcel] = useState<FeatureIdentifier>(getEmptyFeature())
   // Map Properties Filters
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-  const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
   const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
   const spatialFilterValues = useAppSelector((state: RootState) => state.SpeciesFilter.spatialFilterValues)
   const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
@@ -163,6 +163,7 @@ export default function Map(props: MapInterface) {
                 let _bbox = response.data['bbox']
                 if (_bbox && _bbox.length === 4) {
                     let _bbox_str = _bbox.map(String)
+                    _bbox_str.push(session)
                     dispatch(triggerMapEvent({
                         'id': uuidv4(),
                         'name': MapEvents.BOUNDARY_FILES_UPLOADED,
@@ -592,7 +593,6 @@ export default function Map(props: MapInterface) {
         // Force a repaint, so that the map will be repainted without you having to touch the map
         _mapObj.triggerRepaint()
       } else if (_event.name === MapEvents.PROPERTY_SELECTED ||
-          _event.name === MapEvents.BOUNDARY_FILES_UPLOADED ||
           _event.name === MapEvents.ZOOM_INTO_PROPERTY) {
         // parse bbox from payload
         if (_event.payload && _event.payload.length === 4) {
@@ -602,6 +602,16 @@ export default function Map(props: MapInterface) {
               padding: 50,
               maxZoom: 16
           })
+        }
+      } else if (_event.name === MapEvents.BOUNDARY_FILES_UPLOADED) {
+        if (_event.payload && _event.payload.length === 5) {
+          let _bbox = _event.payload.slice(0, 4).map(Number)
+          if (!_mapObj) return;
+          _mapObj.fitBounds([[_bbox[0], _bbox[1]], [_bbox[2], _bbox[3]]], {
+              padding: 50,
+              maxZoom: 16
+          })
+          fetchAndDrawGeojsonLayerFromUpload(_mapObj, _event.payload[4])
         }
       } else if (_event.name === MapEvents.HIGHLIGHT_SELECTED_PARCEL) {
         if (_event.payload && _event.payload.length === 2) {
@@ -648,7 +658,6 @@ export default function Map(props: MapInterface) {
   /* Called when filters are changed */
   useEffect(() => {
     let _data = {
-      'start_year': startYear,
       'end_year': endYear,
       'species': selectedSpecies,
       'organisation': organisationId,
@@ -664,7 +673,7 @@ export default function Map(props: MapInterface) {
       }
       fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies)
     }
-  }, [props.isDataUpload, dynamicMapSession, startYear, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
+  }, [props.isDataUpload, dynamicMapSession, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
   /* Use debounce+UseMemo to avoid updating filter (materialized view) frequently when filter is changed */
   /* useMemo is used to avoid the debounce function is recreated during each render (unless MapTheme is changed) */

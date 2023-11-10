@@ -5,6 +5,7 @@ import copy
 import tempfile
 import pandas as pd
 from django.db import IntegrityError
+from django.utils import timezone
 from frontend.models.upload import UploadSpeciesCSV
 from activity.models import ActivityType
 from occurrence.models import SurveyMethod
@@ -430,7 +431,7 @@ class SpeciesCSVUpload(object):
         ):
             self.error_row(
                 message="Area available to species must be greater than 0 "
-                        "and less than property area size "
+                        "and less than or equal to property area size "
                         "({:.2f} ha).".format(
                             self.upload_session.property.property_size_ha
                         )
@@ -464,6 +465,11 @@ class SpeciesCSVUpload(object):
             pop_other = population_other
 
         year = self.row_value(row, YEAR)
+        if year.isdigit():
+            if int(year) > timezone.now().year:
+                self.error_row(
+                    message=f"'{YEAR}' with value {year} exceeds current year."
+                )
         count_total = self.row_value(row, COUNT_TOTAL)
         presence = self.row_value(row, PRESENCE)
         pop_certainty = self.row_value(row, POPULATION_ESTIMATE_CERTAINTY)

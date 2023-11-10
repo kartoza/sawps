@@ -316,8 +316,7 @@ class TestMapAPIViews(TestCase):
         filter_organisation = 'all'
         filter_spatial = ''
         filter_property = 'all'
-        filter_start_year = 1960
-        filter_end_year = 2023
+        filter_year = 2023
         filter_species_name = taxon.scientific_name
         filter_activity = ''
         session = MapSession.objects.create(
@@ -327,7 +326,7 @@ class TestMapAPIViews(TestCase):
             species=filter_species_name
         )
         # generate materialized view for properties layer
-        generate_map_view(session, False, filter_start_year, filter_end_year,
+        generate_map_view(session, False, filter_year,
                           filter_species_name, filter_organisation,
                           filter_activity, filter_spatial, filter_property)
         self.assertTrue(
@@ -353,7 +352,7 @@ class TestMapAPIViews(TestCase):
             species=filter_species_name
         )
         # generate materialized view for properties layer
-        generate_map_view(session, True, filter_start_year, filter_end_year,
+        generate_map_view(session, True, filter_year,
                           filter_species_name, filter_organisation,
                           filter_activity, filter_spatial, filter_property)
         self.assertTrue(
@@ -579,46 +578,40 @@ class TestMapAPIViews(TestCase):
         self.assertEqual(len(values), 0)
 
     def test_get_query_condition_for_population_query(self):
-        filter_start_year = 1960
-        filter_end_year = 2023
+        filter_year = 2023
         filter_species_name = 'Loxodonta africana'
         activity_type_1 = ActivityTypeFactory.create()
         activity_type_2 = ActivityTypeFactory.create()
         filter_activity = f'{activity_type_1.id},{activity_type_2.id}'
         conds, values = get_query_condition_for_population_query(
-            filter_start_year, filter_end_year,
-            filter_species_name, filter_activity
+            filter_year, filter_species_name, filter_activity
         )
         self.assertEqual(len(conds), 2)
         self.assertIn('t.scientific_name=%s', conds[0])
-        self.assertIn('ap.year between %s and %s', conds[1])
-        self.assertEqual(len(values), 3)
-        filter_start_year = 1960
-        filter_end_year = 2023
+        self.assertIn('ap.year=%s', conds[1])
+        self.assertEqual(len(values), 2)
+        filter_year = 2023
         filter_species_name = 'Loxodonta africana'
         filter_activity = f'{activity_type_1.id}'
         conds, values = get_query_condition_for_population_query(
-            filter_start_year, filter_end_year,
-            filter_species_name, filter_activity
+            filter_year, filter_species_name, filter_activity
         )        
         self.assertEqual(len(conds), 3)
         self.assertIn('t.scientific_name=%s', conds[0])
         self.assertIn('SELECT 1 FROM annual_population_per_activity appa',
                       conds[1])
-        self.assertIn('ap.year between %s and %s', conds[2])
-        self.assertEqual(len(values), 6)
+        self.assertIn('ap.year=%s', conds[2])
+        self.assertEqual(len(values), 4)
 
     def test_get_province_population_query(self):
         filter_organisation = '1,2,3'
         filter_spatial = ''
         filter_property = '1'
-        filter_start_year = 1960
-        filter_end_year = 2023
+        filter_year = 2023
         filter_species_name = 'Loxodonta africana'
         filter_activity = ''
         sql_view, query_values = get_province_population_query(
-            filter_start_year, filter_end_year,
-            filter_species_name, filter_organisation,
+            filter_year, filter_species_name, filter_organisation,
             filter_activity, filter_spatial, filter_property
         )
         self.assertIn('select p.province_id as id, sum(ap.total) as count',
@@ -629,7 +622,7 @@ class TestMapAPIViews(TestCase):
                       sql_view)
         self.assertIn('t.scientific_name=%s',
                       sql_view)
-        self.assertIn('ap.year between %s and %s',
+        self.assertIn('ap.year=%s',
                       sql_view)
         self.assertIn(
             'select p2.id, p2.name, COALESCE(population_summary.count, 0) '
@@ -638,19 +631,17 @@ class TestMapAPIViews(TestCase):
         )
         self.assertIn(
             'from province p2 left join', sql_view)
-        self.assertEqual(len(query_values), 5)
+        self.assertEqual(len(query_values), 4)
 
     def test_get_properties_population_query(self):
         filter_organisation = '1,2,3'
         filter_spatial = ''
         filter_property = '1'
-        filter_start_year = 1960
-        filter_end_year = 2023
+        filter_year = 2023
         filter_species_name = 'Loxodonta africana'
         filter_activity = ''
         sql_view, query_values = get_properties_population_query(
-            filter_start_year, filter_end_year,
-            filter_species_name, filter_organisation,
+            filter_year, filter_species_name, filter_organisation,
             filter_activity, filter_spatial, filter_property
         )
         self.assertIn('select ap.property_id as id, sum(ap.total) as count',
@@ -661,7 +652,7 @@ class TestMapAPIViews(TestCase):
                       sql_view)
         self.assertIn('t.scientific_name=%s',
                       sql_view)
-        self.assertIn('ap.year between %s and %s',
+        self.assertIn('ap.year=%s',
                       sql_view)
         self.assertIn(
             'select p2.id, p2.name, COALESCE(population_summary.count, 0) '
@@ -670,7 +661,7 @@ class TestMapAPIViews(TestCase):
         )
         self.assertIn(
             'from property p2 left join', sql_view)
-        self.assertEqual(len(query_values), 5)
+        self.assertEqual(len(query_values), 4)
 
     def test_get_properties_query(self):
         filter_organisation = '1,2,3'
@@ -697,8 +688,7 @@ class TestMapAPIViews(TestCase):
         filter_organisation = 'all'
         filter_spatial = ''
         filter_property = 'all'
-        filter_start_year = 1960
-        filter_end_year = 2023
+        filter_year = 2023
         filter_species_name = taxon.scientific_name
         filter_activity = ''
         session = MapSession.objects.create(
@@ -706,10 +696,10 @@ class TestMapAPIViews(TestCase):
             created_date=datetime.datetime(2000, 8, 14, 8, 8, 8),
             expired_date=datetime.datetime(2000, 8, 14, 8, 8, 8)
         )
-        generate_map_view(session, False, filter_start_year, filter_end_year,
+        generate_map_view(session, False, filter_year,
                           filter_species_name, filter_organisation,
                           filter_activity, filter_spatial, filter_property)
-        generate_map_view(session, True, filter_start_year, filter_end_year,
+        generate_map_view(session, True, filter_year,
                           filter_species_name, filter_organisation,
                           filter_activity, filter_spatial, filter_property)
         expected_breaks = [
@@ -757,8 +747,7 @@ class TestMapAPIViews(TestCase):
         filter_organisation = 'all'
         filter_spatial = ''
         filter_property = 'all'
-        filter_start_year = 1960
-        filter_end_year = 2023
+        filter_year = 2023
         filter_species_name = ''
         filter_activity = ''
         session = MapSession.objects.create(
@@ -767,7 +756,7 @@ class TestMapAPIViews(TestCase):
             expired_date=datetime.datetime(2000, 8, 14, 8, 8, 8)
         )
         # generate materialized view for properties layer
-        generate_map_view(session, False, filter_start_year, filter_end_year,
+        generate_map_view(session, False, filter_year,
                           filter_species_name, filter_organisation,
                           filter_activity, filter_spatial, filter_property)
         self.assertTrue(
@@ -788,10 +777,10 @@ class TestMapAPIViews(TestCase):
         )
         # generate view for population province+properties
         filter_species_name = 'Loxodonta africana'
-        generate_map_view(session, False, filter_start_year, filter_end_year,
+        generate_map_view(session, False, filter_year,
                           filter_species_name, filter_organisation,
                           filter_activity, filter_spatial, filter_property)
-        generate_map_view(session, True, filter_start_year, filter_end_year,
+        generate_map_view(session, True, filter_year,
                           filter_species_name, filter_organisation,
                           filter_activity, filter_spatial, filter_property)
         self.assertTrue(

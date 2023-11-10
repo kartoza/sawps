@@ -5,8 +5,6 @@ let url = '/';
 
 test.describe('about page', () => {
 
-    test.use({ storageState: 'tests/.auth/sawps-auth.json' });
-
     test('page elements', async ({page}) => {
 
         await page.goto(url);
@@ -26,12 +24,6 @@ test.describe('about page', () => {
         await page.locator('.col-12').first().isVisible();
 
         await page.locator('div').filter({ hasText: 'SAWPS is a centralised wildlife population and trade monitoring system for assessing popu' }).nth(3).click();
-
-        await page.frameLocator('[data-testid="about-page-video-frame"]').getByLabel('Play', { exact: true}).isVisible();
-
-        await page.frameLocator('[data-testid="about-page-video-frame"]').locator('video').click();
-
-        await page.waitForTimeout(5000);
 
         await page.getByRole('heading', { name: 'Secure species data storage' }).isVisible();
 

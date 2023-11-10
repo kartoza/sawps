@@ -3,9 +3,11 @@ import ContextLayerInterface from '../../../models/ContextLayer';
 import ParcelInterface from '../../../models/Parcel';
 import PropertyInterface from "../../../models/Property";
 import { MapTheme, PopulationCountLegend } from "../../../models/Map";
+import { GeoJSONSource } from "maplibre-gl";
 
 const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
 const SEARCH_PROPERTY_URL = '/api/map/search/property/'
+const BOUNDARY_FILE_GEOJSON_URL = '/api/upload/boundary-file/'
 export const MIN_SELECT_PARCEL_ZOOM_LEVEL = 12
 export const MIN_SELECT_PROPERTY_ZOOM_LEVEL = 10
 const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
@@ -179,6 +181,7 @@ export const searchParcel = (lngLat: maplibregl.LngLat, propertyId: number, call
  * @returns true if layer does not exist
  */
 export const addLayerToMap = (layerId: string, mapObj: maplibregl.Map, layerObj: any, beforeLayerId?: string): boolean => {
+    if (!mapObj) return false
     if (typeof mapObj.getLayer(layerId) === 'undefined') {
         mapObj.addLayer(layerObj, beforeLayerId)
         return true
@@ -192,6 +195,7 @@ export const addLayerToMap = (layerId: string, mapObj: maplibregl.Map, layerObj:
  * @param mapObj map reference object
  */
 export const removeLayerFromMap = (layerId: string, mapObj: maplibregl.Map) => {
+    if (!mapObj) return;
     let _layer = mapObj.getLayer(layerId)
     if (typeof _layer !== 'undefined') {
         mapObj.removeLayer(layerId)
@@ -347,6 +351,11 @@ export const addParcelInvisibleFillLayers = (mapObj: maplibregl.Map) => {
     }, 'erf')
 }
 
+/**
+ * Generate stop for choropleth layer's fill-color
+ * @param legends list of break/stop
+ * @returns 
+ */
 const getMapPopulationStops = (legends: PopulationCountLegend[]) => {
     let _stops: any = []
     for (let i=0; i<legends.length; ++i) {
@@ -363,8 +372,14 @@ const getMapPopulationStops = (legends: PopulationCountLegend[]) => {
 }
 
 /**
+ * Add properties/province layers.
+ * Available layers:
+ *   - properties
+ *   - properties-points
+ *   - province-count
+ *   - properties-label
  * 
- * @param showPopulationCount 
+ * @param showPopulationCount True if species filter is applied
  * @param mapObj 
  * @param propertiesCount 
  * @param provinceCount 
@@ -401,72 +416,75 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
         }, 'NGI aerial imagery')
     } else {
         // add province layer
-        let _provinceLayer = {
-            "id": "province-count",
-            "type": "fill",
-            "source": "sanbi-dynamic",
-            "minzoom": 5,
-            "maxzoom": 8,
-            "layout": {"visibility": "visible"},
-            "paint": {
-              "fill-opacity": 1,
-              "fill-color": {
-                "property": "count",
-                "type": "interval",
-                "stops": getMapPopulationStops(provinceCount),
-                "base": 1,
-                "default": "rgba(255, 255, 255, 1)"
-              },
-              "fill-outline-color": "rgba(0, 0, 0, 1)"
-            },
-            "Z": 0,
-            "filter": ["all"],
-            "source-layer": "province_population"
-        }
-        let _propertiesLayer = {
-            "id": "properties",
-            "type": "fill",
-            "source": "sanbi-dynamic",
-            "minzoom": 10,
-            "maxzoom": 24,
-            "layout": {"visibility": "visible"},
-            "paint": {
-              "fill-opacity": 1,
-              "fill-color": {
-                "property": "count",
-                "type": "interval",
-                "stops": getMapPopulationStops(propertiesCount),
-                "base": 1,
-                "default": "rgba(255, 0, 255, 1)"
-              },
-              "fill-outline-color": "rgba(0, 0, 0, 1)"
-            },
-            "Z": 0,
-            "filter": ["all"],
-            "source-layer": "properties"
-        }
-        let _propertiesPointsLayer = {
-            "id": "properties-points",
-            "type": "circle",
-            "source": "sanbi-dynamic",
-            "source-layer": "properties-points",
-            "layout": {"visibility": "visible"},
-            "paint": {
-                "circle-color": {
+        if (provinceCount && provinceCount.length > 0) {
+            let _provinceLayer = {
+                "id": "province-count",
+                "type": "fill",
+                "source": "sanbi-dynamic",
+                "minzoom": 5,
+                "maxzoom": 8,
+                "layout": {"visibility": "visible"},
+                "paint": {
+                  "fill-opacity": 1,
+                  "fill-color": {
                     "property": "count",
-                    "type": "exponential",
+                    "type": "interval",
+                    "stops": getMapPopulationStops(provinceCount),
+                    "base": 1,
+                    "default": "rgba(255, 255, 255, 1)"
+                  },
+                  "fill-outline-color": "rgba(0, 0, 0, 1)"
+                },
+                "Z": 0,
+                "filter": ["all"],
+                "source-layer": "province_population"
+            }
+            addLayerToMap('province-count', mapObj, _provinceLayer, 'NGI aerial imagery')
+        }
+        if (propertiesCount && propertiesCount.length > 0) {
+            let _propertiesLayer = {
+                "id": "properties",
+                "type": "fill",
+                "source": "sanbi-dynamic",
+                "minzoom": 10,
+                "maxzoom": 24,
+                "layout": {"visibility": "visible"},
+                "paint": {
+                  "fill-opacity": 1,
+                  "fill-color": {
+                    "property": "count",
+                    "type": "interval",
                     "stops": getMapPopulationStops(propertiesCount),
                     "base": 1,
-                    "default": "rgba(248, 0, 255, 1)"
-                }
-            },
-            "minzoom": 5,
-            "maxzoom": 10
+                    "default": "rgba(255, 0, 255, 1)"
+                  },
+                  "fill-outline-color": "rgba(0, 0, 0, 1)"
+                },
+                "Z": 0,
+                "filter": ["all"],
+                "source-layer": "properties"
+            }
+            let _propertiesPointsLayer = {
+                "id": "properties-points",
+                "type": "circle",
+                "source": "sanbi-dynamic",
+                "source-layer": "properties-points",
+                "layout": {"visibility": "visible"},
+                "paint": {
+                    "circle-color": {
+                        "property": "count",
+                        "type": "exponential",
+                        "stops": getMapPopulationStops(propertiesCount),
+                        "base": 1,
+                        "default": "rgba(248, 0, 255, 1)"
+                    }
+                },
+                "minzoom": 5,
+                "maxzoom": 10
+            }
+            addLayerToMap('properties', mapObj, _propertiesLayer, 'erf-highlighted')
+            addLayerToMap('properties-points', mapObj, _propertiesPointsLayer, 'NGI aerial imagery')
         }
-        
-        addLayerToMap('province-count', mapObj, _provinceLayer, 'NGI aerial imagery')
-        addLayerToMap('properties', mapObj, _propertiesLayer, 'erf-highlighted')
-        addLayerToMap('properties-points', mapObj, _propertiesPointsLayer, 'NGI aerial imagery')
     }
     // add label based on maptheme
     let _propertiesLabel = {}
@@ -544,6 +562,13 @@ export const removePropertiesLayer = (mapObj: maplibregl.Map) => {
     removeLayerFromMap('properties-extrude', mapObj)
 }
 
+/**
+ * Add 3d extrude layer for province population.
+ * 
+ * @param mapObj 
+ * @param provinceCount 
+ * @returns 
+ */
 const addProvinceExtrudeLayer = (mapObj: maplibregl.Map, provinceCount?: PopulationCountLegend[]) => {
     if (!provinceCount || provinceCount.length === 0) return;
     // TODO: Determine max height of province extrude 3d layer
@@ -572,6 +597,12 @@ const addProvinceExtrudeLayer = (mapObj: maplibregl.Map, provinceCount?: Populat
     addLayerToMap('province-extrude', mapObj, _provinceExtrudeLayer, 'provinces_small_scale')
 }
 
+/**
+ * Add 3d extrude layer for properties population.
+ * @param mapObj 
+ * @param propertiesCount 
+ * @returns 
+ */
 const addPropertiesExtrudeLayer = (mapObj: maplibregl.Map, propertiesCount?: PopulationCountLegend[]) => {
     if (!propertiesCount || propertiesCount.length === 0) return;
     // TODO: Determine max height of properties extrude 3d layer
@@ -600,14 +631,68 @@ const addPropertiesExtrudeLayer = (mapObj: maplibregl.Map, propertiesCount?: Pop
     addLayerToMap('properties-extrude', mapObj, _propertiesExtrudeLayer, 'properties-label')
 }
 
-
+/**
+ * Add 3d layers to the map 
+ * @param mapObj 
+ * @param provinceCount 
+ * @param propertiesCount 
+ */
 export const showExtrudeLayer = (mapObj: maplibregl.Map, provinceCount?: PopulationCountLegend[], propertiesCount?: PopulationCountLegend[]) => {
     removeExtrudeLayer(mapObj)
     addProvinceExtrudeLayer(mapObj, provinceCount)
     addPropertiesExtrudeLayer(mapObj, propertiesCount)
 }
 
+/**
+ * Remove 3d layers from the map
+ * @param mapObj 
+ */
 export const removeExtrudeLayer = (mapObj: maplibregl.Map) => {
     removeLayerFromMap('province-extrude', mapObj)
     removeLayerFromMap('properties-extrude', mapObj)
+}
+
+
+/**
+ * Draw geojson layer for uploaded shapefile or polygon from drawing tools
+ * @param mapObj 
+ * @param geojsonData geojson object
+ */
+const drawGeojsonLayer = (mapObj: maplibregl.Map, geojsonData: any) => {
+    let _sourceName = `geojson-upload`
+    let _source = mapObj.getSource(_sourceName) as GeoJSONSource
+    if (!_source) {
+        mapObj.addSource(_sourceName, {
+            'type': 'geojson',
+            'data': geojsonData
+        })
+        let _layer = {
+            'id': 'geojson-upload-layer',
+            'type': 'line',
+            'source': _sourceName,
+            'layout': {'visibility': 'visible'},
+            "paint": {
+                "line-color": '#fff',
+                "line-width": 6
+            }
+        }
+        addLayerToMap('geojson-upload-layer', mapObj, _layer)
+    } else {
+        _source.setData(geojsonData)
+    }
+}
+
+/**
+ * Retrieve and draw geojson shapefile or polygon from drawing tools
+ * @param mapObj 
+ * @param session search boundary session 
+ */
+export const fetchAndDrawGeojsonLayerFromUpload = (mapObj: maplibregl.Map, session: string) => {
+    axios.get(`${BOUNDARY_FILE_GEOJSON_URL}${session}/geojson/`).then((response) => {
+        if (response.data && mapObj) {
+            drawGeojsonLayer(mapObj, response.data)
+        }
+    }).catch((error) => {
+        console.log('Failed to fetch geojson layer ', error)
+    })
 }

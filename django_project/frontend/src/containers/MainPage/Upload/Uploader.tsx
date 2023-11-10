@@ -242,6 +242,7 @@ export default function Uploader(props: UploaderInterface) {
                     let _bbox = response.data['bbox']
                     if (_bbox && _bbox.length === 4) {
                         let _bbox_str = _bbox.map(String)
+                        _bbox_str.push(session)
                         dispatch(triggerMapEvent({
                             'id': uuidv4(),
                             'name': MapEvents.BOUNDARY_FILES_UPLOADED,

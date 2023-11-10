@@ -4,6 +4,7 @@ import pandas as pd
 from activity.models import ActivityType
 from core.settings.utils import absolute_path
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files import File
 from django.test import TestCase
 from django.urls import reverse
 from frontend.models.upload import UploadSpeciesCSV
@@ -23,13 +24,20 @@ from species.api_views.upload_species import (
     UploadSpeciesStatus,
 )
 from species.models import Taxon
-from species.tasks.upload_species import upload_species_data
+from species.tasks.upload_species import (
+    upload_species_data,
+    try_delete_uploaded_file
+)
 from species.scripts.data_upload import (
     SpeciesCSVUpload,
     string_to_boolean,
     string_to_number
 )
 from species.scripts.upload_file_scripts import SHEET_TITLE
+
+
+def mocked_run_func(encoding):
+    pass
 
 
 class TestUploadSpeciesApiView(TestCase):
@@ -367,6 +375,61 @@ class TestUploadSpeciesApiView(TestCase):
                 errors.append(row['error_message'])
             self.assertTrue(
                 "Open/Close system 'Close' does not exist" in errors
+            )
+
+    def test_upload_species_future_year(self):
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test_future_year.csv')
+        data = open(csv_path, 'rb')
+        data = SimpleUploadedFile(
+            content=data.read(),
+            name=data.name,
+            content_type='multipart/form-data'
+        )
+
+        request = self.factory.post(
+            reverse('upload-species'), {
+                'file': data,
+                'token': self.token,
+                'property': self.property.id
+            }
+        )
+        request.user = self.user
+        view = SpeciesUploader.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 204)
+        upload_session = UploadSpeciesCSV.objects.get(token=self.token)
+        upload_session.progress = 'Processing'
+        upload_session.save()
+        file_upload = SpeciesCSVUpload()
+        file_upload.upload_session = upload_session
+        file_upload.start('utf-8-sig')
+
+        kwargs = {
+            'token': self.token
+        }
+        request = self.factory.get(
+            reverse('upload-species-status', kwargs=kwargs)
+        )
+        request.user = self.user
+        view = UploadSpeciesStatus.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('media' in response.data['error_file'])
+
+        self.assertTrue('error' in upload_session.error_file.path)
+        with open(upload_session.error_file.path, encoding='utf-8-sig') as csv_file:
+            error_file = csv.DictReader(csv_file)
+            headers = error_file.fieldnames
+            self.assertTrue('error_message' in headers)
+            errors = []
+            for row in error_file:
+                errors.append(row['error_message'])
+                print(errors)
+            self.assertTrue(
+                "'Year_of_estimate' with value 2080 exceeds current year."
+                in errors
             )
 
     def test_upload_species_status_not_processed(self):
@@ -781,5 +844,47 @@ class TestUploadSpeciesApiView(TestCase):
                 errors.append(row['error_message'])
             self.assertTrue(
                 "Area available to species must be greater than 0 "
-                "and less than property area size ({:.2f} ha).".format(
+                "and less than or equal to property area size ({:.2f} ha).".format(
                     self.property.property_size_ha) in errors)
+
+    def test_try_delete_uploaded_file(self):
+        upload_session = UploadSpeciesCSV.objects.create(
+            property=self.property,
+            uploader=self.user
+        )
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test.csv')
+        with open(csv_path, 'rb') as data:
+            upload_session.updated_file.save('test.csv', File(data))
+            upload_session.error_file.save('test_error.csv', File(data))
+        self.assertTrue(upload_session.updated_file)
+        self.assertTrue(upload_session.error_file)
+        try_delete_uploaded_file(upload_session.updated_file)
+        self.assertFalse(upload_session.updated_file)
+        with mock.patch('species.tasks.upload_species.FieldFile.delete',
+                        side_effect=Exception("ERROR")) as mocked_delete:
+            try_delete_uploaded_file(upload_session.error_file)
+            mocked_delete.assert_called_once()
+        self.assertTrue(upload_session.error_file)
+
+    def test_rerun_upload(self):
+        upload_session = UploadSpeciesCSV.objects.create(
+            property=self.property,
+            uploader=self.user
+        )
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test.csv')
+        with open(csv_path, 'rb') as data:
+            upload_session.success_file.save('test.csv', File(data))
+            upload_session.error_file.save('test_error.csv', File(data))
+        self.assertTrue(upload_session.success_file)
+        self.assertTrue(upload_session.error_file)
+        with mock.patch('species.tasks.upload_species.SpeciesCSVUpload.start',
+                        side_effect=mocked_run_func) as mocked_run:
+            upload_species_data(upload_session.id)
+            mocked_run.assert_called_once()
+        upload_session.refresh_from_db()
+        self.assertFalse(upload_session.success_file)
+        self.assertFalse(upload_session.error_file)
