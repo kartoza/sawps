@@ -95,6 +95,9 @@ nav:
                 - Manual:
                         - administrator/manual/index.md
                         - Django Administration: administrator/manual/django-admin.md
+                        - Django Tables: administrator/manual/django-table.md
+                        - Add Data in Django: administrator/manual/django-add-data.md
+                        - Edit Data in Django: administrator/manual/django-change-data.md
         - Developer:
                   - developer/index.md
                   - Guide:

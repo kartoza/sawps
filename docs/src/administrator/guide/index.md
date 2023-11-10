@@ -11,5 +11,5 @@ context_id: GsshKJGC8jhaDQNDs4c9Bg
 ---
 
 # Administrator Guide
-<!-- Narrative Instructions on how admin users will use the product/platform -->
-<!-- Replace all of the titles with relevant titles -->
+
+Welcome to the SAWPS administrator guide. In this section of the documentation, we aim to show administrators how to manage the platform effectively. Here is a brief overview of the content provided here:

@@ -16,3 +16,6 @@ context_id: Yv6pU2cCepRBepedk5FuyR
 Welcome to the SAWPS administrator manual. This section of the documentation describes every administrator page in the application and what the various components of that page do. Here is a brief overview of the content provided here:
 
 * **[Django Administration:](./django-admin.md)** this section explains the django administration of the site.
+* **[Django Tables:](./django-table.md)** this section explains the django tables on the Django administration the site.
+* **[Add Data in Django:](./django-add-data.md)** this section explains the addition of data on the Django administration site.
+* **[Edit Data in Django:](./django-change-data.md)** this section explains the editing of data on the Django administration the site.
