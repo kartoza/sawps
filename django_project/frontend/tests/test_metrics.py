@@ -500,7 +500,7 @@ class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
         Test total area versus area available filtered by property.
         """
         id = self.annual_populations[0].property_id
-        data = {'property':id}
+        data = {'property': id}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -521,4 +521,136 @@ class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
             response.data[0]['area']['owned_species'][0] \
                 ['annualpopulation__year'],
             int(year)
+        )
+
+
+class TestPropertyCountPerPopulationSizeCategory(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    property count per population size category.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("property-count-per-population-category-size")
+
+    def test_filter(self) -> None:
+        """
+        Test filtered total property count per population category.
+        """
+        year = self.annual_populations[1].year
+        data = {'year': year, 'species': self.annual_populations[1].taxon.scientific_name}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '98 - 100',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
+        )
+
+
+class TestPropertyCountPerPopulationDensityCategory(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    property count per population density category.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("property-count-per-population-density-category")
+
+    def test_filter(self) -> None:
+        """
+        Test filtered total property count per population density category.
+        """
+        year = self.annual_populations[1].year
+        data = {'year': year, 'species': self.annual_populations[1].taxon.scientific_name}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '0.5 - 0.5',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
+        )
+
+
+class TestPropertyCountPerAreaCategory(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    property count per area category.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("property-count-per-area-category")
+
+    def test_filter(self) -> None:
+        """
+        Test filtered total property count per area category.
+        """
+        year = self.annual_populations[1].year
+        data = {'year': year, 'species': self.annual_populations[1].taxon.scientific_name}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '198 - 200',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
+        )
+
+
+class TestPropertyCountPerAreaAvailableToSpeciesCategory(BaseTestCase):
+    """
+    Test case for the endpoint that retrieves
+    property count per area available to species category.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("property-count-per-area-available-to-species-category")
+
+    def test_filter(self) -> None:
+        """
+        Test filtered total property count per area  available to species category.
+        """
+        year = self.annual_populations[1].year
+        data = {'year': year, 'species': self.annual_populations[1].taxon.scientific_name}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '8.0 - 10.0',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
         )

@@ -486,6 +486,7 @@ class BasePropertyCountAPIView(APIView):
                 results.append(result)
         return results
 
+
 class PropertyCountPerPopulationSizeCategoryAPIView(BasePropertyCountAPIView):
     """
     API endpoint to property count per population size category
@@ -583,14 +584,10 @@ class PropertyCountPerPopulationDensityCategoryAPIView(BasePropertyCountAPIView)
         """
         results = []
         queryset = self.get_queryset()
-        # print(queryset.values('total', 'property__property_size_ha'))
         queryset = queryset.annotate(
             population_density=Cast(Cast(F('total'), FloatField()) / Cast(F('property__property_size_ha'), FloatField()), FloatField())
         )
-        # print(queryset.values('t', 's'))
-        print(queryset.values('total', 'property__property_size_ha', 'population_density'))
         data = queryset.values_list('population_density', flat=True).distinct()
-        print(data)
         if not data.exists():
             return Response(results)
 
