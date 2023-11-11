@@ -39,7 +39,9 @@ from frontend.api_views.metrics import (
     TotalAreaVSAvailableAreaAPIView,
     TotalCountPerPopulationEstimateAPIView,
     PropertyCountPerPopulationSizeCategoryAPIView,
-    PropertyCountPerAreaCategoryAPIView
+    PropertyCountPerAreaCategoryAPIView,
+    PropertyCountPerAreaAvailableToSpeciesCategoryAPIView,
+    PropertyCountPerPopulationDensityCategoryAPIView
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -370,6 +372,16 @@ urlpatterns = [
         'api/property-count-per-area-category/',
         PropertyCountPerAreaCategoryAPIView.as_view(),
         name='property-count-per-area-category'
+    ),
+    path(
+        'api/property-count-per-area-available-to-species-category/',
+        PropertyCountPerAreaAvailableToSpeciesCategoryAPIView.as_view(),
+        name='property-count-per-area-available-to-species-category'
+    ),
+    path(
+        'api/property-count-per-population-density-category/',
+        PropertyCountPerPopulationDensityCategoryAPIView.as_view(),
+        name='property-count-per-population-density-category'
     ),
     path(
         'add_totp_devices/',
