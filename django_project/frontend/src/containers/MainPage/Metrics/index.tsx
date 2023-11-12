@@ -432,12 +432,12 @@ const Metrics = () => {
                 ): (
                     // Render message to user
                     <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
-                        <Grid item>
+                        <Grid item className={'explore-message'}>
                             <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
                                 Ready to explore?
                             </Typography>
                         </Grid>
-                        <Grid>
+                        <Grid item className={'explore-message'}>
                             <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
                                 Choose a species to view the data as charts.
                             </Typography>

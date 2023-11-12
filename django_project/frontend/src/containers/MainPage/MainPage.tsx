@@ -124,22 +124,26 @@ function MainPage() {
   return (
     <div className="App">
       <div className="MainPage">
-        <Grid container flexDirection={'row'}>
+        <Grid container flexDirection={'row'} id={'main-container'}>
           <Grid item
-                xs={12} md={12} lg={2}
+                id={'left-sidebar-container'}
+                xs={12} md={12}
           >
             { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} additionalProps={{
               'selectedMainTabIdx': selectedTab
             }} />}
           </Grid>
           <Grid item flex={1}
-                xs={12} md={12} lg={10}
+                xs={12} md={12}
+                id={'right-sidebar-container'}
                 className="grayBg customWidth">
             <Grid container className="Content" flexDirection={'row'}>
               <Grid item
-                    xs={12} md={12} lg={12}
+                    xs={12} md={12}
+                    lg={12}
+                    sx={{height: '50px' }}
               >
-                <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                   {rightSideBarMode === RightSideBarMode.Upload || isUploadUrl ? null : (
                     <Tabs
                       value={selectedTab}
@@ -173,8 +177,11 @@ function MainPage() {
 
               </Grid>
               <Grid item
-                    xs={12} md={12} lg={12}
-                    className="TabPanels">
+                    xs={12} md={12}
+                    lg={12}
+                    id={'right-sidebar-tab'}
+                    className="TabPanels"
+              >
                 <TabPanel key={0} value={selectedTab} index={-1} indexList={[0, 4]} noPadding>
                   <Map isDataUpload={isUploadUrl || selectedTab === 4} />
                 </TabPanel>

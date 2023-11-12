@@ -39,6 +39,7 @@ body {
     }
     .TabHeaders {
         margin-bottom: 6px;
+        width: calc(100vw - 400px);
     }
 }
 .customWidth {
@@ -94,4 +95,46 @@ body {
 .TabHeaders {
     box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.3);
     z-index: 1;
+}
+
+#right-sidebar-tab {
+    position: absolute;
+    margin-top: 50px;
+    width: calc(100vw - 400px);
+}
+
+@media screen and (min-width: 1200px) {
+  #main-container {
+      flex-direction: column;
+
+      #left-sidebar-container {
+          width: 400px!important;
+      }
+
+      #right-sidebar-container {
+          width: calc(100vw - 440px);
+          margin-left: -40px;
+      }
+
+      #right-sidebar-tab {
+          height: 100%;
+      }
+  }
+
+    #dataContainer {
+        width: calc(100vw - 400px);
+    }
+
+}
+
+@media only screen and (max-width: 600px) {
+    #right-sidebar-tab {
+        //position: absolute;
+        margin-top: 100px;
+        width: 100%;
+    }
+
+    .MainPage .TabHeaders {
+        width: 100%;
+    }
 }
