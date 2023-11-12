@@ -4,6 +4,7 @@ import pandas as pd
 from activity.models import ActivityType
 from core.settings.utils import absolute_path
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files import File
 from django.test import TestCase
 from django.urls import reverse
 from frontend.models.upload import UploadSpeciesCSV
@@ -23,13 +24,20 @@ from species.api_views.upload_species import (
     UploadSpeciesStatus,
 )
 from species.models import Taxon
-from species.tasks.upload_species import upload_species_data
+from species.tasks.upload_species import (
+    upload_species_data,
+    try_delete_uploaded_file
+)
 from species.scripts.data_upload import (
     SpeciesCSVUpload,
     string_to_boolean,
     string_to_number
 )
 from species.scripts.upload_file_scripts import SHEET_TITLE
+
+
+def mocked_run_func(encoding):
+    pass
 
 
 class TestUploadSpeciesApiView(TestCase):
@@ -235,6 +243,9 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(Taxon.objects.all().count(), 1)
         self.assertEqual(AnnualPopulationPerActivity.objects.all().count(), 5)
         self.assertEqual(AnnualPopulation.objects.all().count(), 1)
+        population_data = AnnualPopulation.objects.all().first()
+        self.assertEqual(population_data.total, 190)
+        self.assertEqual(population_data.adult_total, 150)
         self.assertTrue(AnnualPopulationPerActivity.objects.filter(
             activity_type__name="Translocation (Offtake)"
         ).count(), 1)
@@ -838,3 +849,45 @@ class TestUploadSpeciesApiView(TestCase):
                 "Area available to species must be greater than 0 "
                 "and less than or equal to property area size ({:.2f} ha).".format(
                     self.property.property_size_ha) in errors)
+
+    def test_try_delete_uploaded_file(self):
+        upload_session = UploadSpeciesCSV.objects.create(
+            property=self.property,
+            uploader=self.user
+        )
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test.csv')
+        with open(csv_path, 'rb') as data:
+            upload_session.updated_file.save('test.csv', File(data))
+            upload_session.error_file.save('test_error.csv', File(data))
+        self.assertTrue(upload_session.updated_file)
+        self.assertTrue(upload_session.error_file)
+        try_delete_uploaded_file(upload_session.updated_file)
+        self.assertFalse(upload_session.updated_file)
+        with mock.patch('species.tasks.upload_species.FieldFile.delete',
+                        side_effect=Exception("ERROR")) as mocked_delete:
+            try_delete_uploaded_file(upload_session.error_file)
+            mocked_delete.assert_called_once()
+        self.assertTrue(upload_session.error_file)
+
+    def test_rerun_upload(self):
+        upload_session = UploadSpeciesCSV.objects.create(
+            property=self.property,
+            uploader=self.user
+        )
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test.csv')
+        with open(csv_path, 'rb') as data:
+            upload_session.success_file.save('test.csv', File(data))
+            upload_session.error_file.save('test_error.csv', File(data))
+        self.assertTrue(upload_session.success_file)
+        self.assertTrue(upload_session.error_file)
+        with mock.patch('species.tasks.upload_species.SpeciesCSVUpload.start',
+                        side_effect=mocked_run_func) as mocked_run:
+            upload_species_data(upload_session.id)
+            mocked_run.assert_called_once()
+        upload_session.refresh_from_db()
+        self.assertFalse(upload_session.success_file)
+        self.assertFalse(upload_session.error_file)

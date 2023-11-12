@@ -64,6 +64,7 @@ function Filter(props: any) {
     const [selectedInfo, setSelectedInfo] = useState<string[]>(['Species report']);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
+    const startYearDisabled = ['map', 'charts'].includes(tab);
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
@@ -189,8 +190,8 @@ function Filter(props: any) {
 
     const handleChange = (event: any, newValue: number | number[]) => {
         if (Array.isArray(newValue)) {
-            setLocalStartYear((newValue[0]))
-            dispatch(setStartYear(newValue[0]));
+            setLocalStartYear((startYearDisabled? localStartYear : newValue[0]))
+            dispatch(setStartYear(startYearDisabled? localStartYear : newValue[0]));
             setLocalEndYear((newValue[1]))
             dispatch(setEndYear(newValue[1]));
         }
@@ -524,7 +525,8 @@ function Filter(props: any) {
                   </Tooltip>
                 }
 
-                <Box>
+                {tab != 'trends' &&
+                    <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Clock.svg" alt='watch image'/>
                           <Typography color='#75B37A' fontSize='medium'>Year</Typography>
@@ -550,6 +552,7 @@ function Filter(props: any) {
                                     type="number" size='small' value={localStartYear}
                                     onChange={(e: any) => handleStartYearChange(e.target.value)}
                                     className={isStartYearValid ? '': 'yearFilter-red'}
+                                    disabled={startYearDisabled}
                                   />
                             </Tooltip>
                             <Typography className='formtext'>From</Typography>
@@ -568,6 +571,7 @@ function Filter(props: any) {
                           </Box>
                       </Box>
                 </Box>
+                }
 
                 {tab != 'trends' &&
                   <Box>
