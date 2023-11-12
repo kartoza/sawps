@@ -1,18 +1,18 @@
 ﻿"""API Views related to metrics.
 """
 import datetime
-import jenkspy
 from typing import List
 
-from django.utils import timezone
-from django.db.models.query import QuerySet, F
+import jenkspy
+from django.db.models import Count, Value
 from django.db.models import FloatField
 from django.db.models.functions import Cast
+from django.db.models.query import QuerySet, F
 from django.http import HttpRequest
+from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Count, Value
 
 from frontend.filters.metrics import (
     ActivityBaseMetricsFilter,
@@ -20,6 +20,7 @@ from frontend.filters.metrics import (
     PropertyFilter,
 )
 from frontend.serializers.metrics import (
+    AreaAvailablePerSpeciesSerializer,
     ActivityMatrixSerializer,
     SpeciesPopuationCountPerYearSerializer,
     SpeciesPopulationDensityPerPropertySerializer,
@@ -28,7 +29,6 @@ from frontend.serializers.metrics import (
     TotalAreaVSAvailableAreaSerializer,
     TotalCountPerPopulationEstimateSerializer
 )
-from frontend.serializers.metrics import AreaAvailablePerSpeciesSerializer
 from frontend.utils.data_table import (
     get_queryset, get_report_filter, SPECIES_REPORT
 )
@@ -447,14 +447,19 @@ class BasePropertyCountAPIView(APIView):
 
         return lower_bound, upper_bound
 
-    def get_results(self, data, queryset, property_type_name_field, common_name, query_field):
+    def get_results(self, data: set, queryset: QuerySet,
+                    property_type_name_field: str,
+                    common_name: str, query_field: str):
         categories = jenkspy.jenks_breaks(
             data,
             n_classes=data.count() if data.count() < 6 else 6
         )
         categories = [category for category in categories]
         property_types = PropertyType.objects.values_list('name', flat=True)
-        base_dict = {property_type.lower().replace(' ', '_'): 0 for property_type in property_types}
+        base_dict = {
+            property_type.lower().replace(' ', '_'): 0
+            for property_type in property_types
+        }
         base_dict['common_name_varbatim'] = common_name
 
         results = []
@@ -481,7 +486,9 @@ class BasePropertyCountAPIView(APIView):
                 result.update(base_dict)
                 for count in counts:
                     result[
-                        count[property_type_name_field].lower().replace(' ', '_')
+                        count[
+                            property_type_name_field
+                        ].lower().replace(' ', '_')
                     ] = count['count']
                 results.append(result)
         return results
@@ -494,7 +501,8 @@ class PropertyCountPerPopulationSizeCategoryAPIView(BasePropertyCountAPIView):
 
     def get(self, request, *args, **kwargs) -> Response:
         """
-        Handle GET request to retrieve property count per population size category.
+        Handle GET request to retrieve property count
+        per population size category.
         """
         results = []
         queryset = self.get_queryset()
@@ -528,7 +536,11 @@ class PropertyCountPerAreaCategoryAPIView(BasePropertyCountAPIView):
         annual_populations = self.get_queryset()
         if not annual_populations.exists():
             return Response(results)
-        queryset = Property.objects.filter(id__in=annual_populations.values_list('property_id', flat=True))
+        queryset = Property.objects.filter(
+            id__in=annual_populations.values_list(
+                'property_id', flat=True
+            )
+        )
 
         data = queryset.values_list('property_size_ha', flat=True).distinct()
 
@@ -544,7 +556,7 @@ class PropertyCountPerAreaCategoryAPIView(BasePropertyCountAPIView):
         return Response(results)
 
 
-class PropertyCountPerAreaAvailableToSpeciesCategoryAPIView(BasePropertyCountAPIView):
+class PropertyPerAreaAvailableCategoryAPIView(BasePropertyCountAPIView):
     """
     API endpoint to property count per area available to species category
     """
@@ -552,11 +564,15 @@ class PropertyCountPerAreaAvailableToSpeciesCategoryAPIView(BasePropertyCountAPI
 
     def get(self, request, *args, **kwargs) -> Response:
         """
-        Handle GET request to retrieve property count per area available to species category.
+        Handle GET request to retrieve property count per
+        area available to species category.
         """
         results = []
         queryset = self.get_queryset()
-        data = queryset.values_list('area_available_to_species', flat=True).distinct()
+        data = queryset.values_list(
+            'area_available_to_species',
+            flat=True
+        ).distinct()
         if not data.exists():
             return Response(results)
 
@@ -572,7 +588,7 @@ class PropertyCountPerAreaAvailableToSpeciesCategoryAPIView(BasePropertyCountAPI
         return Response(results)
 
 
-class PropertyCountPerPopulationDensityCategoryAPIView(BasePropertyCountAPIView):
+class PropertyPerPopDensityCategoryAPIView(BasePropertyCountAPIView):
     """
     API endpoint to property count per population density category
     """
@@ -580,12 +596,17 @@ class PropertyCountPerPopulationDensityCategoryAPIView(BasePropertyCountAPIView)
 
     def get(self, request, *args, **kwargs) -> Response:
         """
-        Handle GET request to retrieve property count per population density category.
+        Handle GET request to retrieve property count
+        per population density category.
         """
         results = []
         queryset = self.get_queryset()
         queryset = queryset.annotate(
-            population_density=Cast(Cast(F('total'), FloatField()) / Cast(F('property__property_size_ha'), FloatField()), FloatField())
+            population_density=Cast(
+                Cast(F('total'), FloatField()) /
+                Cast(F('property__property_size_ha'), FloatField()),
+                FloatField()
+            )
         )
         data = queryset.values_list('population_density', flat=True).distinct()
         if not data.exists():

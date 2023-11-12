@@ -21,6 +21,7 @@ import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
 import {
     useGetActivityAsObjQuery,
     useGetUserInfoQuery,
+    useGetPropertyTypeQuery
 } from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
@@ -63,6 +64,12 @@ const Metrics = () => {
         isLoading: isActivityLoading,
         isSuccess: isActivitySuccess
     } = useGetActivityAsObjQuery()
+    
+    const {
+        data: propertyTypes,
+        isLoading: isPropertyTypesLoading,
+        isSuccess: isPropertyTypesSuccess
+    } = useGetPropertyTypeQuery()
 
     let activityParams = activityId;
     if (activityList) {
@@ -239,6 +246,7 @@ const Metrics = () => {
                                 <Grid item xs={12} md={12} lg={6}>
                                     <PropertyCountPerCategoryChart
                                         selectedSpecies={selectedSpecies}
+                                        propertyTypeList={propertyTypes}
                                         propertyId={propertyId}
                                         year={endYear}
                                         loading={loading}
@@ -257,6 +265,7 @@ const Metrics = () => {
                                 <Grid item xs={12} md={12} lg={6}>
                                     <PropertyCountPerCategoryChart
                                         selectedSpecies={selectedSpecies}
+                                        propertyTypeList={propertyTypes}
                                         propertyId={propertyId}
                                         year={endYear}
                                         loading={loading}
@@ -275,6 +284,7 @@ const Metrics = () => {
                                 <Grid item xs={12} md={12} lg={6}>
                                     <PropertyCountPerCategoryChart
                                         selectedSpecies={selectedSpecies}
+                                        propertyTypeList={propertyTypes}
                                         propertyId={propertyId}
                                         year={endYear}
                                         loading={loading}
@@ -292,6 +302,7 @@ const Metrics = () => {
                                 <Grid item xs={12} md={12} lg={6}>
                                     <PropertyCountPerCategoryChart
                                         selectedSpecies={selectedSpecies}
+                                        propertyTypeList={propertyTypes}
                                         propertyId={propertyId}
                                         year={endYear}
                                         loading={loading}

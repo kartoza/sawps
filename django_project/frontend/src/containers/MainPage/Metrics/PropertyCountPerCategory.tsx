@@ -3,18 +3,12 @@ import "./index.scss";
 import Loading from '../../../components/Loading';
 import BarChart from "../../../components/BarChart";
 import axios from "axios";
+import {
+    PropertyType
+} from "../../../services/api";
 
 type AvailableColors = {
   [key: string]: string;
-};
-
-const availableColors: AvailableColors = {
-  'Community': 'rgba(112, 178, 118, 1)', // Solid color for male
-  'Provincial': 'rgba(112, 178, 118, 0.5)', // 50% transparency for female
-  'National': 'rgba(250, 167, 85, 1)', // Solid color for male
-  'State': 'rgba(250, 167, 85, 0.5)', // 50% transparency for female
-  'Private': 'rgba(157, 133, 190, 1)', // Solid color for male
-  'State and Private': 'rgba(157, 133, 190, 0.5)', // 50% transparency for female
 };
 
 
@@ -23,6 +17,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
     propertyId,
     year,
     selectedSpecies,
+    propertyTypeList,
     chartId,
     chartTitle,
     xLabel,
@@ -30,6 +25,16 @@ const PropertyCountPerCategoryChart = (props: any) => {
   } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [propertyData, setPropertyData] = useState([]);
+
+  const [availableColors, setAvailableColors] = useState<AvailableColors>({});
+  // Define age groups and their corresponding data properties
+  const [propertyTypes, setPropertyTypes] = useState([])
+  const propertyTypesObj = propertyTypes.map(propertyType => {
+    return {
+      label: propertyType,
+      dataProperty: propertyType.toLowerCase().replace(' ', '-')
+    }
+  })
 
   // Extract the species name
   const species = propertyData.length > 0 ? propertyData[0].common_name_varbatim : '';
@@ -61,21 +66,20 @@ const PropertyCountPerCategoryChart = (props: any) => {
     fetchPopulationEstimateCategoryCount();
   }, [propertyId, year, selectedSpecies]);
 
-  // Define age groups and their corresponding data properties
-  let propertyTypes = [
-    'Community',
-    'Provincial',
-    'National',
-    'State',
-    'Private',
-    'State and private'
-  ]
-  const propertyTypesObj = propertyTypes.map(propertyType => {
-    return {
-      label: propertyType, 
-      dataProperty: propertyType.toLowerCase().replace(' ', '-')
+  useEffect(() => {
+    if (propertyTypeList) {
+      let avColors = {}
+      let propertyTypeNames = []
+      for (const propertyType of propertyTypeList) {
+        const propertyTypeName: string = propertyType.name
+        // @ts-ignore
+        avColors[propertyTypeName] = propertyType.colour
+        propertyTypeNames.push(propertyTypeName)
+      }
+      setAvailableColors(avColors)
+      setPropertyTypes(propertyTypeNames)
     }
-  })
+  }, [propertyTypeList]);
 
   // Create an array to hold datasets
   const datasets = [];

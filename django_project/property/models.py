@@ -6,6 +6,10 @@ from django.dispatch import receiver
 
 class PropertyType(models.Model):
     name = models.CharField(max_length=250, unique=True)
+    colour = models.CharField(
+        max_length=20,
+        default='#000000'
+    )
 
     def __str__(self):
         return self.name

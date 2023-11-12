@@ -40,8 +40,8 @@ from frontend.api_views.metrics import (
     TotalCountPerPopulationEstimateAPIView,
     PropertyCountPerPopulationSizeCategoryAPIView,
     PropertyCountPerAreaCategoryAPIView,
-    PropertyCountPerAreaAvailableToSpeciesCategoryAPIView,
-    PropertyCountPerPopulationDensityCategoryAPIView
+    PropertyPerAreaAvailableCategoryAPIView,
+    PropertyPerPopDensityCategoryAPIView
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -57,7 +57,8 @@ from frontend.api_views.property import (
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
     PropertySearch,
-    CheckPropertyNameIsAvailable
+    CheckPropertyNameIsAvailable,
+    ListPropertyTypeAPIView
 )
 from frontend.api_views.spatial_filter import (
     SpatialFilterList
@@ -190,6 +191,11 @@ urlpatterns = [
         r'^api/property/search/?$',
         PropertySearch.as_view(),
         name='property-search'
+    ),
+    re_path(
+        r'^api/property/types/?$',
+        ListPropertyTypeAPIView.as_view(),
+        name='property-types'
     ),
     re_path(
         r'^api/property/boundaries/update/?$',
@@ -375,12 +381,12 @@ urlpatterns = [
     ),
     path(
         'api/property-count-per-area-available-to-species-category/',
-        PropertyCountPerAreaAvailableToSpeciesCategoryAPIView.as_view(),
+        PropertyPerAreaAvailableCategoryAPIView.as_view(),
         name='property-count-per-area-available-to-species-category'
     ),
     path(
         'api/property-count-per-population-density-category/',
-        PropertyCountPerPopulationDensityCategoryAPIView.as_view(),
+        PropertyPerPopDensityCategoryAPIView.as_view(),
         name='property-count-per-population-density-category'
     ),
     path(

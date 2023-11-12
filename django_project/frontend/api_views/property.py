@@ -31,7 +31,8 @@ from frontend.serializers.property import (
     PropertyDetailSerializer,
     PropertySerializer,
     PropertyTypeSerializer,
-    PropertySearchSerializer
+    PropertySearchSerializer,
+    PropertyTypeColourSerializer
 )
 from frontend.serializers.stakeholder import OrganisationSerializer
 from frontend.static_mapping import DATA_CONTRIBUTORS, SUPER_USER
@@ -418,3 +419,16 @@ class PropertySearch(APIView):
             status=200,
             data=results
         )
+
+
+class ListPropertyTypeAPIView(APIView):
+    """
+    API to list Property Type
+    """
+
+    def get(self, request):
+        properties = PropertyType.objects.order_by('name')
+        properties = PropertyTypeColourSerializer(
+            properties, many=True
+        ).data
+        return Response(properties)

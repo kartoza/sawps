@@ -21,12 +21,13 @@ from frontend.api_views.property import (
     PropertyDetail,
     PropertySearch,
     UpdatePropertyInformation,
-    CheckPropertyNameIsAvailable
+    CheckPropertyNameIsAvailable,
+    ListPropertyTypeAPIView
 )
 from frontend.models.parcels import Erf, Holding
 from frontend.tests.model_factories import UserF
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
-from property.factories import PropertyFactory, ProvinceFactory
+from property.factories import PropertyFactory, ProvinceFactory, PropertyTypeFactory
 from property.models import Parcel, Property, PropertyType
 from population_data.models import OpenCloseSystem
 from stakeholder.factories import (
@@ -570,3 +571,33 @@ class TestPropertyAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data['available'])
+
+from rest_framework.test import APIClient, APIRequestFactory
+class TestPropertyTypeList(TestCase):
+    def test_check_property_name(self):
+        user_1 = UserF.create(username='test_1')
+        prop_type_1 = PropertyTypeFactory.create()
+        prop_type_2 = PropertyTypeFactory.create()
+        request = APIRequestFactory().get(
+            reverse('property-types'),
+            format='json'
+        )
+        request.user = user_1
+        view = ListPropertyTypeAPIView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.data,
+            [
+                {
+                    'id': prop_type_1.id,
+                    'name': prop_type_1.name,
+                    'colour': prop_type_1.colour,
+                },
+                {
+                    'id': prop_type_2.id,
+                    'name': prop_type_2.name,
+                    'colour': prop_type_2.colour,
+                }
+            ]
+        )

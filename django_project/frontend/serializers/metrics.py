@@ -1,21 +1,19 @@
 import datetime
-import jenkspy
-from django.utils import timezone
-from django.db.models import Count
-from django.db.models import Value
 from typing import List
-from frontend.static_mapping import YEAR_DATA_LIMIT
+
 from django.db.models import (
     F,
     Q,
     Sum
 )
+from rest_framework import serializers
+
+from frontend.static_mapping import YEAR_DATA_LIMIT
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
 from property.models import Property
-from rest_framework import serializers
 from species.models import Taxon
 
 
