@@ -233,7 +233,11 @@ class CustomPasswordResetView(View):
                 {'show_email_message': True}
             )
         except User.DoesNotExist:
-            return
+            return render(
+                request,
+                'password_reset.html',
+                {'error_message': 'The email address is not registered.'}
+            )
 
     def dispatch(self, request, *args, **kwargs):
         if request.POST.get('action') == 'sendemail':
