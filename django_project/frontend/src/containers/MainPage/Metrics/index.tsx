@@ -41,15 +41,12 @@ const Metrics = () => {
     const [loading, setLoading] = useState(false)
     const [activityData, setActivityData] = useState([])
     const [activityType, setActivityType] = useState({})
-    const [totalCoutData, setTotalCountData] = useState([])
     const [ageGroupData, setAgeGroupData] = useState([])
     const [open, setOpen] = useState(false)
     const labels = Object.keys(activityType);
-    const totalCountLabel = labels.filter(item => item !== "Base population");
     const [areaData, setAreaData] = useState([])
 
     const [densityData, setDensityData] = useState([])
-    const [speciesData, setSpeciesData] = useState([])
     const contentRef = useRef(null);
 
     // Declare errorMessage as a state variable
@@ -90,21 +87,6 @@ const Metrics = () => {
         })
     }
 
-    // const fetchActivityTotalCount = () => {
-    //     setLoading(true)
-    //     axios.get(
-    //       `${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`
-    //     ).then((response) => {
-    //         setLoading(false)
-    //         if (response.data) {
-    //             setTotalCountData(response.data)
-    //         }
-    //     }).catch((error) => {
-    //         setLoading(false)
-    //         console.log(error)
-    //     })
-    // }
-
     const fetchPopulationAgeGroupData = () => {
         setLoading(true)
         axios.get(`${FETCH_POPULATION_AGE_GROUP}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
@@ -137,7 +119,6 @@ const Metrics = () => {
         if(selectedSpecies){
             setShowCharts(true)
             fetchActivityPercentageData();
-            // fetchActivityTotalCount();
             fetchPopulationAgeGroupData();
             fetchAreaAvailableLineData();
         }else {
@@ -235,134 +216,134 @@ const Metrics = () => {
                         <Topper></Topper>
                         <Grid container spacing={1} ref={contentRef}>
 
-                            {/*{*/}
-                            {/*constants.canViewPopulationCategory &&*/}
-                            {/*selectedSpecies && (*/}
-                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
-                            {/*        <PopulationCategoryChart*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                            {
+                            constants.canViewPopulationCategory &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <PopulationCategoryChart
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                    />
+                                </Grid>
+                            )}
 
-                            {/* {*/}
-                            {/* constants.canViewPropertyType && (*/}
-                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
-                            {/*        <PropertyTypeBarChart*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            setLoading={setLoading}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
-
-
-                            {/*{*/}
-                            {/*constants.canViewDensityBar &&*/}
-                            {/*selectedSpecies && (*/}
-                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
-                            {/*        <DensityBarChart*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            setLoading={setLoading}*/}
-                            {/*            densityData={densityData}*/}
-                            {/*            setDensityData={setDensityData}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                             {
+                             constants.canViewPropertyType && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <PropertyTypeBarChart
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                    />
+                                </Grid>
+                            )}
 
 
-                            {/*{*/}
-                            {/*constants.canViewPropertyAvailable &&*/}
-                            {/*selectedSpecies && (*/}
-                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
-                            {/*        <PropertyAvailableBarChart*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            activity={activityParams}*/}
-                            {/*            setLoading={setLoading}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                            {
+                            constants.canViewDensityBar &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <DensityBarChart
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        densityData={densityData}
+                                        setDensityData={setDensityData}
+                                    />
+                                </Grid>
+                            )}
 
 
-                            {/*{*/}
-                            {/*userInfoData?.user_permissions.includes('Can view age group') &&*/}
-                            {/*ageGroupData.map((data) => (*/}
-                            {/*    <Grid item key={data.id} xs={12} md={12} lg={6}>*/}
-                            {/*        <AgeGroupBarChart*/}
-                            {/*            loading={loading}*/}
-                            {/*            ageGroupData={data?.age_group}*/}
-                            {/*            icon={data?.graph_icon}*/}
-                            {/*            colour={data?.colour}*/}
-                            {/*            name={data?.common_name_varbatim}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*))}*/}
+                            {
+                            constants.canViewPropertyAvailable &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <PropertyAvailableBarChart
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        activity={activityParams}
+                                        setLoading={setLoading}
+                                    />
+                                </Grid>
+                            )}
 
 
-                            {/*{*/}
-                            {/*constants.canViewAreaAvailable && areaData.map((data, index) => (*/}
-                            {/*    <Grid item key={index} xs={12} md={12} lg={6}>*/}
-                            {/*        {data?.area?.owned_species ? (*/}
-                            {/*            <AreaAvailableLineChart*/}
-                            {/*                selectedSpecies={selectedSpecies}*/}
-                            {/*                propertyId={propertyId}*/}
-                            {/*                startYear={startYear}*/}
-                            {/*                endYear={endYear}*/}
-                            {/*                loading={loading}*/}
-                            {/*                areaData={data?.area?.owned_species}*/}
-                            {/*                species_name={data?.common_name_varbatim}*/}
-                            {/*            />*/}
-                            {/*        ) : null}*/}
-                            {/*    </Grid>*/}
-                            {/*))}*/}
+                            {
+                            userInfoData?.user_permissions.includes('Can view age group') &&
+                            ageGroupData.map((data) => (
+                                <Grid item key={data.id} xs={12} md={12} lg={6}>
+                                    <AgeGroupBarChart
+                                        loading={loading}
+                                        ageGroupData={data?.age_group}
+                                        icon={data?.graph_icon}
+                                        colour={data?.colour}
+                                        name={data?.common_name_varbatim}
+                                    />
+                                </Grid>
+                            ))}
 
 
-                            {/*{*/}
-                            {/*constants.canViewProvinceSpeciesCount &&*/}
-                            {/*selectedSpecies && (*/}
-                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
-                            {/*        <SpeciesCountPerProvinceChart*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            setLoading={setLoading}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                            {
+                            constants.canViewAreaAvailable && areaData.map((data, index) => (
+                                <Grid item key={index} xs={12} md={12} lg={6}>
+                                    {data?.area?.owned_species ? (
+                                        <AreaAvailableLineChart
+                                            selectedSpecies={selectedSpecies}
+                                            propertyId={propertyId}
+                                            startYear={startYear}
+                                            endYear={endYear}
+                                            loading={loading}
+                                            areaData={data?.area?.owned_species}
+                                            species_name={data?.common_name_varbatim}
+                                        />
+                                    ) : null}
+                                </Grid>
+                            ))}
 
 
-                            {/*{*/}
-                            {/*userInfoData?.user_permissions.includes('Can view province species count as percentage') &&*/}
-                            {/*selectedSpecies &&*/}
-                            {/*(*/}
-                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
-                            {/*        <SpeciesCountAsPercentage*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            setLoading={setLoading}*/}
-                            {/*            activityData={activityData}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                            {
+                            constants.canViewProvinceSpeciesCount &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <SpeciesCountPerProvinceChart
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                    />
+                                </Grid>
+                            )}
+
+
+                            {
+                            userInfoData?.user_permissions.includes('Can view province species count as percentage') &&
+                            selectedSpecies &&
+                            (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <SpeciesCountAsPercentage
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        activityData={activityData}
+                                    />
+                                </Grid>
+                            )}
 
 
                             {
@@ -380,36 +361,36 @@ const Metrics = () => {
                             )}
 
 
-                            {/*{*/}
-                            {/*constants.canViewPopulationEstimate &&*/}
-                            {/*selectedSpecies && (*/}
-                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
-                            {/*        <PopulationEstimateCategoryCount*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            activityData={activityData}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*    )}*/}
+                            {
+                            constants.canViewPopulationEstimate &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <PopulationEstimateCategoryCount
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        activityData={activityData}
+                                    />
+                                </Grid>
+                                )}
 
 
-                            {/*{*/}
-                            {/*constants.canViewPopulationEstimateAsPercentage &&*/}
-                            {/*selectedSpecies && (*/}
-                            {/*    <Grid item xs={12} md={12} lg={6}>*/}
-                            {/*        <PopulationEstimateAsPercentage*/}
-                            {/*            selectedSpecies={selectedSpecies}*/}
-                            {/*            propertyId={propertyId}*/}
-                            {/*            startYear={startYear}*/}
-                            {/*            endYear={endYear}*/}
-                            {/*            loading={loading}*/}
-                            {/*            setLoading={setLoading}*/}
-                            {/*            activityData={activityData}*/}
-                            {/*        />*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
+                            {
+                            constants.canViewPopulationEstimateAsPercentage &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <PopulationEstimateAsPercentage
+                                        selectedSpecies={selectedSpecies}
+                                        propertyId={propertyId}
+                                        startYear={startYear}
+                                        endYear={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        activityData={activityData}
+                                    />
+                                </Grid>
+                            )}
 
                     </Grid>
                         </>

@@ -12,7 +12,8 @@ interface BarChartInterface {
     xLabel?: string,
     yLabel?: string,
     xStacked?: boolean,
-    yStacked?: boolean
+    yStacked?: boolean,
+    options?: any
 }
 
 
@@ -23,9 +24,13 @@ export default function BarChart({chartData,
                                  xLabel = 'Default X Label',
                                  yLabel = 'Default Y Label',
                                  xStacked = true,
-                                 yStacked = true}: BarChartInterface) {
+                                 yStacked = true,
+                                 options = {}}: BarChartInterface) {
 
-    const options = {
+    const scaleY = options.scales?.y? options.scales.y : {};
+    const datalables = options.plugins?.datalabels? options.plugins.datalabels : {};
+
+    const newOptions = {
         indexAxis: indexAxis as any,
         responsive: true,
         maintainAspectRatio: false,
@@ -58,6 +63,7 @@ export default function BarChart({chartData,
                 ticks: {
                     color: "black",
                 },
+                ...scaleY
             },
         },
         plugins: {
@@ -66,6 +72,7 @@ export default function BarChart({chartData,
             },
             datalabels: {
                 display: false,
+                ...datalables
             },
             legend: {
                 display: true,
@@ -78,10 +85,9 @@ export default function BarChart({chartData,
                         size: 10,
                     }
                 },
-            },
+            }
         },
     } as const;
-
 
     return (
         <ChartContainer title={chartTitle}>
@@ -89,7 +95,7 @@ export default function BarChart({chartData,
                 <Bar
                     key={chartId}
                     data={chartData}
-                    options={options}
+                    options={newOptions}
                     className={'bar-chart'}
                 />
             </div>

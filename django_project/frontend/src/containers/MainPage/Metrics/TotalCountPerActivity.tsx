@@ -19,7 +19,7 @@ const TotalCountPerActivity = (props: any) => {
     activityTypeList
   } = props;
   const [loading, setLoading] = useState<boolean>(false);
-  const [allData, setAllData] = useState([]);
+  const [totalPopulation, setTotalPopulation] = useState(0);
   const [activityData, setActivityData] = useState([]);
 
   const [availableColors, setAvailableColors] = useState<AvailableColors>({});
@@ -32,9 +32,6 @@ const TotalCountPerActivity = (props: any) => {
     }
   })
 
-  // Define the labels (category) dynamically from propertyData and sort them from highest to lowest
-  const labels = activityData.map((data: any) => data.category).sort();
-
   const fetchActivityTotalCount = () => {
     setLoading(true);
     axios
@@ -44,10 +41,10 @@ const TotalCountPerActivity = (props: any) => {
       .then((response) => {
         setLoading(false);
         if (response.data) {
-          setAllData(response.data);
+          setTotalPopulation(response.data.length > 0 ? response.data[0].total : 0);
           setActivityData(response.data.length > 0 ? response.data[0].activities : []);
         } else {
-          setAllData([])
+          setTotalPopulation(0)
           setActivityData([])
         }
       })
@@ -62,7 +59,6 @@ const TotalCountPerActivity = (props: any) => {
   }, [propertyId, startYear, endYear, selectedSpecies]);
 
   useEffect(() => {
-    console.debug('activityTypeList', activityTypeList);
     if (activityTypeList) {
       let avColors = {}
       let activityTypeNames = []
@@ -80,39 +76,67 @@ const TotalCountPerActivity = (props: any) => {
   // Create an array to hold datasets
   const datasets = [];
 
-  // Loop through age groups
   for (const activityType of activityTypesObj) {
-    // Map the data for the current age group
-    const data = activityData.filter((dataItem: any) => dataItem.activity_type === activityType.label)
+    const count = activityData.filter((dataItem: any) => dataItem.activity_type === activityType.label)
       .map((dataItem: any) => dataItem.total);
 
-    if (data.every((d: number) => d === 0)) continue;
-    //
-    // // Rearrange the data to match the sorted labels
-    // const sortedData = labels.map((year: any) => {
-    //   const index = activityData.findIndex((item: { category: any }) => item.category === year);
-    //   return data[index];
-    // });
+    if (count.every(d => d === 0)) continue;
+
+    const percentage = activityData.filter((dataItem: any) => dataItem.activity_type === activityType.label)
+      .map((dataItem: any) => parseFloat(((dataItem.total / totalPopulation) * 100).toFixed(2)));
 
     // Create the dataset object
     const dataset = {
       label: activityType.label,
-      data: data,
-      backgroundColor: availableColors[activityType.label],
-      // stack: `Stack ${activityTypes.indexOf(activityType.label)}`,
+      data: percentage,
+      counts: count,
+      backgroundColor: availableColors[activityType.label]
     };
 
     datasets.push(dataset);
   }
 
-  let data = null;
+  const data = {
+    labels: [''],
+    datasets: datasets,
+  };
 
-  if (labels.length > 0 && datasets.length > 0) {
-    data = {
-      labels: labels,
-      datasets: datasets,
-    };
-  } else return null;
+  const options = {
+        scales: {
+            y: {
+              grace: '5%',
+              display: true,
+              stacked: false,
+              title: {
+                  display: true,
+                  text: 'Percentage',
+                  font: {
+                      size: 14,
+                  },
+              },
+              grid: {
+                  display: false,
+              },
+              ticks: {
+                  color: "black",
+              },
+            }
+        },
+        plugins: {
+            datalabels: {
+                display: true,
+                color: '#000',
+                anchor: 'end',
+                align: 'end',
+                font: {
+                    size: 12,
+                },
+                formatter: function(value: any, context: any) {
+                    return `n=${context.dataset.counts ? context.dataset.counts[context.dataIndex] : null}`;
+                }
+            }
+        },
+    }
 
   return (
     <>
@@ -124,7 +148,9 @@ const TotalCountPerActivity = (props: any) => {
             yLabel={'Percentage'}
             xLabel={'Activities'}
             indexAxis={'x'}
-            // xStacked={false}
+            xStacked={false}
+            yStacked={false}
+            options={options}
         />
       ) : (
         <Loading containerStyle={{minHeight: 160}}/>
