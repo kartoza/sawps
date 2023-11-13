@@ -1007,8 +1007,7 @@ class TestUploadSpeciesApiView(TestCase):
         self.assertEqual(response.data['status'], 'Finished')
         self.assertEqual(AnnualPopulation.objects.count(), 3)
         self.assertEqual(upload_session.success_notes,
-                         "2 rows already exist and have been overwritten "
-                         "in the database.")
+                         "2 rows already exist and have been overwritten.")
         annual_2010.refresh_from_db()
         annual_2011.refresh_from_db()
         annual_2012.refresh_from_db()

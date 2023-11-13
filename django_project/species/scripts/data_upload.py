@@ -214,13 +214,13 @@ class SpeciesCSVUpload(object):
 
         if self.existed_list > 0 and self.created_list == 0:
             success_message = "{} rows already exist and have been " \
-                              "overwritten in the database." \
+                              "overwritten." \
                               "".format(self.existed_list)
 
         if self.existed_list > 0 and self.created_list > 0:
             success_message = "{} rows already exist and have been " \
-                              "overwritten in the database. {} " \
-                              "row uploaded successfully." \
+                              "overwritten. {} " \
+                              "rows uploaded successfully." \
                               "".format(self.existed_list, self.created_list)
 
         if success_message:
