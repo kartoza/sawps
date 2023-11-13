@@ -79,8 +79,8 @@ const Trends = () => {
                     <PopulationTrend
                       selectedSpecies={selectedSpecies}
                       propertyId={propertyId}
-                      startYear={startYear}
-                      endYear={endYear}
+                      startYear={1960}
+                      endYear={new Date().getFullYear()}
                       loading={loading}
                       setLoading={setLoading}
                       setResult={setJsonDoc}

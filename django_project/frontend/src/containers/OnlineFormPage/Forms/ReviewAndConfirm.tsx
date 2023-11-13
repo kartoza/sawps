@@ -15,8 +15,7 @@ import {
 } from '@mui/x-data-grid';
 import {
     UploadSpeciesDetailInterface,
-    AnnualPopulationPerActivityInterface,
-    SubpopulationTotal
+    AnnualPopulationPerActivityInterface
 } from '../../../models/Upload';
 import Loading from '../../../components/Loading';
 import {EventType} from './EventDetailForm';
@@ -50,11 +49,6 @@ const displayBoolean = (value: Boolean):string => {
 
 function SpeciesDetailReview(props: ReviewItemInterface) {
     const { data } = props;
-    const [subpopulationTotal, setSubpopulationTotal] = useState<SubpopulationTotal>({
-        adult: data.annual_population.adult_male + data.annual_population.adult_female,
-        sub_adult: data.annual_population.sub_adult_male + data.annual_population.sub_adult_female,
-        juvenile: data.annual_population.juvenile_male + data.annual_population.juvenile_female
-    })
     return (
         <Grid container className='DataPreview' flexDirection={'column'} rowSpacing={2}>
             <Grid item>
@@ -137,7 +131,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             label='Total Adult'
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={displayNumber(subpopulationTotal.adult)}
+                                            defaultValue={displayNumber(data.annual_population.adult_total)}
                                             disabled
                                         />
                                     </Grid>
@@ -185,7 +179,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             label='Total Subadult'
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={displayNumber(subpopulationTotal.sub_adult)}
+                                            defaultValue={displayNumber(data.annual_population.sub_adult_total)}
                                             disabled
                                         />
                                     </Grid>
@@ -233,7 +227,7 @@ function SpeciesDetailReview(props: ReviewItemInterface) {
                                             label='Total Juvenile'
                                             variant="standard"
                                             fullWidth
-                                            defaultValue={displayNumber(subpopulationTotal.juvenile)}
+                                            defaultValue={displayNumber(data.annual_population.juvenile_total)}
                                             disabled
                                         />
                                     </Grid>

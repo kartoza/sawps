@@ -21,7 +21,7 @@
     "@types/mapbox__mapbox-gl-draw": "^1.4.0",
     "@types/react-router-dom": "^5.3.3",
     "@watergis/maplibre-gl-export": "^3.0.0",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "bootstrap": "^5.2.3",
     "chart.js": "^4.3.3",
     "chartjs-plugin-datalabels": "^2.2.0",

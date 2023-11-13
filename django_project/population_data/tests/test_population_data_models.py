@@ -43,7 +43,8 @@ class PopulationCountTestCase(TestCase):
             user=user,
             total=120,
             adult_male=19,
-            adult_female=100
+            adult_female=100,
+            adult_total=119
         )
 
     def test_create_population_count(self):
