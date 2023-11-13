@@ -28,6 +28,11 @@ To utilise the `Download Data Visualisation` functionality, follow these steps:
 
 ![Charts On Charts Page](./img/charts-2.png)
 
+### Property Count Per Category Charts
+These charts show property count per category (population size, property area, area available to species, 
+and population density). The colours are configurable via Property Type page in [Django Admin](../../../administrator/manual/django-admin.md) 
+![Property count per category](./img/charts-4.png)
+
 ## Downloaded Charts PDF
 
 ![Downloaded Charts PDF](./img/charts-3.png)
