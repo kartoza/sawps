@@ -522,7 +522,8 @@ function Filter(props: any) {
                   </Tooltip>
                 }
 
-                <Box>
+                {tab != 'trends' &&
+                    <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Clock.svg" alt='watch image'/>
                           <Typography color='#75B37A' fontSize='medium'>Year</Typography>
@@ -567,6 +568,7 @@ function Filter(props: any) {
                           </Box>
                       </Box>
                 </Box>
+                }
 
                 {tab != 'trends' &&
                   <Box>

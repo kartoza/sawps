@@ -50,7 +50,7 @@ context_id: D7egzfH2GcgMQgHye7JgyQ
 
 2. **Arrow**: Using these arrows, administrators can add or remove the permissions from the group.
 
-3. **Plus icon**: Clicking on plus icon will allow administrators to add a new permission. The popup for creating a new permission will open.
+3. **Plus icon**: Clicking on the plus icon allows the administrators to add a new permission. The popup for creating a new permission will open.
 
     ![Add Permission](./img/django-add-data-2.png)
 
@@ -68,3 +68,48 @@ context_id: D7egzfH2GcgMQgHye7JgyQ
 7. **Save and continue editing**: Save the current record while still showing the current record.
 
 8. **Save**: Save the current record and then be redirected to the Django Admin Table/record list.
+
+## Add User
+
+![Add user](./img/django-add-data-4.png)
+
+The administrators will be presented with a form to enter the user's information. Here are the fields to fill in:
+
+1. **Username**: Administrators should enter a unique username for the new user. It should be 150 characters, or less, and may contain only letters, digits, and the characters '@', '.', '+', '-', and '_'.
+
+2. **Password**: Administrators should create a strong password for the user. The password must meet these criteria:
+    - Be at least 12 characters long.
+    - Should not resemble the user's personal information.
+    - Should not be a commonly used password.
+    - Should not be entirely numeric.
+    - Must include at least one numeric character.
+    - Must include at least one uppercase letter.
+    - Must include at least one special character (e.g., @, #, %, or ;).
+
+3. **Password Confirmation**: Administrators should re-enter the same password for verification.
+
+4. **Title Id**: Administrators should choose the title from the dropdown.
+
+5. **Icons**: By using these icons, the administrators can add a new user role, and delete, edit, and view details of the chosen user role.
+
+    - **Edit Icon**: Clicking on the `Edit` icon allows the administrators to edit the user role. After clicking on the icon, a popup will open for editing the user role.
+        - ![Edit](./img/django-add-data-5.png)
+
+    - **Plus Icon**: Clicking on the `Plus` icon allows the administrators to add a new user role. After clicking on the icon, a popup will open for adding a new user role.
+        - ![Add](./img/django-add-data-6.png)
+
+
+    - **Cross Icon**: Clicking on the `Cross` icon allows the administrators to delete the user role. After clicking on the icon, a popup will open for deleting the user role.
+        - ![Delete](./img/django-add-data-7.png)
+
+
+    - **Eye Icon**: Clicking on the `Eye` icon allows administrators to view the details of the user role. After clicking on the icon, a popup will open for viewing the details of the user role.
+        - ![Detail](./img/django-add-data-8.png)
+
+6. **Choose File**: Choose a profile picture for the user.
+
+7. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+8. **Save and continue editing**: Save the current record while still showing the current record.
+
+9. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
