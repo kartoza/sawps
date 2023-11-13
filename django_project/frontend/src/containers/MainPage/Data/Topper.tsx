@@ -100,7 +100,7 @@ const Topper = () => {
                               <Grid item xs>
                                   <Box><img src="/static/images/clock-topper.svg" alt='Clock image'/></Box>
                                   <Box className={'text-content'}>
-                                      <b>{startYearDisabled ? `${endYear} - ${endYear}` : `${startYear} - ${endYear}`}</b>
+                                      <b>{startYearDisabled ? endYear : `${startYear} - ${endYear}`}</b>
                                   </Box>
                               </Grid>
                               <Grid item xs>

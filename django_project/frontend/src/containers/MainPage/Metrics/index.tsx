@@ -410,23 +410,6 @@ const Metrics = () => {
                                 </Grid>
                                 )}
 
-
-                            {
-                            constants.canViewPopulationEstimateAsPercentage &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PopulationEstimateAsPercentage
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        activityData={activityData}
-                                    />
-                                </Grid>
-                            )}
-
                     </Grid>
                         </>
                 ): (
