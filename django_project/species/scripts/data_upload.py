@@ -490,6 +490,8 @@ class SpeciesCSVUpload(object):
                     'user': self.upload_session.uploader,
                     'area_available_to_species': area_available_to_species,
                     'total': int(string_to_number(count_total)),
+                    'adult_total': int(string_to_number(
+                        self.row_value(row, COUNT_ADULT_TOTAL))),
                     'adult_male': int(string_to_number(
                         self.row_value(row, COUNT_ADULT_MALES))),
                     'adult_female': int(string_to_number(

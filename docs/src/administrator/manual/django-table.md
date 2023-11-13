@@ -29,3 +29,25 @@ Administrators can assign a user to groups in the User Table.
 2. **Add Group**: Clicking on the `ADD GROUP` button will allow administrators to add a new group. Click [here](django-add-data.md) to see detailed documentation about adding a new group.
 
 3. **Edit Record**: Clicking on the object will allow administrators to change/edit a particular record. Click [here](django-change-data.md) to see detailed documentation about editing a group.
+
+## User Table
+
+![User Table](./img/django-table-4.png)
+
+The user table within the Django Admin interface allows administrators to manage user-related tasks efficiently.
+
+1. **Add User**: Clicking on the `ADD USER` button allows administrators to add a new user. Click on [add user](django-add-data.md) to see detailed documentation on adding a new user.
+
+2. **Filter**: Available filters to filter the records of the user table.
+
+    - ![Filters](./img/django-table-5.png)
+
+    1. **Clear All Filters**: Clicking on the `clear all filters` allows administrators to clear all the filters.
+
+    2. **Filter Field**: The names of the filter field and attributes for filtering the records.
+
+3. **Search Functionality**: The administrators can search the records using the search functionality.
+
+4. **User Table**: The user table with records.
+
+5. **Edit User**: Clicking on the object allows the administrators to change or edit a particular record. Click [here](django-change-data.md) to view detailed documentation on editing a user.
