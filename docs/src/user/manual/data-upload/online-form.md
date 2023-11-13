@@ -2,11 +2,9 @@
 
 ## Online Form Step 1 (Species detail)
 
-### Overview
+The data upload online form provides a convenient and structured way to enter species population data for the user's selected property. This form is designed to capture detailed information about species populations, including scientific names, counts, survey methods, and more. In addition, the form displays an image of the selected property in the top left corner, along with property information.
 
-The data upload online form provides a convenient and structured way to enter species population data for your selected property. This form is designed to capture detailed information about species populations, including scientific names, counts, survey methods, and more. In addition, the form displays an image of the selected property in the top left corner, along with property information.
-
-#### Species detail
+### Species detail
 
 ![Species Detail](./img/online-form-1.png)
 
@@ -58,21 +56,19 @@ The data upload online form provides a convenient and structured way to enter sp
 
 24. **Lower Confidence Level**: Enter the lower confidence level.
 
-25. **SAVE DRAFT**: Click this button to save the current form as a draft, allowing you to return to it later and continue data entry.
+25. **SAVE DRAFT**: Click on this button to save the current form as a draft, allowing the user to return to it later and continue with data entry.
 
-26. **NEXT**: Click this button to proceed to the next step of the data upload process.
+26. **NEXT**: Click on this button to proceed to the next step of the data upload process.
 
 ### Summary
 
-The data upload online form streamlines the process of entering detailed species population data for your selected property. Ensure that mandatory fields are filled in and that you have provided accurate information before saving your draft or moving to the next step in the data upload process.
+The data upload online form streamlines the process of entering detailed species population data for the user's selected property. Ensure that mandatory fields are filled in and that the user has provided accurate information before saving the user's draft or moving to the next step in the data upload process.
 
 ## Online Form Step 2 (Activity detail)
 
-### Overview
+The second step introduces the `Introduction/Reintroduction` and `Off-take` sections, each with its own table and form. These sections allow the user to record important information related to species introduction or reintroduction and off-take data.
 
-The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections, each with its own table and form. These sections allow you to record important information related to species introduction or reintroduction and off-take data.
-
-#### Activity Detail
+### Activity Detail
 
 ![Activity Detail](./img/online-form-2.png)
 
@@ -84,13 +80,13 @@ The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections,
 
     ![Introduction/Reintroduction Table and Form](./img/online-form-3.png)
 
-    1. **Introduction/Reintroduction Table**: The `Introduction/Reintroduction` table displays relevant data in a structured tabular format, making it easy to review and manage your introduction and reintroduction records.
+    1. **Introduction/Reintroduction Table**: The `Introduction/Reintroduction` table displays relevant data in a structured tabular format, making it easy to review and manage the user's introduction and reintroduction records.
 
-    2. **Edit Icon**: This icon allows you to edit the data of the row.
+    2. **Edit Icon**: This icon allows the user to edit the data of the row.
 
-    3. **Delete Icon**: This icon allows you to delete the data of the row
+    3. **Delete Icon**: This icon allows the user to delete the data of the row
 
-    4. **Rows per page**: This is a dropdown for choosing the number of row to display in the table.
+    4. **Rows per page**: This is a dropdown for choosing the number of rows to display in the table.
 
     5. **Adult Males**: Enter the count of adult males.
 
@@ -112,56 +108,56 @@ The step 2 introduces the `Introduction/Reintroduction` and `Off-take` sections,
 
     14. **Notes**: Include any additional notes or comments relevant to the introduction or reintroduction event.
 
-    15. **Add**: Click the `ADD` button to save the information entered into the form. This action will record the introduction or reintroduction event with the specified details.
+    15. **Add**: Click on the `ADD` button to save the information entered into the form. This action will record the introduction or reintroduction event with the specified details.
 
-3. **Off-take**: The `Off-take` section displays the table and form. Table provides a clear overview of your off-take data, and form for input data related to species off-take.
+3. **Off-take**: The `Off-take` section displays the table and form. The table provides a clear overview of the user's off-take data, and form for input data related to species off-take.
 
     **Off-take Table and Form**
 
     ![Off-take Table and Form](./img/online-form-4.png)
 
-    1. **Off-take Table**: The `Off-take` table displays relevant data in a structured tabular format, making it easy to review and manage your Off-take records.
+    1. **Off-take Table**: The `Off-take` table displays relevant data in a structured tabular format, making it easy to review and manage the user's Off-take records.
 
-    2. **Off-take Form**: The `Off-take` is same as the `Introduction/Reintroduction` enter the information related to off-take and add it by clicking on the `ADD` button.
+    2. **Off-take Form**: The `Off-take` is same as the `Introduction/Reintroduction`. Enter the information related to off-take and add it by clicking on the `ADD` button.
 
-4. **Save Draft**: Use the `SAVE DRAFT` button to save your progress and store the data you've entered in the forms. This allows you to return to your work at a later time.
+4. **Save Draft**: Use the `SAVE DRAFT` button to save the user's progress and store the data that the user has entered in the forms. This allows the user to return to the user's work at a later time.
 
-5. **Back**: The `BACK` button enables you to go back to the previous step if you need to review or edit data from Step 1.
+5. **Back**: The `BACK` button enables the user to go back to the previous step if the user needs to review or edit data from Step 1.
 
 6. **Next**: Click `NEXT` to advance to the next step in the data upload process.
 
 ### Summary
 
-Step 2 of the data upload online form  introduces the `Introduction/Reintroduction` and `Off-take` sections, each comprising a table and a form for data entry. These sections are critical for recording and managing information related to species introduction or reintroduction and off-take. The provided navigation buttons, including `SAVE DRAFT`, `BACK`, and `NEXT`, give you control over your data entry process and progression through the data management steps.
+Step 2 of the data upload online form  introduces the `Introduction/Reintroduction` and `Off-take` sections, each comprising a table and a form for data entry. These sections are critical for recording and managing information related to species introduction or reintroduction and off-take. The provided navigation buttons, including `SAVE DRAFT`, `BACK`, and `NEXT`, give the user control over the user's data entry process and progression through the data management steps.
 
 ## Online Form Step 3 (Review & Submit)
 
 ### Overview
 
-Step 3, `Review & Submit`, is the final stage of the data management process, where you have the opportunity to review and confirm the details you've entered. This step provides an overview of species and activity details, as well as introduction/reintroduction and off-take data. It ensures that the information you've provided is accurate and complete before final submission.
+Step 3, `Review & Submit`, is the final stage of the data management process, where the user has the opportunity to review and confirm the details that they have entered. This step provides an overview of species and activity details, as well as introduction/reintroduction and off-take data. It ensures that the information the user has provided is accurate and complete before final submission.
 
 #### Review & Submit
 
 ![Review & Submit](./img/online-form-5.png)
 
-1. **Species Detail**: The `Species Detail` section displays a summary of the species-specific information you've entered, providing an overview of species counts and other relevant details.
+1. **Species Detail**: The `Species Detail` section displays a summary of the species-specific information the user has entered, providing an overview of species' counts and other relevant details.
 
-2. **Edit Note Icon**: For editing the species detail, simply click on the `Edit Note Icon` to access and modify the species-related information.
+2. **Edit Note Icon**: For editing the species detail, simply click on the `Edit Note` icon to access and modify the species-related information.
 
-3. **Activity Detail**: The `Activity Detail` section provides a summary of the activity-related information you've entered, giving you an overview of the activity's attributes and data.
+3. **Activity Detail**: The `Activity Detail` section provides a summary of the activity-related information the user has entered, giving the user an overview of the activity's attributes and data.
 
-4. **Edit Note Icon**: For editing the activity detail, simply click on the `Edit Note Icon` to access and modify the activity-related information.
+4. **Edit Note Icon**: For editing the activity detail, simply click on the `Edit Note` icon to access and modify the activity-related information.
 
 5. **Introduction/Reintroduction Table**: The `Introduction/Reintroduction Table` displays a tabular view of data related to species introduction or reintroduction events, including counts and details of the introduction process.
 
-6. **Off-take Table**: The `Off-take Table` provides a tabular view of your off-take data, summarising details related to the removal of species from the property.
+6. **Off-take Table**: The `Off-take Table` provides a tabular view of the user's off-take data, summarising details related to the removal of species from the property.
 
-7. **Save Draft**: Use the `SAVE DRAFT` button to save your progress and store the data you've entered in the forms. This allows you to return to your work at a later time.
+7. **Save Draft**: Use the `SAVE DRAFT` button to save the user's progress and store the data the user has entered in the forms. This allows the user to return to the user's work at a later time.
 
-8. **Back**: The `BACK` button enables you to go back to the previous step if you need to review or edit data from Step 1.
+8. **Back**: The `BACK` button enables the user to go back to the previous step if the user needs to review or edit data from Step 2.
 
 9. **Next**: Click `NEXT` to advance to the next step in the data upload process.
 
 ### Summary
 
-Step 3, `Review & Submit`, offers a comprehensive overview of your data before final submission. You can review species details, activity details, and introduction/reintroduction and off-take data. The `Edit Note Icons` allow you to make any necessary changes. This step ensures that your data is accurate and complete, providing confidence in your final submission.
+Step 3, `Review & Submit`, offers a comprehensive overview of the user's data before final submission. Users can review species details, activity details, and introduction/reintroduction and off-take data. The `Edit Note` icons allow the user to make any necessary changes. This step ensures that the user's data is accurate and complete, providing confidence in the user's final submission.

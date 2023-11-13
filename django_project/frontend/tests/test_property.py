@@ -532,7 +532,7 @@ class TestPropertyAPIViews(TestCase):
             organisation=self.organisation
         )
         request = self.factory.get(
-            reverse('property-search') + f'?search_text=sea'
+            reverse('property-search') + '?search_text=sea'
         )
         self.user_2.user_profile = self.user_2.user_profile
         self.user_2.user_profile.current_organisation = self.organisation
@@ -543,6 +543,17 @@ class TestPropertyAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 4)
+        # search by short_code
+        request = self.factory.get(
+            reverse('property-search') + f'?search_text={property.short_code}'
+        )
+        request.user = self.user_2
+        view = PropertySearch.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'],
+                         f'{property.name} ({property.short_code})')
 
     def test_check_property_name(self):
         data = {

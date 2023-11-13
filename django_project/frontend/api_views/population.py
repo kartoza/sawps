@@ -195,12 +195,9 @@ class UploadPopulationAPIVIew(APIView):
             survey_method=survey_method,
             sub_adult_male=annual_population.get("sub_adult_male", 0),
             sub_adult_female=annual_population.get("sub_adult_female", 0),
-            sub_adult_total=(annual_population.get("sub_adult_male", 0) +
-                             annual_population.get("sub_adult_female", 0)
-                             ),
-            juvenile_total=(annual_population.get("juvenile_male", 0) +
-                            annual_population.get("juvenile_female", 0)
-                            ),
+            adult_total=annual_population.get("adult_total", 0),
+            sub_adult_total=annual_population.get("sub_adult_total", 0),
+            juvenile_total=annual_population.get("juvenile_total", 0),
             population_estimate_certainty=annual_population.get(
                 "population_estimate_certainty", None),
             upper_confidence_level=annual_population.get(
