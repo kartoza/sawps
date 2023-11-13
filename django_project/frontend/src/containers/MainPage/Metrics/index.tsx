@@ -28,7 +28,6 @@ import Loading from "../../../components/Loading";
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
-const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
 const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 const Metrics = () => {
@@ -43,7 +42,6 @@ const Metrics = () => {
     const [activityType, setActivityType] = useState({})
     const [ageGroupData, setAgeGroupData] = useState([])
     const [open, setOpen] = useState(false)
-    const labels = Object.keys(activityType);
     const [areaData, setAreaData] = useState([])
 
     const [densityData, setDensityData] = useState([])
