@@ -89,6 +89,8 @@ const PropertyCountPerCategoryChart = (props: any) => {
     // Map the data for the current age group
     const data = propertyData.map((dataItem: any) => dataItem[propertyType.dataProperty] || 0);
 
+    if (data.every(d => d === 0)) continue;
+
     // Rearrange the data to match the sorted labels
     const sortedData = labels.map((year: any) => {
       const index = propertyData.findIndex((item: { category: any }) => item.category === year);

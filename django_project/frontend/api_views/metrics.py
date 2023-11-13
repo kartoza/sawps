@@ -4,7 +4,7 @@ import datetime
 from typing import List
 
 import jenkspy
-from django.db.models import Count, Value
+from django.db.models import Count
 from django.db.models import FloatField
 from django.db.models.functions import Cast
 from django.db.models.query import QuerySet, F
@@ -44,7 +44,7 @@ from frontend.utils.organisation import (
 )
 from frontend.utils.user_roles import get_user_roles
 from population_data.models import AnnualPopulation
-from property.models import Property, PropertyType
+from property.models import Property
 from species.models import Taxon
 
 
@@ -273,17 +273,6 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self) -> QuerySet[Property]:
-        """
-        Get the filtered queryset of properties for the current organization.
-            """
-        organisation_id = get_current_organisation_id(self.request.user)
-        queryset = Property.objects.filter(organisation_id=organisation_id)
-        filtered_queryset = PropertyFilter(
-            self.request.GET, queryset=queryset
-        ).qs
-        return filtered_queryset.distinct('name')
-
     def get(self, request: HttpRequest, *args, **kwargs) -> Response:
         """
         Retrieve the calculated total area available to species and
@@ -441,6 +430,9 @@ class BasePropertyCountAPIView(APIView):
         if idx == len(categories) - 2:
             upper_bound = categories[idx + 1]
 
+        if idx == len(categories) - 3:
+            upper_bound = categories[idx + 1]
+
         if query_field == 'population_density':
             lower_bound = round(lower_bound, 4)
             upper_bound = round(upper_bound, 4)
@@ -454,13 +446,6 @@ class BasePropertyCountAPIView(APIView):
             data,
             n_classes=data.count() if data.count() < 6 else 6
         )
-        categories = [category for category in categories]
-        property_types = PropertyType.objects.values_list('name', flat=True)
-        base_dict = {
-            property_type.lower().replace(' ', '_'): 0
-            for property_type in property_types
-        }
-        base_dict['common_name_varbatim'] = common_name
 
         results = []
         for idx, category in enumerate(categories):
@@ -471,19 +456,26 @@ class BasePropertyCountAPIView(APIView):
                     category,
                     query_field
                 )
+
                 if lower_bound < 0:
                     continue
 
+                category_annotation = f'{lower_bound} - {upper_bound}'
+                filters = {f'{query_field}__range': (lower_bound, upper_bound)}
+                if idx == len(categories) - 2 and len(categories) > 2:
+                    category_annotation = f'>{lower_bound}'
+                    filters = {f'{query_field}__gt': lower_bound}
+
                 counts = queryset.filter(
-                    **{f'{query_field}__range': (lower_bound, upper_bound)}
+                    **filters
                 ).values(property_type_name_field).annotate(
-                    count=Count(property_type_name_field),
-                    category=Value(f'{lower_bound} - {upper_bound}')
+                    count=Count(property_type_name_field)
                 )
+
                 result = {
-                    'category': f'{lower_bound} - {upper_bound}'
+                    'category': category_annotation,
+                    'common_name_varbatim': common_name
                 }
-                result.update(base_dict)
                 for count in counts:
                     result[
                         count[
