@@ -130,13 +130,16 @@ body {
 
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1200px) {
     #right-sidebar-tab {
-        //position: absolute;
         margin-top: 100px;
         width: 100%;
 
         .TabHeaders {
+            width: 100%;
+        }
+
+        #dataContainer {
             width: 100%;
         }
     }
