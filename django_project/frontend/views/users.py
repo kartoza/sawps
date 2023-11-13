@@ -5,7 +5,7 @@ from stakeholder.models import (
     OrganisationInvites,
     OrganisationUser,
     UserProfile,
-    UserRoleType
+    UserRoleType, MANAGER, MEMBER
 )
 from django.contrib.auth.models import User
 from .base_view import RegisteredOrganisationBaseView
@@ -38,7 +38,6 @@ class OrganisationUsersView(
     template_name = 'users.html'
     model = OrganisationUser
     context_object_name = 'organisation_users'
-
 
     def extract_substring(self, string):
         '''extract search string from search box on frontend'''
@@ -189,14 +188,14 @@ class OrganisationUsersView(
                         email=email,
                         organisation_id=org_id,
                         user_role=user_role,
-                        assigned_as=OrganisationInvites.MANAGER
+                        assigned_as=MANAGER
                     )
                 else:
                     create_invite = OrganisationInvites(
                         email=email,
                         organisation_id=org_id,
                         user_role=user_role,
-                        assigned_as=OrganisationInvites.MEMBER
+                        assigned_as=MEMBER
                     )
 
                 organisation = Organisation.objects.get(id=org_id)
@@ -228,7 +227,6 @@ class OrganisationUsersView(
                     'domain': Site.objects.get_current().domain
                 }
 
-
                 # instantiate the view
                 add_user_view = AddUserToOrganisation()
                 if add_user_view.send_invitation_email(email_details):
@@ -241,16 +239,21 @@ class OrganisationUsersView(
                             'updated_invites': serialized_invites
                         }
                     )
-                return JsonResponse({'status': 'failed to send email'})
+                return JsonResponse({
+                    'status': 'Failed to send email'
+                })
             else:
-                return JsonResponse({'status': 'invitation already sent'})
+                return JsonResponse({
+                    'status': 'Invitation already sent'
+                })
         except Organisation.DoesNotExist:
-            return JsonResponse({'status': 'failed to send email'})
+            return JsonResponse({
+                'status': 'Organisation does not exist'
+            })
         except Exception as e:
-            return JsonResponse({'status': str(e)})
-
-
-
+            return JsonResponse({
+                'status': str(e)
+            })
 
     def delete_post(self, request):
         object_id = request.POST.get('object_id')
@@ -276,9 +279,6 @@ class OrganisationUsersView(
             # when deletion fails
             return JsonResponse({'status': 'failed'})
 
-
-
-
     def get_organisation_users(self, request):
         organisation_user_list = OrganisationUser.objects.filter(
             organisation_id=get_current_organisation_id(request.user))
@@ -301,12 +301,12 @@ class OrganisationUsersView(
                     "joined": role.joined
                 }
             else:
-                assigned_as = 'Member'
+                assigned_as = MEMBER
                 if hasattr(user.user, 'user_profile'):
                     user_profile = user.user.user_profile
                     role = str(user_profile.user_role_type_id)
                     if role == 'Admin' or role == 'Super User':
-                        assigned_as = 'Manager'
+                        assigned_as = MANAGER
 
                 object_to_save = {
                     "id": user.user.id,
