@@ -102,6 +102,13 @@ body {
     width: calc(100vw - 400px);
 }
 
+#toggle-left-sidebar {
+    button {
+        height: 50px;
+        width: 100%;
+    }
+}
+
 @media screen and (min-width: 1200px) {
   #main-container {
       flex-direction: column;
@@ -123,6 +130,10 @@ body {
               width: calc(100vw - 400px);
           }
       }
+
+      #toggle-left-sidebar {
+          display: none;
+      }
   }
 
     #dataContainer {
@@ -132,6 +143,10 @@ body {
 }
 
 @media only screen and (max-width: 1200px) {
+    #right-sidebar-container {
+        transition: margin-top 1s;
+    }
+
     #right-sidebar-tab {
         margin-top: 100px;
         width: 100%;
@@ -143,5 +158,17 @@ body {
         #dataContainer {
             width: 100%;
         }
+    }
+
+    #toggle-left-sidebar {
+        height: 50px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .decreaseMargin {
+        margin-top: -420px;
     }
 }

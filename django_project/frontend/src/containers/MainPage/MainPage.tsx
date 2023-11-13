@@ -1,37 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import {useSearchParams, useLocation, useNavigate} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate} from "react-router-dom";
+import Button from '@mui/material/Button';
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import {RootState} from '../../app/store';
-import {useAppDispatch, useAppSelector } from '../../app/hooks';
-import TabPanel, { a11yProps } from '../../components/TabPanel';
-import {
-  LeftSideBar,
-  RightSideBar,
-  LayerFilterTabs
-} from './SideBar';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import TabPanel, {a11yProps} from '../../components/TabPanel';
+import {LayerFilterTabs, LeftSideBar, RightSideBar} from './SideBar';
 import Upload from './Upload';
 import Map from './Map';
 import './index.scss';
-import { PropertySummary } from './Property';
-import { MapSelectionMode } from "../../models/Map";
-import { UploadMode } from "../../models/Upload";
-import {
-    setUploadState
-} from '../../reducers/UploadState';
-import {
-    setSelectedParcels,
-    resetSelectedProperty,
-    setMapSelectionMode,
-    resetMapState
-} from '../../reducers/MapState';
+import {PropertySummary} from './Property';
+import {MapSelectionMode} from "../../models/Map";
+import {UploadMode} from "../../models/Upload";
+import {setUploadState} from '../../reducers/UploadState';
+import {resetMapState, resetSelectedProperty, setMapSelectionMode, setSelectedParcels} from '../../reducers/MapState';
 import DataList from './Data';
 import Metrics from './Metrics';
 import Trends from './Trends';
-
-
 
 
 enum RightSideBarMode {
@@ -121,13 +109,28 @@ function MainPage() {
     }
   }, [propertyItem, mapSelectionMode, uploadMode])
 
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+  const [height, setHeight] = useState(0);
+  const toggleShowFilter = () => {
+    setShowLeftSidebar(!showLeftSidebar);
+  }
+
   return (
     <div className="App">
       <div className="MainPage">
         <Grid container flexDirection={'row'} id={'main-container'}>
           <Grid item
+                id={'toggle-left-sidebar'}
+                xs={12} md={12}
+          >
+              <Button variant="outlined" onClick={toggleShowFilter}>
+                {showLeftSidebar ? 'Hide Filters' : 'Show Filters'}
+              </Button>
+          </Grid>
+          <Grid item
                 id={'left-sidebar-container'}
                 xs={12} md={12}
+                className={showLeftSidebar ? '' : 'hidden'}
           >
             { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} additionalProps={{
               'selectedMainTabIdx': selectedTab
@@ -136,7 +139,7 @@ function MainPage() {
           <Grid item flex={1}
                 xs={12} md={12}
                 id={'right-sidebar-container'}
-                className="grayBg customWidth">
+                className={showLeftSidebar ? "grayBg customWidth" : "grayBg customWidth decreaseMargin"}>
             <Grid container className="Content" flexDirection={'row'}>
               <Grid item
                     xs={12} md={12}
