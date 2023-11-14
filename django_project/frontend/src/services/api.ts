@@ -55,7 +55,6 @@ export interface TaxonDetail {
   colour: string
 }
 
-
 export interface Activity {
   id: number
   name: string
@@ -65,12 +64,18 @@ export interface Activity {
   export_fields: string[]
 }
 
+export interface PropertyType {
+  id: number
+  name: string
+  colour: string
+}
+
 
 // Create an API slice using RTK Query's createApi.
 // This defines a set of endpoints related to user operations.
 export const userApi = createApi({
     baseQuery: baseQuery,
-    tagTypes: ['User', 'Organisation', 'Activity', 'Property', 'Species', 'Taxon'],
+    tagTypes: ['User', 'Organisation', 'Activity', 'Property', 'Species', 'Taxon', 'PropertyType'],
     endpoints: (build) => ({
         getUserInfo: build.query<UserInfo, void>({
             query: () => 'api/user-info/',
@@ -121,6 +126,13 @@ export const userApi = createApi({
             },
             providesTags: ['Taxon']
         }),
+        getPropertyType: build.query<PropertyType[], void>({
+            query: () => 'api/property/types/',
+            transformResponse: (response: PropertyType[]) => {
+                return response;
+            },
+            providesTags: ['PropertyType']
+        }),
     })
 })
 
@@ -132,7 +144,8 @@ export const {
     useGetActivityAsObjQuery,
     useGetPropertyQuery,
     useGetSpeciesQuery,
-    useGetTaxonDetailQuery
+    useGetTaxonDetailQuery,
+    useGetPropertyTypeQuery
 } = userApi
 
 
