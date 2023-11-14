@@ -103,15 +103,19 @@ const Topper = () => {
                                       <b>{startYearDisabled ? endYear : `${startYear} - ${endYear}`}</b>
                                   </Box>
                               </Grid>
-                              <Grid item xs>
-                                  <img src="/static/images/separator.svg" alt='Separator'/>
-                              </Grid>
-                              <Grid item xs>
-                                  <Box><img src="/static/images/activity-topper.svg" alt='Activity image'/></Box>
-                                  <Box className={'text-content'}>
-                                      <b>{activityCount} {activityCount > 1 ? 'Activities' : 'Activity'}</b>
-                                  </Box>
-                              </Grid>
+                              {
+                                  tab !== 'trends' && <>
+                                      <Grid item xs>
+                                          <img src="/static/images/separator.svg" alt='Separator'/>
+                                      </Grid>
+                                      <Grid item xs>
+                                          <Box><img src="/static/images/activity-topper.svg" alt='Activity image'/></Box>
+                                          <Box className={'text-content'}>
+                                              <b>{activityCount} {activityCount > 1 ? 'Activities' : 'Activity'}</b>
+                                          </Box>
+                                      </Grid>
+                                    </>
+                              }
                           </Grid>
                       </Box>
                   </Box>
@@ -124,9 +128,13 @@ const Topper = () => {
               <Box>
                   <b>Property list</b>: {propertyName}
               </Box>
-              <Box>
-                  <b>Activity list</b>: {activityName}
-              </Box>
+              {
+                  tab != 'trends' && <>
+                    <Box>
+                      <b>Activity list</b>: {activityName}
+                    </Box>
+                </>
+              }
           </Box>
       </Box>
     )
