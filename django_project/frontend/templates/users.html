@@ -101,7 +101,9 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <p class="text-center">Invitation already sent.</p>
+                  <p class="text-center error-message">
+                      Invitation already sent.
+                  </p>
                 </div>
                 <div class="modal-footer justify-content-between">
                   <button
@@ -403,10 +405,6 @@
       // Optionally, you can clear the input fields after the invitation is sent
       document.querySelector('.email-input').value = '';
 
-      // console.log(email);
-      // console.log(inviteAs);
-      // console.log(memberRole);
-
       // Make an AJAX query to the database
       $.ajax({
         type: 'POST',
@@ -421,39 +419,31 @@
         },
         success: function(response) {
           // Handle the success response
-          console.log(response.status);
-
-          if (response.status === 'invitation already sent') {
-            // Show pop-up modal with error message: invitation already sent
-            $('#errorMessageModal').modal('show');
-          } else {
-            var data = [];
-            try{
-              data = JSON.parse(response.updated_invites);
-
-              var tableBody = $('#invites tbody');
-              tableBody.empty();
-
-              if (data.length > 0) {
-                for (var i = 0; i < data.length; i++) {
-                  var row = '<tr>';
-                  row += '<td>' + data[i].email + '</td>';
-                  row += '<td>' + data[i].user_role + '</td>';
-                  row += '<td><span class="badge ' + (data[i].joined ? 'badge-success' : 'badge-secondary') + '">' + (data[i].joined ? 'joined' : 'pending') + '</span></td>';
-
-                  // Add more table cells as needed
-                  row += '</tr>';
-
-                  tableBody.append(row);
+            if(response.status === 'success') {
+                let data = [];
+                try {
+                    data = JSON.parse(response.updated_invites);
+                    let tableBody = $('#invites tbody');
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            var row = '<tr>';
+                            row += '<td>' + data[i].email + '</td>';
+                            row += '<td>' + data[i].user_role + '</td>';
+                            row += '<td><span class="badge ' + (data[i].joined ? 'badge-success' : 'badge-secondary') + '">' + (data[i].joined ? 'joined' : 'pending') + '</span></td>';
+                            // Add more table cells as needed
+                            row += '</tr>';
+                            tableBody.html(row);
+                        }
+                    }
+                    // Show pop-up modal with success message: email invitation sent
+                    $('#successMessageModal').modal('show');
+                } catch(exception){
+                    console.log(exception.message)
                 }
-              }
-
-              // Show pop-up modal with success message: email invitation sent
-              $('#successMessageModal').modal('show');
-            }catch(exception){
-              console.log(exception.message)
+            } else {
+                $('.error-message').html(response.status);
+                $('#errorMessageModal').modal('show');
             }
-          }
         },
         error: function(xhr, status, error) {
           // Handle the error response

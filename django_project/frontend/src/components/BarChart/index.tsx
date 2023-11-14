@@ -15,6 +15,7 @@ interface BarChartInterface {
     yLabel?: string,
     xStacked?: boolean,
     yStacked?: boolean,
+    showLegend?: boolean
     options?: any
 }
 
@@ -27,6 +28,7 @@ export default function BarChart({chartData,
                                  yLabel = 'Default Y Label',
                                  xStacked = true,
                                  yStacked = true,
+                                 showLegend = true,
                                  options = {}}: BarChartInterface) {
 
     const defaultOptions = {
@@ -72,7 +74,7 @@ export default function BarChart({chartData,
                 display: false
             },
             legend: {
-                display: true,
+                display: showLegend,
                 position: 'right' as 'right',
                 labels: {
                     boxWidth: 20,
