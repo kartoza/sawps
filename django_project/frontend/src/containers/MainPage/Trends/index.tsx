@@ -4,6 +4,7 @@ import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
 import PopulationTrend, {NationalTrendInterface} from "../Metrics/PopulationTrend";
 import {useGetTaxonDetailQuery} from "../../../services/api";
+import Topper from "../Data/Topper";
 import './index.scss';
 
 const Trends = () => {
@@ -49,20 +50,21 @@ const Trends = () => {
       <Box className="charts-container">
 
         {showCharts ? (
+          <>
+          <Topper></Topper>
           <Grid container
                 ref={contentRef}
-                // spacing={2}
-             spacing={0}
-              direction="column"
-              alignItems="center"
-              justifyContent="center"
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
           >
             {selectedSpecies && rerender && (
               <Grid item xs={12} md={6}>
                 <div className='species-card-container-trends' data-testid='species-card-container-trends'>
                   <div className='species-card-image-container'>
                     <img
-                      src={taxonDetail.graph_icon ? taxonDetail.graph_icon : '/static/images/default-species.png'}
+                      src={taxonDetail.graph_icon ? taxonDetail.graph_icon : "/static/images/default-species-graph.svg"}
                       className='species-card-image'
                       data-testid='species-card-image'
                     />
@@ -92,7 +94,9 @@ const Trends = () => {
                 </div>
               </Grid>
             )}
-          </Grid>) : (
+          </Grid>
+          </>
+        ) : (
           // Render message to user
           <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
             <Grid item>
