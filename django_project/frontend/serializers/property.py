@@ -19,6 +19,18 @@ class PropertyTypeSerializer(NameObjectBaseSerializer):
         fields = NameObjectBaseSerializer.Meta.fields
 
 
+class PropertyTypeColourSerializer(serializers.ModelSerializer):
+    """Property Type Serializer with Colour."""
+
+    class Meta:
+        model = PropertyType
+        fields = [
+            'id',
+            'name',
+            'colour'
+        ]
+
+
 class ProvinceSerializer(NameObjectBaseSerializer):
     """Province Serializer."""
 
