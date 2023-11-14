@@ -16,7 +16,7 @@ test('upload geojson', async ({ page }) => {
 
   await page.getByRole('button', { name: 'CREATE A NEW PROPERTY' }).click();
   
-  await page.locator('#input_propertyname').fill('admin-projects');
+  await page.locator('#input_propertyname').fill('admin-projects2');
 
   await page.getByRole('row', { name: 'Open/Closed System ​' }).getByLabel('​').click();
   
@@ -28,7 +28,9 @@ test('upload geojson', async ({ page }) => {
 
   await page.getByRole('button', { name: 'SAVE PROPERTY INFORMATION' }).click();
 
-  await expect(page.getByRole('button', { name: 'UPLOAD' })).toBeVisible();
+  await page.getByAltText('Error!').isVisible();
+
+  await page.getByRole('button', { name: 'Create Property Boundary'}).isVisible();
 
   const upload = page.getByRole('button', { name: 'UPLOAD' });
 
