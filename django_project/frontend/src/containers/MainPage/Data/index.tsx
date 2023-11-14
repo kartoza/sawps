@@ -435,7 +435,7 @@ const DataList = () => {
             </Box>
           ) : (
             <Box>
-               <Box className='dataContainer' id={'dataContainer'} ref={measuredRef}>
+               <Box className='dataContainer' id={'dataContainer'}>
                     <Grid container
                           justifyContent="center" alignItems="center"
                           flexDirection={'column'}>
