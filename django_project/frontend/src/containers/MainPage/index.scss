@@ -124,14 +124,6 @@ body {
 }
 
 @media only screen and (max-width: 1200px) {
-    #right-sidebar-container {
-        transition: margin-top 1s;
-    }
-
-    #left-sidebar-container {
-        transition: margin-left 1s;
-    }
-
     #right-sidebar-tab {
         margin-top: 100px;
         width: 100%;
@@ -150,6 +142,6 @@ body {
     }
 
     .hidden {
-        margin-left: calc(0px - 100vw);
+        display: none;
     }
 }
