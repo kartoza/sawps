@@ -3,6 +3,7 @@ title: IDS SAWPS
 summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
     - Jeremy Prior
     - Ketan Bamniya
+    - Luna Asefaw
 date: 09-11-2023
 some_url: https://github.com/kartoza/sawps/
 copyright: Copyright 2023, SANBI
@@ -13,20 +14,13 @@ context_id: 2H9jexnK8NYkp5keW7YoDf
 
 # Notifications Feature
 
-* The notifications feature allows for the user to receive push notifications of the reminders they have set via the platform.
-* When a notification comes in, a small bell icon appears on the user profile icon.
-* Also a navigation link for notifications becomes available in main navigation dropdown. This allows for the user to view the notifications from any page on the system.
-* Clicking on the notification will lead the user to the notifications page where they can review more details about the notifications.
-* On the profile pages a small notification badge appears showing the number of notifications the user has.
+The notifications feature allows for the user to receive push notifications of the reminders they have set via the platform.
 
 ![Notifications 1](./img/notifications-1.png)
 
-Functionalities offered on the Notifications Page:
-
-* Searching for specific notifications.
-* Searching by filtering.
-* Pagination.
-* Deleting notifications.
+1. When a notification comes in, a small bell icon appears on the user profile icon showing the number of notifications the user has.
+2. A navigation link for notifications becomes available in main navigation dropdown. This allows for the user to view the notifications from any page on the system.
+3. Clicking on a notification will lead the user to the notifications page where they can review more details about the notifications.
 
 ## Notifications tab
 
