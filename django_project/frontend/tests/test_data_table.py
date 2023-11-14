@@ -9,8 +9,8 @@ from django.urls import reverse
 
 from frontend.static_mapping import (
     NATIONAL_DATA_SCIENTIST,
-    REGIONAL_DATA_SCIENTIST,
-    REGIONAL_DATA_CONSUMER
+    PROVINCIAL_DATA_SCIENTIST,
+    PROVINCIAL_DATA_CONSUMER
 )
 from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
 from population_data.factories import (
@@ -473,7 +473,7 @@ class RegionalUserTestCase(TestCase):
             name="Regional data consumer",
         )
 
-        group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
+        group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
         user.groups.add(group)
 
         OrganisationInvites.objects.create(
@@ -550,7 +550,7 @@ class DataScientistTestCase(TestCase):
             organisation=self.organisation_1
         )
 
-        group = GroupF.create(name=REGIONAL_DATA_SCIENTIST)
+        group = GroupF.create(name=PROVINCIAL_DATA_SCIENTIST)
         user.groups.add(group)
         user.user_profile.current_organisation = self.organisation_1
         user.save()

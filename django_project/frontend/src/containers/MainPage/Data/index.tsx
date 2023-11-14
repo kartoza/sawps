@@ -79,7 +79,15 @@ const DataList = () => {
     }
 
     if (isSuccess) {
-        dataset = checkUserRole(userInfoData) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
+        const dataConsumers = new Set([
+          "National data consumer",
+            "Provincial data consumer"
+        ])
+        if (userInfoData.user_roles.some(userRole => dataConsumers.has(userRole))) {
+            dataset = checkUserRole(userInfoData) ? data.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
+        } else {
+            dataset = checkUserRole(userInfoData) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
+        }
         reportList = checkUserRole(userInfoData) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
     }
     const [customColorWidth, setCustomColorWidth] = useState<any>(defaultColorWidth)
@@ -87,7 +95,15 @@ const DataList = () => {
     function checkUserRole(userInfo: UserInfo) {
         if (!userInfo?.user_roles) return false;
         // TODO : Update this to use permissions instead
-        const allowedRoles = new Set(["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"]);
+        const allowedRoles = new Set([
+          "Organisation member",
+            "Organisation manager",
+            "National data scientist",
+            "Provincial data scientist",
+            "Super user",
+            "National data consumer",
+            "Provincial data consumer"
+        ]);
         return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
     }
 

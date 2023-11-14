@@ -6,7 +6,7 @@ from django.test import RequestFactory, TestCase, Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.contenttypes.models import ContentType
 
-from frontend.static_mapping import REGIONAL_DATA_CONSUMER
+from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
 from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
 from sawps.models import ExtendedGroup
@@ -356,7 +356,7 @@ class UserApiTest(TestCase):
             password='testpassword',
             email='test@gmail.com'
         )
-        group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
+        group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
         content_type = ContentType.objects.get_for_model(ExtendedGroup)
         all_permissions = Permission.objects.filter(content_type=content_type)
         group.permissions.add(all_permissions[0])
@@ -377,7 +377,7 @@ class UserApiTest(TestCase):
         response = client.get('/api/user-info/')
         self.assertEqual(response.status_code, 200)
 
-        self.assertTrue(REGIONAL_DATA_CONSUMER in response.data['user_roles'])
+        self.assertTrue(PROVINCIAL_DATA_CONSUMER in response.data['user_roles'])
         data_use_permission = DataUsePermission.objects.create(
             name="test"
         )

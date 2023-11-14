@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS
+from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS, DATA_CONSUMERS
 from frontend.utils.data_table import (
     data_table_reports,
     national_level_user_table,
@@ -45,7 +45,12 @@ class DataTableAPIView(APIView):
         """
         user_roles = get_user_roles(self.request.user)
         queryset = self.get_queryset(user_roles)
-        if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
+        if set(user_roles) & set(DATA_CONSUMERS):
+            return Response(
+                national_level_user_table(
+                    queryset, request, user_roles)
+            )
+        elif set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
             reports = data_table_reports(queryset, request, user_roles)
 
             report_list = request.GET.get("reports", None)
@@ -68,6 +73,7 @@ class DataTableAPIView(APIView):
                 })
 
             return Response(reports)
+
         else:
             return Response(
                 national_level_user_table(

@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, F, Value
 from rest_framework import serializers
 
 from population_data.models import (
@@ -279,37 +279,45 @@ class NationalLevelSpeciesReport(serializers.Serializer):
 class NationalLevelPropertyReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        data = {
-            "common_name": (
-                instance.common_name_varbatim if
-                instance.common_name_varbatim else '-'
-            ),
-            "scientific_name": instance.scientific_name,
-        }
+        all_data = []
+        print(AnnualPopulation.objects.filter(
+            **self.context['filters'], taxon=instance
+        ).values(
+            "property__property_type__name",
+            "total",
+            "year"
+        ))
 
         property_data = AnnualPopulation.objects.filter(
             **self.context['filters'], taxon=instance
-        ).annotate(
-            population=Sum("total"),
-            area=Sum("property__property_size_ha"),
         ).values(
             "property__property_type__name",
-            "population",
-            "area",
-            "year"
+            "year",
+        ).annotate(
+            population=Sum("total"),
+            area=Sum("property__property_size_ha")
         )
+        print(property_data)
 
         for property_entry in property_data:
+            data = {
+                "common_name": (
+                    instance.common_name_varbatim if
+                    instance.common_name_varbatim else '-'
+                ),
+                "scientific_name": instance.scientific_name,
+            }
             property_name = property_entry["property__property_type__name"]
+            data["year"] = property_entry["year"]
             data[
                 f"total_population_{property_name}_property"
             ] = property_entry["population"]
             data[
                 f"total_area_{property_name}_property"
             ] = property_entry["area"]
-            data["year"] = property_entry["year"]
+            all_data.append(data)
 
-        return data
+        return all_data
 
 
 class NationalLevelActivityReport(serializers.Serializer):
@@ -328,13 +336,13 @@ class NationalLevelActivityReport(serializers.Serializer):
         )
 
         for activity_entry in activity_data:
+            data["year"] = activity_entry["year"]
             activity_name = activity_entry[
                 "annualpopulationperactivity__activity_type__name"
             ]
             data[
                 f"total_population_{activity_name}"
             ] = activity_entry["population"]
-            data["year"] = activity_entry["year"]
 
         return data
 

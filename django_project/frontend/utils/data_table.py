@@ -24,8 +24,8 @@ from frontend.serializers.report import (
     NationalLevelActivityReport,
     NationalLevelProvinceReport
 )
-from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS
-from frontend.static_mapping import REGIONAL_DATA_CONSUMER
+from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS, DATA_CONSUMERS
+from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
 from frontend.utils.organisation import get_current_organisation_id
 from population_data.models import (
     AnnualPopulation,
@@ -44,10 +44,15 @@ SPECIES_REPORT = 'Species_report'
 PROVINCE_REPORT = 'Province_report'
 
 
-
 def get_queryset(user_roles: List[str], request):
     organisation_id = get_current_organisation_id(request.user)
-    if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
+    if set(user_roles) & set(DATA_CONSUMERS):
+        query_filter = BaseMetricsFilter
+        queryset = Taxon.objects.filter(
+            annualpopulation__property__organisation_id=organisation_id,
+            taxon_rank__name="Species"
+        ).distinct().order_by("scientific_name")
+    elif set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
         query_filter = DataContributorsFilter
         organisation = request.GET.get("organisation")
         if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
@@ -299,7 +304,7 @@ def national_level_user_table(
             SPECIES_REPORT: national_level_species_report,
         }
 
-        if REGIONAL_DATA_CONSUMER not in user_roles:
+        if PROVINCIAL_DATA_CONSUMER not in user_roles:
             report_functions[
                 PROVINCE_REPORT
             ] = national_level_province_report
@@ -370,7 +375,7 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
             int(act) for act in activity.split(',')
         ] if activity else []
 
-    if REGIONAL_DATA_CONSUMER in user_roles:
+    if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
@@ -447,6 +452,7 @@ def national_level_property_report(
 
     """
     filters = common_filters(request, user_roles)
+    print(filters)
     serializer = NationalLevelPropertyReport(
         queryset,
         many=True,
@@ -455,7 +461,7 @@ def national_level_property_report(
         }
     )
 
-    return serializer.data
+    return serializer.data[0] if serializer.data else []
 
 
 def national_level_activity_report(
@@ -485,7 +491,7 @@ def national_level_activity_report(
         property_list = property_param.split(",")
         filters["property__id__in"] = property_list
 
-    if REGIONAL_DATA_CONSUMER in user_roles:
+    if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id

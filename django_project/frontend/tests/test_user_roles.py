@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.test import TestCase
 
-from frontend.static_mapping import REGIONAL_DATA_CONSUMER, SUPER_USER, ORGANISATION_MEMBER, ORGANISATION_MANAGER
+from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER, SUPER_USER, ORGANISATION_MEMBER, ORGANISATION_MANAGER
 from frontend.utils.user_roles import get_user_roles
 from regulatory_permit.models import DataUsePermission
 from stakeholder.models import (
@@ -22,7 +22,7 @@ class TestUserRoles(TestCase):
             email='test@email.com',
             is_superuser=True
         )
-        self.group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
+        self.group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
         self.user.groups.add(self.group)
 
         self.data_use_permission = DataUsePermission.objects.create(
@@ -33,7 +33,7 @@ class TestUserRoles(TestCase):
     def test_get_user_roles(self):
         user_roles = get_user_roles(self.user)
         self.assertTrue(SUPER_USER in user_roles)
-        self.assertTrue(REGIONAL_DATA_CONSUMER in user_roles)
+        self.assertTrue(PROVINCIAL_DATA_CONSUMER in user_roles)
 
     def test_get_user_roles_as_organisation_member(self):
         OrganisationUser.objects.create(
