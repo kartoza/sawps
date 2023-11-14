@@ -1,9 +1,0 @@
-[
-{
-    "model": "property.province",
-    "pk": 1,
-    "fields": {
-        "name": "Gauteng"
-    }
-}
-]
