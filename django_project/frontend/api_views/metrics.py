@@ -3,8 +3,13 @@
 import datetime
 from typing import List
 
-from django.db.models.query import QuerySet
+import jenkspy
+from django.db.models import Count
+from django.db.models import FloatField
+from django.db.models.functions import Cast
+from django.db.models.query import QuerySet, F
 from django.http import HttpRequest
+from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +20,7 @@ from frontend.filters.metrics import (
     PropertyFilter,
 )
 from frontend.serializers.metrics import (
+    AreaAvailablePerSpeciesSerializer,
     ActivityMatrixSerializer,
     SpeciesPopuationCountPerYearSerializer,
     SpeciesPopulationDensityPerPropertySerializer,
@@ -23,7 +29,6 @@ from frontend.serializers.metrics import (
     TotalAreaVSAvailableAreaSerializer,
     TotalCountPerPopulationEstimateSerializer
 )
-from frontend.serializers.metrics import AreaAvailablePerSpeciesSerializer
 from frontend.utils.data_table import (
     get_queryset, get_report_filter, SPECIES_REPORT
 )
@@ -268,17 +273,6 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self) -> QuerySet[Property]:
-        """
-        Get the filtered queryset of properties for the current organization.
-            """
-        organisation_id = get_current_organisation_id(self.request.user)
-        queryset = Property.objects.filter(organisation_id=organisation_id)
-        filtered_queryset = PropertyFilter(
-            self.request.GET, queryset=queryset
-        ).qs
-        return filtered_queryset.distinct('name')
-
     def get(self, request: HttpRequest, *args, **kwargs) -> Response:
         """
         Retrieve the calculated total area available to species and
@@ -392,3 +386,231 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
+
+
+class BasePropertyCountAPIView(APIView):
+    """
+    Base class for property count APIView
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> List[AnnualPopulation]:
+        """
+        Returns a filtered queryset of Taxon objects
+        """
+        property_list = self.request.GET.get("property")
+
+        filters = {
+            'year': self.request.GET.get("year", timezone.now().year),
+            'taxon__scientific_name': self.request.GET.get("species", ''),
+        }
+
+        if property_list:
+            property_ids = property_list.split(",")
+            filters['property_id__in'] = property_ids
+
+        queryset = AnnualPopulation.objects.filter(
+            **filters
+        ).distinct()
+        return queryset
+
+    def get_upper_lower_bound(self, categories, idx, category, query_field):
+        lower_bound = category
+        upper_bound = categories[idx + 1]
+        delta = 1
+        if query_field == 'population_density':
+            delta = 0.00001
+
+        if lower_bound == upper_bound:
+            lower_bound -= 2 * delta
+            upper_bound -= delta
+        else:
+            upper_bound -= delta
+
+        if idx == len(categories) - 2:
+            upper_bound = categories[idx + 1]
+
+        if idx == len(categories) - 3:
+            upper_bound = categories[idx + 1]
+
+        if query_field == 'population_density':
+            lower_bound = round(lower_bound, 4)
+            upper_bound = round(upper_bound, 4)
+
+        return lower_bound, upper_bound
+
+    def get_results(self, data: set, queryset: QuerySet,
+                    property_type_name_field: str,
+                    common_name: str, query_field: str):
+        categories = jenkspy.jenks_breaks(
+            data,
+            n_classes=data.count() if data.count() < 6 else 6
+        )
+
+        results = []
+        for idx, category in enumerate(categories):
+            if idx != len(categories) - 1:
+                lower_bound, upper_bound = self.get_upper_lower_bound(
+                    categories,
+                    idx,
+                    category,
+                    query_field
+                )
+
+                if lower_bound < 0:
+                    continue
+
+                category_annotation = f'{lower_bound} - {upper_bound}'
+                filters = {f'{query_field}__range': (lower_bound, upper_bound)}
+                if idx == len(categories) - 2 and len(categories) > 2:
+                    category_annotation = f'>{lower_bound}'
+                    filters = {f'{query_field}__gt': lower_bound}
+
+                counts = queryset.filter(
+                    **filters
+                ).values(property_type_name_field).annotate(
+                    count=Count(property_type_name_field)
+                )
+
+                result = {
+                    'category': category_annotation,
+                    'common_name_varbatim': common_name
+                }
+                for count in counts:
+                    result[
+                        count[
+                            property_type_name_field
+                        ].lower().replace(' ', '_')
+                    ] = count['count']
+                results.append(result)
+        return results
+
+
+class PropertyCountPerPopulationSizeCategoryAPIView(BasePropertyCountAPIView):
+    """
+    API endpoint to property count per population size category
+    """
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve property count
+        per population size category.
+        """
+        results = []
+        queryset = self.get_queryset()
+        data = queryset.values_list('total', flat=True).distinct()
+        if not data.exists():
+            return Response(results)
+
+        common_name = queryset.first().taxon.common_name_varbatim
+        results = self.get_results(
+            data,
+            queryset,
+            'property__property_type__name',
+            common_name,
+            'total'
+        )
+
+        return Response(results)
+
+
+class PropertyCountPerAreaCategoryAPIView(BasePropertyCountAPIView):
+    """
+    API endpoint to property count per area category
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve property count per area category.
+        """
+        results = []
+        annual_populations = self.get_queryset()
+        if not annual_populations.exists():
+            return Response(results)
+        queryset = Property.objects.filter(
+            id__in=annual_populations.values_list(
+                'property_id', flat=True
+            )
+        )
+
+        data = queryset.values_list('property_size_ha', flat=True).distinct()
+
+        common_name = annual_populations.first().taxon.common_name_varbatim
+        results = self.get_results(
+            data,
+            queryset,
+            'property_type__name',
+            common_name,
+            'property_size_ha'
+        )
+
+        return Response(results)
+
+
+class PropertyPerAreaAvailableCategoryAPIView(BasePropertyCountAPIView):
+    """
+    API endpoint to property count per area available to species category
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve property count per
+        area available to species category.
+        """
+        results = []
+        queryset = self.get_queryset()
+        data = queryset.values_list(
+            'area_available_to_species',
+            flat=True
+        ).distinct()
+        if not data.exists():
+            return Response(results)
+
+        common_name = queryset.first().taxon.common_name_varbatim
+        results = self.get_results(
+            data,
+            queryset,
+            'property__property_type__name',
+            common_name,
+            'area_available_to_species'
+        )
+
+        return Response(results)
+
+
+class PropertyPerPopDensityCategoryAPIView(BasePropertyCountAPIView):
+    """
+    API endpoint to property count per population density category
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Handle GET request to retrieve property count
+        per population density category.
+        """
+        results = []
+        queryset = self.get_queryset()
+        queryset = queryset.annotate(
+            population_density=Cast(
+                Cast(F('total'), FloatField()) /
+                Cast(F('property__property_size_ha'), FloatField()),
+                FloatField()
+            )
+        )
+        data = queryset.values_list('population_density', flat=True).distinct()
+        if not data.exists():
+            return Response(results)
+
+        common_name = queryset.first().taxon.common_name_varbatim
+        results = self.get_results(
+            data,
+            queryset,
+            'property__property_type__name',
+            common_name,
+            'population_density'
+        )
+
+        return Response(results)

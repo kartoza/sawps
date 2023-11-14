@@ -23,7 +23,7 @@ The main area of the page displays the user's dataset in a tabular format. Each 
 
 ![Reports table](./img/reports-1.png)
 
-1. **Explore**: Click on the `EXPLORE` link available on the navigation bar to open explore page.
+1. **Explore**: Click on the `EXPLORE` link available on the navigation bar to open the explore page.
 2. **Reports**: Click on the `REPORTS` link to view the data.
 3. **Filters**: Utilise the filters provided on the page to refine the user's data view. These filters include:
      * **Organisation Filter:** Filter data by organisation.
@@ -40,21 +40,21 @@ The main area of the page displays the user's dataset in a tabular format. Each 
          * Click on the filter to update the data display based on the user's filter selections.
      * Each filter is designed to help the user narrow down their dataset to view only the data that's relevant to their analysis.
 
-4. **Column Search**: Users can search for specific values within columns by selecting the column. This feature is especially useful when the user needs to locate specific data points within a large dataset. The table will dynamically filter to display selected column.
+4. **Column Search**: Users can search for specific values within columns by selecting the column. This feature is especially useful when the user needs to locate specific data points within a large dataset. The table will dynamically filter to display the selected column.
 5. **XLSX Format:** Click on the `DOWNLOAD DATA REPORT` button to download the current dataset in XLSX format.
 6. **CSV Format:** Click on the `DOWNLOAD DATA CSV` button to download the current dataset in CSV format.
 
 ### Report Type
 
-* **Activity Report:** Report on activity basis.
-* **Property Report:** Report on property basis.
-* **Species Report:** Report on species basis.
-* **Province Report:** Report on province basis.
-Only member of `National data consumer` group can see this report.
+* **Activity Report:** Report on an activity basis.
+* **Property Report:** Report on a property basis.
+* **Species Report:** Report on a species basis.
+* **Province Report:** Report on a province basis.
+Only members of `National data consumer` group can see this report.
 * **Sampling Report:** Filter data by property.
-Member of `National data consumer` or `Regional data consumer` **CAN NOT** see this report.
+Members of `National data consumer` or `Regional data consumer` **CAN NOT** see this report.
 
-User group is configurable from the User Table in the [Django Admin](../../../administrator/manual/django-admin.md).
+The user group is configurable from the User Table in the [Django Admin](../../../administrator/manual/django-admin.md).
 
 #### Activity Report
 
@@ -64,8 +64,7 @@ Activity Report columns consisted of base columns and custom columns.
 
 1. **Base columns**: Hardcoded.
 2. **Custom columns**: Configurable from the Django admin site by the site administrator.
-
-See Activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
+See the activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
 
 ### Reports Page with Reports Filter
 
@@ -75,17 +74,17 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
 1. **Report Type**: Report type filter with the reports type.
 
-2. **Species**: The species icon displays with the scientific name of the selected species.
+2. **Species**: The species icon is displayed with the scientific name of the selected species.
 
-3. **Organisation**: The organisation icon displays with the count of selected organisations.
+3. **Organisation**: The organisation icon is displayed with the count of selected organisations.
 
-4. **Property**: The property icon displays with the count of selected properties.
+4. **Property**: The property icon is displayed with the count of selected properties.
 
 5. **Clock Icon**: The clock icon serves as a visual indicator for the year range filter with year range.
 
-6. **Activity**: The activity icon displays with the count of selected activities.
+6. **Activity**: The activity icon is displayed with the count of selected activities.
 
-7. **Organisation List**: Show the name of the selected organisations.
+7. **Organisation List**: Displays the names of the selected organisations.
 
 8. **Property List**: Show the name of the selected properties.
 
@@ -139,7 +138,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      1. **Property Report**: Selected `Property report`.
 
-     2. **Property Table**: Property table displays data for the properties.
+     2. **Property Table**: The property table displays data for the properties.
 
      **Report Columns**
 
@@ -175,7 +174,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      1. **Species Report**: Selected `Species report`.
 
-     2. **Species Table**: Species report table displays data of the species for the property.
+     2. **Species Table**: The species report table displays data of the species for the property.
 
      **Report Columns**
 
@@ -189,7 +188,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      * **Year**: The specific year for which the data is recorded.
 
-     * **Group**: Information about the group which the species belongs.
+     * **Group**: Information about the group to which the species belongs.
 
      * **Total**: The total count of the species in the specified year.
 
@@ -215,7 +214,7 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      1. **Sampling Report**: Selected `Sampling report`.
 
-     2. **Sampling Table**: Sampling report table displays data of the species for the property.
+     2. **Sampling Table**: The sampling report table displays data of the species for the property.
 
      **Report Columns**
 
@@ -235,11 +234,37 @@ See Activities section in the [Django Admin](../../../administrator/manual/djang
 
      * **Sampling Effort Coverage**: Indicates the extent to which the sampling effort covered the entire population or habitat.
 
-     * **Population Estimate Certainty**: Represents the level of certainty of estimated population.
+     * **Population Estimate Certainty**: This represents the level of certainty of the estimated population.
 
      **Summary**
 
      The Sampling Report is a crucial tool for documenting and reporting on sampling efforts and population estimates for different species. It provides detailed information on property details, species information, and key metrics related to the population and the methods used for data collection. This report is essential for assessing population health and the effectiveness of conservation and management efforts.
+
+     **Province Report**
+
+     ![Province Report](./img/reports-9.png)
+
+     1. **Province Report**: Select the `Province Report` option to generate a report specifically for provinces.
+
+     2. **Province Table**: The Province report table displays data related to the provinces, including population information.
+
+     **Report Columns**
+
+     The Province Report includes the following columns:
+
+     * **Year**: The specific year for which the data is recorded.
+
+     * **Common Name**: The common name of the species associated with the province.
+
+     * **Scientific Name**: The scientific name of the species.
+
+     * **Total Population**: The total population of the species within the province for the specified year.
+
+     * **Total Population Province Name**: The total population of the species within the respective province. This column is repeated for each province, and each entry represents the total population of the species in that specific province for the given year.
+
+     **Summary**
+
+     The Province Report serves as a valuable filter for reporting on provincial data related to species. It provides essential information on the total population of species within each province, as well as details about the species' common name, scientific name, and the year of data collection. This report is indispensable for in-depth analysis and management of species-related information at the provincial level.
 
 ### Summary
 
