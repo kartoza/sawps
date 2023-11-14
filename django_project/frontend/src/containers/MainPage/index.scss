@@ -103,6 +103,10 @@ body {
 }
 
 #toggle-left-sidebar {
+    position: absolute;
+    right: 0;
+    top: 100;
+    z-index: 999;
     button {
         height: 50px;
         width: 100%;
@@ -146,6 +150,10 @@ body {
         transition: margin-top 1s;
     }
 
+    #left-sidebar-container {
+        transition: margin-left 1s;
+    }
+
     #right-sidebar-tab {
         margin-top: 100px;
         width: 100%;
@@ -164,10 +172,6 @@ body {
     }
 
     .hidden {
-        display: none;
-    }
-
-    .decreaseMargin {
-        margin-top: -420px;
+        margin-left: calc(0px - 100vw);
     }
 }

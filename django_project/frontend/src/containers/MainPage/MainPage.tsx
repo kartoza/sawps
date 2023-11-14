@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import MenuIcon from '@mui/icons-material/Menu';
 import {RootState} from '../../app/store';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import TabPanel, {a11yProps} from '../../components/TabPanel';
@@ -124,7 +125,7 @@ function MainPage() {
                 xs={12} md={12}
           >
               <Button variant="outlined" onClick={toggleShowFilter}>
-                {showLeftSidebar ? 'Hide Filters' : 'Show Filters'}
+                <MenuIcon/>
               </Button>
           </Grid>
           <Grid item
@@ -139,7 +140,7 @@ function MainPage() {
           <Grid item flex={1}
                 xs={12} md={12}
                 id={'right-sidebar-container'}
-                className={showLeftSidebar ? "grayBg customWidth" : "grayBg customWidth decreaseMargin"}>
+                className={"grayBg customWidth"}>
             <Grid container className="Content" flexDirection={'row'}>
               <Grid item
                     xs={12} md={12}
