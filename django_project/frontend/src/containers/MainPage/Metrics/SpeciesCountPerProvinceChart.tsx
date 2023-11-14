@@ -132,7 +132,7 @@ const SpeciesCountPerProvinceChart = (props: any) => {
     datasets: datasets
   };
 
-  const chartTitle = `Total count of ${selectedSpecies} per province`;
+  const chartTitle = `Total count of species per province`;
 
   return (
     <Grid>
@@ -143,7 +143,8 @@ const SpeciesCountPerProvinceChart = (props: any) => {
               xLabel={'Provinces'}
               chartData={data}
               chartId={'species-count-per-province-chart'}
-              chartTitle={chartTitle}/>
+              chartTitle={chartTitle}
+              showLegend={false}/>
       ) : (
         <Loading containerStyle={{ minHeight: 160 }} />
       )}
