@@ -1,5 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Bar} from "react-chartjs-2";
+// @ts-ignore
+import _ from "lodash";
 import './style.scss';
 import ChartContainer from "../ChartContainer";
 
@@ -27,10 +29,7 @@ export default function BarChart({chartData,
                                  yStacked = true,
                                  options = {}}: BarChartInterface) {
 
-    const scaleY = options.scales?.y? options.scales.y : {};
-    const datalables = options.plugins?.datalabels? options.plugins.datalabels : {};
-
-    const newOptions = {
+    const defaultOptions = {
         indexAxis: indexAxis as any,
         responsive: true,
         maintainAspectRatio: false,
@@ -62,8 +61,7 @@ export default function BarChart({chartData,
                 },
                 ticks: {
                     color: "black",
-                },
-                ...scaleY
+                }
             },
         },
         plugins: {
@@ -71,8 +69,7 @@ export default function BarChart({chartData,
                 enabled: true
             },
             datalabels: {
-                display: false,
-                ...datalables
+                display: false
             },
             legend: {
                 display: true,
@@ -88,6 +85,8 @@ export default function BarChart({chartData,
             }
         },
     } as const;
+
+    const newOptions = _.merge(defaultOptions, options);
 
     return (
         <ChartContainer title={chartTitle}>

@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import "./index.scss";
 import Loading from '../../../components/Loading';
 import BarChart from "../../../components/BarChart";
 import axios from "axios";
+import "./index.scss";
 
 type AvailableColors = {
   [key: string]: string;
