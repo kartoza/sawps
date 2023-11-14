@@ -29,7 +29,6 @@ import Loading from "../../../components/Loading";
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
-const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
 const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 const Metrics = () => {
@@ -42,15 +41,11 @@ const Metrics = () => {
     const [loading, setLoading] = useState(false)
     const [activityData, setActivityData] = useState([])
     const [activityType, setActivityType] = useState({})
-    const [totalCoutData, setTotalCountData] = useState([])
     const [ageGroupData, setAgeGroupData] = useState([])
     const [open, setOpen] = useState(false)
-    const labels = Object.keys(activityType);
-    const totalCountLabel = labels.filter(item => item !== "Base population");
     const [areaData, setAreaData] = useState([])
 
     const [densityData, setDensityData] = useState([])
-    const [speciesData, setSpeciesData] = useState([])
     const contentRef = useRef(null);
 
     // Declare errorMessage as a state variable
@@ -97,19 +92,6 @@ const Metrics = () => {
         })
     }
 
-    const fetchActivityTotalCount = () => {
-        setLoading(true)
-        axios.get(`${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                setTotalCountData(response.data)
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-
     const fetchPopulationAgeGroupData = () => {
         setLoading(true)
         axios.get(`${FETCH_POPULATION_AGE_GROUP}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
@@ -142,7 +124,6 @@ const Metrics = () => {
         if(selectedSpecies){
             setShowCharts(true)
             fetchActivityPercentageData();
-            fetchActivityTotalCount();
             fetchPopulationAgeGroupData();
             fetchAreaAvailableLineData();
         }else {
@@ -440,28 +421,10 @@ const Metrics = () => {
                                         propertyId={propertyId}
                                         startYear={startYear}
                                         endYear={endYear}
-                                        loading={loading}
-                                        activityData={totalCoutData}
+                                        activityTypeList={activityList}
                                     />
                                 </Grid>
                             )}
-
-
-                            {
-                            userInfoData?.user_permissions.includes('Can view count as percentage') &&
-                            selectedSpecies &&
-                            totalCoutData.length > 0 && (
-                                <Grid item xs={12} md={12} lg={6}
-                                >
-                                    <ActivityCountAsPercentage
-                                        selectedSpecies={selectedSpecies}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        loading={loading}
-                                        activityData={totalCoutData}
-                                    />
-                                </Grid>
-                                )}
 
 
                             {
