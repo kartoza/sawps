@@ -452,7 +452,6 @@ def national_level_property_report(
 
     """
     filters = common_filters(request, user_roles)
-    print(filters)
     serializer = NationalLevelPropertyReport(
         queryset,
         many=True,
@@ -495,7 +494,8 @@ def national_level_activity_report(
         organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
-        ).values_list("id", flat=True)
+        ).values_list("id", flat=True).distinct()
+        print(province_ids)
         filters["property__province__id__in"] = province_ids
 
     serializer = NationalLevelActivityReport(
@@ -522,6 +522,7 @@ def national_level_province_report(
 
     """
     filters = common_filters(request, user_roles)
+    print(filters)
 
     serializer = NationalLevelProvinceReport(
         queryset,

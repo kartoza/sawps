@@ -280,13 +280,6 @@ class NationalLevelPropertyReport(serializers.Serializer):
 
     def to_representation(self, instance):
         all_data = []
-        print(AnnualPopulation.objects.filter(
-            **self.context['filters'], taxon=instance
-        ).values(
-            "property__property_type__name",
-            "total",
-            "year"
-        ))
 
         property_data = AnnualPopulation.objects.filter(
             **self.context['filters'], taxon=instance
@@ -297,7 +290,6 @@ class NationalLevelPropertyReport(serializers.Serializer):
             population=Sum("total"),
             area=Sum("property__property_size_ha")
         )
-        print(property_data)
 
         for property_entry in property_data:
             data = {

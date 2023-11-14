@@ -78,17 +78,26 @@ const DataList = () => {
         "Unplanned/illegal hunting": {color:"#696969",width:147}
     }
 
-    if (isSuccess) {
+    function isDataConsumer(userInfo: UserInfo) {
+        if (!userInfo?.user_roles) return false;
         const dataConsumers = new Set([
           "National data consumer",
             "Provincial data consumer"
         ])
-        if (userInfoData.user_roles.some(userRole => dataConsumers.has(userRole))) {
-            dataset = checkUserRole(userInfoData) ? data.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
+        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
+    }
+
+    if (isSuccess) {
+        if (isDataConsumer(userInfoData)) {
+            dataset = data.flatMap((each) => Object.keys(each));
         } else {
-            dataset = checkUserRole(userInfoData) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
+            dataset = data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each));
         }
-        reportList = checkUserRole(userInfoData) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
+        if (isDataConsumer(userInfoData)) {
+            reportList = dataTableList;
+        } else {
+            reportList = dataTableList.filter(item => !item?.Activity_report);
+        }
     }
     const [customColorWidth, setCustomColorWidth] = useState<any>(defaultColorWidth)
 
@@ -100,9 +109,7 @@ const DataList = () => {
             "Organisation manager",
             "National data scientist",
             "Provincial data scientist",
-            "Super user",
-            "National data consumer",
-            "Provincial data consumer"
+            "Super user"
         ]);
         return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
     }
@@ -275,7 +282,8 @@ const DataList = () => {
                 }
             </>
         )
-        const activityDataGrid = checkUserRole(userInfoData) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
+        const activityDataGrid = isDataConsumer(userInfoData) && activityDataSet.length > 0 ?
+          null : activityDataSet.map((each: any) =>
             <>
                 <Box className="data-table"
                      style={{
@@ -334,7 +342,7 @@ const DataList = () => {
                         })}
                     </>
                 )}
-            </>)
+            </>);
         setActivityTable(activityDataGrid)
 
         const uniqueColumns = getUniqueColumn()
