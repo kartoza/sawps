@@ -15,29 +15,29 @@ test('filter tests', async ({ page }) => {
 
   await page.getByText('Search place').isVisible();
 
-  await page.getByPlaceholder('Search place').click();
+  await expect(page.getByPlaceholder('Search place')).toBeEditable();
 
-  await page.getByRole('img', { name: 'species image' }).click();
+  await expect(page.getByRole('img', { name: 'species image' })).toBeVisible();
 
-  await page.getByText('Species').click();
+  await page.getByText('Species');
 
-  await page.locator('#combo-box-demo').isVisible();
+  await expect(page.locator('#combo-box-demo')).toBeVisible();
 
-  await page.getByText('Activity').isVisible();
+  await expect(page.getByText('Activity')).toBeVisible();
 
-  await page.getByRole('img', { name: 'Organisation image' }).isVisible();
+  await expect(page.getByRole('img', { name: 'Organisation image' })).toBeVisible();
 
   await page.getByText('Organisation', { exact: true }).click();
 
   await page.getByText('Property').click();
 
-  await page.getByRole('img', { name: 'watch image' }).isVisible();
+  await expect(page.getByRole('img', { name: 'watch image' })).toBeVisible();
 
   await page.getByText('Year').click();
 
   await page.getByText('19602023').click();
 
-  await page.getByRole('img', { name: 'Filter image' }).isVisible();
+  await expect(page.getByRole('img', { name: 'Filter image' })).toBeVisible();
 
   await page.getByText('Spatial filters').isVisible();
 
@@ -45,5 +45,5 @@ test('filter tests', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Clear All', exact: true }).click();
 
-  await page.getByRole('img', { name: 'Info image' }).isVisible();
+  await expect(page.getByRole('img', { name: 'Info image' })).toBeVisible();
 });

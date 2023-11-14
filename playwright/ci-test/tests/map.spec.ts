@@ -16,44 +16,21 @@ test('test', async ({ page }) => {
 
   await page.waitForURL('**/map/');
 
-  /*await page.getByLabel('Map').click({
-    position: {
-      x: 618,
-      y: 284
-    }
-  });*/
+  const map = 'canvas.maplibregl-canvas.mapboxgl-canvas';
 
-  // Zoom in
-  const zoomIn = page.getByLabel('Zoom in');
+  await expect(page.locator(map)).toBeVisible();
 
-  await zoomIn.click()
-  
-  // Enable dark mode
-  const darkMode = page.getByLabel('Toggle Dark Mode');
+  await page.getByRole('tab', { name: 'REPORTS' }).click();
 
-  await darkMode.click()
+  await page.waitForURL('**/reports');
 
-  // Enable light mode
-  const lightMode = page.getByLabel('Toggle Light Mode');
+  await page.getByRole('tab', { name: 'CHARTS' }).click();
 
-  await lightMode.click()
+  await page.waitForURL('**/charts');
 
-  /*await page.getByLabel('Map').click({
-    position: {
-      x: 297,
-      y: 351
-    }
-  });*/
+  await page.getByRole('tab', { name: 'TRENDS' }).click();
 
-  // Zoom out
-  const zoomOut = page.getByLabel('Zoom out');
-
-  await zoomOut.click();
-  
-  // Reset bearing
-  const resetBearing = page.getByLabel('Reset bearing to north');
-
-  await resetBearing.click()
+  await page.waitForURL('**/trends');
 
   const finalURL = page.url();
 

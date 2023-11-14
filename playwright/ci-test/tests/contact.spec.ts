@@ -33,6 +33,8 @@ test.describe('contact page', () => {
 
         await page.getByRole('button', { name: 'Send' }).click();
 
+        await page.waitForURL(url);
+
         const finalURL = page.url();
 
         expect(finalURL).toBe(initialURL);
