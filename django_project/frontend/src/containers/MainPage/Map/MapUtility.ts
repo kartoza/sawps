@@ -413,7 +413,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             },
             "minzoom": 5,
             "maxzoom": 10
-        }, 'NGI aerial imagery')
+        }, 'erf-highlighted')
     } else {
         // add province layer
         if (provinceCount && provinceCount.length > 0) {
@@ -483,7 +483,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
                 "maxzoom": 10
             }
             addLayerToMap('properties', mapObj, _propertiesLayer, 'erf-highlighted')
-            addLayerToMap('properties-points', mapObj, _propertiesPointsLayer, 'NGI aerial imagery')
+            addLayerToMap('properties-points', mapObj, _propertiesPointsLayer, 'erf-highlighted')
         }
     }
     // add label based on maptheme
@@ -505,9 +505,8 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
                 'interpolate',
                 ['linear'],
                 ['zoom'],
-                7, ["literal", [0, -1.25]],
-                10, ["literal", [0, -1]],
-                12, ["literal", [0, 0]]
+                7, ["literal", [0, -1]],
+                10, ["literal", [0, -0.75]],
               ]
             },
             "paint": {
@@ -533,9 +532,8 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
                 'interpolate',
                 ['linear'],
                 ['zoom'],
-                7, ["literal", [0, -1.25]],
-                10, ["literal", [0, -1]],
-                12, ["literal", [0, 0]]
+                7, ["literal", [0, -1]],
+                10, ["literal", [0, -0.75]],
               ]
             },
             "paint": {
