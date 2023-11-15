@@ -665,7 +665,7 @@ class TestPropertyCountPerPopulationDensityCategory(
             response.json(),
             [
                 {
-                    'category': '0.5 - 0.5',
+                    'category': '10.0 - 10.0',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
                     'common_name_varbatim': self.taxon.common_name_varbatim
                 }
