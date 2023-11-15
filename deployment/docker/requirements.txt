@@ -62,3 +62,6 @@ openpyxl==3.1.2
 
 # For documentation frontend
 -e git+https://github.com/kartoza/django-docs-crawler.git#egg=django-docs-crawler
+
+# For calculating jenks
+jenkspy==0.3.3

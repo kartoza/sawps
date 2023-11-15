@@ -68,6 +68,7 @@ class AnnualPopulation(AnnualPopulationAbstract):
         null=True
     )
     area_available_to_species = models.FloatField(default=0.0)
+    adult_total = models.IntegerField(null=True, blank=True)
     sub_adult_total = models.IntegerField(null=True, blank=True)
     sub_adult_male = models.IntegerField(null=True, blank=True)
     sub_adult_female = models.IntegerField(null=True, blank=True)

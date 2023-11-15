@@ -175,6 +175,7 @@ class UploadPopulationAPIVIew(APIView):
                     'user': self.request.user,
                     'area_available_to_species': area_available_to_species,
                     'total': annual_population.get("total"),
+                    'adult_total': annual_population.get("adult_total", 0),
                     'adult_male': annual_population.get("adult_male", 0),
                     'adult_female': annual_population.get("adult_female", 0),
                     'juvenile_male': annual_population.get("juvenile_male", 0),

@@ -21,12 +21,13 @@ from frontend.api_views.property import (
     PropertyDetail,
     PropertySearch,
     UpdatePropertyInformation,
-    CheckPropertyNameIsAvailable
+    CheckPropertyNameIsAvailable,
+    ListPropertyTypeAPIView
 )
 from frontend.models.parcels import Erf, Holding
 from frontend.tests.model_factories import UserF
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
-from property.factories import PropertyFactory, ProvinceFactory
+from property.factories import PropertyFactory, ProvinceFactory, PropertyTypeFactory
 from property.models import Parcel, Property, PropertyType
 from population_data.models import OpenCloseSystem
 from stakeholder.factories import (
@@ -531,7 +532,7 @@ class TestPropertyAPIViews(TestCase):
             organisation=self.organisation
         )
         request = self.factory.get(
-            reverse('property-search') + f'?search_text=sea'
+            reverse('property-search') + '?search_text=sea'
         )
         self.user_2.user_profile = self.user_2.user_profile
         self.user_2.user_profile.current_organisation = self.organisation
@@ -542,6 +543,17 @@ class TestPropertyAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 4)
+        # search by short_code
+        request = self.factory.get(
+            reverse('property-search') + f'?search_text={property.short_code}'
+        )
+        request.user = self.user_2
+        view = PropertySearch.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'],
+                         f'{property.name} ({property.short_code})')
 
     def test_check_property_name(self):
         data = {
@@ -570,3 +582,33 @@ class TestPropertyAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data['available'])
+
+from rest_framework.test import APIClient, APIRequestFactory
+class TestPropertyTypeList(TestCase):
+    def test_check_property_name(self):
+        user_1 = UserF.create(username='test_1')
+        prop_type_1 = PropertyTypeFactory.create()
+        prop_type_2 = PropertyTypeFactory.create()
+        request = APIRequestFactory().get(
+            reverse('property-types'),
+            format='json'
+        )
+        request.user = user_1
+        view = ListPropertyTypeAPIView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.data,
+            [
+                {
+                    'id': prop_type_1.id,
+                    'name': prop_type_1.name,
+                    'colour': prop_type_1.colour,
+                },
+                {
+                    'id': prop_type_2.id,
+                    'name': prop_type_2.name,
+                    'colour': prop_type_2.colour,
+                }
+            ]
+        )

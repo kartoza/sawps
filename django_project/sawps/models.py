@@ -67,7 +67,21 @@ class ExtendedGroup(models.Model):
             (
                 "can_view_property_filter",
                 "Can view property filter",
-            )
+            ),
+            (
+                "can_view_property_count_per_area_category",
+                "Can view property count per area category",
+            ),
+            (
+                ("can_view_property_count_per_"
+                 "area_available_to_species_category"),
+                ("Can view property count per "
+                 "area available to species category"),
+            ),
+            (
+                "can_view_property_count_per_population_density_category",
+                "Can view property count per population density category",
+            ),
         ]
 
 

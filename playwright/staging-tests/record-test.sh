@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+source base-url.sh
+
+source playwright-path.sh
+
 if [ -z "$1" ]
 then
   echo "Usage: $0 TESTNAME"
@@ -26,28 +30,14 @@ if [ -w "tests/${1}.spec.ts" ]; then
    esac
 fi
 TESTNAME=$1
-source base-url.sh
 
-echo "Choose OS"
-echo "1. NixOS
-2. Debian\Ubuntu"
-read option
-case $option in
-  1   ) echo "Recording test..."
-        playwright \
-          codegen \
-          --target playwright-test \
-          --load-storage=auth.json \
-          -o tests/$TESTNAME.spec.ts \
-          $BASE_URL;;
-  2   ) echo "Recording test..."
-        npx playwright \
-          codegen \
-          --target playwright-test \
-          --load-storage=auth.json \
-          -o tests/$TESTNAME.spec.ts \
-          $BASE_URL;;
-esac
+$PLAYWRIGHT \
+	codegen \
+	--target playwright-test \
+	--load-storage=auth.json \
+	-o tests/deleteme.spec.ts \
+	$BASE_URL
+
 
 echo "Test recording completed."
 echo "You can then run your test by doing:"

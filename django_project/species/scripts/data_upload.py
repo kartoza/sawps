@@ -6,6 +6,7 @@ import tempfile
 import pandas as pd
 from django.db import IntegrityError
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 from frontend.models.upload import UploadSpeciesCSV
 from activity.models import ActivityType
 from occurrence.models import SurveyMethod
@@ -212,12 +213,14 @@ class SpeciesCSVUpload(object):
                               "".format(self.created_list)
 
         if self.existed_list > 0 and self.created_list == 0:
-            success_message = "{} rows already exist in the database." \
+            success_message = "{} rows already exist and have been " \
+                              "overwritten." \
                               "".format(self.existed_list)
 
         if self.existed_list > 0 and self.created_list > 0:
-            success_message = "{} rows already exist in the database. {} " \
-                              "row uploaded successfully." \
+            success_message = "{} rows already exist and have been " \
+                              "overwritten. {} " \
+                              "rows uploaded successfully." \
                               "".format(self.existed_list, self.created_list)
 
         if success_message:
@@ -479,47 +482,54 @@ class SpeciesCSVUpload(object):
 
         # Save AnnualPopulation
         try:
-            annual, annual_created = AnnualPopulation.objects.get_or_create(
+            annual, annual_created = AnnualPopulation.objects.update_or_create(
                 year=int(string_to_number(year)),
                 taxon=taxon,
-                user=self.upload_session.uploader,
                 property=property,
-                area_available_to_species=area_available_to_species,
-                total=int(string_to_number(count_total)),
-                adult_male=int(string_to_number(
-                    self.row_value(row, COUNT_ADULT_MALES))),
-                adult_female=int(string_to_number(
-                    self.row_value(row, COUNT_ADULT_FEMALES))),
-                juvenile_male=int(string_to_number(
-                    self.row_value(row, COUNT_JUVENILE_MALES))),
-                juvenile_female=int(string_to_number(
-                    self.row_value(row, COUNT_JUVENILE_FEMALES))),
-                sub_adult_total=int(string_to_number(
-                    self.row_value(row, COUNT_SUBADULT_TOTAL))),
-                sub_adult_male=int(string_to_number(
-                    self.row_value(row, COUNT_SUBADULT_MALE))),
-                sub_adult_female=int(string_to_number(
-                    self.row_value(row, COUNT_SUBADULT_FEMALE))),
-                juvenile_total=int(string_to_number(
-                    self.row_value(row, COUNT_JUVENILE_TOTAL))),
-                group=int(string_to_number(self.row_value(row, GROUP))),
-                open_close_system=open_close_system,
-                survey_method=survey_method,
-                presence=string_to_boolean(presence),
-                upper_confidence_level=float(string_to_number(
-                    self.row_value(row, UPPER))),
-                lower_confidence_level=float(string_to_number(
-                    self.row_value(row, LOWER))),
-                certainty_of_bounds=int(string_to_number(
-                    self.row_value(row, CERTAINTY_OF_POPULATION))),
-                sampling_effort_coverage=self.sampling_effort(row),
-                population_estimate_certainty=int(
-                    string_to_number(pop_certainty)),
-                population_estimate_category=population_estimate,
-                survey_method_other=sur_other,
-                population_estimate_category_other=pop_other
+                defaults={
+                    'user': self.upload_session.uploader,
+                    'area_available_to_species': area_available_to_species,
+                    'total': int(string_to_number(count_total)),
+                    'adult_total': int(string_to_number(
+                        self.row_value(row, COUNT_ADULT_TOTAL))),
+                    'adult_male': int(string_to_number(
+                        self.row_value(row, COUNT_ADULT_MALES))),
+                    'adult_female': int(string_to_number(
+                        self.row_value(row, COUNT_ADULT_FEMALES))),
+                    'juvenile_male': int(string_to_number(
+                        self.row_value(row, COUNT_JUVENILE_MALES))),
+                    'juvenile_female': int(string_to_number(
+                        self.row_value(row, COUNT_JUVENILE_FEMALES))),
+                    'sub_adult_total': int(string_to_number(
+                        self.row_value(row, COUNT_SUBADULT_TOTAL))),
+                    'sub_adult_male': int(string_to_number(
+                        self.row_value(row, COUNT_SUBADULT_MALE))),
+                    'sub_adult_female': int(string_to_number(
+                        self.row_value(row, COUNT_SUBADULT_FEMALE))),
+                    'juvenile_total': int(string_to_number(
+                        self.row_value(row, COUNT_JUVENILE_TOTAL))),
+                    'group': int(string_to_number(self.row_value(row, GROUP))),
+                    'open_close_system': open_close_system,
+                    'survey_method': survey_method,
+                    'presence': string_to_boolean(presence),
+                    'upper_confidence_level': float(string_to_number(
+                        self.row_value(row, UPPER))),
+                    'lower_confidence_level': float(string_to_number(
+                        self.row_value(row, LOWER))),
+                    'certainty_of_bounds': int(string_to_number(
+                        self.row_value(row, CERTAINTY_OF_POPULATION))),
+                    'sampling_effort_coverage': self.sampling_effort(row),
+                    'population_estimate_certainty': int(
+                        string_to_number(pop_certainty)),
+                    'population_estimate_category': population_estimate,
+                    'survey_method_other': sur_other,
+                    'population_estimate_category_other': pop_other
+                }
             )
-        except IntegrityError:
+            annual.clean()
+        except (IntegrityError, ValidationError):
+            if annual.pk:
+                annual.delete()
             self.error_row(
                 message="The total of {} and {} must not exceed {}.".format(
                         COUNT_ADULT_MALES,
@@ -536,6 +546,10 @@ class SpeciesCSVUpload(object):
             self.created_list += 1
         else:
             self.existed_list += 1
+            # if updated, cleared population per activity
+            AnnualPopulationPerActivity.objects.filter(
+                annual_population=annual
+            ).delete()
 
         # Save AnnualPopulationPerActivity translocation intake
         if self.row_value(row, INTRODUCTION_TOTAL):

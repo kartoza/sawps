@@ -111,6 +111,9 @@ class TestPopulationAPIViews(TestCase):
                 'adult_male': 5,
                 'adult_female': 7,
                 'sub_adult_male': 8,
+                'adult_total': 12,
+                'sub_adult_total': 8,
+                'juvenile_total': 0,
                 'group': 1,
                 'open_close_id': 1,
                 'area_available_to_species': 5.5,
@@ -188,6 +191,10 @@ class TestPopulationAPIViews(TestCase):
         ).first()
         self.assertTrue(annual_population)
         self.assertEqual(annual_population.area_available_to_species, 5.5)
+        self.assertEqual(annual_population.total, data['annual_population']['total'])
+        self.assertEqual(annual_population.adult_total, data['annual_population']['adult_total'])
+        self.assertEqual(annual_population.sub_adult_total, data['annual_population']['sub_adult_total'])
+        self.assertEqual(annual_population.juvenile_total, data['annual_population']['juvenile_total'])
         # assert annual population per activity - intake
         annual_intake = AnnualPopulationPerActivity.objects.filter(
             annual_population=annual_population,

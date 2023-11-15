@@ -7,7 +7,7 @@ from area import area
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.core.exceptions import ValidationError
-from django.db.models import F, Value, CharField
+from django.db.models import F, Value, CharField, Q
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -31,7 +31,8 @@ from frontend.serializers.property import (
     PropertyDetailSerializer,
     PropertySerializer,
     PropertyTypeSerializer,
-    PropertySearchSerializer
+    PropertySearchSerializer,
+    PropertyTypeColourSerializer
 )
 from frontend.serializers.stakeholder import OrganisationSerializer
 from frontend.static_mapping import DATA_CONTRIBUTORS, SUPER_USER
@@ -393,7 +394,9 @@ class PropertySearch(APIView):
             self.request.user
         ) or 0
         properties = Property.objects.filter(
-            name__istartswith=search_text,
+            Q(name__istartswith=search_text) |
+            Q(short_code__istartswith=search_text)
+        ).filter(
             organisation_id=current_organisation_id
         ).order_by('name')[:10]
         properties_search_results = PropertySearchSerializer(
@@ -418,3 +421,16 @@ class PropertySearch(APIView):
             status=200,
             data=results
         )
+
+
+class ListPropertyTypeAPIView(APIView):
+    """
+    API to list Property Type
+    """
+
+    def get(self, request):
+        properties = PropertyType.objects.order_by('name')
+        properties = PropertyTypeColourSerializer(
+            properties, many=True
+        ).data
+        return Response(properties)

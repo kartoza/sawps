@@ -27,7 +27,7 @@ import {
     FIELD_COUNTER,
     OTHER_NUMBER_FIELDS,
     SUBPOPULATION_FIELD_MAP,
-    SubpopulationTotal
+    SUBPOPULATION_FIELD_KEYS
 } from '../../../models/Upload';
 import PropertyInterface from '../../../models/Property';
 import { REQUIRED_FIELD_ERROR_MESSAGE } from '../../../utils/Validation';
@@ -67,11 +67,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
     } = props
     const [data, setData] = useState<UploadSpeciesDetailInterface>(getDefaultUploadSpeciesDetail(0))
     const [validation, setValidation] = useState<UploadSpeciesDetailValidation>({})
-    const [subpopulationTotal, setSubpopulationTotal] = useState<SubpopulationTotal>({
-        adult: 0,
-        sub_adult: 0,
-        juvenile: 0
-    })
 
     const updateSpecies = (value: number) => {
         // find taxon
@@ -119,41 +114,59 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                     sub_adult_female: 0,
                     juvenile_male: 0,
                     juvenile_female: 0,
+                    adult_total: 0,
+                    sub_adult_total: 0,
+                    juvenile_total: 0
                 },
                 intake_populations: [...data.intake_populations],
                 offtake_populations: [...data.offtake_populations]     
             })
-            setSubpopulationTotal({
-                adult: 0,
-                sub_adult: 0,
-                juvenile: 0
-            })
+        } else if (field.includes('_total')) {
+            // replace _total with _male and _female to get subpopulation field
+            if (isNaN(value)) {
+                value = 0
+            }
+            let _total = 0
+            let _updateSubPopulationFields: { [key: string]: number } = {}
+            for (const [_field, _subpopulationFields] of Object.entries(SUBPOPULATION_FIELD_KEYS)) {
+                if (_field === field) {
+                    _total += value
+                    _updateSubPopulationFields[_subpopulationFields[0]] = 0
+                    _updateSubPopulationFields[_subpopulationFields[1]] = 0
+                } else {
+                    let _keyField = _field as keyof AnnualPopulationInterface
+                    _total += data.annual_population[_keyField] as number
+                }
+            }
+            setData({
+                ...data,
+                annual_population: {
+                    ...data.annual_population,
+                    [field]: value,
+                    total: _total,
+                    ..._updateSubPopulationFields
+                },
+                intake_populations: [...data.intake_populations],
+                offtake_populations: [...data.offtake_populations]     
+            })            
         } else {
             let _total = data.annual_population.total
-            if (FIELD_COUNTER.includes(field)) {
+            let _subpopulation = {
+                adult_total: data.annual_population.adult_total,
+                sub_adult_total: data.annual_population.sub_adult_total,
+                juvenile_total: data.annual_population.juvenile_total
+            }
+            if (field in SUBPOPULATION_FIELD_MAP) {
                 if (isNaN(value)) {
                     value = 0
                 }
-                let _subpopulation = {
-                    adult: 0,
-                    sub_adult: 0,
-                    juvenile: 0
-                }
-                // sum the counter fields
+                let _keySubPopulationTotal = SUBPOPULATION_FIELD_MAP[field]
+                let _otherField = SUBPOPULATION_FIELD_KEYS[_keySubPopulationTotal].filter((val) => val !== field)[0] as keyof AnnualPopulationInterface
+                _subpopulation[_keySubPopulationTotal] = value + data.annual_population[_otherField]
                 _total = 0
-                for (let _field of FIELD_COUNTER) {
-                    let _keySubField = SUBPOPULATION_FIELD_MAP[_field] as keyof SubpopulationTotal
-                    if (_field === field) {
-                        _total += value
-                        _subpopulation[_keySubField] += value
-                    } else {
-                        let _keyField = _field as keyof AnnualPopulationInterface
-                        let _fieldVal = data.annual_population[_keyField] as number
-                        _total += isNaN(_fieldVal) ? 0 : _fieldVal
-                        _subpopulation[_keySubField] += isNaN(_fieldVal) ? 0 : _fieldVal
-                    }
+                for (const [_field, _subpopulationTotal] of Object.entries(_subpopulation)) {
+                    _total += _subpopulationTotal
                 }
-                setSubpopulationTotal(_subpopulation)
             } else if (OTHER_NUMBER_FIELDS.includes(field)) {
                 if (isNaN(value)) {
                     value = 0
@@ -165,6 +178,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                     ...data.annual_population,
                     [field]: value,
                     total: _total,
+                    ..._subpopulation
                 },
                 intake_populations: [...data.intake_populations],
                 offtake_populations: [...data.offtake_populations]     
@@ -298,11 +312,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
             offtake_populations: [...initialData.offtake_populations]
         })
         setValidation({})
-        setSubpopulationTotal({
-            adult: initialData.annual_population.adult_male + initialData.annual_population.adult_female,
-            sub_adult: initialData.annual_population.sub_adult_male + initialData.annual_population.sub_adult_female,
-            juvenile: initialData.annual_population.juvenile_male + initialData.annual_population.juvenile_female
-        })
     }, [initialData])
 
     return (
@@ -514,8 +523,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             variant="standard"
                                             fullWidth
-                                            disabled
-                                            value={subpopulationTotal.adult}
+                                            value={data.annual_population.adult_total}
+                                            onChange={(e) => updateAnnualPopulation('adult_total', parseInt(e.target.value))}
                                             helperText=" "
                                         />
                                     </Grid>
@@ -568,8 +577,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             variant="standard"
                                             fullWidth
-                                            disabled
-                                            value={subpopulationTotal.sub_adult}
+                                            value={data.annual_population.sub_adult_total}
+                                            onChange={(e) => updateAnnualPopulation('sub_adult_total', parseInt(e.target.value))}
                                             helperText=" "
                                         />
                                     </Grid>
@@ -622,8 +631,8 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                             inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                                             variant="standard"
                                             fullWidth
-                                            disabled
-                                            value={subpopulationTotal.juvenile}
+                                            value={data.annual_population.juvenile_total}
+                                            onChange={(e) => updateAnnualPopulation('juvenile_total', parseInt(e.target.value))}
                                             helperText=" "
                                         />
                                     </Grid>

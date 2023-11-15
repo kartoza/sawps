@@ -64,7 +64,7 @@ class UserLogin(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     login_status = models.ForeignKey(
         LoginStatus,
-        on_delete=models.DO_NOTHING
+        on_delete=models.CASCADE
     )
     ip_address = models.CharField(max_length=20)
     date_time = models.DateTimeField(auto_now_add=True)
@@ -89,12 +89,12 @@ class Organisation(models.Model):
     )
     data_use_permission = models.ForeignKey(
         'regulatory_permit.dataUsePermission',
-        on_delete=models.DO_NOTHING
+        on_delete=models.CASCADE
     )
     national = models.BooleanField(null=True, blank=True)
     province = models.ForeignKey(
         Province,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )
@@ -174,7 +174,7 @@ class UserProfile(models.Model):
     )
     title_id = models.ForeignKey(
         UserTitle,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         default=None
@@ -187,7 +187,7 @@ class UserProfile(models.Model):
     )
     user_role_type_id = models.ForeignKey(
         UserRoleType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         default=None
@@ -258,7 +258,7 @@ class OrganisationInvites(models.Model):
     email = models.CharField(max_length=200, null=True, blank=True)
     organisation = models.ForeignKey(
         Organisation,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True, blank=True
     )
     joined = models.BooleanField(
@@ -267,7 +267,7 @@ class OrganisationInvites(models.Model):
     )
     user_role = models.ForeignKey(
         UserRoleType,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         default=None
@@ -313,13 +313,13 @@ class Reminders(models.Model):
     )
     user = models.ForeignKey(
         User,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )
     organisation = models.ForeignKey(
         Organisation,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )

@@ -58,7 +58,7 @@
 }
 
 .dataTable {
-    width: 100%;
+    width: 100%!important;
 
     input[type=checkbox] {
         width: 100%;
@@ -95,6 +95,7 @@
 }
 
 .dataTable-auto {
+    width: 100%;
     min-height: 390px;
 
     .MuiDataGrid-root{

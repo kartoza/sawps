@@ -14,6 +14,9 @@ export interface AnnualPopulationInterface {
     sub_adult_female?: number;
     juvenile_male?: number;
     juvenile_female?: number;
+    adult_total?: number;
+    sub_adult_total?: number;
+    juvenile_total?: number;
     group?: number;
     area_available_to_species: number;
     survey_method_id: number;
@@ -102,13 +105,6 @@ export interface UploadSpeciesDetailValidation {
     offtake_population?: AnnualPopulationPerActivityValidation;
 }
 
-export interface SubpopulationTotal {
-    adult: number;
-    sub_adult: number;
-    juvenile: number;
-}
-
-
 /* Create Default Data Functions */
 const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
     return {
@@ -120,6 +116,9 @@ const getDefaultAnnualPopulation = ():AnnualPopulationInterface => {
         sub_adult_female: 0,
         juvenile_male: 0,
         juvenile_female: 0,
+        adult_total: 0,
+        sub_adult_total: 0,
+        juvenile_total: 0,
         area_available_to_species: 0,
         survey_method_id: 0,
         note: '',
@@ -240,11 +239,17 @@ export const OTHER_NUMBER_FIELDS = [
 ]
 
 
-export const SUBPOPULATION_FIELD_MAP: { [key: string]: string } = {
-    'adult_male': 'adult',
-    'adult_female': 'adult',
-    'sub_adult_male': 'sub_adult',
-    'sub_adult_female': 'sub_adult',
-    'juvenile_male': 'juvenile',
-    'juvenile_female': 'juvenile'
+export const SUBPOPULATION_FIELD_MAP: { [key: string]: 'adult_total' | 'sub_adult_total' | 'juvenile_total' } = {
+    'adult_male': 'adult_total',
+    'adult_female': 'adult_total',
+    'sub_adult_male': 'sub_adult_total',
+    'sub_adult_female': 'sub_adult_total',
+    'juvenile_male': 'juvenile_total',
+    'juvenile_female': 'juvenile_total'
+}
+
+export const SUBPOPULATION_FIELD_KEYS: { [key: string]: string[] } = {
+    'adult_total': ['adult_male', 'adult_female'],
+    'sub_adult_total': ['sub_adult_male', 'sub_adult_female'],
+    'juvenile_total': ['juvenile_male', 'juvenile_female']
 }

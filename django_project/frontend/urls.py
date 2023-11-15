@@ -37,7 +37,11 @@ from frontend.api_views.metrics import (
     TotalAreaAvailableToSpeciesAPIView,
     PopulationPerAgeGroupAPIView,
     TotalAreaVSAvailableAreaAPIView,
-    TotalCountPerPopulationEstimateAPIView
+    TotalCountPerPopulationEstimateAPIView,
+    PropertyCountPerPopulationSizeCategoryAPIView,
+    PropertyCountPerAreaCategoryAPIView,
+    PropertyPerAreaAvailableCategoryAPIView,
+    PropertyPerPopDensityCategoryAPIView
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
@@ -55,7 +59,8 @@ from frontend.api_views.property import (
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
     PropertySearch,
-    CheckPropertyNameIsAvailable
+    CheckPropertyNameIsAvailable,
+    ListPropertyTypeAPIView
 )
 from frontend.api_views.spatial_filter import (
     SpatialFilterList
@@ -188,6 +193,11 @@ urlpatterns = [
         r'^api/property/search/?$',
         PropertySearch.as_view(),
         name='property-search'
+    ),
+    re_path(
+        r'^api/property/types/?$',
+        ListPropertyTypeAPIView.as_view(),
+        name='property-types'
     ),
     re_path(
         r'^api/property/boundaries/update/?$',
@@ -370,6 +380,26 @@ urlpatterns = [
         'api/total-area-vs-available-area/',
         TotalAreaVSAvailableAreaAPIView.as_view(),
         name='total_area_vs_available_area'
+    ),
+    path(
+        'api/property-count-per-population-category-size/',
+        PropertyCountPerPopulationSizeCategoryAPIView.as_view(),
+        name='property-count-per-population-category-size'
+    ),
+    path(
+        'api/property-count-per-area-category/',
+        PropertyCountPerAreaCategoryAPIView.as_view(),
+        name='property-count-per-area-category'
+    ),
+    path(
+        'api/property-count-per-area-available-to-species-category/',
+        PropertyPerAreaAvailableCategoryAPIView.as_view(),
+        name='property-count-per-area-available-to-species-category'
+    ),
+    path(
+        'api/property-count-per-population-density-category/',
+        PropertyPerPopDensityCategoryAPIView.as_view(),
+        name='property-count-per-population-density-category'
     ),
     path(
         'add_totp_devices/',
