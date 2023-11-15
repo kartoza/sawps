@@ -1,16 +1,18 @@
 """Classes for Statistical R Model."""
+from uuid import uuid4
 from django.db import models
 from django.db.models.signals import pre_delete, post_save, post_delete
 from django.dispatch import receiver
+from frontend.models.base_task import BaseTaskRequest
 
 
 # model output types
 NATIONAL_TREND = 'national_trend'
-POPULATION_PER_PROVINCE = 'population_per_province'
 PROVINCE_TREND = 'province_trend'
 PROPERTY_TREND = 'property_trend'
-POPULATION_PER_PROPERTY = 'population_per_property'
 SPECIES_PER_PROPERTY = 'species_per_property'
+NATIONAL_GROWTH = 'national_growth'
+PROVINCIAL_GROWTH = 'provincial_growth'
 
 
 class StatisticalModel(models.Model):
@@ -79,11 +81,11 @@ class StatisticalModelOutput(models.Model):
 
     OUTPUT_TYPE_CHOICES = (
         (NATIONAL_TREND, 'National Trend'),
-        (POPULATION_PER_PROVINCE, 'Population Per Province'),
         (PROVINCE_TREND, 'Province Trend'),
         (PROPERTY_TREND, 'Property Trend'),
-        (POPULATION_PER_PROPERTY, 'Population Per Property'),
-        (SPECIES_PER_PROPERTY, 'Species Per Property')
+        (SPECIES_PER_PROPERTY, 'Species Per Property'),
+        (NATIONAL_GROWTH, 'National Growth'),
+        (PROVINCIAL_GROWTH, 'Provincial Growth')
     )
 
     model = models.ForeignKey(
@@ -94,4 +96,52 @@ class StatisticalModelOutput(models.Model):
     type = models.CharField(
         max_length=100,
         choices=OUTPUT_TYPE_CHOICES
+    )
+
+    variable_name = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+
+class SpeciesModelOutput(BaseTaskRequest):
+    """Store statistical model output for a species."""
+
+    model = models.ForeignKey(
+        'frontend.StatisticalModel',
+        on_delete=models.CASCADE
+    )
+
+    taxon = models.ForeignKey(
+        'species.Taxon',
+        on_delete=models.CASCADE
+    )
+
+    output_file = models.FileField(
+        upload_to='statistical/%Y/%m/%d/',
+        null=True,
+        blank=True
+    )
+
+    uuid = models.UUIDField(
+        default=uuid4
+    )
+
+    is_latest = models.BooleanField(
+        default=False
+    )
+
+    generated_on = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    is_outdated = models.BooleanField(
+        default=False
+    )
+
+    outdated_since = models.DateTimeField(
+        null=True,
+        blank=True
     )
