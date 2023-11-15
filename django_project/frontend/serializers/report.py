@@ -7,21 +7,6 @@ from population_data.models import (
 )
 
 
-class BaseNationalReportSerializer(serializers.Serializer):
-    """
-    Base Serializer for Report.
-    """
-
-    scientific_name = serializers.SerializerMethodField()
-    common_name = serializers.SerializerMethodField()
-
-    def get_scientific_name(self, obj: AnnualPopulation) -> str:
-        return obj.taxon.scientific_name
-
-    def get_common_name(self, obj: AnnualPopulation) -> str:
-        return obj.taxon.common_name_varbatim
-
-
 class BaseReportSerializer(serializers.Serializer):
     """
     Base Serializer for Report.

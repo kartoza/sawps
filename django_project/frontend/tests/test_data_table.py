@@ -417,6 +417,7 @@ class NationalUserTestCase(TestCase):
         """Test property report for national data consumer"""
         url = self.url
         response = self.client.get(url, {'activity': 'all'}, **self.auth_headers)
+        print(response.json())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 

@@ -70,8 +70,7 @@ class DataTableAPIView(APIView):
                     taxon_queryset = self.get_taxon_queryset()
                     province_reports = national_level_province_report(
                         taxon_queryset,
-                        request,
-                        user_roles
+                        request
                     )
                     if province_reports:
                         reports.append({
