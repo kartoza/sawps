@@ -840,7 +840,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             "file": "csv",
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Activity_report,Property_report,Sampling_report,Species_report,Province_report"
+            "reports": "Activity_report,Property_report,Species_report,Province_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -854,7 +854,6 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Species_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Activity_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Property_report.csv")))
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report_Sampling_report.csv")))
 
         # check fields in Activity report
         activity_path = "/home/web/media/download_data/data_report_Activity_report.csv"
@@ -900,7 +899,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             "file": "xlsx",
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Activity_report,Property_report,Sampling_report,Species_report,Province_report"
+            "reports": "Activity_report,Property_report,Species_report,Province_report"
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
