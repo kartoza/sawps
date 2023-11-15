@@ -1,5 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {Bar} from "react-chartjs-2";
+// @ts-ignore
+import _ from "lodash";
 import './style.scss';
 import ChartContainer from "../ChartContainer";
 
@@ -12,7 +14,9 @@ interface BarChartInterface {
     xLabel?: string,
     yLabel?: string,
     xStacked?: boolean,
-    yStacked?: boolean
+    yStacked?: boolean,
+    showLegend?: boolean
+    options?: any
 }
 
 
@@ -23,9 +27,11 @@ export default function BarChart({chartData,
                                  xLabel = 'Default X Label',
                                  yLabel = 'Default Y Label',
                                  xStacked = true,
-                                 yStacked = true}: BarChartInterface) {
+                                 yStacked = true,
+                                 showLegend = true,
+                                 options = {}}: BarChartInterface) {
 
-    const options = {
+    const defaultOptions = {
         indexAxis: indexAxis as any,
         responsive: true,
         maintainAspectRatio: false,
@@ -57,7 +63,7 @@ export default function BarChart({chartData,
                 },
                 ticks: {
                     color: "black",
-                },
+                }
             },
         },
         plugins: {
@@ -65,10 +71,10 @@ export default function BarChart({chartData,
                 enabled: true
             },
             datalabels: {
-                display: false,
+                display: false
             },
             legend: {
-                display: true,
+                display: showLegend,
                 position: 'right' as 'right',
                 labels: {
                     boxWidth: 20,
@@ -78,10 +84,11 @@ export default function BarChart({chartData,
                         size: 10,
                     }
                 },
-            },
+            }
         },
     } as const;
 
+    const newOptions = _.merge(defaultOptions, options);
 
     return (
         <ChartContainer title={chartTitle}>
@@ -89,7 +96,7 @@ export default function BarChart({chartData,
                 <Bar
                     key={chartId}
                     data={chartData}
-                    options={options}
+                    options={newOptions}
                     className={'bar-chart'}
                 />
             </div>

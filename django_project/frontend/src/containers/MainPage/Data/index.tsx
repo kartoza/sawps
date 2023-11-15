@@ -32,7 +32,6 @@ const MenuProps = {
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
 
 const DataList = () => {
-    const [width, setWidth] = useState(0);
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -42,7 +41,6 @@ const DataList = () => {
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
     const [columns, setColumns] = useState([])
-    const [rows, setRows] = useState([])
     const [tableData, setTableData] = useState<any>()
     const [modalOpen, setModalOpen] = useState(false)
     const [activityTableGrid, setActivityTable] = useState<any>()
@@ -113,12 +111,6 @@ const DataList = () => {
         ]);
         return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
     }
-
-    const measuredRef = useCallback((node: any) => {
-        if (node !== null) {
-          setWidth(node.getBoundingClientRect().width)
-        }
-    }, [data])
 
     useEffect(() => {
         if (activityList) {
@@ -247,7 +239,7 @@ const DataList = () => {
                             const generatedColumns = cellKeys.map((key) => ({
                                 field: key,
                                 headerName: getTitle(key),
-                                width: (customColorWidth as any)[each]?.width,
+                                flex: 1
                             }));
                             const filteredColumns = generatedColumns.filter((column) =>
                                 selectedColumns.length > 0 ?
@@ -266,13 +258,7 @@ const DataList = () => {
                                 <DataGrid
                                     key={index}
                                     rows={cellRows}
-                                    columns={selectedColumns.length > 0 ? filteredColumns.map(col => {
-                                        return {
-                                            field: col.field,
-                                            headerName: col.headerName,
-                                            width: width/filteredColumns.length
-                                        }
-                                    }) : generatedColumns}
+                                    columns={filteredColumns}
                                     disableRowSelectionOnClick
                                     components={{
                                         Pagination: null,
@@ -307,7 +293,7 @@ const DataList = () => {
                                 const generatedColumns: GridColDef[] = cellKeys.length > 0 && cellKeys.map((key) => ({
                                     field: key,
                                     headerName: getTitle(key),
-                                    width: width/cellKeys.length,
+                                    flex: 1
                                 }));
                                 const filteredColumns = generatedColumns.filter((column) =>
                                     selectedColumns.length > 0 ?
@@ -326,13 +312,7 @@ const DataList = () => {
                                     <DataGrid
                                         key={index}
                                         rows={cellRows}
-                                        columns={selectedColumns.length > 0 ? filteredColumns.map(col => {
-                                            return {
-                                                field: col.field,
-                                                headerName: col.headerName,
-                                                width: width/filteredColumns.length
-                                            }
-                                        }) : generatedColumns}
+                                        columns={filteredColumns}
                                         disableRowSelectionOnClick
                                         getRowHeight={() => 'auto'}
                                         components={{
@@ -406,7 +386,7 @@ const DataList = () => {
                         </Box>
                     </Modal>
                 </Box>
-                <Box className='dataContainer' id={'dataContainer'} ref={measuredRef}>
+                <Box className='dataContainer' id={'dataContainer'}>
                     <Topper></Topper>
                     <Box className="bgGreen">
                         <Box className="selectBox">
@@ -480,18 +460,24 @@ const DataList = () => {
                 )}
             </Box>
           ) : (
-            <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
-                <Grid item>
-                    <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                        Ready to explore?
-                    </Typography>
-                </Grid>
-                <Grid>
-                    <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                        Choose a species to view the data as table.
-                    </Typography>
-                </Grid>
-            </Grid>
+            <Box>
+               <Box className='dataContainer' id={'dataContainer'}>
+                    <Grid container
+                          justifyContent="center" alignItems="center"
+                          flexDirection={'column'}>
+                        <Grid item className={'explore-message'}>
+                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                                Ready to explore?
+                            </Typography>
+                        </Grid>
+                        <Grid item className={'explore-message'}>
+                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                Choose a species to view the data as table.
+                            </Typography>
+                        </Grid>
+                    </Grid>
+               </Box>
+            </Box>
           )
     )
 }

@@ -1,147 +1,161 @@
-import React, { useEffect, useState } from "react";
-import { CategoryScale } from "chart.js";
-import Chart from "chart.js/auto";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-import Loading from "../../../components/Loading";
+import React, {useEffect, useState} from 'react';
+import Loading from '../../../components/Loading';
+import BarChart from "../../../components/BarChart";
+import axios from "axios";
 import "./index.scss";
-import ChartContainer from "../../../components/ChartContainer";
-import DoughnutChart from "../../../components/DoughnutChart";
 
+type AvailableColors = {
+  [key: string]: string;
+};
 
-
-Chart.register(CategoryScale);
-Chart.register(ChartDataLabels);
-
-const availableColors = [
-  'rgba(112, 178, 118, 1)',
-  'rgba(250, 167, 85, 1)',
-  'rgba(157, 133, 190, 1)',
-  '#FF5252',
-  '#616161',
-  // additional transparency colors for years
-  'rgba(112, 178, 118, 0.5)',  // 50% transparency
-  'rgba(255, 82, 82, 0.5)',  // 50% transparency
-  'rgba(97, 97, 97, 0.5)',  // 50% transparency
-  'rgba(157, 133, 190, 0.5)',  // 50% transparency
-  'rgba(250, 167, 85, 0.5)',  // 50% transparency
-];
-
-
-function processDataForChart(data: any) {
-  const activityCounts: any = {};
-  const colors = [];
-
-  data.forEach((item: any) => {
-    item.activities.forEach((activity: any) => {
-      if (!activityCounts[activity.activity_type]) {
-        activityCounts[activity.activity_type] = 0;
-      }
-      activityCounts[activity.activity_type] += activity.total;
-    });
-  });
-
-  for (const activityType of Object.keys(activityCounts)) {
-    colors.push(availableColors[Object.keys(activityCounts).indexOf(activityType)]);
-  }
-
-  return {
-    labels: Object.keys(activityCounts),
-    datasets: [{
-      label: 'Total Count per Activity Type',
-      data: Object.values(activityCounts),
-      backgroundColor: colors
-    }]
-  };
-}
+const FETCH_ACTIVITY_TOTAL_COUNT = '/api/total-count-per-activity/'
 
 const TotalCountPerActivity = (props: any) => {
   const {
-    selectedSpecies,
     propertyId,
     startYear,
     endYear,
-    loading,
-    activityData
+    selectedSpecies,
+    activityTypeList
   } = props;
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [totalPopulation, setTotalPopulation] = useState(0);
+  const [activityData, setActivityData] = useState([]);
+
+  const [availableColors, setAvailableColors] = useState<AvailableColors>({});
+  // Define age groups and their corresponding data properties
+  const [activityTypes, setActivityTypes] = useState([])
+  const activityTypesObj = activityTypes.map(activityType => {
+    return {
+      label: activityType,
+      dataProperty: activityType.toLowerCase().replace(' ', '-')
+    }
+  })
+
+  const fetchActivityTotalCount = () => {
+    setLoading(true);
+    axios
+      .get(
+          `${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=all&property=${propertyId}`
+      )
+      .then((response) => {
+        setLoading(false);
+        if (response.data) {
+          setTotalPopulation(response.data.length > 0 ? response.data[0].total : 0);
+          setActivityData(response.data.length > 0 ? response.data[0].activities : []);
+        } else {
+          setTotalPopulation(0)
+          setActivityData([])
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
-    if (activityData && activityData.length > 0) {
-      const firstItem = activityData[0];
-      if (firstItem.graph_icon) {
-        setBackgroundImageUrl(firstItem.graph_icon);
-      } else {
-        setBackgroundImageUrl(undefined)
+    fetchActivityTotalCount();
+  }, [propertyId, startYear, endYear, selectedSpecies]);
+
+  useEffect(() => {
+    if (activityTypeList) {
+      let avColors = {}
+      let activityTypeNames = []
+      for (const activityType of activityTypeList) {
+        const activityTypeName: string = activityType.name
+        // @ts-ignore
+        avColors[activityTypeName] = activityType.colour
+        activityTypeNames.push(activityTypeName)
       }
-    }else {
-      setBackgroundImageUrl(undefined)
+      setAvailableColors(avColors)
+      setActivityTypes(activityTypeNames)
     }
-  }, [propertyId,startYear,endYear,activityData, selectedSpecies]);
+  }, [activityTypeList]);
 
-  // Initialize variables
-  const labels: string[] = [];
-  const data: number[] = [];
-  const uniqueColors: string[] = [];
-  let year: number = endYear; // Set the year to the provided startYear
+  // Create an array to hold datasets
+  const datasets = [];
 
-  if (activityData && activityData.length > 0) {
-    // Iterate through activityData
-    activityData.forEach((speciesData: any) => {
-      const speciesActivities = speciesData.activities;
+  for (const activityType of activityTypesObj) {
+    const count = activityData.filter((dataItem: any) => dataItem.activity_type === activityType.label)
+      .map((dataItem: any) => dataItem.total);
 
-      // Find the activity entry that matches the provided startYear
-      const matchingActivity = speciesActivities.find(
-          (activity: any) => activity.year === endYear? activity: null
-      );
+    if (count.every(d => d === 0)) continue;
 
-      if (matchingActivity) {
-        const activityType = matchingActivity.activity_type;
-        const total = matchingActivity.total;
+    const percentage = activityData.filter((dataItem: any) => dataItem.activity_type === activityType.label)
+      .map((dataItem: any) => parseFloat(((dataItem.total / totalPopulation) * 100).toFixed(2)));
 
-        // Check if the activityType is not in the labels list
-        if (!labels.includes(activityType)) {
-          let paddedLabel = activityType + '';
-          if (activityType.length > 25) {
-            // Trim the name to 22 characters and add '...' at the end
-            paddedLabel = activityType.substring(0, 22) + '...';
-          }
+    // Create the dataset object
+    const dataset = {
+      label: activityType.label,
+      data: percentage,
+      counts: count,
+      backgroundColor: availableColors[activityType.label]
+    };
 
-          labels.push(paddedLabel.padEnd(50, ' ')); // Use the padded label
-          data.push(total);
-          uniqueColors.push(availableColors[labels.length - 1]);
-        }
-      }
-    });
+    datasets.push(dataset);
   }
 
-  // Create the chartData object
-  const chartData = processDataForChart(activityData);
+  const data = {
+    labels: [''],
+    datasets: datasets,
+  };
 
-  // Define chart title based on conditions
-  let chartTitle = 'No data available for current filter selections';
-
-  if (selectedSpecies && activityData && activityData.length > 0) {
-    chartTitle = `Total count per activity for ${selectedSpecies} year ${year}`;
-  }
-
-  if (!selectedSpecies){
-    chartTitle = "Please select a species for the chart to show available data";
-  }
+  const options = {
+        scales: {
+            y: {
+              grace: '5%',
+              display: true,
+              stacked: false,
+              title: {
+                  display: true,
+                  text: 'Percentage',
+                  font: {
+                      size: 14,
+                  },
+              },
+              grid: {
+                  display: false,
+              },
+              ticks: {
+                  color: "black",
+              },
+            }
+        },
+        plugins: {
+            datalabels: {
+                display: true,
+                color: '#000',
+                anchor: 'end',
+                align: 'end',
+                font: {
+                    size: 12,
+                },
+                formatter: function(value: any, context: any) {
+                    return `n=${context.dataset.counts ? context.dataset.counts[context.dataIndex] : null}`;
+                }
+            }
+        },
+    }
 
   return (
-      <>
-        {!loading ? (
-            <ChartContainer title={chartTitle}>
-              <DoughnutChart
-                  chartData={chartData}
-                  chartId={'total-count-per-activity'}
-                  icon={backgroundImageUrl}
-              />
-            </ChartContainer>
-        ) : (
-            <Loading containerStyle={{ minHeight: 160 }} />
-        )}
-      </>
+    <>
+      {!loading ? (
+        <BarChart
+            chartData={data}
+            chartId={'TotalCountPerActivity'}
+            chartTitle={'Activity count as % of total population'}
+            yLabel={'Percentage'}
+            xLabel={'Activities'}
+            indexAxis={'x'}
+            xStacked={false}
+            yStacked={false}
+            options={options}
+        />
+      ) : (
+        <Loading containerStyle={{minHeight: 160}}/>
+      )}
+    </>
   );
 };
 

@@ -6,6 +6,10 @@ from django.dispatch import receiver
 
 class PropertyType(models.Model):
     name = models.CharField(max_length=250, unique=True)
+    colour = models.CharField(
+        max_length=20,
+        default='#000000'
+    )
 
     def __str__(self):
         return self.name
@@ -57,17 +61,17 @@ class Property(models.Model):
         blank=True
     )
     owner_email = models.EmailField(null=True, blank=True)
-    property_size_ha = models.IntegerField(null=True, blank=True)
+    property_size_ha = models.FloatField(null=True, blank=True)
     geometry = models.MultiPolygonField(srid=4326, null=True, blank=True)
-    province = models.ForeignKey(Province, on_delete=models.DO_NOTHING)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE)
     property_type = models.ForeignKey(
-        PropertyType, on_delete=models.DO_NOTHING
+        PropertyType, on_delete=models.CASCADE
     )
     organisation = models.ForeignKey(
-        'stakeholder.Organisation', on_delete=models.DO_NOTHING
+        'stakeholder.Organisation', on_delete=models.CASCADE
     )
 
-    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField()
     open = models.ForeignKey(
         "population_data.OpenCloseSystem", on_delete=models.CASCADE, null=True
