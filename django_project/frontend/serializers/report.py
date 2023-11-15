@@ -292,21 +292,17 @@ class NationalLevelPropertyReport(serializers.Serializer):
         )
 
         for property_entry in property_data:
+            property_name = property_entry["property__property_type__name"]
             data = {
+                "year": property_entry["year"],
                 "common_name": (
                     instance.common_name_varbatim if
                     instance.common_name_varbatim else '-'
                 ),
                 "scientific_name": instance.scientific_name,
+                f"total_population_{property_name}_property": property_entry["population"],
+                f"total_area_{property_name}_property": property_entry["area"]
             }
-            property_name = property_entry["property__property_type__name"]
-            data["year"] = property_entry["year"]
-            data[
-                f"total_population_{property_name}_property"
-            ] = property_entry["population"]
-            data[
-                f"total_area_{property_name}_property"
-            ] = property_entry["area"]
             all_data.append(data)
 
         return all_data
@@ -315,11 +311,7 @@ class NationalLevelPropertyReport(serializers.Serializer):
 class NationalLevelActivityReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        data = {
-            "common_name": instance.common_name_varbatim,
-            "scientific_name": instance.scientific_name,
-        }
-
+        data = {}
         activity_data = AnnualPopulation.objects.values(
             "annualpopulationperactivity__activity_type__name",
             "year"
@@ -327,14 +319,17 @@ class NationalLevelActivityReport(serializers.Serializer):
             population=Sum("annualpopulationperactivity__total"),
         )
 
+
         for activity_entry in activity_data:
-            data["year"] = activity_entry["year"]
             activity_name = activity_entry[
                 "annualpopulationperactivity__activity_type__name"
             ]
-            data[
-                f"total_population_{activity_name}"
-            ] = activity_entry["population"]
+            data.update({
+                "year": activity_entry["year"],
+                f"total_population_{activity_name}": activity_entry["population"],
+                "common_name": instance.common_name_varbatim,
+                "scientific_name": instance.scientific_name,
+            })
 
         return data
 

@@ -12,6 +12,12 @@ TOTAL_POPULATION_ERROR_MESSAGE = (
 )
 
 
+AREA_AVAILABLE_ERROR_MESSAGE = (
+    'Area available to species cannot be '
+    'greater than the property size ha.',
+)
+
+
 class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
@@ -36,8 +42,10 @@ class AnnualPopulationAbstract(models.Model):
         Custom validation to ensure the sum of adult_male and adult_female
         is not greater than total.
         """
-        if self.adult_male is not None and self.adult_female is not None:
-            if self.adult_male + self.adult_female > self.total:
+        if self.adult_male is not None or self.adult_female is not None:
+            adult_male = self.adult_male if self.adult_male else 0
+            adult_female = self.adult_female if self.adult_female else 0
+            if adult_male + adult_female > self.total:
                 raise ValidationError({
                     'adult_male': TOTAL_POPULATION_ERROR_MESSAGE,
                     'adult_female': TOTAL_POPULATION_ERROR_MESSAGE,
@@ -125,6 +133,18 @@ class AnnualPopulation(AnnualPopulationAbstract):
             self.property.name,
             self.year
         )
+
+    def clean(self):
+        """
+        Custom validation to ensure area_available_to_species is not greater than property_size_ha.
+        """
+        if self.area_available_to_species and self.property.property_size_ha:
+            if self.area_available_to_species > self.property.property_size_ha:
+                raise ValidationError({
+                    'area_available_to_species': AREA_AVAILABLE_ERROR_MESSAGE
+                })
+
+        super().clean()
 
     class Meta:
         verbose_name = "Annual Population"
