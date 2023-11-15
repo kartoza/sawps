@@ -1,4 +1,4 @@
-from django.db.models import Sum, F, Value
+from django.db.models import Sum
 from rest_framework import serializers
 
 from population_data.models import (
@@ -264,7 +264,7 @@ class NationalLevelSpeciesReport(serializers.Serializer):
 class NationalLevelPropertyReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        all_data = []
+        all_data = {}
 
         property_data = AnnualPopulation.objects.filter(
             **self.context['filters'], taxon=instance
@@ -274,21 +274,57 @@ class NationalLevelPropertyReport(serializers.Serializer):
         ).annotate(
             population=Sum("total"),
             area=Sum("property__property_size_ha")
-        )
+        ).order_by('-year')
+
+        property_type_fields = set()
+        property_area_fields = set()
 
         for property_entry in property_data:
             property_name = property_entry["property__property_type__name"]
+            property_type_field = f"total_population_{property_name}_property"
+            property_area_field = f"total_area_{property_name}_property"
+            year = int(property_entry["year"])
             data = {
-                "year": property_entry["year"],
+                "year": year,
                 "common_name": (
                     instance.common_name_varbatim if
                     instance.common_name_varbatim else '-'
                 ),
                 "scientific_name": instance.scientific_name,
-                f"total_population_{property_name}_property": property_entry["population"],
-                f"total_area_{property_name}_property": property_entry["area"]
+                property_type_field: property_entry["population"],
+                property_area_field: property_entry["area"]
             }
-            all_data.append(data)
+            property_type_fields.add(property_type_field)
+            property_area_fields.add(property_area_field)
+            if year in all_data:
+                all_data[year].update(data)
+            else:
+                all_data[year] = data
+
+        all_data = [dt for dt in all_data.values()]
+        for data in all_data:
+            dt_type_fields = {
+                key for key in data.keys() if
+                key.startswith('total_population')
+            }
+            dt_area_fields = {
+                key for key in data.keys() if
+                key.startswith('total_area')
+            }
+            data.update(
+                {
+                    key: 0 for key in property_type_fields.difference(
+                        dt_type_fields
+                    )
+                }
+            )
+            data.update(
+                {
+                    key: 0 for key in property_area_fields.difference(
+                        dt_area_fields
+                    )
+                }
+            )
 
         return all_data
 
@@ -296,27 +332,47 @@ class NationalLevelPropertyReport(serializers.Serializer):
 class NationalLevelActivityReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        data = {}
+        all_data = {}
         activity_data = AnnualPopulation.objects.values(
             "annualpopulationperactivity__activity_type__name",
             "year"
         ).filter(**self.context['filters'], taxon=instance).annotate(
             population=Sum("annualpopulationperactivity__total"),
-        )
+        ).order_by('-year')
 
-
+        activity_fields = set()
         for activity_entry in activity_data:
+            year = activity_entry["year"]
             activity_name = activity_entry[
                 "annualpopulationperactivity__activity_type__name"
             ]
-            data.update({
+            activity_field = f"total_population_{activity_name}"
+            if not activity_name:
+                continue
+
+            data = {
                 "year": activity_entry["year"],
-                f"total_population_{activity_name}": activity_entry["population"],
+                activity_field: activity_entry["population"],
                 "common_name": instance.common_name_varbatim,
                 "scientific_name": instance.scientific_name,
-            })
+            }
+            activity_fields.add(activity_field)
+            if year in all_data:
+                all_data[year].update(data)
+            else:
+                all_data[year] = data
 
-        return data
+        all_data = [dt for dt in all_data.values()]
+        for data in all_data:
+            dt_prov_fields = {
+                key for key in data.keys() if
+                key.startswith('total_population')
+            }
+            data.update(
+                {key: 0 for key in activity_fields.difference(dt_prov_fields)}
+            )
+
+        return all_data
 
 
 class NationalLevelProvinceReport(serializers.Serializer):

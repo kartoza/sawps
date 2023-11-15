@@ -25,7 +25,9 @@ from frontend.serializers.report import (
     NationalLevelActivityReport,
     NationalLevelProvinceReport
 )
-from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS, DATA_CONSUMERS
+from frontend.static_mapping import (
+    DATA_CONTRIBUTORS, DATA_SCIENTISTS, DATA_CONSUMERS
+)
 from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
 from frontend.utils.organisation import get_current_organisation_id
 from population_data.models import (
@@ -47,7 +49,9 @@ PROVINCE_REPORT = 'Province_report'
 
 def get_queryset(user_roles: List[str], request):
     organisation_id = get_current_organisation_id(request.user)
-    if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) and not set(user_roles) & set(DATA_CONSUMERS):
+    show_detail = set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
+        and not set(user_roles) & set(DATA_CONSUMERS)
+    if show_detail:
         query_filter = DataContributorsFilter
         organisation = request.GET.get("organisation")
         if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
@@ -400,15 +404,6 @@ def national_level_species_report(
     """
     user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
-    print(AnnualPopulation.objects. \
-        filter(**filters, taxon__in=queryset). \
-        values(
-            'taxon__common_name_varbatim',
-            'taxon__scientific_name',
-            'year',
-            'property__property_size_ha',
-            'area_available_to_species'
-        ))
 
     report_data = AnnualPopulation.objects. \
         filter(**filters, taxon__in=queryset). \
@@ -438,7 +433,7 @@ def national_level_species_report(
             juvenile_female_total_population=Sum(
                 "juvenile_female"
             ),
-        )
+        ).order_by('-year')
     return NationalLevelSpeciesReport(report_data, many=True).data
 
 
@@ -499,7 +494,6 @@ def national_level_activity_report(
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
         ).values_list("id", flat=True).distinct()
-        print(province_ids)
         filters["property__province__id__in"] = province_ids
 
     serializer = NationalLevelActivityReport(
@@ -509,7 +503,7 @@ def national_level_activity_report(
             'filters': filters
         }
     )
-    return serializer.data if serializer.data[0] else []
+    return serializer.data[0] if serializer.data else []
 
 
 def national_level_province_report(
@@ -557,7 +551,9 @@ def write_report_to_rows(queryset, request, report_functions=None):
             SPECIES_REPORT: species_report,
             PROVINCE_REPORT: national_level_province_report
         }
-        report_functions = report_functions if report_functions else default_report_functions
+        report_functions = report_functions \
+            if report_functions \
+            else default_report_functions
 
         if request.GET.get('file') == 'xlsx':
             filename = 'data_report' + '.' + request.GET.get('file')
@@ -575,9 +571,13 @@ def write_report_to_rows(queryset, request, report_functions=None):
                     if report_name in report_functions:
                         if report_name == PROVINCE_REPORT:
                             taxon_qs = get_taxon_queryset(request)
-                            rows = report_functions[report_name](taxon_qs, request)
+                            rows = report_functions[
+                                report_name
+                            ](taxon_qs, request)
                         else:
-                            rows = report_functions[report_name](queryset, request)
+                            rows = report_functions[
+                                report_name
+                            ](queryset, request)
                         dataframe = pd.DataFrame(rows)
                         dataframe.to_excel(
                             writer,
@@ -631,8 +631,6 @@ def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
     activity_type_ids = filters[activity_field]
     del filters[activity_field]
     valid_activities = ActivityType.objects.filter(id__in=activity_type_ids)
-    print(queryset)
-    print(filters)
     activity_data = AnnualPopulationPerActivity.objects.filter(
         annual_population__property__in=queryset,
         **filters

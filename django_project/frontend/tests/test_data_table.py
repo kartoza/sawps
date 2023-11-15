@@ -1,26 +1,37 @@
 import base64
 import csv
+import json
 import os
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+from rest_framework import status
 
+from activity.models import ActivityType
 from frontend.static_mapping import (
     NATIONAL_DATA_SCIENTIST,
     PROVINCIAL_DATA_SCIENTIST,
     PROVINCIAL_DATA_CONSUMER
 )
-from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
-from population_data.factories import (
-    AnnualPopulationF,
-    AnnualPopulationPerActivityFactory
+from frontend.tests.model_factories import (
+    SpatialDataModelF,
+    SpatialDataModelValueF
 )
+from frontend.utils.data_table import (
+    ACTIVITY_REPORT,
+    SPECIES_REPORT,
+    PROPERTY_REPORT,
+    SAMPLING_REPORT,
+    PROVINCE_REPORT
+)
+from population_data.factories import (
+    AnnualPopulationF
+)
+from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
 from property.factories import PropertyFactory
-from rest_framework import status
-
-from activity.models import ActivityType
+from property.factories import ProvinceFactory
 from sawps.tests.models.account_factory import GroupF
 from species.factories import (
     TaxonFactory,
@@ -31,11 +42,6 @@ from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
     userRoleTypeFactory,
-)
-from property.factories import ProvinceFactory
-from frontend.tests.model_factories import (
-    SpatialDataModelF,
-    SpatialDataModelValueF
 )
 from stakeholder.models import OrganisationInvites, MANAGER
 
@@ -415,11 +421,156 @@ class NationalUserTestCase(TestCase):
 
     def test_national_property_report_all_activity(self) -> None:
         """Test property report for national data consumer"""
+        annual_population = AnnualPopulation.objects.create(
+            taxon=self.taxon,
+            property=PropertyFactory.create(),
+            year=self.annual_populations[0].year,
+            total=21
+        )
         url = self.url
-        response = self.client.get(url, {'activity': 'all'}, **self.auth_headers)
-        print(response.json())
+        params = {
+            'activity': 'all'
+        }
+        response = self.client.get(url, params, **self.auth_headers)
+        expected_response = [
+            {
+                PROPERTY_REPORT: [{
+                    'year': int(self.annual_populations[0].year),
+                    'common_name': self.taxon.common_name_varbatim,
+                    'scientific_name': self.taxon.scientific_name,
+                    f'total_population_{self.property.property_type.name}_property': 10,
+                    f'total_area_{self.property.property_type.name}_property': 200,
+                    f'total_population_{annual_population.property.property_type.name}_property': 21,
+                    f'total_area_{annual_population.property.property_type.name}_property': 200
+                }]
+            }
+        ]
+        expected_response[0][PROPERTY_REPORT].extend([{
+            'year': int(self.annual_populations[i].year),
+            'common_name': self.taxon.common_name_varbatim,
+            'scientific_name': self.taxon.scientific_name,
+            f'total_population_{self.property.property_type.name}_property': 10,
+            f'total_area_{self.property.property_type.name}_property': 200,
+            f'total_population_{annual_population.property.property_type.name}_property': 0,
+            f'total_area_{annual_population.property.property_type.name}_property': 0
+        } for i in range(1, len(self.annual_populations))])
+        expected_response[0][PROPERTY_REPORT] = sorted(
+            expected_response[0][PROPERTY_REPORT],
+            key=lambda a: a['year'],
+            reverse=True
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.json(), expected_response)
+
+    def test_national_activity_report_all_activity(self) -> None:
+        """Test activity report for national data consumer"""
+        url = self.url
+        params = {
+            'activity': 'all',
+            'reports': ACTIVITY_REPORT
+        }
+        response = self.client.get(url, params, **self.auth_headers)
+        expected_response = [
+            {
+                "Activity_report": []
+            }
+        ]
+        for i in range(0, len(self.annual_populations)):
+            activity_types = ActivityType.objects.exclude(
+                name=self.annual_populations[i].annualpopulationperactivity_set.first().activity_type.name
+            ).values_list('name', flat=True)
+            base_dict = {
+                'year': int(self.annual_populations[i].year),
+                'common_name': self.taxon.common_name_varbatim,
+                'scientific_name': self.taxon.scientific_name,
+                f'total_population_{self.annual_populations[i].annualpopulationperactivity_set.first().activity_type.name}': 100  # noqa
+            }
+            additional_fields = {f"total_population_{key}": 0 for key in activity_types}
+            base_dict.update(additional_fields)
+            expected_response[0][ACTIVITY_REPORT].append(base_dict)
+        expected_response[0][ACTIVITY_REPORT] = sorted(
+            expected_response[0][ACTIVITY_REPORT],
+            key=lambda a: a['year'],
+            reverse=True
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_response)
+
+    def test_national_species_report_all_activity(self) -> None:
+        """Test species report for national data consumer"""
+        url = self.url
+        params = {
+            'activity': 'all',
+            'reports': SPECIES_REPORT
+        }
+        response = self.client.get(url, params, **self.auth_headers)
+
+        expected_response = [
+            {
+                SPECIES_REPORT: [{
+                    'year': int(self.annual_populations[i].year),
+                    'common_name': self.taxon.common_name_varbatim,
+                    'scientific_name': self.taxon.scientific_name,
+                    "total_property_area": 200,
+                    "total_area_available": 10,
+                    "adult_male_total_population": 4,
+                    "adult_female_total_population": 6,
+                    "sub_adult_male_total_population": 10,
+                    "sub_adult_female_total_population": 10,
+                    "juvenile_male_total_population": 30,
+                    "juvenile_female_total_population": 30,
+                } for i in range(0, len(self.annual_populations))]
+            }
+        ]
+        expected_response[0][SPECIES_REPORT] = sorted(
+            expected_response[0][SPECIES_REPORT],
+            key=lambda a: a['year'],
+            reverse=True
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_response)
+
+    def test_national_province_report_all_activity(self) -> None:
+        """Test property report for national data consumer"""
+        annual_population = AnnualPopulation.objects.create(
+            taxon=self.taxon,
+            property=PropertyFactory.create(),
+            year=self.annual_populations[0].year,
+            total=21
+        )
+        url = self.url
+        params = {
+            'activity': 'all',
+            'reports': PROVINCE_REPORT
+        }
+        response = self.client.get(url, params, **self.auth_headers)
+
+        expected_response = [
+            {
+                PROVINCE_REPORT: [{
+                    'year': int(self.annual_populations[0].year),
+                    'common_name': self.taxon.common_name_varbatim,
+                    'scientific_name': self.taxon.scientific_name,
+                    f'total_population_{self.property.province.name}': 10,
+                    f'total_population_{annual_population.property.province.name}': 21
+                }]
+            }
+        ]
+        expected_response[0][PROVINCE_REPORT].extend([{
+            'year': int(self.annual_populations[i].year),
+            'common_name': self.taxon.common_name_varbatim,
+            'scientific_name': self.taxon.scientific_name,
+            f'total_population_{self.property.province.name}': 10,
+            f'total_population_{annual_population.property.province.name}': 0
+        } for i in range(1, len(self.annual_populations))])
+        expected_response[0][PROVINCE_REPORT] = sorted(
+            expected_response[0][PROVINCE_REPORT],
+            key=lambda a: a['year'],
+            reverse=True
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_response)
 
     def test_national_user_reports(self) -> None:
         """Test national data consumer reports"""

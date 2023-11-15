@@ -137,10 +137,15 @@ class AnnualPopulation(AnnualPopulationAbstract):
 
     def clean(self):
         """
-        Custom validation to ensure area_available_to_species is not greater than property_size_ha.
+        Custom validation to ensure area_available_to_species is
+        not greater than property_size_ha.
         """
         if self.area_available_to_species and self.property.property_size_ha:
-            if float(self.area_available_to_species) > float(self.property.property_size_ha):
+            if float(
+                self.area_available_to_species
+            ) > float(
+                self.property.property_size_ha
+            ):
                 raise ValidationError({
                     'area_available_to_species': AREA_AVAILABLE_ERROR_MESSAGE
                 })

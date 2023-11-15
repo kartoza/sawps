@@ -56,7 +56,10 @@ class DataTableAPIView(APIView):
         """
         user_roles = get_user_roles(self.request.user)
         queryset = self.get_queryset(user_roles)
-        if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) and not set(user_roles) & set(DATA_CONSUMERS):
+        show_detail = set(user_roles) & \
+            set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
+            and not set(user_roles) & set(DATA_CONSUMERS)
+        if show_detail:
             if request.GET.get("file"):
                 return Response({
                     "file": write_report_to_rows(queryset, request)
@@ -80,20 +83,21 @@ class DataTableAPIView(APIView):
             return Response(reports)
 
         else:
-            report_functions = {
-                PROPERTY_REPORT: national_level_property_report,
-                ACTIVITY_REPORT: national_level_activity_report,
-                SPECIES_REPORT: national_level_species_report,
-            }
-
-            if PROVINCIAL_DATA_CONSUMER not in user_roles:
-                report_functions[
-                    PROVINCE_REPORT
-                ] = national_level_province_report
-
             if request.GET.get("file"):
+                report_functions = {
+                    PROPERTY_REPORT: national_level_property_report,
+                    ACTIVITY_REPORT: national_level_activity_report,
+                    SPECIES_REPORT: national_level_species_report,
+                }
+
+                if PROVINCIAL_DATA_CONSUMER not in user_roles:
+                    report_functions[
+                        PROVINCE_REPORT
+                    ] = national_level_province_report
                 return Response({
-                    "file": write_report_to_rows(queryset, request, report_functions)
+                    "file": write_report_to_rows(
+                        queryset, request, report_functions
+                    )
                 })
             return Response(
                 national_level_user_table(
