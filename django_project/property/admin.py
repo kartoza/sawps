@@ -25,6 +25,10 @@ class PropertyAdmin(admin.ModelAdmin):
         'province'
     )
     search_fields = ['name', 'organisation__name', 'province__name']
+    list_filter = ['province', 'property_type', 'open']
+    autocomplete_fields = [
+        'province', 'property_type', 'open', 'created_by', 'organisation'
+    ]
 
     @admin.action(
         description="Generate spatial filters for selected properties"
