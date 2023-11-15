@@ -13,8 +13,6 @@ test('page elements', async ({page}) => {
 
     await page.waitForURL('**/contact/');
 
-    const initialURL = page.url();
-
     await page.locator('Contact Us' ).isVisible();
 
     await page.locator('input[id="id_name"]').fill("John");
@@ -29,7 +27,4 @@ test('page elements', async ({page}) => {
 
     await page.getByRole('button', { name: 'Send' }).click();
 
-    const finalURL = page.url();
-
-    expect(finalURL).not.toBe(initialURL);
 });

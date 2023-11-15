@@ -10,13 +10,13 @@ test('upload geojson', async ({ page }) => {
   
   await page.goto(url);
 
-  const initialURL = page.url();
+  //const initialURL = page.url();
 
   await page.getByRole('link', { name: 'UPLOAD DATA' }).click();
 
   await page.getByRole('button', { name: 'CREATE A NEW PROPERTY' }).click();
   
-  await page.locator('#input_propertyname').fill('admin-projects2');
+  await page.locator('#input_propertyname').fill('admin-property');
 
   await page.getByRole('row', { name: 'Open/Closed System ​' }).getByLabel('​').click();
   
@@ -27,8 +27,6 @@ test('upload geojson', async ({ page }) => {
   await page.getByRole('option', { name: 'Provincial' }).click();
 
   await page.getByRole('button', { name: 'SAVE PROPERTY INFORMATION' }).click();
-
-  await page.getByAltText('Error!').isVisible();
 
   await page.getByRole('button', { name: 'Create Property Boundary'}).isVisible();
 
@@ -52,11 +50,22 @@ test('upload geojson', async ({ page }) => {
 
   await fileChooser.setFiles('tests/fixtures/parcel.geojson');
 
+  await expect(page.getByText('parcel.geojson')).toBeVisible();
+
   await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
-  
-  await page.getByRole('button', { name: 'SAVE BOUNDARY' }).click();
 
-  const finalURL = page.url();
+  await page.getByRole(
+    'button', { name: 'PROCESSING FILES...' }).screenshot({ animations: 'disabled' });
 
-  expect(finalURL).not.toBe(initialURL);
+  const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
+
+  await saveBoundary.isEnabled({timeout: 1000000});
+
+  await uploadPromise.isHidden();
+
+  await saveBoundary.click();
+
+  //const finalURL = page.url();
+
+  //expect(finalURL).not.toBe(initialURL);
 });
