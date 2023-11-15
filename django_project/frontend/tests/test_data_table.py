@@ -4,7 +4,7 @@ import json
 import os
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -13,7 +13,8 @@ from activity.models import ActivityType
 from frontend.static_mapping import (
     NATIONAL_DATA_SCIENTIST,
     PROVINCIAL_DATA_SCIENTIST,
-    PROVINCIAL_DATA_CONSUMER
+    PROVINCIAL_DATA_CONSUMER,
+    NATIONAL_DATA_CONSUMER
 )
 from frontend.tests.model_factories import (
     SpatialDataModelF,
@@ -60,7 +61,7 @@ class AnnualPopulationTestMixins:
             taxon_rank=taxon_rank,
             scientific_name='SpeciesA'
         )
-        user = User.objects.create_user(
+        self.user = User.objects.create_user(
             username='testuserd',
             password='testpasswordd'
         )
@@ -71,13 +72,13 @@ class AnnualPopulationTestMixins:
         )
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
-            user=user,
+            user=self.user,
             organisation=self.organisation_1
         )
         group = GroupF.create(name=NATIONAL_DATA_SCIENTIST)
-        user.groups.add(group)
-        user.user_profile.current_organisation = self.organisation_1
-        user.save()
+        self.user.groups.add(group)
+        self.user.user_profile.current_organisation = self.organisation_1
+        self.user.save()
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
@@ -88,7 +89,7 @@ class AnnualPopulationTestMixins:
         self.annual_populations = AnnualPopulationF.create_batch(
             5,
             taxon=self.taxon,
-            user=user,
+            user=self.user,
             property=self.property,
             total=10,
             adult_male=4,
@@ -818,5 +819,95 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
 
 
+class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
+    """Test Case for download data"""
 
+    def setUp(self):
+        super().setUp()
+        self.user.groups.clear()
+        group = Group.objects.create(name=NATIONAL_DATA_CONSUMER)
+        self.user.groups.add(group)
+        self.user.save()
+        self.user.user_profile.current_organisation = self.organisation_1
 
+    def test_download_all_reports_by_all_activity_type(self) -> None:
+        """Test download data table filter by activity name"""
+        url = self.url
+        self.annual_populations[0].annualpopulationperactivity_set.all().delete()
+        self.annual_populations[1].annualpopulationperactivity_set.all().delete()
+
+        data = {
+            "file": "csv",
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report,Province_report"
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test if file output is zip
+        self.assertEqual(response.data['file'], "/media/download_data/data_report.zip")
+
+        # check if all csv files eexist in the folder
+        path = os.path.join(settings.MEDIA_ROOT, "download_data")
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report.zip")))
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report_Species_report.csv")))
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report_Activity_report.csv")))
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report_Property_report.csv")))
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report_Sampling_report.csv")))
+
+        # check fields in Activity report
+        activity_path = "/home/web/media/download_data/data_report_Activity_report.csv"
+        with open(activity_path, encoding='utf-8-sig') as csv_file:
+            file = csv.DictReader(csv_file)
+            headers = file.fieldnames
+            self.assertTrue(any("total_population_" in header for header in headers))
+            self.assertTrue("scientific_name" in headers)
+            self.assertTrue("common_name" in headers)
+            self.assertTrue("year" in headers)
+
+        activity_path = "/home/web/media/download_data/data_report_Province_report.csv"
+        with open(activity_path, encoding='utf-8-sig') as csv_file:
+            file = csv.DictReader(csv_file)
+            headers = file.fieldnames
+            self.assertTrue(any("total_population_" in header for header in headers))
+            self.assertTrue("scientific_name" in headers)
+            self.assertTrue("common_name" in headers)
+            self.assertTrue("year" in headers)
+
+        activity_path = "/home/web/media/download_data/data_report_Species_report.csv"
+        with open(activity_path, encoding='utf-8-sig') as csv_file:
+            file = csv.DictReader(csv_file)
+            headers = file.fieldnames
+            self.assertTrue("scientific_name" in headers)
+            self.assertTrue("common_name" in headers)
+            self.assertTrue("year" in headers)
+
+        activity_path = "/home/web/media/download_data/data_report_Property_report.csv"
+        with open(activity_path, encoding='utf-8-sig') as csv_file:
+            file = csv.DictReader(csv_file)
+            headers = file.fieldnames
+            self.assertTrue(any("total_population_" in header for header in headers))
+            self.assertTrue("scientific_name" in headers)
+            self.assertTrue("common_name" in headers)
+            self.assertTrue("year" in headers)
+
+    def test_download_xlsx_data_all_reports_by_all_activity_type(self) -> None:
+        """Test download data table filter by activity name"""
+        url = self.url
+
+        data = {
+            "file": "xlsx",
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report,Province_report"
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test if file output is xlsx
+        self.assertEqual(response.data['file'], "/media/download_data/data_report.xlsx")
+
+        # check if xlsx files exists in the folder
+        path = os.path.join(settings.MEDIA_ROOT, "download_data")
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))

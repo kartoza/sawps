@@ -554,7 +554,6 @@ def write_report_to_rows(queryset, request, report_functions=None):
         report_functions = report_functions \
             if report_functions \
             else default_report_functions
-
         if request.GET.get('file') == 'xlsx':
             filename = 'data_report' + '.' + request.GET.get('file')
             path_file = os.path.join(path, filename)
