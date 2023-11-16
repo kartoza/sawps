@@ -593,10 +593,10 @@ class PropertyPerPopDensityCategoryAPIView(BasePropertyCountAPIView):
         """
         results = []
         queryset = self.get_queryset()
-        queryset = queryset.annotate(
+        queryset = queryset.exclude(area_available_to_species=0).annotate(
             population_density=Cast(
                 Cast(F('total'), FloatField()) /
-                Cast(F('property__property_size_ha'), FloatField()),
+                Cast(F('area_available_to_species'), FloatField()),
                 FloatField()
             )
         )
