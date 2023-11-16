@@ -334,7 +334,7 @@ class TestGenerateStatisticalModel(TestCase):
             self.assertTrue(output.is_latest)
 
     @mock.patch('frontend.tasks.generate_statistical_model.'
-                'execute_statistical_model')
+                'export_annual_population_data')
     def test_generate_species_statistical_model_with_ex(self, mocked_exec):
         output = SpeciesModelOutputF.create(
             is_latest=True,
