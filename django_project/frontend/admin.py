@@ -19,13 +19,15 @@ from frontend.models import (
     StatisticalModel,
     StatisticalModelOutput,
     Layer,
-    MapSession
+    MapSession,
+    SpeciesModelOutput
 )
 from frontend.models.spatial import SpatialDataModel, SpatialDataValueModel
 from frontend.tasks import (
     clear_older_vector_tiles,
     generate_vector_tiles_task,
     start_plumber_process,
+    generate_species_statistical_model
 )
 
 
@@ -264,6 +266,7 @@ class StatisticalModelAdmin(admin.ModelAdmin):
     change_form_template = "admin/statistical_model_change_form.html"
     list_display = ('taxon', 'name')
     search_fields = ['taxon__scientific_name', 'name']
+    list_filter = ['taxon']
     actions = [restart_plumber_process]
     inlines = [StatisticalModelOutputInline]
 
@@ -281,6 +284,27 @@ class StatisticalModelAdmin(admin.ModelAdmin):
             )
             return response
         return super().response_change(request, obj)
+
+
+@admin.action(description='Trigger generate model output')
+def trigger_generate_species_statistical_model(modeladmin, request, queryset):
+    for output in queryset:
+        task = generate_species_statistical_model.delay(output.id)
+        output.task_id = task.id
+        output.save(update_fields=['task_id'])
+    modeladmin.message_user(
+        request,
+        'Generate statistical model output will be started in background!',
+        messages.SUCCESS
+    )
+
+
+class SpeciesModelOutputAdmin(admin.ModelAdmin):
+    """Admin page for Species Model Output."""
+    list_display = ('taxon', 'model', 'is_latest', 'status', 'generated_on', 'is_outdated')
+    search_fields = ['taxon__scientific_name', 'model__name']
+    list_filter = ['taxon', 'model', 'is_latest', 'is_outdated']
+    actions = [trigger_generate_species_statistical_model]
 
 
 class LayerAdmin(admin.ModelAdmin):
@@ -344,3 +368,4 @@ admin.site.register(StatisticalModel, StatisticalModelAdmin)
 admin.site.register(SpatialDataModel, SpatialDataModelAdmin)
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(MapSession, MapSessionAdmin)
+admin.site.register(SpeciesModelOutput, SpeciesModelOutputAdmin)

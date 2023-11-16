@@ -7,10 +7,12 @@ import subprocess
 import requests
 from uuid import uuid4
 from django.core.cache import cache
-from django.utils.text import slugify
 from core.settings.utils import absolute_path
 from species.models import Taxon
-from frontend.models.statistical import StatisticalModel
+from frontend.models.statistical import (
+    StatisticalModel,
+    StatisticalModelOutput
+)
 from frontend.utils.process import (
     write_pidfile,
     kill_process_by_pid
@@ -117,15 +119,18 @@ def execute_statistical_model(data_filepath, taxon: Taxon,
     }
     response = requests.post(request_url, data=data)
     content_type = response.headers['Content-Type']
+    error = None
     if content_type == 'application/json':
         if response.status_code == 200:
             return True, response.json()
         else:
             logger.error(
                 f'Plumber error response: {str(response.json())}')
+            error = response.json()
     else:
         logger.error(f'Invalid response content type: {content_type}')
-    return False, None
+        error = f'Invalid response content type: {content_type}'
+    return False, error
 
 
 def write_plumber_file(file_path = None):
@@ -152,11 +157,30 @@ def write_plumber_file(file_path = None):
             lines.append('#* @post /statistical/generic\n')
 
         lines.append('function(filepath, taxon_name) {\n')
-        lines.append('  all_data <- read.csv(filepath)\n')
-        lines.append('  metadata <- list(species=taxon_name)\n')
+        lines.append('  raw_data <- read.csv(filepath)\n')
+        lines.append('  metadata <- list(species=taxon_name,'
+                     'generated_on=format(Sys.time(), '
+                     '"%Y-%m-%d %H:%M:%S %Z"))\n')
+        lines.append('  time_start <- Sys.time()\n')
         code_lines = model.code.splitlines()
         for code in code_lines:
             lines.append(f'  {code}\n')
+        lines.append('  metadata[\'total_execution_time\'] '
+                     '<- Sys.time() - time_start\n')
+        # add output
+        model_outputs = StatisticalModelOutput.objects.filter(
+            model=model
+        )
+        output_list = ['metadata=metadata']
+        for output in model_outputs:
+            if output.variable_name:
+                output_list.append(f'{output.type}={output.variable_name}')
+            else:
+                output_list.append(f'{output.type}={output.type}')
+        output_list_str = ','.join(output_list)
+        lines.append(
+            f'  list({output_list_str})\n'
+        )
         lines.append('}\n')
     with open(r_file_path, 'w') as f:
         for line in lines:
@@ -197,56 +221,44 @@ def remove_plumber_data(data_filepath):
         logger.error(ex)
 
 
-def get_statistical_model_output_cache_key(taxon: Taxon, output_type: str,
-                                           add_key: str = None):
+def get_statistical_model_output_cache_key(taxon: Taxon, output_type: str):
     """
     Build cache key for statistical model output.
 
     :param taxon: species
     :param output_type: model output type, e.g. NATIONAL_TREND
-    :param add_key: (Optional) additional cache key \
-        like Province name or Property Name
     :return: cache key
     """
     cache_key = (
         f"species-{str(taxon.id)}-{output_type.replace('_', '-')}"
     )
-    if add_key:
-        cache_key = cache_key + f'-{slugify(add_key)}'
     return cache_key
 
 
 def save_statistical_model_output_cache(taxon: Taxon, output_type: str,
-                                        json_data,
-                                        add_key: str = None):
+                                        json_data):
     """
     Save output of statistical model to cache.
 
+    The cache will be cleared when statistical model is updated or
+    there is new population data for taxon.
     :param taxon: species
     :param output_type: model output type, e.g. NATIONAL_TREND
     :param json_data: json data of model output
-    :param add_key: (Optional) additional cache key \
-        like Province name or Property Name
     """
-    cache_key = get_statistical_model_output_cache_key(taxon, output_type,
-                                                       add_key=add_key)
-    redis_time_cache = 21600  # 6 hours
-    cache.set(cache_key, json_data, redis_time_cache)
+    cache_key = get_statistical_model_output_cache_key(taxon, output_type)
+    cache.set(cache_key, json_data)
 
 
-def get_statistical_model_output_cache(taxon: Taxon, output_type: str,
-                                       add_key: str = None):
+def get_statistical_model_output_cache(taxon: Taxon, output_type: str):
     """
     Retrieve output of statistical model from cache.
 
     :param taxon: species
     :param output_type: model output type, e.g. NATIONAL_TREND
-    :param add_key: (Optional) additional cache key \
-        like Province name or Property Name
     :return: json data or None if there is no cache
     """
-    cache_key = get_statistical_model_output_cache_key(taxon, output_type,
-                                                       add_key=add_key)
+    cache_key = get_statistical_model_output_cache_key(taxon, output_type)
     return cache.get(cache_key)
 
 

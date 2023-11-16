@@ -3,6 +3,7 @@ from uuid import uuid4
 from django.db import models
 from django.db.models.signals import pre_delete, post_save, post_delete
 from django.dispatch import receiver
+from django.utils.text import slugify
 from frontend.models.base_task import BaseTaskRequest
 
 
@@ -13,6 +14,7 @@ PROPERTY_TREND = 'property_trend'
 SPECIES_PER_PROPERTY = 'species_per_property'
 NATIONAL_GROWTH = 'national_growth'
 PROVINCIAL_GROWTH = 'provincial_growth'
+OTHER_DATA = 'other_data'
 
 
 class StatisticalModel(models.Model):
@@ -85,7 +87,8 @@ class StatisticalModelOutput(models.Model):
         (PROPERTY_TREND, 'Property Trend'),
         (SPECIES_PER_PROPERTY, 'Species Per Property'),
         (NATIONAL_GROWTH, 'National Growth'),
-        (PROVINCIAL_GROWTH, 'Provincial Growth')
+        (PROVINCIAL_GROWTH, 'Provincial Growth'),
+        (OTHER_DATA, 'Other Data')
     )
 
     model = models.ForeignKey(
@@ -118,8 +121,14 @@ class SpeciesModelOutput(BaseTaskRequest):
         on_delete=models.CASCADE
     )
 
+    input_file = models.FileField(
+        upload_to='statistical/input/%Y/%m/%d/',
+        null=True,
+        blank=True
+    )
+
     output_file = models.FileField(
-        upload_to='statistical/%Y/%m/%d/',
+        upload_to='statistical/output/%Y/%m/%d/',
         null=True,
         blank=True
     )
@@ -145,3 +154,10 @@ class SpeciesModelOutput(BaseTaskRequest):
         null=True,
         blank=True
     )
+
+    def __str__(self) -> str:
+        return f'{self.taxon} - {self.model.name}'
+
+    def get_cache_key(self, output_type) -> str:
+        taxon_name = slugify(self.taxon.scientific_name)
+        return f'{str(self.uuid)}-{taxon_name}-{output_type}'
