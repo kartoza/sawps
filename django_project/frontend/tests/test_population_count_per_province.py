@@ -30,8 +30,8 @@ from django.urls import reverse
 
 from frontend.static_mapping import (
     NATIONAL_DATA_SCIENTIST,
-    REGIONAL_DATA_SCIENTIST,
-    REGIONAL_DATA_CONSUMER
+    PROVINCIAL_DATA_SCIENTIST,
+    PROVINCIAL_DATA_CONSUMER
 )
 from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
 from population_data.factories import (
