@@ -92,12 +92,23 @@ body {
 }
 
 @media screen and (min-width: 1200px) {
+    body {
+        overflow: hidden;
+    }
+
+    .MainPage-map {
+        overflow: hidden;
+    }
+
+    .MainPage-reports, .MainPage-charts, .MainPage-trends {
+        overflow-y: auto;
+    }
+
   #main-container {
       flex-direction: column;
 
       #left-sidebar-container {
           width: 400px!important;
-          height: 100%;
       }
 
       #right-sidebar-container {
@@ -105,10 +116,9 @@ body {
       }
 
       #right-sidebar-tab {
-          height: 100%;
 
           .TabHeaders {
-              width: calc(100vw - 400px);
+              width: calc(100vw - 420px);
           }
       }
 
@@ -118,7 +128,7 @@ body {
   }
 
     #dataContainer {
-        width: calc(100vw - 400px);
+        width: calc(100vw - 420px);
     }
 
 }
