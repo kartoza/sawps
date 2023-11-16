@@ -94,6 +94,8 @@ jobs:
           export DJANGO_SUPERUSER_PASSWORD=admin
           python manage.py createsuperuser --no-input --username admin --email 'admin@example.com'
           python manage.py loaddata fixtures/*.json
+          cd ..
+          sudo chown $USER -R media
           EOF
       - name: Update dependencies
         working-directory: ./playwright/ci-test

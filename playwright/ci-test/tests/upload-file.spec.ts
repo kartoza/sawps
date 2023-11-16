@@ -8,7 +8,7 @@ test.use({
 
 test('upload geojson', async ({ page }) => {
 
-  test.setTimeout(250000)
+  test.setTimeout(120000)
   
   await page.goto(url);
 
@@ -65,7 +65,7 @@ test('upload geojson', async ({ page }) => {
 
   await page.screenshot({ path: 'playwright-report/data-upload-step-2.png', fullPage: true });
 
-  await saveBoundary.isEnabled({timeout: 250000});
+  await saveBoundary.isEnabled({timeout: 120000});
 
   await uploadPromise.isHidden();
 
@@ -73,7 +73,9 @@ test('upload geojson', async ({ page }) => {
 
   await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
 
-  await page.getByRole('button', { name: 'ONLINE FORM' }).click();
+  await page.screenshot({ path: 'playwright-report/data-upload-step-3.png', fullPage: true });
+
+  await page.getByRole('link', { name: 'ONLINE FORM' }).click();
 
   await page.waitForURL('**/upload-data/**')
 

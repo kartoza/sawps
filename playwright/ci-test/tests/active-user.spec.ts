@@ -79,7 +79,7 @@ test.describe('admin operations', () => {
 
         await page.getByTitle('Click to choose all user permissions at once.').click();
 
-        await page.locator('#user_profile-0').getByText('User role type id:').click();
+        await page.locator('#user_profile-0').getByText('User role type id:').selectOption('5');
 
         await page.locator('#user_profile-0').getByText('Current organisation:').click();
 
