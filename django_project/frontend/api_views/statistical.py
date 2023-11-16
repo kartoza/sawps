@@ -30,7 +30,7 @@ class SpeciesNationalTrend(APIView):
             cache_key = model_output.get_cache_key(NATIONAL_TREND)
             cached_data = cache.get(cache_key)
             if cached_data:
-                 return cached_data
+                return cached_data
         return []
 
     def get(self, *args, **kwargs):

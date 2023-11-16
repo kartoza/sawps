@@ -224,7 +224,8 @@ def remove_plumber_data(data_filepath):
         logger.error(ex)
 
 
-def store_species_model_output_cache(model_output: SpeciesModelOutput, json_data):
+def store_species_model_output_cache(model_output: SpeciesModelOutput,
+                                     json_data):
     """
     Store output types to cache.
 

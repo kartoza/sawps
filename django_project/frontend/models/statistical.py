@@ -21,6 +21,7 @@ CACHED_OUTPUT_TYPES = [
     NATIONAL_GROWTH, PROVINCIAL_GROWTH
 ]
 
+
 class StatisticalModel(models.Model):
     """Model that stores R code of statistical model."""
 
@@ -50,7 +51,6 @@ class StatisticalModel(models.Model):
 @receiver(post_save, sender=StatisticalModel)
 def statistical_model_post_create(sender, instance: StatisticalModel,
                                   created, *args, **kwargs):
-    
     from frontend.tasks.generate_statistical_model import (
         check_affected_model_output
     )

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.utils.html import format_html
 from species.models import TaxonRank, Taxon, OwnedSpecies
 from species.forms import TaxonForm

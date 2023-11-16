@@ -105,7 +105,8 @@ def save_model_output_on_success(model_output: SpeciesModelOutput, json_data):
     model_output.save(update_fields=['is_latest'])
 
 
-def save_model_output_on_failure(model_output: SpeciesModelOutput, errors=None):
+def save_model_output_on_failure(model_output: SpeciesModelOutput,
+                                 errors=None):
     """Store failure from execution R statistical model."""
     model_output.finished_at = timezone.now()
     model_output.status = ERROR
@@ -164,7 +165,7 @@ def check_affected_model_output(model_id, is_created):
 def check_oudated_model_output():
     """
     Check for outdated model output and trigger a job to generate.
-    
+
     CSV Data Upload Flow:
     CSV Upload -> List of species -> mark latest model output as outdated
 

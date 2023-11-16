@@ -309,7 +309,8 @@ def trigger_generate_species_statistical_model(modeladmin, request, queryset):
 
 class SpeciesModelOutputAdmin(admin.ModelAdmin):
     """Admin page for Species Model Output."""
-    list_display = ('taxon', 'model', 'is_latest', 'status', 'generated_on', 'is_outdated')
+    list_display = ('taxon', 'model', 'is_latest', 'status',
+                    'generated_on', 'is_outdated')
     search_fields = ['taxon__scientific_name', 'model__name']
     list_filter = ['taxon', 'model', 'is_latest', 'is_outdated']
     actions = [trigger_generate_species_statistical_model]

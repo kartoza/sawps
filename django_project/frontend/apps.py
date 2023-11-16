@@ -128,6 +128,7 @@ def create_check_outdated_statistical_model():
     except ValidationError as e:
         print(e)
 
+
 class FrontendConfig(AppConfig):
     name = 'frontend'
 
