@@ -28,6 +28,8 @@ test('upload geojson', async ({ page }) => {
 
   await page.getByRole('option', { name: 'Provincial' }).click();
 
+  await page.screenshot({ path: 'playwright-report/data-upload-step-1.png', fullPage: true });
+
   await page.getByRole('button', { name: 'SAVE PROPERTY INFORMATION' }).click();
 
   await page.getByRole('button', { name: 'Create Property Boundary'}).isVisible();
@@ -61,13 +63,19 @@ test('upload geojson', async ({ page }) => {
 
   const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
+  await page.screenshot({ path: 'playwright-report/data-upload-step-2.png', fullPage: true });
+
   await saveBoundary.isEnabled({timeout: 250000});
 
   await uploadPromise.isHidden();
 
   await saveBoundary.click();
 
-  //const finalURL = page.url();
+  await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
+
+  await page.getByRole('button', { name: 'ONLINE FORM' }).click();
+
+  await page.waitForURL('**/upload-data/**')
 
   //expect(finalURL).not.toBe(initialURL);
 });
