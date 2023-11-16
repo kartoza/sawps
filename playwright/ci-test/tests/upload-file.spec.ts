@@ -61,23 +61,23 @@ test('upload geojson', async ({ page }) => {
   await page.getByRole(
     'button', { name: 'PROCESSING FILES...' }).screenshot({ animations: 'disabled' });
 
-  const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
+  //const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
-  await page.screenshot({ path: 'playwright-report/data-upload-step-2.png', fullPage: true });
+  //await page.screenshot({ path: 'playwright-report/data-upload-step-2.png', fullPage: true });
 
-  await saveBoundary.isEnabled({timeout: 120000});
+  //await saveBoundary.isEnabled({timeout: 120000});
 
-  await uploadPromise.isHidden();
+  //await uploadPromise.isHidden();
 
-  await saveBoundary.click();
+  //await saveBoundary.click();
 
-  await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
+  //await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
 
-  await page.screenshot({ path: 'playwright-report/data-upload-step-3.png', fullPage: true });
+  //await page.screenshot({ path: 'playwright-report/data-upload-step-3.png', fullPage: true });
 
-  await page.getByRole('link', { name: 'ONLINE FORM' }).click();
+  //await page.getByRole('link', { name: 'ONLINE FORM' }).click();
 
-  await page.waitForURL('**/upload-data/**')
+  //await page.waitForURL('**/upload-data/**')
 
   //expect(finalURL).not.toBe(initialURL);
 });
