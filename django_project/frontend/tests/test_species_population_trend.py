@@ -8,10 +8,11 @@ from frontend.tests.model_factories import UserF
 from species.factories import TaxonF
 from frontend.tests.model_factories import (
     StatisticalModelF,
-    StatisticalModelOutputF
+    StatisticalModelOutputF,
+    SpeciesModelOutputF
 )
 from frontend.models import SPECIES_PER_PROPERTY
-from frontend.utils.statistical_model import PLUMBER_PORT
+from frontend.models.base_task import DONE
 from frontend.api_views.statistical import SpeciesTrend
 from species.factories import (
     TaxonRankFactory
@@ -83,8 +84,13 @@ class TestSpeciesTrend(TestCase):
     @mock.patch('django.core.cache.cache.get',
                 mock.Mock(side_effect=mocked_cache_get))
     def test_species_trend_from_cache(self):
+        SpeciesModelOutputF.create(
+            taxon=self.taxon,
+            is_latest=True,
+            status=DONE
+        )
         url = reverse('species-population-trend')
-        url += f'?species={self.annual_population.taxon.scientific_name}&start_year=1960&end_year=2023&property={self.property1.id}'
+        url += f'?species={self.annual_population.taxon.scientific_name}'
         request = self.factory.get(url)
         
         request.user = UserF.create()
@@ -97,6 +103,11 @@ class TestSpeciesTrend(TestCase):
     @mock.patch('django.core.cache.cache.get',
                 mock.Mock(side_effect=mocked_cache_get_empty))
     def test_species_trend_without_cache(self):
+        SpeciesModelOutputF.create(
+            taxon=self.taxon,
+            is_latest=True,
+            status=DONE
+        )
         model = StatisticalModelF.create(
             taxon=self.taxon
         )
@@ -105,76 +116,10 @@ class TestSpeciesTrend(TestCase):
             type=SPECIES_PER_PROPERTY
         )
         url = reverse('species-population-trend')
-        url += f'?species={self.annual_population.taxon.scientific_name}&start_year=1960&end_year=2023&property={self.property1.id}'
+        url += f'?species={self.annual_population.taxon.scientific_name}'
         request = self.factory.get(url)
-        with requests_mock.Mocker() as m:
-            json_response = {'species_per_property': 'abcde'}
-            m.post(
-                f'http://plumber:{PLUMBER_PORT}/statistical/api_{model.id}',
-                json=json_response,
-                headers={'Content-Type':'application/json'},
-                status_code=200
-            )
-            request.user = UserF.create()
-            view = SpeciesTrend.as_view()
-            response = view(request)
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data, 'abcde')
-
-    @mock.patch('django.core.cache.cache.get',
-                mock.Mock(side_effect=mocked_cache_get_empty))
-    def test_species_trend_without_output(self):
-        url = reverse('species-population-trend')
-        url += f'?species={self.annual_population.taxon.scientific_name}&start_year=1960&end_year=2023&property={self.property1.id}'
-        request = self.factory.get(url)
-        with requests_mock.Mocker() as m:
-            json_response = {'species_per_property': 'qwerty'}
-            m.post(
-                f'http://plumber:{PLUMBER_PORT}/statistical/generic',
-                json=json_response,
-                headers={'Content-Type':'application/json'},
-                status_code=200
-            )
-            request.user = UserF.create()
-            view = SpeciesTrend.as_view()
-            response = view(request)
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data, 'qwerty')
-
-    @mock.patch('django.core.cache.cache.get',
-                mock.Mock(side_effect=mocked_cache_get_empty))
-    def test_species_trend_model_failure(self):
-        url = reverse('species-population-trend')
-        url += f'?species={self.annual_population.taxon.scientific_name}&start_year=1960&end_year=2023&property={self.property1.id}'
-        request = self.factory.get(url)
-        with requests_mock.Mocker() as m:
-            # without national trend model, it will use generic model
-            json_response = {'error': 'Internal server error'}
-            m.post(
-                f'http://plumber:{PLUMBER_PORT}/statistical/generic',
-                json=json_response,
-                headers={'Content-Type':'application/json'},
-                status_code=500
-            )
-            request.user = UserF.create()
-            view = SpeciesTrend.as_view()
-            response = view(request)
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data, [])
-
-    def test_species_trend_404(self):
-        url = reverse('species-population-trend')
-        request = self.factory.get(url)
-        with requests_mock.Mocker() as m:
-            # without national trend model, it will use generic model
-            json_response = {'error': 'Internal server error'}
-            m.post(
-                f'http://plumber:{PLUMBER_PORT}/statistical/generic',
-                json=json_response,
-                headers={'Content-Type':'application/json'},
-                status_code=500
-            )
-            request.user = UserF.create()
-            view = SpeciesTrend.as_view()
-            response = view(request)
-            self.assertEqual(response.status_code, 404)
+        request.user = UserF.create()
+        view = SpeciesTrend.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])

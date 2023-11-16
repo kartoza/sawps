@@ -19,9 +19,7 @@ class SpeciesNationalTrend(APIView):
     """Fetch national trend of species."""
     permission_classes = [AllowAny]
 
-    def get(self, *args, **kwargs):
-        species_id = kwargs.get('species_id')
-        species = get_object_or_404(Taxon, id=species_id)
+    def get_national_trend_data(self, species: Taxon):
         # get latest species model output
         model_output = SpeciesModelOutput.objects.filter(
             taxon=species,
@@ -31,11 +29,18 @@ class SpeciesNationalTrend(APIView):
         if model_output:
             cache_key = model_output.get_cache_key(NATIONAL_TREND)
             cached_data = cache.get(cache_key)
-            return Response(status=200, data=cached_data)
-        return Response(status=200, data=[])
+            if cached_data:
+                 return cached_data
+        return []
+
+    def get(self, *args, **kwargs):
+        species_id = kwargs.get('species_id')
+        species = get_object_or_404(Taxon, id=species_id)
+        return Response(
+            status=200, data=self.get_national_trend_data(species))
 
 
-class SpeciesTrend(APIView):
+class SpeciesTrend(SpeciesNationalTrend):
     """Fetch trend of species based on specified criteria.
 
     This view allows users to retrieve national trend
@@ -55,14 +60,5 @@ class SpeciesTrend(APIView):
         species = get_object_or_404(
             Taxon, scientific_name=species_name
         )
-        # get latest species model output
-        model_output = SpeciesModelOutput.objects.filter(
-            taxon=species,
-            is_latest=True,
-            status=DONE
-        ).first()
-        if model_output:
-            cache_key = model_output.get_cache_key(NATIONAL_TREND)
-            cached_data = cache.get(cache_key)
-            return Response(status=200, data=cached_data)
-        return Response(status=200, data=[])
+        return Response(
+            status=200, data=self.get_national_trend_data(species))
