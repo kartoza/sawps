@@ -6,6 +6,7 @@ from collections import OrderedDict
 from species.factories import TaxonF
 from frontend.models.statistical import (
     NATIONAL_TREND,
+    PROVINCE_TREND,
     CACHED_OUTPUT_TYPES,
     SpeciesModelOutput
 )
@@ -28,7 +29,8 @@ from frontend.utils.statistical_model import (
 from frontend.utils.process import write_pidfile
 from frontend.tests.model_factories import (
     StatisticalModelF,
-    SpeciesModelOutputF
+    SpeciesModelOutputF,
+    StatisticalModelOutputF
 )
 
 
@@ -136,6 +138,20 @@ class TestStatisticalUtils(TestCase):
                                                              model)
             self.assertFalse(is_success)
             self.assertEqual('Internal server error', response['error'])
+        with requests_mock.Mocker() as m:
+            data_response = 'Test'
+            m.post(
+                f'http://plumber:{PLUMBER_PORT}/statistical/api_{model.id}',
+                json=data_response,
+                headers={'Content-Type':'text/plain'},
+                status_code=500
+            )
+            is_success, response = execute_statistical_model(data_filepath,
+                                                             model.taxon,
+                                                             model)
+            self.assertFalse(is_success)
+            self.assertEqual('Invalid response content type: text/plain',
+                             response)
 
     def test_write_plumber_file(self):
         taxon = TaxonF.create()
@@ -144,6 +160,16 @@ class TestStatisticalUtils(TestCase):
         )
         model = StatisticalModelF.create(
             taxon=taxon
+        )
+        StatisticalModelOutputF.create(
+            model=model,
+            type=NATIONAL_TREND,
+            variable_name='test_var1'
+        )
+        StatisticalModelOutputF.create(
+            model=model,
+            type=PROVINCE_TREND,
+            variable_name=None
         )
         r_file_path = write_plumber_file(
             os.path.join(

@@ -10,7 +10,8 @@ from population_data.factories import AnnualPopulationF
 from frontend.models.base_task import DONE, PROCESSING, ERROR, PENDING
 from frontend.models.statistical import (
     NATIONAL_TREND,
-    SpeciesModelOutput
+    SpeciesModelOutput,
+    CACHED_OUTPUT_TYPES
 )
 from frontend.tests.model_factories import (
     StatisticalModelF,
@@ -31,6 +32,9 @@ from frontend.tasks.generate_statistical_model import (
     check_affected_model_output,
     generate_species_statistical_model
 )
+from frontend.admin import (
+    trigger_generate_species_statistical_model
+)
 
 
 def mocked_cache_op(self, *args, **kwargs):
@@ -40,6 +44,9 @@ def mocked_cache_op(self, *args, **kwargs):
 class DummyTask:
     def __init__(self, id):
         self.id = id
+
+    def message_user(self, request, msg, type):
+        pass
 
 
 def mocked_process_func(*args, **kwargs):
@@ -103,6 +110,15 @@ class TestGenerateStatisticalModel(TestCase):
             status=PROCESSING,
             generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
         )
+        # ADD LATEST
+        SpeciesModelOutputF.create(
+            taxon=output.taxon,
+            model=output.model,
+            is_latest=True,
+            is_outdated=False,
+            status=DONE,
+            generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
+        )
         save_model_output_on_success(output, {
             NATIONAL_TREND: 'abcdef'
         })
@@ -115,6 +131,7 @@ class TestGenerateStatisticalModel(TestCase):
             output.output_file.storage.exists(output.output_file.name))
         mocked_set.assert_called_once()
         self.assertTrue(output.is_latest)
+        self.assertEqual(mocked_clear.call_count, len(CACHED_OUTPUT_TYPES))
 
     def test_save_model_output_on_failure(self):
         output = SpeciesModelOutputF.create(
@@ -281,7 +298,59 @@ class TestGenerateStatisticalModel(TestCase):
             self.assertTrue(
                 output.output_file.storage.exists(output.output_file.name))
             mocked_set.assert_called_once()
+            mocked_set.reset_mock()
             self.assertTrue(output.is_latest)
+        # mock success for generic model
+        generic_model = StatisticalModelF.create(
+            taxon=None
+        )
+        taxon = TaxonF.create()
+        output = SpeciesModelOutputF.create(
+            model=generic_model,
+            taxon=taxon,
+            is_latest=True,
+            is_outdated=True,
+            status=PENDING,
+            generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
+        )
+        with requests_mock.Mocker() as m:
+            json_response = {'national_trend': 'abcde'}
+            m.post(
+                f'http://plumber:{PLUMBER_PORT}/statistical/generic',
+                json=json_response,
+                headers={'Content-Type':'application/json'},
+                status_code=200
+            )
+            generate_species_statistical_model(output.id)
+            output.refresh_from_db()
+            self.assertEqual(output.status, DONE)
+            self.assertFalse(output.errors)
+            self.assertFalse(output.is_outdated)
+            self.assertTrue(output.output_file)
+            self.assertTrue(
+                output.output_file.storage.exists(output.output_file.name))
+            mocked_set.assert_called_once()
+            mocked_set.reset_mock()
+            self.assertTrue(output.is_latest)
+
+    @mock.patch('frontend.tasks.generate_statistical_model.'
+                'execute_statistical_model')
+    def test_generate_species_statistical_model_with_ex(self, mocked_exec):
+        output = SpeciesModelOutputF.create(
+            is_latest=True,
+            is_outdated=True,
+            status=PENDING,
+            generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
+        )
+        pop_1 = AnnualPopulationF.create(
+            taxon=output.taxon
+        )
+        mocked_exec.side_effect = Exception('Test')
+        generate_species_statistical_model(output.id)
+        output.refresh_from_db()
+        self.assertEqual(output.status, ERROR)
+        self.assertIn('Test', output.errors)
+        self.assertFalse(output.is_outdated)
 
     def test_clean_old_model_output(self):
         output = SpeciesModelOutputF.create(
@@ -303,3 +372,22 @@ class TestGenerateStatisticalModel(TestCase):
         self.assertTrue(SpeciesModelOutput.objects.filter(
             id=output_1.id
         ).exists())
+
+    @mock.patch('frontend.admin.'
+                'generate_species_statistical_model.delay')
+    def test_trigger_action(self, mocked_process):
+        mocked_process.side_effect = mocked_process_func
+        output = SpeciesModelOutputF.create(
+            is_latest=False,
+            is_outdated=False,
+            status=DONE,
+            generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8),
+            task_id=None
+        )
+        qs = SpeciesModelOutput.objects.filter(
+            id=output.id
+        )
+        trigger_generate_species_statistical_model(DummyTask('1'), None, qs)
+        mocked_process.assert_called_once()
+        output.refresh_from_db()
+        self.assertEqual(output.task_id, '1')
