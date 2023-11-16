@@ -91,11 +91,3 @@ serve:
 	@echo "Execute webpack serve command"
 	@echo "------------------------------------------------------------------"
 	@docker-compose ${ARGS} exec -T dev npm --prefix /home/web/django_project/frontend run serve
-
-superuser:
-	@echo
-	@echo "------------------------------------------------------------------"
-	@echo "Create superuser"
-	@echo "------------------------------------------------------------------"
-	@docker-compose ${ARGS} exec -T dev bash -c "export DJANGO_SUPERUSER_PASSWORD=admin"
-	@docker-compose ${ARGS} exec -T dev bash -c "python manage.py createsuperuser --no-input --username admin --email 'admin@example.com'"
