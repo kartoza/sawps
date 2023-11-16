@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {v4 as uuidv4} from 'uuid';
 import axios from "axios";
+import Grid from "@mui/material/Grid";
 import {Autocomplete, Box, TextField, Typography,} from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import List from '@mui/material/List';
@@ -119,7 +120,8 @@ function Filter(props: any) {
             }
         ]
 
-        if (userInfoData.user_permissions.includes("Can view province report")) {
+        if (userInfoData.user_permissions.includes("Can view province report")
+          && !roleExists('Provincial data consumer')) {
             informationList.push({
                 id: "Province report",
                 name: "Province report"
@@ -371,7 +373,9 @@ function Filter(props: any) {
                 >
                     <CircularProgress color="inherit" />
                 </div> : null }
-            <Box className='sidebarBox' style={{ marginTop: 10 }}>
+            <Grid container>
+                <Grid item xs={12} md={12} lg={12}>
+                    <Box className='sidebarBox' style={{ marginTop: 10 }}>
                 <Box className='clear-button-container'>
                     <Button onClick={clearFilter}>Clear All</Button>
                 </Box>
@@ -522,7 +526,8 @@ function Filter(props: any) {
                   </Tooltip>
                 }
 
-                <Box>
+                {tab != 'trends' &&
+                    <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Clock.svg" alt='watch image'/>
                           <Typography color='#75B37A' fontSize='medium'>Year</Typography>
@@ -567,6 +572,7 @@ function Filter(props: any) {
                           </Box>
                       </Box>
                 </Box>
+                }
 
                 {tab != 'trends' &&
                   <Box>
@@ -582,6 +588,8 @@ function Filter(props: any) {
                   </Box>
                 }
             </Box>
+                </Grid>
+            </Grid>
         </Box >
     )
 }

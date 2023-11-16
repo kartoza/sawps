@@ -19,6 +19,18 @@ class PropertyTypeSerializer(NameObjectBaseSerializer):
         fields = NameObjectBaseSerializer.Meta.fields
 
 
+class PropertyTypeColourSerializer(serializers.ModelSerializer):
+    """Property Type Serializer with Colour."""
+
+    class Meta:
+        model = PropertyType
+        fields = [
+            'id',
+            'name',
+            'colour'
+        ]
+
+
 class ProvinceSerializer(NameObjectBaseSerializer):
     """Province Serializer."""
 
@@ -153,12 +165,16 @@ class PropertySearchSerializer(PropertyDetailSerializer):
     """Return id, name, bbox of property."""
     id = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
 
     def get_id(self, obj: Property):
         return f'property-{obj.id}'
 
     def get_type(self, obj: Property):
         return 'property'
+
+    def get_name(self, obj: Property):
+        return f'{obj.name} ({obj.short_code})'
 
     class Meta:
         model = Property

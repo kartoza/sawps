@@ -9,7 +9,7 @@ from species.factories import (
     TaxonFactory,
     TaxonRankFactory,
 )
-from population_data.models import PopulationEstimateCategory
+from population_data.models import AnnualPopulation, PopulationEstimateCategory
 from population_data.factories import AnnualPopulationF
 from species.models import TaxonRank
 from stakeholder.factories import organisationFactory, organisationUserFactory
@@ -500,7 +500,7 @@ class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
         Test total area versus area available filtered by property.
         """
         id = self.annual_populations[0].property_id
-        data = {'property':id}
+        data = {'property': id}
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -521,4 +521,233 @@ class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
             response.data[0]['area']['owned_species'][0] \
                 ['annualpopulation__year'],
             int(year)
+        )
+
+
+class TestPropertyCountPerCategoryMixins:
+    def test_empty_result(self) -> None:
+        """
+        Test empty result when there is no data.
+        """
+        year = self.annual_populations[1].year
+        data = {
+            'year': year,
+            'species': 'Species A',
+            'property': self.annual_populations[1].property_id
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEquals(
+            response.json(),
+            []
+        )
+
+
+class TestPropertyCountPerPopulationSizeCategory(
+    TestPropertyCountPerCategoryMixins,
+    BaseTestCase
+):
+    """
+    Test case for the endpoint that retrieves
+    property count per population size category.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("property-count-per-population-category-size")
+        self.new_property = PropertyFactory.create()
+        AnnualPopulation.objects.create(
+            total=30,
+            property=self.new_property,
+            year=self.annual_populations[1].year,
+            taxon=self.annual_populations[1].taxon,
+            adult_male=10,
+            adult_female=20
+        )
+
+    def test_filter(self) -> None:
+        """
+        Test filtered total property count per population category.
+        """
+        year = self.annual_populations[1].year
+        data = {
+            'year': year,
+            'species': self.annual_populations[1].taxon.scientific_name
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '28 - 30',
+                    self.new_property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                },
+                {
+                    'category': '>30',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
+        )
+
+    def test_lower_bound_negative(self) -> None:
+        """
+        Test negative lower bound.
+        """
+        new_property = PropertyFactory.create()
+        AnnualPopulation.objects.create(
+            total=1,
+            property=new_property,
+            year=self.annual_populations[1].year,
+            taxon=self.annual_populations[1].taxon,
+            adult_male=1,
+            adult_female=0
+        )
+        year = self.annual_populations[1].year
+        data = {
+            'year': year,
+            'species': self.annual_populations[1].taxon.scientific_name
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '1 - 30',
+                    'common_name_varbatim': self.taxon.common_name_varbatim,
+                    new_property.property_type.name.lower().replace(' ', '_'): 1,
+                    self.new_property.property_type.name.lower().replace(' ', '_'): 1
+                },
+                {
+                    'category': '>30',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
+        )
+
+
+class TestPropertyCountPerPopulationDensityCategory(
+    TestPropertyCountPerCategoryMixins,
+    BaseTestCase
+):
+    """
+    Test case for the endpoint that retrieves
+    property count per population density category.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("property-count-per-population-density-category")
+
+    def test_filter(self) -> None:
+        """
+        Test filtered total property count per population density category.
+        """
+        year = self.annual_populations[1].year
+        data = {
+            'year': year,
+            'species': self.annual_populations[1].taxon.scientific_name,
+            'property': self.annual_populations[1].property_id
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '10.0 - 10.0',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
+        )
+
+
+class TestPropertyCountPerAreaCategory(
+    TestPropertyCountPerCategoryMixins,
+    BaseTestCase
+):
+    """
+    Test case for the endpoint that retrieves
+    property count per area category.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("property-count-per-area-category")
+
+    def test_filter(self) -> None:
+        """
+        Test filtered total property count per area category.
+        """
+        year = self.annual_populations[1].year
+        data = {
+            'year': year,
+            'species': self.annual_populations[1].taxon.scientific_name,
+            'property': self.annual_populations[1].property_id
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '198.0 - 200.0',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
+        )
+
+
+class TestPropertyCountPerAreaAvailableToSpeciesCategory(
+    TestPropertyCountPerCategoryMixins,
+    BaseTestCase
+):
+    """
+    Test case for the endpoint that retrieves
+    property count per area available to species category.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up the test case.
+        """
+        super().setUp()
+        self.url = reverse("property-count-per-area-available-to-species-category")
+
+    def test_filter(self) -> None:
+        """
+        Test filtered total property count per area  available to species category.
+        """
+        year = self.annual_populations[1].year
+        data = {
+            'year': year,
+            'species': self.annual_populations[1].taxon.scientific_name,
+            'property': self.annual_populations[1].property_id
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '8.0 - 10.0',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_varbatim': self.taxon.common_name_varbatim
+                }
+            ]
         )

@@ -7,7 +7,7 @@ import LandingPagePopulationOverview from '../../../src/components/LandingPage/L
 
 function HomePage() {
   return (
-    <div className="App">
+    <div className="App LandingPage">
       <LandingPageBanner/>
       <LandingPagePopulationOverview/>
       <Footer/>

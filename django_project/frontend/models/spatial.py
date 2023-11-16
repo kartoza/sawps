@@ -8,7 +8,7 @@ class SpatialDataModel(models.Model):
     )
     context_layer = models.ForeignKey(
         'frontend.ContextLayer',
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )

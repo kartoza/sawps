@@ -32,7 +32,6 @@ const MenuProps = {
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
 
 const DataList = () => {
-    const [width, setWidth] = useState(0);
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -42,7 +41,6 @@ const DataList = () => {
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
     const [columns, setColumns] = useState([])
-    const [rows, setRows] = useState([])
     const [tableData, setTableData] = useState<any>()
     const [modalOpen, setModalOpen] = useState(false)
     const [activityTableGrid, setActivityTable] = useState<any>()
@@ -78,24 +76,41 @@ const DataList = () => {
         "Unplanned/illegal hunting": {color:"#696969",width:147}
     }
 
+    function isDataConsumer(userInfo: UserInfo) {
+        if (!userInfo?.user_roles) return false;
+        const dataConsumers = new Set([
+          "National data consumer",
+            "Provincial data consumer"
+        ])
+        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
+    }
+
     if (isSuccess) {
-        dataset = checkUserRole(userInfoData) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
-        reportList = checkUserRole(userInfoData) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
+        if (isDataConsumer(userInfoData)) {
+            dataset = data.flatMap((each) => Object.keys(each));
+        } else {
+            dataset = data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each));
+        }
+        if (isDataConsumer(userInfoData)) {
+            reportList = dataTableList;
+        } else {
+            reportList = dataTableList.filter(item => !item?.Activity_report);
+        }
     }
     const [customColorWidth, setCustomColorWidth] = useState<any>(defaultColorWidth)
 
     function checkUserRole(userInfo: UserInfo) {
         if (!userInfo?.user_roles) return false;
         // TODO : Update this to use permissions instead
-        const allowedRoles = new Set(["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"]);
+        const allowedRoles = new Set([
+          "Organisation member",
+            "Organisation manager",
+            "National data scientist",
+            "Provincial data scientist",
+            "Super user"
+        ]);
         return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
     }
-
-    const measuredRef = useCallback((node: any) => {
-        if (node !== null) {
-          setWidth(node.getBoundingClientRect().width)
-        }
-    }, [data])
 
     useEffect(() => {
         if (activityList) {
@@ -170,7 +185,9 @@ const DataList = () => {
         if (activityList) {
             activityParams = activityId.split(',').length === activityList.length ? 'all': activityId;
         }
-        axios.get(`${FETCH_AVAILABLE_DATA}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityParams}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        axios.get(
+          `${FETCH_AVAILABLE_DATA}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityParams}&spatial_filter_values=${spatialFilterValues}`
+        ).then((response) => {
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
@@ -222,7 +239,7 @@ const DataList = () => {
                             const generatedColumns = cellKeys.map((key) => ({
                                 field: key,
                                 headerName: getTitle(key),
-                                width: (customColorWidth as any)[each]?.width,
+                                flex: 1
                             }));
                             const filteredColumns = generatedColumns.filter((column) =>
                                 selectedColumns.length > 0 ?
@@ -241,13 +258,7 @@ const DataList = () => {
                                 <DataGrid
                                     key={index}
                                     rows={cellRows}
-                                    columns={selectedColumns.length > 0 ? filteredColumns.map(col => {
-                                        return {
-                                            field: col.field,
-                                            headerName: col.headerName,
-                                            width: width/filteredColumns.length
-                                        }
-                                    }) : generatedColumns}
+                                    columns={filteredColumns}
                                     disableRowSelectionOnClick
                                     components={{
                                         Pagination: null,
@@ -259,7 +270,8 @@ const DataList = () => {
                 }
             </>
         )
-        const activityDataGrid = checkUserRole(userInfoData) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
+        const activityDataGrid = isDataConsumer(userInfoData) && activityDataSet.length > 0 ?
+          null : activityDataSet.map((each: any) =>
             <>
                 <Box className="data-table"
                      style={{
@@ -281,7 +293,7 @@ const DataList = () => {
                                 const generatedColumns: GridColDef[] = cellKeys.length > 0 && cellKeys.map((key) => ({
                                     field: key,
                                     headerName: getTitle(key),
-                                    width: width/cellKeys.length,
+                                    flex: 1
                                 }));
                                 const filteredColumns = generatedColumns.filter((column) =>
                                     selectedColumns.length > 0 ?
@@ -300,13 +312,7 @@ const DataList = () => {
                                     <DataGrid
                                         key={index}
                                         rows={cellRows}
-                                        columns={selectedColumns.length > 0 ? filteredColumns.map(col => {
-                                            return {
-                                                field: col.field,
-                                                headerName: col.headerName,
-                                                width: width/filteredColumns.length
-                                            }
-                                        }) : generatedColumns}
+                                        columns={filteredColumns}
                                         disableRowSelectionOnClick
                                         getRowHeight={() => 'auto'}
                                         components={{
@@ -318,7 +324,7 @@ const DataList = () => {
                         })}
                     </>
                 )}
-            </>)
+            </>);
         setActivityTable(activityDataGrid)
 
         const uniqueColumns = getUniqueColumn()
@@ -380,7 +386,7 @@ const DataList = () => {
                         </Box>
                     </Modal>
                 </Box>
-                <Box className='dataContainer' id={'dataContainer'} ref={measuredRef}>
+                <Box className='dataContainer buttonsBuffer' id={'dataContainer'}>
                     <Topper></Topper>
                     <Box className="bgGreen">
                         <Box className="selectBox">
@@ -454,18 +460,24 @@ const DataList = () => {
                 )}
             </Box>
           ) : (
-            <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
-                <Grid item>
-                    <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                        Ready to explore?
-                    </Typography>
-                </Grid>
-                <Grid>
-                    <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                        Choose a species to view the data as table.
-                    </Typography>
-                </Grid>
-            </Grid>
+            <Box>
+               <Box className='dataContainer' id={'dataContainer'}>
+                    <Grid container
+                          justifyContent="center" alignItems="center"
+                          flexDirection={'column'}>
+                        <Grid item className={'explore-message'}>
+                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                                Ready to explore?
+                            </Typography>
+                        </Grid>
+                        <Grid item className={'explore-message'}>
+                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                Choose a species to view the data as table.
+                            </Typography>
+                        </Grid>
+                    </Grid>
+               </Box>
+            </Box>
           )
     )
 }

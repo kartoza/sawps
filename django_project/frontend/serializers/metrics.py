@@ -1,17 +1,19 @@
 import datetime
 from typing import List
-from frontend.static_mapping import YEAR_DATA_LIMIT
+
 from django.db.models import (
     F,
     Q,
     Sum
 )
+from rest_framework import serializers
+
+from frontend.static_mapping import YEAR_DATA_LIMIT
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
 from property.models import Property
-from rest_framework import serializers
 from species.models import Taxon
 
 
@@ -394,7 +396,7 @@ class SpeciesPopulationDensityPerPropertySerializer(
                 "property__name",
                 "year",
                 "total",
-                "property__property_size_ha"
+                "area_available_to_species"
             )
         )
 
@@ -402,11 +404,11 @@ class SpeciesPopulationDensityPerPropertySerializer(
         result_data = []
         for data in populations:
             total = data.get("total")
-            property_in_ha = data.get("property__property_size_ha")
+            area_available = data.get("area_available_to_species")
             year = data.get("year")
 
-            if total and property_in_ha:
-                density = total / property_in_ha
+            if total and area_available:
+                density = total / area_available
             else:
                 density = None
 

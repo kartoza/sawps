@@ -1,37 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import {useSearchParams, useLocation, useNavigate} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate} from "react-router-dom";
+import Button from '@mui/material/Button';
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import MenuIcon from '@mui/icons-material/Menu';
 import {RootState} from '../../app/store';
-import {useAppDispatch, useAppSelector } from '../../app/hooks';
-import TabPanel, { a11yProps } from '../../components/TabPanel';
-import {
-  LeftSideBar,
-  RightSideBar,
-  LayerFilterTabs
-} from './SideBar';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import TabPanel, {a11yProps} from '../../components/TabPanel';
+import {LayerFilterTabs, LeftSideBar, RightSideBar} from './SideBar';
 import Upload from './Upload';
 import Map from './Map';
 import './index.scss';
-import { PropertySummary } from './Property';
-import { MapSelectionMode } from "../../models/Map";
-import { UploadMode } from "../../models/Upload";
-import {
-    setUploadState
-} from '../../reducers/UploadState';
-import {
-    setSelectedParcels,
-    resetSelectedProperty,
-    setMapSelectionMode,
-    resetMapState
-} from '../../reducers/MapState';
+import {PropertySummary} from './Property';
+import {MapSelectionMode} from "../../models/Map";
+import {UploadMode} from "../../models/Upload";
+import {setUploadState} from '../../reducers/UploadState';
+import {resetMapState, resetSelectedProperty, setMapSelectionMode, setSelectedParcels} from '../../reducers/MapState';
 import DataList from './Data';
 import Metrics from './Metrics';
 import Trends from './Trends';
-
-
 
 
 enum RightSideBarMode {
@@ -121,47 +110,89 @@ function MainPage() {
     }
   }, [propertyItem, mapSelectionMode, uploadMode])
 
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+  const [height, setHeight] = useState(0);
+  const toggleShowFilter = () => {
+    setShowLeftSidebar(!showLeftSidebar);
+  }
+
+  const [tab, setTab] = useState<string>('')
+
+  useEffect(() => {
+      const pathname = window.location.pathname.replace(/\//g, '');
+      setTab(pathname)
+  }, [window.location.pathname])
+
   return (
     <div className="App">
-      <div className="MainPage">
-        <Grid container flexDirection={'row'}>
-          <Grid item>
+      <div className={`MainPage MainPage-${tab}`}>
+        <Grid container flexDirection={'row'} id={'main-container'}>
+          <Grid item
+                id={'toggle-left-sidebar'}
+                xs={12} md={12}
+          >
+              <Button variant="outlined" onClick={toggleShowFilter}>
+                <MenuIcon/>
+              </Button>
+          </Grid>
+          <Grid item
+                id={'left-sidebar-container'}
+                xs={12} md={12}
+                className={showLeftSidebar ? '' : 'hidden'}
+          >
             { rightSideBarMode === RightSideBarMode.Upload ? <LeftSideBar element={Upload} /> : <LeftSideBar element={LayerFilterTabs} additionalProps={{
               'selectedMainTabIdx': selectedTab
             }} />}
           </Grid>
-          <Grid item flex={1} className="grayBg customWidth">
-            <Grid container className="Content" flexDirection={'column'}>
-              <Grid item>
-              <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                {rightSideBarMode === RightSideBarMode.Upload || isUploadUrl ? null : (
-                  <Tabs
-                    value={selectedTab}
-                    onChange={(event: React.SyntheticEvent, newValue: number) => {
-                      const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
-                      const selectedTabName = tabNames[newValue];
-                      setSelectedTab(newValue);
-                      if (selectedTabName === 'upload') {
-                        setRightSideBarMode(RightSideBarMode.Upload);
-                        dispatch(setUploadState(UploadMode.SelectProperty));
-                      } else {
-                        setRightSideBarMode(RightSideBarMode.None);
-                      }
-                      navigate(`/${selectedTabName}`);
-                    }}
-                    aria-label="Main Page Tabs"
-                  >
-                    <Tab key={0} label={'MAP'} {...a11yProps(0)} />
-                    <Tab key={1} label={'REPORTS'} {...a11yProps(1)} />
-                    <Tab key={2} label={'CHARTS'} {...a11yProps(2)} />
-                    <Tab key={3} label={'TRENDS'} {...a11yProps(3)} />
-                  </Tabs>
-                )}
-                <div style={{ flex: 1 }}></div>
-              </Box>
+          <Grid item flex={1}
+                xs={12} md={12}
+                id={'right-sidebar-container'}
+                className={"grayBg customWidth"}>
+            <Grid container className="Content" flexDirection={'row'}>
+              <Grid item
+                    xs={12} md={12}
+                    lg={12}
+                    sx={{height: '50px' }}
+              >
+                <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                  {rightSideBarMode === RightSideBarMode.Upload || isUploadUrl ? null : (
+                    <Tabs
+                      value={selectedTab}
+                      onChange={(event: React.SyntheticEvent, newValue: number) => {
+                        const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
+                        const selectedTabName = tabNames[newValue];
+                        setSelectedTab(newValue);
+                        if (selectedTabName === 'upload') {
+                          setRightSideBarMode(RightSideBarMode.Upload);
+                          dispatch(setUploadState(UploadMode.SelectProperty));
+                        } else {
+                          setRightSideBarMode(RightSideBarMode.None);
+                        }
+                        navigate(`/${selectedTabName}`);
+                      }}
+                      aria-label="Main Page Tabs"
+                      sx={{
+                        '& .MuiTabs-flexContainer': {
+                          flexWrap: 'wrap',
+                        },
+                      }}
+                    >
+                      <Tab key={0} label={'MAP'} {...a11yProps(0)} />
+                      <Tab key={1} label={'REPORTS'} {...a11yProps(1)} />
+                      <Tab key={2} label={'CHARTS'} {...a11yProps(2)} />
+                      <Tab key={3} label={'TRENDS'} {...a11yProps(3)} />
+                    </Tabs>
+                  )}
+                  <div style={{ flex: 1 }}></div>
+                </Box>
 
               </Grid>
-              <Grid item className="TabPanels">
+              <Grid item
+                    xs={12} md={12}
+                    lg={12}
+                    id={'right-sidebar-tab'}
+                    className="TabPanels"
+              >
                 <TabPanel key={0} value={selectedTab} index={-1} indexList={[0, 4]} noPadding>
                   <Map isDataUpload={isUploadUrl || selectedTab === 4} />
                 </TabPanel>

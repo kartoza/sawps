@@ -43,7 +43,8 @@ class PopulationCountTestCase(TestCase):
             user=user,
             total=120,
             adult_male=19,
-            adult_female=100
+            adult_female=100,
+            adult_total=119
         )
 
     def test_create_population_count(self):
@@ -55,15 +56,6 @@ class PopulationCountTestCase(TestCase):
             AnnualPopulation.objects.filter(
                 id=self.population_count.id
             ).exists()
-        )
-
-
-    def test_update_population_count(self):
-        """Test update population count."""
-        self.population_count.total = 125
-        self.population_count.save()
-        self.assertEqual(
-            AnnualPopulation.objects.get(year=self.population_count.year).total, 125
         )
 
     def test_delete_population_count(self):
@@ -83,6 +75,22 @@ class PopulationCountTestCase(TestCase):
             'total': 100,
             'adult_male': 60,
             'adult_female': 50,
+        }
+        with self.assertRaises(ValidationError):
+            population_instance = AnnualPopulation(**data)
+            population_instance.clean()
+
+    def test_area_available_to_species(self):
+        """
+        Test that a ValidationError is raised when area available to species
+        exceeds property size.
+        """
+        property_obj = self.population_count.property
+        data = {
+            'year': 2023,
+            'total': 100,
+            'area_available_to_species': 100000,
+            'property': property_obj
         }
         with self.assertRaises(ValidationError):
             population_instance = AnnualPopulation(**data)

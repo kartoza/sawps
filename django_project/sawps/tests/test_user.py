@@ -1,7 +1,7 @@
 from django.core import mail
 from django.test import (
-    Client, 
-    TestCase, 
+    Client,
+    TestCase,
     RequestFactory
 )
 from regulatory_permit.models import DataUsePermission
@@ -99,18 +99,14 @@ class CustomPasswordResetViewTest(TestCase):
 
     def test_send_reset_email_invalid_email(self):
         # Simulate a POST request with an invalid email
-        self.factory = RequestFactory()
         url = reverse('password_reset')
         data = {'action': 'sendemail', 'email': 'invalid_email@example.com'}
-        request = self.factory.post(url, data)
-
-        # Create an instance of the CustomPasswordResetView
-        view = CustomPasswordResetView.as_view()
 
         # Call the dispatch method
-        response = view(request)
-
-        self.assertIsNone(response)
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'password_reset.html')
+        self.assertEqual(response.context['error_message'], 'The email address is not registered.')
 
     def test_dispatch_get(self):
         self.factory = RequestFactory()
@@ -204,7 +200,7 @@ class AddUserToOrganisationTestCase(TestCase):
         org_invite = OrganisationInvites.objects.filter(
             email=self.user_email,
             organisation=self.organisation).first()
-        
+
         self.assertIsNotNone(org_user)
         self.assertIsNotNone(org_invite)
         self.assertTrue(org_invite.joined)

@@ -4,11 +4,13 @@
 """Admin for property package.
 """
 from django.contrib import admin
+from django.utils.html import format_html
 from property.models import (
     PropertyType, Province, ParcelType,
     Property,
     Parcel
 )
+from property.forms import PropertyTypeForm
 
 
 class PropertyAdmin(admin.ModelAdmin):
@@ -23,6 +25,10 @@ class PropertyAdmin(admin.ModelAdmin):
         'province'
     )
     search_fields = ['name', 'organisation__name', 'province__name']
+    list_filter = ['province', 'property_type', 'open']
+    autocomplete_fields = [
+        'province', 'property_type', 'open', 'created_by', 'organisation'
+    ]
 
     @admin.action(
         description="Generate spatial filters for selected properties"
@@ -75,8 +81,17 @@ class PropertyTypeAdmin(admin.ModelAdmin):
     """Admin page for PropertyType model.
 
     """
-    list_display = ('id', 'name')
+    form = PropertyTypeForm
+    list_display = ('id', 'name', 'display_color')
     search_fields = ['name']
+
+    def display_color(self, obj):
+        return format_html(
+            '<span style="width:10px;height:10px;'
+            'display:inline-block;background-color:%s"></span>' % obj.colour
+        )
+    display_color.short_description = 'Colour'
+    display_color.allow_tags = True
 
 
 class ProvinceAdmin(admin.ModelAdmin):

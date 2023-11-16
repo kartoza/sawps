@@ -52,28 +52,6 @@ body {
             line-height: 17px;
             text-align: left;
         }
-        .MuiDataGrid-columnHeader{
-            &:nth-child(4){
-                max-width: 80px !important;
-                width: 80px !important;
-                min-width: 0px !important;
-            }
-            &:nth-child(5){
-                max-width: 95px !important;
-                width: 95px !important;
-            }
-        }
-        .MuiDataGrid-cell{
-            &:nth-child(4){
-                max-width: 80px !important;
-                width: 80px !important;
-                min-width: 0px !important;
-            }
-            &:nth-child(5){
-                max-width: 95px !important;
-                width: 95px !important;
-            }
-        }
         .MuiDataGrid-virtualScrollerContent{
             width: 100% !important;
             .MuiDataGrid-virtualScrollerRenderZone{
@@ -94,4 +72,90 @@ body {
 .TabHeaders {
     box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.3);
     z-index: 1;
+}
+
+#right-sidebar-tab {
+    position: absolute;
+    margin-top: 50px;
+    width: calc(100vw - 400px);
+}
+
+#toggle-left-sidebar {
+    position: absolute;
+    right: 0;
+    top: 100;
+    z-index: 999;
+    button {
+        height: 50px;
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    body {
+        overflow: hidden;
+    }
+
+    .MainPage-map {
+        overflow: hidden;
+    }
+
+    .MainPage-reports, .MainPage-charts, .MainPage-trends {
+        overflow-y: auto;
+    }
+
+  #main-container {
+      flex-direction: column;
+
+      #left-sidebar-container {
+          width: 400px!important;
+      }
+
+      #right-sidebar-container {
+          width: calc(100vw - 400px);
+      }
+
+      #right-sidebar-tab {
+
+          .TabHeaders {
+              width: calc(100vw - 420px);
+          }
+      }
+
+      #toggle-left-sidebar {
+          display: none;
+      }
+  }
+
+    #dataContainer {
+        width: calc(100vw - 420px);
+    }
+
+}
+
+@media only screen and (max-width: 1200px) {
+    #right-sidebar-tab {
+        margin-top: 100px;
+        width: 100%;
+
+        .TabHeaders {
+            width: 100%;
+        }
+
+        #dataContainer {
+            width: 100%;
+        }
+    }
+
+    #toggle-left-sidebar {
+        height: 50px;
+    }
+
+    .hidden {
+        display: none;
+    }
+}
+
+.buttonsBuffer {
+    padding-bottom: 120px;
 }
