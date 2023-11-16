@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def export_annual_population_data(taxon: Taxon):
+    """Export annual population to csv data."""
     csv_headers = [
         'species', 'property', 'province', 'year', 'pop_est',
         'lower_est', 'upper_est', 'survey_method',
@@ -67,6 +68,7 @@ def export_annual_population_data(taxon: Taxon):
 
 
 def save_model_data_input(model_output: SpeciesModelOutput, data_filepath):
+    """Store csv data of annual population data."""
     taxon_name = slugify(model_output.taxon.scientific_name).replace('-', '_')
     if data_filepath and os.path.exists(data_filepath):
         with open(data_filepath, 'rb') as input_file:
@@ -75,6 +77,7 @@ def save_model_data_input(model_output: SpeciesModelOutput, data_filepath):
 
 
 def save_model_output_on_success(model_output: SpeciesModelOutput, json_data):
+    """Store the result from successful execution of R statistical model."""
     model_output.finished_at = timezone.now()
     model_output.status = DONE
     model_output.errors = None
@@ -103,6 +106,7 @@ def save_model_output_on_success(model_output: SpeciesModelOutput, json_data):
 
 
 def save_model_output_on_failure(model_output: SpeciesModelOutput, errors=None):
+    """Store failure from execution R statistical model."""
     model_output.finished_at = timezone.now()
     model_output.status = ERROR
     model_output.errors = errors
@@ -115,6 +119,7 @@ def save_model_output_on_failure(model_output: SpeciesModelOutput, errors=None):
 
 def trigger_generate_species_model_output(model_output: SpeciesModelOutput):
     """Trigger generate species model output job."""
+    logger.info(f'Regenerating statistical model output for {model_output}')
     if model_output.task_id:
         cancel_task(model_output.task_id)
     model_output.status = PENDING
@@ -155,7 +160,7 @@ def check_affected_model_output(model_id, is_created):
     start_plumber_process.apply_async(queue='plumber')
 
 
-@shared_task(name="check_oudated_model_output")
+@shared_task(name="check_oudated_model_output", ignore_result=True)
 def check_oudated_model_output():
     """
     Check for outdated model output and trigger a job to generate.
@@ -180,7 +185,8 @@ def check_oudated_model_output():
     that needs to be refreshed.
     """
     outputs = SpeciesModelOutput.objects.filter(
-        is_outdated=True
+        is_outdated=True,
+        is_latest=True
     )
     for model_output in outputs:
         if model_output.output_file:

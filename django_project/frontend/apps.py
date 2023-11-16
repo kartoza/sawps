@@ -110,7 +110,7 @@ def create_check_outdated_statistical_model():
             import_module('django_celery_beat.models').PeriodicTask
         )
         schedule, created = IntervalSchedule.objects.get_or_create(
-            every=3,
+            every=1,
             period=IntervalSchedule.HOURS
         )
     except Exception as e:

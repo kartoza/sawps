@@ -235,7 +235,7 @@ def store_species_model_output_cache(model_output: SpeciesModelOutput, json_data
         if output_type not in json_data:
             continue
         cache_key = model_output.get_cache_key(output_type)
-        cache.set(cache_key, json_data[output_type])
+        cache.set(cache_key, json_data[output_type], timeout=None)
 
 
 def clear_species_model_output_cache(model_output: SpeciesModelOutput):
@@ -258,28 +258,29 @@ def mark_model_output_as_outdated_by_model(model: StatisticalModel):
     """
     SpeciesModelOutput.objects.filter(
         model=model,
-        is_latest=True
+        is_latest=True,
+        is_outdated=False
     ).update(
         is_outdated=True,
         outdated_since=timezone.now()
     )
 
 
-def mark_model_output_as_outdated_by_species(taxon: Taxon):
+def mark_model_output_as_outdated_by_species_list(taxon_id_list):
     """
     Mark latest output as outdated so it can be refreshed.
 
     This is triggered when a new data of species are added.
     :param taxon: species
     """
-    latest_output = SpeciesModelOutput.objects.filter(
-        taxon=taxon,
-        is_latest=True
-    ).first()
-    if latest_output:
-        latest_output.is_outdated = True
-        latest_output.outdated_since = timezone.now()
-        latest_output.save(update_fields=['is_outdated', 'outdated_since'])
+    SpeciesModelOutput.objects.filter(
+        taxon_id__in=taxon_id_list,
+        is_latest=True,
+        is_outdated=False
+    ).update(
+        is_outdated=True,
+        outdated_since=timezone.now()
+    )
 
 
 def init_species_model_output_from_generic_model(model: StatisticalModel):

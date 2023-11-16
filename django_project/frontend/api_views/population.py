@@ -31,6 +31,10 @@ from rest_framework.views import APIView
 from species.models import Taxon
 from species.serializers import TaxonSerializer
 from stakeholder.models import OrganisationUser
+from frontend.utils.statistical_model import (
+    mark_model_output_as_outdated_by_species_list
+)
+
 
 
 class PopulationMetadataList(APIView):
@@ -259,6 +263,8 @@ class UploadPopulationAPIVIew(APIView):
                 offtake_permit=offtake_population.get("permit", None),
                 note=offtake_population.get("note", None),
             )
+        # mark statistical model output as outdated
+        mark_model_output_as_outdated_by_species_list([taxon.id])
         # if draft exists, then delete it
         draft_uuid = request.GET.get("uuid", None)
         if draft_uuid:
