@@ -11,7 +11,9 @@ from core.settings.utils import absolute_path
 from species.models import Taxon
 from frontend.models.statistical import (
     StatisticalModel,
-    StatisticalModelOutput
+    StatisticalModelOutput,
+    SpeciesModelOutput,
+    CACHED_OUTPUT_TYPES
 )
 from frontend.utils.process import (
     write_pidfile,
@@ -280,3 +282,28 @@ def clear_statistical_model_output_cache(taxon: Taxon):
         for cache_key in output_caches:
             cleaned_key = str(cache_key).split(':')[-1].replace('\'', '')
             cache.delete(cleaned_key)
+
+
+def store_species_model_output_cache(model_output: SpeciesModelOutput, json_data):
+    """
+    Store output types to cache.
+
+    :param model_output: SpeciesModelOutput
+    :param json_data: dictionary from plumber response
+    """
+    for output_type in CACHED_OUTPUT_TYPES:
+        if output_type not in json_data:
+            continue
+        cache_key = model_output.get_cache_key(output_type)
+        cache.set(cache_key, json_data[output_type])
+
+
+def clear_species_model_output_cache(model_output: SpeciesModelOutput):
+    """
+    Clear all output from species statistical model in the cache.
+
+    :param model_output: SpeciesModelOutput
+    """
+    for output_type in CACHED_OUTPUT_TYPES:
+        cache_key = model_output.get_cache_key(output_type)
+        cache.delete(cache_key)

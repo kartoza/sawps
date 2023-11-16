@@ -15,7 +15,9 @@ from frontend.models.statistical import SpeciesModelOutput
 from frontend.utils.statistical_model import (
     write_plumber_data,
     execute_statistical_model,
-    remove_plumber_data
+    remove_plumber_data,
+    store_species_model_output_cache,
+    clear_species_model_output_cache
 )
 
 
@@ -66,21 +68,25 @@ def save_model_output_on_success(model_output: SpeciesModelOutput, data_filepath
     model_output.is_outdated = False
     model_output.outdated_since = None
     model_output.save()
-
     taxon_name = slugify(model_output.taxon.scientific_name).replace('-', '_')
     if data_filepath and os.path.exists(data_filepath):
         with open(data_filepath, 'rb') as input_file:
             input_name = f'{model_output.id}_{taxon_name}.csv'
             model_output.input_file.save(input_name, File(input_file))
-    if json_data:
-        output_name = f'{model_output.id}_{taxon_name}.json'
-        model_output.output_file.save(
-            output_name, ContentFile(json.dumps(json_data)))
-    # TODO: update cache: national and provincial data
+    output_name = f'{model_output.id}_{taxon_name}.json'
+    model_output.output_file.save(
+        output_name, ContentFile(json.dumps(json_data)))
+    # update cache: national and provincial data
+    store_species_model_output_cache(model_output, json_data)
     # set previous model is_latest to False
-    SpeciesModelOutput.objects.filter(
-        taxon=model_output.taxon
-    ).exclude(id=model_output.id).update(is_latest=False)
+    latest_output = SpeciesModelOutput.objects.filter(
+        taxon=model_output.taxon,
+        is_latest=True
+    ).exclude(id=model_output.id)
+    for output in latest_output:
+        clear_species_model_output_cache(output)
+        output.is_latest = False
+        output.save()
     # last update the model output with is_latest = True
     model_output.is_latest = True
     model_output.save(update_fields=['is_latest'])
@@ -105,12 +111,14 @@ def check_oudated_model_output():
     Input data for a species -> mark latest model output as outdated
 
     R Code Update:
-    StatisticalModel Update -> mark latest model output as outdated -> restart plumber
-    -> Plumber ready -> trigger check_oudated_model_output manually
+    StatisticalModel Update -> mark latest model output as outdated
+    -> restart plumber -> Plumber ready
+    -> trigger check_oudated_model_output manually
 
     R Code Create:
     StatisticalModel Create -> create model output with outdated=True
-    -> restart plumber -> Plumber ready -> trigger check_oudated_model_output manually
+    -> restart plumber -> Plumber ready
+    -> trigger check_oudated_model_output manually
 
     This check_outdated_model_output will check every model output
     that needs to be refreshed.

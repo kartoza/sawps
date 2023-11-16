@@ -16,6 +16,10 @@ NATIONAL_GROWTH = 'national_growth'
 PROVINCIAL_GROWTH = 'provincial_growth'
 OTHER_DATA = 'other_data'
 
+CACHED_OUTPUT_TYPES = [
+    NATIONAL_TREND, PROVINCE_TREND,
+    NATIONAL_GROWTH, PROVINCIAL_GROWTH
+]
 
 class StatisticalModel(models.Model):
     """Model that stores R code of statistical model."""
@@ -57,15 +61,6 @@ def statistical_model_post_create(sender, instance: StatisticalModel,
     if instance.code:
         # respawn Plumber API
         start_plumber_process.apply_async(queue='plumber')
-
-
-@receiver(pre_delete, sender=StatisticalModel)
-def statistical_model_pre_delete(sender, instance: StatisticalModel,
-                                 *args, **kwargs):
-    from frontend.utils.statistical_model import (
-        clear_statistical_model_output_cache
-    )
-    clear_statistical_model_output_cache(instance.taxon)
 
 
 @receiver(post_delete, sender=StatisticalModel)
@@ -161,3 +156,13 @@ class SpeciesModelOutput(BaseTaskRequest):
     def get_cache_key(self, output_type) -> str:
         taxon_name = slugify(self.taxon.scientific_name)
         return f'{str(self.uuid)}-{taxon_name}-{output_type}'
+
+
+@receiver(pre_delete, sender=SpeciesModelOutput)
+def species_model_output_pre_delete(sender,
+                                        instance: SpeciesModelOutput,
+                                        *args, **kwargs):
+    from frontend.utils.statistical_model import (
+        clear_species_model_output_cache
+    )
+    clear_species_model_output_cache(instance)
