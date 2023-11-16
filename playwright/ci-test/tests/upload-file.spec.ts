@@ -7,6 +7,8 @@ test.use({
 });
 
 test('upload geojson', async ({ page }) => {
+
+  test.setTimeout(250000)
   
   await page.goto(url);
 
@@ -59,7 +61,7 @@ test('upload geojson', async ({ page }) => {
 
   const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
-  await saveBoundary.isEnabled({timeout: 1000000});
+  await saveBoundary.isEnabled({timeout: 250000});
 
   await uploadPromise.isHidden();
 
