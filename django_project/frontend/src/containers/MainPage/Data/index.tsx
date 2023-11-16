@@ -76,16 +76,39 @@ const DataList = () => {
         "Unplanned/illegal hunting": {color:"#696969",width:147}
     }
 
+    function isDataConsumer(userInfo: UserInfo) {
+        if (!userInfo?.user_roles) return false;
+        const dataConsumers = new Set([
+          "National data consumer",
+            "Provincial data consumer"
+        ])
+        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
+    }
+
     if (isSuccess) {
-        dataset = checkUserRole(userInfoData) ? data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each)) : data.flatMap((each) => Object.keys(each));
-        reportList = checkUserRole(userInfoData) ? dataTableList.filter(item => !item?.Activity_report) : dataTableList;
+        if (isDataConsumer(userInfoData)) {
+            dataset = data.flatMap((each) => Object.keys(each));
+        } else {
+            dataset = data.filter(item => !item?.Activity_report)?.flatMap((each) => Object.keys(each));
+        }
+        if (isDataConsumer(userInfoData)) {
+            reportList = dataTableList;
+        } else {
+            reportList = dataTableList.filter(item => !item?.Activity_report);
+        }
     }
     const [customColorWidth, setCustomColorWidth] = useState<any>(defaultColorWidth)
 
     function checkUserRole(userInfo: UserInfo) {
         if (!userInfo?.user_roles) return false;
         // TODO : Update this to use permissions instead
-        const allowedRoles = new Set(["Organisation member", "Organisation manager", "National data scientist", "Regional data scientist", "Super user"]);
+        const allowedRoles = new Set([
+          "Organisation member",
+            "Organisation manager",
+            "National data scientist",
+            "Provincial data scientist",
+            "Super user"
+        ]);
         return userInfo.user_roles.some(userRole => allowedRoles.has(userRole))
     }
 
@@ -162,7 +185,9 @@ const DataList = () => {
         if (activityList) {
             activityParams = activityId.split(',').length === activityList.length ? 'all': activityId;
         }
-        axios.get(`${FETCH_AVAILABLE_DATA}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityParams}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        axios.get(
+          `${FETCH_AVAILABLE_DATA}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityParams}&spatial_filter_values=${spatialFilterValues}`
+        ).then((response) => {
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
@@ -245,7 +270,8 @@ const DataList = () => {
                 }
             </>
         )
-        const activityDataGrid = checkUserRole(userInfoData) && activityDataSet.length > 0 && activityDataSet.map((each: any) =>
+        const activityDataGrid = isDataConsumer(userInfoData) && activityDataSet.length > 0 ?
+          null : activityDataSet.map((each: any) =>
             <>
                 <Box className="data-table"
                      style={{
@@ -298,7 +324,7 @@ const DataList = () => {
                         })}
                     </>
                 )}
-            </>)
+            </>);
         setActivityTable(activityDataGrid)
 
         const uniqueColumns = getUniqueColumn()

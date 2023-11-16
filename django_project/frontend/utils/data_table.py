@@ -14,6 +14,7 @@ from django.http import HttpRequest
 from activity.models import ActivityType
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
+from frontend.utils.user_roles import get_user_roles
 from frontend.serializers.report import (
     SpeciesReportSerializer,
     SamplingReportSerializer,
@@ -24,8 +25,10 @@ from frontend.serializers.report import (
     NationalLevelActivityReport,
     NationalLevelProvinceReport
 )
-from frontend.static_mapping import DATA_CONTRIBUTORS, DATA_SCIENTISTS
-from frontend.static_mapping import REGIONAL_DATA_CONSUMER
+from frontend.static_mapping import (
+    DATA_CONTRIBUTORS, DATA_SCIENTISTS, DATA_CONSUMERS
+)
+from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
 from frontend.utils.organisation import get_current_organisation_id
 from population_data.models import (
     AnnualPopulation,
@@ -44,10 +47,11 @@ SPECIES_REPORT = 'Species_report'
 PROVINCE_REPORT = 'Province_report'
 
 
-
 def get_queryset(user_roles: List[str], request):
     organisation_id = get_current_organisation_id(request.user)
-    if set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS):
+    show_detail = set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
+        and not set(user_roles) & set(DATA_CONSUMERS)
+    if show_detail:
         query_filter = DataContributorsFilter
         organisation = request.GET.get("organisation")
         if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
@@ -279,7 +283,7 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
 
 
 def national_level_user_table(
-        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
+        queryset: QuerySet, request: HttpRequest
 ) -> List[Dict]:
     """
     Generate national-level reports for a user based on their role.
@@ -287,8 +291,8 @@ def national_level_user_table(
     Params:
         queryset : The initial queryset for data retrieval.
         request : The HTTP request object containing query parameters.
-        user_roles : The roles of the user.
     """
+    user_roles = get_user_roles(request.user)
     reports_list = request.GET.get("reports")
     reports = []
     if reports_list:
@@ -299,7 +303,7 @@ def national_level_user_table(
             SPECIES_REPORT: national_level_species_report,
         }
 
-        if REGIONAL_DATA_CONSUMER not in user_roles:
+        if PROVINCIAL_DATA_CONSUMER not in user_roles:
             report_functions[
                 PROVINCE_REPORT
             ] = national_level_province_report
@@ -308,12 +312,12 @@ def national_level_user_table(
             if report_name in report_functions:
                 report_data = report_functions[
                     report_name
-                ](queryset, request, user_roles)
+                ](queryset, request)
                 if report_data:
                     reports.append({report_name: report_data})
 
     else:
-        data = national_level_property_report(queryset, request, user_roles)
+        data = national_level_property_report(queryset, request)
         if data:
             reports.append({PROPERTY_REPORT: data})
 
@@ -370,7 +374,7 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
             int(act) for act in activity.split(',')
         ] if activity else []
 
-    if REGIONAL_DATA_CONSUMER in user_roles:
+    if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
@@ -387,7 +391,7 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
 
 
 def national_level_species_report(
-        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
+        queryset: QuerySet, request: HttpRequest
 ) -> List[Dict]:
     """
     Generate a national-level species report based on
@@ -396,9 +400,9 @@ def national_level_species_report(
     Args:
         queryset : The initial queryset containing species data.
         request : The HTTP request object containing query parameters.
-        user_roles : The roles of the user.
 
     """
+    user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
 
     report_data = AnnualPopulation.objects. \
@@ -409,7 +413,7 @@ def national_level_species_report(
             'year'
         ). \
         annotate(
-            property_area=Sum("property__property_size_ha"),
+            total_property_area=Sum("property__property_size_ha"),
             total_area_available=Sum("area_available_to_species"),
             adult_male_total_population=Sum(
                 "adult_male"
@@ -429,12 +433,12 @@ def national_level_species_report(
             juvenile_female_total_population=Sum(
                 "juvenile_female"
             ),
-        )
+        ).order_by('-year')
     return NationalLevelSpeciesReport(report_data, many=True).data
 
 
 def national_level_property_report(
-        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
+        queryset: QuerySet, request: HttpRequest
 ) -> List[Dict]:
     """
     Generate a national-level property report based on
@@ -443,9 +447,9 @@ def national_level_property_report(
     Args:
         queryset : The initial queryset containing species data.
         request : The HTTP request object containing query parameters.
-        user_roles : The roles of the user.
 
     """
+    user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
     serializer = NationalLevelPropertyReport(
         queryset,
@@ -455,11 +459,11 @@ def national_level_property_report(
         }
     )
 
-    return serializer.data
+    return serializer.data[0] if serializer.data else []
 
 
 def national_level_activity_report(
-        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
+        queryset: QuerySet, request: HttpRequest
 ) -> List[Dict]:
     """
     Generate a national-level activity report based on
@@ -468,9 +472,9 @@ def national_level_activity_report(
     Args:
         queryset : The initial queryset containing species data.
         request : The HTTP request object containing query parameters.
-        user_roles : The roles of the user.
 
     """
+    user_roles = get_user_roles(request.user)
     filters = {}
 
     start_year = request.GET.get("start_year")
@@ -485,11 +489,11 @@ def national_level_activity_report(
         property_list = property_param.split(",")
         filters["property__id__in"] = property_list
 
-    if REGIONAL_DATA_CONSUMER in user_roles:
+    if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
-        ).values_list("id", flat=True)
+        ).values_list("id", flat=True).distinct()
         filters["property__province__id__in"] = province_ids
 
     serializer = NationalLevelActivityReport(
@@ -499,11 +503,11 @@ def national_level_activity_report(
             'filters': filters
         }
     )
-    return serializer.data
+    return serializer.data[0] if serializer.data else []
 
 
 def national_level_province_report(
-        queryset: QuerySet, request: HttpRequest, user_roles: List[str]
+        queryset: QuerySet, request: HttpRequest
 ) -> List[Dict]:
     """
     Generate a national-level species report based on
@@ -512,9 +516,9 @@ def national_level_province_report(
     Args:
         queryset : The initial queryset containing species data.
         request : The HTTP request object containing query parameters.
-        user_roles : The roles of the user.
 
     """
+    user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
 
     serializer = NationalLevelProvinceReport(
@@ -528,7 +532,7 @@ def national_level_province_report(
     return serializer.data[0] if serializer.data else []
 
 
-def write_report_to_rows(queryset, request):
+def write_report_to_rows(queryset, request, report_functions=None):
     """
     Write report rows.
     """
@@ -540,14 +544,16 @@ def write_report_to_rows(queryset, request):
     if reports_list:
         reports_list = reports_list.split(",")
 
-        report_functions = {
+        default_report_functions = {
             ACTIVITY_REPORT: activity_report_rows,
             PROPERTY_REPORT: property_report,
             SAMPLING_REPORT: sampling_report,
             SPECIES_REPORT: species_report,
-            # PROVINCE_REPORT: province_reports
+            PROVINCE_REPORT: national_level_province_report
         }
-
+        report_functions = report_functions \
+            if report_functions \
+            else default_report_functions
         if request.GET.get('file') == 'xlsx':
             filename = 'data_report' + '.' + request.GET.get('file')
             path_file = os.path.join(path, filename)
@@ -562,7 +568,15 @@ def write_report_to_rows(queryset, request):
                         msg=str(report_name)
                     )
                     if report_name in report_functions:
-                        rows = report_functions[report_name](queryset, request)
+                        if report_name == PROVINCE_REPORT:
+                            taxon_qs = get_taxon_queryset(request)
+                            rows = report_functions[
+                                report_name
+                            ](taxon_qs, request)
+                        else:
+                            rows = report_functions[
+                                report_name
+                            ](queryset, request)
                         dataframe = pd.DataFrame(rows)
                         dataframe.to_excel(
                             writer,

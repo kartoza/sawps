@@ -1,26 +1,38 @@
 import base64
 import csv
+import json
 import os
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.test import Client, TestCase
 from django.urls import reverse
-
-from frontend.static_mapping import (
-    NATIONAL_DATA_SCIENTIST,
-    REGIONAL_DATA_SCIENTIST,
-    REGIONAL_DATA_CONSUMER
-)
-from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
-from population_data.factories import (
-    AnnualPopulationF,
-    AnnualPopulationPerActivityFactory
-)
-from property.factories import PropertyFactory
 from rest_framework import status
 
 from activity.models import ActivityType
+from frontend.static_mapping import (
+    NATIONAL_DATA_SCIENTIST,
+    PROVINCIAL_DATA_SCIENTIST,
+    PROVINCIAL_DATA_CONSUMER,
+    NATIONAL_DATA_CONSUMER
+)
+from frontend.tests.model_factories import (
+    SpatialDataModelF,
+    SpatialDataModelValueF
+)
+from frontend.utils.data_table import (
+    ACTIVITY_REPORT,
+    SPECIES_REPORT,
+    PROPERTY_REPORT,
+    SAMPLING_REPORT,
+    PROVINCE_REPORT
+)
+from population_data.factories import (
+    AnnualPopulationF
+)
+from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
+from property.factories import PropertyFactory
+from property.factories import ProvinceFactory
 from sawps.tests.models.account_factory import GroupF
 from species.factories import (
     TaxonFactory,
@@ -31,11 +43,6 @@ from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
     userRoleTypeFactory,
-)
-from property.factories import ProvinceFactory
-from frontend.tests.model_factories import (
-    SpatialDataModelF,
-    SpatialDataModelValueF
 )
 from stakeholder.models import OrganisationInvites, MANAGER
 
@@ -54,7 +61,7 @@ class AnnualPopulationTestMixins:
             taxon_rank=taxon_rank,
             scientific_name='SpeciesA'
         )
-        user = User.objects.create_user(
+        self.user = User.objects.create_user(
             username='testuserd',
             password='testpasswordd'
         )
@@ -65,13 +72,13 @@ class AnnualPopulationTestMixins:
         )
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
-            user=user,
+            user=self.user,
             organisation=self.organisation_1
         )
         group = GroupF.create(name=NATIONAL_DATA_SCIENTIST)
-        user.groups.add(group)
-        user.user_profile.current_organisation = self.organisation_1
-        user.save()
+        self.user.groups.add(group)
+        self.user.user_profile.current_organisation = self.organisation_1
+        self.user.save()
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
@@ -82,7 +89,7 @@ class AnnualPopulationTestMixins:
         self.annual_populations = AnnualPopulationF.create_batch(
             5,
             taxon=self.taxon,
-            user=user,
+            user=self.user,
             property=self.property,
             total=10,
             adult_male=4,
@@ -415,10 +422,156 @@ class NationalUserTestCase(TestCase):
 
     def test_national_property_report_all_activity(self) -> None:
         """Test property report for national data consumer"""
+        annual_population = AnnualPopulation.objects.create(
+            taxon=self.taxon,
+            property=PropertyFactory.create(),
+            year=self.annual_populations[0].year,
+            total=21
+        )
         url = self.url
-        response = self.client.get(url, {'activity': 'all'}, **self.auth_headers)
+        params = {
+            'activity': 'all'
+        }
+        response = self.client.get(url, params, **self.auth_headers)
+        expected_response = [
+            {
+                PROPERTY_REPORT: [{
+                    'year': int(self.annual_populations[0].year),
+                    'common_name': self.taxon.common_name_varbatim,
+                    'scientific_name': self.taxon.scientific_name,
+                    f'total_population_{self.property.property_type.name}_property': 10,
+                    f'total_area_{self.property.property_type.name}_property': 200,
+                    f'total_population_{annual_population.property.property_type.name}_property': 21,
+                    f'total_area_{annual_population.property.property_type.name}_property': 200
+                }]
+            }
+        ]
+        expected_response[0][PROPERTY_REPORT].extend([{
+            'year': int(self.annual_populations[i].year),
+            'common_name': self.taxon.common_name_varbatim,
+            'scientific_name': self.taxon.scientific_name,
+            f'total_population_{self.property.property_type.name}_property': 10,
+            f'total_area_{self.property.property_type.name}_property': 200,
+            f'total_population_{annual_population.property.property_type.name}_property': 0,
+            f'total_area_{annual_population.property.property_type.name}_property': 0
+        } for i in range(1, len(self.annual_populations))])
+        expected_response[0][PROPERTY_REPORT] = sorted(
+            expected_response[0][PROPERTY_REPORT],
+            key=lambda a: a['year'],
+            reverse=True
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.json(), expected_response)
+
+    def test_national_activity_report_all_activity(self) -> None:
+        """Test activity report for national data consumer"""
+        url = self.url
+        params = {
+            'activity': 'all',
+            'reports': ACTIVITY_REPORT
+        }
+        response = self.client.get(url, params, **self.auth_headers)
+        expected_response = [
+            {
+                "Activity_report": []
+            }
+        ]
+        for i in range(0, len(self.annual_populations)):
+            activity_types = ActivityType.objects.exclude(
+                name=self.annual_populations[i].annualpopulationperactivity_set.first().activity_type.name
+            ).values_list('name', flat=True)
+            base_dict = {
+                'year': int(self.annual_populations[i].year),
+                'common_name': self.taxon.common_name_varbatim,
+                'scientific_name': self.taxon.scientific_name,
+                f'total_population_{self.annual_populations[i].annualpopulationperactivity_set.first().activity_type.name}': 100  # noqa
+            }
+            additional_fields = {f"total_population_{key}": 0 for key in activity_types}
+            base_dict.update(additional_fields)
+            expected_response[0][ACTIVITY_REPORT].append(base_dict)
+        expected_response[0][ACTIVITY_REPORT] = sorted(
+            expected_response[0][ACTIVITY_REPORT],
+            key=lambda a: a['year'],
+            reverse=True
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_response)
+
+    def test_national_species_report_all_activity(self) -> None:
+        """Test species report for national data consumer"""
+        url = self.url
+        params = {
+            'activity': 'all',
+            'reports': SPECIES_REPORT
+        }
+        response = self.client.get(url, params, **self.auth_headers)
+
+        expected_response = [
+            {
+                SPECIES_REPORT: [{
+                    'year': int(self.annual_populations[i].year),
+                    'common_name': self.taxon.common_name_varbatim,
+                    'scientific_name': self.taxon.scientific_name,
+                    "total_property_area": 200,
+                    "total_area_available": 10,
+                    "adult_male_total_population": 4,
+                    "adult_female_total_population": 6,
+                    "sub_adult_male_total_population": 10,
+                    "sub_adult_female_total_population": 10,
+                    "juvenile_male_total_population": 30,
+                    "juvenile_female_total_population": 30,
+                } for i in range(0, len(self.annual_populations))]
+            }
+        ]
+        expected_response[0][SPECIES_REPORT] = sorted(
+            expected_response[0][SPECIES_REPORT],
+            key=lambda a: a['year'],
+            reverse=True
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_response)
+
+    def test_national_province_report_all_activity(self) -> None:
+        """Test property report for national data consumer"""
+        annual_population = AnnualPopulation.objects.create(
+            taxon=self.taxon,
+            property=PropertyFactory.create(),
+            year=self.annual_populations[0].year,
+            total=21
+        )
+        url = self.url
+        params = {
+            'activity': 'all',
+            'reports': PROVINCE_REPORT
+        }
+        response = self.client.get(url, params, **self.auth_headers)
+
+        expected_response = [
+            {
+                PROVINCE_REPORT: [{
+                    'year': int(self.annual_populations[0].year),
+                    'common_name': self.taxon.common_name_varbatim,
+                    'scientific_name': self.taxon.scientific_name,
+                    f'total_population_{self.property.province.name}': 10,
+                    f'total_population_{annual_population.property.province.name}': 21
+                }]
+            }
+        ]
+        expected_response[0][PROVINCE_REPORT].extend([{
+            'year': int(self.annual_populations[i].year),
+            'common_name': self.taxon.common_name_varbatim,
+            'scientific_name': self.taxon.scientific_name,
+            f'total_population_{self.property.province.name}': 10,
+            f'total_population_{annual_population.property.province.name}': 0
+        } for i in range(1, len(self.annual_populations))])
+        expected_response[0][PROVINCE_REPORT] = sorted(
+            expected_response[0][PROVINCE_REPORT],
+            key=lambda a: a['year'],
+            reverse=True
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected_response)
 
     def test_national_user_reports(self) -> None:
         """Test national data consumer reports"""
@@ -473,7 +626,7 @@ class RegionalUserTestCase(TestCase):
             name="Regional data consumer",
         )
 
-        group = GroupF.create(name=REGIONAL_DATA_CONSUMER)
+        group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
         user.groups.add(group)
 
         OrganisationInvites.objects.create(
@@ -550,7 +703,7 @@ class DataScientistTestCase(TestCase):
             organisation=self.organisation_1
         )
 
-        group = GroupF.create(name=REGIONAL_DATA_SCIENTIST)
+        group = GroupF.create(name=PROVINCIAL_DATA_SCIENTIST)
         user.groups.add(group)
         user.user_profile.current_organisation = self.organisation_1
         user.save()
@@ -666,5 +819,94 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
 
 
+class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
+    """Test Case for download data"""
 
+    def setUp(self):
+        super().setUp()
+        self.user.groups.clear()
+        group = Group.objects.create(name=NATIONAL_DATA_CONSUMER)
+        self.user.groups.add(group)
+        self.user.save()
+        self.user.user_profile.current_organisation = self.organisation_1
 
+    def test_download_all_reports_by_all_activity_type(self) -> None:
+        """Test download data table filter by activity name"""
+        url = self.url
+        self.annual_populations[0].annualpopulationperactivity_set.all().delete()
+        self.annual_populations[1].annualpopulationperactivity_set.all().delete()
+
+        data = {
+            "file": "csv",
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Activity_report,Property_report,Species_report,Province_report"
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test if file output is zip
+        self.assertEqual(response.data['file'], "/media/download_data/data_report.zip")
+
+        # check if all csv files eexist in the folder
+        path = os.path.join(settings.MEDIA_ROOT, "download_data")
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report.zip")))
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report_Species_report.csv")))
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report_Activity_report.csv")))
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report_Property_report.csv")))
+
+        # check fields in Activity report
+        activity_path = "/home/web/media/download_data/data_report_Activity_report.csv"
+        with open(activity_path, encoding='utf-8-sig') as csv_file:
+            file = csv.DictReader(csv_file)
+            headers = file.fieldnames
+            self.assertTrue(any("total_population_" in header for header in headers))
+            self.assertTrue("scientific_name" in headers)
+            self.assertTrue("common_name" in headers)
+            self.assertTrue("year" in headers)
+
+        activity_path = "/home/web/media/download_data/data_report_Province_report.csv"
+        with open(activity_path, encoding='utf-8-sig') as csv_file:
+            file = csv.DictReader(csv_file)
+            headers = file.fieldnames
+            self.assertTrue(any("total_population_" in header for header in headers))
+            self.assertTrue("scientific_name" in headers)
+            self.assertTrue("common_name" in headers)
+            self.assertTrue("year" in headers)
+
+        activity_path = "/home/web/media/download_data/data_report_Species_report.csv"
+        with open(activity_path, encoding='utf-8-sig') as csv_file:
+            file = csv.DictReader(csv_file)
+            headers = file.fieldnames
+            self.assertTrue("scientific_name" in headers)
+            self.assertTrue("common_name" in headers)
+            self.assertTrue("year" in headers)
+
+        activity_path = "/home/web/media/download_data/data_report_Property_report.csv"
+        with open(activity_path, encoding='utf-8-sig') as csv_file:
+            file = csv.DictReader(csv_file)
+            headers = file.fieldnames
+            self.assertTrue(any("total_population_" in header for header in headers))
+            self.assertTrue("scientific_name" in headers)
+            self.assertTrue("common_name" in headers)
+            self.assertTrue("year" in headers)
+
+    def test_download_xlsx_data_all_reports_by_all_activity_type(self) -> None:
+        """Test download data table filter by activity name"""
+        url = self.url
+
+        data = {
+            "file": "xlsx",
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Activity_report,Property_report,Species_report,Province_report"
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test if file output is xlsx
+        self.assertEqual(response.data['file'], "/media/download_data/data_report.xlsx")
+
+        # check if xlsx files exists in the folder
+        path = os.path.join(settings.MEDIA_ROOT, "download_data")
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))

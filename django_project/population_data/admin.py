@@ -26,6 +26,10 @@ class AnnualPopulationAdmin(admin.ModelAdmin):
         'taxon__common_name_varbatim'
     ]
     form = AnnualPopulationForm
+    autocomplete_fields = [
+        'user', 'owned_species', 'taxon',
+        'property', 'population_estimate_category', 'sampling_effort_coverage'
+    ]
 
     def property_name(self, obj: AnnualPopulation):
         if obj.property:
