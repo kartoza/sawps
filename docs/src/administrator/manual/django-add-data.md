@@ -147,3 +147,49 @@ The administrators will be presented with a form to enter the user's information
 7. **Save and continue editing**: Save the current record while still showing the current record.
 
 8. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
+
+## Add Taxon Table
+
+![Add Taxon](./img/django-add-data-11.png)
+
+1. **Form Fields**: This form allows administrators to input values for the taxon.
+
+    The Taxon table is designed to store information about various taxonomic entities.
+
+    - **Scientific Name**: Field to input the scientific name of the taxon.
+    
+    - **Common Name Varbatim**: Field for entering the common name of the taxon.
+    
+    - **Colour Variant**: Dropdown menu for selecting color variants.
+    
+    - **Infraspecific Epithet**: Field for specifying the infraspecific epithet.
+    
+    - **Taxon Rank**: Dropdown menu for selecting the taxonomic rank.
+    
+    - **Parent**: Dropdown menu for selecting the parent taxon.
+    
+    - **Show on Front Page**: Checkbox indicating whether the taxon should be displayed on the front page.
+    
+    - **Is Selected**: Checkbox indicating whether the taxon is selected.
+    
+    - **Front Page Order**: Field to input the order of appearance on the front page (default: 0).
+    
+    - **Colour**: Field to specify the color.
+    
+    - **Graph Icon**: This icon is used in graphs and charts.
+        - **Click here for a sample**: Clicking on the `Click here for sample` link will show administrators a sample for the graph icon.
+            ![Graph icon](./img/django-add-data-12.png)
+
+    - **Topper Icon**: This icon is generated automatically from the graph icon for use in the `Reports` and `Charts` topper. The administrators can re-upload the topper icon by re-uploading the graph icon.
+        - **Click here for a sample**: Clicking on the `Click here for sample` link will show administrators a sample for the topper icon.
+            ![Graph icon](./img/django-add-data-13.png)
+    
+    - **Icon**: This icon is generated automatically from the graph icon for use in the population overview graph on the landing page. The administrators can re-upload the icon by re-uploading the graph icon.
+        - **Click here for a sample**: Clicking on the `Click here for sample` link will show administrators a sample for the icon.
+            ![Graph icon](./img/django-add-data-14.png)
+
+3. **Save and Add Another**: This option saves the current taxon record and redirects administrators to a new page to add another taxon record.
+
+4. **Save and Continue Editing**: Choosing this option saves the current taxon record while still displaying the current record for further editing.
+
+5. **Save**: This option saves the current taxon record and redirects administrators to the Django Admin Table/record list.
