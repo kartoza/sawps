@@ -4,6 +4,7 @@ import logging
 import traceback
 import json
 import time
+from datetime import datetime, timedelta
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
@@ -11,7 +12,7 @@ from django.utils import timezone
 from celery import shared_task
 from species.models import Taxon
 from population_data.models import AnnualPopulation
-from frontend.models.base_task import DONE, ERROR
+from frontend.models.base_task import DONE, ERROR, PENDING
 from frontend.models.statistical import StatisticalModel, SpeciesModelOutput
 from frontend.utils.statistical_model import (
     write_plumber_data,
@@ -19,11 +20,11 @@ from frontend.utils.statistical_model import (
     remove_plumber_data,
     store_species_model_output_cache,
     clear_species_model_output_cache,
-    mark_model_output_as_outdated_by_model
+    mark_model_output_as_outdated_by_model,
+    init_species_model_output_from_generic_model,
+    init_species_model_output_from_non_generic_model
 )
-from frontend.tasks.start_plumber import (
-    start_plumber_process
-)
+from frontend.utils.celery import cancel_task
 
 
 logger = logging.getLogger(__name__)
@@ -105,7 +106,25 @@ def save_model_output_on_failure(model_output: SpeciesModelOutput, errors=None):
     model_output.finished_at = timezone.now()
     model_output.status = ERROR
     model_output.errors = errors
-    model_output.save(update_fields=['finished_at', 'status', 'errors'])
+    model_output.is_outdated = False
+    model_output.outdated_since = None
+    model_output.save(update_fields=['finished_at', 'status',
+                                     'errors', 'is_outdated',
+                                     'outdated_since'])
+
+
+def trigger_generate_species_model_output(model_output: SpeciesModelOutput):
+    """Trigger generate species model output job."""
+    if model_output.task_id:
+        cancel_task(model_output.task_id)
+    model_output.status = PENDING
+    model_output.is_outdated = False
+    model_output.outdated_since = None
+    model_output.save(update_fields=['status', 'is_outdated',
+                                     'outdated_since'])
+    task = generate_species_statistical_model.delay(model_output.id)
+    model_output.task_id = task.id
+    model_output.save(update_fields=['task_id'])
 
 
 @shared_task(name="check_affected_model_output")
@@ -113,6 +132,9 @@ def check_affected_model_output(model_id, is_created):
     """
     Triggered when model is created/updated.
     """
+    from frontend.tasks.start_plumber import (
+        start_plumber_process
+    )
     if is_created:
         time.sleep(2)
     model = StatisticalModel.objects.get(id=model_id)
@@ -125,36 +147,11 @@ def check_affected_model_output(model_id, is_created):
         # create model output with outdated = True
         if model.taxon:
             # non generic model
-            # delete output from generic model
-            generic_model = StatisticalModel.objects.filter(
-                taxon__isnull=True
-            ).first()
-            if generic_model:
-                SpeciesModelOutput.objects.filter(
-                    taxon=model.taxon,
-                    model=generic_model
-                ).delete()
-            SpeciesModelOutput.objects.create(
-                model=model,
-                taxon=model.taxon,
-                is_latest=True,
-                is_outdated=True,
-                outdated_since=timezone.now()
-            )
+            init_species_model_output_from_non_generic_model(model)
         else:
-            # generic model created new
-            non_generic_models = StatisticalModel.objects.filter(
-                taxon__isnull=False
-            ).values_list('taxon_id', flat=True)
-            taxons = Taxon.objects.exclude(id__in=non_generic_models)
-            for taxon in taxons:
-                SpeciesModelOutput.objects.create(
-                    model=model,
-                    taxon=taxon,
-                    is_latest=True,
-                    is_outdated=True,
-                    outdated_since=timezone.now()
-                )
+            # generic model - create new
+            init_species_model_output_from_generic_model(model)
+    # restart plumber to load new R codes
     start_plumber_process.apply_async(queue='plumber')
 
 
@@ -182,7 +179,26 @@ def check_oudated_model_output():
     This check_outdated_model_output will check every model output
     that needs to be refreshed.
     """
-    pass
+    outputs = SpeciesModelOutput.objects.filter(
+        is_outdated=True
+    )
+    for model_output in outputs:
+        if model_output.output_file:
+            # create a new model output
+            model_output.is_outdated = False
+            model_output.outdated_since = None
+            model_output.save(update_fields=['is_outdated', 'outdated_since'])
+            new_model_output = SpeciesModelOutput.objects.create(
+                model=model_output.model,
+                taxon=model_output.taxon,
+                is_latest=False,
+                is_outdated=True,
+                outdated_since=timezone.now()
+            )
+            trigger_generate_species_model_output(new_model_output)
+        else:
+            # this is from initialization
+            trigger_generate_species_model_output(model_output)
 
 
 @shared_task(name="generate_species_statistical_model")
@@ -215,4 +231,11 @@ def generate_species_statistical_model(request_id):
 @shared_task(name="clean_old_model_output")
 def clean_old_model_output():
     """Remove old model output that has more recent model."""
-    pass
+    datetime_filter = datetime.now() - timedelta(days=30)
+    old_outputs = SpeciesModelOutput.objects.filter(
+        is_latest=False,
+        status=DONE,
+        generated_on__lte=datetime_filter
+    )
+    total_count, _ = old_outputs.delete()
+    logger.info(f'Clear old model output: {total_count} counts')

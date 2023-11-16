@@ -281,3 +281,42 @@ def mark_model_output_as_outdated_by_species(taxon: Taxon):
         latest_output.outdated_since = timezone.now()
         latest_output.save(update_fields=['is_outdated', 'outdated_since'])
 
+
+def init_species_model_output_from_generic_model(model: StatisticalModel):
+    """
+    Create species model output from generic model.
+    """
+    non_generic_models = StatisticalModel.objects.filter(
+        taxon__isnull=False
+    ).values_list('taxon_id', flat=True)
+    taxons = Taxon.objects.exclude(id__in=non_generic_models)
+    for taxon in taxons:
+        SpeciesModelOutput.objects.create(
+            model=model,
+            taxon=taxon,
+            is_latest=True,
+            is_outdated=True,
+            outdated_since=timezone.now()
+        )
+
+
+def init_species_model_output_from_non_generic_model(model: StatisticalModel):
+    """
+    Create species model output specific to a taxon in model.
+    """
+    generic_model = StatisticalModel.objects.filter(
+        taxon__isnull=True
+    ).first()
+    if generic_model:
+        # delete output from generic model
+        SpeciesModelOutput.objects.filter(
+            taxon=model.taxon,
+            model=generic_model
+        ).delete()
+    SpeciesModelOutput.objects.create(
+        model=model,
+        taxon=model.taxon,
+        is_latest=True,
+        is_outdated=True,
+        outdated_since=timezone.now()
+    )
