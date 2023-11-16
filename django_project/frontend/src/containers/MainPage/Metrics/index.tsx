@@ -59,7 +59,7 @@ const Metrics = () => {
         isLoading: isActivityLoading,
         isSuccess: isActivitySuccess
     } = useGetActivityAsObjQuery()
-    
+
     const {
         data: propertyTypes,
         isLoading: isPropertyTypesLoading,
@@ -217,7 +217,7 @@ const Metrics = () => {
             <Box className="charts-container" id={'charts-container'}>
 
                 {showCharts ? (
-                        <>
+                        <div className="buttonsBuffer">
                         <Topper></Topper>
                         <Grid container spacing={1} ref={contentRef}>
 
@@ -442,7 +442,7 @@ const Metrics = () => {
                                 )}
 
                     </Grid>
-                        </>
+                        </div>
                 ): (
                     // Render message to user
                     <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
