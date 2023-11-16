@@ -8,9 +8,6 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from frontend.models.upload import DraftSpeciesUpload
-from frontend.utils.statistical_model import (
-    clear_statistical_model_output_cache
-)
 from occurrence.models import SurveyMethod
 from occurrence.serializers import (
     SurveyMethodSerializer,
@@ -266,8 +263,6 @@ class UploadPopulationAPIVIew(APIView):
         draft_uuid = request.GET.get("uuid", None)
         if draft_uuid:
             DraftSpeciesUpload.objects.filter(uuid=draft_uuid).delete()
-        # clear caches of the species
-        clear_statistical_model_output_cache(taxon)
         return Response(status=204)
 
 

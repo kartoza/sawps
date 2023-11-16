@@ -94,16 +94,6 @@ class TestSpeciesTrend(TestCase):
         self.assertIn('test', response.data)
         self.assertEqual(response.data['test'], '12345')
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'save_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     @mock.patch('django.core.cache.cache.get',
                 mock.Mock(side_effect=mocked_cache_get_empty))
     def test_species_trend_without_cache(self):
@@ -131,16 +121,6 @@ class TestSpeciesTrend(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data, 'abcde')
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'save_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     @mock.patch('django.core.cache.cache.get',
                 mock.Mock(side_effect=mocked_cache_get_empty))
     def test_species_trend_without_output(self):
@@ -161,16 +141,6 @@ class TestSpeciesTrend(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data, 'qwerty')
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'save_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     @mock.patch('django.core.cache.cache.get',
                 mock.Mock(side_effect=mocked_cache_get_empty))
     def test_species_trend_model_failure(self):

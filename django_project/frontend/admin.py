@@ -270,6 +270,14 @@ class StatisticalModelAdmin(admin.ModelAdmin):
     actions = [restart_plumber_process]
     inlines = [StatisticalModelOutputInline]
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            # disable taxon in edit mode
+            # because SpeciesModelOutput depends on this
+            return ['taxon']
+        else:
+            return []
+
     def response_change(self, request, obj):
         if '_download-data-template' in request.POST:
             template_file = absolute_path(

@@ -437,11 +437,6 @@ class TaxonTestCase(TestCase):
         self.taxonRank.delete()
         self.assertEqual(TaxonRank.objects.count(), 0)
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     def test_taxon_admin_list(self):
         taxon2 = Taxon.objects.create(
             scientific_name='taxon_1',

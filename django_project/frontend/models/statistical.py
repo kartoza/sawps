@@ -50,17 +50,12 @@ class StatisticalModel(models.Model):
 @receiver(post_save, sender=StatisticalModel)
 def statistical_model_post_create(sender, instance: StatisticalModel,
                                   created, *args, **kwargs):
-    from frontend.tasks.start_plumber import (
-        start_plumber_process
+    
+    from frontend.tasks.generate_statistical_model import (
+        check_affected_model_output
     )
-    from frontend.utils.statistical_model import (
-        clear_statistical_model_output_cache
-    )
-    if not created:
-        clear_statistical_model_output_cache(instance.taxon)
-    if instance.code:
-        # respawn Plumber API
-        start_plumber_process.apply_async(queue='plumber')
+    if instance.code and instance.id:
+        check_affected_model_output.delay(instance.id, created)
 
 
 @receiver(post_delete, sender=StatisticalModel)
@@ -151,7 +146,7 @@ class SpeciesModelOutput(BaseTaskRequest):
     )
 
     def __str__(self) -> str:
-        return f'{self.taxon} - {self.model.name}'
+        return f'{self.taxon}'
 
     def get_cache_key(self, output_type) -> str:
         taxon_name = slugify(self.taxon.scientific_name)
@@ -160,8 +155,8 @@ class SpeciesModelOutput(BaseTaskRequest):
 
 @receiver(pre_delete, sender=SpeciesModelOutput)
 def species_model_output_pre_delete(sender,
-                                        instance: SpeciesModelOutput,
-                                        *args, **kwargs):
+                                    instance: SpeciesModelOutput,
+                                    *args, **kwargs):
     from frontend.utils.statistical_model import (
         clear_species_model_output_cache
     )

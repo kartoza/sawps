@@ -8,13 +8,11 @@ from frontend.utils.statistical_model import (
     write_plumber_file,
     write_plumber_data, 
     remove_plumber_data,
-    get_statistical_model_output_cache_key,
     execute_statistical_model,
     PLUMBER_PORT,
     plumber_health_check,
     kill_r_plumber_process,
-    spawn_r_plumber,
-    clear_statistical_model_output_cache
+    spawn_r_plumber
 )
 from frontend.utils.process import write_pidfile
 from frontend.tests.model_factories import StatisticalModelF
@@ -109,11 +107,6 @@ class TestStatisticalUtils(TestCase):
         kill_r_plumber_process()
         self.assertEqual(mocked_os.call_count, 1)
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     def test_execute_statistical_model(self):
         data_filepath = '/home/web/plumber_data/test.csv'
         model = StatisticalModelF.create()
@@ -144,11 +137,6 @@ class TestStatisticalUtils(TestCase):
             self.assertFalse(is_success)
             self.assertFalse(response)
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     def test_write_plumber_file(self):
         taxon = TaxonF.create()
         model = StatisticalModelF.create(
@@ -185,20 +173,3 @@ class TestStatisticalUtils(TestCase):
         self.assertTrue(os.path.exists(file_path))
         remove_plumber_data(file_path)
         self.assertFalse(os.path.exists(file_path))
-
-    def test_get_statistical_model_output_cache_key(self):
-        taxon = TaxonF.create()
-        cache_key = get_statistical_model_output_cache_key(
-            taxon, NATIONAL_TREND)
-        self.assertEqual(cache_key, f'species-{taxon.id}-national-trend')
-        cache_key = get_statistical_model_output_cache_key(
-            taxon, PROVINCE_TREND, 'Gauteng')
-        self.assertEqual(
-            cache_key, f'species-{taxon.id}-province-trend-gauteng')
-
-    @mock.patch('frontend.utils.statistical_model.cache')
-    def test_clear_statistical_model_output_cache(self, mocked_cached):
-        mocked_cached.return_value = DummyCacheHandler()
-        taxon = TaxonF.create()
-        clear_statistical_model_output_cache(taxon)
-        clear_statistical_model_output_cache(None)

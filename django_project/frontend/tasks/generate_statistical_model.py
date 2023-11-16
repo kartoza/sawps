@@ -3,6 +3,7 @@ import os
 import logging
 import traceback
 import json
+import time
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
@@ -11,13 +12,17 @@ from celery import shared_task
 from species.models import Taxon
 from population_data.models import AnnualPopulation
 from frontend.models.base_task import DONE, ERROR
-from frontend.models.statistical import SpeciesModelOutput
+from frontend.models.statistical import StatisticalModel, SpeciesModelOutput
 from frontend.utils.statistical_model import (
     write_plumber_data,
     execute_statistical_model,
     remove_plumber_data,
     store_species_model_output_cache,
-    clear_species_model_output_cache
+    clear_species_model_output_cache,
+    mark_model_output_as_outdated_by_model
+)
+from frontend.tasks.start_plumber import (
+    start_plumber_process
 )
 
 
@@ -60,7 +65,15 @@ def export_annual_population_data(taxon: Taxon):
     return write_plumber_data(csv_headers, csv_data)
 
 
-def save_model_output_on_success(model_output: SpeciesModelOutput, data_filepath, json_data):
+def save_model_data_input(model_output: SpeciesModelOutput, data_filepath):
+    taxon_name = slugify(model_output.taxon.scientific_name).replace('-', '_')
+    if data_filepath and os.path.exists(data_filepath):
+        with open(data_filepath, 'rb') as input_file:
+            input_name = f'{model_output.id}_{taxon_name}.csv'
+            model_output.input_file.save(input_name, File(input_file))
+
+
+def save_model_output_on_success(model_output: SpeciesModelOutput, json_data):
     model_output.finished_at = timezone.now()
     model_output.status = DONE
     model_output.errors = None
@@ -69,10 +82,6 @@ def save_model_output_on_success(model_output: SpeciesModelOutput, data_filepath
     model_output.outdated_since = None
     model_output.save()
     taxon_name = slugify(model_output.taxon.scientific_name).replace('-', '_')
-    if data_filepath and os.path.exists(data_filepath):
-        with open(data_filepath, 'rb') as input_file:
-            input_name = f'{model_output.id}_{taxon_name}.csv'
-            model_output.input_file.save(input_name, File(input_file))
     output_name = f'{model_output.id}_{taxon_name}.json'
     model_output.output_file.save(
         output_name, ContentFile(json.dumps(json_data)))
@@ -97,6 +106,56 @@ def save_model_output_on_failure(model_output: SpeciesModelOutput, errors=None):
     model_output.status = ERROR
     model_output.errors = errors
     model_output.save(update_fields=['finished_at', 'status', 'errors'])
+
+
+@shared_task(name="check_affected_model_output")
+def check_affected_model_output(model_id, is_created):
+    """
+    Triggered when model is created/updated.
+    """
+    if is_created:
+        time.sleep(2)
+    model = StatisticalModel.objects.get(id=model_id)
+    model_outputs = SpeciesModelOutput.objects.filter(
+        model=model
+    )
+    if model_outputs.exists():
+        mark_model_output_as_outdated_by_model(model)
+    else:
+        # create model output with outdated = True
+        if model.taxon:
+            # non generic model
+            # delete output from generic model
+            generic_model = StatisticalModel.objects.filter(
+                taxon__isnull=True
+            ).first()
+            if generic_model:
+                SpeciesModelOutput.objects.filter(
+                    taxon=model.taxon,
+                    model=generic_model
+                ).delete()
+            SpeciesModelOutput.objects.create(
+                model=model,
+                taxon=model.taxon,
+                is_latest=True,
+                is_outdated=True,
+                outdated_since=timezone.now()
+            )
+        else:
+            # generic model created new
+            non_generic_models = StatisticalModel.objects.filter(
+                taxon__isnull=False
+            ).values_list('taxon_id', flat=True)
+            taxons = Taxon.objects.exclude(id__in=non_generic_models)
+            for taxon in taxons:
+                SpeciesModelOutput.objects.create(
+                    model=model,
+                    taxon=taxon,
+                    is_latest=True,
+                    is_outdated=True,
+                    outdated_since=timezone.now()
+                )
+    start_plumber_process.apply_async(queue='plumber')
 
 
 @shared_task(name="check_oudated_model_output")
@@ -134,10 +193,15 @@ def generate_species_statistical_model(request_id):
     data_filepath = None
     try:
         data_filepath = export_annual_population_data(model_output.taxon)
+        save_model_data_input(model_output, data_filepath)
+        model = model_output.model
+        if model.taxon is None:
+            # this is generic model
+            model = None
         is_success, json_data = execute_statistical_model(
-            data_filepath, model_output.taxon, model=model_output.model)
+            data_filepath, model_output.taxon, model=model)
         if is_success:
-            save_model_output_on_success(model_output, data_filepath, json_data)
+            save_model_output_on_success(model_output, json_data)
         else:
             save_model_output_on_failure(model_output, errors=str(json_data))
     except Exception as ex:

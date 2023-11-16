@@ -7,6 +7,7 @@ import subprocess
 import requests
 from uuid import uuid4
 from django.core.cache import cache
+from django.utils import timezone
 from core.settings.utils import absolute_path
 from species.models import Taxon
 from frontend.models.statistical import (
@@ -223,67 +224,6 @@ def remove_plumber_data(data_filepath):
         logger.error(ex)
 
 
-def get_statistical_model_output_cache_key(taxon: Taxon, output_type: str):
-    """
-    Build cache key for statistical model output.
-
-    :param taxon: species
-    :param output_type: model output type, e.g. NATIONAL_TREND
-    :return: cache key
-    """
-    cache_key = (
-        f"species-{str(taxon.id)}-{output_type.replace('_', '-')}"
-    )
-    return cache_key
-
-
-def save_statistical_model_output_cache(taxon: Taxon, output_type: str,
-                                        json_data):
-    """
-    Save output of statistical model to cache.
-
-    The cache will be cleared when statistical model is updated or
-    there is new population data for taxon.
-    :param taxon: species
-    :param output_type: model output type, e.g. NATIONAL_TREND
-    :param json_data: json data of model output
-    """
-    cache_key = get_statistical_model_output_cache_key(taxon, output_type)
-    cache.set(cache_key, json_data)
-
-
-def get_statistical_model_output_cache(taxon: Taxon, output_type: str):
-    """
-    Retrieve output of statistical model from cache.
-
-    :param taxon: species
-    :param output_type: model output type, e.g. NATIONAL_TREND
-    :return: json data or None if there is no cache
-    """
-    cache_key = get_statistical_model_output_cache_key(taxon, output_type)
-    return cache.get(cache_key)
-
-
-def clear_statistical_model_output_cache(taxon: Taxon):
-    """
-    Clear all output from species in the cache.
-
-    :param taxon: species
-    """
-    if taxon:
-        keys_pattern = f'*species-{str(taxon.id)}-*'
-    else:
-        # updated generic model, all cache can be cleared
-        keys_pattern = '*species-*'
-    output_caches = (
-        cache._cache.get_client().keys(keys_pattern)
-    )
-    if output_caches:
-        for cache_key in output_caches:
-            cleaned_key = str(cache_key).split(':')[-1].replace('\'', '')
-            cache.delete(cleaned_key)
-
-
 def store_species_model_output_cache(model_output: SpeciesModelOutput, json_data):
     """
     Store output types to cache.
@@ -307,3 +247,37 @@ def clear_species_model_output_cache(model_output: SpeciesModelOutput):
     for output_type in CACHED_OUTPUT_TYPES:
         cache_key = model_output.get_cache_key(output_type)
         cache.delete(cache_key)
+
+
+def mark_model_output_as_outdated_by_model(model: StatisticalModel):
+    """
+    Mark latest output as outdated so it can be refreshed.
+
+    This is triggered when R code in a model is updated.
+    :param model: StatisticalModel
+    """
+    SpeciesModelOutput.objects.filter(
+        model=model,
+        is_latest=True
+    ).update(
+        is_outdated=True,
+        outdated_since=timezone.now()
+    )
+
+
+def mark_model_output_as_outdated_by_species(taxon: Taxon):
+    """
+    Mark latest output as outdated so it can be refreshed.
+
+    This is triggered when a new data of species are added.
+    :param taxon: species
+    """
+    latest_output = SpeciesModelOutput.objects.filter(
+        taxon=taxon,
+        is_latest=True
+    ).first()
+    if latest_output:
+        latest_output.is_outdated = True
+        latest_output.outdated_since = timezone.now()
+        latest_output.save(update_fields=['is_outdated', 'outdated_since'])
+
