@@ -53,6 +53,10 @@ def mocked_process_func(*args, **kwargs):
     return DummyTask(1)
 
 
+def mocked_raise_exception_func(*args, **kwargs):
+    raise Exception('Test')
+
+
 class TestGenerateStatisticalModel(TestCase):
 
     def test_export_annual_population_data(self):
@@ -334,7 +338,7 @@ class TestGenerateStatisticalModel(TestCase):
             self.assertTrue(output.is_latest)
 
     @mock.patch('frontend.tasks.generate_statistical_model.'
-                'export_annual_population_data')
+                'execute_statistical_model')
     def test_generate_species_statistical_model_with_ex(self, mocked_exec):
         output = SpeciesModelOutputF.create(
             is_latest=True,
@@ -345,12 +349,13 @@ class TestGenerateStatisticalModel(TestCase):
         pop_1 = AnnualPopulationF.create(
             taxon=output.taxon
         )
-        mocked_exec.side_effect = Exception('Test')
+        mocked_exec.side_effect = mocked_raise_exception_func
         generate_species_statistical_model(output.id)
         output.refresh_from_db()
         self.assertEqual(output.status, ERROR)
         self.assertIn('Test', output.errors)
         self.assertFalse(output.is_outdated)
+        mocked_exec.assert_called_once()
 
     def test_clean_old_model_output(self):
         output = SpeciesModelOutputF.create(

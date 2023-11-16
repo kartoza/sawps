@@ -7,6 +7,10 @@ def mocked_task_revoke(self, *args, **kwargs):
     return 1
 
 
+def mocked_raise_exception_func(*args, **kwargs):
+    raise Exception('Test')
+
+
 class CeleryTestCase(TestCase):
 
     @mock.patch('core.celery.app.control.revoke')
@@ -22,7 +26,7 @@ class CeleryTestCase(TestCase):
     @mock.patch('frontend.utils.celery.AsyncResult.ready')
     def test_cancel_task_ready_with_ex(self, mocked_ready, mocked_revoke):
         mocked_ready.return_value = False
-        mocked_revoke.side_effect = Exception('Test')
+        mocked_revoke.side_effect = mocked_raise_exception_func
         cancel_task('123')
         mocked_ready.assert_called_once()
         mocked_revoke.assert_called_once()
