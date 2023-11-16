@@ -386,7 +386,7 @@ const DataList = () => {
                         </Box>
                     </Modal>
                 </Box>
-                <Box className='dataContainer' id={'dataContainer'}>
+                <Box className='dataContainer buttonsBuffer' id={'dataContainer'}>
                     <Topper></Topper>
                     <Box className="bgGreen">
                         <Box className="selectBox">
