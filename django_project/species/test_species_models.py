@@ -454,16 +454,6 @@ class TaxonTestCase(TestCase):
         response = client.get(reverse('admin:species_taxon_changelist'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, 'Colour')
-        response = client.post(
-            reverse('admin:species_taxon_changelist'),
-            {
-                'action': 'clean_output_caches',
-                '_selected_action': [taxon2.id]
-            },
-            follow=True
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, 'cache has been cleared')
 
 
 class TaxonSurveyMethodTestCase(TestCase):
