@@ -58,19 +58,12 @@
   box-shadow: 0 0 6px -2px rgba(0, 0, 0, 0.3);
   width: 100%;
   flex-direction: column;
-  height: 320px;
-  .ChartTitleBox {
-    height: 50px;
-
-    .ChartTitle {
-      font-weight: bold;
-    }
-  }
+  height: 400px;
 
   .ChartContainers {
-    height: 270px;
+    height: 320px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     .ChartContainer {
       height: 270px;
@@ -78,6 +71,22 @@
       .ChartBox {
         height: 270px;
       }
+    }
+    .ChartTitleBox {
+      height: 50px;
+  
+      .ChartTitle {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .DownloadChartContainer {
+    height: 20px;
+    text-align: right;
+
+    img:hover {
+      cursor: pointer;
     }
   }
 }
