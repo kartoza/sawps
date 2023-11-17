@@ -143,11 +143,11 @@ After successfully changing the password, the administrator will receive a confi
 
     - **Survey methods**: The `Survey methods` table is used for storing the survey methods records. In the field of wildlife and environmental studies, survey methods are essential for systematically collecting data about the occurrence and distribution of various species and ecosystems. These methods are carefully designed to provide accurate information for research, conservation, and management purposes. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing survey methods.
 
-10. **OTP STATIC**: The administrators can use this section to perform operations related to static OTP devices.
+10. **OTP STATIC**: The administrators can use this section to perform operations related to static OTP (one-time pin) devices.
 
     - **Static devices**: The `Static devices` table is used for storing the static devices records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing static devices.
 
-11. **OTP TOTP**: The administrators can use this section to perform operations related to OTP TOTP devices.
+11. **OTP TOTP**: The administrators can use this section to perform operations related to OTP TOTP (time-based one-time pin) devices.
 
     - **TOTP devices**: The `TOTP devices` table is used for storing the TOTP devices records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing TOTP devices.
         - **Add**: Click on the [add](django-add-data.md) to view how to add a new TOTP device.
@@ -224,7 +224,7 @@ After successfully changing the password, the administrator will receive a confi
 
     - **Taxon Ranks**: The `Taxon Ranks` table is used for storing the taxon rank records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing taxon ranks.
 
-20. - **STAKEHOLDER**: The administrators can use this section to perform operations related to stakeholders.
+20. **STAKEHOLDER**: The administrators can use this section to perform operations related to stakeholders.
 
     - **Login Status**: The `Login status` table is used for storing the login status records. The administrators can use the login status table to define and manage different login states within the SAWPS. This can help track and manage user's login activities. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing login status.
 
