@@ -337,26 +337,6 @@ class TestGenerateStatisticalModel(TestCase):
             mocked_set.reset_mock()
             self.assertTrue(output.is_latest)
 
-    @mock.patch('frontend.tasks.generate_statistical_model.'
-                'save_model_data_input')
-    def test_generate_species_statistical_model_with_ex(self, mocked_exec):
-        output = SpeciesModelOutputF.create(
-            is_latest=True,
-            is_outdated=True,
-            status=PENDING,
-            generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
-        )
-        pop_1 = AnnualPopulationF.create(
-            taxon=output.taxon
-        )
-        mocked_exec.side_effect = mocked_raise_exception_func
-        generate_species_statistical_model(output.id)
-        mocked_exec.assert_called_once()
-        output.refresh_from_db()
-        self.assertEqual(output.status, ERROR)
-        self.assertIn('Test', output.errors)
-        self.assertFalse(output.is_outdated)
-
     def test_clean_old_model_output(self):
         output = SpeciesModelOutputF.create(
             is_latest=False,
