@@ -2,22 +2,42 @@ import os
 from django.test import TestCase
 import mock
 import requests_mock
+from collections import OrderedDict
 from species.factories import TaxonF
-from frontend.models.statistical import NATIONAL_TREND, PROVINCE_TREND
+from frontend.models.statistical import (
+    NATIONAL_TREND,
+    PROVINCE_TREND,
+    CACHED_OUTPUT_TYPES,
+    SpeciesModelOutput
+)
 from frontend.utils.statistical_model import (
     write_plumber_file,
     write_plumber_data, 
     remove_plumber_data,
-    get_statistical_model_output_cache_key,
     execute_statistical_model,
     PLUMBER_PORT,
     plumber_health_check,
     kill_r_plumber_process,
     spawn_r_plumber,
-    clear_statistical_model_output_cache
+    store_species_model_output_cache,
+    clear_species_model_output_cache,
+    mark_model_output_as_outdated_by_model,
+    mark_model_output_as_outdated_by_species_list,
+    init_species_model_output_from_generic_model,
+    init_species_model_output_from_non_generic_model
 )
 from frontend.utils.process import write_pidfile
-from frontend.tests.model_factories import StatisticalModelF
+from frontend.tests.model_factories import (
+    StatisticalModelF,
+    SpeciesModelOutputF,
+    StatisticalModelOutputF
+)
+
+
+def mocked_cache_get(self, *args, **kwargs):
+    return OrderedDict({
+        'test': '12345'
+    })
 
 
 def mocked_clear_cache(self, *args, **kwargs):
@@ -36,26 +56,6 @@ def find_r_line_code(lines, code):
 class DummyProcess:
     def __init__(self, pid):
         self.pid = pid
-
-
-class DummyCacheClient:
-    def __init__(self, results = []):
-        self.results = results
-
-    def keys(self, key_pattern):
-        return self.results
-
-
-class DummyCacheHandler:
-    def __init__(self, results = []):
-        self.results = results
-        self._cache = self
-
-    def get_client(self):
-        return DummyCacheClient(self.results)
-    
-    def delete(self, key):
-        return 1
 
 
 def mocked_process(*args, **kwargs):
@@ -109,11 +109,6 @@ class TestStatisticalUtils(TestCase):
         kill_r_plumber_process()
         self.assertEqual(mocked_os.call_count, 1)
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     def test_execute_statistical_model(self):
         data_filepath = '/home/web/plumber_data/test.csv'
         model = StatisticalModelF.create()
@@ -142,13 +137,22 @@ class TestStatisticalUtils(TestCase):
                                                              model.taxon,
                                                              model)
             self.assertFalse(is_success)
-            self.assertFalse(response)
+            self.assertEqual('Internal server error', response['error'])
+        with requests_mock.Mocker() as m:
+            data_response = 'Test'
+            m.post(
+                f'http://plumber:{PLUMBER_PORT}/statistical/api_{model.id}',
+                json=data_response,
+                headers={'Content-Type':'text/plain'},
+                status_code=500
+            )
+            is_success, response = execute_statistical_model(data_filepath,
+                                                             model.taxon,
+                                                             model)
+            self.assertFalse(is_success)
+            self.assertEqual('Invalid response content type: text/plain',
+                             response)
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     def test_write_plumber_file(self):
         taxon = TaxonF.create()
         model = StatisticalModelF.create(
@@ -156,6 +160,16 @@ class TestStatisticalUtils(TestCase):
         )
         model = StatisticalModelF.create(
             taxon=taxon
+        )
+        StatisticalModelOutputF.create(
+            model=model,
+            type=NATIONAL_TREND,
+            variable_name='test_var1'
+        )
+        StatisticalModelOutputF.create(
+            model=model,
+            type=PROVINCE_TREND,
+            variable_name=None
         )
         r_file_path = write_plumber_file(
             os.path.join(
@@ -186,19 +200,60 @@ class TestStatisticalUtils(TestCase):
         remove_plumber_data(file_path)
         self.assertFalse(os.path.exists(file_path))
 
-    def test_get_statistical_model_output_cache_key(self):
-        taxon = TaxonF.create()
-        cache_key = get_statistical_model_output_cache_key(
-            taxon, NATIONAL_TREND)
-        self.assertEqual(cache_key, f'species-{taxon.id}-national-trend')
-        cache_key = get_statistical_model_output_cache_key(
-            taxon, PROVINCE_TREND, 'Gauteng')
-        self.assertEqual(
-            cache_key, f'species-{taxon.id}-province-trend-gauteng')
+    @mock.patch('django.core.cache.cache.set')
+    @mock.patch('django.core.cache.cache.delete')
+    def test_species_model_output_cache(self, mocked_clear, mocked_set):
+        mocked_clear.side_effect = mocked_clear_cache
+        mocked_set.side_effect = mocked_clear_cache
+        latest_model = SpeciesModelOutputF.create(
+            is_latest=True
+        )
+        store_species_model_output_cache(latest_model, {
+            NATIONAL_TREND: 'test',
+            'abcdef': 'test123'
+        })
+        mocked_set.assert_called_once()
+        clear_species_model_output_cache(latest_model)
+        self.assertEqual(mocked_clear.call_count, len(CACHED_OUTPUT_TYPES))
 
-    @mock.patch('frontend.utils.statistical_model.cache')
-    def test_clear_statistical_model_output_cache(self, mocked_cached):
-        mocked_cached.return_value = DummyCacheHandler()
-        taxon = TaxonF.create()
-        clear_statistical_model_output_cache(taxon)
-        clear_statistical_model_output_cache(None)
+    def test_mark_model_output_as_outdated(self):
+        model = StatisticalModelF.create()
+        output = SpeciesModelOutputF.create(
+            model=model,
+            is_latest=True,
+            is_outdated=False
+        )
+        mark_model_output_as_outdated_by_model(model)
+        output.refresh_from_db()
+        self.assertTrue(output.is_outdated)
+        output.is_outdated = False
+        output.save()
+        mark_model_output_as_outdated_by_species_list([output.taxon.id])
+        output.refresh_from_db()
+        self.assertTrue(output.is_outdated)
+
+    def test_init_species_model_output(self):
+        taxon_a = TaxonF.create()
+        taxon_b = TaxonF.create()
+        non_generic_model = StatisticalModelF.create(
+            taxon=taxon_a
+        )
+        generic_model = StatisticalModelF.create(
+            taxon=None
+        )
+        init_species_model_output_from_generic_model(generic_model)
+        output_1 = SpeciesModelOutput.objects.filter(model=generic_model)
+        self.assertEqual(output_1.count(), 1)
+        output_1 = output_1.first()
+        self.assertEqual(output_1.taxon.id, taxon_b.id)
+        non_generic_model_2 = StatisticalModelF.create(
+            taxon=taxon_b
+        )
+        init_species_model_output_from_non_generic_model(non_generic_model_2)
+        output_1 = SpeciesModelOutput.objects.filter(model=generic_model)
+        self.assertEqual(output_1.count(), 0)
+        output_2 = SpeciesModelOutput.objects.filter(
+            model=non_generic_model_2)
+        self.assertEqual(output_2.count(), 1)
+        output_2 = output_2.first()
+        self.assertEqual(output_2.taxon.id, taxon_b.id)

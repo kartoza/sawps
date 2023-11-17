@@ -66,7 +66,7 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
                             fill: false,
                             parsing: {
                                 xAxisKey: 'year',
-                                yAxisKey: 'fit'
+                                yAxisKey: 'sum_fitted'
                             },
                             pointRadius: 0
                         },

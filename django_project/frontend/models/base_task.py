@@ -1,7 +1,7 @@
 """Base model for task.
 """
 from django.db import models
-from datetime import datetime
+from django.utils import timezone
 
 # task statuses
 PENDING = 'PENDING'
@@ -56,10 +56,15 @@ class BaseTaskRequest(models.Model):
         blank=True
     )
 
+    errors = models.TextField(
+        null=True,
+        blank=True
+    )
+
     def task_on_started(self):
         """Initialize properties when task is started."""
         self.status = PROCESSING
-        self.started_at = datetime.now()
+        self.started_at = timezone.now()
         self.finished_at = None
         self.progress = 0
         self.progress_text = None

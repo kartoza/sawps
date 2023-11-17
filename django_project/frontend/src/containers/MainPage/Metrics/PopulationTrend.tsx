@@ -41,7 +41,7 @@ ChartJS.register(
 // National trend structure
 export interface NationalTrendInterface {
     year: number;
-    fit: number;
+    sum_fitted: number;
     'se.fit': number;
     lower_ci: number;
     upper_ci: number;
@@ -55,7 +55,7 @@ const PopulationTrend= (props: any) => {
 
     const fetchChartData = () => {
       setLoading(true);
-        axios.get(`${SPECIES_POPULATION_TREND_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`)
+        axios.get(`${SPECIES_POPULATION_TREND_URL}?species=${selectedSpecies}`)
             .then((response) => {
             if (response.data) {
                 setLoading(false)
@@ -74,14 +74,14 @@ const PopulationTrend= (props: any) => {
                         fill: false,
                         parsing: {
                           xAxisKey: "year",
-                          yAxisKey: "fit",
+                          yAxisKey: "sum_fitted",
                         },
                         pointRadius: 0, // Disable points for the trend line
                       },
                       // Add a new dataset for the counts with points
                       {
                         label: "Counts",
-                        data: _data.map((item) => ({ x: item.year, y: item.fit })),
+                        data: _data.map((item) => ({ x: item.year, y: item.sum_fitted })),
                         borderColor: "rgba(0, 0, 0, 0)", // Transparent line
                         pointBackgroundColor: "rgba(0, 0, 0, 0.8)", // Point color
                         pointRadius: 4, // Point size
@@ -121,7 +121,7 @@ const PopulationTrend= (props: any) => {
 
     useEffect(() => {
         fetchChartData();
-    }, [propertyId, startYear, endYear, selectedSpecies]);
+    }, [selectedSpecies]);
 
     const options:object={
         responsive: true,

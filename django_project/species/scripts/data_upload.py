@@ -21,6 +21,9 @@ from property.models import Property
 from species.models import Taxon
 
 from species.scripts.upload_file_scripts import *  # noqa
+from frontend.utils.statistical_model import (
+    mark_model_output_as_outdated_by_species_list
+)
 
 logger = logging.getLogger('sawps')
 
@@ -61,6 +64,7 @@ class SpeciesCSVUpload(object):
     total_rows = 0
     row_error = []
     csv_dict_reader = None
+    species_id_list = []
 
     def process_started(self):
         pass
@@ -73,6 +77,7 @@ class SpeciesCSVUpload(object):
         Start processing the csv file from upload session
         """
         self.error_list = []
+        self.species_id_list = []
         uploaded_file = self.upload_session.process_file
         if self.upload_session.process_file.path.endswith('.xlsx'):
             excel = pd.ExcelFile(self.upload_session.process_file)
@@ -234,6 +239,8 @@ class SpeciesCSVUpload(object):
         self.upload_session.processed = True
         self.upload_session.progress = 'Finished'
         self.upload_session.save()
+        if self.created_list > 0 or self.existed_list > 0:
+            mark_model_output_as_outdated_by_species_list(self.species_id_list)
 
     def row_value(self, row, key):
         """
@@ -421,6 +428,8 @@ class SpeciesCSVUpload(object):
                                 self.row_value(row, SCIENTIFIC_NAME)
                             )
                 )
+            elif taxon.id not in self.species_id_list:
+                self.species_id_list.append(taxon.id)
 
         area_available_to_species = self.row_value(row, AREA)
         # validate area_available_to_species must be greater than 0 and
