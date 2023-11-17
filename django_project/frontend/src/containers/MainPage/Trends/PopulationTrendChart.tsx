@@ -8,60 +8,75 @@ export interface PopulationTrendItem {
     sum_fitted: number;
     lower_ci: number;
     upper_ci: number;
+    raw_pop_est?: number;
 }
 
 export interface PopulationTrendChartInterface {
     data: PopulationTrendItem[];
     chartTitle: string;
     chartId: string;
+    showRawPopEst?: boolean;
 }
 
 const PopulationTrendChart = (props: PopulationTrendChartInterface) => {
     const [chartData, setChartData] = useState(null)
 
     useEffect(() => {
+        let _datasets = []
+        if (props.showRawPopEst) {
+            _datasets.push({
+                label: "Counts",
+                data: props.data,
+                parsing: {
+                    xAxisKey: "year",
+                    yAxisKey: "raw_pop_est",
+                },
+                borderColor: "rgba(0, 0, 0, 0)", // Transparent line
+                pointBackgroundColor: "rgba(0, 0, 0, 0.8)", // Point color
+                pointRadius: 4, // Point size
+            })
+        }
+        _datasets.push({
+            label: "Population",
+            data: props.data,
+            borderColor: "#86BC8B",
+            fill: false,
+            parsing: {
+              xAxisKey: "year",
+              yAxisKey: "sum_fitted",
+            },
+            pointRadius: 0, // Disable points for the trend line
+        })
+        _datasets.push({
+            label: "upper_ci",
+            data: props.data,
+            fill: 1,
+            parsing: {
+              xAxisKey: "year",
+              yAxisKey: "upper_ci",
+            },
+            backgroundColor: "rgba(117, 179, 122, 0.63)",
+            showLine: false,
+            pointRadius: 0,
+        })
+        _datasets.push({
+            label: "lower_ci",
+            data: props.data,
+            fill: 1,
+            parsing: {
+              xAxisKey: "year",
+              yAxisKey: "lower_ci",
+            },
+            backgroundColor: "rgba(117, 179, 122, 0.63)",
+            showLine: false,
+            pointRadius: 0,
+        })
         setChartData({
             labels: props.data.map((a) => {
-              if (a.year % 2 === 0) return a.year;
+              if (a.year % 1 === 0) return a.year;
               return "";
             }),
-            datasets: [
-              {
-                label: "Population",
-                data: props.data,
-                borderColor: "#86BC8B",
-                fill: false,
-                parsing: {
-                  xAxisKey: "year",
-                  yAxisKey: "sum_fitted",
-                },
-                pointRadius: 0, // Disable points for the trend line
-              },
-              {
-                label: "upper_ci",
-                data: props.data,
-                fill: 1,
-                parsing: {
-                  xAxisKey: "year",
-                  yAxisKey: "upper_ci",
-                },
-                backgroundColor: "rgba(117, 179, 122, 0.63)",
-                showLine: false,
-                pointRadius: 0,
-              },
-              {
-                label: "lower_ci",
-                data: props.data,
-                fill: 1,
-                parsing: {
-                  xAxisKey: "year",
-                  yAxisKey: "lower_ci",
-                },
-                backgroundColor: "rgba(117, 179, 122, 0.63)",
-                showLine: false,
-                pointRadius: 0,
-              },
-            ],
+            datasets: _datasets,
           })
     }, [props.data])
 

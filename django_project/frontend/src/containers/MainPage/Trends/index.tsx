@@ -2,20 +2,17 @@ import React, {useEffect, useRef, useState} from "react";
 import {Box, Button, Grid, Typography} from "@mui/material";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
-// import PopulationTrend, {NationalTrendInterface} from "../Metrics/PopulationTrend";
 import {useGetTaxonDetailQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import './index.scss';
 import NationalTrendSection from "./NationalTrendSection";
 import ProvincialTrendSection from "./ProvincialTrendSection";
+import PropertyTrendSection from "./PropertyTrendSection";
+
 
 const Trends = () => {
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
   const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-  const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
-  const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
-  const [loading, setLoading] = useState(false)
-  // const [jsonDoc,setJsonDoc] = useState<NationalTrendInterface[]>()
   const [rerender, setRerender] = useState<boolean>(false)
   const contentRef = useRef(null);
   const {data: taxonDetail, isLoading: isTaxonDetailLoading, isSuccess} = useGetTaxonDetailQuery(selectedSpecies)
@@ -24,6 +21,7 @@ const Trends = () => {
   const [showCharts, setShowCharts] = useState(false);
 
   const downloadTxtFile = () => {
+    // TODO: download should filter out property that are not selected in the filter
     // const element = document.createElement("a");
     // const file = new Blob([JSON.stringify(jsonDoc)], {type: 'text/plain'});
     // element.href = URL.createObjectURL(file);
@@ -34,12 +32,11 @@ const Trends = () => {
 
   useEffect(() => {
     if (selectedSpecies) {
-      setRerender(false)
       setShowCharts(true)
     } else {
-      setShowCharts(false);
+      setShowCharts(false)
     }
-  }, [propertyId, startYear, endYear, selectedSpecies])
+  }, [propertyId, selectedSpecies])
 
   useEffect(() => {
     if (taxonDetail?.id) {
@@ -68,6 +65,11 @@ const Trends = () => {
             {selectedSpecies && rerender && (
               <Grid item xs={12} md={12} className="SectionItem" key={'ProvincialSectionItem'}>
                 <ProvincialTrendSection species={selectedSpecies} />
+              </Grid>
+            )}
+            {selectedSpecies && rerender && (
+              <Grid item xs={12} md={12} className="SectionItem" key={'PropertySectionItem'}>
+                <PropertyTrendSection species={selectedSpecies} property={propertyId} />
               </Grid>
             )}
           </Grid>
