@@ -125,7 +125,7 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 
 2. **Form Fields**: Administrators can edit all taxon details, including scientific name, common name, color variant, infraspecific epithet, taxon rank, parent taxon, visibility settings, and taxon color. Additionally, administrators can edit the icons by modifying the graph icon, and the topper icon and icon will be generated automatically based on the graph icon.
 
-3. **Delete**: The administrators can delete the taxon by clicking on this button. The popup will open for the confirmation to delete the taxon.
+3. **Delete**: The administrators can delete the taxon by clicking on this button. The popup will open to confirm the deletion of the taxon.
 
 3. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
 

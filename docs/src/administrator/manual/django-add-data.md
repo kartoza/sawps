@@ -158,9 +158,9 @@ The administrators will be presented with a form to enter the user's information
 
     - **Scientific Name**: Field to input the scientific name of the taxon.
     
-    - **Common Name Varbatim**: Field for entering the common name of the taxon.
+    - **Common Name Verbatim**: Field for entering the common name of the taxon.
     
-    - **Colour Variant**: Dropdown menu for selecting color variants.
+    - **Colour Variant**: Dropdown menu for selecting colour variants.
     
     - **Infraspecific Epithet**: Field for specifying the infraspecific epithet.
     
