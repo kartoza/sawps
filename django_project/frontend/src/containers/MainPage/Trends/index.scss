@@ -17,3 +17,67 @@
   bottom: 5px;
   right: 5px;
 }
+
+.SectionItem {
+  width: 100%;
+}
+
+.SectionContainer {
+  margin-top: 10px;
+  .SectionTitle {
+    color: #86BC8B;
+    font-size: 20px;
+    margin-bottom: 20px;
+    p {
+      text-align: left;
+    }
+    .MuiDivider-root {
+      border-color: #86BC8B;
+    }
+  }
+
+  
+}
+
+.PopulationTrendChartContainer {
+  width: 100%;
+  height: 260px;
+}
+
+.GroupedGrowthChartContainer {
+  width: 100%;
+  height: 260px;
+}
+
+
+.GroupedGrowthChartContainerBox {
+  padding: 20px;
+  display: flex;
+  background-color: white;
+  justify-content: center;
+  box-shadow: 0 0 6px -2px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  flex-direction: column;
+  height: 320px;
+  .ChartTitleBox {
+    height: 50px;
+
+    .ChartTitle {
+      font-weight: bold;
+    }
+  }
+
+  .ChartContainers {
+    height: 270px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    .ChartContainer {
+      height: 270px;
+      flex-grow: 1;
+      .ChartBox {
+        height: 270px;
+      }
+    }
+  }
+}
