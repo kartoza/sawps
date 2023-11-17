@@ -32,12 +32,12 @@ The filter side panel enhances the user experience by allowing them to focus on 
 
 #### 1. Search place Filter
 
-* **Filter Description:** This filter allows users to search places.
-* **Usage:** Click on the search place to search the places.
+* **Filter Description:** This filter allows users to search for places.
+* **Usage:** Click on the search place field and type letters to search for places.
 
 ![Search_place filter](./img/filters-3.png)
 
-1. **Search place:** Click on the search place to search the places and filter.
+1. **Search place:** Click on the search place to filter places.
 
 #### 2. Species Filter
 
@@ -79,12 +79,12 @@ to make a user group e.g. `National data scientist` able to see the organisation
 * **Filter Description:** The property filter helps users filter data based on properties. This filter is dependent on the organisation filter. 
 It means the options will be based on the selected organisations.
 * **Usage:** Select a property from the available options to view data related to that property.
-* **Permission:** `Can view property filter` permission must be added to the group on the admin page, 
-to make the user group e.g. `National data scientist` able to see the property filter.
+* **Permission:** The `can view property filter` permission must be added to the group on the admin page, 
+to allow the user group (e.g. `National data scientist`) to see the property filter.
 
 ![Property filter](./img/filters-6.png)
 
-1. **Select All:** `Select All` select all the properties.
+1. **Select All:** `Select All` of the properties.
 2. **Show selected property count:** A user will see the count of the property selected.
 3. **Cross Icon**: Click on the `Cross` icon to clear the property filter.
 
@@ -109,7 +109,8 @@ to make the user group e.g. `National data scientist` able to see the property f
 1. **Critical biodiversity type dropdown** Using this, the user can filter the data according to the critical biodiversity areas.
 2. **Ecosystem dropdown:** Using this, the user can filter the data according to the ecosystem types.
 
-8. **Clear All**: Click on the `Clear All` button, to clear all the filters.
+8. **Clear All**: Click on the `Clear All` button to clear all the filters.
+
 #### Report Type Filter
 
 * **Filter Description:** This filter allows users to filter data based on report types. This filter appears on the reports tab. 
@@ -118,6 +119,7 @@ to make the user group e.g. `National data scientist` able to see the property f
 ![Report filter](./img/filters-5.png)
 
 1. **Report type:** The Report Type Filter is a multi-select filter that enables users to filter data based on specific report types or view data of all the report types. With this filter, users can easily narrow down their dataset to view data associated with a particular report type.
+
 ## Summary
 
-The filter side panel provides a robust toolset for users to refine and explore their datasets effectively. Whether it's searching for specific places, species, or filtering by activities, organisations, properties, years, or spatial criteria, this comprehensive guide ensures users can seamlessly navigate and utilize the filtering functionalities for a more tailored data analysis experience.
+The filter side panel provides a robust toolset for users to refine and explore their datasets effectively. Whether it's searching for specific places, species, or filtering by activities, organisations, properties, years, or spatial criteria, this comprehensive manual ensures users can seamlessly navigate and utilize the filtering functionalities for a more tailored data analysis experience.
