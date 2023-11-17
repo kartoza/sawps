@@ -19,6 +19,7 @@ export interface GrowthDataItem {
     count2: string;
     sort?: number;
     pop_size_cat?: string;
+    province?: string;
 }
 
 interface GrowthChartInterface {
@@ -164,7 +165,9 @@ const GrowthChart = (props: GrowthChartInterface) => {
                     size: 12,
                 },
                 formatter: function(value: any, context: any) {
-                    return `n=${context.dataset.counts ? context.dataset.counts[context.dataIndex] : null}`;
+                    if (context.dataset.counts && context.dataset.counts[context.dataIndex])
+                        return `n=${context.dataset.counts[context.dataIndex]}`;
+                    return '';
                 }
             },
             legend: {

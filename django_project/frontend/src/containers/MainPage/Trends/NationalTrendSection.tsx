@@ -82,7 +82,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                             </Grid>
                         </Grid>
                         <Grid item md={8}>
-                            <Grid container flexDirection={'column'}>
+                            <Grid container flexDirection={'column'} spacing={1}>
                                 <Grid item>
                                     <GroupedGrowthChart chartId='large-national-growth-chart' title={`Large ${props.species} Populations`} data={largePopulationGrowthData} />
                                 </Grid>
