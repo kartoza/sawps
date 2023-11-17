@@ -62,11 +62,6 @@ class StatisticalModelAdminTestCase(TestCase):
         self.assertContains(
             response, 'Plumber process will be started in background')
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     @mock.patch('frontend.tasks.start_plumber.'
                 'start_plumber_process.apply_async',
                 mock.Mock(side_effect=mocked_process))
@@ -86,11 +81,6 @@ class StatisticalModelAdminTestCase(TestCase):
         self.assertFalse(StatisticalModel.objects.filter(
             id=self.model.id).exists())
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     @mock.patch('frontend.tasks.start_plumber.'
                 'start_plumber_process.apply_async',
                 mock.Mock(side_effect=mocked_process))

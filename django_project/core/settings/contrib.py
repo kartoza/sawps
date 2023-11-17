@@ -57,6 +57,7 @@ AUTHENTICATION_BACKENDS = (
 )
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXTENDED = True
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'django.template.context_processors.request',
