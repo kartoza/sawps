@@ -65,7 +65,8 @@ from frontend.api_views.spatial_filter import (
 )
 from frontend.api_views.statistical import (
     SpeciesNationalTrend,
-    SpeciesTrend
+    SpeciesTrend,
+    DownloadTrendDataAsJson
 )
 from frontend.api_views.upload import (
     BoundaryFileList,
@@ -251,6 +252,11 @@ urlpatterns = [
         r'^api/species/(?P<species_id>\d+)/trend/national/?$',
         SpeciesNationalTrend.as_view(),
         name='species-national-trend'
+    ),
+    path(
+        'api/species/population_trend/download/',
+        DownloadTrendDataAsJson.as_view(),
+        name='download-species-population-trend'
     ),
     path(
         'api/species/population_trend/',

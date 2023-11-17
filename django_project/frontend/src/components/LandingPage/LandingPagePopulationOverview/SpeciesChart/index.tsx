@@ -55,8 +55,8 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
                 let _data = response.data as NationalTrendInterface[]
                 setChartData({
                     labels: _data.map((a) => {
-                        if (a.year % 2 === 0) return a.year
-                        return ""
+                        if (a.year % 1 === 0) return a.year;
+                        return "";
                     }),
                     datasets:[
                         {

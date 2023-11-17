@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
+import axios from "axios";
 import {Box, Button, Grid, Typography} from "@mui/material";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
@@ -9,6 +10,7 @@ import NationalTrendSection from "./NationalTrendSection";
 import ProvincialTrendSection from "./ProvincialTrendSection";
 import PropertyTrendSection from "./PropertyTrendSection";
 
+const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/download/'
 
 const Trends = () => {
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -16,18 +18,40 @@ const Trends = () => {
   const [rerender, setRerender] = useState<boolean>(false)
   const contentRef = useRef(null);
   const {data: taxonDetail, isLoading: isTaxonDetailLoading, isSuccess} = useGetTaxonDetailQuery(selectedSpecies)
+  const [isDownloadingJson, setIsDownloadingJson] = useState(false)
 
   // Declare errorMessage as a state variable
   const [showCharts, setShowCharts] = useState(false);
 
   const downloadTxtFile = () => {
-    // TODO: download should filter out property that are not selected in the filter
-    // const element = document.createElement("a");
-    // const file = new Blob([JSON.stringify(jsonDoc)], {type: 'text/plain'});
-    // element.href = URL.createObjectURL(file);
-    // element.download = `${selectedSpecies}.json`;
-    // document.body.appendChild(element); // Required for this to work in FireFox
-    // element.click();
+    setIsDownloadingJson(true)
+    let _data = {
+      'species': selectedSpecies,
+      'property': propertyId
+    }
+    axios.post(`${SPECIES_POPULATION_TREND_URL}`, _data, {
+      responseType: 'blob',
+    }).then((response) => {
+        setIsDownloadingJson(false)
+        if (response.data) {
+          // create file link in browser's memory
+          const href = URL.createObjectURL(response.data);
+
+          // create "a" HTML element with href to file & click
+          const link = document.createElement('a');
+          link.href = href;
+          link.setAttribute('download', `${selectedSpecies}.json`);
+          document.body.appendChild(link);
+          link.click();
+
+          // clean up "a" element & remove ObjectURL
+          document.body.removeChild(link);
+          URL.revokeObjectURL(href);
+        }
+    }).catch((error) => {
+        setIsDownloadingJson(false)
+        console.log(error)
+    })
   }
 
   useEffect(() => {
@@ -92,13 +116,22 @@ const Trends = () => {
       </Box>
       {showCharts && (
         <Box className="download-btn-box" style={{position: 'fixed', bottom: '20px', right: '20px'}}>
-          <Button
-            onClick={downloadTxtFile}
-            variant="contained"
-            color="primary"
-          >
-            Download JSON Document
-          </Button>
+          { isDownloadingJson ?
+            <Button
+              disabled
+              variant="contained"
+              color="primary"
+            >
+              Downloading...
+            </Button>:
+            <Button
+              onClick={downloadTxtFile}
+              variant="contained"
+              color="primary"
+            >
+              Download JSON Document
+            </Button>
+          }
         </Box>
       )}
     </Box>
