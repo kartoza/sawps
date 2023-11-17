@@ -63,6 +63,14 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
             .then((response) => {
             setLoadingGrowthData(false)
             if (response.data) {
+                // check if has data
+                if (response.data.length === 1) {
+                    let _item = response.data[0]
+                    if ('data.limitation' in _item) {
+                        setPopulatioGrowthData({})
+                        return;
+                    }
+                }
                 let _data: ProvincialPopulationGrowthDict = {}
                 for (let i = 0; i < response.data.length; i++) {
                     let _item = response.data[i] as GrowthDataItem
