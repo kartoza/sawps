@@ -2,10 +2,12 @@ import React, {useEffect, useRef, useState} from "react";
 import {Box, Button, Grid, Typography} from "@mui/material";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
-import PopulationTrend, {NationalTrendInterface} from "../Metrics/PopulationTrend";
+// import PopulationTrend, {NationalTrendInterface} from "../Metrics/PopulationTrend";
 import {useGetTaxonDetailQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import './index.scss';
+import NationalTrendSection from "./NationalTrendSection";
+import ProvincialTrendSection from "./ProvincialTrendSection";
 
 const Trends = () => {
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -13,7 +15,7 @@ const Trends = () => {
   const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
   const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
   const [loading, setLoading] = useState(false)
-  const [jsonDoc,setJsonDoc] = useState<NationalTrendInterface[]>()
+  // const [jsonDoc,setJsonDoc] = useState<NationalTrendInterface[]>()
   const [rerender, setRerender] = useState<boolean>(false)
   const contentRef = useRef(null);
   const {data: taxonDetail, isLoading: isTaxonDetailLoading, isSuccess} = useGetTaxonDetailQuery(selectedSpecies)
@@ -22,12 +24,12 @@ const Trends = () => {
   const [showCharts, setShowCharts] = useState(false);
 
   const downloadTxtFile = () => {
-    const element = document.createElement("a");
-    const file = new Blob([JSON.stringify(jsonDoc)], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = `${selectedSpecies}.json`;
-    document.body.appendChild(element); // Required for this to work in FireFox
-    element.click();
+    // const element = document.createElement("a");
+    // const file = new Blob([JSON.stringify(jsonDoc)], {type: 'text/plain'});
+    // element.href = URL.createObjectURL(file);
+    // element.download = `${selectedSpecies}.json`;
+    // document.body.appendChild(element); // Required for this to work in FireFox
+    // element.click();
   }
 
   useEffect(() => {
@@ -56,42 +58,16 @@ const Trends = () => {
                 ref={contentRef}
                 spacing={0}
                 direction="column"
-                alignItems="center"
-                justifyContent="center"
+                alignItems="flex-start"
           >
             {selectedSpecies && rerender && (
-              <Grid item xs={12} md={6}>
-                <div className='species-card-container-trends' data-testid='species-card-container-trends'>
-                  <div className='species-card-image-container'>
-                    <img
-                      src={taxonDetail.graph_icon ? taxonDetail.graph_icon : "/static/images/default-species-graph.svg"}
-                      className='species-card-image'
-                      data-testid='species-card-image'
-                    />
-                    <p className='species-card-text species-name-text'> {selectedSpecies} </p>
-                    {/*<hr/>*/}
-                  </div>
-                  <div className='species-card-text-container'>
-                    <p className='species-card-text' data-testid='species-card-population'>Total Population
-                      : {taxonDetail.total_population}</p>
-                    <p className='species-card-text' data-testid='species-card-total-area'>Total Area
-                      : {+taxonDetail.total_area.toFixed(2)}</p>
-                  </div>
-                  <div className='ChartHolder'>
-                    <PopulationTrend
-                      selectedSpecies={selectedSpecies}
-                      propertyId={propertyId}
-                      startYear={1960}
-                      endYear={new Date().getFullYear()}
-                      loading={loading}
-                      setLoading={setLoading}
-                      setResult={setJsonDoc}
-                      lineColor={'#000000'}
-                      onEmptyDatasets={() => {
-                      }}
-                    />
-                  </div>
-                </div>
+              <Grid item xs={12} md={12} className="SectionItem" key={'NationalSectionItem'}>
+                <NationalTrendSection species={selectedSpecies} />
+              </Grid>
+            )}
+            {selectedSpecies && rerender && (
+              <Grid item xs={12} md={12} className="SectionItem" key={'ProvincialSectionItem'}>
+                <ProvincialTrendSection species={selectedSpecies} />
               </Grid>
             )}
           </Grid>

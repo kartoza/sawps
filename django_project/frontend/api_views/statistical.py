@@ -11,7 +11,9 @@ from frontend.models.base_task import DONE
 from species.models import Taxon
 from frontend.models import (
     SpeciesModelOutput,
-    NATIONAL_TREND
+    NATIONAL_TREND,
+    PROVINCE_TREND,
+    NATIONAL_GROWTH
 )
 
 
@@ -19,7 +21,7 @@ class SpeciesNationalTrend(APIView):
     """Fetch national trend of species."""
     permission_classes = [AllowAny]
 
-    def get_national_trend_data(self, species: Taxon):
+    def get_trend_data(self, species: Taxon, output_type = NATIONAL_TREND):
         # get latest species model output
         model_output = SpeciesModelOutput.objects.filter(
             taxon=species,
@@ -27,7 +29,7 @@ class SpeciesNationalTrend(APIView):
             status=DONE
         ).first()
         if model_output:
-            cache_key = model_output.get_cache_key(NATIONAL_TREND)
+            cache_key = model_output.get_cache_key(output_type)
             cached_data = cache.get(cache_key)
             if cached_data:
                 return cached_data
@@ -37,7 +39,7 @@ class SpeciesNationalTrend(APIView):
         species_id = kwargs.get('species_id')
         species = get_object_or_404(Taxon, id=species_id)
         return Response(
-            status=200, data=self.get_national_trend_data(species))
+            status=200, data=self.get_trend_data(species))
 
 
 class SpeciesTrend(SpeciesNationalTrend):
@@ -57,8 +59,27 @@ class SpeciesTrend(SpeciesNationalTrend):
 
     def get(self, request):
         species_name = request.GET.get("species")
+        level = request.GET.get('level')
+        type = request.GET.get('data_type', 'trend')
         species = get_object_or_404(
             Taxon, scientific_name=species_name
         )
+        output_type = NATIONAL_TREND
+        if type == 'trend':
+            if level == 'provincial':
+                output_type = PROVINCE_TREND
+        elif type == 'growth':
+            output_type = NATIONAL_GROWTH
+            # provincial growth is for future use
+        else:
+            return Response(
+                status=400,
+                data={
+                    'detail': (
+                        f'Invalid type: {type}. '
+                        'Please use either trend or growth!'
+                    )
+                }
+            )
         return Response(
-            status=200, data=self.get_national_trend_data(species))
+            status=200, data=self.get_trend_data(species, output_type))
