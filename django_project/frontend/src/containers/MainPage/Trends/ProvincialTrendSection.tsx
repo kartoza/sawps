@@ -5,6 +5,7 @@ import PopulationTrendChart, {PopulationTrendItem} from './PopulationTrendChart'
 import {GrowthDataItem} from './GrowthChart';
 import GroupedGrowthChart from './GroupedGrowthChart';
 import './index.scss';
+import Loading from '../../../components/Loading';
 
 interface ProvincialTrendSectionInterface {
     species: string;
@@ -23,10 +24,14 @@ const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/'
 const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
     const [populationTrendData, setPopulationTrendData] = useState<ProvincialPopulationTrendDict>({})
     const [populationGrowthData, setPopulatioGrowthData] = useState<ProvincialPopulationGrowthDict>({})
+    const [loadingTrendData, setLoadingTrendData] = useState(false)
+    const [loadingGrowthData, setLoadingGrowthData] = useState(false)
 
     const fetchProvincialTrendData = (species: string) => {
+        setLoadingTrendData(true)
         axios.get(`${SPECIES_POPULATION_TREND_URL}?species=${species}&level=provincial`)
             .then((response) => {
+            setLoadingTrendData(false)
             if (response.data) {
                 let _trendData: ProvincialPopulationTrendDict = {}
                 for (let i=0; i < response.data.length; ++i) {
@@ -47,13 +52,16 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                 setPopulationTrendData({..._trendData})
             }
         }).catch((error) => {
+            setLoadingTrendData(false)
             console.log(error)
         })
     }
 
     const fetchProvincialGrowthData = (species: string) => {
+        setLoadingGrowthData(true)
         axios.get(`${SPECIES_POPULATION_TREND_URL}?species=${species}&level=provincial&data_type=growth`)
             .then((response) => {
+            setLoadingGrowthData(false)
             if (response.data) {
                 let _data: ProvincialPopulationGrowthDict = {}
                 for (let i = 0; i < response.data.length; i++) {
@@ -68,6 +76,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                 setPopulatioGrowthData({..._data})
             }
         }).catch((error) => {
+            setLoadingGrowthData(false)
             console.log(error)
         })
     }
@@ -87,6 +96,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                 <Grid item>
                     <Grid container flexDirection={'column'} spacing={1}>
                         <Grid item>
+                            {!loadingTrendData ? 
                             <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
                                 {Object.keys(populationTrendData).map((province, index) => {
                                     return (
@@ -96,8 +106,10 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                                     )
                                 })}
                             </Grid>
+                            : <Loading containerStyle={{minHeight: 160}}/>}
                         </Grid>
                         <Grid item>
+                            {!loadingGrowthData ? 
                             <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
                                 {Object.keys(populationGrowthData).map((province, index) => {
                                     return (
@@ -107,6 +119,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                                     )
                                 })}
                             </Grid>
+                            : <Loading containerStyle={{minHeight: 160}}/>}
                         </Grid>
                     </Grid>
                 </Grid>

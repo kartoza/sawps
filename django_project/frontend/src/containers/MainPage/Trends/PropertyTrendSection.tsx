@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {Box, Typography, Grid, Divider} from "@mui/material";
 import PopulationTrendChart, {PopulationTrendItem} from './PopulationTrendChart';
+import Loading from '../../../components/Loading';
 
 interface PropertyTrendSectionInterface {
     species: string;
@@ -16,14 +17,17 @@ interface PropertyTrendDict {
 
 const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
     const [populationTrendData, setPopulationTrendData] = useState<PropertyTrendDict>({})
+    const [loadingTrendData, setLoadingTrendData] = useState(false)
 
     const fetchPropertyTrendData = (species: string, property: string) => {
+        setLoadingTrendData(true)
         let _data = {
             'species': species,
             'property': property
         }
         axios.post(`${SPECIES_POPULATION_TREND_URL}`, _data)
             .then((response) => {
+                setLoadingTrendData(false)
             if (response.data) {
                 let _trendData: PropertyTrendDict = {}
                 for (let i=0; i < response.data.length; ++i) {
@@ -45,6 +49,7 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
                 setPopulationTrendData({..._trendData})
             }
         }).catch((error) => {
+            setLoadingTrendData(false)
             console.log(error)
         })
     }
@@ -64,6 +69,7 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
                 <Grid item>
                     <Grid container flexDirection={'column'}>
                         <Grid item>
+                            {!loadingTrendData ? 
                             <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
                                 {Object.keys(populationTrendData).map((property, index) => {
                                     return (
@@ -73,6 +79,7 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
                                     )
                                 })}
                             </Grid>
+                            : <Loading containerStyle={{minHeight: 160}}/>}
                         </Grid>
                         <Grid item>
                         </Grid>
