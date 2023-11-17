@@ -68,4 +68,4 @@ This table is used for storing, generating, and deleting the TOTP device.
 
 3. **Add TOTP Device**: The administrator can add a TOTP device by clicking on the `ADD TOTP DEVICE` button. Click on the [add TOTP device](./django-add-data.md) to view detailed documentation about adding a new TOTP device.
 
-4. **Edit TOTP Device**: The administrator can edit the TOTP device for that particular object by clicking on the object. Click on the [edit TOTP device](./django-change-data.md) to view detailed documentation about editing a TOTP device.
+4. **Edit TOTP Device**: The administrator can edit the TOTP device for that particular object by clicking on the object. Click on the [here](./django-change-data.md) to view detailed documentation about editing a TOTP device.

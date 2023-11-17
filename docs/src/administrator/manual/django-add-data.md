@@ -101,7 +101,7 @@ The administrators will be presented with a form to enter the user's information
 
 9. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
 
-## Add TOTP Device
+## Add TOTP (Time-based One Time Pin) Device
 
 ![Add TOTP Device](./img/django-add-data-9.png)
 
@@ -123,7 +123,7 @@ The administrators will be presented with a form to enter the user's information
 
 ![Add TOTP Device Steps And Throttling](./img/django-add-data-10.png)
 
-1. **Drift**: The number of time steps the prover is known to deviate from our clock.
+1. **Drift**: The number of time steps the prover is known to deviate from a centralised clock.
 
 2. **Throttling**: A timestamp of the last failed verification attempt. Null if the last attempt succeeded.
 
