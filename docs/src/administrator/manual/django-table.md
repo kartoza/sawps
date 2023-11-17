@@ -52,7 +52,7 @@ The user table within the Django Admin interface allows administrators to manage
 
 5. **Edit User**: Clicking on the object allows the administrators to change or edit a particular record. Click [here](django-change-data.md) to view detailed documentation on editing a user.
 
-## TOTP(Time-based One-Time Passwords) Device
+## TOTP (Time-based One-Time Passwords) Device
 
 ![TOTP Device](./img/django-table-6.png)
 
