@@ -85,7 +85,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                     <Divider />
                 </Grid>
                 <Grid item>
-                    <Grid container flexDirection={'column'}>
+                    <Grid container flexDirection={'column'} spacing={1}>
                         <Grid item>
                             <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
                                 {Object.keys(populationTrendData).map((province, index) => {
