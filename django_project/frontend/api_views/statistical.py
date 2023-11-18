@@ -67,12 +67,12 @@ class SpeciesTrend(SpeciesNationalTrend):
         if model_output is None:
             return None
         if (
-            model_output.output_file is None or
-            not model_output.output_file.storage.exists(
+            model_output.output_file and
+            model_output.output_file.storage.exists(
                 model_output.output_file.name)
         ):
-            return None
-        return model_output
+            return model_output
+        return None
 
     def get_properties_names(self):
         filter_property = self.request.data.get('property', None)
@@ -142,7 +142,9 @@ class DownloadTrendDataAsJson(SpeciesTrend):
         )
         model_output = self.get_model_output(species)
         if model_output is None:
-            return Response(status=200, data=[])
+            return Response(status=404, data={
+                'detail': 'Empty data model for given species!'
+            })
         properties = self.get_properties_names()
         with model_output.output_file.open('r') as json_file:
             json_dict = json.load(json_file)

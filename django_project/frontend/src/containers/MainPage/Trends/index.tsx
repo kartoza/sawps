@@ -51,6 +51,19 @@ const Trends = () => {
     }).catch((error) => {
         setIsDownloadingJson(false)
         console.log(error)
+        if (
+            error.request.responseType === 'blob' &&
+            error.response.data instanceof Blob &&
+            error.response.data.type &&
+            error.response.data.type.toLowerCase().indexOf('json') != -1
+        ) {
+          error.response.data.text().then((text: string) => {
+            let errorJSON = JSON.parse(text)
+            if (errorJSON['detail']) {
+              alert(errorJSON['detail'])
+            }
+          })
+        }
     })
   }
 
