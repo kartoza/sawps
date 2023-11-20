@@ -20,9 +20,9 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'django_otp',
     'django_otp.plugins.otp_totp',
     'django_otp.plugins.otp_static',
+    'docs_crawler',
     # Enable two-factor auth.
     'allauth_2fa',
-    'docs_crawler',
 )
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -57,6 +57,7 @@ AUTHENTICATION_BACKENDS = (
 )
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXTENDED = True
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'django.template.context_processors.request',
