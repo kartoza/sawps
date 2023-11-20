@@ -1,0 +1,1 @@
+[{"model": "species.ownedspecies", "pk": 1, "fields": {"user": 2, "taxon": 1, "property": 27, "area_available_to_species": 40.0}}]
