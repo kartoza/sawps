@@ -9,7 +9,6 @@ from django.db.models import FloatField
 from django.db.models.functions import Cast
 from django.db.models.query import QuerySet, F
 from django.http import HttpRequest
-from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -399,11 +398,15 @@ class BasePropertyCountAPIView(APIView):
         Returns a filtered queryset of Taxon objects
         """
         property_list = self.request.GET.get("property")
+        year_filter = self.request.GET.get('year', None)
+        taxon_filter = self.request.GET.get('species', None)
 
-        filters = {
-            'year': self.request.GET.get("year", timezone.now().year),
-            'taxon__scientific_name': self.request.GET.get("species", ''),
-        }
+        filters = {}
+
+        if year_filter:
+            filters['year'] = year_filter
+        if taxon_filter:
+            filters['taxon__scientific_name'] = taxon_filter
 
         if property_list:
             property_ids = property_list.split(",")
