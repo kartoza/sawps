@@ -1,33 +1,33 @@
 """API Views related to uploading population data.
 """
 from datetime import datetime
+from statistics import mean, stdev
 
 from activity.models import ActivityType
 from activity.serializers import ActivityTypeSerializer
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from frontend.api_views.metrics import BasePropertyCountAPIView
 from frontend.models.upload import DraftSpeciesUpload
 from frontend.utils.statistical_model import (
     clear_statistical_model_output_cache
 )
 from occurrence.models import SurveyMethod
-from occurrence.serializers import (
-    SurveyMethodSerializer,
-)
+from occurrence.serializers import SurveyMethodSerializer
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
-    SamplingEffortCoverage,
-    PopulationStatus,
     PopulationEstimateCategory,
+    PopulationStatus,
+    SamplingEffortCoverage,
 )
 from population_data.serializers import (
-    SamplingEffortCoverageSerializer,
-    PopulationStatusSerializer,
     PopulationEstimateCategorySerializer,
+    PopulationStatusSerializer,
+    SamplingEffortCoverageSerializer,
 )
-from property.models import Property
+from property.models import Property, PropertyType
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -336,3 +336,149 @@ class DraftPopulationUpload(APIView):
         draft.upload_date = draft_time
         draft.save()
         return Response(status=201, data={"uuid": str(draft.uuid)})
+
+
+FEMALE_SUFFIX = '_female'
+MALE_SUFFIX = '_male'
+TOTAL_SUFFIX = '_total'
+
+
+class PopulationMeanSDChartApiView(BasePropertyCountAPIView):
+    """
+    API view for calculating and presenting statistical data
+    related to population means and standard deviations (SD)
+    based on different age classes.
+    """
+    age_classes = ['adult', 'sub_adult', 'juvenile']
+
+    def calculate_sd_and_mean_by_age_class(self, data, age_class: str) -> dict:
+        """
+        Calculates the mean and standard deviation (SD) for
+        male and female data within a specified age class.
+
+        :param data: A dictionary containing population data.
+        :param age_class: The age class for which calculations are performed.
+        """
+        male_data = []
+        female_data = []
+
+        female_class = age_class + FEMALE_SUFFIX
+        male_class = age_class + MALE_SUFFIX
+
+        for location, years in data.items():
+            for year, age_classes in years.items():
+                if male_class in age_classes:
+                    male_data.append(age_classes[male_class])
+                if female_class in age_classes:
+                    female_data.append(age_classes[female_class])
+
+        mean_male = mean(male_data) if male_data else 0
+        sd_male = stdev(male_data) if len(male_data) > 1 else 0
+
+        mean_female = mean(female_data) if female_data else 0
+        sd_female = stdev(female_data) if len(female_data) > 1 else 0
+
+        return {
+            'mean_' + female_class: mean_female,
+            'sd_' + female_class: sd_female,
+            'mean_' + male_class: mean_male,
+            'sd_' + male_class: sd_male
+        }
+
+    def calculate_sd_and_mean(self, data) -> dict:
+        """
+        Aggregates mean and standard deviation calculations
+            across all age classes.
+
+        :param data: A dictionary containing detailed population data
+            segregated by age classes.
+        :return: A dictionary with aggregated mean and SD values for
+            each age class and gender.
+        """
+        sd_and_means = {}
+        for age_class in self.age_classes:
+            sd_and_means.update(
+                self.calculate_sd_and_mean_by_age_class(
+                    data, age_class
+                )
+            )
+        return sd_and_means
+
+    def calculate_percentage(
+            self,
+            annual_population: AnnualPopulation, age_class: str) -> dict:
+        """
+        Calculates the percentage of male and female populations in a
+        given age class.
+
+        :param annual_population: object representing annual population data.
+        :param age_class: age class for which the percentage
+            calculation is done.
+        :return: dictionary with percentage values for
+            males and females in the specified age class.
+        """
+        age_class_male = age_class + MALE_SUFFIX
+        age_class_female = age_class + FEMALE_SUFFIX
+        age_class_total = age_class + TOTAL_SUFFIX
+        male = getattr(annual_population, age_class_male)
+        female = getattr(annual_population, age_class_female)
+        total = getattr(annual_population, age_class_total)
+
+        if not male:
+            male = 0
+
+        if not female:
+            female = 0
+
+        if not total:
+            total = male + female
+
+        return {
+            age_class_male: male / total * 100 if total > 0 else 0,
+            age_class_female: female / total * 100 if total > 0 else 0
+        }
+
+    def age_group_by_property_type(self, property_type: PropertyType) -> dict:
+        """
+        Organizes and calculates percentage distribution
+        of age classes by property type.
+
+        :param property_type: The property type for which data is organized.
+        :return: A dictionary with percentage distributions for each age class,
+            organized by year and property type.
+        """
+        annual_populations = self.get_queryset().filter(
+            property__property_type=property_type
+        ).order_by('year').distinct()
+        year = {}
+
+        for annual_population in annual_populations:
+            if annual_population.year not in year:
+                year[annual_population.year] = {}
+
+            for age_class in self.age_classes:
+                year[annual_population.year].update(
+                    self.calculate_percentage(
+                        annual_population,
+                        age_class
+                    )
+                )
+        return {
+            property_type.name: year
+        }
+
+    def get(self, request, *args):
+        """
+        Handle GET request
+        """
+        property_types = PropertyType.objects.all()
+
+        result = {}
+
+        for property_type in property_types:
+            result[property_type.name] = self.calculate_sd_and_mean(
+                self.age_group_by_property_type(
+                    property_type
+                ))
+
+        return Response(result)
