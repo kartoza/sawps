@@ -8,11 +8,11 @@ test.use({
 
 test('upload geojson', async ({ page }) => {
 
-  test.setTimeout(120000)
+  test.setTimeout(300000)
   
   await page.goto(url);
 
-  //const initialURL = page.url();
+  const initialURL = page.url();
 
   await page.getByRole('link', { name: 'UPLOAD DATA' }).click();
 
@@ -27,8 +27,6 @@ test('upload geojson', async ({ page }) => {
   await page.getByRole('row', { name: 'Property Type ​' }).getByLabel('​').click();
 
   await page.getByRole('option', { name: 'Provincial' }).click();
-
-  await page.screenshot({ path: 'playwright-report/data-upload-step-1.png', fullPage: true });
 
   await page.getByRole('button', { name: 'SAVE PROPERTY INFORMATION' }).click();
 
@@ -61,23 +59,23 @@ test('upload geojson', async ({ page }) => {
   await page.getByRole(
     'button', { name: 'PROCESSING FILES...' }).screenshot({ animations: 'disabled' });
 
-  //const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
+  const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
-  //await page.screenshot({ path: 'playwright-report/data-upload-step-2.png', fullPage: true });
+  await page.waitForLoadState('domcontentloaded');
 
-  //await saveBoundary.isEnabled({timeout: 120000});
+  await uploadPromise.isHidden();
 
-  //await uploadPromise.isHidden();
+  await saveBoundary.isEnabled();
 
-  //await saveBoundary.click();
+  await saveBoundary.click();
 
-  //await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
+  await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
 
-  //await page.screenshot({ path: 'playwright-report/data-upload-step-3.png', fullPage: true });
+  await page.getByRole('link', { name: 'ONLINE FORM' }).click();
 
-  //await page.getByRole('link', { name: 'ONLINE FORM' }).click();
+  await page.waitForURL('**/upload-data/**')
 
-  //await page.waitForURL('**/upload-data/**')
+  const finalURL = page.url();
 
-  //expect(finalURL).not.toBe(initialURL);
+  expect(finalURL).not.toBe(initialURL);
 });
