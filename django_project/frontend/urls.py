@@ -68,6 +68,16 @@ from frontend.api_views.property import (
     PropertySearch,
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
+    CheckPropertyNameIsAvailable,
+    ListPropertyTypeAPIView
+)
+from frontend.api_views.spatial_filter import (
+    SpatialFilterList
+)
+from frontend.api_views.statistical import (
+    SpeciesNationalTrend,
+    SpeciesTrend,
+    DownloadTrendDataAsJson
 )
 from frontend.api_views.spatial_filter import SpatialFilterList
 from frontend.api_views.statistical import SpeciesNationalTrend, SpeciesTrend
@@ -244,6 +254,11 @@ urlpatterns = [
         r'^api/species/(?P<species_id>\d+)/trend/national/?$',
         SpeciesNationalTrend.as_view(),
         name='species-national-trend'
+    ),
+    path(
+        'api/species/population_trend/download/',
+        DownloadTrendDataAsJson.as_view(),
+        name='download-species-population-trend'
     ),
     path(
         'api/species/population_trend/',

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Core URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -22,10 +20,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+from docs_crawler.urls import preferences as docs_crawler_preferences
+from sawps.custom_docs_crawler_views import CustomDocumentationDetail
 
 urlpatterns = [
     path('accounts/two-factor/', include('allauth_2fa.urls')),
@@ -37,7 +37,18 @@ urlpatterns = [
     path('', include('stakeholder.urls')),
     path('', include('sawps.urls')),
     path('', include('species.urls')),
-    path('', include('docs_crawler.urls')),
+]
+
+# Docs crawler
+urlpatterns += [
+    path(
+        'admin/docs_crawler/preferences/',
+        docs_crawler_preferences,
+        name='docs-crawler-admin-preferences'
+    ),
+    path('docs_crawler/data/',
+         CustomDocumentationDetail.as_view(),
+         name='docs-crawler-data'),
 ]
 
 if settings.DEBUG:

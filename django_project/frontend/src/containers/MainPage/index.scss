@@ -75,9 +75,8 @@ body {
 }
 
 #right-sidebar-tab {
-    position: absolute;
-    margin-top: 50px;
     width: calc(100vw - 400px);
+    height: calc(100% - 50px);
 }
 
 #toggle-left-sidebar {

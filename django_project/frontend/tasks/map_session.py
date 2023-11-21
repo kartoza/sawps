@@ -5,7 +5,7 @@ from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 
 
-@shared_task(name="clear_expired_map_session")
+@shared_task(name="clear_expired_map_session", ignore_result=True)
 def clear_expired_map_session():
     """
     Clear expired map session.

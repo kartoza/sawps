@@ -1,24 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.utils.html import format_html
 from species.models import TaxonRank, Taxon, OwnedSpecies
 from species.forms import TaxonForm
-
-
-@admin.action(description='Clean output caches')
-def clean_output_caches(modeladmin, request, queryset):
-    """Clean statistical model output from taxons."""
-    from frontend.utils.statistical_model import (
-        clear_statistical_model_output_cache
-    )
-    for taxon in queryset:
-        clear_statistical_model_output_cache(taxon)
-    modeladmin.message_user(
-        request,
-        'Statistical model output cache has been cleared!',
-        messages.SUCCESS
-    )
 
 
 class TaxonAdmin(admin.ModelAdmin):
@@ -30,7 +15,6 @@ class TaxonAdmin(admin.ModelAdmin):
     search_fields = ['scientific_name', 'common_name_varbatim',
                      'taxon_rank__name']
     form = TaxonForm
-    actions = [clean_output_caches]
     readonly_fields = ['topper_icon', 'icon']
 
     def display_color(self, obj):
