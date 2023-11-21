@@ -1,1 +1,0 @@
-[{"model": "species.taxon", "pk": 1, "fields": {"scientific_name": "Panthera leo", "common_name_varbatim": "Lion", "colour_variant": true, "infraspecific_epithet": null, "taxon_rank": 1, "parent": null, "show_on_front_page": true, "is_selected": true, "front_page_order": 0, "colour": "#000000", "icon": "", "graph_icon": "", "topper_icon": ""}}]

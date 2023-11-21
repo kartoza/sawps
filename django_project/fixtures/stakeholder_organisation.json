@@ -1,1 +1,0 @@
-[{"model": "stakeholder.organisation", "pk": 1, "fields": {"name": "Cape", "short_code": "GACA0002", "data_use_permission": 1, "national": true, "province": 1, "use_of_data_by_sanbi_only": false, "hosting_through_sanbi_platforms": false, "allowing_sanbi_to_expose_data": false}}]
