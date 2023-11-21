@@ -57,6 +57,7 @@ function Filter(props: any) {
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const [loading, setLoading] = useState(false)
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
+    const [selectedSpeciesList, setSelectedSpeciesList] = useState<string[]>([]);
     const [selectedProperty, setSelectedProperty] = useState([]);
     const [selectedActivity, setSelectedActivity] = useState<number[]>([]);
     const [localStartYear, setLocalStartYear] = useState(startYear);
@@ -331,12 +332,50 @@ function Filter(props: any) {
         }
         setSelectedProperty([])
         setSelectedSpecies('')
+        setSelectedSpeciesList([])
         setSelectedActivity([])
         setSelectedInfo([])
         setLocalStartYear(yearRangeStart)
         setLocalEndYear(yearRangeEnd)
         dispatch(setStartYear(yearRangeStart));
         dispatch(setEndYear(yearRangeEnd));
+    }
+
+    const propertyInputField = () => {
+        return (
+            <Tooltip
+                title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
+                placement="top-start"
+            >
+                <Box>
+                    <Box className='sidebarBoxHeading'>
+                        <img src="/static/images/Property.svg" alt='Property image' />
+                        <Typography color='#75B37A' fontSize='medium'>Property</Typography>
+                    </Box>
+                    <List className='ListItem' component="nav" aria-label="">
+                        {loading || isPropertyLoading ? (
+                            <Loading />
+                        ) : (
+                            <AutoCompleteCheckbox
+                                options={shownPropertyOptions}
+                                selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
+                                singleTerm={'Property'}
+                                pluralTerms={'Properties'}
+                                setSelectedOption={(newValues) => {
+                                    setSelectedProperty(newValues)
+                                    if (newValues.length === 0) {
+                                        adjustMapToBoundingBox(boundingBox)
+                                    } else {
+                                        // Call zoomToCombinedBoundingBox with the updated list of selected properties
+                                        zoomToCombinedBoundingBox(newValues);
+                                    }
+                                }}
+                            />
+                        )}
+                    </List>
+                </Box>
+            </Tooltip>
+        )
     }
 
     useEffect(() => {
@@ -347,8 +386,10 @@ function Filter(props: any) {
             })
             if (selectedOrganisation.length === 0) {
                 setSearchSpeciesList([])
+                setSelectedSpeciesList([])
             } else {
                 setSearchSpeciesList(sList)
+                setSelectedSpeciesList(sList)
             }
         }
     }, [SpeciesFilterList])
@@ -403,6 +444,11 @@ function Filter(props: any) {
                     }} />
                 </Box>
                 )}
+
+                {
+                    (allowPropertiesSelection && tab === 'property_reports') && propertyInputField()
+                }
+
                 <Tooltip
                   title={selectedOrganisation.length === 0 ? "Select Organisation to show Species options!" : ""}
                   placement="top-start"
@@ -414,7 +460,7 @@ function Filter(props: any) {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading || isSpeciesLoading ? <Loading /> :
-                                (
+                                tab !== 'property_reports' ? (
                                     <Autocomplete
                                         id="combo-box-demo"
                                         disableClearable={true}
@@ -424,12 +470,25 @@ function Filter(props: any) {
                                         onChange={(event, value) => handleSelectedSpecies(value)}
                                         renderInput={(params) => <TextField {...params} placeholder="Select" />}
                                     />
+                                ) : (
+                                    <AutoCompleteCheckbox
+                                        options={searchSpeciesList.map((species) => {
+                                            return {
+                                                'id': species,
+                                                'name': species
+                                            }
+                                        })}
+                                        selectedOption={selectedSpeciesList}
+                                        singleTerm={'Species'}
+                                        pluralTerms={'Species'}
+                                        setSelectedOption={setSelectedSpeciesList}
+                                    />
                                 )
                             }
                         </List>
                     </Box>
                 </Tooltip>
-                {tab === 'reports' &&
+                {(tab === 'reports' || tab === 'property_reports') &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
                             <img src="/static/images/Information.svg" alt='Info image' />
@@ -491,42 +550,10 @@ function Filter(props: any) {
                     </Box>
                 }
                 {
-                    allowPropertiesSelection &&
-                  <Tooltip
-                    title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
-                    placement="top-start"
-                  >
-                    <Box>
-                        <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/Property.svg" alt='Property image' />
-                            <Typography color='#75B37A' fontSize='medium'>Property</Typography>
-                        </Box>
-                        <List className='ListItem' component="nav" aria-label="">
-                            {loading || isPropertyLoading ? (
-                                <Loading />
-                            ) : (
-                              <AutoCompleteCheckbox
-                                options={shownPropertyOptions}
-                                selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
-                                singleTerm={'Property'}
-                                pluralTerms={'Properties'}
-                                setSelectedOption={(newValues) => {
-                                    setSelectedProperty(newValues)
-                                    if (newValues.length === 0) {
-                                        adjustMapToBoundingBox(boundingBox)
-                                    } else {
-                                      // Call zoomToCombinedBoundingBox with the updated list of selected properties
-                                      zoomToCombinedBoundingBox(newValues);
-                                    }
-                                }}
-                              />
-                            )}
-                        </List>
-                    </Box>
-                  </Tooltip>
+                    (allowPropertiesSelection && tab !== 'property_reports') && propertyInputField()
                 }
 
-                {tab != 'trends' &&
+                {tab !== 'trends' &&
                     <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Clock.svg" alt='watch image'/>
@@ -574,7 +601,7 @@ function Filter(props: any) {
                 </Box>
                 }
 
-                {tab != 'trends' &&
+                {tab !== 'trends' &&
                   <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Layers.svg" alt='Filter image'/>

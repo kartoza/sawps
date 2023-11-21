@@ -83,6 +83,7 @@ from frontend.api_views.upload import (
     BoundaryFileUpload,
 )
 from frontend.views.base_view import get_user_notifications
+from .api_views.property_report import PropertyReportApiView
 
 from .api_views.user import UserInfoAPIView
 from .views.about import AboutView
@@ -96,6 +97,7 @@ from .views.map import (
     redirect_to_reports,
     redirect_to_trends,
     redirect_to_upload,
+    redirect_to_property_reports,
 )
 from .views.online_form import OnlineFormView
 from .views.organisations import (
@@ -278,6 +280,11 @@ urlpatterns = [
         'reports/',
         redirect_to_reports,
         name='reports'
+    ),
+    path(
+        'property_reports/',
+        redirect_to_property_reports,
+        name='property_reports'
     ),
     path(
         'charts/',
@@ -464,5 +471,10 @@ urlpatterns = [
         'api/population-mean-sd-chart/',
         PopulationMeanSDChartApiView.as_view(),
         name='population-mean-sd-chart'
+    ),
+    path(
+        'api/property-report-data/',
+        PropertyReportApiView.as_view(),
+        name='property-report-api'
     )
 ]

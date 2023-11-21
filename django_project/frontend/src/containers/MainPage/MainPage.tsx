@@ -21,6 +21,7 @@ import {resetMapState, resetSelectedProperty, setMapSelectionMode, setSelectedPa
 import DataList from './Data';
 import Metrics from './Metrics';
 import Trends from './Trends';
+import PropertyReport from "../../components/PropertyReport";
 
 
 enum RightSideBarMode {
@@ -29,6 +30,8 @@ enum RightSideBarMode {
   PropertySummary = 1,
   FilteredResult = 2
 }
+
+const TAB_NAMES = ['map', 'reports', 'property_reports', 'charts', 'trends', 'upload'];
 
 function MainPage() {
   const dispatch = useAppDispatch();
@@ -39,6 +42,9 @@ function MainPage() {
   const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
   const mapSelectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
 
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+  const [height, setHeight] = useState(0);
+
   const initialTabParam = new URLSearchParams(location.search).get('tab');
   const initialSelectedTab = initialTabParam !== null ? parseInt(initialTabParam) : 0;
   const [selectedTab, setSelectedTab] = useState(initialSelectedTab);
@@ -47,9 +53,10 @@ function MainPage() {
   const tabNameToValue: { [key: string]: number } = {
     'map': 0,
     'reports': 1,
-    'charts': 2,
-    'trends': 3,
-    'upload': 4,
+    'property_reports': 2,
+    'charts': 3,
+    'trends': 4,
+    'upload': 5,
   };
 
   useEffect(() => {
@@ -63,8 +70,7 @@ function MainPage() {
   }, [location.search]);
 
   useEffect(() => {
-    const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
-    const selectedTabName = tabNames[selectedTab];
+    const selectedTabName = TAB_NAMES[selectedTab];
     const newPath = `/${selectedTabName}`;
     if ([1, 2, 3].includes(selectedTab)) {
       // dispatch to reset map state in data or charts tab
@@ -110,8 +116,6 @@ function MainPage() {
     }
   }, [propertyItem, mapSelectionMode, uploadMode])
 
-  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
-  const [height, setHeight] = useState(0);
   const toggleShowFilter = () => {
     setShowLeftSidebar(!showLeftSidebar);
   }
@@ -159,8 +163,7 @@ function MainPage() {
                     <Tabs
                       value={selectedTab}
                       onChange={(event: React.SyntheticEvent, newValue: number) => {
-                        const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
-                        const selectedTabName = tabNames[newValue];
+                        const selectedTabName = TAB_NAMES[newValue];
                         setSelectedTab(newValue);
                         if (selectedTabName === 'upload') {
                           setRightSideBarMode(RightSideBarMode.Upload);
@@ -178,9 +181,10 @@ function MainPage() {
                       }}
                     >
                       <Tab key={0} label={'MAP'} {...a11yProps(0)} />
-                      <Tab key={1} label={'REPORTS'} {...a11yProps(1)} />
-                      <Tab key={2} label={'CHARTS'} {...a11yProps(2)} />
-                      <Tab key={3} label={'TRENDS'} {...a11yProps(3)} />
+                      <Tab key={1} label={'SPECIES REPORTS'} {...a11yProps(1)} />
+                      <Tab key={2} label={'PROPERTY REPORTS'} {...a11yProps(2)} />
+                      <Tab key={3} label={'CHARTS'} {...a11yProps(3)} />
+                      <Tab key={4} label={'TRENDS'} {...a11yProps(4)} />
                     </Tabs>
                   )}
                   <div style={{ flex: 1 }}></div>
@@ -193,16 +197,19 @@ function MainPage() {
                     id={'right-sidebar-tab'}
                     className="TabPanels"
               >
-                <TabPanel key={0} value={selectedTab} index={-1} indexList={[0, 4]} noPadding>
-                  <Map isDataUpload={isUploadUrl || selectedTab === 4} />
+                <TabPanel key={0} value={selectedTab} index={-1} indexList={[0, 5]} noPadding>
+                  <Map isDataUpload={isUploadUrl || selectedTab === 5} />
                 </TabPanel>
                 <TabPanel key={1} value={selectedTab} index={1} noPadding>
                   <DataList/>
                 </TabPanel>
                 <TabPanel key={2} value={selectedTab} index={2} noPadding>
-                  <Metrics/>
+                  <PropertyReport/>
                 </TabPanel>
                 <TabPanel key={3} value={selectedTab} index={3} noPadding>
+                  <Metrics/>
+                </TabPanel>
+                <TabPanel key={4} value={selectedTab} index={4} noPadding>
                   <Trends/>
                 </TabPanel>
               </Grid>
