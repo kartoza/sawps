@@ -4,36 +4,36 @@ import datetime
 from typing import List
 
 import jenkspy
-from django.db.models import Count
-from django.db.models import FloatField
+from django.db.models import Count, FloatField
 from django.db.models.functions import Cast
-from django.db.models.query import QuerySet, F
+from django.db.models.query import F, QuerySet
 from django.http import HttpRequest
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from frontend.filters.metrics import (
     ActivityBaseMetricsFilter,
     BaseMetricsFilter,
     PropertyFilter,
 )
 from frontend.serializers.metrics import (
-    AreaAvailablePerSpeciesSerializer,
     ActivityMatrixSerializer,
+    AreaAvailablePerSpeciesSerializer,
+    PopulationPerAgeGroupSerialiser,
     SpeciesPopuationCountPerYearSerializer,
     SpeciesPopulationDensityPerPropertySerializer,
-    TotalCountPerActivitySerializer,
-    PopulationPerAgeGroupSerialiser,
     TotalAreaVSAvailableAreaSerializer,
-    TotalCountPerPopulationEstimateSerializer
+    TotalCountPerActivitySerializer,
+    TotalCountPerPopulationEstimateSerializer,
 )
 from frontend.utils.data_table import (
-    get_queryset, get_report_filter, SPECIES_REPORT
+    SPECIES_REPORT,
+    common_filters,
+    get_queryset,
+    get_report_filter,
+    get_taxon_queryset,
 )
-from frontend.utils.data_table import get_taxon_queryset, common_filters
 from frontend.utils.metrics import (
+    calculate_base_population_of_species,
     calculate_population_categories,
+    calculate_species_count_per_province,
     calculate_total_area_per_property_type,
     calculate_base_population_of_species,
     calculate_species_count_per_province
@@ -45,6 +45,9 @@ from frontend.utils.organisation import (
 from frontend.utils.user_roles import get_user_roles
 from population_data.models import AnnualPopulation
 from property.models import Property
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from species.models import Taxon
 
 
@@ -452,7 +455,7 @@ class BasePropertyCountAPIView(APIView):
 
     def get_results(self, data: set, queryset: QuerySet,
                     property_type_name_field: str,
-                    common_name: str, query_field: str):
+                    scientific_name: str, query_field: str):
         categories = jenkspy.jenks_breaks(
             data,
             n_classes=data.count() if data.count() < 6 else 6
@@ -489,7 +492,7 @@ class BasePropertyCountAPIView(APIView):
 
                 result = {
                     'category': category_annotation,
-                    'common_name_verbatim': common_name
+                    'scientific_name': scientific_name
                 }
                 for count in counts:
                     result[
@@ -518,12 +521,12 @@ class PropertyCountPerPopulationSizeCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_verbatim
+        scientific_name = queryset.first().taxon.scientific_name
         results = self.get_results(
             data,
             queryset,
             'property__property_type__name',
-            common_name,
+            scientific_name,
             'total'
         )
 
@@ -552,12 +555,12 @@ class PropertyCountPerAreaCategoryAPIView(BasePropertyCountAPIView):
 
         data = queryset.values_list('property_size_ha', flat=True).distinct()
 
-        common_name = annual_populations.first().taxon.common_name_verbatim
+        scientific_name = annual_populations.first().taxon.scientific_name
         results = self.get_results(
             data,
             queryset,
             'property_type__name',
-            common_name,
+            scientific_name,
             'property_size_ha'
         )
 
@@ -584,12 +587,12 @@ class PropertyPerAreaAvailableCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_verbatim
+        scientific_name = queryset.first().taxon.scientific_name
         results = self.get_results(
             data,
             queryset,
             'property__property_type__name',
-            common_name,
+            scientific_name,
             'area_available_to_species'
         )
 
@@ -620,12 +623,12 @@ class PropertyPerPopDensityCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_verbatim
+        scientific_name = queryset.first().taxon.scientific_name
         results = self.get_results(
             data,
             queryset,
             'property__property_type__name',
-            common_name,
+            scientific_name,
             'population_density'
         )
 

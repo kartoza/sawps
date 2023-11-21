@@ -37,11 +37,11 @@ const PropertyCountPerCategoryChart = (props: any) => {
   })
 
   // Extract the species name
-  const species = propertyData.length > 0 ? propertyData[0].common_name_verbatim : '';
+  const species = propertyData.length > 0 ? propertyData[0].scientific_name : '';
 
   // Define the labels (category) dynamically from propertyData and sort them from highest to lowest
-  const labels = propertyData.map((data: any) => data.category);
-  
+  const labels = propertyData.map((data: any) => data.category).sort();
+
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
     let fullUrl = `${url}?year=${year}&species=${selectedSpecies}&property=${propertyId}`

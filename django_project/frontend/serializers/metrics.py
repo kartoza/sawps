@@ -1,18 +1,13 @@
 import datetime
 from typing import List
 
-from django.db.models import (
-    F,
-    Q,
-    Sum
-)
-from rest_framework import serializers
-
+from django.db.models import F, Q, Sum
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
 from property.models import Property
+from rest_framework import serializers
 from species.models import Taxon
 
 
@@ -46,7 +41,7 @@ class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
         """
         return obj.colour
 
-    def get_annualpopulation_count(self, obj: Taxon) -> List[dict]:
+    def get_annualpopulation_count(self, obj: Taxon) -> list[dict]:
         """Get the population count per year for the species.
         Params:
             obj (Taxon): The Taxon instance representing the species.
@@ -426,7 +421,13 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = Taxon
-        fields = ["age_group", "graph_icon", "common_name_verbatim", "colour"]
+        fields = [
+            "age_group",
+            "graph_icon",
+            "common_name_verbatim",
+            "colour",
+            "scientific_name"
+        ]
 
     def get_age_group(self, obj) -> dict:
         """ Calculate population per age group.
@@ -517,7 +518,7 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Taxon
-        fields = ["area", "common_name_verbatim"]
+        fields = ["area", "common_name_verbatim", "scientific_name"]
 
     def get_area(self, obj) -> list:
         """ Calculate and get total area and available area.

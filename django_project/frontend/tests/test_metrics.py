@@ -3,14 +3,14 @@ import base64
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+from population_data.factories import AnnualPopulationF
+from population_data.models import (
+    AnnualPopulation,
+    PopulationEstimateCategory
+)
 from property.factories import PropertyFactory
 from rest_framework import status
-from species.factories import (
-    TaxonFactory,
-    TaxonRankFactory,
-)
-from population_data.models import AnnualPopulation, PopulationEstimateCategory
-from population_data.factories import AnnualPopulationF
+from species.factories import TaxonFactory, TaxonRankFactory
 from species.models import TaxonRank
 from property.models import Property
 from stakeholder.factories import organisationFactory, organisationUserFactory
@@ -268,12 +268,12 @@ class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
         data = {"species": "Penthera leo"}
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         # test with no species or property
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        
+
         # test with non existent owned species
         data = {"species": "leo"}
         response = self.client.get(url, data, **self.auth_headers)
@@ -325,7 +325,7 @@ class PropertiesPerPopulationCategoryTestCase(BaseTestCase):
         data = {'property':id}
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         # test property id
         id = self.annual_populations[0].property_id
         data = {'property':id, 'species': 'Penthera leo'}
@@ -357,7 +357,7 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), len(self.annual_populations))
         self.assertEqual(response.data[0]['area'], 10)
-        
+
         data = {
             'property': self.annual_populations[0].property_id,
             'species': "Penthera leo",
@@ -568,7 +568,7 @@ class TestPropertyCountPerCategoryMixins:
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
-        self.assertEquals(
+        self.assertEqual(
             response.json(),
             []
         )
@@ -616,12 +616,12 @@ class TestPropertyCountPerPopulationSizeCategory(
                 {
                     'category': '28 - 30',
                     self.new_property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_verbatim': self.taxon.common_name_verbatim
+                    'scientific_name': self.taxon.scientific_name
                 },
                 {
                     'category': '>30',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_verbatim': self.taxon.common_name_verbatim
+                    'scientific_name': self.taxon.scientific_name
                 }
             ]
         )
@@ -651,14 +651,14 @@ class TestPropertyCountPerPopulationSizeCategory(
             [
                 {
                     'category': '1 - 30',
-                    'common_name_verbatim': self.taxon.common_name_verbatim,
+                    'scientific_name': self.taxon.scientific_name,
                     new_property.property_type.name.lower().replace(' ', '_'): 1,
                     self.new_property.property_type.name.lower().replace(' ', '_'): 1
                 },
                 {
                     'category': '>30',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_verbatim': self.taxon.common_name_verbatim
+                    'scientific_name': self.taxon.scientific_name
                 }
             ]
         )
@@ -698,7 +698,7 @@ class TestPropertyCountPerPopulationDensityCategory(
                 {
                     'category': '10.0 - 10.0',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_verbatim': self.taxon.common_name_verbatim
+                    'scientific_name': self.taxon.scientific_name
                 }
             ]
         )
@@ -738,7 +738,7 @@ class TestPropertyCountPerAreaCategory(
                 {
                     'category': '198 - 200',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_verbatim': self.taxon.common_name_verbatim
+                    'scientific_name': self.taxon.scientific_name
                 }
             ]
         )
@@ -778,7 +778,7 @@ class TestPropertyCountPerAreaAvailableToSpeciesCategory(
                 {
                     'category': '8 - 10',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_verbatim': self.taxon.common_name_verbatim
+                    'scientific_name': self.taxon.scientific_name
                 }
             ]
         )
