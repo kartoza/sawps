@@ -59,9 +59,7 @@ from frontend.api_views.population import (
     UploadPopulationAPIVIew,
 )
 from frontend.api_views.property import (
-    CheckPropertyNameIsAvailable,
     CreateNewProperty,
-    ListPropertyTypeAPIView,
     PropertyDetail,
     PropertyList,
     PropertyMetadataList,
@@ -71,12 +69,7 @@ from frontend.api_views.property import (
     CheckPropertyNameIsAvailable,
     ListPropertyTypeAPIView
 )
-from frontend.api_views.spatial_filter import (
-    SpatialFilterList
-)
 from frontend.api_views.statistical import (
-    SpeciesNationalTrend,
-    SpeciesTrend,
     DownloadTrendDataAsJson
 )
 from frontend.api_views.spatial_filter import SpatialFilterList

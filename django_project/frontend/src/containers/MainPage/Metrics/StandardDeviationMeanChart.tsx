@@ -7,6 +7,7 @@ import {
 import ChartContainer from "../../../components/ChartContainer";
 import Loading from "../../../components/Loading";
 import axios from "axios";
+import {uniqueColors} from "../../../utils/Theme";
 
 Chart.register(
     ScatterWithErrorBarsController,
@@ -45,20 +46,6 @@ export default function StandardDeviationMeanChart(props: StandardDeviationMeanC
         })
     };
 
-    function stringToColor(str: string) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-        for (let i = 0; i < 3; i++) {
-            let value = (hash >> (i * 8)) & 0xFF;
-            color += ('00' + value.toString(16)).substr(-2);
-        }
-        return color;
-    }
-
     const processedData = useMemo(() => {
         if (!chartRawData) return null;
         const categories = Object.keys(chartRawData);
@@ -67,7 +54,7 @@ export default function StandardDeviationMeanChart(props: StandardDeviationMeanC
             return groupName.replace('mean_', '').replace('sd_', '');
         }))];
         let datasets = categories.map((category, categoryIndex) => {
-            let randomColor = stringToColor(category);
+            let randomColor = uniqueColors[categoryIndex % uniqueColors.length];
             let groupDataByClass = classesNames.map((className, index) => {
                 let mean = chartRawData[category]['mean_' + className];
                 let sd = chartRawData[category]['sd_' + className];
@@ -86,7 +73,8 @@ export default function StandardDeviationMeanChart(props: StandardDeviationMeanC
                 borderColor: randomColor,
                 errorBarColor: randomColor,
                 errorBarWhiskerColor: randomColor,
-                borderWidth: 4,
+                errorBarLineWidth: 4,
+                borderWidth: 4
             };
         });
 
