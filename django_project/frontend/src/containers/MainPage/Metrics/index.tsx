@@ -25,6 +25,7 @@ import {
 } from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
+import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
@@ -439,6 +440,17 @@ const Metrics = () => {
                                         activityData={activityData}
                                     />
                                 </Grid>
+                                )}
+
+
+                            {
+                                constants.canViewPopulationCategory && (
+                                    <Grid item xs={12} md={12} lg={12}>
+                                        <StandardDeviationMeanChart
+                                            species={selectedSpecies}
+                                            propertyIds={propertyId}
+                                            title={`Mean and standard deviation of age classes for ${selectedSpecies}`}/>
+                                    </Grid>
                                 )}
 
                     </Grid>
