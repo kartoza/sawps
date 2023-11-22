@@ -82,6 +82,10 @@ class ExtendedGroup(models.Model):
                 "can_view_property_count_per_population_density_category",
                 "Can view property count per population density category",
             ),
+            (
+                "can_edit_species_population_data",
+                "Can edit species population data",
+            ),
         ]
 
 
