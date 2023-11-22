@@ -91,7 +91,7 @@ The Taxon table within the Django Admin interface provides administrators with t
 
 1. **Add Taxon**: Clicking on the `ADD TAXON` button enables administrators to add a new taxon. To learn more about adding a new taxon, refer to the detailed documentation on [adding a taxon](django-add-data.md).
 
-2. **Search Functionality**: Administrators can utilize the search functionality to find specific taxonomic records.
+2. **Search Functionality**: Administrators can utilise the search functionality to find specific taxonomic records.
 
 3. **Actions Dropdown**: The `Actions` dropdown provides the following options for managing taxonomic records:
 
