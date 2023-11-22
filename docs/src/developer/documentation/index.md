@@ -74,7 +74,7 @@ Please follow these conventions when writing your documentation:
 9. For every section that contains images, the first image will be used as the thumbnail if the heading is referenced from the application.
 
 <!-- Break for formatting reasons -->
-:pencil2: **Note:** *The repo name in the images below is blurred out, you should work against the GeoSight-OS repository when following these notes.*
+:pencil2: **Note:** *The repo name in the images below is blurred out, you should work against the SAWPS repository when following these notes.*
 <!-- Break for formatting reasons -->
 :pencil2: *Additionally **read** the text part of the instructions, **do not** just use the images as pictorial instructions!*
 
@@ -298,9 +298,9 @@ Whenever the user visits the page using the UUID URL, they will be redirected to
 
 ### Generating PDFS
 
-To generate PDFS, `cd` into `GEOSIGHT-OS/docs` and then run the `build-docs-pdf` in a local terminal
+To generate PDFS, `cd` into `SAWPS/docs` and then run the `build-docs-pdf` in a local terminal
 
 ### Generating static site
 
-To generate HTML, `cd` into `GEOSIGHT-OS/docs` and then run the `build-docs-html` in a local terminal.
+To generate HTML, `cd` into `SAWPS/docs` and then run the `build-docs-html` in a local terminal.
 You can then run `mkdocs serve` to generate the static site on your local host, if there is a port conflict you can specify the port using the `-a` flag e.g `mkdocs serve -a 127.0.0.1:8001`.
