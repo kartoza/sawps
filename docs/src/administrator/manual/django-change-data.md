@@ -90,3 +90,29 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 4. **Save and continue editing**: Save the current record while still showing the current record.
 
 5. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
+
+## Change TOTP Device
+
+![Change TOTP Device](./img/django-change-data-9.png)
+
+1. **History**: The button to see actions applied to the current record.
+
+2. **Identity**: The administrator can edit the user, name and confirmed status for the TOTP device. Click on the user name of the user allows the administrator to view the details of that user.
+
+3. **Configuration**: The administrator can edit the configuration of the TOTP device by using this form.
+
+![Change TOTP Device](./img/django-change-data-10.png)
+
+4. **State**: The administrator can edit the state of the TOTP device by using this form.
+
+5. **Throttling**: The administrator can edit the throttling of the TOTP device by using this form.
+
+6. **QRCode**: The administrator can view the qrcode by clicking on the `qrcode` link.
+
+7. **Delete**: The administrator can delete the TOTP device by clicking on the `Delete` button.
+
+8. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+9. **Save and continue editing**: Save the current record while still showing the current record.
+
+10. **Save**: Save the current record, then redirect to the Django Admin Table or record list.

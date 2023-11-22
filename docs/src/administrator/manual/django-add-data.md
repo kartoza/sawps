@@ -113,3 +113,37 @@ The administrators will be presented with a form to enter the user's information
 8. **Save and continue editing**: Save the current record while still showing the current record.
 
 9. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
+
+## Add TOTP (Time-based One Time Pin) Device
+
+![Add TOTP Device](./img/django-add-data-9.png)
+
+1. **User**: The administrator can add the user for whom TOTP is being created. Existing users can be searched by clicking the search icon next to the user input field.
+
+2.  **Name**: The administrator can add the name of this device in the name input field.
+
+3. **Confirmed**: Check the checkbox if the device is ready for use.
+
+4. **Key**: A pre-generated hex-encoded secret key, which can be up to 40 bytes in length.
+
+5. **Steps**: The time step in seconds.
+
+6. **To**: The Unix time at which to begin counting steps.
+
+7. **Digits**: The number of digits to expect in a token.
+
+8. **Tolerance**: The number of time steps in the past or future to allow.
+
+![Add TOTP Device Steps And Throttling](./img/django-add-data-10.png)
+
+1. **Drift**: The number of time steps the prover is known to deviate from a centralised clock.
+
+2. **Throttling**: A timestamp of the last failed verification attempt. Null if the last attempt succeeded.
+
+3. **Throttling Failure Count**: Number of successive failed attempts.
+
+6. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+7. **Save and continue editing**: Save the current record while still showing the current record.
+
+8. **Save**: Save the current record, then redirect to the Django Admin Table/record list.

@@ -64,3 +64,21 @@ The user table within the Django Admin interface allows administrators to manage
 4. **User Table**: The user table with records.
 
 5. **Edit User**: Clicking on the object allows the administrators to change or edit a particular record. Click [here](django-change-data.md) to view detailed documentation on editing a user.
+
+## TOTP (Time-based One-Time Passwords) Device
+
+![TOTP Device](./img/django-table-6.png)
+
+This table is used for storing, generating, and deleting the TOTP device.
+
+1.  **TOTP Table**: The table displays the record for the TOTP device.
+
+2.  **QRCode**: The administrator can view the QRCode of the TOTP device by clicking on the `qrcode` link.
+
+    - ![QRCode](./img/django-table-7.png)
+    1. **QRCode**: Displays QRCode.
+    2. **URI**: URI(Uniform Resource Identifier) for configuring TOTP.
+
+3. **Add TOTP Device**: The administrator can add a TOTP device by clicking on the `ADD TOTP DEVICE` button. Click on the [add TOTP device](./django-add-data.md) to view detailed documentation about adding a new TOTP device.
+
+4. **Edit TOTP Device**: The administrator can edit the TOTP device for that particular object by clicking on the object. Click on the [here](./django-change-data.md) to view detailed documentation about editing a TOTP device.
