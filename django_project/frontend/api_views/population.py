@@ -340,25 +340,6 @@ class DraftPopulationUpload(APIView):
         return Response(status=201, data={"uuid": str(draft.uuid)})
 
 
-class CheckExistingPopulationData(APIView):
-    """Check for existing annual population data."""
-    permission_classes = [IsAuthenticated]
-
-    def get(self, *args, **kwargs):
-        annual_population = AnnualPopulation.objects.filter(
-            property_id=kwargs.get("property_id"),
-            year=kwargs.get("year"),
-            taxon_id=kwargs.get("taxon_id")
-        ).first()
-        return Response(
-            status=200,
-            data={
-                'has_existing_data': True if annual_population else False,
-                'annual_population_id': annual_population.id if annual_population else None
-            }
-        )
-
-
 class FetchPopulationData(APIView):
     """Fetch existing annual population data."""
     permission_classes = [IsAuthenticated]
