@@ -20,25 +20,22 @@ def calculate_species_count_per_province(
         'property__province'
     ).filter(
         **filters, taxon=taxon
-    ).order_by('-year').distinct('year', 'property__province')
-
-    result_data = dict()
-
+    ).values(
+        'year', 'property__province__name', 'taxon__scientific_name'
+    ).annotate(
+        total_population=Sum('total')
+    ).order_by('-year', '-total_population')
+    result_data = list()
     for pop_data in annual_populations:
-        print(pop_data.property.province, pop_data.total)
         data = {
-            "year": pop_data.year,
-            "count": pop_data.total,
-            "province": pop_data.property.province.name,
-            "species": pop_data.taxon.scientific_name,
+            "year": pop_data['year'],
+            "count": pop_data['total_population'],
+            "province": pop_data['property__province__name'],
+            "species": pop_data['taxon__scientific_name'],
         }
-        key = f'{pop_data.year}-{pop_data.property.province.name}'
-        if key in result_data:
-            result_data[key]['count'] += pop_data.total
-        else:
-            result_data[key] = data
+        result_data.append(data)
 
-    return result_data.values()
+    return result_data
 
 
 def calculate_population_categories(
