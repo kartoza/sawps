@@ -250,6 +250,11 @@ form {
   border-radius: 5px;
 }
 
+.fs-background .half-height {
+  min-height: 92vh;
+  align-items: center;
+}
+
 .account-action:before {
   content: "";
   position: absolute;
