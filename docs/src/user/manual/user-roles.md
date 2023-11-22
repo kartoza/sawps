@@ -149,7 +149,7 @@ context_id: Bov9ysSsFG8VhSLC6oQdRF
 
     * **Access with conditions**: The national data scientist can access the following pages with conditions.
 
-        1. **Organisation member page**: Can only add organisation members if instated as a manager of an organisation or their organization.
+        1. **Organisation member page**: Can only add organisation members if instated as a manager of an organisation or their organisation.
 
         2. **Explore page map tab**: Can see all data on the map at the property level for South Africa and filter by organisation, year, species etc.
 
