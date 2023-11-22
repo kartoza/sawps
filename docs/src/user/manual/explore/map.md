@@ -45,7 +45,7 @@ This documentation outlines the functionalities available in the map view, inclu
 
 - **Highlighting The Most Populated Region**: The map dynamically identifies and highlights the region with the population density for the selected species. This region is visually emphasised to draw the user's attention to the area with the most significant concentration of the chosen species.
 
-- **Compass Icon**: The `Compass Icon` serves as a visual guide within the map view, enhancing the user's ability to explore a 3D representation of the environment. Represented by a compass symbol, this icon provides users with a quick reference to the cardinal directions, facilitating orientation while navigating the 3D map. The Compass Icon dynamically adjusts its orientation based on the user's movements, consistently pointing toward the geographic north. Users can interact with the icon to reset the map orientation to its default north-facing position
+- **Compass Icon**: The `Compass Icon` serves as a visual guide within the map view, enhancing the user's ability to explore a 3D representation of the environment. Represented by a compass symbol, this icon provides users with a quick reference to the cardinal directions, facilitating orientation while navigating the 3D map. The Compass Icon dynamically adjusts its orientation based on the user's movements, consistently pointing toward Geographic North. Users can interact with the icon to reset the map orientation to its default north-facing position
 
 ## Summary
 
