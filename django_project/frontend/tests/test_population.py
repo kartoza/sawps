@@ -203,6 +203,17 @@ class TestPopulationAPIViews(TestCase):
             activity_type_id=2
         ).first()
         self.assertTrue(annual_offtake)
+        # test fetch the annual population data
+        fetch_kwargs = {
+            'id': annual_population.id
+        }
+        request = self.factory.get(
+            reverse('fetch-population-data', kwargs=fetch_kwargs)
+        )
+        request.user = self.user_1
+        view = FetchPopulationData.as_view()
+        response = view(request, **fetch_kwargs)
+        self.assertEqual(response.status_code, 200)
         # test to update and overwrite the data
         data = {
             'taxon_id': taxon.id,
@@ -446,7 +457,7 @@ class TestPopulationAPIViews(TestCase):
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 204)
 
-    def test_fetch_existing_population_data(self):
+    def test_fetch_non_existing_population_data(self):
         kwargs = {
             'id': 1000
         }
