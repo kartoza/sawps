@@ -8,6 +8,7 @@ from frontend.models.statistical import (
     NATIONAL_TREND,
     StatisticalModel,
     StatisticalModelOutput,
+    SpeciesModelOutput
 )
 from frontend.models.upload import UploadSpeciesCSV
 from frontend.models.spatial import (
@@ -175,6 +176,22 @@ class StatisticalModelF(factory.django.DjangoModelFactory):
     )
 
     code = 'cleaned_data <- all_data'
+
+
+class SpeciesModelOutputF(factory.django.DjangoModelFactory):
+    """Factory for SpeciesModelOutput Model."""
+
+    class Meta:
+        """Meta class Factory for SpeciesModelOutput Model."""
+        model = SpeciesModelOutput
+
+    model = factory.SubFactory(
+        'frontend.tests.model_factories.StatisticalModelF'
+    )
+
+    taxon = factory.SubFactory(
+        'species.factories.TaxonF'
+    )
 
 
 class UploadSpeciesCSVF(factory.django.DjangoModelFactory):

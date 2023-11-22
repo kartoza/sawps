@@ -18,34 +18,43 @@ from frontend.api_views.data_table import DataTableAPIView
 from frontend.api_views.map import (
     AerialTile,
     ContextLayerList,
+    DefaultPropertiesLayerMVTTiles,
     FindParcelByCoord,
     FindPropertyByCoord,
     MapAuthenticate,
     MapStyles,
+    PopulationCountLegends,
     SessionPropertiesLayerMVTTiles,
-    DefaultPropertiesLayerMVTTiles,
-    PopulationCountLegends
 )
 from frontend.api_views.metrics import (
     ActivityPercentageAPIView,
-    PropertiesPerPopulationCategoryAPIView,
-    SpeciesPopuationCountPerYearAPIView,
-    TotalAreaPerPropertyTypeAPIView,
-    SpeciesPopulationDensityPerPropertyAPIView,
-    SpeciesPopulationCountPerProvinceAPIView,
-    TotalCountPerActivityAPIView,
-    TotalAreaAvailableToSpeciesAPIView,
     PopulationPerAgeGroupAPIView,
-    TotalAreaVSAvailableAreaAPIView,
-    TotalCountPerPopulationEstimateAPIView,
-    PropertyCountPerPopulationSizeCategoryAPIView,
+    PropertiesPerPopulationCategoryAPIView,
     PropertyCountPerAreaCategoryAPIView,
+    PropertyCountPerPopulationSizeCategoryAPIView,
     PropertyPerAreaAvailableCategoryAPIView,
-    PropertyPerPopDensityCategoryAPIView
+    PropertyPerPopDensityCategoryAPIView,
+    SpeciesPopuationCountPerYearAPIView,
+    SpeciesPopulationCountPerProvinceAPIView,
+    SpeciesPopulationDensityPerPropertyAPIView,
+    TotalAreaAvailableToSpeciesAPIView,
+    TotalAreaPerPropertyTypeAPIView,
+    TotalAreaVSAvailableAreaAPIView,
+    TotalCountPerActivityAPIView,
+    TotalCountPerPopulationEstimateAPIView,
+)
+from frontend.api_views.national_statistic import (
+    NationalActivityCountPerPropertyView,
+    NationalActivityCountPerProvinceView,
+    NationalActivityCountView,
+    NationalPropertiesView,
+    NationalSpeciesView,
+    NationalStatisticsView,
 )
 from frontend.api_views.population import (
     DraftPopulationUpload,
     FetchDraftPopulationUpload,
+    PopulationMeanSDChartApiView,
     PopulationMetadataList,
     UploadPopulationAPIVIew,
     CheckExistingPopulationData,
@@ -56,64 +65,51 @@ from frontend.api_views.property import (
     PropertyDetail,
     PropertyList,
     PropertyMetadataList,
+    PropertySearch,
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
-    PropertySearch,
     CheckPropertyNameIsAvailable,
     ListPropertyTypeAPIView
 )
-from frontend.api_views.spatial_filter import (
-    SpatialFilterList
-)
 from frontend.api_views.statistical import (
-    SpeciesNationalTrend,
-    SpeciesTrend
+    DownloadTrendDataAsJson
 )
+from frontend.api_views.spatial_filter import SpatialFilterList
+from frontend.api_views.statistical import SpeciesNationalTrend, SpeciesTrend
 from frontend.api_views.upload import (
+    BoundaryFileGeoJson,
     BoundaryFileList,
     BoundaryFileRemove,
     BoundaryFileSearch,
     BoundaryFileSearchStatus,
     BoundaryFileUpload,
-    BoundaryFileGeoJson
 )
 from frontend.views.base_view import get_user_notifications
 
 from .api_views.user import UserInfoAPIView
-
 from .views.about import AboutView
 from .views.contact import ContactUsView
 from .views.help import HelpView
 from .views.home import HomeView
 from .views.map import (
     MapView,
-    redirect_to_reports,
     redirect_to_charts,
+    redirect_to_explore,
+    redirect_to_reports,
     redirect_to_trends,
     redirect_to_upload,
-    redirect_to_explore
 )
 from .views.online_form import OnlineFormView
-from .views.switch_organisation import switch_organisation
-from .views.totp_device import (
-    add_totp_device,
-    delete_totp_device,
-    view_totp_devices
-)
-from .views.users import OrganisationUsersView
-from frontend.api_views.national_statistic import (
-    NationalStatisticsView,
-    NationalSpeciesView,
-    NationalPropertiesView,
-    NationalActivityCountView,
-    NationalActivityCountPerProvinceView,
-    NationalActivityCountPerPropertyView
-)
 from .views.organisations import (
     OrganisationsView,
     organization_detail,
-    save_permissions
+    save_permissions,
 )
+from .views.switch_organisation import switch_organisation
+from .views.totp_device import (
+    add_totp_device, delete_totp_device, view_totp_devices
+)
+from .views.users import OrganisationUsersView
 
 urlpatterns = [
     re_path(
@@ -263,6 +259,11 @@ urlpatterns = [
         r'^api/species/(?P<species_id>\d+)/trend/national/?$',
         SpeciesNationalTrend.as_view(),
         name='species-national-trend'
+    ),
+    path(
+        'api/species/population_trend/download/',
+        DownloadTrendDataAsJson.as_view(),
+        name='download-species-population-trend'
     ),
     path(
         'api/species/population_trend/',
@@ -470,5 +471,10 @@ urlpatterns = [
         'api/user-info/',
         UserInfoAPIView.as_view(),
         name='user-info-api'
+    ),
+    path(
+        'api/population-mean-sd-chart/',
+        PopulationMeanSDChartApiView.as_view(),
+        name='population-mean-sd-chart'
     )
 ]

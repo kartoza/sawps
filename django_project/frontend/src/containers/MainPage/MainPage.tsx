@@ -116,9 +116,16 @@ function MainPage() {
     setShowLeftSidebar(!showLeftSidebar);
   }
 
+  const [tab, setTab] = useState<string>('')
+
+  useEffect(() => {
+      const pathname = window.location.pathname.replace(/\//g, '');
+      setTab(pathname)
+  }, [window.location.pathname])
+
   return (
     <div className="App">
-      <div className="MainPage">
+      <div className={`MainPage MainPage-${tab}`}>
         <Grid container flexDirection={'row'} id={'main-container'}>
           <Grid item
                 id={'toggle-left-sidebar'}

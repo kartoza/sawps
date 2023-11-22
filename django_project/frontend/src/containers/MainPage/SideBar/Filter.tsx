@@ -120,7 +120,8 @@ function Filter(props: any) {
             }
         ]
 
-        if (userInfoData.user_permissions.includes("Can view province report")) {
+        if (userInfoData.user_permissions.includes("Can view province report")
+          && !roleExists('Provincial data consumer')) {
             informationList.push({
                 id: "Province report",
                 name: "Province report"

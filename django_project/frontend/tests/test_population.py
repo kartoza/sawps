@@ -90,11 +90,6 @@ class TestPopulationAPIViews(TestCase):
             ]
         )
 
-    @mock.patch(
-        'frontend.api_views.population.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     def test_upload_population_data(self):
         property = PropertyFactory.create(
             organisation=self.organisation
@@ -210,11 +205,6 @@ class TestPopulationAPIViews(TestCase):
         ).first()
         self.assertTrue(annual_offtake)
 
-    @mock.patch(
-        'frontend.api_views.population.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     def test_upload_population_data_future_year(self):
         property = PropertyFactory.create(
             organisation=self.organisation

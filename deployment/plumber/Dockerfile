@@ -25,7 +25,7 @@ ARG CPUCOUNT=1
 RUN pip3 install -r /requirements.txt
 
 # install R packages
-RUN install2.r --error tidyverse tidygam mgcv ggpubr
+RUN install2.r --error tidyverse tidygam mgcv ggpubr classInt
 
 # add django project
 ADD django_project /home/web/django_project

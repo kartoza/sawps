@@ -1,43 +1,79 @@
 import React, {useEffect, useRef, useState} from "react";
+import axios from "axios";
 import {Box, Button, Grid, Typography} from "@mui/material";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
-import PopulationTrend, {NationalTrendInterface} from "../Metrics/PopulationTrend";
 import {useGetTaxonDetailQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import './index.scss';
+import NationalTrendSection from "./NationalTrendSection";
+import ProvincialTrendSection from "./ProvincialTrendSection";
+import PropertyTrendSection from "./PropertyTrendSection";
+
+const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/download/'
 
 const Trends = () => {
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
   const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
-  const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
-  const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
-  const [loading, setLoading] = useState(false)
-  const [jsonDoc,setJsonDoc] = useState<NationalTrendInterface[]>()
   const [rerender, setRerender] = useState<boolean>(false)
   const contentRef = useRef(null);
   const {data: taxonDetail, isLoading: isTaxonDetailLoading, isSuccess} = useGetTaxonDetailQuery(selectedSpecies)
+  const [isDownloadingJson, setIsDownloadingJson] = useState(false)
 
   // Declare errorMessage as a state variable
   const [showCharts, setShowCharts] = useState(false);
 
   const downloadTxtFile = () => {
-    const element = document.createElement("a");
-    const file = new Blob([JSON.stringify(jsonDoc)], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = `${selectedSpecies}.json`;
-    document.body.appendChild(element); // Required for this to work in FireFox
-    element.click();
+    setIsDownloadingJson(true)
+    let _data = {
+      'species': selectedSpecies,
+      'property': propertyId
+    }
+    axios.post(`${SPECIES_POPULATION_TREND_URL}`, _data, {
+      responseType: 'blob',
+    }).then((response) => {
+        setIsDownloadingJson(false)
+        if (response.data) {
+          // create file link in browser's memory
+          const href = URL.createObjectURL(response.data);
+
+          // create "a" HTML element with href to file & click
+          const link = document.createElement('a');
+          link.href = href;
+          link.setAttribute('download', `${selectedSpecies}.json`);
+          document.body.appendChild(link);
+          link.click();
+
+          // clean up "a" element & remove ObjectURL
+          document.body.removeChild(link);
+          URL.revokeObjectURL(href);
+        }
+    }).catch((error) => {
+        setIsDownloadingJson(false)
+        console.log(error)
+        if (
+            error.request.responseType === 'blob' &&
+            error.response.data instanceof Blob &&
+            error.response.data.type &&
+            error.response.data.type.toLowerCase().indexOf('json') != -1
+        ) {
+          error.response.data.text().then((text: string) => {
+            let errorJSON = JSON.parse(text)
+            if (errorJSON['detail']) {
+              alert(errorJSON['detail'])
+            }
+          })
+        }
+    })
   }
 
   useEffect(() => {
     if (selectedSpecies) {
-      setRerender(false)
       setShowCharts(true)
     } else {
-      setShowCharts(false);
+      setShowCharts(false)
     }
-  }, [propertyId, startYear, endYear, selectedSpecies])
+  }, [propertyId, selectedSpecies])
 
   useEffect(() => {
     if (taxonDetail?.id) {
@@ -56,42 +92,21 @@ const Trends = () => {
                 ref={contentRef}
                 spacing={0}
                 direction="column"
-                alignItems="center"
-                justifyContent="center"
+                alignItems="flex-start"
           >
             {selectedSpecies && rerender && (
-              <Grid item xs={12} md={6}>
-                <div className='species-card-container-trends' data-testid='species-card-container-trends'>
-                  <div className='species-card-image-container'>
-                    <img
-                      src={taxonDetail.graph_icon ? taxonDetail.graph_icon : "/static/images/default-species-graph.svg"}
-                      className='species-card-image'
-                      data-testid='species-card-image'
-                    />
-                    <p className='species-card-text species-name-text'> {selectedSpecies} </p>
-                    {/*<hr/>*/}
-                  </div>
-                  <div className='species-card-text-container'>
-                    <p className='species-card-text' data-testid='species-card-population'>Total Population
-                      : {taxonDetail.total_population}</p>
-                    <p className='species-card-text' data-testid='species-card-total-area'>Total Area
-                      : {+taxonDetail.total_area.toFixed(2)}</p>
-                  </div>
-                  <div className='ChartHolder'>
-                    <PopulationTrend
-                      selectedSpecies={selectedSpecies}
-                      propertyId={propertyId}
-                      startYear={1960}
-                      endYear={new Date().getFullYear()}
-                      loading={loading}
-                      setLoading={setLoading}
-                      setResult={setJsonDoc}
-                      lineColor={'#000000'}
-                      onEmptyDatasets={() => {
-                      }}
-                    />
-                  </div>
-                </div>
+              <Grid item xs={12} md={12} className="SectionItem" key={'NationalSectionItem'}>
+                <NationalTrendSection species={selectedSpecies} />
+              </Grid>
+            )}
+            {selectedSpecies && rerender && (
+              <Grid item xs={12} md={12} className="SectionItem" key={'ProvincialSectionItem'}>
+                <ProvincialTrendSection species={selectedSpecies} />
+              </Grid>
+            )}
+            {selectedSpecies && rerender && (
+              <Grid item xs={12} md={12} className="SectionItem" key={'PropertySectionItem'}>
+                <PropertyTrendSection species={selectedSpecies} property={propertyId} />
               </Grid>
             )}
           </Grid>
@@ -114,13 +129,22 @@ const Trends = () => {
       </Box>
       {showCharts && (
         <Box className="download-btn-box" style={{position: 'fixed', bottom: '20px', right: '20px'}}>
-          <Button
-            onClick={downloadTxtFile}
-            variant="contained"
-            color="primary"
-          >
-            Download JSON Document
-          </Button>
+          { isDownloadingJson ?
+            <Button
+              disabled
+              variant="contained"
+              color="primary"
+            >
+              Downloading...
+            </Button>:
+            <Button
+              onClick={downloadTxtFile}
+              variant="contained"
+              color="primary"
+            >
+              Download JSON Document
+            </Button>
+          }
         </Box>
       )}
     </Box>

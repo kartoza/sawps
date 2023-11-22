@@ -1,11 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, Button, Grid, Typography, Modal } from "@mui/material";
-import DensityBarChart from "./DensityBarChart";
-import PopulationCategoryChart from "./PopulationCategoryChart";
-import { useAppSelector } from "../../../app/hooks";
-import { RootState } from "../../../app/store";
-import PropertyAvailableBarChart from "./PropertyAvailable";
-import PropertyTypeBarChart from "./PropertyType";
+import React, {useEffect, useRef, useState} from "react";
+import {Box, Button, Grid, Modal, Typography} from "@mui/material";
+import {useAppSelector} from "../../../app/hooks";
+import {RootState} from "../../../app/store";
 import AgeGroupBarChart from "./AgeGroupBarChart";
 import AreaAvailableLineChart from "./AreaAvailableLineChart";
 import axios from "axios";
@@ -14,17 +10,12 @@ import jsPDF from "jspdf";
 import SpeciesCountPerProvinceChart from "./SpeciesCountPerProvinceChart";
 import SpeciesCountAsPercentage from "./SpeciesCountAsPercentage";
 import TotalCountPerActivity from "./TotalCountPerActivity";
-import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
-import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
 import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
-import {
-    useGetActivityAsObjQuery,
-    useGetUserInfoQuery,
-    useGetPropertyTypeQuery
-} from "../../../services/api";
+import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
+import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
 
 
 const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
@@ -59,7 +50,7 @@ const Metrics = () => {
         isLoading: isActivityLoading,
         isSuccess: isActivitySuccess
     } = useGetActivityAsObjQuery()
-    
+
     const {
         data: propertyTypes,
         isLoading: isPropertyTypesLoading,
@@ -217,7 +208,7 @@ const Metrics = () => {
             <Box className="charts-container" id={'charts-container'}>
 
                 {showCharts ? (
-                        <>
+                        <div className="buttonsBuffer">
                         <Topper></Topper>
                         <Grid container spacing={1} ref={contentRef}>
 
@@ -292,55 +283,6 @@ const Metrics = () => {
                                         chartTitle={'Number of properties per population category (population density) of {species} for {year}'}
                                         xLabel={'Population size categories (population density)'}
                                         url={'/api/property-count-per-population-density-category/'}
-                                    />
-                                </Grid>
-                            )}
-
-                             {
-                             constants.canViewPropertyType && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PropertyTypeBarChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                    />
-                                </Grid>
-                            )}
-
-
-                            {
-                            constants.canViewDensityBar &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <DensityBarChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        densityData={densityData}
-                                        setDensityData={setDensityData}
-                                    />
-                                </Grid>
-                            )}
-
-
-                            {
-                            constants.canViewPropertyAvailable &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PropertyAvailableBarChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        loading={loading}
-                                        activity={activityParams}
-                                        setLoading={setLoading}
                                     />
                                 </Grid>
                             )}
@@ -441,8 +383,19 @@ const Metrics = () => {
                                 </Grid>
                                 )}
 
+
+                            {
+                                constants.canViewPopulationCategory && (
+                                    <Grid item xs={12} md={12} lg={12}>
+                                        <StandardDeviationMeanChart
+                                            species={selectedSpecies}
+                                            propertyIds={propertyId}
+                                            title={`Mean and standard deviation of age classes for ${selectedSpecies}`}/>
+                                    </Grid>
+                                )}
+
                     </Grid>
-                        </>
+                        </div>
                 ): (
                     // Render message to user
                     <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>

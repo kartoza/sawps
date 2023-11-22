@@ -396,7 +396,7 @@ class SpeciesPopulationDensityPerPropertySerializer(
                 "property__name",
                 "year",
                 "total",
-                "property__property_size_ha"
+                "area_available_to_species"
             )
         )
 
@@ -404,11 +404,11 @@ class SpeciesPopulationDensityPerPropertySerializer(
         result_data = []
         for data in populations:
             total = data.get("total")
-            property_in_ha = data.get("property__property_size_ha")
+            area_available = data.get("area_available_to_species")
             year = data.get("year")
 
-            if total and property_in_ha:
-                density = total / property_in_ha
+            if total and area_available:
+                density = total / area_available
             else:
                 density = None
 

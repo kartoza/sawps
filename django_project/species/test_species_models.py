@@ -437,11 +437,6 @@ class TaxonTestCase(TestCase):
         self.taxonRank.delete()
         self.assertEqual(TaxonRank.objects.count(), 0)
 
-    @mock.patch(
-        'frontend.utils.statistical_model.'
-        'clear_statistical_model_output_cache',
-        mock.Mock(side_effect=mocked_clear_cache)
-    )
     def test_taxon_admin_list(self):
         taxon2 = Taxon.objects.create(
             scientific_name='taxon_1',
@@ -459,16 +454,6 @@ class TaxonTestCase(TestCase):
         response = client.get(reverse('admin:species_taxon_changelist'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, 'Colour')
-        response = client.post(
-            reverse('admin:species_taxon_changelist'),
-            {
-                'action': 'clean_output_caches',
-                '_selected_action': [taxon2.id]
-            },
-            follow=True
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, 'cache has been cleared')
 
 
 class TaxonSurveyMethodTestCase(TestCase):
