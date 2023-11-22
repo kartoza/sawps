@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, Button, Grid, Typography, Modal } from "@mui/material";
+import React, {useEffect, useRef, useState} from "react";
+import {Box, Button, Grid, Modal, Typography} from "@mui/material";
 import DensityBarChart from "./DensityBarChart";
-import PopulationCategoryChart from "./PopulationCategoryChart";
-import { useAppSelector } from "../../../app/hooks";
-import { RootState } from "../../../app/store";
+import {useAppSelector} from "../../../app/hooks";
+import {RootState} from "../../../app/store";
 import PropertyAvailableBarChart from "./PropertyAvailable";
 import PropertyTypeBarChart from "./PropertyType";
 import AgeGroupBarChart from "./AgeGroupBarChart";
@@ -14,15 +13,9 @@ import jsPDF from "jspdf";
 import SpeciesCountPerProvinceChart from "./SpeciesCountPerProvinceChart";
 import SpeciesCountAsPercentage from "./SpeciesCountAsPercentage";
 import TotalCountPerActivity from "./TotalCountPerActivity";
-import ActivityCountAsPercentage from "./ActivityCountAsPercentage";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
-import PopulationEstimateAsPercentage from "./PopulationEstimateCategoryAsPercentage";
 import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
-import {
-    useGetActivityAsObjQuery,
-    useGetUserInfoQuery,
-    useGetPropertyTypeQuery
-} from "../../../services/api";
+import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
 import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
