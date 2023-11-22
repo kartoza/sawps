@@ -179,19 +179,23 @@ class UploadPopulationAPIVIew(APIView):
                     'adult_total': annual_population.get("adult_total", 0),
                     'adult_male': annual_population.get("adult_male", 0),
                     'adult_female': annual_population.get("adult_female", 0),
-                    'juvenile_male': annual_population.get("juvenile_male", 0),
-                    'juvenile_female': annual_population.get("juvenile_female", 0),
+                    'juvenile_male': annual_population.get(
+                        "juvenile_male", 0),
+                    'juvenile_female': annual_population.get(
+                        "juvenile_female", 0),
                     'group': annual_population.get("group", 0),
                     'note': annual_population.get("note", None),
                     'survey_method': survey_method,
-                    'sub_adult_male': annual_population.get("sub_adult_male", 0),
-                    'sub_adult_female': annual_population.get("sub_adult_female", 0),
-                    'sub_adult_total': (annual_population.get("sub_adult_male", 0) +
-                                    annual_population.get("sub_adult_female", 0)
-                                    ),
-                    'juvenile_total': (annual_population.get("juvenile_male", 0) +
-                                    annual_population.get("juvenile_female", 0)
-                                    ),
+                    'sub_adult_male': annual_population.get(
+                        "sub_adult_male", 0),
+                    'sub_adult_female': annual_population.get(
+                        "sub_adult_female", 0),
+                    'sub_adult_total': (
+                        annual_population.get("sub_adult_male", 0) +
+                        annual_population.get("sub_adult_female", 0)),
+                    'juvenile_total': (
+                        annual_population.get("juvenile_male", 0) +
+                        annual_population.get("juvenile_female", 0)),
                     'population_estimate_certainty': annual_population.get(
                         "population_estimate_certainty", None),
                     'upper_confidence_level': annual_population.get(
@@ -200,12 +204,14 @@ class UploadPopulationAPIVIew(APIView):
                         "lower_confidence_level", None),
                     'certainty_of_bounds': annual_population.get(
                         "certainty_of_bounds", None),
-                    'population_estimate_category_other': annual_population.get(
-                        "population_estimate_category_other", None),
+                    'population_estimate_category_other': (
+                        annual_population.get(
+                            "population_estimate_category_other", None)),
                     'survey_method_other': annual_population.get(
                         "survey_method_other", None),
                     'population_status': population_status,
-                    'population_estimate_category': population_estimate_category,
+                    'population_estimate_category': (
+                        population_estimate_category),
                     'sampling_effort_coverage': sampling_effort_coverage,
                     'presence': annual_population.get("present")
                 }
@@ -346,7 +352,8 @@ class FetchPopulationData(APIView):
 
     def get(self, *args, **kwargs):
         annual_population_id = kwargs.get("id")
-        annual_population = get_object_or_404(AnnualPopulation, id=annual_population_id)
+        annual_population = get_object_or_404(AnnualPopulation,
+                                              id=annual_population_id)
         intakes = AnnualPopulationPerActivity.objects.filter(
             annual_population=annual_population,
             activity_type__recruitment=True

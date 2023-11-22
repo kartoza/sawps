@@ -46,13 +46,19 @@ class AnnualPopulationFormSerializer(serializers.ModelSerializer):
         return obj.survey_method.name if obj.survey_method else ''
 
     def get_sampling_effort_coverage_name(self, obj: AnnualPopulation):
-        return obj.sampling_effort_coverage.name if obj.sampling_effort_coverage else ''
+        return (
+            obj.sampling_effort_coverage.name if
+            obj.sampling_effort_coverage else ''
+        )
 
     def get_population_status_name(self, obj: AnnualPopulation):
         return obj.population_status.name if obj.population_status else ''
 
     def get_population_estimate_category_name(self, obj: AnnualPopulation):
-        return obj.population_estimate_category.name if obj.population_estimate_category else ''
+        return (
+            obj.population_estimate_category.name if
+            obj.population_estimate_category else ''
+        )
 
     class Meta:
         model = AnnualPopulation
