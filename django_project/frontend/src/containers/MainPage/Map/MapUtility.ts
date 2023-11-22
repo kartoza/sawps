@@ -409,7 +409,9 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             "source-layer": "properties-points",
             "layout": {"visibility": "visible"},
             "paint": {
-                "circle-color": "rgba(255, 82, 82, 0.8)"
+                "circle-color": "rgba(255, 82, 82, 0.8)",
+                "circle-stroke-width": 1,
+                "circle-stroke-color": "rgb(0, 0, 0)"
             },
             "minzoom": 5,
             "maxzoom": 10
@@ -477,7 +479,9 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
                         "stops": getMapPopulationStops(propertiesCount),
                         "base": 1,
                         "default": "rgba(248, 0, 255, 1)"
-                    }
+                    },
+                    "circle-stroke-width": 1,
+                    "circle-stroke-color": "rgb(0, 0, 0)"
                 },
                 "minzoom": 5,
                 "maxzoom": 10
