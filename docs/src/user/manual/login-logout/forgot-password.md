@@ -20,7 +20,7 @@ The steps involve:
 * Providing the correct email for the user account.
 * Clicking on the reset password link provided in their email.
 * Resetting their password on the platform.
-* Logging in with their new password.
+* Log in with their new password.
 
 ## Forgot password
 
@@ -35,6 +35,8 @@ The steps involve:
 1. Reset Password Label
 2. Email Field: the user should enter their email address into this field.
 3. Reset Password button: when clicked sends the reset password email and notifies the user.
+4. Go back link: when clicked returns the user to the login page.
+
 
 ![Forgot Password 3](./img/forgot-password-3.png)
 
@@ -53,8 +55,8 @@ The steps involve:
 ![Forgot Password 5](./img/forgot-password-5.png)
 
 1. New Password field: the user should enter their new password into this field.
-2. Allowable Password characteristics: the new password for the user should include the characteristics described.
-3. New password confirmation field: the user should re enter their password to make sure they didn’t make a mistake.
+2. New password confirmation field: the user should re-enter their password to make sure they didn’t make a mistake.
+3. Allowable Password characteristics: the new password for the user should include the characteristics described.
 4. Reset password button: when clicked sets the password the user provided as the new password for logging in and also shows a success message.
 
 ### Password reset success

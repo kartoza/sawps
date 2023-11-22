@@ -13,7 +13,7 @@ context_id: 6R7wPf6e2GkEvqNjzRBmxY
 
 # Two-Factor Authentication Page Documentation
 
-The Two-Factor Authentication (2FA) Page is a critical security feature that adds an extra layer of protection to the user's account. With 2FA, the user will be required to enter a OTP (One-Time Password) code in addition to their regular login credentials. This documentation provides an explanation of the 2FA page.
+The Two-Factor Authentication (2FA) Page is a critical security feature that adds an extra layer of protection to the user's account. With 2FA, the user will be required to enter an OTP (One-Time Password) code in addition to their regular login credentials. This documentation explains the 2FA page.
 
 ![Two-Factor Authentication Page](./img/login-2fa-page-1.png)
 
@@ -21,11 +21,11 @@ The Two-Factor Authentication (2FA) Page is a critical security feature that add
 
 2. **Authenticate Button**: Once the user has entered the OTP code, they can click the `Authenticate` button to verify their identity. If the OTP code is correct, the user will gain access to their account.
 
-3. **Lost Your Device?**: Below the `Authenticate` button, the user will see a section titled `Lost your device?`.This section provides guidance for users who have lost access to their 2FA device. If the user no longer has access to their authentication app, they can follow the instructions provided here to regain access to their account. Typically, this involves contacting the user's account administrator, or support, for further assistance.
+3. **Contact**:  The `Contact` link provides access to the [contact page](../help-contact.md) where the SAWPS team is ready to assist with any inquiries or issues.
 
 ## Two-Factor Authentication Security
 
-Two-Factor Authentication (2FA) is a critical security measure that significantly reduces the risk of unauthorised access to the user's account. It is highly recommended to enable and use 2FA to protect a user's data and ensure the integrity of their account.
+Two-factor authentication (2FA) is a critical security measure that significantly reduces the risk of unauthorised access to the user's account. It is highly recommended to enable and use 2FA to protect a user's data and ensure the integrity of their account.
 
 ## Summary
-Users can effectively use the 2FA page to enhance the security of their account and maintain control, even in the event of a lost device.
+Users can effectively use the 2FA page to enhance the security of their accounts and maintain control, even in the event of a lost device.
