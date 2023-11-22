@@ -39,7 +39,7 @@ This will redirect you to a profile configuration page.
 
 ![Registering 5](./img/registering-5.png)
 
-This step will require you to download and install a token generator, such as the Google Authenticator from the Google Play store. You can install the token generator on your preferred device (ii.e. cellphone, laptop, etc.)
+This step will require you to download and install a token generator, such as the Google Authenticator from the Google Play store. You can install the token generator on your preferred device (i.e. cellphone, laptop, etc.)
 
 ![Registering 6](./img/registering-6.png)
 

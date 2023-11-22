@@ -92,6 +92,12 @@ nav:
                 - administrator/index.md
                 - Guide:
                         - administrator/guide/index.md
+                        - Accessing the Administration Site: administrator/guide/access-admin-site.md
+                        - Managing Organisations: administrator/guide/manage-organisations.md
+                        - Managing Users: administrator/guide/manage-users.md
+                        - Managing Taxa: administrator/guide/manage-taxa.md
+                        - Managing Uploaded Data: administrator/guide/manage-upload-data.md
+                        - Managing Lookup Tables: administrator/guide/manage-lookup-tables.md
                 - Manual:
                         - administrator/manual/index.md
                         - Django Administration: administrator/manual/django-admin.md
