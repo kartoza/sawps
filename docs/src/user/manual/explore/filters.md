@@ -122,4 +122,4 @@ to allow the user group (e.g. `National data scientist`) to see the property fil
 
 ## Summary
 
-The filter side panel provides a robust toolset for users to refine and explore their datasets effectively. Whether it's searching for specific places, species, or filtering by activities, organisations, properties, years, or spatial criteria, this comprehensive manual ensures users can seamlessly navigate and utilize the filtering functionalities for a more tailored data analysis experience.
+The filter side panel provides a robust toolset for users to refine and explore their datasets effectively. Whether it's searching for specific places, species, or filtering by activities, organisations, properties, years, or spatial criteria, this comprehensive manual ensures users can seamlessly navigate and utilise the filtering functionalities for a more tailored data analysis experience.
