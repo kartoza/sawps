@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
-import { Grid } from "@mui/material";
-import { Line } from "react-chartjs-2";
-import { CategoryScale } from "chart.js";
+import React, {useEffect, useState} from "react";
+import {Line} from "react-chartjs-2";
+import {CategoryScale} from "chart.js";
 import Chart from "chart.js/auto";
 import Loading from "../../../components/Loading";
 import "./index.scss";
 import ChartContainer from "../../../components/ChartContainer";
-import DoughnutChart from "../../../components/DoughnutChart";
+import axios from "axios";
 
 
 Chart.register(CategoryScale);
+const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
+
 
 const AreaAvailableLineChart = (props: any) => {
     const {
@@ -17,16 +18,16 @@ const AreaAvailableLineChart = (props: any) => {
         propertyId,
         startYear,
         endYear,
-        loading,
-        areaData,
         species_name
     } = props
+    const [loading, setLoading] = useState(false)
+    const [areaData, setAreaData] = useState([])
 
     // Extract the species name
     const speciesName = species_name ? species_name : '';
 
     const AreaDataValue = {
-        labels: areaData.map((item: any) => item?.annualpopulation__year),
+        labels: areaData.map((item: any) => item?.year),
         datasets: [
             {
                 label: "Area available to species",
@@ -49,6 +50,21 @@ const AreaAvailableLineChart = (props: any) => {
         ]
     }
 
+    const fetchAreaAvailableLineData = () => {
+        setLoading(true)
+        axios.get(`${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+            setLoading(false)
+            if (response.data) {
+                if (response.data.length > 0) {
+                    setAreaData(response.data[0]?.area)
+                }
+            }
+        }).catch((error) => {
+            setLoading(false)
+            console.log(error)
+        })
+    }
+
     // incase there is a single label and single value
     interface AreaDataValueB {
         labels: number[];
@@ -66,17 +82,8 @@ const AreaAvailableLineChart = (props: any) => {
       }
 
       useEffect(() => {
-        let render_chart = true
-        let override_render_chart = false
-        areaDataB.datasets.forEach(dataset => {
-            if (dataset.data.length === 0) {
-            render_chart = false
-            }else {
-                render_chart = true
-                override_render_chart = true
-            }
-        });
-      }, [propertyId, startYear, endYear, selectedSpecies,areaData]);
+        fetchAreaAvailableLineData()
+      }, [propertyId, startYear, endYear, selectedSpecies]);
 
       areaDataB.datasets.forEach(dataset => {
         if (dataset.data.length === 1) {

@@ -8,7 +8,6 @@ from django.db.models import (
 )
 from rest_framework import serializers
 
-from frontend.static_mapping import YEAR_DATA_LIMIT
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
@@ -543,22 +542,14 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
 
         populations = AnnualPopulation.objects.filter(
             **filters, taxon=obj
+        ).values(
+            'year'
         ).annotate(
             area_total=Sum("property__property_size_ha"),
-            area_available=Sum("area_available_to_species"),
-            annualpopulation__year=F('year')
-        ).values('annualpopulation__year', 'area_total', 'area_available')
-        data = {
-            "owned_species": populations
-        }
-        if len(populations) > YEAR_DATA_LIMIT:
-            data = {
-                "owned_species": populations[:YEAR_DATA_LIMIT],
-                "message": "Only last 10 years data are displayed \
-                for search with >10 years data returned"
-            }
+            area_available=Sum("area_available_to_species")
+        )
 
-        return data
+        return populations
 
 
 class AreaAvailablePerSpeciesSerializer(serializers.ModelSerializer):
