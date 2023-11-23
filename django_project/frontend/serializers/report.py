@@ -45,6 +45,10 @@ class SpeciesReportSerializer(
     """
     Serializer for Species Report.
     """
+    upload_id = serializers.SerializerMethodField()
+
+    def get_upload_id(self, obj: AnnualPopulation):
+        return obj.id
 
     class Meta:
         model = AnnualPopulation
@@ -54,7 +58,7 @@ class SpeciesReportSerializer(
             "scientific_name", "common_name",
             "year", "group", "total", "adult_male", "adult_female",
             "juvenile_male", "juvenile_female", "sub_adult_male",
-            "sub_adult_female",
+            "sub_adult_female", "upload_id", "property_id"
         ]
 
 

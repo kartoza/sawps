@@ -5,7 +5,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
-import {DataGrid, GridColDef} from '@mui/x-data-grid';
+import {DataGrid, GridColDef, GridRowParams, GridActionsCellItem} from '@mui/x-data-grid';
+import EditIcon from '@mui/icons-material/Edit';
 import Loading from '../../../components/Loading';
 import axios from "axios";
 import {useAppSelector} from "../../../app/hooks";
@@ -30,6 +31,7 @@ const MenuProps = {
 };
 
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
+const EXCLUDED_COLUMNS = ['upload_id', 'property_id']
 
 const DataList = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -222,7 +224,7 @@ const DataList = () => {
     useEffect(() => {
         if (!isSuccess) return;
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
-            <>
+            <Box key={each}>
                 <Box className="data-table data-grid"
                      style={{
                          backgroundColor: (customColorWidth as any)[each]?.color,
@@ -236,10 +238,10 @@ const DataList = () => {
                         const cellData = item[each];
                         if (cellData !== undefined && cellData.length > 0) {
                             const cellKeys = Object.keys(cellData[0]);
-                            const generatedColumns = cellKeys.map((key) => ({
+                            const generatedColumns: GridColDef[] = cellKeys.filter((key) => !EXCLUDED_COLUMNS.includes(key)).map((key) => ({
                                 field: key,
                                 headerName: getTitle(key),
-                                flex: 1
+                                flex: 1,
                             }));
                             const filteredColumns = generatedColumns.filter((column) =>
                                 selectedColumns.length > 0 ?
@@ -249,6 +251,20 @@ const DataList = () => {
                                 if (!columns.includes(value)) {
                                     columns.push(value)
                                 }
+                            }
+                            if (each === 'Species_report' && userInfoData?.user_permissions.includes('Can edit species population data')) {
+                                filteredColumns.push({
+                                    field: '',
+                                    headerName: 'Action',
+                                    flex: 0.5,
+                                    type: 'actions',
+                                    getActions: (params: GridRowParams) => [
+                                        <GridActionsCellItem key={params.id} icon={<EditIcon />} onClick={() => {
+                                            let _speciesReportRow = params.row as any
+                                            window.location.replace(window.location.origin + `/upload-data/${_speciesReportRow.property_id}/?upload_id=${_speciesReportRow.upload_id}`)
+                                        }} label="Edit Data" title="Edit Data" />
+                                      ]
+                                })
                             }
                             const cellRows = cellData.map((row: any, rowIndex: any) => ({
                                 id: rowIndex,
@@ -268,11 +284,11 @@ const DataList = () => {
                         }
                     })
                 }
-            </>
+            </Box>
         )
         const activityDataGrid = isDataConsumer(userInfoData) && activityDataSet.length > 0 ?
           null : activityDataSet.map((each: any) =>
-            <>
+            <Box key={each}>
                 <Box className="data-table"
                      style={{
                          backgroundColor: (customColorWidth as any)[each]?.color,
@@ -282,7 +298,7 @@ const DataList = () => {
                     {getTitle(each)}
                 </Box>
                 {activityReportList.map((each: any) =>
-                    <>
+                    <Box key={each}>
                         <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
                             {getTitle(each)}
                         </Box>
@@ -322,9 +338,9 @@ const DataList = () => {
                                 );
                             }
                         })}
-                    </>
+                    </Box>
                 )}
-            </>);
+            </Box>);
         setActivityTable(activityDataGrid)
 
         const uniqueColumns = getUniqueColumn()
