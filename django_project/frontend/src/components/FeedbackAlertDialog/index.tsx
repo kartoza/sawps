@@ -23,7 +23,9 @@ interface FeedbackAlertDialogInterface {
     alertDialogTitle: string,
     alertDialogDescription: string,
     alertClosed?: () => void,
-    actionButtonText?: string
+    actionButtonText?: string,
+    otherActionButton?: string,
+    otherActionButtonOnClick?: () => void
 }
 
 const getIcon = (type: AlertType) => {
@@ -78,6 +80,10 @@ export default function FeedbackAlertDialog(props: FeedbackAlertDialogInterface)
                     </Grid>
                 </DialogContent>
                 <DialogActions>
+                    { props.otherActionButton && <Button variant='outlined' onClick={() => props.otherActionButtonOnClick ? props.otherActionButtonOnClick(): null }>
+                        {props.otherActionButton}
+                    </Button>
+                    }
                     <Button variant='contained' onClick={handleClose}>
                         {props.actionButtonText ? props.actionButtonText : `OK`}
                     </Button>

@@ -38,6 +38,7 @@ def upload_species_data(upload_session_id):
     upload_session.processed = False
     upload_session.success_notes = None
     upload_session.error_notes = None
+    upload_session.canceled = False
     if upload_session.success_file:
         try_delete_uploaded_file(upload_session.success_file)
         upload_session.success_file = None

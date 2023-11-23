@@ -892,6 +892,7 @@ class TestUploadSpeciesApiView(TestCase):
         upload_session.refresh_from_db()
         self.assertFalse(upload_session.success_file)
         self.assertFalse(upload_session.error_file)
+        self.assertFalse(upload_session.canceled)
 
     def test_overwrite_annual_population(self):
         """Test upload species multiple times to overwrite data."""
