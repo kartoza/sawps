@@ -40,7 +40,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
   const species = propertyData.length > 0 ? propertyData[0].common_name_varbatim : '';
 
   // Define the labels (category) dynamically from propertyData and sort them from highest to lowest
-  const labels = propertyData.map((data: any) => data.category).sort();
+  const labels = propertyData.map((data: any) => data.category);
   
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
@@ -109,6 +109,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
   }
 
   let data = null;
+  console.debug(labels)
 
   if (labels.length > 0 && datasets.length > 0) {
     data = {
@@ -116,6 +117,16 @@ const PropertyCountPerCategoryChart = (props: any) => {
       datasets: datasets,
     };
   } else return null;
+
+  const options = {
+        scales: {
+            y: {
+              ticks: {
+                  precision: 0
+              },
+            }
+        }
+    }
 
   return (
     <>
@@ -127,6 +138,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
             yLabel={'Count'}
             xLabel={xLabel}
             indexAxis={'x'}
+            options={options}
         />
       ) : (
         <Loading containerStyle={{minHeight: 160}}/>
