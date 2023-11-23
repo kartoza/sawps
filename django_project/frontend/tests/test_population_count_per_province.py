@@ -108,12 +108,25 @@ class SpeciesCountPerProvinceTest(APITestCase):
         self.province2 = Province.objects.create(name="Province2")
 
         # Create test data, including properties and owned species
-        self.property1 = PropertyFactory.create(name="Property 1", province=self.province1, organisation=self.organisation)
-        self.property2 = PropertyFactory.create(name="Property 2", province=self.province2, organisation=self.organisation)
+        self.property1 = PropertyFactory.create(
+            name="Property 1",
+            province=self.province1,
+            organisation=self.organisation
+        )
+        self.property2 = PropertyFactory.create(
+            name="Property 2",
+            province=self.province2,
+            organisation=self.organisation
+        )
+        self.property3 = PropertyFactory.create(
+            name="Property 3",
+            province=self.province2,
+            organisation=self.organisation
+        )
 
         AnnualPopulationF.create(
             year=2023,
-            property=self.property2,
+            property=self.property3,
             user=self.user,
             taxon=self.taxon,
             total=60,
@@ -140,6 +153,15 @@ class SpeciesCountPerProvinceTest(APITestCase):
             sub_adult_male=10,
             sub_adult_female=10,
             juvenile_total=10,
+        )
+        AnnualPopulationF.create(
+            year=2023,
+            property=self.property2,
+            user=self.user,
+            taxon=self.taxon,
+            total=10,
+            adult_male=5,
+            adult_female=5
         )
 
         AnnualPopulationF.create(
@@ -187,11 +209,13 @@ class SpeciesCountPerProvinceTest(APITestCase):
         # Perform assertions based on the expected results
         # We have two provinces with 3 years of data
         # For 2023, there are data for Province1 and Province2
+        # In 2023, Province 1 population is 60 coming from Property 1
+        # In 2023 Province 2 population is 70, coming from Property 1 (60) and Property 2 (10)
         self.assertEqual(
             result_data,
             [
+                {"year": 2023, "count": 70, "province": "Province2", "species": "Penthera leo"},
                 {"year": 2023, "count": 60, "province": "Province1", "species": "Penthera leo"},
-                {"year": 2023, "count": 60, "province": "Province2", "species": "Penthera leo"},
                 {"year": 2022, "count": 20, "province": "Province1", "species": "Penthera leo"},
                 {"year": 1960, "count": 30, "province": "Province1", "species": "Penthera leo"},
             ]
@@ -200,17 +224,20 @@ class SpeciesCountPerProvinceTest(APITestCase):
     def test_calculate_species_count_per_province_year_filter(self):
         data = {
             'species': "Penthera leo",
-            'start_year': 2022,
-            'end_year': 2022
+            'start_year': 2023,
+            'end_year': 2023
         }
         # self.client.force_login(self.user)
         response = self.client.get(self.url, data, **self.auth_headers)
         result_data = response.json()
 
         # Perform assertions based on the expected results
-        self.assertEqual(len(result_data), 1)  # We have two provinces with 3 years of data
+        self.assertEqual(len(result_data), 2)  # We have two provinces with population data
 
         self.assertEqual(
             result_data,
-            [{"year": 2022, "count": 20, "province": "Province1", "species": "Penthera leo"}],
+            [
+                {"year": 2023, "count": 70, "province": "Province2", "species": "Penthera leo"},
+                {"year": 2023, "count": 60, "province": "Province1", "species": "Penthera leo"},
+            ]
         )
