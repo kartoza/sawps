@@ -1,3 +1,16 @@
+---
+title: IDS SAWPS
+summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
+    - Jeremy Prior
+    - Ketan Bamniya
+date: 09-11-2023
+some_url: https://github.com/kartoza/sawps/
+copyright: Copyright 2023, SANBI
+contact: PROJECT_CONTACT
+license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+context_id: 6R7wPf6e2GkEvqNjzRBmxY
+---
+
 # Two-Factor Authentication Page Documentation
 
 The Two-Factor Authentication (2FA) Page is a critical security feature that adds an extra layer of protection to the user's account. With 2FA, the user will be required to enter an OTP (One-Time Password) code in addition to their regular login credentials. This documentation explains the 2FA page.

@@ -52,7 +52,6 @@ nav:
                           - Organisations: user/guide/organisations.md
                           - Working with the Explore Page: user/guide/explore.md
                           - Using the Data Upload Feature: user/guide/data-upload.md
-                          - Viewing Your Property/Properties: user/guide/view-properties.md
                   - Manual :
                           - user/manual/index.md
                           - Landing Page: user/manual/landing-page.md
@@ -93,9 +92,18 @@ nav:
                 - administrator/index.md
                 - Guide:
                         - administrator/guide/index.md
+                        - Accessing the Administration Site: administrator/guide/access-admin-site.md
+                        - Managing Organisations: administrator/guide/manage-organisations.md
+                        - Managing Users: administrator/guide/manage-users.md
+                        - Managing Taxa: administrator/guide/manage-taxa.md
+                        - Managing Uploaded Data: administrator/guide/manage-upload-data.md
+                        - Managing Lookup Tables: administrator/guide/manage-lookup-tables.md
                 - Manual:
                         - administrator/manual/index.md
                         - Django Administration: administrator/manual/django-admin.md
+                        - Django Tables: administrator/manual/django-table.md
+                        - Add Data in Django: administrator/manual/django-add-data.md
+                        - Edit Data in Django: administrator/manual/django-change-data.md
         - Developer:
                   - developer/index.md
                   - Guide:
@@ -139,4 +147,3 @@ nav:
                   - About: about/index.md
                   - License: about/license.md
                   - Contributing: about/contributing.md
-                  - Funders: about/funders.md

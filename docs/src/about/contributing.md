@@ -1,3 +1,16 @@
+---
+title: IDS SAWPS
+summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
+    - Tim Sutton
+    - Jeremy Prior
+date: 09-11-2023
+some_url: https://github.com/kartoza/sawps/
+copyright: Copyright 2023, SANBI
+contact: PROJECT_CONTACT
+license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+context_id: Ahq6M4WZNcZya3kwunfFn3
+---
+
 # Contributing to SANBI WPS
 
 First off, thanks for taking the time to contribute! 🎉 😘 ✨

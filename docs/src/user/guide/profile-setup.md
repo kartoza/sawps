@@ -1,3 +1,15 @@
+---
+title: IDS SAWPS
+summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
+    - Jeremy Prior
+date: 09-11-2023
+some_url: https://github.com/kartoza/sawps/
+copyright: Copyright 2023, SANBI
+contact: PROJECT_CONTACT
+license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+context_id: caEFNmhuhQJg73UXnFR92o
+---
+
 # Profile setup
 
 The documentation herein, describes how to customise your profile as needed and to adjust other profile related settings.
@@ -81,3 +93,31 @@ Once the `Add button` has been clicked, the popup will change to display a QR Im
 The `Cancel` button 1️⃣ will prevent the device from being removed (This is in case the user isn't sure or clicked the icon by accident). The `Delete` button 2️⃣ will remove the device from the platform meaning the user will no longer be able to login using that device.
 
 ![Delete Device 1](./img/2fa-delete-device-1.png)
+
+## Organisation settings
+
+In the `ORGANISATIONS` tab, you can apply for a new organisation or can switch your active organisation.
+
+### Joining a new organisation
+
+If you didn't apply to be in an organisation when you registered, you can still apply to be added to one or have an organisation created. Navigate to the `ORGANISATIONS` tab on the `Profile Configuration` page. Then click on the `+REQUEST ORGANISATION` button, this will cause a popup to appear.
+
+![Registering 10](./img/registering-10.png)
+
+In the pop up, you need to fill in the name of the organisation that you would like to be added to (or have created for you) and a message to the administrator with any additional information you think is necessary. Once you have filled in everything, click on the `SEND` button.
+
+![Registering 11](./img/registering-11.png)
+
+This will send your request to the admin team for verification.
+
+![Registering 12](./img/registering-12.png)
+
+### Switching organisations
+
+If you are part of multiple organisations, you can switch which organisation is your active one. To do so, navigate to 1️⃣ the profile dropdown menu in the navigation bar and then click on 2️⃣ the `My Profile` link to be redirected to your profile.
+
+![Switch Organisations 1](./img/switch-organisations-1.png)
+
+Once on your profile, navigate to 1️⃣ the organisations tab and then click on 2️⃣ the `SET ACTIVE` button next to whichever organisation you would like to choose as your active organisation (i.e. the organisation that you will upload species data to).
+
+![Switch Organisations 2](./img/switch-organisations-2.png)

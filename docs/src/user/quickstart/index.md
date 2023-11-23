@@ -1,3 +1,15 @@
+---
+title: IDS SAWPS
+summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
+    - Jeremy Prior
+date: 09-11-2023
+some_url: https://github.com/kartoza/sawps/
+copyright: Copyright 2023, SANBI
+contact: PROJECT_CONTACT
+license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+context_id: mZq4S9eVpc2hb5hS2cVcCW
+---
+
 # SANBI SAWPS Quickstart
 
 ## Accessing the Platform
@@ -30,7 +42,7 @@ This will redirect you to a profile configuration page.
 
 ![Registering 5](./img/registering-5.png)
 
-This step will require you to download and install a token generator, such as the Google Authenticator from the Google Play store. You can install the token generator on your preferred device (ii.e. cellphone, laptop, etc.)
+This step will require you to download and install a token generator, such as the Google Authenticator from the Google Play store. You can install the token generator on your preferred device (i.e. cellphone, laptop, etc.)
 
 ![Registering 6](./img/registering-6.png)
 

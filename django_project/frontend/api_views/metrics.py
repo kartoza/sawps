@@ -1,4 +1,4 @@
-﻿"""API Views related to metrics.
+"""API Views related to metrics.
 """
 import datetime
 from typing import List
