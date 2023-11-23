@@ -284,6 +284,8 @@ function FormWizard(props: FormWizardInterface) {
                         } else {
                             setFeedbackAlertDialog(AlertType.none)
                         }
+                    }} otherActionButton='Add another record' otherActionButtonOnClick={() => {
+                        window.location.replace(window.location.origin + `/upload-data/${props.propertyItem.id}/`)                        
                     }} />
             </Grid>
             <Grid item>
