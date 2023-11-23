@@ -29,6 +29,7 @@ from frontend.tasks import (
     start_plumber_process,
     generate_species_statistical_model
 )
+from species.models import Taxon
 
 
 def cancel_other_processing_tasks(task_id=None):
@@ -269,6 +270,15 @@ class StatisticalModelAdmin(admin.ModelAdmin):
     list_filter = ['taxon']
     actions = [restart_plumber_process]
     inlines = [StatisticalModelOutputInline]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "taxon":
+            taxon_ids = StatisticalModel.objects.filter(
+                taxon__isnull=False).values_list('taxon_id', flat=True)
+            kwargs["queryset"] = Taxon.objects.filter(
+                taxon_rank__name='Species'
+            ).exclude(id__in=taxon_ids)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
         if obj:

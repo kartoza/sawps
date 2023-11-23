@@ -2,13 +2,16 @@ import os
 from django.test import TestCase
 import mock
 import requests_mock
+from django.db.models import signals
 from collections import OrderedDict
-from species.factories import TaxonF
+from species.factories import TaxonF, TaxonRankFactory
 from frontend.models.statistical import (
     NATIONAL_TREND,
     PROVINCE_TREND,
     CACHED_OUTPUT_TYPES,
-    SpeciesModelOutput
+    SpeciesModelOutput,
+    StatisticalModel,
+    statistical_model_post_create
 )
 from frontend.utils.statistical_model import (
     write_plumber_file,
@@ -64,6 +67,8 @@ def mocked_process(*args, **kwargs):
 
 class TestStatisticalUtils(TestCase):
 
+    def setUp(self):
+        signals.post_save.disconnect(statistical_model_post_create, sender=StatisticalModel)
 
     def test_plumber_health_check(self):
         with requests_mock.Mocker() as m:
@@ -233,8 +238,21 @@ class TestStatisticalUtils(TestCase):
         self.assertTrue(output.is_outdated)
 
     def test_init_species_model_output(self):
-        taxon_a = TaxonF.create()
-        taxon_b = TaxonF.create()
+        species_rank = TaxonRankFactory.create(
+            name='Species'
+        )
+        other_rank = TaxonRankFactory.create(
+            name='Other'
+        )
+        taxon_a = TaxonF.create(
+            taxon_rank=species_rank
+        )
+        taxon_b = TaxonF.create(
+            taxon_rank=species_rank
+        )
+        taxon_c = TaxonF.create(
+            taxon_rank=other_rank
+        )
         non_generic_model = StatisticalModelF.create(
             taxon=taxon_a
         )

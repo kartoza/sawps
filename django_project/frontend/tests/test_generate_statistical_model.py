@@ -3,15 +3,21 @@ import mock
 import datetime
 import csv
 import requests_mock
-import json
+from django.db.models import signals
 from django.test import TestCase
-from species.factories import TaxonF
+from species.factories import TaxonF, TaxonRankFactory
+from property.models import (
+    Property,
+    property_post_save
+)
 from population_data.factories import AnnualPopulationF
 from frontend.models.base_task import DONE, PROCESSING, ERROR, PENDING
 from frontend.models.statistical import (
     NATIONAL_TREND,
     SpeciesModelOutput,
-    CACHED_OUTPUT_TYPES
+    CACHED_OUTPUT_TYPES,
+    StatisticalModel,
+    statistical_model_post_create
 )
 from frontend.tests.model_factories import (
     StatisticalModelF,
@@ -58,6 +64,10 @@ def mocked_raise_exception_func(*args, **kwargs):
 
 
 class TestGenerateStatisticalModel(TestCase):
+
+    def setUp(self):
+        signals.post_save.disconnect(statistical_model_post_create, sender=StatisticalModel)
+        signals.post_save.disconnect(property_post_save, sender=Property)
 
     def test_export_annual_population_data(self):
         taxon = TaxonF.create()
@@ -176,8 +186,15 @@ class TestGenerateStatisticalModel(TestCase):
     @mock.patch('frontend.tasks.start_plumber.'
                 'start_plumber_process.apply_async')
     def test_check_affected_model_output(self, mocked_process):
-        taxon_a = TaxonF.create()
-        taxon_b = TaxonF.create()
+        species_rank = TaxonRankFactory.create(
+            name='Species'
+        )
+        taxon_a = TaxonF.create(
+            taxon_rank=species_rank
+        )
+        taxon_b = TaxonF.create(
+            taxon_rank=species_rank
+        )
         non_generic_model = StatisticalModelF.create(
             taxon=taxon_a
         )
