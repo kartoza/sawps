@@ -33,6 +33,12 @@ import './index.scss';
 const FETCH_PROPERTY_LIST_URL = '/api/property/list/'
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
+const getPropertyText = (property: PropertyInterface) => {
+    return `${property.name} (${property.short_code})`
+}
+
+
+
 function Upload() {
     const dispatch = useAppDispatch()
     const [loading, setLoading] = useState(false)
@@ -129,13 +135,13 @@ function Upload() {
                                                     if (selected.length === 0 || selected === '0') {
                                                         return <span className='SelectPlaceHolder'>Select Property</span>
                                                     }
-                                        
-                                                    return selected
+                                                    let _selectedProperty = propertyList.find((val) => val.id === parseInt(selected))
+                                                    return _selectedProperty ? getPropertyText(_selectedProperty) : selected
                                                 }}
                                             >
                                                 { propertyList.map((property: PropertyInterface) => {
                                                     return (
-                                                        <MenuItem key={property.id} value={property.id}>{property.name}</MenuItem>
+                                                        <MenuItem key={property.id} value={property.id}>{getPropertyText(property)}</MenuItem>
                                                     )
                                                 })}
                                             </Select>

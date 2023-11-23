@@ -9,10 +9,12 @@ import PropertyInterface from '../../models/Property';
 import PropertySummaryTable from '../../components/PropertySummaryTable';
 import MapPreview from '../../components/MapPreview';
 import ConfirmationAlertDialog from '../../components/ConfirmationAlertDialog';
+import { UploadSpeciesDetailInterface } from '../../models/Upload';
 
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 const FETCH_FORM_METADATA_LIST_URL = '/api/population/metadata/list/'
 const FETCH_FORM_DRAFT_LIST = '/api/upload/population/draft/'
+const FETCH_EXISTING_POPULATION_DATA = '/api/upload/population/fetch/'
 
 
 function OnlineForm() {
@@ -22,10 +24,12 @@ function OnlineForm() {
     const [draftUUID, setDraftUUID] = useState<string>('')
     const [draftUUIDToConfirm, setDraftUUIDToConfirm] = useState<string>('')
     const [confirmationOpen, setConfirmationOpen] = useState(false)
+    const [initialData, setInitialData] = useState<UploadSpeciesDetailInterface>(null)
 
     useEffect(() => {
         let fetch_apis = []
         let propertyId = (window as any).property_id
+        let uploadId = parseInt((window as any).upload_id)
         setLoading(true)
         fetch_apis.push(
             axios.get(`${FETCH_PROPERTY_DETAIL_URL}${propertyId}/`)
@@ -33,17 +37,28 @@ function OnlineForm() {
         fetch_apis.push(
             axios.get(`${FETCH_FORM_METADATA_LIST_URL}`)
         )
-        fetch_apis.push(
-            axios.get(`${FETCH_FORM_DRAFT_LIST}${propertyId}/`)
-        )
+        if (uploadId > 0) {
+            fetch_apis.push(
+                axios.get(`${FETCH_EXISTING_POPULATION_DATA}${uploadId}/`)
+            )
+        } else {
+            fetch_apis.push(
+                axios.get(`${FETCH_FORM_DRAFT_LIST}${propertyId}/`)
+            )
+        }
         Promise.all(fetch_apis).then((responses) => {
             setLoading(false)
             setProperty(responses[0].data as PropertyInterface)
             setFormMetadata(responses[1].data as FormMetadata)
-            let _draftList = responses[2].data as string[]
-            if (_draftList && _draftList.length) {
-                setDraftUUIDToConfirm(_draftList[0])
-                setConfirmationOpen(true)
+            if (uploadId) {
+                console.log('data ', responses[2].data)
+                setInitialData(responses[2].data as UploadSpeciesDetailInterface)
+            } else {
+                let _draftList = responses[2].data as string[]
+                if (_draftList && _draftList.length) {
+                    setDraftUUIDToConfirm(_draftList[0])
+                    setConfirmationOpen(true)
+                }
             }
           }).catch(error => {
             setLoading(false)
@@ -96,7 +111,7 @@ function OnlineForm() {
                     <Grid item flex={1}>
                         <Grid container className="Content" flexDirection={'column'}>
                             <Grid item className='FlexContainerFillHeight'>
-                                {loading ? <Skeleton sx={{height: '100%'}} /> : <FormWizard propertyItem={property} metadata={formMetadata} draftUUID={draftUUID} /> }
+                                {loading ? <Skeleton sx={{height: '100%'}} /> : <FormWizard propertyItem={property} metadata={formMetadata} draftUUID={draftUUID} initialData={initialData} /> }
                             </Grid>
                         </Grid>
                     </Grid>
