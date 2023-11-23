@@ -288,14 +288,14 @@ export default function Map(props: MapInterface) {
   /* End of Map Draw (Digitise) Mode  */
 
   /* Map Legend functions */
-  const updateMapLegends = (currentZoom: number, species: string, provinceCountData: PopulationCountLegend[], propertiesCountData: PopulationCountLegend[]) => {
+  const updateMapLegends = (currentZoom: number, species: string, year: number, provinceCountData: PopulationCountLegend[], propertiesCountData: PopulationCountLegend[]) => {
     if (!mapLegendControlRef.current) return;
     let _legendObj: LegendControl<IControl> = mapLegendControlRef.current
     if (species) {
       if (currentZoom >= MIN_PROVINCE_ZOOM_LEVEL && currentZoom <= MAX_PROVINCE_ZOOM_LEVEL && provinceCountData) {
-        _legendObj.onUpdateLegends(currentZoom, species, provinceCountData)
+        _legendObj.onUpdateLegends(currentZoom, species, year, provinceCountData)
       } else if (currentZoom > MAX_PROVINCE_ZOOM_LEVEL && propertiesCountData) {
-        _legendObj.onUpdateLegends(currentZoom, species, propertiesCountData)
+        _legendObj.onUpdateLegends(currentZoom, species, year, propertiesCountData)
       } else {
         _legendObj.onClearLegends()
       }
@@ -400,7 +400,7 @@ export default function Map(props: MapInterface) {
     if (mapLegendControlRef.current) {
       let _legendObj: LegendControl<IControl> = mapLegendControlRef.current
       if (_legendObj.getCurrentZoom() === zoom) return;
-      updateMapLegends(zoom, selectedSpecies, provinceCounts, propertiesCounts)
+      updateMapLegends(zoom, selectedSpecies, endYear, provinceCounts, propertiesCounts)
     }
   }, [zoom])
 
@@ -671,13 +671,13 @@ export default function Map(props: MapInterface) {
       if (dynamicMapSession) {
         _queryParams = `session=${dynamicMapSession}`
       }
-      fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies)
+      fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies, endYear)
     }
   }, [props.isDataUpload, dynamicMapSession, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
   /* Use debounce+UseMemo to avoid updating filter (materialized view) frequently when filter is changed */
   /* useMemo is used to avoid the debounce function is recreated during each render (unless MapTheme is changed) */
-  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, bodyData: any, speciesFilters: string) => {
+  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, bodyData: any, speciesFilters: string, year: number) => {
     if (axiosSource.current) axiosSource.current.cancel()
     let cancelPostToken = newCancelToken()
     axios.post(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`, bodyData, {cancelToken: cancelPostToken }).then((response) => {
@@ -689,7 +689,7 @@ export default function Map(props: MapInterface) {
           let _zoom = Math.trunc(map.current.getZoom())
           dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
           dispatch(setDynamicMapSession(_session))
-          updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
+          updateMapLegends(_zoom, speciesFilters, year, _provinceCounts, _propertiesCounts)
         } else if (map.current) {
           let _zoom = Math.trunc(map.current.getZoom())
           let _provinceCounts:PopulationCountLegend[] = []
@@ -709,7 +709,7 @@ export default function Map(props: MapInterface) {
               'date': Date.now()
             }))
           }
-          updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
+          updateMapLegends(_zoom, speciesFilters, year, _provinceCounts, _propertiesCounts)
         } else {
           // initial map state will not have DynamicMapSession, hence map initialization depends on filters/mapTheme changed
           dispatch(setDynamicMapSession(_session))
