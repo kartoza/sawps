@@ -439,7 +439,7 @@ export default function Map(props: MapInterface) {
       // add exporter dialog
       mapNavControl.current = new CustomNavControl({
         showZoom: true,
-        visualizePitch: true
+        showCompass: false
       }, {
         initialTheme: mapTheme,
         onThemeSwitched: () => { dispatch(toggleMapTheme()) }
