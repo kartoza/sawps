@@ -6,6 +6,8 @@ import Loading from "../../../components/Loading";
 import "./index.scss";
 import ChartContainer from "../../../components/ChartContainer";
 import axios from "axios";
+import {useAppSelector} from "../../../app/hooks";
+import {RootState} from "../../../app/store";
 
 
 Chart.register(CategoryScale);
@@ -14,17 +16,14 @@ const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 const AreaAvailableLineChart = (props: any) => {
     const {
-        selectedSpecies,
         propertyId,
         startYear,
         endYear,
-        species_name
+        national
     } = props
+    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const [loading, setLoading] = useState(false)
     const [areaData, setAreaData] = useState([])
-
-    // Extract the species name
-    const speciesName = species_name ? species_name : '';
 
     const AreaDataValue = {
         labels: areaData.map((item: any) => item?.year),
@@ -52,7 +51,12 @@ const AreaAvailableLineChart = (props: any) => {
 
     const fetchAreaAvailableLineData = () => {
         setLoading(true)
-        axios.get(`${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
+        let url = `${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}`
+        if (!national) {
+            url = `${url}&property=${propertyId}`
+        }
+
+        axios.get(url).then((response) => {
             setLoading(false)
             if (response.data) {
                 if (response.data.length > 0) {
@@ -157,8 +161,8 @@ const AreaAvailableLineChart = (props: any) => {
     return (
         <>
             {!loading ? (
-            <ChartContainer title={`Total area vs area available to ${speciesName}`}>
-                <div style={{ width: '100%', height: 260}}>
+            <ChartContainer title={`Total area vs area available to ${selectedSpecies}`}>
+                <div style={{ width: '100%', height: 460}}>
                     <Line
                         data={AreaDataValue}
                         options={AreaOptions}

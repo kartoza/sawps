@@ -9,7 +9,6 @@ import './index.scss';
 import NationalTrendSection from "./NationalTrendSection";
 import ProvincialTrendSection from "./ProvincialTrendSection";
 import PropertyTrendSection from "./PropertyTrendSection";
-import AreaAvailableLineChart from "../Metrics/AreaAvailableLineChart";
 
 const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/download/'
 
@@ -108,17 +107,6 @@ const Trends = () => {
             {selectedSpecies && rerender && (
               <Grid item xs={12} md={12} className="SectionItem" key={'PropertySectionItem'}>
                 <PropertyTrendSection species={selectedSpecies} property={propertyId} />
-              </Grid>
-            )}
-            {selectedSpecies && rerender && (
-              <Grid item xs={12} md={12} className="SectionItem" key={'SectionItem'}>
-                    <AreaAvailableLineChart
-                        selectedSpecies={selectedSpecies}
-                        propertyId={propertyId}
-                        startYear={1960}
-                        endYear={new Date().getFullYear()}
-                        species_name={selectedSpecies}
-                    />
               </Grid>
             )}
           </Grid>

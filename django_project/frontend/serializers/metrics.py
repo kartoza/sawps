@@ -547,7 +547,7 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
         ).annotate(
             area_total=Sum("property__property_size_ha"),
             area_available=Sum("area_available_to_species")
-        )
+        ).order_by('year')
 
         return populations
 
