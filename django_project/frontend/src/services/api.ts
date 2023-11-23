@@ -70,12 +70,16 @@ export interface PropertyType {
   colour: string
 }
 
+export interface Province {
+  id: number
+  name: string
+}
 
 // Create an API slice using RTK Query's createApi.
 // This defines a set of endpoints related to user operations.
 export const userApi = createApi({
     baseQuery: baseQuery,
-    tagTypes: ['User', 'Organisation', 'Activity', 'Property', 'Species', 'Taxon', 'PropertyType'],
+    tagTypes: ['User', 'Organisation', 'Activity', 'Property', 'Species', 'Taxon', 'PropertyType', 'Province'],
     endpoints: (build) => ({
         getUserInfo: build.query<UserInfo, void>({
             query: () => 'api/user-info/',
@@ -133,6 +137,13 @@ export const userApi = createApi({
             },
             providesTags: ['PropertyType']
         }),
+        getProvince: build.query<Province[], void>({
+            query: () => 'api/province/',
+            transformResponse: (response: Province[]) => {
+                return response;
+            },
+            providesTags: ['Province']
+        }),
     })
 })
 
@@ -145,7 +156,8 @@ export const {
     useGetPropertyQuery,
     useGetSpeciesQuery,
     useGetTaxonDetailQuery,
-    useGetPropertyTypeQuery
+    useGetPropertyTypeQuery,
+    useGetProvinceQuery
 } = userApi
 
 

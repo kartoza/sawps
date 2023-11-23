@@ -181,3 +181,9 @@ class PropertySearchSerializer(PropertyDetailSerializer):
         fields = [
             'id', 'type', 'name', 'bbox'
         ]
+
+
+class ProvinceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = '__all__'

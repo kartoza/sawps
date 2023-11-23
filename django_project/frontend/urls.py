@@ -67,7 +67,8 @@ from frontend.api_views.property import (
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
     CheckPropertyNameIsAvailable,
-    ListPropertyTypeAPIView
+    ListPropertyTypeAPIView,
+    ListProvince
 )
 from frontend.api_views.statistical import (
     DownloadTrendDataAsJson
@@ -192,6 +193,11 @@ urlpatterns = [
         r'^api/property/types/?$',
         ListPropertyTypeAPIView.as_view(),
         name='property-types'
+    ),
+    re_path(
+        r'^api/province/?$',
+        ListProvince.as_view(),
+        name='province-list'
     ),
     re_path(
         r'^api/property/boundaries/update/?$',

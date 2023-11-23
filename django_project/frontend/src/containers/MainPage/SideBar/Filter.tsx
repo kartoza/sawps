@@ -25,7 +25,9 @@ import {
     setSelectedInfoList,
     setSpatialFilterValues,
     setStartYear,
-    toggleSpecies
+    toggleSpecies,
+    setSelectedProvinceId,
+    setSelectedProvinceCount
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import {MapEvents} from '../../../models/Map';
@@ -39,7 +41,8 @@ import {
     useGetOrganisationQuery,
     useGetPropertyQuery,
     useGetSpeciesQuery,
-    useGetUserInfoQuery
+    useGetUserInfoQuery,
+    useGetProvinceQuery
 } from "../../../services/api";
 import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
@@ -58,6 +61,7 @@ function Filter(props: any) {
     const [loading, setLoading] = useState(false)
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [selectedProperty, setSelectedProperty] = useState([]);
+    const [selectedProvince, setSelectedProvince] = useState([]);
     const [selectedActivity, setSelectedActivity] = useState<number[]>([]);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
@@ -92,6 +96,11 @@ function Filter(props: any) {
         isLoading: isSpeciesLoading,
         isSuccess: isSpeciesSuccess
     } = useGetSpeciesQuery(selectedOrganisation.join(','))
+    const {
+        data: provinceList,
+        isLoading: isProvinceListLoading,
+        isSuccess: isProvinceListSuccess
+    } = useGetProvinceQuery()
 
     type Information = {
         id?: string,
@@ -285,6 +294,17 @@ function Filter(props: any) {
             dispatch(setPropertyCount(selectedProperty.length));
         }
     }, [selectedProperty])
+
+    useEffect(() => {
+        if (provinceList) {
+            dispatch(setSelectedProvinceId(selectedProvince.join(',')));
+            // const selectedPropertyNames = propertyList.filter(
+            //   propertyObj => selectedProperty.includes(propertyObj.id)
+            // ).map(propertyObj => propertyObj.name)
+            // dispatch(selectedPropertyName(selectedPropertyNames.length > 0 ? selectedPropertyNames.join(', ') : ''));
+            // dispatch(setSelectedProvinceCount(selectedProvince.length));
+        }
+    }, [selectedProvince])
 
     useEffect(() => {
         if (organisationList) {
@@ -518,6 +538,36 @@ function Filter(props: any) {
                                       // Call zoomToCombinedBoundingBox with the updated list of selected properties
                                       zoomToCombinedBoundingBox(newValues);
                                     }
+                                }}
+                              />
+                            )}
+                        </List>
+                    </Box>
+                  </Tooltip>
+                }
+
+                {
+                    tab === 'trends' &&
+                  <Tooltip
+                    title={""}
+                    placement="top-start"
+                  >
+                    <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/Property.svg" alt='Property image' />
+                            <Typography color='#75B37A' fontSize='medium'>Province</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isProvinceListLoading ? (
+                                <Loading />
+                            ) : (
+                              <AutoCompleteCheckbox
+                                options={provinceList}
+                                selectedOption={selectedProvince}
+                                singleTerm={'Province'}
+                                pluralTerms={'Provinces'}
+                                setSelectedOption={(newValues) => {
+                                    setSelectedProvince(newValues)
                                 }}
                               />
                             )}

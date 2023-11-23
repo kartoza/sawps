@@ -32,7 +32,8 @@ from frontend.serializers.property import (
     PropertySerializer,
     PropertyTypeSerializer,
     PropertySearchSerializer,
-    PropertyTypeColourSerializer
+    PropertyTypeColourSerializer,
+    ProvinceSerializer
 )
 from frontend.serializers.stakeholder import OrganisationSerializer
 from frontend.static_mapping import DATA_CONTRIBUTORS, SUPER_USER
@@ -434,3 +435,16 @@ class ListPropertyTypeAPIView(APIView):
             properties, many=True
         ).data
         return Response(properties)
+
+
+class ListProvince(APIView):
+    """
+    API to list Property Type
+    """
+
+    def get(self, request):
+        provinces = Province.objects.order_by('name')
+        provinces = ProvinceSerializer(
+            provinces, many=True
+        ).data
+        return Response(provinces)
