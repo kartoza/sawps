@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from .base_view import RegisteredOrganisationBaseView
 from property.models import Property
 from stakeholder.models import OrganisationUser
+from population_data.models import AnnualPopulation
 
 
 class OnlineFormView(RegisteredOrganisationBaseView):
@@ -27,4 +28,14 @@ class OnlineFormView(RegisteredOrganisationBaseView):
             if not valid:
                 raise PermissionDenied()
         ctx['property_id'] = property_id
+        # check if upload is belong to property
+        ctx['upload_id'] = 0
+        upload_id = self.request.GET.get('upload_id', 0)
+        if upload_id:
+            valid_upload = AnnualPopulation.objects.filter(
+                id=upload_id,
+                property_id=property_id
+            ).first()
+            if valid_upload:
+                ctx['upload_id'] = valid_upload.id
         return ctx
