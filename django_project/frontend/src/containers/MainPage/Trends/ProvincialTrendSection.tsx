@@ -6,9 +6,11 @@ import {GrowthDataItem} from './GrowthChart';
 import GroupedGrowthChart from './GroupedGrowthChart';
 import './index.scss';
 import Loading from '../../../components/Loading';
+import {setSelectedProvinceCount} from "../../../reducers/SpeciesFilter";
 
 interface ProvincialTrendSectionInterface {
     species: string;
+    province: string[]
 }
 
 interface ProvincialPopulationTrendDict {
@@ -22,6 +24,8 @@ const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/'
 
 
 const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
+    const [allPopulationTrendData, setAllPopulationTrendData] = useState<ProvincialPopulationTrendDict>({})
+    const [allPopulationGrowthData, setAllPopulationGrowthData] = useState<ProvincialPopulationGrowthDict>({})
     const [populationTrendData, setPopulationTrendData] = useState<ProvincialPopulationTrendDict>({})
     const [populationGrowthData, setPopulatioGrowthData] = useState<ProvincialPopulationGrowthDict>({})
     const [loadingTrendData, setLoadingTrendData] = useState(false)
@@ -49,6 +53,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                         _trendData[_province] = [_item]
                     }
                 }
+                setAllPopulationTrendData({..._trendData})
                 setPopulationTrendData({..._trendData})
             }
         }).catch((error) => {
@@ -81,6 +86,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                         _data[_province] = [_item]
                     }
                 }
+                setAllPopulationGrowthData({..._data})
                 setPopulatioGrowthData({..._data})
             }
         }).catch((error) => {
@@ -93,6 +99,15 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
         fetchProvincialTrendData(props.species)
         fetchProvincialGrowthData(props.species)
     }, [props.species])
+
+    useEffect(() => {
+        setPopulatioGrowthData(
+          Object.fromEntries(Object.entries(allPopulationGrowthData).filter(([key]) => props.province.includes(key)))
+        )
+        setPopulationTrendData(
+          Object.fromEntries(Object.entries(allPopulationTrendData).filter(([key]) => props.province.includes(key)))
+        )
+    }, [props.province])
 
     return (
         <Box className={'SectionContainer'}>

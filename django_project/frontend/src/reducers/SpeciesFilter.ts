@@ -19,7 +19,7 @@ export interface SpeciesFilterInterface {
   propertyCount:number;
   organisationCount:number;
   activityCount:number;
-  selectedProvinceId: string,
+  selectedProvinceName: string,
   selectedProvinceCount: number,
 }
 
@@ -41,7 +41,7 @@ const initialState: SpeciesFilterInterface = {
   propertyCount: 0,
   organisationCount: 0,
   activityCount: 0,
-  selectedProvinceId: "",
+  selectedProvinceName: "",
   selectedProvinceCount: 0,
 };
 
@@ -126,8 +126,8 @@ export const SpeciesFilterSlice = createSlice({
     setSelectedProvinceCount: (state, action: PayloadAction<number>) => {
       state.selectedProvinceCount = action.payload;
     },
-    setSelectedProvinceId: (state, action: PayloadAction<string>) => {
-      state.selectedProvinceId = action.payload;
+    setSelectedProvinceName: (state, action: PayloadAction<string>) => {
+      state.selectedProvinceName = action.payload;
     },
   },
 });
@@ -151,7 +151,7 @@ export const {
   setOrganisationCount,
   setActivityCount,
   setSelectedProvinceCount,
-  setSelectedProvinceId
+  setSelectedProvinceName
 } = SpeciesFilterSlice.actions;
 
 export default SpeciesFilterSlice.reducer;

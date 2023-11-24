@@ -16,7 +16,8 @@ interface PropertyTrendDict {
 }
 
 const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
-    const [populationTrendData, setPopulationTrendData] = useState<PropertyTrendDict>({})
+    const [allPopulationTrendData, setAllPopulationTrendData] = useState<PropertyTrendDict>({})
+    // const [populationTrendData, setPopulationTrendData] = useState<PropertyTrendDict>({})
     const [loadingTrendData, setLoadingTrendData] = useState(false)
 
     const fetchPropertyTrendData = (species: string, property: string) => {
@@ -46,7 +47,7 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
                         _trendData[_property] = [_item]
                     }
                 }
-                setPopulationTrendData({..._trendData})
+                setAllPopulationTrendData({..._trendData})
             }
         }).catch((error) => {
             setLoadingTrendData(false)
@@ -71,10 +72,10 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
                         <Grid item>
                             {!loadingTrendData ? 
                             <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
-                                {Object.keys(populationTrendData).map((property, index) => {
+                                {Object.keys(allPopulationTrendData).map((property, index) => {
                                     return (
                                         <Grid item xs={3} key={index}>
-                                            <PopulationTrendChart chartId={`property-population-trend-${property}`} chartTitle={`${property}`} data={populationTrendData[property]} showRawPopEst={true} />
+                                            <PopulationTrendChart chartId={`property-population-trend-${property}`} chartTitle={`${property}`} data={allPopulationTrendData[property]} showRawPopEst={true} />
                                         </Grid>
                                     )
                                 })}

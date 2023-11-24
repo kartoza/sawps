@@ -26,7 +26,7 @@ import {
     setSpatialFilterValues,
     setStartYear,
     toggleSpecies,
-    setSelectedProvinceId,
+    setSelectedProvinceName,
     setSelectedProvinceCount
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
@@ -37,6 +37,7 @@ import {
     Activity,
     Organisation,
     Property,
+    Province,
     useGetActivityQuery,
     useGetOrganisationQuery,
     useGetPropertyQuery,
@@ -73,6 +74,7 @@ function Filter(props: any) {
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const [shownPropertyOptions, setShownPropertyOptions] = useState([])
+    const [provinceOptions, setProvinceOptions] = useState([])
     const isStartYearValid = localStartYear >= yearRangeStart && localStartYear <= yearRangeEnd
     const isEndYearValid = localEndYear >= yearRangeStart && localEndYear <= yearRangeEnd
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
@@ -153,12 +155,24 @@ function Filter(props: any) {
         }
     }, [organisationList]);
 
+    // Select all province by default
+    useEffect(() => {
+        if (provinceList) {
+            setProvinceOptions(provinceList.map((province: Province) => {
+                return {
+                    id: province.name,
+                    name: province.name
+                }
+            }))
+            setSelectedProvince(provinceList.map((province: Province) => province.name))
+        }
+    }, [provinceList]);
 
     useEffect(() => {
         if (propertyList) {
-            if (selectedOrganisation.length === 0) {
+            if (selectedOrganisation.length === 0 && selectedProvince.length === 0) {
                 setShownPropertyOptions([])
-                setSelectedProperty([])
+                // setSelectedProperty([])
             } else {
                 setShownPropertyOptions(propertyList.map(property => {
                     return {
@@ -166,7 +180,7 @@ function Filter(props: any) {
                         name: `${property.name} (${property.short_code})`
                     }
                 }))
-                setSelectedProperty(propertyList.map(property => property.id))
+                // setSelectedProperty(propertyList.map(property => property.id))
             }
         }
     }, [propertyList])
@@ -195,6 +209,11 @@ function Filter(props: any) {
 
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
+        if (pathname !== 'trends') {
+            setSelectedProvince([])
+        } else {
+            setSelectedProvince(provinceOptions.map((province: Province) => province.name))
+        }
         setTab(pathname)
     }, [window.location.pathname])
 
@@ -296,13 +315,35 @@ function Filter(props: any) {
     }, [selectedProperty])
 
     useEffect(() => {
+       setSelectedProperty(shownPropertyOptions.map(property => property.id))
+    }, [shownPropertyOptions]);
+
+    useEffect(() => {
         if (provinceList) {
-            dispatch(setSelectedProvinceId(selectedProvince.join(',')));
-            // const selectedPropertyNames = propertyList.filter(
-            //   propertyObj => selectedProperty.includes(propertyObj.id)
-            // ).map(propertyObj => propertyObj.name)
-            // dispatch(selectedPropertyName(selectedPropertyNames.length > 0 ? selectedPropertyNames.join(', ') : ''));
-            // dispatch(setSelectedProvinceCount(selectedProvince.length));
+            dispatch(setSelectedProvinceName(selectedProvince.join(',')));
+
+            if (propertyList) {
+                if (selectedOrganisation.length === 0 && selectedProvince.length === 0) {
+                    setShownPropertyOptions([])
+                } else {
+                    console.debug(shownPropertyOptions.length)
+                    let newPropertyOptions = propertyList;
+                    if (tab === 'trends') {
+                        newPropertyOptions = newPropertyOptions.filter(property =>
+                            selectedProvince.includes(property.province)
+                        )
+                    }
+                    // @ts-ignore
+                    newPropertyOptions = newPropertyOptions.map(property => {
+                        return {
+                            id: property.id,
+                            name: `${property.name} (${property.short_code})`
+                        }
+                    })
+
+                    setShownPropertyOptions(newPropertyOptions)
+                }
+            }
         }
     }, [selectedProvince])
 
@@ -510,6 +551,37 @@ function Filter(props: any) {
                         </List>
                     </Box>
                 }
+
+                {
+                    tab === 'trends' &&
+                  <Tooltip
+                    title={""}
+                    placement="top-start"
+                  >
+                    <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/Property.svg" alt='Property image' />
+                            <Typography color='#75B37A' fontSize='medium'>Province</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isProvinceListLoading ? (
+                                <Loading />
+                            ) : (
+                              <AutoCompleteCheckbox
+                                options={provinceOptions}
+                                selectedOption={selectedProvince}
+                                singleTerm={'Province'}
+                                pluralTerms={'Provinces'}
+                                setSelectedOption={(newValues) => {
+                                    setSelectedProvince(newValues)
+                                }}
+                              />
+                            )}
+                        </List>
+                    </Box>
+                  </Tooltip>
+                }
+
                 {
                     allowPropertiesSelection &&
                   <Tooltip
@@ -538,36 +610,6 @@ function Filter(props: any) {
                                       // Call zoomToCombinedBoundingBox with the updated list of selected properties
                                       zoomToCombinedBoundingBox(newValues);
                                     }
-                                }}
-                              />
-                            )}
-                        </List>
-                    </Box>
-                  </Tooltip>
-                }
-
-                {
-                    tab === 'trends' &&
-                  <Tooltip
-                    title={""}
-                    placement="top-start"
-                  >
-                    <Box>
-                        <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/Property.svg" alt='Property image' />
-                            <Typography color='#75B37A' fontSize='medium'>Province</Typography>
-                        </Box>
-                        <List className='ListItem' component="nav" aria-label="">
-                            {loading || isProvinceListLoading ? (
-                                <Loading />
-                            ) : (
-                              <AutoCompleteCheckbox
-                                options={provinceList}
-                                selectedOption={selectedProvince}
-                                singleTerm={'Province'}
-                                pluralTerms={'Provinces'}
-                                setSelectedOption={(newValues) => {
-                                    setSelectedProvince(newValues)
                                 }}
                               />
                             )}

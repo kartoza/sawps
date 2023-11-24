@@ -269,6 +269,7 @@ class StatisticalModelAdmin(admin.ModelAdmin):
     list_filter = ['taxon']
     actions = [restart_plumber_process]
     inlines = [StatisticalModelOutputInline]
+    autocomplete_fields = ['taxon']
 
     def get_readonly_fields(self, request, obj=None):
         if obj:

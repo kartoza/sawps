@@ -36,6 +36,10 @@ class SpeciesNationalTrend(APIView):
             status=DONE
         ).first()
         if model_output:
+            if model_output.output_file:
+                content = model_output.output_file.read().decode('utf-8')
+                content = json.loads(content)
+                return content[output_type]
             cache_key = model_output.get_cache_key(output_type)
             cached_data = cache.get(cache_key)
             if cached_data:
@@ -76,6 +80,8 @@ class SpeciesTrend(SpeciesNationalTrend):
 
     def get_properties_names(self):
         filter_property = self.request.data.get('property', None)
+        if not filter_property:
+            return []
         property_id_list = ast.literal_eval('(' + filter_property + ',)')
         return Property.objects.filter(
             id__in=property_id_list
@@ -125,6 +131,7 @@ class SpeciesTrend(SpeciesNationalTrend):
         trends = []
         with model_output.output_file.open('r') as json_file:
             json_dict = json.load(json_file)
+            print(PROPERTY_TREND in json_dict)
             if PROPERTY_TREND in json_dict:
                 trends = json_dict[PROPERTY_TREND]
         return Response(
