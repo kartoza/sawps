@@ -117,7 +117,9 @@ const GrowthChart = (props: GrowthChartInterface) => {
                 data: _dataInCategory.map((item) => item.percentage),
                 counts: _dataInCategory.map((item) => item.count),
                 backgroundColor: _color,
-                stack: _category
+                stack: _category,
+                categoryPercentage: 0.9,
+                barPercentage: 0.9
             })
         }
         setChartData({
@@ -132,7 +134,7 @@ const GrowthChart = (props: GrowthChartInterface) => {
         maintainAspectRatio: false,
         scales: {
             y: {
-              grace: '5%',
+              grace: '20%',
               display: true,
               stacked: false,
               title: {
@@ -165,6 +167,10 @@ const GrowthChart = (props: GrowthChartInterface) => {
                 font: {
                     size: 12,
                 },
+                padding: {
+                    top: 0,
+                    bottom: 0
+                },
                 formatter: function(value: any, context: any) {
                     if (context.dataset.counts && context.dataset.counts[context.dataIndex])
                         return `n=${context.dataset.counts[context.dataIndex]}`;
@@ -173,7 +179,7 @@ const GrowthChart = (props: GrowthChartInterface) => {
             },
             legend: {
                 display: true,
-                position: 'right' as 'right',
+                position: 'bottom',
                 labels: {
                     boxWidth: 20,
                     boxHeight: 13,

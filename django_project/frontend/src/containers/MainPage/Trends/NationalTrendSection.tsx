@@ -81,7 +81,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                 </Grid>
                 <Grid item>
                     <Grid container flexDirection={'row'} spacing={1}>
-                        <Grid item md={4}>
+                        <Grid item sm={12} lg={4}>
                             <Grid container flexDirection={'column'}>
                                 <Grid item>
                                     {!loadingTrendData ?
@@ -93,7 +93,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item md={8}>
+                        <Grid item sm={12} lg={8}>
                             {!loadingGrowthData ?
                                 <Grid container flexDirection={'column'} spacing={1}>
                                     <Grid item>
