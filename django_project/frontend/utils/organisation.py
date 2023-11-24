@@ -1,4 +1,4 @@
-from stakeholder.models import UserProfile
+from stakeholder.models import UserProfile, OrganisationUser
 
 """Organisation utility functions."""
 
@@ -24,3 +24,10 @@ def get_abbreviation(text: str):
         return words[0][0:2].upper()
     else:
         return ''.join(map(lambda word: word[0:1].upper(), words))
+
+
+def get_organisation_ids(user):
+    """Get organisation ids that user belongs to."""
+    return OrganisationUser.objects.filter(
+        user=user
+    ).values_list('organisation_id', flat=True)
