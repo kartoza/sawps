@@ -86,8 +86,7 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
         acres = meters_sq * 0.000247105381  # meters^2 to acres
         return acres / 2.471
 
-    def get_geometry(self, parcels):
-        geom: GEOSGeometry = None
+    def group_parcels(self, parcels):
         erf_parcel_ids = []
         holding_parcel_ids = []
         farm_portion_parcel_ids = []
@@ -105,42 +104,41 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
                 farm_portion_parcel_ids.append(parcel['id'])
             elif parcel['layer'] == 'parent_farm':
                 parent_farm_parcel_ids.append(parcel['id'])
-        if erf_parcel_ids:
-            queryset = Erf.objects.filter(
-                id__in=erf_parcel_ids
-            )
-            queryset = queryset.aggregate(Union('geom'))
+        return (
+            erf_parcel_ids, holding_parcel_ids,
+            farm_portion_parcel_ids, parent_farm_parcel_ids
+        )
+
+    def find_parcel_geom(self, cls, parcel_ids, geom):
+        queryset = cls.objects.filter(
+            id__in=parcel_ids
+        )
+        queryset = queryset.aggregate(Union('geom'))
+        other_geom = queryset['geom__union']
+        if other_geom:
             geom = (
-                queryset['geom__union'] if geom is None else
-                geom.union(queryset['geom__union'])
+                other_geom if geom is None else
+                geom.union(other_geom)
             )
-        if holding_parcel_ids:
-            queryset = Holding.objects.filter(
-                id__in=holding_parcel_ids
-            )
-            queryset = queryset.aggregate(Union('geom'))
-            geom = (
-                queryset['geom__union'] if geom is None else
-                geom.union(queryset['geom__union'])
-            )
-        if farm_portion_parcel_ids:
-            queryset = FarmPortion.objects.filter(
-                id__in=farm_portion_parcel_ids
-            )
-            queryset = queryset.aggregate(Union('geom'))
-            geom = (
-                queryset['geom__union'] if geom is None else
-                geom.union(queryset['geom__union'])
-            )
-        if parent_farm_parcel_ids:
-            queryset = ParentFarm.objects.filter(
-                id__in=parent_farm_parcel_ids
-            )
-            queryset = queryset.aggregate(Union('geom'))
-            geom = (
-                queryset['geom__union'] if geom is None else
-                geom.union(queryset['geom__union'])
-            )
+        return geom
+
+    def check_parcel_ids(self, cls, parcel_ids):
+        queryset = cls.objects.filter(
+            id__in=parcel_ids
+        )
+        return queryset.values_list('id', flat=True)
+
+    def get_geometry(self, erf_ids, holding_ids,
+                     farm_portion_ids, parent_farm_ids):
+        geom: GEOSGeometry = None
+        if erf_ids:
+            geom = self.find_parcel_geom(Erf, erf_ids, geom)
+        if holding_ids:
+            geom = self.find_parcel_geom(Holding, holding_ids, geom)
+        if farm_portion_ids:
+            geom = self.find_parcel_geom(FarmPortion, farm_portion_ids, geom)
+        if parent_farm_ids:
+            geom = self.find_parcel_geom(FarmPortion, parent_farm_ids, geom)
         if isinstance(geom, Polygon):
             # parcels geom is in 3857
             geom = MultiPolygon([geom], srid=3857)
@@ -150,10 +148,24 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             geom.transform(4326)
         return geom, province
 
-    def add_parcels(self, property, parcels):
+    def add_parcels(self, property, parcels,
+                    erf_ids, holding_ids,
+                    farm_portion_ids, parent_farm_ids):
+        filtered_ids = {
+            'erf': self.check_parcel_ids(Erf, erf_ids),
+            'holding': self.check_parcel_ids(Holding, holding_ids),
+            'farm_portion': self.check_parcel_ids(FarmPortion,
+                                                  farm_portion_ids),
+            'parent_farm': self.check_parcel_ids(ParentFarm, parent_farm_ids),
+        }
         cnames = []
         for parcel in parcels:
-            if parcel['cname'] in cnames:
+            layer = parcel['layer']
+            obj_id = parcel['id']
+            cname = parcel['cname']
+            if cname in cnames:
+                continue
+            if obj_id not in filtered_ids[layer]:
                 continue
             type = parcel['type']
             parcel_type = ParcelType.objects.filter(
@@ -162,20 +174,24 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             if not parcel_type:
                 raise ValidationError(f'Invalid parcel_type: {type}')
             data = {
-                'sg_number': parcel['cname'],
+                'sg_number': cname,
                 'year': datetime.today().date(),
                 'property': property,
                 'parcel_type_id': parcel_type.id,
-                'source': parcel['layer'],
-                'source_id': parcel['id']
+                'source': layer,
+                'source_id': obj_id
             }
             Parcel.objects.create(**data)
-            cnames.append(parcel['cname'])
+            cnames.append(cname)
 
     def post(self, request, *args, **kwargs):
         # union of parcels
         parcels = request.data.get('parcels')
-        geom, province = self.get_geometry(parcels)
+        (
+            erf_ids, holding_ids, farm_portion_ids, parent_farm_ids
+        ) = self.group_parcels(parcels)
+        geom, province = self.get_geometry(erf_ids, holding_ids,
+                                           farm_portion_ids, parent_farm_ids)
         if not province:
             return Response(
                 status=400, data=(
@@ -220,7 +236,8 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             'centroid': geom.point_on_surface
         }
         property = Property.objects.create(**data)
-        self.add_parcels(property, parcels)
+        self.add_parcels(property, parcels, erf_ids, holding_ids,
+                         farm_portion_ids, parent_farm_ids)
         return Response(status=201, data=PropertySerializer(property).data)
 
 

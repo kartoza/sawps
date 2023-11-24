@@ -455,38 +455,11 @@ class FindParcelByCoord(APIView):
     """Find parcel that contains coordinate."""
     permission_classes = [IsAuthenticated]
 
-    def find_erf(self, point: Point):
-        """Find Erf parcel by point."""
-        parcel = Erf.objects.filter(geom__contains=point)
+    def find_parcel(self, cls, cls_serializer, point: Point):
+        """Find parcel by point."""
+        parcel = cls.objects.filter(geom__contains=point)
         if parcel:
-            return ErfParcelSerializer(
-                parcel.first()
-            ).data
-        return None
-
-    def find_holding(self, point: Point):
-        """Find Holding parcel by point."""
-        parcel = Holding.objects.filter(geom__contains=point)
-        if parcel:
-            return HoldingParcelSerializer(
-                parcel.first()
-            ).data
-        return None
-
-    def find_farm_portion(self, point: Point):
-        """Find FarmPortion parcel by point."""
-        parcel = FarmPortion.objects.filter(geom__contains=point)
-        if parcel:
-            return FarmPortionParcelSerializer(
-                parcel.first()
-            ).data
-        return None
-
-    def find_parent_farm(self, point: Point):
-        """Find ParentFarm parcel by point."""
-        parcel = ParentFarm.objects.filter(geom__contains=point)
-        if parcel:
-            return ParentFarmParcelSerializer(
+            return cls_serializer(
                 parcel.first()
             ).data
         return None
@@ -509,30 +482,25 @@ class FindParcelByCoord(APIView):
             zoom <= PARENT_FARM_LAYER_ZOOMS[1]
         ):
             # find parent_farm
-            parcel = self.find_parent_farm(point)
+            parcel = self.find_parcel(ParentFarm, ParentFarmParcelSerializer,
+                                      point)
             if parcel:
                 if self.check_used_parcel(parcel['cname'], property_id):
                     return Response(status=404)
                 return Response(status=200, data=parcel)
         else:
-            # find erf
-            parcel = self.find_erf(point)
-            if parcel:
-                if self.check_used_parcel(parcel['cname'], property_id):
-                    return Response(status=404)
-                return Response(status=200, data=parcel)
-            # find holding
-            parcel = self.find_holding(point)
-            if parcel:
-                if self.check_used_parcel(parcel['cname'], property_id):
-                    return Response(status=404)
-                return Response(status=200, data=parcel)
-            # find farm_portion
-            parcel = self.find_farm_portion(point)
-            if parcel:
-                if self.check_used_parcel(parcel['cname'], property_id):
-                    return Response(status=404)
-                return Response(status=200, data=parcel)
+            map_serializers = {
+                Erf: ErfParcelSerializer,
+                Holding: HoldingParcelSerializer,
+                FarmPortion: FarmPortionParcelSerializer
+            }
+            for parcel_class, parcel_serializer in map_serializers.items():
+                parcel = self.find_parcel(parcel_class,
+                                          parcel_serializer, point)
+                if parcel:
+                    if self.check_used_parcel(parcel['cname'], property_id):
+                        return Response(status=404)
+                    return Response(status=200, data=parcel)
         return Response(status=404)
 
 

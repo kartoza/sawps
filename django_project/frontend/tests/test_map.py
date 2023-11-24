@@ -13,7 +13,11 @@ from django.contrib.contenttypes.models import ContentType
 from core.settings.utils import absolute_path
 from frontend.utils.map import get_map_template_style
 from activity.factories import ActivityTypeFactory
-from property.factories import PropertyFactory, ProvinceFactory
+from property.factories import (
+    PropertyFactory,
+    ProvinceFactory,
+    ParcelFactory
+)
 from stakeholder.models import OrganisationUser
 from stakeholder.factories import (
     organisationFactory,
@@ -24,7 +28,8 @@ from species.factories import TaxonF
 from frontend.models.map_session import MapSession
 from frontend.models.parcels import (
     Erf,
-    Holding
+    Holding,
+    ParentFarm
 )
 from frontend.tests.model_factories import UserF
 from frontend.api_views.map import (
@@ -149,6 +154,10 @@ class TestMapAPIViews(TestCase):
                 geom=GEOSGeometry(geom_str),
                 cname='C1235DEF'
             )
+            self.parent_farm_1 = ParentFarm.objects.create(
+                geom=GEOSGeometry(geom_str),
+                cname='C1235GHI'
+            )
             self.property_1 = PropertyFactory.create(
                 geometry=self.holding_1.geom,
                 name='Property ABC',
@@ -239,6 +248,18 @@ class TestMapAPIViews(TestCase):
     def test_find_parcel_by_coord(self):
         lat = -26.71998940486352
         lng = 27.763781680455708
+        lng_2 = 25.763781680455708
+        # test not found
+        request = self.factory.get(
+            reverse('find-parcel') + (
+                f'/?lat={lat}&lng={lng_2}'
+            )
+        )
+        request.user = self.user_1
+        view = FindParcelByCoord.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 404)
+        # test found holding
         request = self.factory.get(
             reverse('find-parcel') + (
                 f'/?lat={lat}&lng={lng}'
@@ -250,6 +271,42 @@ class TestMapAPIViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['layer'], 'holding')
         self.assertEqual(response.data['cname'], self.holding_1.cname)
+        # test has been used
+        used_parcel = ParcelFactory.create(
+            sg_number=self.holding_1.cname
+        )
+        response = view(request)
+        self.assertEqual(response.status_code, 404)
+        used_parcel.delete()
+        # test with zoom
+        request = self.factory.get(
+            reverse('find-parcel') + (
+                f'/?lat={lat}&lng={lng}&zoom=9'
+            )
+        )
+        request.user = self.user_1
+        view = FindParcelByCoord.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['layer'], 'parent_farm')
+        self.assertEqual(response.data['cname'], self.parent_farm_1.cname)
+        # test has been used
+        used_parcel = ParcelFactory.create(
+            sg_number=self.parent_farm_1.cname
+        )
+        response = view(request)
+        self.assertEqual(response.status_code, 404)
+        used_parcel.delete()
+        # test not found
+        request = self.factory.get(
+            reverse('find-parcel') + (
+                f'/?lat={lat}&lng={lng_2}&zoom=9'
+            )
+        )
+        request.user = self.user_1
+        view = FindParcelByCoord.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 404)
 
     def test_find_property_by_coord(self):
         self.user_1.user_profile.current_organisation = self.organisation_1

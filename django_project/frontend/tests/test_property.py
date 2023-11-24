@@ -98,6 +98,18 @@ class TestPropertyAPIViews(TestCase):
                     'cname': self.holding_1.cname,
                     'type': 'urban'
                 },
+                {
+                    'id': 1001,
+                    'layer': 'farm_portion',
+                    'cname': 'C1001',
+                    'type': 'urban'
+                },
+                {
+                    'id': 1002,
+                    'layer': 'parent_farm',
+                    'cname': 'C1002',
+                    'type': 'urban'
+                },
             ]
         }
         request = self.factory.post(
