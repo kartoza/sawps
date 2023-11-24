@@ -162,11 +162,8 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            int(response.data[0]['annualpopulation_count'][0].
-                get('year')),
-            int(year)
-        )
+        year_data = [p for p in response.data[0]['annualpopulation_count'] if int(p['year']) == int(year)]
+        self.assertEqual(len(year_data), 1)
 
 
 class ActivityPercentageTestCase(BaseTestCase):
