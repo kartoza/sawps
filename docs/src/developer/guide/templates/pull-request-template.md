@@ -13,7 +13,7 @@ context_id: LmD2JcMLJGCcn6yEc4bvKW
 # Pull Request Template
 # Pull Request
 - Push the code on the GitHub.
-- Click on the `Create pull request` button to create a PR.
+- Click on the `Compare & pull request` button to create a PR.
 ## Description
 
 - Describe the purpose and context of the changes made in this PR.
