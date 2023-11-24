@@ -92,6 +92,12 @@ class TestPropertyAPIViews(TestCase):
                     'cname': self.holding_1.cname,
                     'type': 'urban'
                 },
+                {
+                    'id': self.holding_1.id,
+                    'layer': 'farm_portion',
+                    'cname': self.holding_1.cname,
+                    'type': 'urban'
+                },
             ]
         }
         request = self.factory.post(
@@ -145,6 +151,8 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['bbox']), 4)
         self.assertEqual(len(response.data['parcels']), 2)
+        find_parcel = [p for p in response.data['parcels'] if p['id'] == self.erf_1.id and p['layer'] == 'erf']
+        self.assertEqual(len(find_parcel), 1)
         self.assertEqual(response.data['short_code'], property.short_code)
         # test insert with existing name should return 400
         request = self.factory.post(

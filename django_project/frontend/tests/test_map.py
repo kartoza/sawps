@@ -206,6 +206,13 @@ class TestMapAPIViews(TestCase):
         request.user = self.user_1
         response = get_map_template_style(request, 'session-test', 1)
         self.assertIsNotNone(response['layers'])
+        layers = response['layers']
+        find_layers = [layer for layer in layers if layer['id'] == 'parent_farm-highlighted']
+        self.assertEqual(len(find_layers), 1)
+        self.assertEqual(find_layers[0]['minzoom'], 9)
+        find_layers = [layer for layer in layers if layer['id'] == 'erf-highlighted']
+        self.assertEqual(len(find_layers), 1)
+        self.assertEqual(find_layers[0]['minzoom'], 12)
 
     def test_get_properties_map_tile(self):
         kwargs = {

@@ -88,7 +88,23 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
 
     def get_geometry(self, parcels):
         geom: GEOSGeometry = None
-        erf_parcel_ids = [p['id'] for p in parcels if p['layer'] == 'erf']
+        erf_parcel_ids = []
+        holding_parcel_ids = []
+        farm_portion_parcel_ids = []
+        parent_farm_parcel_ids = []
+        cnames = []
+        for parcel in parcels:
+            if parcel['cname'] in cnames:
+                continue
+            cnames.append(parcel['cname'])
+            if parcel['layer'] == 'erf':
+                erf_parcel_ids.append(parcel['id'])
+            elif parcel['layer'] == 'holding':
+                holding_parcel_ids.append(parcel['id'])
+            elif parcel['layer'] == 'farm_portion':
+                farm_portion_parcel_ids.append(parcel['id'])
+            elif parcel['layer'] == 'parent_farm':
+                parent_farm_parcel_ids.append(parcel['id'])
         if erf_parcel_ids:
             queryset = Erf.objects.filter(
                 id__in=erf_parcel_ids
@@ -98,9 +114,6 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
                 queryset['geom__union'] if geom is None else
                 geom.union(queryset['geom__union'])
             )
-
-        holding_parcel_ids = [p['id'] for p in parcels if
-                              p['layer'] == 'holding']
         if holding_parcel_ids:
             queryset = Holding.objects.filter(
                 id__in=holding_parcel_ids
@@ -110,9 +123,6 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
                 queryset['geom__union'] if geom is None else
                 geom.union(queryset['geom__union'])
             )
-
-        farm_portion_parcel_ids = [p['id'] for p in parcels if
-                                   p['layer'] == 'farm_portion']
         if farm_portion_parcel_ids:
             queryset = FarmPortion.objects.filter(
                 id__in=farm_portion_parcel_ids
@@ -122,9 +132,6 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
                 queryset['geom__union'] if geom is None else
                 geom.union(queryset['geom__union'])
             )
-
-        parent_farm_parcel_ids = [p['id'] for p in parcels if
-                                  p['layer'] == 'parent_farm']
         if parent_farm_parcel_ids:
             queryset = ParentFarm.objects.filter(
                 id__in=parent_farm_parcel_ids

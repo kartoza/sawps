@@ -88,7 +88,7 @@ class ParcelAdmin(admin.ModelAdmin):
         )
         patch_parcel_sources.delay()
 
-    actions = [run_patch_parcel_source,]
+    actions = [run_patch_parcel_source]
 
 
 class PropertyTypeAdmin(admin.ModelAdmin):

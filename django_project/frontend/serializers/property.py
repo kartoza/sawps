@@ -1,6 +1,5 @@
 """Serializer for property classes."""
 from rest_framework import serializers
-from collections import OrderedDict
 from frontend.serializers.common import NameObjectBaseSerializer
 from property.models import (
     PropertyType,
