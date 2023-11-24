@@ -20,11 +20,11 @@ When the user clicks the dropdown icon 1️⃣ next to their username and profil
 
 ## Organisation members
 
-On the Organisation's page a user can see 1️⃣ the organisation name which indicates to the user the current organization they are viewing. To add new members, a user (with necessary permissions) can click on the `Add People` button 2️⃣ which will open a popup (example below) where a new member's information can be added. Underneath the Members heading 3️⃣, a user can use the search box 4️⃣ to find specific members within the organisation. Users can decided how many rows per page they would like to see by adjusting the rows per page 5️⃣ (fewer rows displayed can be useful on smaller devices). A user can see which page of members they are on or click on the navigation links 6️⃣ to change between pages. On the Invitations table 7️⃣, a user can see the members that have been invited to the organisation and if the user has a *status* role, they can see if a new user has joined the organisation or not in the status column 8️⃣.
+On the Organisation's page a user can see 1️⃣ the organisation name which indicates to the user the current organisation they are viewing. To add new members, a user (with necessary permissions) can click on the `Add People` button 2️⃣ which will open a popup (example below) where a new member's information can be added. Underneath the Members heading 3️⃣, a user can use the search box 4️⃣ to find specific members within the organisation. Users can decided how many rows per page they would like to see by adjusting the rows per page 5️⃣ (fewer rows displayed can be useful on smaller devices). A user can see which page of members they are on or click on the navigation links 6️⃣ to change between pages. On the Invitations table 7️⃣, a user can see the members that have been invited to the organisation and if the user has a *status* role, they can see if a new user has joined the organisation or not in the status column 8️⃣.
 
 ![Organisation Page 2](./img/organisation-page-2.png)
 
-The **Add People** popup contains an `Email address` field 1️⃣ that the inviter needs to populate with the email address for the individual they wish to invite to the organization. The inviter also needs to specify if the individual they’re inviting will have a manager or member role within the organization using the `Invite as` field 2️⃣ and to set the new user's permissions using the `Permissions` field 3️⃣. To finalise adding a new member, an inviting user needs to click on the `Invite` button 4️⃣ to send the invitation to the individual being invited to the organisation.
+The **Add People** popup contains an `Email address` field 1️⃣ that the inviter needs to populate with the email address for the individual they wish to invite to the organisation. The inviter also needs to specify if the individual they’re inviting will have a manager or member role within the organisation using the `Invite as` field 2️⃣ and to set the new user's permissions using the `Permissions` field 3️⃣. To finalise adding a new member, an inviting user needs to click on the `Invite` button 4️⃣ to send the invitation to the individual being invited to the organisation.
 
 ![Organisation Page 3](./img/organisation-page-3.png)
 
@@ -51,7 +51,7 @@ To request to be added to an organisation, or have one created, a user needs to 
 
 ![Request Organisation 1](./img/request-organisation-1.png)
 
-When the `Request Organisation` button is clicked, a popup window is will appear. On the popup, a user can specify the name/s of the organization they wish to have created in `Organization Name` field 1️⃣ and add message providing a description of the organisation, etc. in the `Message to administrator` field 2️⃣. Once the user has filled in the relevant fields, they can then click on the `Send` button 3️⃣.
+When the `Request Organisation` button is clicked, a popup window is will appear. On the popup, a user can specify the name/s of the organisation they wish to have created in `Organization Name` field 1️⃣ and add message providing a description of the organisation, etc. in the `Message to administrator` field 2️⃣. Once the user has filled in the relevant fields, they can then click on the `Send` button 3️⃣.
 
 ![Request Organisation 2](./img/request-organisation-2.png)
 
