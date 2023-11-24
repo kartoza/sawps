@@ -90,3 +90,17 @@
     }
   }
 }
+
+.trends-left-line-chart {
+    .ChartContainerBox {
+        height: 600px;
+
+        .ChartContainer {
+            height: 560px;
+
+            .PopulationTrendChartContainer {
+                height: 460px!important;
+            }
+        }
+    }
+}

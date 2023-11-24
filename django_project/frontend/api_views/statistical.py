@@ -127,7 +127,6 @@ class SpeciesTrend(SpeciesNationalTrend):
         trends = []
         with model_output.output_file.open('r') as json_file:
             json_dict = json.load(json_file)
-            print(PROPERTY_TREND in json_dict)
             if PROPERTY_TREND in json_dict:
                 trends = json_dict[PROPERTY_TREND]
         return Response(
