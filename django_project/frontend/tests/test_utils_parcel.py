@@ -128,5 +128,6 @@ class TestParcelUtils(TestCase):
         self.assertFalse(parcel.source_id)
         patch_parcel_sources()
         parcel.refresh_from_db()
+        # assert that source and source_id are generated
         self.assertTrue(parcel.source)
         self.assertTrue(parcel.source_id)
