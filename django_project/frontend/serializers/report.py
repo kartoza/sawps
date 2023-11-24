@@ -53,11 +53,14 @@ class SpeciesReportSerializer(
 
     def get_is_editable(self, obj: AnnualPopulation):
         user = self.context.get('user', None)
-        if user is None:
+        managed_organisations = self.context.get('managed_ids', [])
+        if user is None or obj.user is None:
             return False
         if user.is_superuser:
             return True
-        return obj.user.id == user.id if obj.user else False
+        if obj.property.organisation.id in managed_organisations:
+            return True
+        return obj.user.id == user.id
 
     class Meta:
         model = AnnualPopulation

@@ -89,6 +89,19 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             serializer.data,
             expected_value
         )
+        # test with manager
+        serializer = SpeciesReportSerializer(
+            annual_population,
+            context={
+                'user': other_user,
+                'managed_ids': [self.organisation_1.id]
+            }
+        )
+        expected_value['is_editable'] = True
+        self.assertEqual(
+            serializer.data,
+            expected_value
+        )
 
     def test_property_report_serializer(self):
         serializer = PropertyReportSerializer(self.annual_population)
