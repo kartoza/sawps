@@ -21,12 +21,12 @@ def find_layer_by_cname(cname: str):
     obj = Holding.objects.filter(cname=cname).first()
     if obj:
         return 'holding', obj.id
-    obj = ParentFarm.objects.filter(cname=cname).first()
-    if obj:
-        return 'parent_farm', obj.id
     obj = FarmPortion.objects.filter(cname=cname).first()
     if obj:
         return 'farm_portion', obj.id
+    obj = ParentFarm.objects.filter(cname=cname).first()
+    if obj:
+        return 'parent_farm', obj.id
     return None, None
 
 

@@ -144,7 +144,10 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
         return geom, province
 
     def add_parcels(self, property, parcels):
+        cnames = []
         for parcel in parcels:
+            if parcel['cname'] in cnames:
+                continue
             type = parcel['type']
             parcel_type = ParcelType.objects.filter(
                 name__iexact=type
@@ -155,9 +158,12 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
                 'sg_number': parcel['cname'],
                 'year': datetime.today().date(),
                 'property': property,
-                'parcel_type_id': parcel_type.id
+                'parcel_type_id': parcel_type.id,
+                'source': parcel['layer'],
+                'source_id': parcel['id']
             }
             Parcel.objects.create(**data)
+            cnames.append(parcel['cname'])
 
     def post(self, request, *args, **kwargs):
         # union of parcels
