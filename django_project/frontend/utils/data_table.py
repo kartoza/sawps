@@ -201,7 +201,10 @@ def species_report(queryset: QuerySet, request) -> List:
     ).distinct()
     species_reports = SpeciesReportSerializer(
         species_population_data,
-        many=True
+        many=True,
+        context={
+            'user': request.user
+        }
     ).data
     return species_reports
 

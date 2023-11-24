@@ -46,9 +46,18 @@ class SpeciesReportSerializer(
     Serializer for Species Report.
     """
     upload_id = serializers.SerializerMethodField()
+    is_editable = serializers.SerializerMethodField()
 
     def get_upload_id(self, obj: AnnualPopulation):
         return obj.id
+
+    def get_is_editable(self, obj: AnnualPopulation):
+        user = self.context.get('user', None)
+        if user is None:
+            return False
+        if user.is_superuser:
+            return True
+        return obj.user.id == user.id if obj.user else False
 
     class Meta:
         model = AnnualPopulation
@@ -58,7 +67,8 @@ class SpeciesReportSerializer(
             "scientific_name", "common_name",
             "year", "group", "total", "adult_male", "adult_female",
             "juvenile_male", "juvenile_female", "sub_adult_male",
-            "sub_adult_female", "upload_id", "property_id"
+            "sub_adult_female", "upload_id", "property_id",
+            "is_editable"
         ]
 
 
