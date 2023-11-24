@@ -70,7 +70,10 @@ class UserLogin(models.Model):
     date_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.username
+        try:
+            return self.user.username
+        except User.DoesNotExist:
+            return self.id
 
     class Meta:
         verbose_name = 'User login'
@@ -209,7 +212,10 @@ class UserProfile(models.Model):
         return super(self.__class__, self).delete(*args, **kwargs)
 
     def __str__(self):
-        return self.user.username
+        try:
+            return self.user.username
+        except User.DoesNotExist:
+            return self.id
 
     def picture_url(self):
         if self.picture.url:
