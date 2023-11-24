@@ -52,8 +52,9 @@ from frontend.utils.organisation import get_current_organisation_id
 
 User = get_user_model()
 PROVINCE_LAYER_ZOOMS = (5, 8)
-PROPERTIES_LAYER_ZOOMS = (10, 24)
+PROPERTIES_LAYER_ZOOMS = (9, 24)
 PROPERTIES_POINT_LAYER_ZOOMS = (5, 24)
+PARENT_FARM_LAYER_ZOOMS = (9, 11)
 
 
 def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
@@ -500,32 +501,38 @@ class FindParcelByCoord(APIView):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
         property_id = self.request.GET.get('property_id', 0)
+        zoom = int(self.request.GET.get('zoom', 12))
         point = Point(float(lng), float(lat), srid=4326)
         point.transform(3857)
-        # find erf
-        parcel = self.find_erf(point)
-        if parcel:
-            if self.check_used_parcel(parcel['cname'], property_id):
-                return Response(status=404)
-            return Response(status=200, data=parcel)
-        # find holding
-        parcel = self.find_holding(point)
-        if parcel:
-            if self.check_used_parcel(parcel['cname'], property_id):
-                return Response(status=404)
-            return Response(status=200, data=parcel)
-        # find farm_portion
-        parcel = self.find_farm_portion(point)
-        if parcel:
-            if self.check_used_parcel(parcel['cname'], property_id):
-                return Response(status=404)
-            return Response(status=200, data=parcel)
-        # find parent_farm
-        parcel = self.find_parent_farm(point)
-        if parcel:
-            if self.check_used_parcel(parcel['cname'], property_id):
-                return Response(status=404)
-            return Response(status=200, data=parcel)
+        if (
+            zoom >= PARENT_FARM_LAYER_ZOOMS[0] and
+            zoom <= PARENT_FARM_LAYER_ZOOMS[1]
+        ):
+            # find parent_farm
+            parcel = self.find_parent_farm(point)
+            if parcel:
+                if self.check_used_parcel(parcel['cname'], property_id):
+                    return Response(status=404)
+                return Response(status=200, data=parcel)
+        else:
+            # find erf
+            parcel = self.find_erf(point)
+            if parcel:
+                if self.check_used_parcel(parcel['cname'], property_id):
+                    return Response(status=404)
+                return Response(status=200, data=parcel)
+            # find holding
+            parcel = self.find_holding(point)
+            if parcel:
+                if self.check_used_parcel(parcel['cname'], property_id):
+                    return Response(status=404)
+                return Response(status=200, data=parcel)
+            # find farm_portion
+            parcel = self.find_farm_portion(point)
+            if parcel:
+                if self.check_used_parcel(parcel['cname'], property_id):
+                    return Response(status=404)
+                return Response(status=200, data=parcel)
         return Response(status=404)
 
 
