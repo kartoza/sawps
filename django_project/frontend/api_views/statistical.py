@@ -36,14 +36,15 @@ class SpeciesNationalTrend(APIView):
             status=DONE
         ).first()
         if model_output:
-            if model_output.output_file:
-                content = model_output.output_file.read().decode('utf-8')
-                content = json.loads(content)
-                return content[output_type]
             cache_key = model_output.get_cache_key(output_type)
             cached_data = cache.get(cache_key)
             if cached_data:
                 return cached_data
+            elif model_output.output_file:
+                    content = model_output.output_file.read().decode('utf-8')
+                    content = json.loads(content)
+                    cache.set(cache_key, content, timeout=None)
+                    return content[output_type]
         return []
 
     def get(self, *args, **kwargs):
