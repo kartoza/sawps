@@ -5,3 +5,7 @@ mdx_gh_links
 mkdocs-pdf-export-plugin
 mkdocstrings-python
 mkdocs-video
+# needed for the create-uuid.py helper script
+shortuuid
+# Needed for mkdocstrings python documentation generator
+black

@@ -1,3 +1,16 @@
+---
+title: IDS SAWPS
+summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
+    - Jeremy Prior
+    - Zulfikar Muzakki
+date: 09-11-2023
+some_url: https://github.com/kartoza/sawps/
+copyright: Copyright 2023, SANBI
+contact: PROJECT_CONTACT
+license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+context_id: NdC85vJeHPKTG9zAzJLRB2
+---
+
 # Working with the data upload
 
 The data upload function allows users to fill in an online form or upload a CSV file to the SAWPS platform to further enrich their data.
@@ -12,7 +25,7 @@ Click on the `UPLOAD DATA` button in the navigation bar. This will redirect you 
 
 ### Step 1
 
-In this step/tab, you should enter the information for your property (such as Property Name, Property Type, and Property Province) and once you have entered all of the relevant information you should click on 1️⃣ `SAVE PROPERTY INFORMATION` button. This will redirect you to `STEP 2`.
+In this step/tab, you should enter the information for your property (such as Property Name, whether the property is an Open/Closed System, and the Property Type) and once you have entered all of the relevant information you should click on 1️⃣ `SAVE PROPERTY INFORMATION` button. This will redirect you to `STEP 2`.
 
 ![Upload Data New 2](img/upload-data-new-2.png)
 
@@ -94,7 +107,7 @@ If you choose to use the `ONLINE FORM` and click on the button of the same name,
 
 On the **ACTIVITY DETAIL** page, you can add details regarding **Introduction/Reintroduction** and/or **Off-take** of individuals on the property. Once you have filled out the **Introduction/Reintroduction** section you can click on 1️⃣ the `+ ADD` button, and/or once you have filled in the **Off-take** section you can click on 2️⃣ the `+ ADD` button.
 
-After adding a new event, you can click on 3️⃣ the `NEXT` button. If you would like to change the species on your property you can click 4️⃣ the `BACK` button, or if you wish to leave and come back to the form later one, you can click on 5️⃣ `SAVE DRAFT`. Again, you are required to fill in every field that has an asterisk (little star '*') next to the field title, as these are mandatory.
+After adding a new event, you can click on 3️⃣ the `NEXT` button. If you would like to change the species on your property you can click 4️⃣ the `BACK` button, or if you wish to leave and come back to the form later one, you can click on 5️⃣ `SAVE DRAFT`. Again, you are required to fill in every field that has an asterisk (little star '*') next to the field title, as these are mandatory. If you don't have an event to add you can just click on 3️⃣ the `NEXT` button.
 
 ![Upload Data New 16](img/upload-data-new-16.png)
 
@@ -108,7 +121,7 @@ Once you have clicked on `SUBMIT` a popup will appear letting you know your data
 
 #### Upload Data using template
 
-If you would like to download the data template to then upload it, you can click on 1️⃣ the `DOWNLOAD TEMPLATE` button. This will download the template to your computer as an excel file (a .xlsx file).
+If you would like to download the data template to then upload it, you can click on 1️⃣ the `DOWNLOAD TEMPLATE` button. This will download the template to your computer as an excel file (a .xlsx file). The 2️⃣ **Property Code** available here will be used in the spreadsheet.
 
 ![Upload New Data 19](img/upload-data-new-19.png)
 
@@ -116,7 +129,7 @@ When you first open the file, the **`MASTER`** sheet will be displayed. This pag
 
 ![Upload New Data 20](img/upload-data-new-20.png)
 
-Navigate to 1️⃣ the `Dataset_pilot` sheet, and start imputing your species data. Keep in mind the compulsory fields as specified in 2️⃣ the `Master` sheet.
+Navigate to 1️⃣ the `Dataset_pilot` sheet, and start imputing your species data. Keep in mind the compulsory fields as specified in 2️⃣ the `Master` sheet and the **Property Code** for your specific property that can be found on the site, as shown previously.
 
 ![Upload New Data 21](img/upload-data-new-21.png)
 
@@ -128,7 +141,57 @@ The platform will then process your file.
 
 ![Upload New Data 23](img/upload-data-new-23.png)
 
-<!-- Will continue this when the functionality is available -->
+Once the platform has processed your uploaded data, a success message will be displayed and you can then click on the `CLOSE` button on the popup.
+
+![Upload New Data 24](img/upload-data-new-24.png)
+
+The data has now been uploaded and is associated with your property
+
+##### What happens if there are issues with my upload?
+
+If there is an issue with your uploaded data the site will return a warning or a csv file with information about the issue with your data. These are explained below:
+
+###### Uploading duplicate data
+
+If you attempt to upload data that is populated with previously uploaded data, the site will successfully upload the data but will return a warning saying that the row(s) already exist in the database.
+
+![Data Upload Issue 1](./img/data-upload-issue-1.png)
+
+###### Compulsory fields not filled in
+
+If you attempt to upload data that is missing one (or many) compulsory field(s), the site will not allow for the upload and will then return an error message. If you click on 1️⃣ the `ERROR FILE` button, an error csv file will be downloaded to your computer.
+
+![Data Upload Issue 2](./img/data-upload-issue-2.png)
+
+If you open the error csv file, the first column in the file will contain a message regarding the error the platform has encountered (this example didn't input the scientific name). You need to correct the issue in the file you want to upload.
+
+![Data Upload Issue 3](./img/data-upload-issue-3.png)
+
+Once you have fixed the error in the file you want to upload, click on 1️⃣ the `X` button to remove the upload with an error and then 2️⃣ upload the corrected file.
+
+![Data Upload Issue 4](./img/data-upload-issue-4.png)
+
+###### Property code provided does not match selected property
+
+If you try to upload data that has a project code that does not match with the property code of the property you are trying to upload data to, the platform will not allow the upload to happen and will then return an error message. If you click on 1️⃣ the `ERROR FILE` button, an error csv file will be downloaded to your computer.
+
+![Data Upload Issue 2](./img/data-upload-issue-2.png)
+
+If you open the error csv file, the first column in the file will contain a message explaining what you need to change your property code to, to be correct.
+
+![Data Upload Issue 5](./img/data-upload-issue-5.png)
+
+Once you have fixed the error in the file you want to upload, click on 1️⃣ the `X` button to remove the upload with an error and then 2️⃣ upload the corrected file.
+
+![Data Upload Issue 4](./img/data-upload-issue-4.png)
+
+This Section Will Be Updated.
+
+###### Empty sheet uploaded
+
+If you try to upload an empty data file, the site will return an error message. Fill in all the mandatory fields in the file and try uploading again.
+
+![Data Upload Issue 6](./img/data-upload-issue-6.png)
 
 ## How do I upload to, or manage, an existing property?
 

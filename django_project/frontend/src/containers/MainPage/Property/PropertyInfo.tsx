@@ -11,12 +11,15 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import IconButton from '@mui/material/IconButton';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PropertyInterface, {
     PropertyValidation,
     PropertyTypeInterface,
     OpenCloseInterface
 } from '../../../models/Property';
 import { OrganisationInterface } from '../../../models/Stakeholder';
+import AlertMessage from '../../../components/AlertMessage';
 import './index.scss';
 
 interface PropertyInfoInterface {
@@ -39,6 +42,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
     const [propertyTypeList, setPropertyTypeList] = useState<PropertyTypeInterface[]>([])
     const [organisationList, setOrganisationList] = useState<OrganisationInterface[]>([])
     const [openCloseList, setOpenCloseList] = useState<OpenCloseInterface[]>([])
+    const [alertMessage, setAlertMessage] = useState<string>('')
 
     const fetchMetadataList = () => {
         setLoading(true)
@@ -75,6 +79,9 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
 
     return (
         <TableContainer component={Paper}>
+            <AlertMessage message={alertMessage} onClose={() => {
+                setAlertMessage('')
+            }} />
             <Table className='PropertyInfoTable' aria-label="property info table" size='small'>
                 <colgroup>
                     <col width="50%" />
@@ -94,6 +101,20 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                         </TableCell>
                         <TableCell className='TableCellText'>
                             <span>{props.property.short_code ? props.property.short_code : '-'}</span>
+                            <span>
+                                <IconButton
+                                    aria-label="Copy Property Code"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(props.property.short_code)
+                                        setAlertMessage('Property code is copied to clipboard')
+                                    }}
+                                    edge="end"
+                                    title='Copy Property Code'
+                                    sx={{marginLeft: '10px'}}
+                                >
+                                    <ContentCopyIcon />
+                                </IconButton>
+                            </span>
                         </TableCell>
                     </TableRow>
                     )}
