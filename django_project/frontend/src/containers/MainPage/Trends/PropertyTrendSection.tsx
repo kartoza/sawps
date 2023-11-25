@@ -60,10 +60,10 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
 
 
     return (
-        <Box className={'SectionContainer'}>
+        <Box className={'SectionContainer' + (Object.keys(populationTrendData).length == 0 ? ' SectionEmpty': '')}>
             <Grid container flexDirection={'column'}>
                 <Grid item className='SectionTitle'>
-                    <Typography>Property</Typography>
+                    <Typography>{Object.keys(populationTrendData).length > 1 ? 'Properties' : 'Property'}</Typography>
                     <Divider />
                 </Grid>
                 <Grid item>
