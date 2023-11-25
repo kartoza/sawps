@@ -71,11 +71,12 @@ class BaseTestCase(TestCase):
         # add superuser
         self.superuser = User.objects.create_user(
             username="testadmin",
-            password="testpasswordd"
+            password="testpasswordd",
+            is_superuser=True
         )
         self.auth_headers_superuser = {
             "HTTP_AUTHORIZATION": "Basic "
-            + base64.b64encode(b"testuserd:testpasswordd").decode("ascii"),
+            + base64.b64encode(b"testadmin:testpasswordd").decode("ascii"),
         }
 
 
