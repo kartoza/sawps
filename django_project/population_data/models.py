@@ -43,7 +43,6 @@ class AnnualPopulationAbstract(models.Model):
         is not greater than total.
         """
         if self.adult_male is not None or self.adult_female is not None:
-            print('aaaa')
             adult_male = self.adult_male if self.adult_male else 0
             adult_female = self.adult_female if self.adult_female else 0
             if adult_male + adult_female > self.total:

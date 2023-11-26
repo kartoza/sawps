@@ -45,6 +45,8 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "juvenile_female": annual_population.juvenile_female,
             "sub_adult_male": annual_population.sub_adult_male,
             "sub_adult_female": annual_population.sub_adult_female,
+            "property_id": self.property.id,
+            "upload_id": annual_population.id
         }
         self.assertEqual(
             serializer.data,

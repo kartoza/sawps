@@ -146,7 +146,78 @@ export const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActiv
     }
 }
 
-export const getDefaultUploadSpeciesDetail = (propertyId: number):UploadSpeciesDetailInterface => {
+const copyAnnualPopulation = (data: AnnualPopulationInterface):AnnualPopulationInterface => {
+    // replace null with 0 or empty string
+    return {
+        present: data.present,
+        total: data.total,
+        adult_male: data.adult_male != null ? data.adult_male : 0,
+        adult_female: data.adult_female != null ? data.adult_female : 0,
+        sub_adult_male: data.sub_adult_male != null ? data.sub_adult_male : 0,
+        sub_adult_female: data.sub_adult_female != null ? data.sub_adult_female : 0,
+        juvenile_male: data.juvenile_male != null ? data.juvenile_male : 0,
+        juvenile_female: data.juvenile_female != null ? data.juvenile_female : 0,
+        adult_total: data.adult_total != null ? data.adult_total : 0,
+        sub_adult_total: data.sub_adult_total != null ? data.sub_adult_total : 0,
+        juvenile_total: data.juvenile_total != null ? data.juvenile_total : 0,
+        area_available_to_species: data.area_available_to_species,
+        survey_method_id: data.survey_method_id != null ? data.survey_method_id : 0,
+        survey_method_name: data.survey_method_name != null ? data.survey_method_name : '',
+        survey_method_other: data.survey_method_other != null ? data.survey_method_other : '',
+        note: data.note != null ? data.note : '',
+        population_estimate_certainty: data.population_estimate_certainty != null ? data.population_estimate_certainty : 0,
+        population_estimate_certainty_name: data.population_estimate_category_name != null ? data.population_estimate_category_name : '',
+        population_estimate_category_id: data.population_estimate_category_id != null ? data.population_estimate_category_id : 0,
+        population_estimate_category_name: data.population_estimate_category_name != null ? data.population_estimate_category_name : '',
+        population_estimate_category_other: data.population_estimate_category_other != null ? data.population_estimate_category_other : '',
+        sampling_effort_coverage_id: data.sampling_effort_coverage_id != null ? data.sampling_effort_coverage_id : 0,
+        sampling_effort_coverage_name: data.sampling_effort_coverage_name != null ? data.sampling_effort_coverage_name : '',
+        population_status_id: data.population_status_id != null ? data.population_status_id : 0,
+        population_status_name: data.population_status_name != null ? data.population_status_name : '',
+        certainty_of_bounds: data.certainty_of_bounds,
+        upper_confidence_level: data.upper_confidence_level,
+        lower_confidence_level: data.lower_confidence_level,
+        group: data.group
+    }
+}
+
+const copyActivityPopulation = (dataList: AnnualPopulationPerActivityInterface[]):AnnualPopulationPerActivityInterface[] => {
+    let _results:AnnualPopulationPerActivityInterface[] = []
+    dataList.forEach((data) => {
+        _results.push({
+            id: data.id,
+            activity_type_id: data.activity_type_id,
+            activity_type_name: data.activity_type_name,
+            adult_male: data.adult_male != null ? data.adult_male : 0,
+            adult_female: data.adult_female != null ? data.adult_female : 0,
+            juvenile_male: data.juvenile_male != null ? data.juvenile_male : 0,
+            juvenile_female: data.juvenile_female != null ? data.juvenile_female : 0,
+            total: data.total,
+            founder_population: data.founder_population != null ? data.founder_population : false,
+            reintroduction_source: data.reintroduction_source != null ? data.reintroduction_source : '',
+            translocation_destination: data.translocation_destination != null ? data.translocation_destination : '',
+            note: data.note != null ? data.note : '',
+            permit: data.permit != null ? data.permit : 0,
+        })
+    })
+    return _results
+}
+
+
+export const getDefaultUploadSpeciesDetail = (propertyId: number, initialData?: UploadSpeciesDetailInterface):UploadSpeciesDetailInterface => {
+    if (initialData) {
+        let _cpData = {
+            taxon_id: initialData.taxon_id,
+            taxon_name: initialData.taxon_name,
+            common_name: initialData.common_name,
+            year: initialData.year,
+            property_id: propertyId,
+            annual_population: copyAnnualPopulation(initialData.annual_population),
+            intake_populations: copyActivityPopulation(initialData.intake_populations),
+            offtake_populations: copyActivityPopulation(initialData.offtake_populations),
+        }
+        return _cpData
+    }
     let _currentDate = new Date()
     return {
         taxon_id: 0,

@@ -10,6 +10,10 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from frontend.api_views.metrics import BasePropertyCountAPIView
 from frontend.models.upload import DraftSpeciesUpload
+from frontend.serializers.population import (
+    AnnualPopulationFormSerializer,
+    ActivityFormSerializer
+)
 from occurrence.models import SurveyMethod
 from occurrence.serializers import SurveyMethodSerializer
 from population_data.models import (
@@ -105,13 +109,6 @@ class UploadPopulationAPIVIew(APIView):
             organisation=property.organisation, user=self.request.user
         ).exists()
 
-    def check_existing_data(self, property: Property, taxon: Taxon, year):
-        # check if no data exist for taxon+property+year
-        return AnnualPopulation.objects.filter(
-            year=year, property=property,
-            taxon=taxon
-        ).exists()
-
     def post(self, request, *args, **kwargs):
         taxon_id = request.data.get("taxon_id")
         property_id = kwargs.get("property_id")
@@ -135,16 +132,6 @@ class UploadPopulationAPIVIew(APIView):
                     "detail": (
                         "You cannot add data to property that "
                         "does not belong to your organisations!"
-                    )
-                },
-            )
-        if self.check_existing_data(property_obj, taxon, year):
-            return Response(
-                status=400,
-                data={
-                    "detail": (
-                        "There is already existing data "
-                        f"for {taxon.scientific_name} in year {year}!"
                     )
                 },
             )
@@ -180,41 +167,61 @@ class UploadPopulationAPIVIew(APIView):
             population_estimate_category = get_object_or_404(
                 PopulationEstimateCategory, id=population_estimate_category_id
             )
-        annual_population_obj = AnnualPopulation.objects.create(
-            year=year,
-            taxon=taxon,
-            property=property_obj,
-            user=self.request.user,
-            area_available_to_species=area_available_to_species,
-            total=annual_population.get("total"),
-            adult_male=annual_population.get("adult_male", 0),
-            adult_female=annual_population.get("adult_female", 0),
-            juvenile_male=annual_population.get("juvenile_male", 0),
-            juvenile_female=annual_population.get("juvenile_female", 0),
-            group=annual_population.get("group", 0),
-            note=annual_population.get("note", None),
-            survey_method=survey_method,
-            sub_adult_male=annual_population.get("sub_adult_male", 0),
-            sub_adult_female=annual_population.get("sub_adult_female", 0),
-            adult_total=annual_population.get("adult_total", 0),
-            sub_adult_total=annual_population.get("sub_adult_total", 0),
-            juvenile_total=annual_population.get("juvenile_total", 0),
-            population_estimate_certainty=annual_population.get(
-                "population_estimate_certainty", None),
-            upper_confidence_level=annual_population.get(
-                "upper_confidence_level", None),
-            lower_confidence_level=annual_population.get(
-                "lower_confidence_level", None),
-            certainty_of_bounds=annual_population.get(
-                "certainty_of_bounds", None),
-            population_estimate_category_other=annual_population.get(
-                "population_estimate_category_other", None),
-            survey_method_other=annual_population.get(
-                "survey_method_other", None),
-            population_status=population_status,
-            population_estimate_category=population_estimate_category,
-            sampling_effort_coverage=sampling_effort_coverage
+        annual_population_obj, is_created = (
+            AnnualPopulation.objects.update_or_create(
+                year=year,
+                taxon=taxon,
+                property=property_obj,
+                defaults={
+                    'user': self.request.user,
+                    'area_available_to_species': area_available_to_species,
+                    'total': annual_population.get("total"),
+                    'adult_total': annual_population.get("adult_total", 0),
+                    'adult_male': annual_population.get("adult_male", 0),
+                    'adult_female': annual_population.get("adult_female", 0),
+                    'juvenile_male': annual_population.get(
+                        "juvenile_male", 0),
+                    'juvenile_female': annual_population.get(
+                        "juvenile_female", 0),
+                    'group': annual_population.get("group", 0),
+                    'note': annual_population.get("note", None),
+                    'survey_method': survey_method,
+                    'sub_adult_male': annual_population.get(
+                        "sub_adult_male", 0),
+                    'sub_adult_female': annual_population.get(
+                        "sub_adult_female", 0),
+                    'sub_adult_total': (
+                        annual_population.get("sub_adult_male", 0) +
+                        annual_population.get("sub_adult_female", 0)),
+                    'juvenile_total': (
+                        annual_population.get("juvenile_male", 0) +
+                        annual_population.get("juvenile_female", 0)),
+                    'population_estimate_certainty': annual_population.get(
+                        "population_estimate_certainty", None),
+                    'upper_confidence_level': annual_population.get(
+                        "upper_confidence_level", None),
+                    'lower_confidence_level': annual_population.get(
+                        "lower_confidence_level", None),
+                    'certainty_of_bounds': annual_population.get(
+                        "certainty_of_bounds", None),
+                    'population_estimate_category_other': (
+                        annual_population.get(
+                            "population_estimate_category_other", None)),
+                    'survey_method_other': annual_population.get(
+                        "survey_method_other", None),
+                    'population_status': population_status,
+                    'population_estimate_category': (
+                        population_estimate_category),
+                    'sampling_effort_coverage': sampling_effort_coverage,
+                    'presence': annual_population.get("present")
+                }
+            )
         )
+        if not is_created:
+            # clear existing activities data
+            AnnualPopulationPerActivity.objects.filter(
+                annual_population=annual_population_obj
+            ).delete()
         # add annual population per activity - intake
         for intake_population in intake_populations:
             # get intake activity
@@ -337,6 +344,43 @@ class DraftPopulationUpload(APIView):
         draft.upload_date = draft_time
         draft.save()
         return Response(status=201, data={"uuid": str(draft.uuid)})
+
+
+class FetchPopulationData(APIView):
+    """Fetch existing annual population data."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, *args, **kwargs):
+        annual_population_id = kwargs.get("id")
+        annual_population = get_object_or_404(AnnualPopulation,
+                                              id=annual_population_id)
+        intakes = AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_population,
+            activity_type__recruitment=True
+        ).select_related('activity_type').order_by('id')
+        offtakes = AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_population,
+            activity_type__recruitment=False
+        ).select_related('activity_type').order_by('id')
+        return Response(
+            status=200,
+            data={
+                'taxon_id': annual_population.taxon.id,
+                'taxon_name': annual_population.taxon.scientific_name,
+                'common_name': annual_population.taxon.common_name_varbatim,
+                'year': annual_population.year,
+                'property_id': annual_population.property.id,
+                'annual_population': AnnualPopulationFormSerializer(
+                    annual_population, many=False
+                ).data,
+                'intake_populations': ActivityFormSerializer(
+                    intakes, many=True
+                ).data,
+                'offtake_populations': ActivityFormSerializer(
+                    offtakes, many=True
+                ).data
+            }
+        )
 
 
 FEMALE_SUFFIX = '_female'

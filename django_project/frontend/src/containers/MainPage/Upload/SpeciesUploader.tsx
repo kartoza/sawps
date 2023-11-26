@@ -145,11 +145,11 @@ export default function Uploader(props: UploaderInterface) {
             setLoading(true)
             setCloseButton('CLOSE')
             setTimeout(() => {
+                setLoading(false)
                 file.remove()
                 let response = JSON.parse(xhr.response)
                 setIsError(true)
                 setAlertMessage(response.detail)
-
             }, 300)
         }
     };
