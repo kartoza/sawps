@@ -7,7 +7,7 @@ from zipfile import ZipFile
 
 import pandas as pd
 from django.conf import settings
-from django.db.models import Sum
+from django.db.models import Sum, F, Value
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 
@@ -47,13 +47,20 @@ SPECIES_REPORT = 'Species_report'
 PROVINCE_REPORT = 'Province_report'
 
 
+def get_param_from_request(request, param, default_value=None):
+    if request.method == 'GET':
+        return request.GET.get(param, default_value)
+    else:
+        return request.data.get(param, default_value)
+
+
 def get_queryset(user_roles: List[str], request):
     organisation_id = get_current_organisation_id(request.user)
     show_detail = set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
         and not set(user_roles) & set(DATA_CONSUMERS)
     if show_detail:
         query_filter = DataContributorsFilter
-        organisation = request.GET.get("organisation")
+        organisation = get_param_from_request(request, 'organisation')
         if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
             ids = organisation.split(",")
             queryset = Property.objects.filter(
@@ -66,7 +73,8 @@ def get_queryset(user_roles: List[str], request):
                 annualpopulation__taxon__taxon_rank__name="Species"
             ).distinct().order_by("name")
 
-        spatial_filter_values = request.GET.get(
+        spatial_filter_values = get_param_from_request(
+            request,
             'spatial_filter_values',
             ''
         ).split(',')
@@ -91,7 +99,7 @@ def get_queryset(user_roles: List[str], request):
         ).distinct().order_by("scientific_name")
 
     filtered_queryset = query_filter(
-        request.GET, queryset=queryset
+        request.GET if request.method == 'GET' else request.data, queryset=queryset
     ).qs
 
     return filtered_queryset
@@ -106,7 +114,7 @@ def get_taxon_queryset(request):
     ).distinct().order_by("scientific_name")
 
     filtered_queryset = query_filter(
-        request.GET, queryset=queryset
+        request.GET if request.method == 'GET' else request.data, queryset=queryset
     ).qs
     return filtered_queryset
 
@@ -118,7 +126,7 @@ def data_table_reports(queryset: QuerySet, request, user_roles) -> List[Dict]:
         queryset (QuerySet): The initial queryset to generate reports from.
         request: The HTTP request object.
     """
-    reports_list = request.GET.get("reports", None)
+    reports_list = get_param_from_request(request, "reports", None)
     reports = []
 
     if reports_list:
@@ -158,15 +166,15 @@ def get_report_filter(request, report_type):
         ACTIVITY_REPORT: default_year_field
     }
 
-    species_list = request.GET.get("species")
+    species_list = get_param_from_request(request, "species")
     if species_list:
         species_list = species_list.split(",")
         filters[species_fields[report_type]] = species_list
 
-    start_year = request.GET.get("start_year")
+    start_year = get_param_from_request(request, "start_year")
     if start_year:
         start_year = int(start_year)
-        end_year = int(request.GET.get("end_year"))
+        end_year = int(get_param_from_request(request, "end_year"))
         filters[year_fields[report_type]] = (start_year, end_year)
 
     default_activity_field = (
@@ -174,7 +182,7 @@ def get_report_filter(request, report_type):
         'activity_type_id__in'
     )
 
-    activity = request.GET.get("activity", "")
+    activity = get_param_from_request(request, "activity", "")
     activity = urllib.parse.unquote(activity)
     if activity != 'all':
         filters[default_activity_field] = [
@@ -293,7 +301,7 @@ def national_level_user_table(
         request : The HTTP request object containing query parameters.
     """
     user_roles = get_user_roles(request.user)
-    reports_list = request.GET.get("reports")
+    reports_list = get_param_from_request(request, "reports")
     reports = []
     if reports_list:
         reports_list = reports_list.split(",")
@@ -336,20 +344,21 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     filters = {}
     properties = Property.objects.all()
 
-    start_year = request.GET.get("start_year")
+    start_year = get_param_from_request(request, "start_year")
     if start_year:
-        end_year = request.GET.get("end_year")
+        end_year = get_param_from_request(request, "end_year")
         filters["year__range"] = (
             start_year, end_year
         )
 
-    property_param = request.GET.get("property")
+    property_param = get_param_from_request(request, "property")
     if property_param:
         properties = properties.filter(
             id__in=property_param.split(',')
         )
 
-    spatial_filter_values = request.GET.get(
+    spatial_filter_values = get_param_from_request(
+        request,
         'spatial_filter_values',
         ''
     ).split(',')
@@ -367,7 +376,7 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
             })
         )
 
-    activity = request.GET.get("activity", "")
+    activity = get_param_from_request(request, "activity", "")
     activity = urllib.parse.unquote(activity)
     if activity not in ['all', '']:
         filters['annualpopulationperactivity__activity_type_id__in'] = [
@@ -413,6 +422,8 @@ def national_level_species_report(
             'year'
         ). \
         annotate(
+            common_name=F("taxon__common_name_varbatim"),
+            scientific_name=F("taxon__scientific_name"),
             total_property_area=Sum("property__property_size_ha"),
             total_area_available=Sum("area_available_to_species"),
             adult_male_total_population=Sum(
@@ -477,14 +488,14 @@ def national_level_activity_report(
     user_roles = get_user_roles(request.user)
     filters = {}
 
-    start_year = request.GET.get("start_year")
+    start_year = get_param_from_request(request, "start_year")
     if start_year:
-        end_year = request.GET.get("end_year")
+        end_year = get_param_from_request(request, "end_year")
         filters[
             "annualpopulationperactivity__year__range"
         ] = (start_year, end_year)
 
-    property_param = request.GET.get("property")
+    property_param = get_param_from_request(request, "property")
     if property_param:
         property_list = property_param.split(",")
         filters["property__id__in"] = property_list
@@ -536,11 +547,10 @@ def write_report_to_rows(queryset, request, report_functions=None):
     """
     Write report rows.
     """
-    reports_list = request.GET.get("reports", None)
+    reports_list = get_param_from_request(request, "reports", None)
     path = os.path.join(settings.MEDIA_ROOT, "download_data")
     if not os.path.exists(path):
         os.mkdir(path)
-
     if reports_list:
         reports_list = reports_list.split(",")
 
@@ -554,8 +564,8 @@ def write_report_to_rows(queryset, request, report_functions=None):
         report_functions = report_functions \
             if report_functions \
             else default_report_functions
-        if request.GET.get('file') == 'xlsx':
-            filename = 'data_report' + '.' + request.GET.get('file')
+        if get_param_from_request(request, 'file') == 'xlsx':
+            filename = 'data_report' + '.' + get_param_from_request(request, 'file')
             path_file = os.path.join(path, filename)
             if os.path.exists(path_file):
                 os.remove(path_file)
@@ -592,16 +602,15 @@ def write_report_to_rows(queryset, request, report_functions=None):
                 rows = report_functions[report_name](queryset, request)
                 dataframe = pd.DataFrame(rows)
                 filename = "data_report_" + report_name
-                filename = filename + '.' + request.GET.get('file')
+                filename = filename + '.' + get_param_from_request(request, 'file')
                 path_file = os.path.join(path, filename)
 
                 if os.path.exists(path_file):
                     os.remove(path_file)
                 dataframe.to_csv(path_file)
                 csv_reports.append(path_file)
-        if len(csv_reports) < 1:
-            return
-        elif len(csv_reports) == 1:
+
+        if len(csv_reports) == 1:
             return settings.MEDIA_URL + 'download_data/' \
                    + os.path.basename(csv_reports[0])
         path_zip = os.path.join(path, 'data_report.zip')
