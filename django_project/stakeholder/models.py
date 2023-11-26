@@ -217,13 +217,6 @@ class UserProfile(models.Model):
         except User.DoesNotExist:
             return self.id
 
-    def picture_url(self):
-        if self.picture.url:
-            return '{media}/{url}'.format(
-                    media=settings.MEDIA_ROOT,
-                    url=self.picture,
-            )
-
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
