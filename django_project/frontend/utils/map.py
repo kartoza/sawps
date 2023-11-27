@@ -155,7 +155,7 @@ def get_highlighted_layer(layer_name):
         "type": "line",
         "source": "sanbi",
         "source-layer": f"{layer_name}",
-        "minzoom": 12,
+        "minzoom": 9 if layer_name == 'parent_farm' else 12,
         "layout": {"visibility": "visible", "line-join": "bevel"},
         "paint": {
             "line-color": "#ffffff",

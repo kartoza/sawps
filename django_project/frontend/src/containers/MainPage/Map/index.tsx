@@ -37,6 +37,7 @@ import {
   getSelectParcelLayerNames,
   MIN_SELECT_PARCEL_ZOOM_LEVEL,
   MIN_SELECT_PROPERTY_ZOOM_LEVEL,
+  MIN_SEARCH_PARCEL_ZOOM_LEVEL,
   findAreaLayers,
   isContextLayerSelected,
   getMapPopupDescription,
@@ -479,12 +480,12 @@ export default function Map(props: MapInterface) {
     if (selectionMode === MapSelectionMode.None) return;
     let _parcelLayer = findParcelLayer(contextLayers)
     if (typeof _parcelLayer === 'undefined') return;
-    let _mapZoom = map.current.getZoom()
+    let _mapZoom = Math.trunc(map.current.getZoom())
     if (selectionMode === MapSelectionMode.Parcel) {
       // skip search if not in the parcel zoom
       if (_mapZoom < MIN_SELECT_PARCEL_ZOOM_LEVEL) return;
       // find parcel
-      searchParcel(e.lngLat, selectedProperty.id, (parcel: ParcelInterface) => {
+      searchParcel(e.lngLat, selectedProperty.id, _mapZoom, (parcel: ParcelInterface) => {
         if (parcel) {
           dispatch(toggleParcelSelectedState(parcel))
         }
@@ -499,9 +500,9 @@ export default function Map(props: MapInterface) {
       }
       const _parcelLayer = findParcelLayer(contextLayers)
       let _fillParcelLayers:string[] = []
-      if (_mapZoom >= MIN_SELECT_PARCEL_ZOOM_LEVEL && _parcelLayer && _parcelLayer.isSelected) {
+      if (_mapZoom >= MIN_SEARCH_PARCEL_ZOOM_LEVEL && _parcelLayer && _parcelLayer.isSelected) {
         // need to use invisible parcel layers
-        _fillParcelLayers = _parcelLayer.layer_names.map((layer_name) => layer_name !== 'parent_farm' ? `${layer_name}-invisible-fill` : '').filter((layer_name) => layer_name.length > 0)
+        _fillParcelLayers = _parcelLayer.layer_names.map((layer_name) => `${layer_name}-invisible-fill`).filter((layer_name) => layer_name.length > 0)
       }
       let _searchLayers = _layers.filter((layer:any) => _areaSourceLayers.includes(layer['source-layer']) || _fillParcelLayers.includes(layer['id']) ).map((layer:any) => layer.id)
       let features = map.current.queryRenderedFeatures(e.point, { layers: _searchLayers })
