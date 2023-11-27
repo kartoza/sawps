@@ -226,6 +226,7 @@ class TotalCountPerActivityTestCase(BaseTestCase):
         Set up the test case.
         """
         super().setUp()
+        self.annual_populations[0].annualpopulationperactivity_set.all().delete()
         self.url = reverse("total_count_per_activity")
 
     def test_total_count_per_activity(self) -> None:
@@ -235,7 +236,8 @@ class TotalCountPerActivityTestCase(BaseTestCase):
         url = self.url
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data[0]['activities']), 5)
+        self.assertEqual(response.data[0]['total'], 500)
+        self.assertEqual(len(response.data[0]['activities']), 4)
         self.assertGreater(len(response.data), 0)
         # test with property id
         data = {'property': self.property.id}
