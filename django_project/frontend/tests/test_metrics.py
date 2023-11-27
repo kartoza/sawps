@@ -705,7 +705,7 @@ class TestPropertyCountPerAreaCategory(
             response.json(),
             [
                 {
-                    'category': '198.0 - 200.0',
+                    'category': '198 - 200',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
                     'common_name_varbatim': self.taxon.common_name_varbatim
                 }
@@ -745,7 +745,7 @@ class TestPropertyCountPerAreaAvailableToSpeciesCategory(
             response.json(),
             [
                 {
-                    'category': '8.0 - 10.0',
+                    'category': '8 - 10',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
                     'common_name_varbatim': self.taxon.common_name_varbatim
                 }

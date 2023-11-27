@@ -437,8 +437,11 @@ class BasePropertyCountAPIView(APIView):
             upper_bound = categories[idx + 1]
 
         if query_field == 'population_density':
-            lower_bound = round(lower_bound, 4)
-            upper_bound = round(upper_bound, 4)
+            lower_bound = round(lower_bound, 2)
+            upper_bound = round(upper_bound, 2)
+        else:
+            lower_bound = round(lower_bound)
+            upper_bound = round(upper_bound)
 
         return lower_bound, upper_bound
 
@@ -449,6 +452,10 @@ class BasePropertyCountAPIView(APIView):
             data,
             n_classes=data.count() if data.count() < 6 else 6
         )
+        if query_field == 'population_density':
+            categories = sorted([round(cat, 2) for cat in categories])
+        else:
+            categories = sorted([round(cat) for cat in categories])
 
         results = []
         for idx, category in enumerate(categories):
@@ -485,7 +492,8 @@ class BasePropertyCountAPIView(APIView):
                             property_type_name_field
                         ].lower().replace(' ', '_')
                     ] = count['count']
-                results.append(result)
+                if counts.exists():
+                    results.append(result)
         return results
 
 
