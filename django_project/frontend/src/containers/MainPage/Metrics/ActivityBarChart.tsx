@@ -24,14 +24,12 @@ const availableColors = [
 const ActivityBarChart = (props: {
     property: any;
     selectedSpecies: string | string[];
-    from: number;
     to: number;
 }) => {
     const [loading, setLoading] = useState(false);
     const [activityData, setActivityData] = useState([]);
     const propertyId = props.property;
     var selectedSpecies = props.selectedSpecies;
-    var startYear = props.from;
     var endYear = props.to;
     const [noData, setNoData] = useState(false);
 
@@ -39,19 +37,18 @@ const ActivityBarChart = (props: {
         if (
             propertyId && 
             selectedSpecies.length > 0 &&
-            startYear &&
             endYear
         ) {
           fetchActivityData();
         }
-    }, [propertyId, selectedSpecies, startYear, endYear]); // Re-fetch when propertyId or selectedSpecies change
+    }, [propertyId, selectedSpecies, endYear]); // Re-fetch when propertyId or selectedSpecies change
 
     const fetchActivityData = async () => {
         setLoading(true);
 
         try {
             const response = await axios.get(
-                `${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`
+                `${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${endYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`
             );
 
             const speciesColors: { [key: string]: string } = {};
@@ -158,7 +155,7 @@ const ActivityBarChart = (props: {
                         <Typography>No data available for current selections.</Typography>
                     ) : (
                         <Box>
-                            <Typography>Species activity data, as totals by method</Typography>
+                            <Typography>Species activity data, as totals by method for {endYear}</Typography>
                             <Box className="BoxChartType">
                                 <Bar data={BarData} options={options} />
                             </Box>

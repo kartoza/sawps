@@ -68,6 +68,17 @@ class BaseTestCase(TestCase):
         session = self.client.session
         session.save()
 
+        # add superuser
+        self.superuser = User.objects.create_user(
+            username="testadmin",
+            password="testpasswordd",
+            is_superuser=True
+        )
+        self.auth_headers_superuser = {
+            "HTTP_AUTHORIZATION": "Basic "
+            + base64.b64encode(b"testadmin:testpasswordd").decode("ascii"),
+        }
+
 
 class PopulationEstimateCategoryTestCase(BaseTestCase):
     """
@@ -128,6 +139,10 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
             response.data[0]['annualpopulation_count'][0].get('year_total'),
             response.data[0]['annualpopulation_count'][4]['year_total']
         )
+        # test using superuser
+        response = self.client.get(url, **self.auth_headers_superuser)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0].get('species_name'), 'Lion')
 
     def test_species_population_count_filter_by_name(self) -> None:
         """
@@ -162,11 +177,8 @@ class SpeciesPopuationCountPerYearTestCase(BaseTestCase):
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            int(response.data[0]['annualpopulation_count'][0].
-                get('year')),
-            int(year)
-        )
+        year_data = [p for p in response.data[0]['annualpopulation_count'] if int(p['year']) == int(year)]
+        self.assertEqual(len(year_data), 1)
 
 
 class ActivityPercentageTestCase(BaseTestCase):
@@ -228,6 +240,9 @@ class TotalCountPerActivityTestCase(BaseTestCase):
         # test with property id
         data = {'property': self.property.id}
         response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # test using superuser
+        response = self.client.get(url, data, **self.auth_headers_superuser)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
