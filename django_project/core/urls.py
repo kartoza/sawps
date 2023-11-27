@@ -24,31 +24,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from docs_crawler.urls import preferences as docs_crawler_preferences
-from sawps.custom_docs_crawler_views import CustomDocumentationDetail
 
 urlpatterns = [
     path('accounts/two-factor/', include('allauth_2fa.urls')),
     path('accounts/', include('allauth.urls')),
     path('', include('frontend.urls')),
+    path('', include('docs_crawler.urls')),
     path('admin/', admin.site.urls),
     path('', include('notification.urls')),
     path('', include('activity.urls')),
     path('', include('stakeholder.urls')),
     path('', include('sawps.urls')),
     path('', include('species.urls')),
-]
-
-# Docs crawler
-urlpatterns += [
-    path(
-        'admin/docs_crawler/preferences/',
-        docs_crawler_preferences,
-        name='docs-crawler-admin-preferences'
-    ),
-    path('docs_crawler/data/',
-         CustomDocumentationDetail.as_view(),
-         name='docs-crawler-data'),
 ]
 
 if settings.DEBUG:
