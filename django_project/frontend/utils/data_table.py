@@ -7,14 +7,13 @@ from zipfile import ZipFile
 
 import pandas as pd
 from django.conf import settings
-from django.db.models import Sum, F, Value
+from django.db.models import Sum, F
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 
 from activity.models import ActivityType
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
-from frontend.utils.user_roles import get_user_roles
 from frontend.serializers.report import (
     SpeciesReportSerializer,
     SamplingReportSerializer,
@@ -30,6 +29,7 @@ from frontend.static_mapping import (
 )
 from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
 from frontend.utils.organisation import get_current_organisation_id
+from frontend.utils.user_roles import get_user_roles
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
@@ -99,7 +99,8 @@ def get_queryset(user_roles: List[str], request):
         ).distinct().order_by("scientific_name")
 
     filtered_queryset = query_filter(
-        request.GET if request.method == 'GET' else request.data, queryset=queryset
+        request.GET if request.method == 'GET' else request.data,
+        queryset=queryset
     ).qs
 
     return filtered_queryset
@@ -114,7 +115,8 @@ def get_taxon_queryset(request):
     ).distinct().order_by("scientific_name")
 
     filtered_queryset = query_filter(
-        request.GET if request.method == 'GET' else request.data, queryset=queryset
+        request.GET if request.method == 'GET' else request.data,
+        queryset=queryset
     ).qs
     return filtered_queryset
 
@@ -565,7 +567,9 @@ def write_report_to_rows(queryset, request, report_functions=None):
             if report_functions \
             else default_report_functions
         if get_param_from_request(request, 'file') == 'xlsx':
-            filename = 'data_report' + '.' + get_param_from_request(request, 'file')
+            filename = (
+                'data_report' + '.' + get_param_from_request(request, 'file')
+            )
             path_file = os.path.join(path, filename)
             if os.path.exists(path_file):
                 os.remove(path_file)
@@ -602,7 +606,9 @@ def write_report_to_rows(queryset, request, report_functions=None):
                 rows = report_functions[report_name](queryset, request)
                 dataframe = pd.DataFrame(rows)
                 filename = "data_report_" + report_name
-                filename = filename + '.' + get_param_from_request(request, 'file')
+                filename = (
+                    filename + '.' + get_param_from_request(request, 'file')
+                )
                 path_file = os.path.join(path, filename)
 
                 if os.path.exists(path_file):
