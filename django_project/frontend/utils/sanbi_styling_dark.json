@@ -5,7 +5,7 @@
     "maputnik:license": "https://github.com/maputnik/osm-liberty/blob/gh-pages/LICENSE.md",
     "maputnik:renderer": "mbgljs",
     "openmaptiles:version": "3.x",
-    "sanbi:version": "12",
+    "sanbi:version": "13",
     "sanbi:theme": "dark"
   },
   "center": [25.86, -28.52],
@@ -1588,7 +1588,7 @@
       "type": "line",
       "source": "sanbi",
       "source-layer": "parent_farm",
-      "minzoom": 10,
+      "minzoom": 9,
       "layout": {
         "visibility": "visible",
         "line-join": "bevel",

@@ -218,6 +218,20 @@ class TestAPIStatistical(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
+        # test empty property id
+        data = {
+            'species': self.taxon.scientific_name,
+            'property': ''
+        }
+        request = self.factory.post(
+            reverse('species-population-trend'),
+            data=data, format='json'
+        )
+        request.user = self.user_1
+        view = SpeciesTrend.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
         # remove test file
         output.delete()
 

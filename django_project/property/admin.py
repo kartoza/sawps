@@ -73,8 +73,22 @@ class ParcelAdmin(admin.ModelAdmin):
     """Admin page for Parcel model.
 
     """
-    list_display = ('sg_number', 'property', 'parcel_type')
-    search_fields = ['sg_number', 'property__name', 'parcel_type__name']
+    list_display = ('sg_number', 'property', 'parcel_type', 'source')
+    search_fields = ['sg_number', 'property__name', 'parcel_type__name',
+                     'source']
+    list_filter = ('parcel_type', 'source')
+
+    @admin.action(
+        description="Patch source in parcels"
+    )
+    def run_patch_parcel_source(self, request, queryset):
+        """Admin action to patch source in parcels."""
+        from frontend.tasks.parcel import (
+            patch_parcel_sources
+        )
+        patch_parcel_sources.delay()
+
+    actions = [run_patch_parcel_source]
 
 
 class PropertyTypeAdmin(admin.ModelAdmin):
