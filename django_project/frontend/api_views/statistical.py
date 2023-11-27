@@ -76,9 +76,9 @@ class SpeciesTrend(SpeciesNationalTrend):
 
     def get_properties_names(self):
         filter_property = self.request.data.get('property', None)
-        if not filter_property:
-            return []
-        property_id_list = ast.literal_eval('(' + filter_property + ',)')
+        property_id_list = []
+        if filter_property:
+            property_id_list = ast.literal_eval('(' + filter_property + ',)')
         return Property.objects.filter(
             id__in=property_id_list
         ).values_list('name', flat=True).distinct()

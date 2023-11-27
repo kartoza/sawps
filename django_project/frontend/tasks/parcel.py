@@ -32,3 +32,19 @@ def boundary_files_search(request_id):
     from frontend.utils.upload_file import search_parcels_by_boundary_files
     search_request = BoundarySearchRequest.objects.get(id=request_id)
     search_parcels_by_boundary_files(search_request)
+
+
+@shared_task(name='patch_parcel_sources')
+def patch_parcel_sources():
+    from property.models import Parcel
+    from frontend.utils.parcel import find_layer_by_cname
+    parcels = Parcel.objects.filter(
+        source__isnull=True
+    )
+    logger.info(f'Patch parcels {parcels.count()}')
+    for parcel in parcels:
+        layer, parcel_id = find_layer_by_cname(parcel.sg_number)
+        parcel.source = layer
+        parcel.source_id = parcel_id
+        parcel.save(update_fields=['source', 'source_id'])
+    logger.info(f'Finished patching parcels {parcels.count()}')
