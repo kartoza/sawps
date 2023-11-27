@@ -31,7 +31,7 @@ const MenuProps = {
 };
 
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
-const EXCLUDED_COLUMNS = ['upload_id', 'property_id']
+const EXCLUDED_COLUMNS = ['upload_id', 'property_id', 'is_editable']
 
 const DataList = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -262,7 +262,7 @@ const DataList = () => {
                                         <GridActionsCellItem key={params.id} icon={<EditIcon />} onClick={() => {
                                             let _speciesReportRow = params.row as any
                                             window.location.replace(window.location.origin + `/upload-data/${_speciesReportRow.property_id}/?upload_id=${_speciesReportRow.upload_id}`)
-                                        }} label="Edit Data" title="Edit Data" />
+                                        }} label="Edit Data" title="Edit Data" hidden={!params.row.is_editable} />
                                       ]
                                 })
                             }
