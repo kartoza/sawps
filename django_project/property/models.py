@@ -169,6 +169,8 @@ class Parcel(models.Model):
         null=False,
         default=0
     )
+    source = models.CharField(max_length=100, null=True, blank=True)
+    source_id = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.sg_number

@@ -37,6 +37,7 @@ from population_data.models import (
 from property.models import Property
 from property.models import Province
 from species.models import Taxon
+from stakeholder.models import OrganisationRepresentative
 
 logger = logging.getLogger('sawps')
 
@@ -205,13 +206,23 @@ def species_report(queryset: QuerySet, request) -> List:
         request: The HTTP request object.
     """
     filters = get_report_filter(request, SPECIES_REPORT)
-    species_population_data = AnnualPopulation.objects.filter(
+    species_population_data = AnnualPopulation.objects.select_related(
+        'taxon', 'property', 'property__organisation', 'user'
+    ).filter(
         property_id__in=queryset.values_list('id', flat=True),
         **filters
     ).distinct()
+    # fetch organisations ids where user is manager
+    managed_ids = OrganisationRepresentative.objects.filter(
+        user=request.user
+    ).values_list('organisation_id', flat=True)
     species_reports = SpeciesReportSerializer(
         species_population_data,
-        many=True
+        many=True,
+        context={
+            'user': request.user,
+            'managed_ids': managed_ids
+        }
     ).data
     return species_reports
 

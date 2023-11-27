@@ -60,20 +60,20 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
 
 
     return (
-        <Box className={'SectionContainer'}>
+        <Box className={'SectionContainer' + (Object.keys(populationTrendData).length == 0 ? ' SectionEmpty': '')}>
             <Grid container flexDirection={'column'}>
                 <Grid item className='SectionTitle'>
-                    <Typography>Property</Typography>
+                    <Typography>{Object.keys(populationTrendData).length > 1 ? 'Properties' : 'Property'}</Typography>
                     <Divider />
                 </Grid>
                 <Grid item>
                     <Grid container flexDirection={'column'}>
                         <Grid item>
                             {!loadingTrendData ? 
-                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
+                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 8, xl: 12 }}>
                                 {Object.keys(populationTrendData).map((property, index) => {
                                     return (
-                                        <Grid item xs={3} key={index}>
+                                        <Grid item xs={4} key={index}>
                                             <PopulationTrendChart chartId={`property-population-trend-${property}`} chartTitle={`${property}`} data={populationTrendData[property]} showRawPopEst={true} />
                                         </Grid>
                                     )

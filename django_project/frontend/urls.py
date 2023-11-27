@@ -34,7 +34,7 @@ from frontend.api_views.metrics import (
     PropertyCountPerPopulationSizeCategoryAPIView,
     PropertyPerAreaAvailableCategoryAPIView,
     PropertyPerPopDensityCategoryAPIView,
-    SpeciesPopuationCountPerYearAPIView,
+    SpeciesPopulationCountPerYearAPIView,
     SpeciesPopulationCountPerProvinceAPIView,
     SpeciesPopulationDensityPerPropertyAPIView,
     TotalAreaAvailableToSpeciesAPIView,
@@ -323,7 +323,7 @@ urlpatterns = [
     path('api/data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
         'api/species-population-count/',
-        SpeciesPopuationCountPerYearAPIView.as_view(),
+        SpeciesPopulationCountPerYearAPIView.as_view(),
         name='species_population_count'
     ),
     path(

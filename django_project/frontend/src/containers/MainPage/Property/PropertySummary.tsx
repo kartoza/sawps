@@ -3,7 +3,7 @@ import Grid from "@mui/material/Grid";
 import {RootState} from '../../../app/store';
 import { useAppSelector } from '../../../app/hooks';
 import PropertySummaryTable from '../../../components/PropertySummaryTable';
-import SpeciesSideBarLineChart from '../Metrics/SpeciesSideBarLineChart';
+import SpeciesSideBarChart from '../Metrics/SpeciesSideBarChart';
 import ActivityBarChart from '../Metrics/ActivityBarChart';
 
 
@@ -40,11 +40,9 @@ export default function PropertySummary() {
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <SpeciesSideBarLineChart
+                                <SpeciesSideBarChart
                                     property={propertyItem.id}            
                                     selectedSpecies={selectedSpecies}
-                                    from={startYear}
-                                    to={endYear}
                                 />
                             </Grid>
                             <Grid item>
@@ -59,7 +57,6 @@ export default function PropertySummary() {
                                     <ActivityBarChart
                                         property={propertyItem.id}            
                                         selectedSpecies={selectedSpecies}
-                                        from={startYear}
                                         to={endYear}
                                     />
                             </Grid>
