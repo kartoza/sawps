@@ -287,7 +287,6 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
-
                             {
                             userInfoData?.user_permissions.includes('Can view age group') &&
                             ageGroupData.map((data) => (

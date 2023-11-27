@@ -104,7 +104,7 @@ const TotalCountPerActivity = (props: any) => {
   const options = {
         scales: {
             y: {
-              grace: '5%',
+              grace: '10%',
               display: true,
               stacked: false,
               title: {
