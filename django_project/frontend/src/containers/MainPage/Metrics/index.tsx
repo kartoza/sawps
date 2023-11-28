@@ -186,7 +186,7 @@ const Metrics = () => {
     // Call the function with user permissions
     updateConstants(userPermissions, constants);
 
-
+    console.debug('showCharts', showCharts)
     return (
         <Box>
             <Box>
