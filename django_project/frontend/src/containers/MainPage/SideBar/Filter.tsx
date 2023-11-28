@@ -26,6 +26,7 @@ import {
     setSpatialFilterValues,
     setStartYear,
     toggleSpecies,
+    toggleSpeciesList,
     setSelectedProvinceName,
     setSelectedProvinceCount
 } from '../../../reducers/SpeciesFilter';
@@ -71,6 +72,7 @@ function Filter(props: any) {
     const [tab, setTab] = useState<string>('')
     const startYearDisabled = ['map', 'charts'].includes(tab);
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
+    const [selectedSpeciesList, setSelectedSpeciesList] = useState<string[]>([]);
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const [shownPropertyOptions, setShownPropertyOptions] = useState([])
@@ -172,7 +174,7 @@ function Filter(props: any) {
         if (propertyList) {
             if (selectedOrganisation.length === 0 && selectedProvince.length === 0) {
                 setShownPropertyOptions([])
-                // setSelectedProperty([])
+                setSelectedProperty([])
             } else {
                 setShownPropertyOptions(propertyList.map(property => {
                     return {
@@ -180,7 +182,7 @@ function Filter(props: any) {
                         name: `${property.name} (${property.short_code})`
                     }
                 }))
-                // setSelectedProperty(propertyList.map(property => property.id))
+                setSelectedProperty(propertyList.map(property => property.id))
             }
         }
     }, [propertyList])
@@ -231,12 +233,15 @@ function Filter(props: any) {
     };
 
     useEffect(() => {
+        if (selectedSpeciesList.length === 0 && selectedSpecies !== "") {
+            setSelectedSpeciesList([selectedSpecies])
+        }
         dispatch(toggleSpecies(selectedSpecies));
     }, [selectedSpecies])
 
     useEffect(() => {
-        dispatch(toggleSpecies(selectedSpecies));
-    }, [selectedSpecies])
+        dispatch(toggleSpeciesList(selectedSpeciesList.join(',')));
+    }, [selectedSpeciesList])
 
     useEffect(() => {
         const values = selectedInfo.join(',')
@@ -400,6 +405,43 @@ function Filter(props: any) {
         dispatch(setEndYear(yearRangeEnd));
     }
 
+    const propertyInputField = () => {
+        return (
+            <Tooltip
+                title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
+                placement="top-start"
+            >
+                <Box>
+                    <Box className='sidebarBoxHeading'>
+                        <img src="/static/images/Property.svg" alt='Property image' />
+                        <Typography color='#75B37A' fontSize='medium'>Property</Typography>
+                    </Box>
+                    <List className='ListItem' component="nav" aria-label="">
+                        {loading || isPropertyLoading ? (
+                            <Loading />
+                        ) : (
+                            <AutoCompleteCheckbox
+                                options={shownPropertyOptions}
+                                selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
+                                singleTerm={'Property'}
+                                pluralTerms={'Properties'}
+                                setSelectedOption={(newValues) => {
+                                    setSelectedProperty(newValues)
+                                    if (newValues.length === 0) {
+                                        adjustMapToBoundingBox(boundingBox)
+                                    } else {
+                                        // Call zoomToCombinedBoundingBox with the updated list of selected properties
+                                        zoomToCombinedBoundingBox(newValues);
+                                    }
+                                }}
+                            />
+                        )}
+                    </List>
+                </Box>
+            </Tooltip>
+        )
+    }
+
     useEffect(() => {
         if (SpeciesFilterList) {
             const sList: any = []
@@ -464,6 +506,7 @@ function Filter(props: any) {
                     }} />
                 </Box>
                 )}
+
                 <Tooltip
                   title={selectedOrganisation.length === 0 ? "Select Organisation to show Species options!" : ""}
                   placement="top-start"
@@ -475,7 +518,7 @@ function Filter(props: any) {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading || isSpeciesLoading ? <Loading /> :
-                                (
+                                tab !== 'reports' ? (
                                     <Autocomplete
                                         id="combo-box-demo"
                                         disableClearable={true}
@@ -485,11 +528,25 @@ function Filter(props: any) {
                                         onChange={(event, value) => handleSelectedSpecies(value)}
                                         renderInput={(params) => <TextField {...params} placeholder="Select" />}
                                     />
+                                ) : (
+                                    <AutoCompleteCheckbox
+                                        options={searchSpeciesList.map((species) => {
+                                            return {
+                                                'id': species,
+                                                'name': species
+                                            }
+                                        })}
+                                        selectedOption={selectedSpeciesList}
+                                        singleTerm={'Species'}
+                                        pluralTerms={'Species'}
+                                        setSelectedOption={setSelectedSpeciesList}
+                                    />
                                 )
                             }
                         </List>
                     </Box>
                 </Tooltip>
+
                 {tab === 'reports' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
@@ -511,6 +568,7 @@ function Filter(props: any) {
                         </List>
                     </Box>
                 }
+
                  {tab !== 'trends' &&
                    <Box>
                         <Box className='sidebarBoxHeading'>
@@ -532,6 +590,7 @@ function Filter(props: any) {
                         </List>
                     </Box>
                  }
+
                 {
                     allowOrganisationSelection && <Box>
                         <Box className='sidebarBoxHeading'>
@@ -583,42 +642,10 @@ function Filter(props: any) {
                 }
 
                 {
-                    allowPropertiesSelection &&
-                  <Tooltip
-                    title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
-                    placement="top-start"
-                  >
-                    <Box>
-                        <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/Property.svg" alt='Property image' />
-                            <Typography color='#75B37A' fontSize='medium'>Property</Typography>
-                        </Box>
-                        <List className='ListItem' component="nav" aria-label="">
-                            {loading || isPropertyLoading ? (
-                                <Loading />
-                            ) : (
-                              <AutoCompleteCheckbox
-                                options={shownPropertyOptions}
-                                selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
-                                singleTerm={'Property'}
-                                pluralTerms={'Properties'}
-                                setSelectedOption={(newValues) => {
-                                    setSelectedProperty(newValues)
-                                    if (newValues.length === 0) {
-                                        adjustMapToBoundingBox(boundingBox)
-                                    } else {
-                                      // Call zoomToCombinedBoundingBox with the updated list of selected properties
-                                      zoomToCombinedBoundingBox(newValues);
-                                    }
-                                }}
-                              />
-                            )}
-                        </List>
-                    </Box>
-                  </Tooltip>
+                    allowPropertiesSelection && propertyInputField()
                 }
 
-                {tab != 'trends' &&
+                {tab !== 'trends' &&
                     <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Clock.svg" alt='watch image'/>
@@ -666,7 +693,7 @@ function Filter(props: any) {
                 </Box>
                 }
 
-                {tab != 'trends' &&
+                {tab !== 'trends' &&
                   <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Layers.svg" alt='Filter image'/>

@@ -1,6 +1,7 @@
 import base64
 import csv
 import json
+import shutil
 import os
 
 from django.conf import settings
@@ -318,10 +319,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        if response.data:
-            self.assertEqual(next(iter(response.data[0])), "Activity_report")
-        else:
-            self.assertEqual(response.data, [])
+        self.assertEqual(next(iter(response.data[0])), "Activity_report")
 
     def test_activity_report_without_activity_filter(self) -> None:
         """Test data table activity report without activity"""
@@ -335,10 +333,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        if response.data:
-            self.assertEqual(next(iter(response.data[0])), "Activity_report")
-        else:
-            self.assertEqual(response.data, [])
+        self.assertEqual(response.data, [])
 
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
@@ -353,6 +348,27 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "activity": str(value.activity_type.id)
         }
         response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]["Sampling_report"][0][
+                "scientific_name"
+            ],
+            "SpeciesA"
+        )
+
+    def test_data_table_post(self) -> None:
+        """Test data table with post request"""
+        year = self.annual_populations[1].year
+        value = self.annual_populations[1].annualpopulationperactivity_set.first()
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "start_year": year,
+            "end_year": year,
+            "reports": "Sampling_report",
+            "activity": str(value.activity_type.id)
+        }
+        response = self.client.post(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]["Sampling_report"][0][
@@ -910,3 +926,41 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         # check if xlsx files exists in the folder
         path = os.path.join(settings.MEDIA_ROOT, "download_data")
         self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
+
+    def test_download_one_report(self) -> None:
+        """Test download data table with only one report"""
+        url = self.url
+
+        data = {
+            "file": "csv",
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Species_report"
+        }
+        response = self.client.post(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data['file'],
+            '/media/download_data/data_report_Species_report.csv'
+        )
+
+    def test_path_not_exist(self):
+        """Test download data table when file path does not exist"""
+
+        path = os.path.join(settings.MEDIA_ROOT, "download_data")
+        shutil.rmtree(path, ignore_errors=True)
+
+        url = self.url
+
+        data = {
+            "file": "csv",
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Species_report"
+        }
+        response = self.client.post(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data['file'],
+            '/media/download_data/data_report_Species_report.csv'
+        )

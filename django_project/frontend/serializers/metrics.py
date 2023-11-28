@@ -297,10 +297,10 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             )
 
         populations = populations.annotate(
-            total=Sum("annualpopulationperactivity__total")
+            total_population=Sum("total")
         )
         if populations.exists():
-            return populations[0].get("total")
+            return populations[0].get("total_population")
         else:
             return None
 
