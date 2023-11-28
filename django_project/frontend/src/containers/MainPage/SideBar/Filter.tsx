@@ -293,6 +293,9 @@ function Filter(props: any) {
 
     useEffect(() => {
         if (organisationList) {
+            if (selectedOrganisation.length === 0) {
+                setSelectedSpeciesList([])
+            }
             dispatch(selectedOrganisationId(selectedOrganisation.join(',')))
             const selectedOrganisationNames = organisationList.filter(
               organisationObj => selectedOrganisation.includes(organisationObj.id)
@@ -336,6 +339,7 @@ function Filter(props: any) {
         }
         setSelectedProperty([])
         setSelectedSpecies('')
+        setSelectedSpeciesList([])
         setSelectedActivity([])
         setSelectedInfo([])
         setLocalStartYear(yearRangeStart)
@@ -551,7 +555,7 @@ function Filter(props: any) {
                 }
 
                 {
-                    (allowPropertiesSelection && tab === 'reports') && propertyInputField()
+                    allowPropertiesSelection && propertyInputField()
                 }
 
                 {tab !== 'trends' &&
