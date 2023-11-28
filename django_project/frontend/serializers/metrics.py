@@ -8,7 +8,6 @@ from django.db.models import (
 )
 from rest_framework import serializers
 
-from frontend.static_mapping import YEAR_DATA_LIMIT
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
@@ -52,14 +51,9 @@ class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
         Params:
             obj (Taxon): The Taxon instance representing the species.
         """
-        start_year = self.context["request"].GET.get("start_year")
-        end_year = self.context["request"].GET.get("end_year")
         property = self.context['request'].GET.get('property')
         annual_populations = (
             AnnualPopulation.objects.filter(
-                Q(
-                    year__range=(start_year, end_year)
-                ) if start_year and end_year else Q(),
                 Q(
                     property__id__in=property.split(",")
                 ) if property else Q(),
@@ -303,10 +297,10 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             )
 
         populations = populations.annotate(
-            total=Sum("annualpopulationperactivity__total")
+            total_population=Sum("total")
         )
         if populations.exists():
-            return populations[0].get("total")
+            return populations[0].get("total_population")
         else:
             return None
 
@@ -543,22 +537,14 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
 
         populations = AnnualPopulation.objects.filter(
             **filters, taxon=obj
+        ).values(
+            'year'
         ).annotate(
             area_total=Sum("property__property_size_ha"),
-            area_available=Sum("area_available_to_species"),
-            annualpopulation__year=F('year')
-        ).values('annualpopulation__year', 'area_total', 'area_available')
-        data = {
-            "owned_species": populations
-        }
-        if len(populations) > YEAR_DATA_LIMIT:
-            data = {
-                "owned_species": populations[:YEAR_DATA_LIMIT],
-                "message": "Only last 10 years data are displayed \
-                for search with >10 years data returned"
-            }
+            area_available=Sum("area_available_to_species")
+        ).order_by('year')
 
-        return data
+        return populations
 
 
 class AreaAvailablePerSpeciesSerializer(serializers.ModelSerializer):

@@ -1,0 +1,45 @@
+[
+  {
+    "model": "docs_crawler.page",
+    "pk": 1,
+    "fields": {
+      "name": "help",
+      "relative_url": "/help",
+      "url": "/user/manual/",
+      "title": "Help",
+      "intro": "",
+      "autogenerate_block": true
+    }
+  },
+  {
+    "model": "docs_crawler.page",
+    "pk": 2,
+    "fields": {
+      "name": "map",
+      "relative_url": "/map",
+      "url": "/user/manual/explore/",
+      "title": "Explore",
+      "intro": "",
+      "autogenerate_block": true
+    }
+  },
+  {
+    "model": "docs_crawler.page",
+    "pk": 3,
+    "fields": {
+      "name": "upload",
+      "relative_url": "/upload",
+      "url": "/user/manual/data-upload/",
+      "title": "Upload data",
+      "intro": "",
+      "autogenerate_block": true
+    }
+  },
+  {
+    "model": "docs_crawler.preferences",
+    "pk": 1,
+    "fields": {
+      "documentation_base_url": "https://kartoza.github.io/sawps/"
+    }
+  }
+]

@@ -21,6 +21,7 @@ import {resetMapState, resetSelectedProperty, setMapSelectionMode, setSelectedPa
 import DataList from './Data';
 import Metrics from './Metrics';
 import Trends from './Trends';
+import { HelperContainerWithToggle } from "../../components/HelperContainer";
 
 
 enum RightSideBarMode {
@@ -183,7 +184,15 @@ function MainPage() {
                       <Tab key={3} label={'TRENDS'} {...a11yProps(3)} />
                     </Tabs>
                   )}
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1, paddingRight: "1rem" }}>
+                    <div style={{ width: "100%", display: "flex"}}>
+                      {
+                        rightSideBarMode === RightSideBarMode.Upload ?
+                        <HelperContainerWithToggle key={'/upload/'} relativeUrl='/upload/'/>:
+                        <HelperContainerWithToggle key={'/map/'} relativeUrl='/map/'/>
+                      }
+                    </div>
+                  </div>
                 </Box>
 
               </Grid>

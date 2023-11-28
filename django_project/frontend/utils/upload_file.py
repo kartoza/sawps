@@ -20,12 +20,14 @@ from frontend.models.base_task import (
 from frontend.models.parcels import (
     Erf,
     Holding,
-    FarmPortion
+    FarmPortion,
+    ParentFarm
 )
 from frontend.serializers.parcel import (
     ErfParcelSerializer,
     HoldingParcelSerializer,
-    FarmPortionParcelSerializer
+    FarmPortionParcelSerializer,
+    ParentFarmParcelSerializer
 )
 from frontend.models.boundary_search import (
     BoundarySearchRequest,
@@ -40,7 +42,8 @@ from frontend.utils.parcel import find_parcel_base
 PARCEL_SERIALIZER_MAP = {
     Erf: ErfParcelSerializer,
     Holding: HoldingParcelSerializer,
-    FarmPortion: FarmPortionParcelSerializer
+    FarmPortion: FarmPortionParcelSerializer,
+    ParentFarm: ParentFarmParcelSerializer
 }
 
 fiona.drvsupport.supported_drivers['KML'] = 'ro'

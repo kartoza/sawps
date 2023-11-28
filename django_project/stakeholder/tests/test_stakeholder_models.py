@@ -132,7 +132,7 @@ class TestUser(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.profileFactory = User.objects.create().user_profile
+        cls.user_profile = User.objects.create().user_profile
 
     def test_create_new_user_with_new_profile(self):
         """Test creating new user when new profile is created."""
@@ -140,17 +140,17 @@ class TestUser(TestCase):
 
     def test_update_user_profile(self):
         """Test updating user through profile."""
-        self.profileFactory.user.username = 'test'
-        self.profileFactory.user.first_name = 'test123'
-        self.profileFactory.user.save()
+        self.user_profile.user.username = 'test'
+        self.user_profile.user.first_name = 'test123'
+        self.user_profile.user.save()
         self.assertEqual(
             User.objects.get(username='test').first_name, 'test123'
         )
 
     def test_delete_profile(self):
         """Test deleting user when a profile is deleted."""
-        user_id = self.profileFactory.user.id
-        self.profileFactory.delete()
+        user_id = self.user_profile.user.id
+        self.user_profile.delete()
         self.assertEqual(User.objects.count(), 1)
 
         users = User.objects.filter(id=user_id)
@@ -170,6 +170,17 @@ class TestUser(TestCase):
         self.assertTrue(UserProfile.objects.filter(
             user_id=user.id
         ).exists())
+
+    def test_user_not_exist(self):
+        self.assertEqual(
+            self.user_profile.__str__(),
+            self.user_profile.user.username
+        )
+        self.user_profile.user_id = 99999999999
+        self.assertEqual(
+            self.user_profile.__str__(),
+            self.user_profile.id
+        )
 
 
 class TestUserLogin(TestCase):
@@ -198,6 +209,17 @@ class TestUserLogin(TestCase):
         self.user_login.delete()
         self.assertEqual(UserLogin.objects.count(), 0)
         self.assertEqual(User.objects.count(), 2)
+
+    def test_user_not_exist(self):
+        self.assertEqual(
+            self.user_login.__str__(),
+            self.user_login.user.username
+        )
+        self.user_login.user_id = 99999999999
+        self.assertEqual(
+            self.user_login.__str__(),
+            self.user_login.id
+        )
 
 
 @override_settings(

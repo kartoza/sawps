@@ -22,6 +22,8 @@ const Topper = () => {
     const [tab, setTab] = useState<string>('')
     const startYearDisabled = ['map', 'charts'].includes(tab);
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const selectedSpeciesList = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpeciesList).split(',').join(', ')
+    const selectedSpeciesListCount = selectedSpeciesList.split(', ').length
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
@@ -48,7 +50,10 @@ const Topper = () => {
 
 
     useEffect(() => {
-        if (taxonDetail) {
+        if (tab === 'reports') {
+            setSpeciesIcon("/static/images/default-species-topper.svg")
+        }
+        else if (taxonDetail) {
             if (taxonDetail.topper_icon) {
                 setSpeciesIcon(taxonDetail.topper_icon)
             } else {
@@ -74,7 +79,9 @@ const Topper = () => {
                           <Grid container flexDirection={'row'} flexGrow={1}>
                               <Grid item xs>
                                   <Box><img className={'species-image'} src={speciesIcon} alt='Species image'/></Box>
-                                  <Box className={'text-content'}><b>{selectedSpecies}</b></Box>
+                                  <Box className={'text-content'}><b>
+                                      {tab === 'reports' ? `${selectedSpeciesListCount} Species` : selectedSpecies}
+                                  </b></Box>
                               </Grid>
                               <Grid item xs>
                                   <img src="/static/images/separator.svg" alt='Separator'/>
@@ -122,6 +129,9 @@ const Topper = () => {
               </Box>
           </Box>
           <Box className={'topper-grey'} padding={'10px'}>
+              <Box>
+                  <b>Species list</b>: {selectedSpeciesList}
+              </Box>
               <Box>
                   <b>Organisation list</b>: {organisationName}
               </Box>
