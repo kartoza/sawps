@@ -34,7 +34,7 @@ const FETCH_AVAILABLE_DATA = '/api/data-table/'
 const EXCLUDED_COLUMNS = ['upload_id', 'property_id', 'is_editable']
 
 const DataList = () => {
-    const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const selectedSpeciesList = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpeciesList)
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const selectedInfo = useAppSelector((state: RootState) => state.SpeciesFilter.selectedInfoList)
@@ -132,7 +132,17 @@ const DataList = () => {
         if (activityList) {
             activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
         }
-        axios.get(`${FETCH_AVAILABLE_DATA}?reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityParams}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        let _data = {
+            'species': selectedSpeciesList,
+            'reports': selectedInfo.replace(/ /g, '_'),
+            'start_year': startYear,
+            'end_year': endYear,
+            'property': propertyId,
+            'organisation': organisationId,
+            'activity': activityParams,
+            'spatial_filter_values': spatialFilterValues,
+        }
+        axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
@@ -154,12 +164,12 @@ const DataList = () => {
     useEffect(() => {
         setColumns([])
         fetchDataList()
-        if (selectedSpecies) {
+        if (selectedSpeciesList) {
             setShowReports(true);
         } else {
             setShowReports(false);
         }
-    }, [selectedSpecies, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
+    }, [selectedSpeciesList, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
 
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
@@ -171,7 +181,22 @@ const DataList = () => {
     };
 
     const handleExportCsv = (): void => {
-        axios.get(`${FETCH_AVAILABLE_DATA}?file=csv&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityId}&spatial_filter_values=${spatialFilterValues}`).then((response) => {
+        let activityParams = activityId;
+        if (activityList) {
+            activityParams = activityId.split(',').length === activityList.length ? 'all': activityId;
+        }
+        let _data = {
+            'file': 'csv',
+            'species': selectedSpeciesList,
+            'reports': selectedInfo.replace(/ /g, '_'),
+            'start_year': startYear,
+            'end_year': endYear,
+            'property': propertyId,
+            'organisation': organisationId,
+            'activity': activityParams,
+            'spatial_filter_values': spatialFilterValues,
+        }
+        axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
@@ -187,9 +212,18 @@ const DataList = () => {
         if (activityList) {
             activityParams = activityId.split(',').length === activityList.length ? 'all': activityId;
         }
-        axios.get(
-          `${FETCH_AVAILABLE_DATA}?file=xlsx&reports=${selectedInfo.replace(/ /g, '_')}&start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationId}&activity=${activityParams}&spatial_filter_values=${spatialFilterValues}`
-        ).then((response) => {
+        let _data = {
+            'file': 'xlsx',
+            'species': selectedSpeciesList,
+            'reports': selectedInfo.replace(/ /g, '_'),
+            'start_year': startYear,
+            'end_year': endYear,
+            'property': propertyId,
+            'organisation': organisationId,
+            'activity': activityParams,
+            'spatial_filter_values': spatialFilterValues,
+        }
+        axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
@@ -352,7 +386,7 @@ const DataList = () => {
         const uniqueColumns = getUniqueColumn()
         setSelectedColumns(
           uniqueColumns
-            .filter(col => !['Common Name', 'Scientific Name'].includes(col.headerName))
+            .filter(col => !['Organisation Name', 'Organisation Short Code', 'Property Short Code'].includes(col.headerName))
             .map(col => col.headerName)
         )
     }, [data])
@@ -378,7 +412,7 @@ const DataList = () => {
             heightLeft -= pageHeight;
           }
           setModalOpen(false)
-          doc.save(`${selectedSpecies} - reports.pdf`);
+          doc.save(`${selectedSpeciesList} - reports.pdf`);
         });
     }
 

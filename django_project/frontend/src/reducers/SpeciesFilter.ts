@@ -4,6 +4,7 @@ import SpeciesLayer from "../models/SpeciesLayer";
 export interface SpeciesFilterInterface {
   SpeciesFilterList: SpeciesLayer[];
   selectedSpecies: string;
+  selectedSpeciesList: string;
   months: string[];
   selectedMonths: string;
   startYear: number;
@@ -24,6 +25,7 @@ export interface SpeciesFilterInterface {
 const initialState: SpeciesFilterInterface = {
   SpeciesFilterList: [],
   selectedSpecies: "",
+  selectedSpeciesList: "",
   months: [],
   selectedMonths: "",
   startYear: 1960,
@@ -71,6 +73,9 @@ export const SpeciesFilterSlice = createSlice({
     },
     toggleSpecies: (state, action: PayloadAction<string>) => {
       state.selectedSpecies = action.payload;
+    },
+    toggleSpeciesList: (state, action: PayloadAction<string>) => {
+      state.selectedSpeciesList = action.payload;
     },
     setSelectedInfoList: (state, action: PayloadAction<string>) => {
       state.selectedInfoList = action.payload;
@@ -125,6 +130,7 @@ export const SpeciesFilterSlice = createSlice({
 export const {
   setSpeciesFilter,
   toggleSpecies,
+  toggleSpeciesList,
   setSelectedSpecies,
   selectedPropertyId,
   selectedOrganisationId,
