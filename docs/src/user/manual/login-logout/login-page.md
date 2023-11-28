@@ -1,6 +1,19 @@
+---
+title: IDS SAWPS
+summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
+    - Jeremy Prior
+    - Ketan Bamniya
+date: 09-11-2023
+some_url: https://github.com/kartoza/sawps/
+copyright: Copyright 2023, SANBI
+contact: PROJECT_CONTACT
+license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+context_id: FsEuBo8PhBfYJK2fueLWE4
+---
+
 # Login Page Documentation
 
-The Login Page is the entry point to access the user's account within the application. This page provides a secure way for users to log in using their credentials. It offers a straightforward interface for entering the user's email address, password, and includes an optional `Remember Me` checkbox for convenience.
+The Login Page is the entry point to access the user's account within the application. This page provides a secure way for users to log in using their credentials. It offers a straightforward interface for entering the user's email address, and password, and includes an optional `Remember Me` checkbox for convenience.
 
 ## Login Form
 
@@ -14,11 +27,13 @@ The Login Page is the entry point to access the user's account within the applic
 
 4. **Login Button**: Click the `LOGIN` button to submit the user's credentials and access their account.
 
-5. **Forgot Password**: The `Forgot Password` link opens the [forgot password](forgot-password.md) for reset password.
+5. **Register Here**: The `Register Here` link opens the [register page](../register/register-page.md) for registration.
+
+6. **Forgot Password**: The `Forgot Password` link opens the [forgot password](forgot-password.md) for reset password.
 
 ### Remember Me
 
-The `Remember Me` checkbox allows users to opt for the application to remember the users login information. When checked, users won't need to re-enter their email and password each time they visit the login page. This is particularly convenient for returning users who want a seamless login experience.
+The `Remember Me` checkbox allows users to opt for the application to remember the user's login information. When checked, users won't need to re-enter their email and password each time they visit the login page. This is particularly convenient for returning users who want a seamless login experience.
 
 ### Security
 
@@ -27,7 +42,7 @@ The `Login Page` is designed with security in mind to protect user accounts and 
 
 ### Logging In
 
-Please ensure that users enter their email and password correctly to access their account. After clicking the `LOGIN` button, users will be redirected to the two factor authentication page within the application.
+Please ensure that users enter their email and password correctly to access their accounts. After clicking the `LOGIN` button, users will be redirected to the two-factor authentication page within the application.
 
 ## Summary
 The Login Page serves as the gateway to users' accounts, providing a secure and user-friendly way to access the application's features and functionality.

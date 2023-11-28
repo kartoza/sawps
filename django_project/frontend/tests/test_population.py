@@ -13,7 +13,8 @@ from frontend.api_views.population import (
     PopulationMetadataList,
     UploadPopulationAPIVIew,
     FetchDraftPopulationUpload,
-    DraftPopulationUpload
+    DraftPopulationUpload,
+    FetchPopulationData
 )
 from property.factories import (
     PropertyFactory
@@ -202,6 +203,71 @@ class TestPopulationAPIViews(TestCase):
             activity_type_id=2
         ).first()
         self.assertTrue(annual_offtake)
+        # test fetch the annual population data
+        fetch_kwargs = {
+            'id': annual_population.id
+        }
+        request = self.factory.get(
+            reverse('fetch-population-data', kwargs=fetch_kwargs)
+        )
+        request.user = self.user_1
+        view = FetchPopulationData.as_view()
+        response = view(request, **fetch_kwargs)
+        self.assertEqual(response.status_code, 200)
+        # test to update and overwrite the data
+        data = {
+            'taxon_id': taxon.id,
+            'year': 2023,
+            'property_id': property.id,
+            'month': 7,
+            'annual_population': {
+                'present': True,
+                'total': 45,
+                'adult_male': 0,
+                'adult_female': 0,
+                'sub_adult_male': 0,
+                'adult_total': 0,
+                'sub_adult_total': 0,
+                'juvenile_total': 0,
+                'group': 1,
+                'open_close_id': 1,
+                'area_available_to_species': 5.5,
+                'survey_method_id': 1,
+                'area_covered': 1.2,
+                'note': 'This is notes',
+                'sampling_effort_coverage_id': self.coverage.id,
+                'population_status_id': self.population_status.id,
+                'population_estimate_category_id': self.estimate.id
+            },
+            'intake_populations': [],
+            'offtake_populations': []
+        }
+        request = self.factory.post(
+            reverse('population-upload', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = self.user_1
+        view = UploadPopulationAPIVIew.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 204)
+        annual_population.refresh_from_db()
+        self.assertEqual(annual_population.total, data['annual_population']['total'])
+        self.assertEqual(annual_population.adult_total, data['annual_population']['adult_male'])
+        self.assertEqual(annual_population.adult_total, data['annual_population']['adult_female'])
+        self.assertEqual(annual_population.adult_total, data['annual_population']['adult_total'])
+        self.assertEqual(annual_population.adult_total, data['annual_population']['sub_adult_male'])
+        self.assertEqual(annual_population.sub_adult_total, data['annual_population']['sub_adult_total'])
+        self.assertEqual(annual_population.juvenile_total, data['annual_population']['juvenile_total'])
+        self.assertFalse(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_population,
+            year=2023,
+            activity_type_id=1
+        ).exists())
+        self.assertFalse(AnnualPopulationPerActivity.objects.filter(
+            annual_population=annual_population,
+            year=2023,
+            activity_type_id=2
+        ))
 
     def test_upload_population_data_future_year(self):
         property = PropertyFactory.create(
@@ -390,3 +456,15 @@ class TestPopulationAPIViews(TestCase):
         view = FetchDraftPopulationUpload.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 204)
+
+    def test_fetch_non_existing_population_data(self):
+        kwargs = {
+            'id': 1000
+        }
+        request = self.factory.get(
+            reverse('fetch-population-data', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = FetchPopulationData.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 404)

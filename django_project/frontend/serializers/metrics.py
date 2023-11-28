@@ -51,14 +51,9 @@ class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
         Params:
             obj (Taxon): The Taxon instance representing the species.
         """
-        start_year = self.context["request"].GET.get("start_year")
-        end_year = self.context["request"].GET.get("end_year")
         property = self.context['request'].GET.get('property')
         annual_populations = (
             AnnualPopulation.objects.filter(
-                Q(
-                    year__range=(start_year, end_year)
-                ) if start_year and end_year else Q(),
                 Q(
                     property__id__in=property.split(",")
                 ) if property else Q(),
@@ -302,10 +297,10 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             )
 
         populations = populations.annotate(
-            total=Sum("annualpopulationperactivity__total")
+            total_population=Sum("total")
         )
         if populations.exists():
-            return populations[0].get("total")
+            return populations[0].get("total_population")
         else:
             return None
 

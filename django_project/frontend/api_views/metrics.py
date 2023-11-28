@@ -1,4 +1,4 @@
-﻿"""API Views related to metrics.
+"""API Views related to metrics.
 """
 import datetime
 from typing import List
@@ -39,7 +39,8 @@ from frontend.utils.metrics import (
     calculate_species_count_per_province
 )
 from frontend.utils.organisation import (
-    get_current_organisation_id
+    get_current_organisation_id,
+    get_organisation_ids
 )
 from frontend.utils.user_roles import get_user_roles
 from population_data.models import AnnualPopulation
@@ -47,7 +48,7 @@ from property.models import Property
 from species.models import Taxon
 
 
-class SpeciesPopuationCountPerYearAPIView(APIView):
+class SpeciesPopulationCountPerYearAPIView(APIView):
     """
     An API view to retrieve species population count per year.
     """
@@ -60,11 +61,14 @@ class SpeciesPopuationCountPerYearAPIView(APIView):
         Returns a filtered queryset of Taxon objects representing
         species within the specified organization.
         """
-        organisation_id = get_current_organisation_id(self.request.user)
-        queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
-            taxon_rank__name='Species'
-        ).distinct()
+        queryset = Taxon.objects.none()
+        if self.request.user.is_superuser:
+            queryset = Taxon.objects.all().distinct()
+        else:
+            organisation_ids = get_organisation_ids(self.request.user)
+            queryset = Taxon.objects.filter(
+                annualpopulation__property__organisation__in=organisation_ids
+            ).distinct()
         filtered_queryset = BaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
@@ -143,11 +147,14 @@ class TotalCountPerActivityAPIView(APIView):
         Returns a filtered queryset of Taxon objects representing
         species within the specified organization.
         """
-        organisation_id = get_current_organisation_id(self.request.user)
-        queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
-            taxon_rank__name='Species'
-        ).distinct()
+        queryset = Taxon.objects.none()
+        if self.request.user.is_superuser:
+            queryset = Taxon.objects.all().distinct()
+        else:
+            organisation_ids = get_organisation_ids(self.request.user)
+            queryset = Taxon.objects.filter(
+                annualpopulation__property__organisation__in=organisation_ids
+            ).distinct()
         filtered_queryset = ActivityBaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
@@ -437,8 +444,11 @@ class BasePropertyCountAPIView(APIView):
             upper_bound = categories[idx + 1]
 
         if query_field == 'population_density':
-            lower_bound = round(lower_bound, 4)
-            upper_bound = round(upper_bound, 4)
+            lower_bound = round(lower_bound, 2)
+            upper_bound = round(upper_bound, 2)
+        else:
+            lower_bound = round(lower_bound)
+            upper_bound = round(upper_bound)
 
         return lower_bound, upper_bound
 
@@ -449,6 +459,10 @@ class BasePropertyCountAPIView(APIView):
             data,
             n_classes=data.count() if data.count() < 6 else 6
         )
+        if query_field == 'population_density':
+            categories = sorted([round(cat, 2) for cat in categories])
+        else:
+            categories = sorted([round(cat) for cat in categories])
 
         results = []
         for idx, category in enumerate(categories):
@@ -485,7 +499,8 @@ class BasePropertyCountAPIView(APIView):
                             property_type_name_field
                         ].lower().replace(' ', '_')
                     ] = count['count']
-                results.append(result)
+                if counts.exists():
+                    results.append(result)
         return results
 
 

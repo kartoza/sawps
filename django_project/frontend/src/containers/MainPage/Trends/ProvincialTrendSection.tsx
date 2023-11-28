@@ -105,7 +105,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                     <Grid container flexDirection={'column'} spacing={1}>
                         <Grid item>
                             {!loadingTrendData ? 
-                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
+                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 8, xl: 12 }}>
                                 {Object.keys(populationTrendData).map((province, index) => {
                                     return (
                                         <Grid item xs={4} key={index}>
@@ -118,10 +118,10 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                         </Grid>
                         <Grid item>
                             {!loadingGrowthData ? 
-                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
+                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 4, md: 12, xl: 12 }}>
                                 {Object.keys(populationGrowthData).map((province, index) => {
                                     return (
-                                        <Grid item xs={4} key={index}>
+                                        <Grid item xs={4} md={6} key={index}>
                                             <GroupedGrowthChart chartId={`province-growth-chart-${province}`} title={`${province}`} data={populationGrowthData[province]} />
                                         </Grid>
                                     )

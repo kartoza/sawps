@@ -1,5 +1,19 @@
+---
+title: IDS SAWPS
+summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
+    - Jeremy Prior
+date: 09-11-2023
+some_url: https://github.com/kartoza/sawps/
+copyright: Copyright 2023, SANBI
+contact: PROJECT_CONTACT
+license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+context_id: 2eVGMmQFandJNZKd6BgDkB
+---
+
 # Registration and Logging In
 <!-- How to Register and then Login -->
+
+This document will take you through various workflows associated with registering on the platform and, in turn, logging in.
 
 ## How do I register on the site?
 
@@ -8,6 +22,8 @@ Navigate to the `REGISTER` button on the home page and fill in your details in t
 ![Registering 1](./img/registering-1.png)
 
 You will be redirected to the registration page where you will be prompted to fill in some information. Namely; your first name, Last name (surname), Email address you'd like associated with your account, and the password you will use to log in to the platform. Once you have filled in all of the information click on the `REGISTER` button at the bottom of the registration window.
+
+> **Hint:** Read the descriptor beneath the password fields to ensure you have a strong password for security reasons, or use a password manages to generate a password of 14 characters.
 
 ![Registering 2](./img/registering-2.png)
 
@@ -23,7 +39,7 @@ This will redirect you to a profile configuration page.
 
 ![Registering 5](./img/registering-5.png)
 
-This step will require you to download and install a token generator, such as the Google Authenticator from the Google Play store. You can install the token generator on your preferred device (ii.e. cellphone, laptop, etc.)
+This step will require you to download and install a token generator, such as the Google Authenticator from the Google Play store. You can install the token generator on your preferred device (i.e. cellphone, laptop, etc.)
 
 ![Registering 6](./img/registering-6.png)
 
@@ -39,7 +55,7 @@ You can use these in future to login to your profile. Additional devices can als
 
 ![Registering 9](./img/registering-9.png)
 
-The next step is to request to be added to the ‘Organisation’ in which you belong. Navigate to the `ORGANISATIONS` tab on the `Profile COnfiguration` page. Then click on the `+REQUEST ORGANISATION` button, this will cause a popup to appear.
+The next step is to request to be added to the ‘Organisation’ in which you belong. Navigate to the `ORGANISATIONS` tab on the `Profile Configuration` page. Then click on the `+REQUEST ORGANISATION` button, this will cause a popup to appear.
 
 ![Registering 10](./img/registering-10.png)
 

@@ -34,7 +34,7 @@ from frontend.api_views.metrics import (
     PropertyCountPerPopulationSizeCategoryAPIView,
     PropertyPerAreaAvailableCategoryAPIView,
     PropertyPerPopDensityCategoryAPIView,
-    SpeciesPopuationCountPerYearAPIView,
+    SpeciesPopulationCountPerYearAPIView,
     SpeciesPopulationCountPerProvinceAPIView,
     SpeciesPopulationDensityPerPropertyAPIView,
     TotalAreaAvailableToSpeciesAPIView,
@@ -57,6 +57,7 @@ from frontend.api_views.population import (
     PopulationMeanSDChartApiView,
     PopulationMetadataList,
     UploadPopulationAPIVIew,
+    FetchPopulationData
 )
 from frontend.api_views.property import (
     CreateNewProperty,
@@ -239,6 +240,11 @@ urlpatterns = [
         name='population-metadata'
     ),
     re_path(
+        r'^api/upload/population/fetch/(?P<id>\d+)/?$',
+        FetchPopulationData.as_view(),
+        name='fetch-population-data'
+    ),
+    re_path(
         r'^api/upload/population/(?P<property_id>\d+)/?$',
         UploadPopulationAPIVIew.as_view(),
         name='population-upload'
@@ -317,7 +323,7 @@ urlpatterns = [
     path('api/data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
         'api/species-population-count/',
-        SpeciesPopuationCountPerYearAPIView.as_view(),
+        SpeciesPopulationCountPerYearAPIView.as_view(),
         name='species_population_count'
     ),
     path(

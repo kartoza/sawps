@@ -1,3 +1,15 @@
+---
+title: IDS SAWPS
+summary: The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
+    - Jeremy Prior
+date: 09-11-2023
+some_url: https://github.com/kartoza/sawps/
+copyright: Copyright 2023, SANBI
+contact: PROJECT_CONTACT
+license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+context_id: VLgUSgLtA4Qr6uA4MrtCCA
+---
+
 # Organisation page
 
 Every organisation can manage their organisation members via this page. The organisation page allows for the viewing of organisation members, inviting new members to the organisation (provided the user has the necessary permissions), deleting organisation members (provided the user has the necessary permissions), and searching to see if a member exists within an organisation.
@@ -8,7 +20,7 @@ When the user clicks the dropdown icon 1️⃣ next to their username and profil
 
 ## Organisation members
 
-On the Organisation's page a user can see the organisation name 1️⃣ which indicates to the user the current organization they are viewing. To add new members, a user (with necessary permissions) can click on the `Add People` button 2️⃣ which will open a popup (example below) where a new member's information can be added. Underneath the Members heading 3️⃣, a user can use the search box 4️⃣ to find specific members within the organisation. Users can decided how many rows per page they would like to see by adjusting the rows per page 5️⃣ (fewer rows displayed can be useful on smaller devices). A user can see which page of members they are on or click on the navigation links 6️⃣ to change between pages. On the Invitations table 7️⃣, a user can see the members that have been invited to the organisation and if the user has a *status* role, they can see if a new user has joined the organisation or not in the status column 8️⃣.
+On the Organisation's page a user can see 1️⃣ the organisation name which indicates to the user the current organization they are viewing. To add new members, a user (with necessary permissions) can click on the `Add People` button 2️⃣ which will open a popup (example below) where a new member's information can be added. Underneath the Members heading 3️⃣, a user can use the search box 4️⃣ to find specific members within the organisation. Users can decided how many rows per page they would like to see by adjusting the rows per page 5️⃣ (fewer rows displayed can be useful on smaller devices). A user can see which page of members they are on or click on the navigation links 6️⃣ to change between pages. On the Invitations table 7️⃣, a user can see the members that have been invited to the organisation and if the user has a *status* role, they can see if a new user has joined the organisation or not in the status column 8️⃣.
 
 ![Organisation Page 2](./img/organisation-page-2.png)
 

@@ -7,6 +7,7 @@ import GroupedGrowthChart from './GroupedGrowthChart';
 import './index.scss';
 import Loading from '../../../components/Loading';
 import AreaAvailableLineChart from "../Metrics/AreaAvailableLineChart";
+import { capitalizeSentence } from '../../../utils/Helpers';
 
 
 interface NationalTrendSectionInterface {
@@ -81,7 +82,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                 </Grid>
                 <Grid item>
                     <Grid container flexDirection={'row'} spacing={1} className={'trends-left-line-chart'}>
-                        <Grid item md={4}>
+                        <Grid item md={4} sm={12} lg={4}>
                             <Grid container flexDirection={'column'}>
                                 <Grid item>
                                     {!loadingTrendData ?
@@ -99,17 +100,17 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item md={8}>
+                        <Grid item sm={12} lg={8}>
                             {!loadingGrowthData ?
                                 <Grid container flexDirection={'column'} spacing={1}>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='large-national-growth-chart' title={`Large ${props.species} Populations`} data={largePopulationGrowthData} />
+                                        <GroupedGrowthChart chartId='large-national-growth-chart' title={capitalizeSentence(`Large ${props.species} Populations`)} data={largePopulationGrowthData} />
                                     </Grid>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='medium-national-growth-chart' title={`Medium ${props.species} Populations`} data={mediumPopulationGrowthData} />
+                                        <GroupedGrowthChart chartId='medium-national-growth-chart' title={capitalizeSentence(`Medium ${props.species} Populations`)} data={mediumPopulationGrowthData} />
                                     </Grid>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='small-national-growth-chart' title={`Small ${props.species} Populations`} data={smallPopulationGrowthData} />                                    
+                                        <GroupedGrowthChart chartId='small-national-growth-chart' title={capitalizeSentence(`Small ${props.species} Populations`)} data={smallPopulationGrowthData} />                                    
                                     </Grid>
                                 </Grid>
                             : <Loading containerStyle={{minHeight: 160}}/>}
