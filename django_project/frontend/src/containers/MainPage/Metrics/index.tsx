@@ -2,8 +2,6 @@ import React, {useEffect, useRef, useState} from "react";
 import {Box, Button, Grid, Modal, Typography} from "@mui/material";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
-import AgeGroupBarChart from "./AgeGroupBarChart";
-import AreaAvailableLineChart from "./AreaAvailableLineChart";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -17,10 +15,7 @@ import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
 import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
 
-
-const FETCH_POPULATION_AGE_GROUP = '/api/population-per-age-group/'
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
-const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
 
 const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
@@ -32,11 +27,8 @@ const Metrics = () => {
     const [loading, setLoading] = useState(false)
     const [activityData, setActivityData] = useState([])
     const [activityType, setActivityType] = useState({})
-    const [ageGroupData, setAgeGroupData] = useState([])
     const [open, setOpen] = useState(false)
-    const [areaData, setAreaData] = useState([])
 
-    const [densityData, setDensityData] = useState([])
     const contentRef = useRef(null);
 
     // Declare errorMessage as a state variable
@@ -83,40 +75,10 @@ const Metrics = () => {
         })
     }
 
-    const fetchPopulationAgeGroupData = () => {
-        setLoading(true)
-        axios.get(`${FETCH_POPULATION_AGE_GROUP}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                console.log('fetched data: ',response.data)
-                setAgeGroupData(response.data)
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-
-
-    const fetchAreaAvailableLineData = () => {
-        setLoading(true)
-        axios.get(`${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`).then((response) => {
-            setLoading(false)
-            if (response.data) {
-                setAreaData(response.data)
-            }
-        }).catch((error) => {
-            setLoading(false)
-            console.log(error)
-        })
-    }
-
     useEffect(() => {
         if(selectedSpecies){
             setShowCharts(true)
             fetchActivityPercentageData();
-            fetchPopulationAgeGroupData();
-            fetchAreaAvailableLineData();
         }else {
             setShowCharts(false);
         }
@@ -286,40 +248,6 @@ const Metrics = () => {
                                     />
                                 </Grid>
                             )}
-
-
-                            {
-                            userInfoData?.user_permissions.includes('Can view age group') &&
-                            ageGroupData.map((data) => (
-                                <Grid item key={data.id} xs={12} md={12} lg={6}>
-                                    <AgeGroupBarChart
-                                        loading={loading}
-                                        ageGroupData={data?.age_group}
-                                        icon={data?.graph_icon}
-                                        colour={data?.colour}
-                                        name={data?.common_name_varbatim}
-                                    />
-                                </Grid>
-                            ))}
-
-
-                            {
-                            constants.canViewAreaAvailable && areaData.map((data, index) => (
-                                <Grid item key={index} xs={12} md={12} lg={6}>
-                                    {data?.area?.owned_species ? (
-                                        <AreaAvailableLineChart
-                                            selectedSpecies={selectedSpecies}
-                                            propertyId={propertyId}
-                                            startYear={startYear}
-                                            endYear={endYear}
-                                            loading={loading}
-                                            areaData={data?.area?.owned_species}
-                                            species_name={data?.common_name_varbatim}
-                                        />
-                                    ) : null}
-                                </Grid>
-                            ))}
-
 
                             {
                             constants.canViewProvinceSpeciesCount &&

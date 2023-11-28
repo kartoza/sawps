@@ -97,7 +97,7 @@ export default function Step2(props: Step2Interface) {
                                     'name': MapEvents.HIGHLIGHT_SELECTED_PARCEL,
                                     'date': Date.now(),
                                     'payload': []
-                                }))                                
+                                }))
                             }}
                             onParcelHovered={(parcel: ParcelInterface) => {
                                 if (parcel) {

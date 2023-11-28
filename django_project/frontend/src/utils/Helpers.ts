@@ -52,3 +52,11 @@ export const isMapDisplayed = () => {
   const currentUrl = window.location.href;
   return currentUrl.endsWith('/map') || currentUrl.endsWith('/map/')
 }
+
+
+/**
+ * Capitalize each word in string
+ */
+export function capitalizeSentence(str: string) {
+  return str.split(' ').map((word) => capitalize(word)).join(' ').trim()
+}

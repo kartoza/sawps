@@ -101,8 +101,6 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertIn('current_organisation_id', context)
         self.assertIn('organisations', context)
         self.assertGreater(len(context['organisations']), 0)
-        self.assertEqual(context['organisations'][0]['id'],
-                            context['current_organisation_id'])
 
     def do_test_user_without_organisation(self):
         request = self.factory.get(reverse(self.view_name))

@@ -46,9 +46,21 @@ class SpeciesReportSerializer(
     Serializer for Species Report.
     """
     upload_id = serializers.SerializerMethodField()
+    is_editable = serializers.SerializerMethodField()
 
     def get_upload_id(self, obj: AnnualPopulation):
         return obj.id
+
+    def get_is_editable(self, obj: AnnualPopulation):
+        user = self.context.get('user', None)
+        managed_organisations = self.context.get('managed_ids', [])
+        if user is None:
+            return False
+        if user.is_superuser:
+            return True
+        if obj.property.organisation.id in managed_organisations:
+            return True
+        return obj.user.id == user.id if obj.user else False
 
     class Meta:
         model = AnnualPopulation
@@ -58,7 +70,8 @@ class SpeciesReportSerializer(
             "scientific_name", "common_name",
             "year", "group", "total", "adult_male", "adult_female",
             "juvenile_male", "juvenile_female", "sub_adult_male",
-            "sub_adult_female", "upload_id", "property_id"
+            "sub_adult_female", "upload_id", "property_id",
+            "is_editable"
         ]
 
 
@@ -258,8 +271,8 @@ class ActivityReportSerializer(
 class NationalLevelSpeciesReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        instance['common_name'] = instance['taxon__common_name_varbatim']
-        instance['scientific_name'] = instance['taxon__scientific_name']
+        # instance['common_name'] = instance['taxon__common_name_varbatim']
+        # instance['scientific_name'] = instance['taxon__scientific_name']
         del instance['taxon__common_name_varbatim']
         del instance['taxon__scientific_name']
         return instance
@@ -356,9 +369,9 @@ class NationalLevelActivityReport(serializers.Serializer):
 
             data = {
                 "year": activity_entry["year"],
-                activity_field: activity_entry["population"],
                 "common_name": instance.common_name_varbatim,
                 "scientific_name": instance.scientific_name,
+                activity_field: activity_entry["population"],
             }
             activity_fields.add(activity_field)
             if year in all_data:
