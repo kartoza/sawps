@@ -1,15 +1,14 @@
-from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
+
+from property.models import Province
 from stakeholder.utils import (
     add_user_to_organisation_group,
     remove_organisation_user_from_group
 )
-
-from property.models import Province
 
 MEMBER = 'Member'
 MANAGER = 'Manager'
@@ -70,7 +69,10 @@ class UserLogin(models.Model):
     date_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.username
+        try:
+            return self.user.username
+        except User.DoesNotExist:
+            return self.id
 
     class Meta:
         verbose_name = 'User login'
@@ -209,14 +211,10 @@ class UserProfile(models.Model):
         return super(self.__class__, self).delete(*args, **kwargs)
 
     def __str__(self):
-        return self.user.username
-
-    def picture_url(self):
-        if self.picture.url:
-            return '{media}/{url}'.format(
-                    media=settings.MEDIA_ROOT,
-                    url=self.picture,
-            )
+        try:
+            return self.user.username
+        except User.DoesNotExist:
+            return self.id
 
     class Meta:
         verbose_name = 'User'
