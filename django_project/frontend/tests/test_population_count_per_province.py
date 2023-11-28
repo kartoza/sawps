@@ -200,7 +200,8 @@ class SpeciesCountPerProvinceTest(APITestCase):
 
     def test_calculate_species_count_per_province(self):
         data = {
-            'species': "Penthera leo"
+            "species": "Penthera leo",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         # self.client.force_login(self.user)
         response = self.client.get(self.url, data, **self.auth_headers)
@@ -223,9 +224,10 @@ class SpeciesCountPerProvinceTest(APITestCase):
 
     def test_calculate_species_count_per_province_year_filter(self):
         data = {
-            'species': "Penthera leo",
-            'start_year': 2023,
-            'end_year': 2023
+            "species": "Penthera leo",
+            "start_year": 2023,
+            "end_year": 2023,
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         # self.client.force_login(self.user)
         response = self.client.get(self.url, data, **self.auth_headers)
