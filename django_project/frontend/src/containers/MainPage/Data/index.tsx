@@ -128,10 +128,6 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        let activityParams = activityId
-        if (activityList) {
-            activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
-        }
         let _data = {
             'species': selectedSpeciesList,
             'reports': selectedInfo.replace(/ /g, '_'),
@@ -139,7 +135,7 @@ const DataList = () => {
             'end_year': endYear,
             'property': propertyId,
             'organisation': organisationId,
-            'activity': activityParams,
+            'activity': activityId,
             'spatial_filter_values': spatialFilterValues,
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {

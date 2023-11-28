@@ -164,13 +164,6 @@ function Filter(props: any) {
         }
     }, [propertyList])
 
-    // Select all activities by default
-    useEffect(() => {
-        if (activityList) {
-            setSelectedActivity(activityList.map((activity: Activity) => activity.id))
-        }
-    }, [activityList]);
-
     // intial map state vars for zoom out
     const center = [25.86, -28.52]; // Center point in backend
     const width = 10;
