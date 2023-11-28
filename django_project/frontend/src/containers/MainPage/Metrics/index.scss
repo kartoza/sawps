@@ -337,3 +337,13 @@
         text-align: center;
     }
 }
+
+.trends-left-line-chart {
+    .ChartContainerBox {
+        height: 600px;
+
+        .ChartContainer {
+            height: 560px;
+        }
+    }
+}

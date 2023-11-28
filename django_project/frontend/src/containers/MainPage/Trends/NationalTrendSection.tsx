@@ -6,6 +6,7 @@ import {GrowthDataItem} from './GrowthChart';
 import GroupedGrowthChart from './GroupedGrowthChart';
 import './index.scss';
 import Loading from '../../../components/Loading';
+import AreaAvailableLineChart from "../Metrics/AreaAvailableLineChart";
 import { capitalizeSentence } from '../../../utils/Helpers';
 
 
@@ -80,16 +81,22 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                     <Divider />
                 </Grid>
                 <Grid item>
-                    <Grid container flexDirection={'row'} spacing={1}>
-                        <Grid item sm={12} lg={4}>
+                    <Grid container flexDirection={'row'} spacing={1} className={'trends-left-line-chart'}>
+                        <Grid item md={4} sm={12} lg={4}>
                             <Grid container flexDirection={'column'}>
                                 <Grid item>
                                     {!loadingTrendData ?
                                         <PopulationTrendChart chartId='national-population-trend' chartTitle='National Population Trend' data={populationTrendData} />
                                     : <Loading containerStyle={{minHeight: 160}}/>}
                                 </Grid>
-                                <Grid item>
-                                    
+                                <Grid item></Grid>
+                                <Grid item style={{ marginTop: 15 }}>
+                                    <AreaAvailableLineChart
+                                        propertyId={''}
+                                        startYear={1960}
+                                        endYear={new Date().getFullYear()}
+                                        national={true}
+                                    />
                                 </Grid>
                             </Grid>
                         </Grid>
