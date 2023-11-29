@@ -16,13 +16,13 @@ context_id: 6LU6BRAbSHMaZfxVn6mZc3
 
 1. **Creating a GitHub Issue.**
 
-    Creating a GitHub issue for a new feature is the first step in proposing and discussing enhancements in a project. This user guide provides a step-by-step process for creating an issue specifically for suggesting new features on GitHub.
+    Creating a GitHub issue for a new feature is the first step in proposing and discussing enhancements in a project. This developer guide provides a step-by-step process for creating an issue specifically for suggesting new features on GitHub.
 
     ## Steps to create an issue
 
     ### 1. Navigate to the repository
 
-    - Open your web browser and go to the GitHub repository where you want to create the issue.
+    - Open a web browser and go to the GitHub repository where you want to create the issue.
 
     ### 2. Access the issues section
 
@@ -71,7 +71,7 @@ context_id: 6LU6BRAbSHMaZfxVn6mZc3
 
     ## Conclusion
 
-    Creating a GitHub issue for a new feature is a fundamental aspect of collaborative development. By following this user guide, you ensure that the feature requests are well-documented and effectively communicated. This process contributes to the overall enhancement and progress of the project, fostering a collaborative environment for developing and implementing exciting new features.
+    Creating a GitHub issue for a new feature is a fundamental aspect of collaborative development. By following this developer guide, you ensure that the feature requests are well-documented and effectively communicated. This process contributes to the overall enhancement and progress of the project, fostering a collaborative environment for developing and implementing exciting new features.
 
 2. **Wait for it to be added to a Sprint.**
     - Allow time for the new feature or issue to be scheduled and included in a sprint or development cycle.
@@ -80,7 +80,7 @@ context_id: 6LU6BRAbSHMaZfxVn6mZc3
     - Develop and execute functional tests to ensure that the newly added feature or code meets the specified requirements and functions as intended.
 
 4. **Playwright Tests.**
-    - Implement and run Playwright tests to perform end-to-end testing, validating the functionality and behavior of the application from a user's perspective.
+    - Implement and run Playwright tests to perform end-to-end testing, validating the functionality and behaviour of the application from a user's perspective.
 
 5. **Write End User Documentation.**
     - Create comprehensive documentation that provides end users with clear instructions and information on how to use the new feature or functionality.
@@ -89,13 +89,13 @@ context_id: 6LU6BRAbSHMaZfxVn6mZc3
 
 1. **Creating a GitHub Issue.**
 
-    Initiating a GitHub issue for a bug is the initial step in identifying, discussing, and resolving issues in a project. This user guide outlines the step-by-step process of creating a bug-related issue on GitHub.
+    Initiating a GitHub issue for a bug is the initial step in identifying, discussing, and resolving issues in a project. This developer guide outlines the step-by-step process of creating a bug-related issue on GitHub.
 
     ## Steps to create a bug-fix issue
 
     ### 1. Navigate to the repository
 
-    - Open your web browser and go to the GitHub repository where the bug is identified.
+    - Open a web browser and go to the GitHub repository where the bug is identified.
 
     ### 2. Access the issues section
 
@@ -144,7 +144,7 @@ context_id: 6LU6BRAbSHMaZfxVn6mZc3
 
     ## Conclusion
 
-    Creating a GitHub issue for fixing a bug is a crucial aspect of collaborative development. This user guide ensures that bug reports are well-documented and effectively communicated, contributing to the overall stability and progress of the project.
+    Creating a GitHub issue for fixing a bug is a crucial aspect of collaborative development. This developer guide ensures that bug reports are well-documented and effectively communicated, contributing to the overall stability and progress of the project.
 
 2. **Wait for it to be added to a Sprint.**
     - Allow time for the identified bug fix to be scheduled and incorporated into a sprint or development cycle.
