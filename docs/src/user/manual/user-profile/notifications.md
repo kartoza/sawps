@@ -14,7 +14,11 @@ context_id: 2H9jexnK8NYkp5keW7YoDf
 
 # Notifications Feature
 
-The notifications feature allows for the user to receive push notifications of the reminders they have set via the platform.
+* The notifications feature allows the user to receive push notifications of the reminders they have set via the platform.
+* When a notification comes in, a small bell icon appears on the user profile icon.
+* Also, a navigation link for notifications becomes available in the main navigation dropdown. This allows for the user to view the notifications from any page on the system.
+* Clicking on the notification will lead the user to the notifications page where they can review more details about the notifications.
+* On the profile pages a small notification badge appears showing the number of notifications the user has.
 
 ![Notifications 1](./img/notifications-1.png)
 

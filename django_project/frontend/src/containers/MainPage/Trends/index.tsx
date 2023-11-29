@@ -15,6 +15,7 @@ const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/download/'
 const Trends = () => {
   const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
   const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
+  const provinceName = useAppSelector((state: RootState) => state.SpeciesFilter.selectedProvinceName).split(',')
   const [rerender, setRerender] = useState<boolean>(false)
   const contentRef = useRef(null);
   const {data: taxonDetail, isLoading: isTaxonDetailLoading, isSuccess} = useGetTaxonDetailQuery(selectedSpecies)
@@ -101,7 +102,7 @@ const Trends = () => {
             )}
             {selectedSpecies && rerender && (
               <Grid item xs={12} md={12} className="SectionItem" key={'ProvincialSectionItem'}>
-                <ProvincialTrendSection species={selectedSpecies} />
+                <ProvincialTrendSection species={selectedSpecies} province={provinceName}/>
               </Grid>
             )}
             {selectedSpecies && rerender && (
