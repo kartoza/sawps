@@ -544,7 +544,7 @@ function Filter(props: any) {
                 }
 
                 {
-                    (allowPropertiesSelection && tab === 'reports') && propertyInputField()
+                    allowPropertiesSelection && propertyInputField()
                 }
 
                 {tab !== 'trends' &&
