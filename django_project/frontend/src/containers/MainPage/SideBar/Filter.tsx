@@ -508,28 +508,6 @@ function Filter(props: any) {
                     </Box>
                 }
 
-                 {tab !== 'trends' &&
-                   <Box>
-                        <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/Activity.svg" alt='Property image' />
-                            <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
-                        </Box>
-                        <List className='ListItem' component="nav" aria-label="">
-                            {loading || isActivityLoading ? <Loading /> :
-                                (
-                                    <AutoCompleteCheckbox
-                                        options={activityList}
-                                        selectedOption={selectedActivity}
-                                        singleTerm={'Activity'}
-                                        pluralTerms={'Activities'}
-                                        setSelectedOption={setSelectedActivity}
-                                      />
-                                )
-                            }
-                        </List>
-                    </Box>
-                 }
-
                 {
                     allowOrganisationSelection && <Box>
                         <Box className='sidebarBoxHeading'>
@@ -600,6 +578,28 @@ function Filter(props: any) {
                           </Box>
                       </Box>
                 </Box>
+                }
+
+                {tab !== 'trends' &&
+                   <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/Activity.svg" alt='Property image' />
+                            <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isActivityLoading ? <Loading /> :
+                                (
+                                    <AutoCompleteCheckbox
+                                        options={activityList}
+                                        selectedOption={selectedActivity}
+                                        singleTerm={'Activity'}
+                                        pluralTerms={'Activities'}
+                                        setSelectedOption={setSelectedActivity}
+                                      />
+                                )
+                            }
+                        </List>
+                    </Box>
                 }
 
                 {tab !== 'trends' &&
