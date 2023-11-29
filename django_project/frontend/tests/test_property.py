@@ -1,18 +1,14 @@
 import base64
 import json
-import mock
 
+import mock
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import Client, TestCase
 from django.urls import reverse
+from rest_framework.test import APIRequestFactory
+
 from core.settings.utils import absolute_path
-from frontend.models.places import (
-    PlaceNameSmallScale,
-    PlaceNameMidScale,
-    PlaceNameLargerScale,
-    PlaceNameLargestScale
-)
 from frontend.api_views.property import (
     CreateNewProperty,
     PropertyList,
@@ -22,14 +18,21 @@ from frontend.api_views.property import (
     PropertySearch,
     UpdatePropertyInformation,
     CheckPropertyNameIsAvailable,
-    ListPropertyTypeAPIView
+    ListPropertyTypeAPIView,
+    ListProvince
 )
 from frontend.models.parcels import Erf, Holding
+from frontend.models.places import (
+    PlaceNameSmallScale,
+    PlaceNameMidScale,
+    PlaceNameLargerScale,
+    PlaceNameLargestScale
+)
 from frontend.tests.model_factories import UserF
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
+from population_data.models import OpenCloseSystem
 from property.factories import PropertyFactory, ProvinceFactory, PropertyTypeFactory
 from property.models import Parcel, Property, PropertyType
-from population_data.models import OpenCloseSystem
 from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
@@ -177,6 +180,118 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('existing property with name Property A', response.data)
 
+    @mock.patch('frontend.api_views.property.find_province')
+    def test_create_new_property_parcel_not_exist(self, mocked_find_province):
+        mocked_find_province.return_value = self.province
+        property_type = PropertyType.objects.all().first()
+        open_close_system = OpenCloseSystem.objects.all().first()
+        self.user_1.user_profile = self.user_1.user_profile
+        self.user_1.user_profile.current_organisation = self.organisation
+        self.user_1.save()
+        data = {
+            'name': 'Property A',
+            'owner_email': 'test@test.com',
+            'property_type_id': property_type.id,
+            'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
+            'parcels': [
+                {
+                    'id': self.erf_1.id,
+                    'layer': 'erf',
+                    'cname': self.erf_1.cname,
+                    'type': 'non-existing-type'
+                }
+            ]
+        }
+        organisationUserFactory.create(
+            user=self.user_1,
+            organisation=self.organisation
+        )
+        request = self.factory.post(
+            reverse('property-create'), data=data,
+            format='json'
+        )
+
+        request.user = self.user_1
+        view = CreateNewProperty.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEquals(
+            response.data,
+            'Invalid parcel_type: non-existing-type'
+        )
+
+    @mock.patch('frontend.api_views.property.find_province')
+    def test_create_new_property_province_not_exist(self, mocked_find_province):
+        mocked_find_province.return_value = None
+        property_type = PropertyType.objects.all().first()
+        open_close_system = OpenCloseSystem.objects.all().first()
+        self.user_1.user_profile = self.user_1.user_profile
+        self.user_1.user_profile.current_organisation = self.organisation
+        self.user_1.save()
+        data = {
+            'name': 'Property A',
+            'owner_email': 'test@test.com',
+            'property_type_id': property_type.id,
+            'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
+            'parcels': [
+                {
+                    'id': self.erf_1.id,
+                    'layer': 'erf',
+                    'cname': self.erf_1.cname,
+                    'type': 'non-existing-type'
+                }
+            ]
+        }
+        organisationUserFactory.create(
+            user=self.user_1,
+            organisation=self.organisation
+        )
+        request = self.factory.post(
+            reverse('property-create'), data=data,
+            format='json'
+        )
+
+        request.user = self.user_1
+        view = CreateNewProperty.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEquals(
+            response.data,
+            'Invalid Province! Please contact administrator to populate province table!'
+        )
+
+    @mock.patch('frontend.api_views.property.get_current_organisation_id')
+    def test_create_new_property_organisation_not_exist(self, mocked_org_id):
+        mocked_org_id.return_value = None
+        property_type = PropertyType.objects.all().first()
+        open_close_system = OpenCloseSystem.objects.all().first()
+        data = {
+            'name': 'Property A',
+            'owner_email': 'test@test.com',
+            'property_type_id': property_type.id,
+            'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
+            'parcels': [
+                {
+                    'id': self.erf_1.id,
+                    'layer': 'erf',
+                    'cname': self.erf_1.cname,
+                    'type': 'non-existing-type'
+                }
+            ]
+        }
+        request = self.factory.post(
+            reverse('property-create'), data=data,
+            format='json'
+        )
+
+        request.user = self.user_1
+        view = CreateNewProperty.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEquals(response.data, 'Invalid Organisation!')
 
     def test_metadata_list(self):
         request = self.factory.get(
@@ -603,7 +718,7 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data['available'])
 
-from rest_framework.test import APIClient, APIRequestFactory
+
 class TestPropertyTypeList(TestCase):
     def test_check_property_name(self):
         user_1 = UserF.create(username='test_1')
@@ -629,6 +744,34 @@ class TestPropertyTypeList(TestCase):
                     'id': prop_type_2.id,
                     'name': prop_type_2.name,
                     'colour': prop_type_2.colour,
+                }
+            ]
+        )
+
+
+class TestProvinceList(TestCase):
+    def test_province_list(self):
+        user_1 = UserF.create(username='test_1')
+        province_1 = ProvinceFactory.create()
+        province_2 = ProvinceFactory.create()
+        request = APIRequestFactory().get(
+            reverse('province-list'),
+            format='json'
+        )
+        request.user = user_1
+        view = ListProvince.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.data,
+            [
+                {
+                    'id': province_1.id,
+                    'name': province_1.name
+                },
+                {
+                    'id': province_2.id,
+                    'name': province_2.name
                 }
             ]
         )

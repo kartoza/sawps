@@ -32,7 +32,8 @@ from frontend.serializers.property import (
     PropertySerializer,
     PropertyTypeSerializer,
     PropertySearchSerializer,
-    PropertyTypeColourSerializer
+    PropertyTypeColourSerializer,
+    ProvinceSerializer
 )
 from frontend.serializers.stakeholder import OrganisationSerializer
 from frontend.static_mapping import DATA_CONTRIBUTORS, SUPER_USER
@@ -229,7 +230,11 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             'centroid': geom.point_on_surface
         }
         property = Property.objects.create(**data)
-        self.add_parcels(property, parcels, filtered_ids)
+
+        try:
+            self.add_parcels(property, parcels, filtered_ids)
+        except ValidationError as e:
+            return Response(status=400, data=e.message)
         return Response(status=201, data=PropertySerializer(property).data)
 
 
@@ -457,3 +462,16 @@ class ListPropertyTypeAPIView(APIView):
             properties, many=True
         ).data
         return Response(properties)
+
+
+class ListProvince(APIView):
+    """
+    API to list Property Type
+    """
+
+    def get(self, request):
+        provinces = Province.objects.order_by('name')
+        provinces = ProvinceSerializer(
+            provinces, many=True
+        ).data
+        return Response(provinces)

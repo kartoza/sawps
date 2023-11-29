@@ -249,6 +249,7 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
+
                             {
                             constants.canViewProvinceSpeciesCount &&
                             selectedSpecies && (

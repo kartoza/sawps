@@ -13,13 +13,10 @@ context_id: QLQAaYi6C75XT7Nwvv4ivH
 
 # Two-Factor Authentication (2FA) Setup Page
 
-## Introduction
-
-Two-Factor Authentication (2FA) is an added layer of security designed to ensure the security of people utilising the online platform. SAWPS values the security of user's account and data. This page is an explanation of the various elements of the 2FA page users see when they register on the platform.
+Two-factor authentication (2FA) is an added layer of security designed to ensure the security of people utilising the online platform. SAWPS values the security of the user's account and data. This page is an explanation of the various elements of the 2FA page users see when they register on the platform.
 
 ## Prerequisites
-
-Before begin setting up 2FA, users should ensure that they have the following:
+Before beginning to set up 2FA, users should ensure that they have the following:
 
 * A smartphone or tablet with a compatible authenticator app installed (e.g., Google Authenticator).
 
@@ -33,7 +30,7 @@ Before begin setting up 2FA, users should ensure that they have the following:
 
 # Two-Factor Authentication (2FA) Once Verified
 
-Once users have successfully verified the 2FA, they will be able to add device, delete device and generate backup tokens.
+Once users have successfully verified the 2FA, they will be able to add devices, delete devices and generate backup tokens.
 
 ![Two-Factor Authentication (2FA) Once Verify](./img/setup-2fa-2.png)
 
@@ -43,11 +40,11 @@ Once users have successfully verified the 2FA, they will be able to add device, 
 
     ![Two-factor authentication devices table](./img/setup-2fa-5.png)
 
-    1. **Device Name**: Displays name of added devices.
+    1. **Device Name**: Displays the name of added devices.
 
-    2. **Delete Icon**: Users can delete the specific device by clicking on the delete icon.
+    2. **Delete Icon**: Users can delete a specific device by clicking on the delete icon.
 
-        By clicking on the delete icon users will see popup for confirming the deletion of a device.
+        By clicking on the delete icon users will see a popup for confirming the deletion of a device.
 
         ![Delete Confirmation](./img/setup-2fa-6.png)
 
