@@ -66,13 +66,6 @@ This documentation outlines the functionalities available in the map view, inclu
 
     ![Highlighted Regions](./img/map-6.png)
 
-
-- **Species Population Range Indicator**: The chart uses a gradient of colors to smoothly represent the varying population densities. Users can quickly assess the concentration of species in different regions based on the color intensity. Users can use this chart to analyse and interpret the population distribution of selected species across different geographical areas, distinguishing between low, moderate, and high population densities.
-
-- **Highlighting The Most Populated Region**: The map dynamically identifies and highlights the region with the population density for the selected species. This region is visually emphasised to draw the user's attention to the area with the most significant concentration of the chosen species.
-
-- **Compass Icon**: The `Compass Icon` serves as a visual guide within the map view, enhancing the user's ability to explore a 3D representation of the environment. Represented by a compass symbol, this icon provides users with a quick reference to the cardinal directions, facilitating orientation while navigating the 3D map. The Compass Icon dynamically adjusts its orientation based on the user's movements, consistently pointing toward Geographic North. Users can interact with the icon to reset the map orientation to its default north-facing position
-
 ## Summary
 
 The Map Functionalities provide users with a comprehensive set of tools for a flexible and tailored map exploration experience. Users can seamlessly adjust the view with zoom functionalities, allowing for detailed examinations or broader perspectives. The option to toggle between Dark and Light Modes ensures optimal visibility in diverse lighting conditions.
