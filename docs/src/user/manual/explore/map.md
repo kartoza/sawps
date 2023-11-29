@@ -24,7 +24,7 @@ This documentation outlines the functionalities available in the map view, inclu
 2. **Question Mark Icon**: Click on the `Question Mark Icon` to know the valuable insights into optimising the use of the Map page. Explore the helpful tips and guidelines provided in this sidebar to enhance the efficiency in navigating and utilising the map features. Click on the `visit our Documentation` link to visit the documentation
     ![Side Bar](./img/map-4.png)
 
-3. **Dots**: Upon landing, users are greeted with a visual representation of property locations in the form of dots, providing an immediate overview of the geographical distribution of properties (unless the user is designated as a data consumer).
+3. **Points**: Upon landing on the page, users are greeted with a visual representation of property locations in the form of points, providing an immediate overview of the geographical distribution of properties (unless the user is designated as a data consumer).
 
 4. **Zooming In Icon**: The zooming-in icon is represented by a plus sign (+). Click on this icon to zoom in on the map, making features and details appear larger and more visible.
 
