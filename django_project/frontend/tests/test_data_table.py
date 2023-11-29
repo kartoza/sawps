@@ -531,6 +531,7 @@ class NationalUserTestCase(TestCase):
                     'scientific_name': self.taxon.scientific_name,
                     "total_property_area": 200,
                     "total_area_available": 10,
+                    "total_population": 10,
                     "adult_male_total_population": 4,
                     "adult_female_total_population": 6,
                     "sub_adult_male_total_population": 10,

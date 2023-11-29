@@ -271,8 +271,6 @@ class ActivityReportSerializer(
 class NationalLevelSpeciesReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        # instance['common_name'] = instance['taxon__common_name_varbatim']
-        # instance['scientific_name'] = instance['taxon__scientific_name']
         del instance['taxon__common_name_varbatim']
         del instance['taxon__scientific_name']
         return instance
