@@ -116,3 +116,19 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 9. **Save and continue editing**: Save the current record while still showing the current record.
 
 10. **Save**: Save the current record, then redirect to the Django Admin Table or record list.
+
+### Change Taxon
+
+![Change dates and User Info](./img/django-change-data-11.png)
+
+1. **History**: Button to view actions applied to the current record.
+
+2. **Form Fields**: Administrators can edit all taxon details, including scientific name, common name, color variant, infraspecific epithet, taxon rank, parent taxon, visibility settings, and taxon color. Additionally, administrators can edit the icons by modifying the graph icon, and the topper icon and icon will be generated automatically based on the graph icon.
+
+3. **Delete**: The administrators can delete the taxon by clicking on this button. The popup will open to confirm the deletion of the taxon.
+
+3. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+4. **Save and continue editing**: Save the current record while still showing the current record.
+
+5. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
