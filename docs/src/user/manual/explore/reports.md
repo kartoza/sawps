@@ -52,7 +52,7 @@ The main area of the page displays the user's dataset in a tabular format. Each 
 * **Province Report:** Report on a province basis.
 Only members of `National data consumer` group can see this report.
 * **Sampling Report:** Filter data by property.
-Members of `National data consumer` or `Regional data consumer` **CAN NOT** see this report.
+Members of `National data consumer` or `Provincial data consumer` **CAN NOT** see this report.
 
 The user group is configurable from the User Table in the [Django Admin](../../../administrator/manual/django-admin.md).
 
