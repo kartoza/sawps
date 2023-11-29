@@ -33,7 +33,8 @@ context_id: e6Vaw8mReGPoc8vk4ZrqS9
 
 ![Group Table](./img/django-table-2.png)
 
-This table is used to store existing user groups, that will affect the available options in the [Report](../../user/manual/explore/reports.md).
+This table is used to store existing user groups, that will affect the available options in the [Report](../../user/manual/explore/reports.md) and 
+available charts in the [Charts](../../user/manual/explore/charts.md).
 
 Administrators can assign a user to groups in the User Table.
 
@@ -42,6 +43,10 @@ Administrators can assign a user to groups in the User Table.
 2. **Add Group**: Clicking on the `ADD GROUP` button will allow administrators to add a new group. Click [here](django-add-data.md) to see detailed documentation about adding a new group.
 
 3. **Edit Record**: Clicking on the object will allow administrators to change/edit a particular record. Click [here](django-change-data.md) to see detailed documentation about editing a group.
+
+Admnistrator can also configure what charts available to each group, by adding the necessary permission to each group.
+![Group Permission](./img/django-table-9.png)
+
 
 ## User Table
 
@@ -82,3 +87,23 @@ This table is used for storing, generating, and deleting the TOTP device.
 3. **Add TOTP Device**: The administrator can add a TOTP device by clicking on the `ADD TOTP DEVICE` button. Click on the [add TOTP device](./django-add-data.md) to view detailed documentation about adding a new TOTP device.
 
 4. **Edit TOTP Device**: The administrator can edit the TOTP device for that particular object by clicking on the object. Click on the [here](./django-change-data.md) to view detailed documentation about editing a TOTP device.
+
+## Taxon Table
+
+![Taxon Table](./img/django-table-8.png)
+
+The Taxon table within the Django Admin interface provides administrators with the tools to manage taxonomic information efficiently.
+
+1. **Add Taxon**: Clicking on the `ADD TAXON` button enables administrators to add a new taxon. To learn more about adding a new taxon, refer to the detailed documentation on [adding a taxon](django-add-data.md).
+
+2. **Search Functionality**: Administrators can utilise the search functionality to find specific taxonomic records.
+
+3. **Actions Dropdown**: The `Actions` dropdown provides the following options for managing taxonomic records:
+
+    - **Delete Selected Taxa**: This action allows administrators to delete the selected taxonomic records in bulk.
+
+    - **Clear Output Cache**: This action enables administrators to clear the output cache associated with the taxonomic records.
+
+4. **Go Button**: The administrators can execute the selected action by clicking this button.
+
+5. **Edit Taxon**: Clicking on a specific taxon entry enables administrators to modify or edit the corresponding record. For detailed instructions on editing a taxon, refer to the documentation on [editing a taxon](django-change-data.md).

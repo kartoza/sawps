@@ -36,6 +36,7 @@ To utilise the `Download Data Visualisation` functionality, follow these steps:
 - Click on the button to initiate the download process.
 
 ## Charts On Charts Page
+The charts shown to user are configurable via group permission in the Group Table in [Django Admin](../../../administrator/manual/django-table.md).
 
 ![Charts On Charts Page](./img/charts-2.png)
 

@@ -25,7 +25,10 @@ import {
     setSelectedInfoList,
     setSpatialFilterValues,
     setStartYear,
-    toggleSpecies
+    toggleSpecies,
+    toggleSpeciesList,
+    setSelectedProvinceName,
+    setSelectedProvinceCount
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import {MapEvents} from '../../../models/Map';
@@ -35,11 +38,13 @@ import {
     Activity,
     Organisation,
     Property,
+    Province,
     useGetActivityQuery,
     useGetOrganisationQuery,
     useGetPropertyQuery,
     useGetSpeciesQuery,
-    useGetUserInfoQuery
+    useGetUserInfoQuery,
+    useGetProvinceQuery
 } from "../../../services/api";
 import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
@@ -58,6 +63,7 @@ function Filter(props: any) {
     const [loading, setLoading] = useState(false)
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [selectedProperty, setSelectedProperty] = useState([]);
+    const [selectedProvince, setSelectedProvince] = useState([]);
     const [selectedActivity, setSelectedActivity] = useState<number[]>([]);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
@@ -66,9 +72,11 @@ function Filter(props: any) {
     const [tab, setTab] = useState<string>('')
     const startYearDisabled = ['map', 'charts'].includes(tab);
     const [searchSpeciesList, setSearchSpeciesList] = useState([])
+    const [selectedSpeciesList, setSelectedSpeciesList] = useState<string[]>([]);
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const [shownPropertyOptions, setShownPropertyOptions] = useState([])
+    const [provinceOptions, setProvinceOptions] = useState([])
     const isStartYearValid = localStartYear >= yearRangeStart && localStartYear <= yearRangeEnd
     const isEndYearValid = localEndYear >= yearRangeStart && localEndYear <= yearRangeEnd
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
@@ -92,6 +100,11 @@ function Filter(props: any) {
         isLoading: isSpeciesLoading,
         isSuccess: isSpeciesSuccess
     } = useGetSpeciesQuery(selectedOrganisation.join(','))
+    const {
+        data: provinceList,
+        isLoading: isProvinceListLoading,
+        isSuccess: isProvinceListSuccess
+    } = useGetProvinceQuery()
 
     type Information = {
         id?: string,
@@ -144,10 +157,22 @@ function Filter(props: any) {
         }
     }, [organisationList]);
 
+    // Select all province by default
+    useEffect(() => {
+        if (provinceList) {
+            setProvinceOptions(provinceList.map((province: Province) => {
+                return {
+                    id: province.name,
+                    name: province.name
+                }
+            }))
+            setSelectedProvince(provinceList.map((province: Province) => province.name))
+        }
+    }, [provinceList]);
 
     useEffect(() => {
         if (propertyList) {
-            if (selectedOrganisation.length === 0) {
+            if (selectedOrganisation.length === 0 && selectedProvince.length === 0) {
                 setShownPropertyOptions([])
                 setSelectedProperty([])
             } else {
@@ -186,6 +211,11 @@ function Filter(props: any) {
 
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
+        if (pathname !== 'trends') {
+            setSelectedProvince([])
+        } else {
+            setSelectedProvince(provinceOptions.map((province: Province) => province.name))
+        }
         setTab(pathname)
     }, [window.location.pathname])
 
@@ -203,12 +233,15 @@ function Filter(props: any) {
     };
 
     useEffect(() => {
+        if (selectedSpeciesList.length === 0 && selectedSpecies !== "") {
+            setSelectedSpeciesList([selectedSpecies])
+        }
         dispatch(toggleSpecies(selectedSpecies));
     }, [selectedSpecies])
 
     useEffect(() => {
-        dispatch(toggleSpecies(selectedSpecies));
-    }, [selectedSpecies])
+        dispatch(toggleSpeciesList(selectedSpeciesList.join(',')));
+    }, [selectedSpeciesList])
 
     useEffect(() => {
         const values = selectedInfo.join(',')
@@ -287,6 +320,39 @@ function Filter(props: any) {
     }, [selectedProperty])
 
     useEffect(() => {
+       setSelectedProperty(shownPropertyOptions.map(property => property.id))
+    }, [shownPropertyOptions]);
+
+    useEffect(() => {
+        if (provinceList) {
+            dispatch(setSelectedProvinceName(selectedProvince.join(',')));
+
+            if (propertyList) {
+                if (selectedOrganisation.length === 0 && selectedProvince.length === 0) {
+                    setShownPropertyOptions([])
+                } else {
+                    console.debug(shownPropertyOptions.length)
+                    let newPropertyOptions = propertyList;
+                    if (tab === 'trends') {
+                        newPropertyOptions = newPropertyOptions.filter(property =>
+                            selectedProvince.includes(property.province)
+                        )
+                    }
+                    // @ts-ignore
+                    newPropertyOptions = newPropertyOptions.map(property => {
+                        return {
+                            id: property.id,
+                            name: `${property.name} (${property.short_code})`
+                        }
+                    })
+
+                    setShownPropertyOptions(newPropertyOptions)
+                }
+            }
+        }
+    }, [selectedProvince])
+
+    useEffect(() => {
         if (organisationList) {
             dispatch(selectedOrganisationId(selectedOrganisation.join(',')))
             const selectedOrganisationNames = organisationList.filter(
@@ -331,12 +397,50 @@ function Filter(props: any) {
         }
         setSelectedProperty([])
         setSelectedSpecies('')
+        setSelectedSpeciesList([])
         setSelectedActivity([])
         setSelectedInfo([])
         setLocalStartYear(yearRangeStart)
         setLocalEndYear(yearRangeEnd)
         dispatch(setStartYear(yearRangeStart));
         dispatch(setEndYear(yearRangeEnd));
+    }
+
+    const propertyInputField = () => {
+        return (
+            <Tooltip
+                title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
+                placement="top-start"
+            >
+                <Box>
+                    <Box className='sidebarBoxHeading'>
+                        <img src="/static/images/Property.svg" alt='Property image' />
+                        <Typography color='#75B37A' fontSize='medium'>Property</Typography>
+                    </Box>
+                    <List className='ListItem' component="nav" aria-label="">
+                        {loading || isPropertyLoading ? (
+                            <Loading />
+                        ) : (
+                            <AutoCompleteCheckbox
+                                options={shownPropertyOptions}
+                                selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
+                                singleTerm={'Property'}
+                                pluralTerms={'Properties'}
+                                setSelectedOption={(newValues) => {
+                                    setSelectedProperty(newValues)
+                                    if (newValues.length === 0) {
+                                        adjustMapToBoundingBox(boundingBox)
+                                    } else {
+                                        // Call zoomToCombinedBoundingBox with the updated list of selected properties
+                                        zoomToCombinedBoundingBox(newValues);
+                                    }
+                                }}
+                            />
+                        )}
+                    </List>
+                </Box>
+            </Tooltip>
+        )
     }
 
     useEffect(() => {
@@ -403,6 +507,7 @@ function Filter(props: any) {
                     }} />
                 </Box>
                 )}
+
                 <Tooltip
                   title={selectedOrganisation.length === 0 ? "Select Organisation to show Species options!" : ""}
                   placement="top-start"
@@ -414,7 +519,7 @@ function Filter(props: any) {
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
                             {loading || isSpeciesLoading ? <Loading /> :
-                                (
+                                tab !== 'reports' ? (
                                     <Autocomplete
                                         id="combo-box-demo"
                                         disableClearable={true}
@@ -424,11 +529,25 @@ function Filter(props: any) {
                                         onChange={(event, value) => handleSelectedSpecies(value)}
                                         renderInput={(params) => <TextField {...params} placeholder="Select" />}
                                     />
+                                ) : (
+                                    <AutoCompleteCheckbox
+                                        options={searchSpeciesList.map((species) => {
+                                            return {
+                                                'id': species,
+                                                'name': species
+                                            }
+                                        })}
+                                        selectedOption={selectedSpeciesList}
+                                        singleTerm={'Species'}
+                                        pluralTerms={'Species'}
+                                        setSelectedOption={setSelectedSpeciesList}
+                                    />
                                 )
                             }
                         </List>
                     </Box>
                 </Tooltip>
+
                 {tab === 'reports' &&
                     <Box>
                         <Box className='sidebarBoxHeading'>
@@ -450,27 +569,7 @@ function Filter(props: any) {
                         </List>
                     </Box>
                 }
-                 {tab !== 'trends' &&
-                   <Box>
-                        <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/Activity.svg" alt='Property image' />
-                            <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
-                        </Box>
-                        <List className='ListItem' component="nav" aria-label="">
-                            {loading || isActivityLoading ? <Loading /> :
-                                (
-                                    <AutoCompleteCheckbox
-                                        options={activityList}
-                                        selectedOption={selectedActivity}
-                                        singleTerm={'Activity'}
-                                        pluralTerms={'Activities'}
-                                        setSelectedOption={setSelectedActivity}
-                                      />
-                                )
-                            }
-                        </List>
-                    </Box>
-                 }
+
                 {
                     allowOrganisationSelection && <Box>
                         <Box className='sidebarBoxHeading'>
@@ -490,34 +589,29 @@ function Filter(props: any) {
                         </List>
                     </Box>
                 }
+
                 {
-                    allowPropertiesSelection &&
+                    tab === 'trends' &&
                   <Tooltip
-                    title={selectedOrganisation.length === 0 ? "Select Organisation to show Property options!" : ""}
+                    title={""}
                     placement="top-start"
                   >
                     <Box>
                         <Box className='sidebarBoxHeading'>
                             <img src="/static/images/Property.svg" alt='Property image' />
-                            <Typography color='#75B37A' fontSize='medium'>Property</Typography>
+                            <Typography color='#75B37A' fontSize='medium'>Province</Typography>
                         </Box>
                         <List className='ListItem' component="nav" aria-label="">
-                            {loading || isPropertyLoading ? (
+                            {loading || isProvinceListLoading ? (
                                 <Loading />
                             ) : (
                               <AutoCompleteCheckbox
-                                options={shownPropertyOptions}
-                                selectedOption={selectedOrganisation.length > 0 ? selectedProperty : []}
-                                singleTerm={'Property'}
-                                pluralTerms={'Properties'}
+                                options={provinceOptions}
+                                selectedOption={selectedProvince}
+                                singleTerm={'Province'}
+                                pluralTerms={'Provinces'}
                                 setSelectedOption={(newValues) => {
-                                    setSelectedProperty(newValues)
-                                    if (newValues.length === 0) {
-                                        adjustMapToBoundingBox(boundingBox)
-                                    } else {
-                                      // Call zoomToCombinedBoundingBox with the updated list of selected properties
-                                      zoomToCombinedBoundingBox(newValues);
-                                    }
+                                    setSelectedProvince(newValues)
                                 }}
                               />
                             )}
@@ -526,7 +620,11 @@ function Filter(props: any) {
                   </Tooltip>
                 }
 
-                {tab != 'trends' &&
+                {
+                    allowPropertiesSelection && propertyInputField()
+                }
+
+                {tab !== 'trends' &&
                     <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Clock.svg" alt='watch image'/>
@@ -574,7 +672,29 @@ function Filter(props: any) {
                 </Box>
                 }
 
-                {tab != 'trends' &&
+                {tab !== 'trends' &&
+                   <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/Activity.svg" alt='Property image' />
+                            <Typography color='#75B37A' fontSize='medium'>Activity</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isActivityLoading ? <Loading /> :
+                                (
+                                    <AutoCompleteCheckbox
+                                        options={activityList}
+                                        selectedOption={selectedActivity}
+                                        singleTerm={'Activity'}
+                                        pluralTerms={'Activities'}
+                                        setSelectedOption={setSelectedActivity}
+                                      />
+                                )
+                            }
+                        </List>
+                    </Box>
+                }
+
+                {tab !== 'trends' &&
                   <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Layers.svg" alt='Filter image'/>

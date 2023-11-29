@@ -1,6 +1,7 @@
 import base64
 import csv
 import json
+import shutil
 import os
 
 from django.conf import settings
@@ -24,15 +25,14 @@ from frontend.utils.data_table import (
     ACTIVITY_REPORT,
     SPECIES_REPORT,
     PROPERTY_REPORT,
-    SAMPLING_REPORT,
     PROVINCE_REPORT
 )
 from population_data.factories import (
     AnnualPopulationF
 )
 from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
-from property.factories import PropertyFactory
-from property.factories import ProvinceFactory
+from property.factories import PropertyFactory, ProvinceFactory
+from property.models import Property
 from sawps.tests.models.account_factory import GroupF
 from species.factories import (
     TaxonFactory,
@@ -123,7 +123,8 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "species": "SpeciesA",
             "activity": str(value.activity_type.id),
-            "reports": "Property_report"
+            "reports": "Property_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(len(response.data[0]["Property_report"]), 1)
@@ -139,7 +140,8 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "species": "SpeciesA",
             "activity": '',
-            "reports": "Property_report"
+            "reports": "Property_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(len(response.data), 0)
@@ -183,7 +185,8 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Activity_report,Property_report,Province_report,Sampling_report,Species_report"
+            "reports": "Activity_report,Property_report,Province_report,Sampling_report,Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -253,6 +256,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "activity": str(value.activity_type.id),
             "reports": "Property_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -278,6 +282,17 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(
             response.data[0]["Property_report"][0]["property_name"],
             "PropertyA"
+        )
+
+    def test_filter_without_property(self) -> None:
+        """Test data table filter without property"""
+        data = {
+            "property": ''
+        }
+        response = self.client.get(self.url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            len(response.data), 0,
         )
 
     def test_filter_by_year_and_report(self) -> None:
@@ -314,14 +329,12 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "start_year": year,
             "end_year": year,
             "reports": "Activity_report",
-            "activity": str(value.activity_type.id)
+            "activity": str(value.activity_type.id),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        if response.data:
-            self.assertEqual(next(iter(response.data[0])), "Activity_report")
-        else:
-            self.assertEqual(response.data, [])
+        self.assertEqual(next(iter(response.data[0])), "Activity_report")
 
     def test_activity_report_without_activity_filter(self) -> None:
         """Test data table activity report without activity"""
@@ -332,13 +345,11 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "start_year": year,
             "end_year": year,
             "reports": "Activity_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        if response.data:
-            self.assertEqual(next(iter(response.data[0])), "Activity_report")
-        else:
-            self.assertEqual(response.data, [])
+        self.assertEqual(response.data, [])
 
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
@@ -350,9 +361,32 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "start_year": year,
             "end_year": year,
             "reports": "Sampling_report",
-            "activity": str(value.activity_type.id)
+            "activity": str(value.activity_type.id),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]["Sampling_report"][0][
+                "scientific_name"
+            ],
+            "SpeciesA"
+        )
+
+    def test_data_table_post(self) -> None:
+        """Test data table with post request"""
+        year = self.annual_populations[1].year
+        value = self.annual_populations[1].annualpopulationperactivity_set.first()
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "start_year": year,
+            "end_year": year,
+            "reports": "Sampling_report",
+            "activity": str(value.activity_type.id),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.post(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]["Sampling_report"][0][
@@ -430,7 +464,8 @@ class NationalUserTestCase(TestCase):
         )
         url = self.url
         params = {
-            'activity': 'all'
+            'activity': 'all',
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
         expected_response = [
@@ -468,7 +503,8 @@ class NationalUserTestCase(TestCase):
         url = self.url
         params = {
             'activity': 'all',
-            'reports': ACTIVITY_REPORT
+            'reports': ACTIVITY_REPORT,
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
         expected_response = [
@@ -503,7 +539,8 @@ class NationalUserTestCase(TestCase):
         url = self.url
         params = {
             'activity': 'all',
-            'reports': SPECIES_REPORT
+            'reports': SPECIES_REPORT,
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
 
@@ -543,7 +580,8 @@ class NationalUserTestCase(TestCase):
         url = self.url
         params = {
             'activity': 'all',
-            'reports': PROVINCE_REPORT
+            'reports': PROVINCE_REPORT,
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
 
@@ -670,7 +708,8 @@ class RegionalUserTestCase(TestCase):
                 [
                     str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
                 ]
-            )
+            ),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
@@ -746,7 +785,8 @@ class DataScientistTestCase(TestCase):
             "reports": (
                 "Species_report,Property_report"
             ),
-            "activity": str(value.activity_type.id)
+            "activity": str(value.activity_type.id),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
@@ -767,7 +807,8 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
             "file": "csv",
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Activity_report,Property_report,Sampling_report,Species_report"
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -806,7 +847,8 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
             "file": "xlsx",
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Activity_report,Property_report,Sampling_report,Species_report"
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -840,7 +882,8 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             "file": "csv",
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Activity_report,Property_report,Species_report,Province_report"
+            "reports": "Activity_report,Property_report,Species_report,Province_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -899,7 +942,8 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             "file": "xlsx",
             "species": "SpeciesA",
             "activity": 'all',
-            "reports": "Activity_report,Property_report,Species_report,Province_report"
+            "reports": "Activity_report,Property_report,Species_report,Province_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -910,3 +954,43 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         # check if xlsx files exists in the folder
         path = os.path.join(settings.MEDIA_ROOT, "download_data")
         self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
+
+    def test_download_one_report(self) -> None:
+        """Test download data table with only one report"""
+        url = self.url
+
+        data = {
+            "file": "csv",
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.post(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data['file'],
+            '/media/download_data/data_report_Species_report.csv'
+        )
+
+    def test_path_not_exist(self):
+        """Test download data table when file path does not exist"""
+
+        path = os.path.join(settings.MEDIA_ROOT, "download_data")
+        shutil.rmtree(path, ignore_errors=True)
+
+        url = self.url
+
+        data = {
+            "file": "csv",
+            "species": "SpeciesA",
+            "activity": 'all',
+            "reports": "Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.post(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data['file'],
+            '/media/download_data/data_report_Species_report.csv'
+        )

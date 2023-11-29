@@ -4,6 +4,7 @@ import SpeciesLayer from "../models/SpeciesLayer";
 export interface SpeciesFilterInterface {
   SpeciesFilterList: SpeciesLayer[];
   selectedSpecies: string;
+  selectedSpeciesList: string;
   months: string[];
   selectedMonths: string;
   startYear: number;
@@ -19,11 +20,14 @@ export interface SpeciesFilterInterface {
   propertyCount:number;
   organisationCount:number;
   activityCount:number;
+  selectedProvinceName: string,
+  selectedProvinceCount: number,
 }
 
 const initialState: SpeciesFilterInterface = {
   SpeciesFilterList: [],
   selectedSpecies: "",
+  selectedSpeciesList: "",
   months: [],
   selectedMonths: "",
   startYear: 1960,
@@ -38,7 +42,9 @@ const initialState: SpeciesFilterInterface = {
   organisationName: "",
   propertyCount: 0,
   organisationCount: 0,
-  activityCount: 0
+  activityCount: 0,
+  selectedProvinceName: "",
+  selectedProvinceCount: 0,
 };
 
 export const SpeciesFilterSlice = createSlice({
@@ -71,6 +77,9 @@ export const SpeciesFilterSlice = createSlice({
     },
     toggleSpecies: (state, action: PayloadAction<string>) => {
       state.selectedSpecies = action.payload;
+    },
+    toggleSpeciesList: (state, action: PayloadAction<string>) => {
+      state.selectedSpeciesList = action.payload;
     },
     setSelectedInfoList: (state, action: PayloadAction<string>) => {
       state.selectedInfoList = action.payload;
@@ -118,13 +127,20 @@ export const SpeciesFilterSlice = createSlice({
     },
     setActivityCount: (state, action: PayloadAction<number>) => {
       state.activityCount = action.payload;
-    }
+    },
+    setSelectedProvinceCount: (state, action: PayloadAction<number>) => {
+      state.selectedProvinceCount = action.payload;
+    },
+    setSelectedProvinceName: (state, action: PayloadAction<string>) => {
+      state.selectedProvinceName = action.payload;
+    },
   },
 });
 
 export const {
   setSpeciesFilter,
   toggleSpecies,
+  toggleSpeciesList,
   setSelectedSpecies,
   selectedPropertyId,
   selectedOrganisationId,
@@ -139,7 +155,9 @@ export const {
   selectedOrganisationName,
   setPropertyCount,
   setOrganisationCount,
-  setActivityCount
+  setActivityCount,
+  setSelectedProvinceCount,
+  setSelectedProvinceName
 } = SpeciesFilterSlice.actions;
 
 export default SpeciesFilterSlice.reducer;

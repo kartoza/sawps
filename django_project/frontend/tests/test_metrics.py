@@ -12,6 +12,7 @@ from species.factories import (
 from population_data.models import AnnualPopulation, PopulationEstimateCategory
 from population_data.factories import AnnualPopulationF
 from species.models import TaxonRank
+from property.models import Property
 from stakeholder.factories import organisationFactory, organisationUserFactory
 
 
@@ -349,7 +350,10 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         Test total area available to species.
         """
         url = self.url
-        response = self.client.get(url, **self.auth_headers)
+        data = {
+            'property': ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+        }
+        response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), len(self.annual_populations))
         self.assertEqual(response.data[0]['area'], 10)
@@ -365,6 +369,17 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['area'], 10)
 
+
+    def test_total_area_available_to_species_filter_by_property(self) -> None:
+        """
+        Test total area available to species filtered by property.
+        """
+        prop_id = self.annual_populations[0].property_id
+        data = {'property': prop_id}
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['property_name'], 'PropertyA')
 
     def test_total_area_available_to_species_filter_by_property(self) -> None:
         """
@@ -506,10 +521,10 @@ class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
         response = self.client.get(url, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['area']['owned_species'][0]['area_total'], 200
+            response.data[0]['area'][0]['area_total'], 200
         )
         self.assertEqual(
-            response.data[0]['area']['owned_species'][0]['area_available'], 10
+            response.data[0]['area'][0]['area_available'], 10
         )
 
     def test_total_area_vs_area_available_filter_by_property(self) -> None:
@@ -522,7 +537,7 @@ class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['area']['owned_species'][0]['area_total'], 200
+            response.data[0]['area'][0]['area_total'], 200
         )
 
     def test_total_area_vs_area_available_filter_by_year(self) -> None:
@@ -535,8 +550,7 @@ class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data[0]['area']['owned_species'][0] \
-                ['annualpopulation__year'],
+            response.data[0]['area'][0]['year'],
             int(year)
         )
 
