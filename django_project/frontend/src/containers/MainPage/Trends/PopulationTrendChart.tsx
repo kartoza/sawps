@@ -123,7 +123,7 @@ const PopulationTrendChart = (props: PopulationTrendChartInterface) => {
 
     return (
         <ChartContainer title={props.chartTitle}>
-            <div className={'PopulationTrendChartContainer'}>
+            <div className={'PopulationTrendChartContainer'} style={{ width: '100%', height: 460}}>
                 {chartData !== null && <Line
                     key={props.chartId}
                     data={chartData}

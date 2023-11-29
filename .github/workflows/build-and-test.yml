@@ -87,6 +87,14 @@ jobs:
           export DJANGO_SETTINGS_MODULE=core.settings.dev && coverage run manage.py test && coverage xml
           EOF
           docker cp sanbi_dev_1:/home/web/django_project/coverage.xml ../coverage.xml
+      - name: Create superuser
+        working-directory: deployment
+        run: |
+          cat << EOF | docker-compose exec -T dev bash
+          export DJANGO_SUPERUSER_PASSWORD=admin
+          python manage.py createsuperuser --no-input --username admin --email 'admin@example.com'
+          python manage.py loaddata fixtures/*.json
+          EOF
       - name: Update dependencies
         working-directory: ./playwright/ci-test
         run: npm install
