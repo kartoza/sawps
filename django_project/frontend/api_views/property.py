@@ -230,7 +230,11 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             'centroid': geom.point_on_surface
         }
         property = Property.objects.create(**data)
-        self.add_parcels(property, parcels, filtered_ids)
+
+        try:
+            self.add_parcels(property, parcels, filtered_ids)
+        except ValidationError as e:
+            return Response(status=400, data=e.message)
         return Response(status=201, data=PropertySerializer(property).data)
 
 
