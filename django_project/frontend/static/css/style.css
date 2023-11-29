@@ -201,7 +201,7 @@ form {
   stroke: #28a745;
   stroke-width: 2;
   stroke-linecap: round;
-  stroke-dasharray: 25;
+  stroke-dasharray: 38;
   stroke-dashoffset: 25;
   transform-origin: 50% 50%;
   animation: success-tick-draw 0.6s 0.3s ease forwards;
