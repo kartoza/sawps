@@ -397,6 +397,7 @@ function Filter(props: any) {
         }
         setSelectedProperty([])
         setSelectedSpecies('')
+        setSelectedSpeciesList([])
         setSelectedActivity([])
         setSelectedInfo([])
         setLocalStartYear(yearRangeStart)
