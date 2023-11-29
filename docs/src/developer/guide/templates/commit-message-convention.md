@@ -20,7 +20,7 @@ context_id: V2ix8Cp6B5qvQ2rQaezWJs
 
 - **Release Notes:** Simplify the creation of meaningful release notes.
 
-- **Collaboration:** Improve teamwork with a standardized way to document changes.
+- **Collaboration:** Improve teamwork with a standardised way to document changes.
 
 ## Steps to Set Up a Convention
 
@@ -30,7 +30,7 @@ context_id: V2ix8Cp6B5qvQ2rQaezWJs
 <type>(<scope>): <message>
 ```
 
-# Commit Message Format
+## Commit Message Format
 
 - `<type>`: Purpose of the commit (e.g., `feat`, `fix`, `docs`).
 - `<scope>` (optional): Module/component affected by the commit.

@@ -87,7 +87,7 @@ pg_restore -h 127.0.0.1 -U docker -d django -n layer sanbi_layer_db_compact.dump
 
 #### Load Fixtures
 
-To load fixtures into your database, you can use the loaddata management command.
+To load fixtures into your database, you can use the `loaddata` management command.
 
 Run this command to load all the fixtures.
 ```
