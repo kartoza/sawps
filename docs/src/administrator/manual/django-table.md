@@ -45,7 +45,7 @@ Administrators can assign a user to groups in the User Table.
 3. **Edit Record**: Clicking on the object will allow administrators to change/edit a particular record. Click [here](django-change-data.md) to see detailed documentation about editing a group.
 
 Admnistrator can also configure what charts available to each group, by adding the necessary permission to each group.
-![Group Permission](./img/django-table-8.png)
+![Group Permission](./img/django-table-9.png)
 
 
 ## User Table
