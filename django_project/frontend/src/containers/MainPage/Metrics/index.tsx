@@ -148,7 +148,6 @@ const Metrics = () => {
     // Call the function with user permissions
     updateConstants(userPermissions, constants);
 
-
     return (
         <Box>
             <Box>
@@ -194,6 +193,25 @@ const Metrics = () => {
                             )}
 
                             {
+                            userInfoData?.user_permissions.includes('Can view property count per population density category') &&
+                            selectedSpecies && (
+                                <Grid item xs={12} md={12} lg={6}>
+                                    <PropertyCountPerCategoryChart
+                                        selectedSpecies={selectedSpecies}
+                                        propertyTypeList={propertyTypes}
+                                        propertyId={propertyId}
+                                        year={endYear}
+                                        loading={loading}
+                                        setLoading={setLoading}
+                                        chartId={'property-count-per-population-density-category'}
+                                        chartTitle={'Number of properties per population category (population density) of {species} for {year}'}
+                                        xLabel={'Population size categories (population density)'}
+                                        url={'/api/property-count-per-population-density-category/'}
+                                    />
+                                </Grid>
+                            )}
+
+                            {
                             userInfoData?.user_permissions.includes('Can view property count per area category') &&
                             selectedSpecies && (
                                 <Grid item xs={12} md={12} lg={6}>
@@ -230,25 +248,6 @@ const Metrics = () => {
                                     />
                                 </Grid>
                             )}
-                            {
-                            userInfoData?.user_permissions.includes('Can view property count per population density category') &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PropertyCountPerCategoryChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyTypeList={propertyTypes}
-                                        propertyId={propertyId}
-                                        year={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        chartId={'property-count-per-population-density-category'}
-                                        chartTitle={'Number of properties per population category (population density) of {species} for {year}'}
-                                        xLabel={'Population size categories (population density)'}
-                                        url={'/api/property-count-per-population-density-category/'}
-                                    />
-                                </Grid>
-                            )}
-
 
                             {
                             constants.canViewProvinceSpeciesCount &&
@@ -261,23 +260,6 @@ const Metrics = () => {
                                         endYear={endYear}
                                         loading={loading}
                                         setLoading={setLoading}
-                                    />
-                                </Grid>
-                            )}
-
-                            {
-                            userInfoData?.user_permissions.includes('Can view province species count as percentage') &&
-                            selectedSpecies &&
-                            (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <SpeciesCountAsPercentage
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        activityData={activityData}
                                     />
                                 </Grid>
                             )}
