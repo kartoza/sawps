@@ -33,7 +33,8 @@ context_id: e6Vaw8mReGPoc8vk4ZrqS9
 
 ![Group Table](./img/django-table-2.png)
 
-This table is used to store existing user groups, that will affect the available options in the [Report](../../user/manual/explore/reports.md).
+This table is used to store existing user groups, that will affect the available options in the [Report](../../user/manual/explore/reports.md) and 
+available charts in the [Charts](../../user/manual/explore/charts.md).
 
 Administrators can assign a user to groups in the User Table.
 
@@ -42,6 +43,10 @@ Administrators can assign a user to groups in the User Table.
 2. **Add Group**: Clicking on the `ADD GROUP` button will allow administrators to add a new group. Click [here](django-add-data.md) to see detailed documentation about adding a new group.
 
 3. **Edit Record**: Clicking on the object will allow administrators to change/edit a particular record. Click [here](django-change-data.md) to see detailed documentation about editing a group.
+
+Admnistrator can also configure what charts available to each group, by adding the necessary permission to each group.
+![Group Permission](./img/django-table-9.png)
+
 
 ## User Table
 

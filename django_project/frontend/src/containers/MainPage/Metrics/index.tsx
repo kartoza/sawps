@@ -148,7 +148,6 @@ const Metrics = () => {
     // Call the function with user permissions
     updateConstants(userPermissions, constants);
 
-
     return (
         <Box>
             <Box>
