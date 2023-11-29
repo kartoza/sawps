@@ -186,12 +186,6 @@ def get_report_filter(request, report_type):
         filters['annualpopulationperactivity__activity_type_id__in'] = [
             int(act) for act in activity.split(',')
         ] if activity else []
-    # else:
-    #     filters['id__in'] = AnnualPopulation.objects.exclude(
-    #         id__in=AnnualPopulationPerActivity.objects.values_list(
-    #             'annual_population', flat=True
-    #         ).distinct()
-    #     )
 
     return filters
 
