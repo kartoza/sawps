@@ -27,6 +27,8 @@ import {
     setStartYear,
     toggleSpecies,
     toggleSpeciesList,
+    setSelectedProvinceName,
+    setSelectedProvinceCount
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import {MapEvents} from '../../../models/Map';
@@ -36,11 +38,13 @@ import {
     Activity,
     Organisation,
     Property,
+    Province,
     useGetActivityQuery,
     useGetOrganisationQuery,
     useGetPropertyQuery,
     useGetSpeciesQuery,
-    useGetUserInfoQuery
+    useGetUserInfoQuery,
+    useGetProvinceQuery
 } from "../../../services/api";
 import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
@@ -59,6 +63,7 @@ function Filter(props: any) {
     const [loading, setLoading] = useState(false)
     const [selectedSpecies, setSelectedSpecies] = useState<string>('');
     const [selectedProperty, setSelectedProperty] = useState([]);
+    const [selectedProvince, setSelectedProvince] = useState([]);
     const [selectedActivity, setSelectedActivity] = useState<number[]>([]);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
@@ -71,6 +76,7 @@ function Filter(props: any) {
     const [allowPropertiesSelection, setPropertiesSelection] = useState(false)
     const [allowOrganisationSelection, setOrganisationSelection] = useState(false)
     const [shownPropertyOptions, setShownPropertyOptions] = useState([])
+    const [provinceOptions, setProvinceOptions] = useState([])
     const isStartYearValid = localStartYear >= yearRangeStart && localStartYear <= yearRangeEnd
     const isEndYearValid = localEndYear >= yearRangeStart && localEndYear <= yearRangeEnd
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
@@ -94,6 +100,11 @@ function Filter(props: any) {
         isLoading: isSpeciesLoading,
         isSuccess: isSpeciesSuccess
     } = useGetSpeciesQuery(selectedOrganisation.join(','))
+    const {
+        data: provinceList,
+        isLoading: isProvinceListLoading,
+        isSuccess: isProvinceListSuccess
+    } = useGetProvinceQuery()
 
     type Information = {
         id?: string,
@@ -146,10 +157,22 @@ function Filter(props: any) {
         }
     }, [organisationList]);
 
+    // Select all province by default
+    useEffect(() => {
+        if (provinceList) {
+            setProvinceOptions(provinceList.map((province: Province) => {
+                return {
+                    id: province.name,
+                    name: province.name
+                }
+            }))
+            setSelectedProvince(provinceList.map((province: Province) => province.name))
+        }
+    }, [provinceList]);
 
     useEffect(() => {
         if (propertyList) {
-            if (selectedOrganisation.length === 0) {
+            if (selectedOrganisation.length === 0 && selectedProvince.length === 0) {
                 setShownPropertyOptions([])
                 setSelectedProperty([])
             } else {
@@ -188,6 +211,11 @@ function Filter(props: any) {
 
     useEffect(() => {
         const pathname = window.location.pathname.replace(/\//g, '');
+        if (pathname !== 'trends') {
+            setSelectedProvince([])
+        } else {
+            setSelectedProvince(provinceOptions.map((province: Province) => province.name))
+        }
         setTab(pathname)
     }, [window.location.pathname])
 
@@ -292,10 +320,40 @@ function Filter(props: any) {
     }, [selectedProperty])
 
     useEffect(() => {
-        if (organisationList) {
-            if (selectedOrganisation.length === 0) {
-                setSelectedSpeciesList([])
+       setSelectedProperty(shownPropertyOptions.map(property => property.id))
+    }, [shownPropertyOptions]);
+
+    useEffect(() => {
+        if (provinceList) {
+            dispatch(setSelectedProvinceName(selectedProvince.join(',')));
+
+            if (propertyList) {
+                if (selectedOrganisation.length === 0 && selectedProvince.length === 0) {
+                    setShownPropertyOptions([])
+                } else {
+                    console.debug(shownPropertyOptions.length)
+                    let newPropertyOptions = propertyList;
+                    if (tab === 'trends') {
+                        newPropertyOptions = newPropertyOptions.filter(property =>
+                            selectedProvince.includes(property.province)
+                        )
+                    }
+                    // @ts-ignore
+                    newPropertyOptions = newPropertyOptions.map(property => {
+                        return {
+                            id: property.id,
+                            name: `${property.name} (${property.short_code})`
+                        }
+                    })
+
+                    setShownPropertyOptions(newPropertyOptions)
+                }
             }
+        }
+    }, [selectedProvince])
+
+    useEffect(() => {
+        if (organisationList) {
             dispatch(selectedOrganisationId(selectedOrganisation.join(',')))
             const selectedOrganisationNames = organisationList.filter(
               organisationObj => selectedOrganisation.includes(organisationObj.id)
@@ -552,6 +610,36 @@ function Filter(props: any) {
                             }
                         </List>
                     </Box>
+                }
+
+                {
+                    tab === 'trends' &&
+                  <Tooltip
+                    title={""}
+                    placement="top-start"
+                  >
+                    <Box>
+                        <Box className='sidebarBoxHeading'>
+                            <img src="/static/images/Property.svg" alt='Property image' />
+                            <Typography color='#75B37A' fontSize='medium'>Province</Typography>
+                        </Box>
+                        <List className='ListItem' component="nav" aria-label="">
+                            {loading || isProvinceListLoading ? (
+                                <Loading />
+                            ) : (
+                              <AutoCompleteCheckbox
+                                options={provinceOptions}
+                                selectedOption={selectedProvince}
+                                singleTerm={'Province'}
+                                pluralTerms={'Provinces'}
+                                setSelectedOption={(newValues) => {
+                                    setSelectedProvince(newValues)
+                                }}
+                              />
+                            )}
+                        </List>
+                    </Box>
+                  </Tooltip>
                 }
 
                 {
