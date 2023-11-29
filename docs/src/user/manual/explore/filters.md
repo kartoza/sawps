@@ -13,11 +13,13 @@ context_id: GD6YdjhPx43u8TKLi3eNNE
 ---
 
 # Filter Side Panel Documentation
-# Map Tab Filter Panel Overview
 
 > **Disclaimer:** Please read the following information carefully. The screenshots may vary slightly due to various user roles on the platform.
 
 The filter side panel allows users to refine and narrow down data based on specific criteria. There are different types of filters are available for customisation.
+
+## Map Tab Filter Panel Overview
+
 The filter side panel enhances the user experience by allowing them to focus on specific subsets of data based on their preferences, making it easier to analyse and work with the dataset effectively.
 
 ## Viewing the filters
@@ -88,7 +90,7 @@ to allow the user group (e.g. `National data scientist`) to see the property fil
 
     ![Property filter](./img/filters-6.png)
 
-1. **Property Filter:** In the property filter, all properties are initially selected as the default setting. Users have the freedom to handpick a property of their choice. If a user is associated with multiple organisations, the filter intelligently displays a list of properties aligned with the selected organisation, ensuring a tailored and organisation-specific selection experience.
+1. **Property Filter:** In the property filter, all properties are initially selected as the default setting. Users have the freedom to hand-pick a property of their choice. If a user is associated with multiple organisations, the filter intelligently displays a list of properties aligned with the selected organisation, ensuring a tailored and organisation-specific selection experience.
 
 #### 6. Year Range Filter
 
@@ -176,7 +178,7 @@ It means the options will be based on the selected organisations.
 
     ![Property filter](./img/filters-14.png)
 
-1. **Property Filter:** In the property filter, all properties are initially selected as the default setting. Users have the freedom to handpick a property of their choice. If a user is associated with multiple organisations, the filter intelligently displays a list of properties aligned with the selected organisation, ensuring a tailored and organisation-specific selection experience.
+1. **Property Filter:** In the property filter, all properties are initially selected as the default setting. Users have the freedom to hand-pick a property of their choice. If a user is associated with multiple organisations, the filter intelligently displays a list of properties aligned with the selected organisation, ensuring a tailored and organisation-specific selection experience.
 
 
 #### 6. Year Range Filter
@@ -252,7 +254,7 @@ It means the options will be based on the selected organisations.
 
     ![Property filter](./img/filters-14.png)
 
-1. **Property Filter:** In the property filter, all properties are initially selected as the default setting. Users have the freedom to handpick a property of their choice. If a user is associated with multiple organisations, the filter intelligently displays a list of properties aligned with the selected organisation, ensuring a tailored and organisation-specific selection experience.
+1. **Property Filter:** In the property filter, all properties are initially selected as the default setting. Users have the freedom to hand-pick a property of their choice. If a user is associated with multiple organisations, the filter intelligently displays a list of properties aligned with the selected organisation, ensuring a tailored and organisation-specific selection experience.
 
 #### 5. Year Range Filter
 
@@ -318,4 +320,4 @@ It means the options will be based on the selected organisations.
 
     ![Property filter](./img/filters-14.png)
 
-1. **Property Filter:** In the property filter, all properties are initially selected as the default setting. Users have the freedom to handpick a property of their choice. If a user is associated with multiple organisations, the filter intelligently displays a list of properties aligned with the selected organisation, ensuring a tailored and organisation-specific selection experience.
+1. **Property Filter:** In the property filter, all properties are initially selected as the default setting. Users have the freedom to hand-pick a property of their choice. If a user is associated with multiple organisations, the filter intelligently displays a list of properties aligned with the selected organisation, ensuring a tailored and organisation-specific selection experience.
