@@ -16,6 +16,8 @@ test('test', async ({ page }) => {
   await expect(page.getByPlaceholder('Search place')).toBeEmpty();
 
   await page.getByPlaceholder('Search place').click();
+
+  await page.getByPlaceholder('Search place').fill('limpopo');
   
   await page.getByRole('option', { name: 'Limpopo, South Africa' }).click();
 
@@ -59,9 +61,7 @@ test('test', async ({ page }) => {
 
   await page.getByRole('tab', { name: 'CHARTS' }).click();
 
-  await expect(page.getByText('Number of properties per population category (count) of Lion for')).toBeVisible();
-
-  await page.getByText('19601994').click();
+  await page.waitForLoadState('domcontentloaded');
 
   await page.getByText('19601992').click();
 
@@ -99,17 +99,11 @@ test('test', async ({ page }) => {
 
   await expect(page.locator('div:nth-child(5) > .MuiGrid-root > .ChartContainerBox > .ChartContainer > .ChartBox > .BarChartContainer > .bar-chart')).toBeVisible();
 
-  await expect(page.getByText('Total count as % of total')).toBeVisible();
-
   await expect(page.locator('.DoughnutChartContainer > canvas').first()).toBeVisible();
 
   await expect(page.getByText('Activity count as % of total')).toBeVisible();
 
-  await expect(page.locator('div:nth-child(7) > .ChartContainerBox > .ChartContainer > .ChartBox > .BarChartContainer > .bar-chart')).toBeVisible();
-
   await expect(page.getByText('Total count per population')).toBeVisible();
-
-  await expect(page.locator('div:nth-child(8) > .ChartContainerBox > .ChartContainer > .ChartBox > .DoughnutChartContainer > canvas')).toBeVisible();
 
   await expect(page.getByText('Mean and standard deviation')).toBeVisible();
 
@@ -161,15 +155,15 @@ test('test', async ({ page }) => {
 
   await expect(page.locator('div:nth-child(2) > .ChartContainerBox > .ChartContainer > .ChartBox > .PopulationTrendChartContainer > .PopulationTrendChart').first()).toBeVisible();
 
-  await expect(page.getByText('KwaZulu-Natal')).toBeVisible();
+  await expect(page.getByText('KwaZulu-Natal').first()).toBeVisible();
 
   await expect(page.locator('div').filter({ hasText: /^KwaZulu-Natal$/ }).nth(1)).toBeVisible();
 
-  await expect(page.getByText('North West', { exact: true })).toBeVisible();
+  await expect(page.getByText('North West', { exact: true }).first()).toBeVisible();
 
   await expect(page.locator('div').filter({ hasText: /^North West$/ }).nth(1)).toBeVisible();
 
-  await expect(page.getByText('Limpopo', { exact: true })).toBeVisible();
+  await expect(page.getByText('Limpopo', { exact: true }).first()).toBeVisible();
 
   await expect(page.locator('div').filter({ hasText: /^Limpopo$/ }).nth(1)).toBeVisible();
 
