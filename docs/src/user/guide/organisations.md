@@ -51,7 +51,7 @@ To request to be added to an organisation, or have one created, a user needs to 
 
 ![Request Organisation 1](./img/request-organisation-1.png)
 
-When the `Request Organisation` button is clicked, a popup window is will appear. On the popup, a user can specify the name/s of the organisation they wish to have created in `Organization Name` field 1️⃣ and add message providing a description of the organisation, etc. in the `Message to administrator` field 2️⃣. Once the user has filled in the relevant fields, they can then click on the `Send` button 3️⃣.
+When the `Request Organisation` button is clicked, a popup window is will appear. On the popup, a user can specify the name/s of the organisation they wish to have created in `Organisation Name` field 1️⃣ and add message providing a description of the organisation, etc. in the `Message to administrator` field 2️⃣. Once the user has filled in the relevant fields, they can then click on the `Send` button 3️⃣.
 
 ![Request Organisation 2](./img/request-organisation-2.png)
 
