@@ -264,23 +264,6 @@ const Metrics = () => {
                                 </Grid>
                             )}
 
-                            {
-                            userInfoData?.user_permissions.includes('Can view province species count as percentage') &&
-                            selectedSpecies &&
-                            (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <SpeciesCountAsPercentage
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        activityData={activityData}
-                                    />
-                                </Grid>
-                            )}
-
 
                             {
                             constants.canViewTotalCount &&
