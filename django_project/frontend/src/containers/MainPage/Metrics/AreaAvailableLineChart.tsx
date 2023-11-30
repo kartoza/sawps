@@ -78,22 +78,18 @@ const AreaAvailableLineChart = (props: any) => {
     const areaDataB: AreaDataValueB = AreaDataValue
 
       if (areaDataB.labels.length === 1) {
-        const year = areaDataB.labels[0];
-        if (!isNaN(year)) {
-          // Modify the data in place by adding the previous year to labels
-          areaDataB.labels = [year - 1, year];
-        }
+        areaDataB.labels = []
       }
 
-      useEffect(() => {
+    useEffect(() => {
         fetchAreaAvailableLineData()
-      }, [propertyId, startYear, endYear, selectedSpecies]);
+    }, [propertyId, startYear, endYear, selectedSpecies]);
 
-      areaDataB.datasets.forEach(dataset => {
+    areaDataB.datasets.forEach(dataset => {
         if (dataset.data.length === 1) {
-          dataset.data.unshift(0);
+            dataset.data = [];
         }
-      });
+    });
 
     const AreaOptions = {
         tension: 0.5,
