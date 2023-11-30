@@ -1,10 +1,9 @@
 from django.db.models import Sum
-from rest_framework import serializers
-
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
+from rest_framework import serializers
 
 
 class BaseReportSerializer(serializers.Serializer):
