@@ -19,7 +19,7 @@ def switch_organisation(request, organisation_id):
         id=organisation_id
     )
 
-    # Validate if the user can switch organizations
+    # Validate if the user can switch organisations
     # only if the user is not a superadmin
     if not request.user.is_superuser:
         organisation_user = OrganisationUser.objects.filter(

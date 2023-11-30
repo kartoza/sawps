@@ -175,7 +175,7 @@ class NationalPropertiesViewTest(TestCase):
         self.client = Client()
 
     def test_get_properties_per_population_category(self):
-        # Create a test organization and properties
+        # Create a test organisation and properties.
         self.organisation = organisationFactory.create()
         Province.objects.create(name='Gauteng')
         organisation_id = self.organisation.pk
