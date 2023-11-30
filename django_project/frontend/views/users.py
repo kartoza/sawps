@@ -114,7 +114,6 @@ class OrganisationUsersView(
 
         return rows_per_page
 
-
     def search_user_table(self, request):
         query = request.POST.get('query')
         organisation = request.POST.get('current_organisation')

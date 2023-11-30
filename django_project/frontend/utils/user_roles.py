@@ -51,9 +51,8 @@ def is_organisation_manager(
         otherwise False.
     """
 
-    # TODO: Update organisation member checking to use group
     # Since user with OrganisationUser record will be added to
-    # organisation member/manager group.
+    # organisation member/manager group, use group to check role.
 
     if not UserProfile.objects.filter(
             user=user
@@ -65,7 +64,7 @@ def is_organisation_manager(
 
     # TODO: Add the user object to organisation invites,
     #  because users can change their email.
-    return OrganisationInvites.objects.filter(
+    org_invite_exists = OrganisationInvites.objects.filter(
         email=user.email,
         organisation=(
             organisation if organisation else
@@ -73,6 +72,10 @@ def is_organisation_manager(
         ),
         assigned_as=MANAGER
     ).exists()
+    group_exists = 'Organisation Manager'.lower() in [
+        name.lower() for name in user.groups.values_list('name', flat=True)
+    ]
+    return org_invite_exists or group_exists
 
 
 def get_user_roles(user: User) -> List[str]:
