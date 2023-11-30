@@ -81,7 +81,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                     <Divider />
                 </Grid>
                 <Grid item>
-                    <Grid container flexDirection={'row'} spacing={1} className={'trends-left-line-chart'}>
+                    <Grid container flexDirection={'row'} spacing={1}>
                         <Grid item md={4} sm={12} lg={4}>
                             <Grid container flexDirection={'column'}>
                                 <Grid item>
