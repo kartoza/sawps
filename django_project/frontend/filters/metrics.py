@@ -75,9 +75,8 @@ class BaseMetricsFilter(django_filters.FilterSet):
         Params:
             queryset (QuerySet): The base queryset of Taxon model.
             value (str): Comma-separated property IDs.
-            name (str): The name of the field to be filtered (property).
+            name (str): The name of the field to be filtered (organisation).
         """
-        print('aaaaaaaaaaaaa')
         organisation_list = value.split(',')
         return queryset.filter(
             annualpopulation__property__organisation__id__in=organisation_list
