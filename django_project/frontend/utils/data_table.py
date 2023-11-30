@@ -37,7 +37,7 @@ from population_data.models import (
 from property.models import Property
 from property.models import Province
 from species.models import Taxon
-from stakeholder.models import OrganisationRepresentative
+from stakeholder.models import OrganisationRepresentative, Organisation
 
 logger = logging.getLogger('sawps')
 
@@ -98,10 +98,17 @@ def get_queryset(user_roles: List[str], request):
             )
     else:
         query_filter = BaseMetricsFilter
-        queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
-            taxon_rank__name="Species"
-        ).distinct().order_by("scientific_name")
+        if PROVINCIAL_DATA_CONSUMER in user_roles:
+            queryset = Taxon.objects.filter(
+                annualpopulation__property__organisation_id=organisation_id,
+                taxon_rank__name="Species"
+            ).distinct().order_by("scientific_name")
+        else:
+            province = Organisation.objects.get(id=organisation_id).province
+            queryset = Taxon.objects.filter(
+                annualpopulation__property__province=province,
+                taxon_rank__name="Species"
+            ).distinct().order_by("scientific_name")
 
     filtered_queryset = query_filter(
         request.GET if request.method == 'GET' else request.data,
