@@ -271,8 +271,6 @@ class ActivityReportSerializer(
 class NationalLevelSpeciesReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        # instance['common_name'] = instance['taxon__common_name_varbatim']
-        # instance['scientific_name'] = instance['taxon__scientific_name']
         del instance['taxon__common_name_varbatim']
         del instance['taxon__scientific_name']
         return instance
@@ -350,18 +348,18 @@ class NationalLevelActivityReport(serializers.Serializer):
 
     def to_representation(self, instance):
         all_data = {}
-        activity_data = AnnualPopulation.objects.values(
-            "annualpopulationperactivity__activity_type__name",
+        activity_data = AnnualPopulationPerActivity.objects.values(
+            "activity_type__name",
             "year"
-        ).filter(**self.context['filters'], taxon=instance).annotate(
-            population=Sum("annualpopulationperactivity__total"),
+        ).filter(**self.context['filters'], annual_population__taxon=instance).annotate(
+            population=Sum("total"),
         ).order_by('-year')
 
         activity_fields = set()
         for activity_entry in activity_data:
             year = activity_entry["year"]
             activity_name = activity_entry[
-                "annualpopulationperactivity__activity_type__name"
+                "activity_type__name"
             ]
             activity_field = f"total_population_{activity_name}"
             if not activity_name:
