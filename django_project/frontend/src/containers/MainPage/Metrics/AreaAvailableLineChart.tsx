@@ -79,18 +79,18 @@ const AreaAvailableLineChart = (props: any) => {
     const areaDataB: AreaDataValueB = AreaDataValue
 
       if (areaDataB.labels.length === 1) {
-         areaDataB.labels = []
+        areaDataB.labels = []
       }
 
-      useEffect(() => {
+    useEffect(() => {
         fetchAreaAvailableLineData()
-      }, [propertyId, startYear, endYear, selectedSpecies]);
+    }, [propertyId, startYear, endYear, selectedSpecies]);
 
-      areaDataB.datasets.forEach(dataset => {
+    areaDataB.datasets.forEach(dataset => {
         if (dataset.data.length === 1) {
-          dataset.data = []
+            dataset.data = [];
         }
-      });
+    });
 
     const AreaOptions = {
         tension: 0.5,

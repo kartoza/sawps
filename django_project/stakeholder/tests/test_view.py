@@ -844,7 +844,7 @@ class GetOrganisationRemindersTest(TestCase):
 
         result = get_organisation_reminders(request)
 
-        # Check that the result contains both reminders for the given organization
+        # Check that the result contains both reminders for the given organisation
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].title, 'Reminder 1')
         self.assertEqual(result[1].title, 'Reminder 2')

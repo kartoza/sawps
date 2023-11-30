@@ -15,11 +15,15 @@ const LeftSideBarContent = (Component: React.ElementType, givenProps?: any) => {
 
 function LeftSideBar(props: LeftSideBarInterface) {
     return (
-        <Box className={`LeftSideBar ${props.additionalClasses ? props.additionalClasses : ''}`}>
-            { props.element ?
-                LeftSideBarContent(props.element, props.additionalProps) : <Skeleton />
-            }
-        </Box>
+        <Box className='main-content-wrap'>
+            <Box className='main-content-sidebar-area'>
+                <Box className={`LeftSideBar ${props.additionalClasses ? props.additionalClasses : ''}`}>
+                    { props.element ?
+                        LeftSideBarContent(props.element, props.additionalProps) : <Skeleton />
+                    }
+                </Box>
+            </Box>
+        </Box>        
     )
 }
 

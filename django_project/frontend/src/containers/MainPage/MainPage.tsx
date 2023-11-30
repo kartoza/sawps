@@ -153,7 +153,7 @@ function MainPage() {
               <Grid item
                     xs={12} md={12}
                     lg={12}
-                    sx={{height: '50px' }}
+                    className='ContentTabHeaders'
               >
                 <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                   {rightSideBarMode === RightSideBarMode.Upload || isUploadUrl ? null : (
@@ -194,7 +194,6 @@ function MainPage() {
                     </div>
                   </div>
                 </Box>
-
               </Grid>
               <Grid item
                     xs={12} md={12}
