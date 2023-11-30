@@ -442,6 +442,9 @@ def national_level_species_report(
             scientific_name=F("taxon__scientific_name"),
             total_property_area=Sum("property__property_size_ha"),
             total_area_available=Sum("area_available_to_species"),
+            total_population=Sum(
+                "total"
+            ),
             adult_male_total_population=Sum(
                 "adult_male"
             ),
