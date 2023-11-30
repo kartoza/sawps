@@ -135,7 +135,9 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         )
 
     def test_data_table_filter_by_no_activity(self) -> None:
-        """Test data table filter by species name"""
+        """Test data table filter without specifying any activity.
+        It will return all data.
+        """
         url = self.url
         data = {
             "species": "SpeciesA",
@@ -144,10 +146,10 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data), 1)
 
-    def test_filter_all_reports_by_all_activity_type(self) -> None:
-        """Test data table filter by activity name"""
+    def test_show_all_reports(self) -> None:
+        """Test showing report for a species."""
         url = self.url
         self.annual_populations[0].annualpopulationperactivity_set.all().delete()
         self.annual_populations[1].annualpopulationperactivity_set.all().delete()
@@ -184,7 +186,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
 
         data = {
             "species": "SpeciesA",
-            "activity": 'all',
+            "activity": '',
             "reports": "Activity_report,Property_report,Province_report,Sampling_report,Species_report",
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -336,21 +338,6 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(next(iter(response.data[0])), "Activity_report")
 
-    def test_activity_report_without_activity_filter(self) -> None:
-        """Test data table activity report without activity"""
-        year = AnnualPopulationPerActivity.objects.first().year
-        url = self.url
-        data = {
-            "species": "SpeciesA",
-            "start_year": year,
-            "end_year": year,
-            "reports": "Activity_report",
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
-        }
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, [])
-
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
         year = self.annual_populations[1].year
@@ -464,7 +451,7 @@ class NationalUserTestCase(TestCase):
         )
         url = self.url
         params = {
-            'activity': 'all',
+            'activity': '',
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
@@ -502,7 +489,7 @@ class NationalUserTestCase(TestCase):
         """Test activity report for national data consumer"""
         url = self.url
         params = {
-            'activity': 'all',
+            'activity': ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             'reports': ACTIVITY_REPORT,
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -538,7 +525,7 @@ class NationalUserTestCase(TestCase):
         """Test species report for national data consumer"""
         url = self.url
         params = {
-            'activity': 'all',
+            'activity': ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             'reports': SPECIES_REPORT,
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -552,6 +539,7 @@ class NationalUserTestCase(TestCase):
                     'scientific_name': self.taxon.scientific_name,
                     "total_property_area": 200,
                     "total_area_available": 10,
+                    "total_population": 10,
                     "adult_male_total_population": 4,
                     "adult_female_total_population": 6,
                     "sub_adult_male_total_population": 10,
@@ -579,7 +567,7 @@ class NationalUserTestCase(TestCase):
         )
         url = self.url
         params = {
-            'activity': 'all',
+            'activity': '',
             'reports': PROVINCE_REPORT,
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -806,7 +794,7 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "csv",
             "species": "SpeciesA",
-            "activity": 'all',
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             "reports": "Activity_report,Property_report,Sampling_report,Species_report",
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -846,7 +834,7 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "xlsx",
             "species": "SpeciesA",
-            "activity": 'all',
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             "reports": "Activity_report,Property_report,Sampling_report,Species_report",
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -881,7 +869,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "csv",
             "species": "SpeciesA",
-            "activity": 'all',
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             "reports": "Activity_report,Property_report,Species_report,Province_report",
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -941,7 +929,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "xlsx",
             "species": "SpeciesA",
-            "activity": 'all',
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             "reports": "Activity_report,Property_report,Species_report,Province_report",
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -962,7 +950,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "csv",
             "species": "SpeciesA",
-            "activity": 'all',
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             "reports": "Species_report",
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
@@ -984,7 +972,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "csv",
             "species": "SpeciesA",
-            "activity": 'all',
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             "reports": "Species_report",
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }

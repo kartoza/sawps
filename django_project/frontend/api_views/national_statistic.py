@@ -119,7 +119,7 @@ class NationalPropertiesView(APIView):
     def get_properties_per_population_category(self) -> QuerySet[Property]:
         """
         Get the filtered queryset
-        of properties owned by the organization.
+        of properties owned by the organisation.
         """
         queryset = Property.objects.filter()
         filtered_queryset = PropertyFilter(

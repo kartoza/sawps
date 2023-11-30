@@ -46,7 +46,7 @@ class ActivateAccount(View):
                 backend='django.contrib.auth.backends.ModelBackend',
             )
             messages.success(request, ('Your account have been confirmed.'))
-            return redirect('/accounts/two-factor/two_factor/setup')
+            return redirect('/accounts/two_factor/setup')
         else:
             messages.warning(
                 request,

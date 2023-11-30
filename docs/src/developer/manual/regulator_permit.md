@@ -49,4 +49,3 @@ context_id: PN56qAr5jCf3ApJJJtAPPk
         docstring_style: sphinx
         heading_level: 1
         show_source: true
-

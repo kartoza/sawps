@@ -95,7 +95,7 @@ class OrganisationBaseView(TemplateView):
                 organisation = organisation_user.organisation
 
         if organisation:
-            # Set the current organization in the user's profile
+            # Set the current organisation in the user's profile
             if user_profile:
                 user_profile.current_organisation = organisation
                 user_profile.save()
