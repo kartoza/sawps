@@ -43,7 +43,15 @@ test('test', async ({ page }) => {
 
   await expect(page.locator('#dataContainer')).toContainText('Species list: Panthera leo');
 
-  await expect(page.getByText('Species Report')).toBeVisible();
+  await expect(page.getByText('Activity Report')).toBeVisible();
+
+  await expect(page.locator('#dataContainer')).toContainText('Translocation (Intake)');
+
+  await expect(page.locator('#dataContainer')).toContainText('Planned Hunt/Cull');
+
+  await expect(page.locator('#dataContainer')).toContainText('Unplanned/Illegal Hunting');
+  
+  await expect(page.locator('#dataContainer')).toContainText('Other');
 
   await expect(page.getByText('Venetia Limpopo NR', { exact: true })).toBeVisible();
 
