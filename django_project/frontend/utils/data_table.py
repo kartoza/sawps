@@ -59,11 +59,11 @@ def get_queryset(user_roles: List[str], request):
     organisation_id = get_current_organisation_id(request.user)
     show_detail = set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
         and not set(user_roles) & set(DATA_CONSUMERS)
-    property_ids = get_param_from_request(request, 'property')
-    prop_ids = property_ids.split(",") if property_ids else []
     if show_detail:
         query_filter = DataContributorsFilter
         organisation = get_param_from_request(request, 'organisation')
+        property_ids = get_param_from_request(request, 'property')
+        prop_ids = property_ids.split(",") if property_ids else []
         if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
             org_ids = organisation.split(",") if organisation else []
             queryset = Property.objects.filter(
@@ -100,7 +100,6 @@ def get_queryset(user_roles: List[str], request):
         query_filter = BaseMetricsFilter
         queryset = Taxon.objects.filter(
             annualpopulation__property__organisation_id=organisation_id,
-            annualpopulation__property_id__in=prop_ids,
             taxon_rank__name="Species"
         ).distinct().order_by("scientific_name")
 
@@ -188,21 +187,13 @@ def get_report_filter(request, report_type):
         end_year = int(get_param_from_request(request, "end_year"))
         filters[year_fields[report_type]] = (start_year, end_year)
 
-    default_activity_field = (
-        'annualpopulationperactivity__'
-        'activity_type_id__in'
-    )
-
     activity = get_param_from_request(request, "activity", "")
     activity = urllib.parse.unquote(activity)
-    if activity != 'all':
-        filters[default_activity_field] = [
+    if activity:
+        filters['annualpopulationperactivity__activity_type_id__in'] = [
             int(act) for act in activity.split(',')
         ] if activity else []
-    elif report_type == ACTIVITY_REPORT:
-        filters[
-            default_activity_field
-        ] = ActivityType.objects.values_list('id', flat=True)
+
     return filters
 
 
@@ -288,8 +279,11 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         'annualpopulationperactivity__'
         'activity_type_id__in'
     )
-    activity_type_ids = filters[activity_field]
-    del filters[activity_field]
+    if activity_field in filters:
+        activity_type_ids = filters[activity_field]
+        del filters[activity_field]
+    else:
+        activity_type_ids = ActivityType.objects.values_list('id', flat=True)
 
     activity_reports = {}
     valid_activities = ActivityType.objects.filter(id__in=activity_type_ids)
@@ -447,6 +441,9 @@ def national_level_species_report(
             scientific_name=F("taxon__scientific_name"),
             total_property_area=Sum("property__property_size_ha"),
             total_area_available=Sum("area_available_to_species"),
+            total_population=Sum(
+                "total"
+            ),
             adult_male_total_population=Sum(
                 "adult_male"
             ),
@@ -513,20 +510,20 @@ def national_level_activity_report(
     if start_year:
         end_year = get_param_from_request(request, "end_year")
         filters[
-            "annualpopulationperactivity__year__range"
+            "annual_population__year__range"
         ] = (start_year, end_year)
 
     property_param = get_param_from_request(request, "property")
     if property_param:
         property_list = property_param.split(",")
-        filters["property__id__in"] = property_list
+        filters["annual_population__property__id__in"] = property_list
 
     if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
         province_ids = Province.objects.filter(
             property__organisation_id=organisation_id
         ).values_list("id", flat=True).distinct()
-        filters["property__province__id__in"] = province_ids
+        filters["annual_population__property__province__id__in"] = province_ids
 
     serializer = NationalLevelActivityReport(
         queryset,

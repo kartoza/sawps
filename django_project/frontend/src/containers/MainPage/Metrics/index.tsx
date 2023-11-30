@@ -10,7 +10,7 @@ import SpeciesCountAsPercentage from "./SpeciesCountAsPercentage";
 import TotalCountPerActivity from "./TotalCountPerActivity";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
-import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery} from "../../../services/api";
+import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery, UserInfo} from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
 import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
@@ -49,6 +49,15 @@ const Metrics = () => {
         isSuccess: isPropertyTypesSuccess
     } = useGetPropertyTypeQuery()
 
+    function isDataConsumer(userInfo: UserInfo) {
+        if (!userInfo?.user_roles) return false;
+        const dataConsumers = new Set([
+          "National data consumer",
+            "Provincial data consumer"
+        ])
+        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
+    }
+
     let activityParams = activityId;
     if (activityList) {
         activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
@@ -63,7 +72,11 @@ const Metrics = () => {
 
     const fetchActivityPercentageData = () => {
         setLoading(true)
-        axios.get(`${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`).then((response) => {
+
+        let fullUrl = `${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}`
+        fullUrl = isDataConsumer(userInfoData) ? fullUrl : `${fullUrl}&property=${propertyId}`
+
+        axios.get(fullUrl).then((response) => {
             setLoading(false)
             if (response.data) {
                 setActivityData(response.data.data)
@@ -149,192 +162,198 @@ const Metrics = () => {
     updateConstants(userPermissions, constants);
 
     return (
-        <Box>
-            <Box>
-                <Modal
-                  id={'pdf-modal'}
-                  open={open}
-                >
-                    <Box>
-                        <Typography variant="h6" component="h2">
-                            Generating PDF!
-                        </Typography>
-                        <Typography id="modal-modal-description" sx={{mt: 2}}>
-                            This might take a while.
-                        </Typography>
-                        <Loading />
-                    </Box>
-                </Modal>
-            </Box>
-            <Box className="charts-container" id={'charts-container'}>
+        <Box className='main-content-wrap'>
+            <Box className='main-content-area'>
+                <Box>
+                    <Modal
+                    id={'pdf-modal'}
+                    open={open}
+                    >
+                        <Box>
+                            <Typography variant="h6" component="h2">
+                                Generating PDF!
+                            </Typography>
+                            <Typography id="modal-modal-description" sx={{mt: 2}}>
+                                This might take a while.
+                            </Typography>
+                            <Loading />
+                        </Box>
+                    </Modal>
+                </Box>
+                <Box className="charts-container" id={'charts-container'}>
 
-                {showCharts ? (
-                        <div className="buttonsBuffer">
-                        <Topper></Topper>
-                        <Grid container spacing={1} ref={contentRef}>
+                    {showCharts ? (
+                            <div className="buttonsBuffer">
+                            <Topper></Topper>
+                            <Grid container spacing={1} ref={contentRef}>
 
-                            {
-                            constants.canViewPopulationCategory &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PropertyCountPerCategoryChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyTypeList={propertyTypes}
-                                        propertyId={propertyId}
-                                        year={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        chartId={'property-count-per-population-category-chart'}
-                                        chartTitle={'Number of properties per population category (count) of {species} for {year}'}
-                                        xLabel={'Population size category (Count)'}
-                                        url={'/api/property-count-per-population-category-size/'}
-                                    />
-                                </Grid>
-                            )}
-
-                            {
-                            userInfoData?.user_permissions.includes('Can view property count per population density category') &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PropertyCountPerCategoryChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyTypeList={propertyTypes}
-                                        propertyId={propertyId}
-                                        year={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        chartId={'property-count-per-population-density-category'}
-                                        chartTitle={'Number of properties per population category (population density) of {species} for {year}'}
-                                        xLabel={'Population size categories (population density)'}
-                                        url={'/api/property-count-per-population-density-category/'}
-                                    />
-                                </Grid>
-                            )}
-
-                            {
-                            userInfoData?.user_permissions.includes('Can view property count per area category') &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PropertyCountPerCategoryChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyTypeList={propertyTypes}
-                                        propertyId={propertyId}
-                                        year={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        chartId={'property-count-per-area-category-chart'}
-                                        chartTitle={'Number of properties per categories of area (ha) for {species} for {year}'}
-                                        xLabel={'Area size category (ha)'}
-                                        url={'/api/property-count-per-area-category/'}
-                                    />
-                                </Grid>
-                            )}
-
-                            {
-                            userInfoData?.user_permissions.includes('Can view property count per area available to species category') &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PropertyCountPerCategoryChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyTypeList={propertyTypes}
-                                        propertyId={propertyId}
-                                        year={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                        chartId={'property-count-per-area-available-to-species-category-chart'}
-                                        chartTitle={'Number of properties per categories of area (ha) available to {species} for {year}'}
-                                        xLabel={'Area size category (ha)'}
-                                        url={'/api/property-count-per-area-available-to-species-category/'}
-                                    />
-                                </Grid>
-                            )}
-
-                            {
-                            constants.canViewProvinceSpeciesCount &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <SpeciesCountPerProvinceChart
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        loading={loading}
-                                        setLoading={setLoading}
-                                    />
-                                </Grid>
-                            )}
-
-
-                            {
-                            constants.canViewTotalCount &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <TotalCountPerActivity
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        activityTypeList={activityList}
-                                    />
-                                </Grid>
-                            )}
-
-
-                            {
-                            constants.canViewPopulationEstimate &&
-                            selectedSpecies && (
-                                <Grid item xs={12} md={12} lg={6}>
-                                    <PopulationEstimateCategoryCount
-                                        selectedSpecies={selectedSpecies}
-                                        propertyId={propertyId}
-                                        startYear={startYear}
-                                        endYear={endYear}
-                                        activityData={activityData}
-                                    />
-                                </Grid>
-                                )}
-
-
-                            {
-                                constants.canViewPopulationCategory && (
-                                    <Grid item xs={12} md={12} lg={12}>
-                                        <StandardDeviationMeanChart
-                                            species={selectedSpecies}
-                                            propertyIds={propertyId}
-                                            title={`Mean and standard deviation of age classes for ${selectedSpecies}`}/>
+                                {
+                                constants.canViewPopulationCategory &&
+                                selectedSpecies && (
+                                    <Grid item xs={12} md={12} lg={6}>
+                                        <PropertyCountPerCategoryChart
+                                            selectedSpecies={selectedSpecies}
+                                            propertyTypeList={propertyTypes}
+                                            propertyId={propertyId}
+                                            year={endYear}
+                                            loading={loading}
+                                            setLoading={setLoading}
+                                            chartId={'property-count-per-population-category-chart'}
+                                            chartTitle={'Number of properties per population category (count) of {species} for {year}'}
+                                            xLabel={'Population size category (Count)'}
+                                            url={'/api/property-count-per-population-category-size/'}
+                                            isDataConsumer={isDataConsumer(userInfoData)}
+                                        />
                                     </Grid>
                                 )}
 
-                    </Grid>
-                        </div>
-                ): (
-                    // Render message to user
-                    <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
-                        <Grid item className={'explore-message'}>
-                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                                Ready to explore?
-                            </Typography>
+                                {
+                                userInfoData?.user_permissions.includes('Can view property count per population density category') &&
+                                selectedSpecies && (
+                                    <Grid item xs={12} md={12} lg={6}>
+                                        <PropertyCountPerCategoryChart
+                                            selectedSpecies={selectedSpecies}
+                                            propertyTypeList={propertyTypes}
+                                            propertyId={propertyId}
+                                            year={endYear}
+                                            loading={loading}
+                                            setLoading={setLoading}
+                                            chartId={'property-count-per-population-density-category'}
+                                            chartTitle={'Number of properties per population category (population density) of {species} for {year}'}
+                                            xLabel={'Population size categories (population density)'}
+                                            url={'/api/property-count-per-population-density-category/'}
+                                            isDataConsumer={isDataConsumer(userInfoData)}
+                                        />
+                                    </Grid>
+                                )}
+
+                                {
+                                userInfoData?.user_permissions.includes('Can view property count per area category') &&
+                                selectedSpecies && (
+                                    <Grid item xs={12} md={12} lg={6}>
+                                        <PropertyCountPerCategoryChart
+                                            selectedSpecies={selectedSpecies}
+                                            propertyTypeList={propertyTypes}
+                                            propertyId={propertyId}
+                                            year={endYear}
+                                            loading={loading}
+                                            setLoading={setLoading}
+                                            chartId={'property-count-per-area-category-chart'}
+                                            chartTitle={'Number of properties per categories of area (ha) for {species} for {year}'}
+                                            xLabel={'Area size category (ha)'}
+                                            url={'/api/property-count-per-area-category/'}
+                                            isDataConsumer={isDataConsumer(userInfoData)}
+                                        />
+                                    </Grid>
+                                )}
+
+                                {
+                                userInfoData?.user_permissions.includes('Can view property count per area available to species category') &&
+                                selectedSpecies && (
+                                    <Grid item xs={12} md={12} lg={6}>
+                                        <PropertyCountPerCategoryChart
+                                            selectedSpecies={selectedSpecies}
+                                            propertyTypeList={propertyTypes}
+                                            propertyId={propertyId}
+                                            year={endYear}
+                                            loading={loading}
+                                            setLoading={setLoading}
+                                            chartId={'property-count-per-area-available-to-species-category-chart'}
+                                            chartTitle={'Number of properties per categories of area (ha) available to {species} for {year}'}
+                                            xLabel={'Area size category (ha)'}
+                                            url={'/api/property-count-per-area-available-to-species-category/'}
+                                            isDataConsumer={isDataConsumer(userInfoData)}
+                                        />
+                                    </Grid>
+                                )}
+
+                                {
+                                constants.canViewProvinceSpeciesCount &&
+                                selectedSpecies && (
+                                    <Grid item xs={12} md={12} lg={6}>
+                                        <SpeciesCountPerProvinceChart
+                                            selectedSpecies={selectedSpecies}
+                                            propertyId={propertyId}
+                                            startYear={startYear}
+                                            endYear={endYear}
+                                            loading={loading}
+                                            setLoading={setLoading}
+                                        />
+                                    </Grid>
+                                )}
+
+
+                                {
+                                constants.canViewTotalCount &&
+                                selectedSpecies && (
+                                    <Grid item xs={12} md={12} lg={6}>
+                                        <TotalCountPerActivity
+                                            selectedSpecies={selectedSpecies}
+                                            propertyId={propertyId}
+                                            startYear={startYear}
+                                            endYear={endYear}
+                                            activityTypeList={activityList}
+                                        />
+                                    </Grid>
+                                )}
+
+
+                                {
+                                constants.canViewPopulationEstimate &&
+                                selectedSpecies && (
+                                    <Grid item xs={12} md={12} lg={6}>
+                                        <PopulationEstimateCategoryCount
+                                            selectedSpecies={selectedSpecies}
+                                            propertyId={propertyId}
+                                            startYear={startYear}
+                                            endYear={endYear}
+                                            activityData={activityData}
+                                            isDataConsumer={isDataConsumer(userInfoData)}
+                                        />
+                                    </Grid>
+                                    )}
+
+
+                                {
+                                    constants.canViewPopulationCategory && (
+                                        <Grid item xs={12} md={12} lg={12}>
+                                            <StandardDeviationMeanChart
+                                                species={selectedSpecies}
+                                                propertyIds={propertyId}
+                                                title={`Mean and standard deviation of age classes for ${selectedSpecies}`}/>
+                                        </Grid>
+                                    )}
+
                         </Grid>
-                        <Grid item className={'explore-message'}>
-                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                                Choose a species to view the data as charts.
-                            </Typography>
+                            </div>
+                    ): (
+                        // Render message to user
+                        <Grid container justifyContent="center" alignItems="center" flexDirection={'column'}>
+                            <Grid item className={'explore-message'}>
+                                <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                                    Ready to explore?
+                                </Typography>
+                            </Grid>
+                            <Grid item className={'explore-message'}>
+                                <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                    Choose a species to view the data as charts.
+                                </Typography>
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    )}
+                </Box>
+                {/* for decision makers only */}
+                {/* {userRole === 'decision maker' && (
+                    <GenerateChartImages />
+                )} */}
+                {showCharts && (
+                    <Box className="download-btn-box" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
+                        <Button onClick={handleDownloadPdf} variant="contained" color="primary">
+                            Download data visualizations
+                        </Button>
+                    </Box>
                 )}
             </Box>
-            {/* for decision makers only */}
-            {/* {userRole === 'decision maker' && (
-                <GenerateChartImages />
-            )} */}
-            {showCharts && (
-                <Box className="download-btn-box" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
-                    <Button onClick={handleDownloadPdf} variant="contained" color="primary">
-                        Download data visualizations
-                    </Button>
-                </Box>
-            )}
-
         </Box>
     );
 };
