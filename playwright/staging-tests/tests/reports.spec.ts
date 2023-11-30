@@ -50,14 +50,14 @@ test('test', async ({ page }) => {
   await expect(page.locator('#dataContainer')).toContainText('Planned Hunt/Cull');
 
   await expect(page.locator('#dataContainer')).toContainText('Unplanned/Illegal Hunting');
-  
+
   await expect(page.locator('#dataContainer')).toContainText('Other');
 
-  await expect(page.getByText('Venetia Limpopo NR', { exact: true })).toBeVisible();
+  await expect(page.getByText('Venetia Limpopo NR', { exact: true }).first()).toBeVisible();
 
   await expect(page.getByText('amy\'s shape').nth(1)).toBeVisible();
 
-  await expect(page.getByText('Mapungubwe GR', { exact: true })).toBeVisible();
+  await expect(page.getByText('Mapungubwe GR', { exact: true }).first()).toBeVisible();
 
   await page.locator('span').filter({ hasText: '1960' }).nth(1).click();
 
@@ -65,7 +65,7 @@ test('test', async ({ page }) => {
 
   await page.getByText('19602023').click();
 
-  await expect(page.getByText('Mapungubwe GR', { exact: true })).toBeVisible();
+  await expect(page.getByText('Mapungubwe GR', { exact: true }).first()).toBeVisible();
 
   await page.getByRole('tab', { name: 'CHARTS' }).click();
 
