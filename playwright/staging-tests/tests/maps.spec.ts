@@ -94,7 +94,10 @@ test('test', async ({ page }) => {
 
   await page.getByLabel('Toggle Light Mode').click();
 
-  await page.getByLabel('Reset bearing to north').click();
+  // Updated to 3D
+  await page.getByLabel('Toggle 3D view').click();
+
+  await page.getByLabel('Toggle 3D view').click();
 
   await page.getByPlaceholder('Search place').click();
 
