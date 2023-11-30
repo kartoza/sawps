@@ -351,7 +351,10 @@ class NationalLevelActivityReport(serializers.Serializer):
         activity_data = AnnualPopulationPerActivity.objects.values(
             "activity_type__name",
             "year"
-        ).filter(**self.context['filters'], annual_population__taxon=instance).annotate(
+        ).filter(
+            **self.context['filters'],
+            annual_population__taxon=instance
+        ).annotate(
             population=Sum("total"),
         ).order_by('-year')
 

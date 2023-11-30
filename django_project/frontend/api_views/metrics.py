@@ -373,9 +373,7 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
         Returns a filtered queryset of Taxon objects representing
         species within the specified organisation.
         """
-        organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
         filtered_queryset = BaseMetricsFilter(
