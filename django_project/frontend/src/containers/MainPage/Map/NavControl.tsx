@@ -30,8 +30,10 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
         if (this._map) {
           if (this._map.getPitch() > 0) {
             this._map.setPitch(0)
+            this._dimSwitcherIcon.classList.remove('selected')
           } else {
             this._map.setPitch(60)
+            this._dimSwitcherIcon.classList.add('selected')
           }
         }
         e.preventDefault()
