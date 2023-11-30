@@ -138,6 +138,9 @@ const DataList = () => {
             'activity': activityId,
             'spatial_filter_values': spatialFilterValues,
         }
+        if (isDataConsumer(userInfoData)) {
+            delete _data['property']
+        }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
             setLoading(false)
             if (response.data) {
