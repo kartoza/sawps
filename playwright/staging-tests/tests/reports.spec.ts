@@ -29,6 +29,12 @@ test('test', async ({ page }) => {
 
   await page.getByRole('tab', { name: 'REPORTS' }).click();
 
+  await page.locator('nav').filter({ hasText: 'Report selected' }).getByLabel('Open').click();
+
+  await page.locator('label').filter({ hasText: 'Select All' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+  
+  await page.getByRole('button', { name: 'Close' }).click();
+
   await expect(page.locator('#dataContainer')).toContainText('SAWPS SUMMARY REPORT');
 
   await expect(page.getByRole('img', { name: 'Species image', exact: true })).toBeVisible();
