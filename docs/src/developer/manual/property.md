@@ -49,3 +49,64 @@ context_id: NHUoStSTW5N7xpC7uCCD5z
         docstring_style: sphinx
         heading_level: 1
         show_source: true
+
+
+::: django_project.property.tests.test_spatial_data
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.property.tests.test_migration
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.property.tests.test_generate_property_centroid
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+# Tasks
+
+
+::: django_project.property.tasks.generate_property_centroid
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.property.tasks.generate_spatial_filter
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.property.tasks.update_organisation_property_short_code
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+# Spatial Data
+
+
+::: django_project.property.spatial_data
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true

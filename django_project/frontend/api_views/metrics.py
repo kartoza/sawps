@@ -59,7 +59,7 @@ class SpeciesPopulationCountPerYearAPIView(APIView):
     def get_queryset(self) -> List[Taxon]:
         """
         Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        species within the specified organisation.
         """
         queryset = Taxon.objects.none()
         if self.request.user.is_superuser:
@@ -96,7 +96,7 @@ class ActivityPercentageAPIView(APIView):
     def get_queryset(self) -> List[Taxon]:
         """
         Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        species within the specified organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
@@ -145,7 +145,7 @@ class TotalCountPerActivityAPIView(APIView):
     def get_queryset(self) -> List[Taxon]:
         """
         Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        species within the specified organisation.
         """
         queryset = Taxon.objects.none()
         if self.request.user.is_superuser:
@@ -181,7 +181,7 @@ class SpeciesPopulationCountPerProvinceAPIView(APIView):
     def get_queryset(self) -> QuerySet[Property]:
         """
         Returns a filtered queryset of property objects
-        within the specified organization.
+        within the specified organisation.
         """
 
     def get(self, request, *args, **kwargs) -> Response:
@@ -210,7 +210,7 @@ class SpeciesPopulationDensityPerPropertyAPIView(APIView):
     def get_queryset(self) -> QuerySet[Property]:
         """
         Returns a filtered queryset of property objects
-        within the specified organization.
+        within the specified organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Property.objects.filter(organisation_id=organisation_id)
@@ -244,13 +244,13 @@ class SpeciesPopulationDensityPerPropertyAPIView(APIView):
 class PropertiesPerPopulationCategoryAPIView(APIView):
     """
     API endpoint to retrieve population categories
-    for properties within an organization.
+    for properties within an organisation.
     """
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self) -> QuerySet[Property]:
         """
-        Get the filtered queryset of properties owned by the organization.
+        Get the filtered queryset of properties owned by the organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Property.objects.filter(organisation_id=organisation_id)
@@ -303,13 +303,13 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
 class TotalAreaPerPropertyTypeAPIView(APIView):
     """
     API endpoint to retrieve total area per property type
-    for properties within an organization.
+    for properties within an organisation.
     """
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self) -> QuerySet[Property]:
         """
-        Get the filtered queryset of properties owned by the organization.
+        Get the filtered queryset of properties owned by the organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Property.objects.filter(organisation_id=organisation_id)
@@ -338,7 +338,7 @@ class PopulationPerAgeGroupAPIView(APIView):
 
     def get_queryset(self) -> QuerySet[Taxon]:
         """
-        Get the filtered queryset taxon owned by the organization.
+        Get the filtered queryset taxon owned by the organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
@@ -371,7 +371,7 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
     def get_queryset(self) -> List[Taxon]:
         """
         Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        species within the specified organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
