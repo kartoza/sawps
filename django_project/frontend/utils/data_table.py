@@ -59,11 +59,11 @@ def get_queryset(user_roles: List[str], request):
     organisation_id = get_current_organisation_id(request.user)
     show_detail = set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
         and not set(user_roles) & set(DATA_CONSUMERS)
+    property_ids = get_param_from_request(request, 'property')
+    prop_ids = property_ids.split(",") if property_ids else []
     if show_detail:
         query_filter = DataContributorsFilter
         organisation = get_param_from_request(request, 'organisation')
-        property_ids = get_param_from_request(request, 'property')
-        prop_ids = property_ids.split(",") if property_ids else []
         if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
             org_ids = organisation.split(",") if organisation else []
             queryset = Property.objects.filter(
@@ -106,9 +106,9 @@ def get_queryset(user_roles: List[str], request):
             ).distinct().order_by("scientific_name")
             print(queryset)
         else:
-            province = Organisation.objects.get(id=organisation_id).province
             queryset = Taxon.objects.filter(
-                annualpopulation__property__province=province,
+                annualpopulation__property__organisation_id=organisation_id,
+                annualpopulation__property_id__in=prop_ids,
                 taxon_rank__name="Species"
             ).distinct().order_by("scientific_name")
 

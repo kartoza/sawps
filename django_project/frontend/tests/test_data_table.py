@@ -1,8 +1,7 @@
 import base64
 import csv
-import json
-import shutil
 import os
+import shutil
 
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -642,14 +641,19 @@ class RegionalUserTestCase(TestCase):
                 username='testuserd',
                 password='testpasswordd'
             )
-        self.organisation_1 = organisationFactory.create()
+        self.province = ProvinceFactory.create(
+            name='Limpopo'
+        )
+        self.organisation_1 = organisationFactory.create(
+            province=self.province
+        )
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
             user=user,
             organisation=self.organisation_1
         )
         self.role_organisation_manager = userRoleTypeFactory.create(
-            name="Regional data consumer",
+            name="Provincial data consumer",
         )
 
         group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
@@ -688,16 +692,38 @@ class RegionalUserTestCase(TestCase):
         session.save()
 
 
-    def test_regional_data_consumer(self) -> None:
-        """Test data table filter by regional data consumer"""
+    def test_no_province_data(self) -> None:
+        """Test data table filter by regional data consumer.
+        The response would be empty since there are no Annual Population data
+        for the user's organisation's province.
+        """
         data = {
             "reports": "Activity_report,Species_report,Property_report",
             "activity": ",".join(
                 [
                     str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
                 ]
-            ),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            )
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_has_province_data(self) -> None:
+        """Test data table filter by regional data consumer.
+        The response would not be empty since there are Annual Population data
+        for the user's organisation's province.
+        """
+        self.property.province = self.organisation_1.province
+        self.property.save()
+        data = {
+            "reports": "Activity_report,Species_report,Property_report",
+            "activity": ",".join(
+                [
+                    str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
+                ]
+            )
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)

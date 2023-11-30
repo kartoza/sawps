@@ -113,7 +113,11 @@ def property_pre_save(
         old_property: Property = Property.objects.get(id=instance.id)
         is_name_changed = old_property.name != instance.name
         is_org_changed = old_property.organisation != instance.organisation
-        is_province_changed = old_property.province != instance.province
+        print(old_property.province)
+        print(instance.province)
+        old_province = old_property.province if old_property.province else ''
+        new_province = instance.province if instance.province else ''
+        is_province_changed = old_province != new_province
         if any([is_province_changed, is_org_changed, is_name_changed]):
             instance.short_code = get_property_short_code(
                 province_name=(
