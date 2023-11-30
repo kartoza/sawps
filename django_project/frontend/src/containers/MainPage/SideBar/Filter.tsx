@@ -199,7 +199,7 @@ function Filter(props: any) {
     // Select all activities by default
     useEffect(() => {
         if (activityList) {
-            setSelectedActivity(activityList.map((activity: Activity) => activity.id))
+            setSelectedActivity([])
         }
     }, [activityList]);
 

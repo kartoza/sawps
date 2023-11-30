@@ -35,6 +35,7 @@ class TaxonListAPIView(APIView):
                     annualpopulation__property__province=org.province,
                     taxon_rank__name="Species"
                 ).order_by("scientific_name").distinct()
+                print(taxon)
             else:
                 taxon = []
         else:

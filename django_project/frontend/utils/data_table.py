@@ -402,19 +402,18 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
 
     activity = get_param_from_request(request, "activity", "")
     activity = urllib.parse.unquote(activity)
-    if activity not in ['all', '']:
+    if activity:
         filters['annualpopulationperactivity__activity_type_id__in'] = [
             int(act) for act in activity.split(',')
         ] if activity else []
 
     if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
-        province_ids = Province.objects.filter(
-            property__organisation_id=organisation_id
-        ).values_list("id", flat=True)
-        properties = properties.filter(
-            province__id__in=province_ids
-        )
+        if organisation_id:
+            organisation = Organisation.objects.get(id=organisation_id)
+            properties = properties.filter(
+                province=organisation.province
+            )
 
     filters['property__id__in'] = list(
         properties.values_list('id', flat=True)

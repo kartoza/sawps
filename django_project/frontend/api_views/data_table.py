@@ -85,7 +85,6 @@ class DataTableAPIView(APIView):
             return Response(reports)
 
         else:
-            print(queryset)
             if get_param_from_request(request, "file"):
                 report_functions = {
                     PROPERTY_REPORT: national_level_property_report,
