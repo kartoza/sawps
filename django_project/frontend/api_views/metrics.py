@@ -373,9 +373,8 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
         Returns a filtered queryset of Taxon objects representing
         species within the specified organization.
         """
-        organisation_id = get_current_organisation_id(self.request.user)
+        # organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
         filtered_queryset = BaseMetricsFilter(
@@ -383,7 +382,7 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
         ).qs
         return filtered_queryset
 
-    def get(self, request, *args, **kwargs) -> Response:
+    def process_request(self, request, *args, **kwargs) -> Response:
         """
         Handle GET request to retrieve total area and available area.
         """
@@ -392,6 +391,12 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
             queryset, many=True, context={"request": request}
         )
         return Response(serializer.data)
+
+    def get(self, request, *args, **kwargs) -> Response:
+        return self.process_request(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs) -> Response:
+        return self.process_request(request, *args, **kwargs)
 
 
 class BasePropertyCountAPIView(APIView):

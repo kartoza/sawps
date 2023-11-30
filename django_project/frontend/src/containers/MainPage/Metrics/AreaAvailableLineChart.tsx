@@ -8,6 +8,7 @@ import ChartContainer from "../../../components/ChartContainer";
 import axios from "axios";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
+import queryString from 'query-string';
 
 
 Chart.register(CategoryScale);
@@ -22,6 +23,7 @@ const AreaAvailableLineChart = (props: any) => {
         national
     } = props
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const selectedOrganisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const [loading, setLoading] = useState(false)
     const [areaData, setAreaData] = useState([])
 
@@ -51,12 +53,26 @@ const AreaAvailableLineChart = (props: any) => {
 
     const fetchAreaAvailableLineData = () => {
         setLoading(true)
-        let url = `${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}`
-        if (!national) {
-            url = `${url}&property=${propertyId}`
+        let _data = {
+            'species': selectedSpecies,
+            'start_year': startYear,
+            'end_year': endYear,
+            'property': propertyId,
+            'organisation': selectedOrganisationId,
+        }
+        if (national) {
+            delete _data['property']
         }
 
-        axios.get(url).then((response) => {
+        axios.post(
+          FETCH_PROPERTY_POPULATION_SPECIES,
+          queryString.stringify(_data),
+      {
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              }
+            }
+          ).then((response) => {
             setLoading(false)
             if (response.data) {
                 if (response.data.length > 0) {

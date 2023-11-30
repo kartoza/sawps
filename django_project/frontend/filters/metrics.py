@@ -14,6 +14,7 @@ class BaseMetricsFilter(django_filters.FilterSet):
     species = django_filters.CharFilter(method='filter_species')
     start_year = django_filters.CharFilter(method='filter_start_year')
     property = django_filters.CharFilter(method='filter_property')
+    organisation = django_filters.CharFilter(method='filter_organisation')
 
     class Meta:
         model = Taxon
@@ -54,7 +55,7 @@ class BaseMetricsFilter(django_filters.FilterSet):
     def filter_property(self, queryset: QuerySet, name: str, value: str) \
         -> QuerySet:
         """
-        Filter properties based on owned species.
+        Filter properties based on annual population.
 
         Params:
             queryset (QuerySet): The base queryset of Taxon model.
@@ -64,6 +65,22 @@ class BaseMetricsFilter(django_filters.FilterSet):
         properties_list = value.split(',')
         return queryset.filter(
             annualpopulation__property__id__in=properties_list
+        )
+
+    def filter_organisation(self, queryset: QuerySet, name: str, value: str) \
+        -> QuerySet:
+        """
+        Filter organisation based on annual population.
+
+        Params:
+            queryset (QuerySet): The base queryset of Taxon model.
+            value (str): Comma-separated property IDs.
+            name (str): The name of the field to be filtered (property).
+        """
+        print('aaaaaaaaaaaaa')
+        organisation_list = value.split(',')
+        return queryset.filter(
+            annualpopulation__property__organisation__id__in=organisation_list
         )
 
 
