@@ -140,6 +140,9 @@ const DataList = () => {
         }
         if (isDataConsumer(userInfoData)) {
             delete _data['property']
+            if (userInfoData.user_roles.includes("Provincial data consumer")) {
+                delete _data['organisation']
+            }
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
             setLoading(false)

@@ -9,8 +9,14 @@ from .serializers import (
     TaxonSerializer,
     TrendPageTaxonSerializer
 )
-
-# Create your views here.
+from stakeholder.models import Organisation
+from frontend.utils.user_roles import get_user_roles
+from frontend.static_mapping import (
+    DATA_CONTRIBUTORS,
+    DATA_SCIENTISTS,
+    DATA_CONSUMERS,
+    PROVINCIAL_DATA_CONSUMER
+)
 
 
 class TaxonListAPIView(APIView):
@@ -20,19 +26,31 @@ class TaxonListAPIView(APIView):
     def get(self, request):
         organisation_id = get_current_organisation_id(self.request.user)
         organisation = self.request.GET.get("organisation")
-        if organisation:
-            _organisation = organisation.split(",")
-            taxon = Taxon.objects.filter(
-                annualpopulation__property__organisation_id__in=(
-                    [int(id) for id in _organisation]
-                ),
-                annualpopulation__taxon__taxon_rank__name__iexact="Species"
-            ).order_by("scientific_name").distinct()
+
+        user_roles = get_user_roles(self.request.user)
+        if PROVINCIAL_DATA_CONSUMER in user_roles:
+            if organisation_id:
+                org = Organisation.objects.get(id=organisation_id)
+                taxon = Taxon.objects.filter(
+                    annualpopulation__property__province=org.province,
+                    taxon_rank__name="Species"
+                ).order_by("scientific_name").distinct()
+            else:
+                taxon = []
         else:
-            taxon = Taxon.objects.filter(
-                annualpopulation__property__organisation_id=organisation_id,
-                taxon_rank__name="Species"
-            ).order_by("scientific_name").distinct()
+            if organisation:
+                _organisation = organisation.split(",")
+                taxon = Taxon.objects.filter(
+                    annualpopulation__property__organisation_id__in=(
+                        [int(id) for id in _organisation]
+                    ),
+                    annualpopulation__taxon__taxon_rank__name__iexact="Species"
+                ).order_by("scientific_name").distinct()
+            else:
+                taxon = Taxon.objects.filter(
+                    annualpopulation__property__organisation_id=organisation_id,
+                    taxon_rank__name="Species"
+                ).order_by("scientific_name").distinct()
 
         return Response(
             status=200,

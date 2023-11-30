@@ -99,10 +99,12 @@ def get_queryset(user_roles: List[str], request):
     else:
         query_filter = BaseMetricsFilter
         if PROVINCIAL_DATA_CONSUMER in user_roles:
+            organisation = Organisation.objects.get(id=organisation_id)
             queryset = Taxon.objects.filter(
-                annualpopulation__property__organisation_id=organisation_id,
+                annualpopulation__property__province=organisation.province,
                 taxon_rank__name="Species"
             ).distinct().order_by("scientific_name")
+            print(queryset)
         else:
             province = Organisation.objects.get(id=organisation_id).province
             queryset = Taxon.objects.filter(
@@ -417,6 +419,7 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     filters['property__id__in'] = list(
         properties.values_list('id', flat=True)
     )
+    print(filters)
 
     return filters
 
