@@ -13,6 +13,12 @@ context_id: 7G6gfGwMPjwqzeFDc9JVFh
 
 # Organisation page
 
+![Dropdown](./img/organisation-page-7.png)
+
+1. **Dropdown**: Click on the dropdown to view the organisation options.
+
+2. **Organisation Name**: Click on the name of the organisation to open organisation home page.
+
 Every organisation can manage its organisation members via this page.
 
 This page offers the following functionality:
