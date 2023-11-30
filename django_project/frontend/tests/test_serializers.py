@@ -4,7 +4,8 @@ from frontend.serializers.property import PropertySerializer
 from frontend.serializers.report import (
     SamplingReportSerializer,
     PropertyReportSerializer,
-    SpeciesReportSerializer
+    SpeciesReportSerializer,
+    ActivityReportSerializer
 )
 from frontend.tests.test_data_table import AnnualPopulationTestMixins
 from population_data.models import (
@@ -150,6 +151,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             expected_value
         )
 
+
 class TestPropertySerializer(TestCase):
     def setUp(self) -> None:
         self.property = PropertyFactory.create()
@@ -165,3 +167,13 @@ class TestPropertySerializer(TestCase):
             sorted(list(serializer.data.keys())),
             sorted(expected_value)
         )
+
+
+class TestActivityReportSerializer(TestCase):
+
+    def test_activity_not_specified(self):
+        with self.assertRaises(ValueError):
+            ActivityReportSerializer(
+                [],
+                many=True
+            )
