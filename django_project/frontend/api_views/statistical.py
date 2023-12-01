@@ -164,7 +164,7 @@ class DownloadTrendDataAsJson(SpeciesTrend):
                 'detail': 'Empty data model for given species!'
             })
         with model_output.output_file.open('r') as json_file:
-            json_dict = json.load(json_file)    
+            json_dict = json.load(json_file)
         if self.can_view_properties_trends():
             properties = self.get_properties_names()
             if PROPERTY_TREND in json_dict:
