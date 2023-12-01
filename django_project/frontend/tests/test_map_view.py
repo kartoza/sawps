@@ -4,6 +4,10 @@ from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
+from sawps.tests.models.account_factory import GroupF, UserF
+from frontend.static_mapping import (
+    NATIONAL_DATA_CONSUMER
+)
 
 
 class TestHomeView(RegisteredBaseViewTestBase):
@@ -21,6 +25,12 @@ class RedirectViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.factory = RequestFactory()
+        # create new super user
+        self.user_1 = UserF.create(is_superuser=True)
+        # create another user for data consumer
+        self.user_2 = UserF.create(username='test_2')
+        self.data_consumer_group = GroupF.create(name=NATIONAL_DATA_CONSUMER)
+        self.user_2.groups.add(self.data_consumer_group)
 
     def test_redirect_to_report(self):
         response = self.client.get(reverse('reports'))
@@ -53,4 +63,13 @@ class RedirectViewTests(TestCase):
         view = MapView()
         view.setup(request)
         with self.assertRaises(PermissionDenied):
-            context = view.get_context_data()
+            view.get_context_data()
+
+    def test_superuser_data_upload_access(self):
+        request = self.factory.get(f"{reverse('map')}?tab=4")
+        request.user = self.user_1
+        view = MapView()
+        view.setup(request)
+        ctx = view.get_context_data()
+        self.assertIn('can_user_do_upload_data', ctx)
+        self.assertTrue(ctx['can_user_do_upload_data'])

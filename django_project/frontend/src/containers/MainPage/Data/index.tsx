@@ -11,7 +11,7 @@ import Loading from '../../../components/Loading';
 import axios from "axios";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
-import {getTitle} from "../../../utils/Helpers";
+import {getTitle, isDataConsumer, isDataScientiest} from "../../../utils/Helpers";
 import {Activity, useGetActivityAsObjQuery, useGetUserInfoQuery, UserInfo} from "../../../services/api";
 import Topper from "./Topper";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -303,7 +303,7 @@ const DataList = () => {
                                     columns.push(value)
                                 }
                             }
-                            if (each === 'Species_report' && userInfoData?.user_permissions.includes('Can edit species population data')) {
+                            if (each === 'Species_report' && userInfoData?.user_permissions.includes('Can edit species population data') && !isDataConsumer(userInfoData) && !isDataScientiest(userInfoData)) {
                                 filteredColumns.push({
                                     field: '',
                                     headerName: 'Action',
