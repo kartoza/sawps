@@ -88,11 +88,6 @@ class ExtendedGroup(models.Model):
                 "can_edit_species_population_data",
                 "Can edit species population data",
             ),
-            # Used to view properties trends: Data Scientist
-            (
-                "can_view_properties_trends_data",
-                "Can view properties trends data",
-            ),
         ]
 
 

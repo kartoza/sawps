@@ -6,14 +6,14 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import SpeciesCountPerProvinceChart from "./SpeciesCountPerProvinceChart";
-import SpeciesCountAsPercentage from "./SpeciesCountAsPercentage";
 import TotalCountPerActivity from "./TotalCountPerActivity";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
-import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery, UserInfo} from "../../../services/api";
+import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
 import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
+import { isDataConsumer } from "../../../utils/Helpers";
 
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 
@@ -48,15 +48,6 @@ const Metrics = () => {
         isLoading: isPropertyTypesLoading,
         isSuccess: isPropertyTypesSuccess
     } = useGetPropertyTypeQuery()
-
-    function isDataConsumer(userInfo: UserInfo) {
-        if (!userInfo?.user_roles) return false;
-        const dataConsumers = new Set([
-          "National data consumer",
-            "Provincial data consumer"
-        ])
-        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
-    }
 
     let activityParams = activityId;
     if (activityList) {
