@@ -258,7 +258,7 @@ const DataList = () => {
         if (!isSuccess) return;
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
             <Box key={each}>
-                <Box className="data-table data-grid"
+                <Box className="data-table data-grid data-table-header"
                      style={{
                          backgroundColor: (customColorWidth as any)[each]?.color,
                          marginTop: '20px'
@@ -308,6 +308,7 @@ const DataList = () => {
                                     key={index}
                                     rows={cellRows}
                                     columns={filteredColumns}
+                                    getRowHeight={() => 'auto'}
                                     disableRowSelectionOnClick
                                     components={{
                                         Pagination: null,
@@ -332,7 +333,8 @@ const DataList = () => {
                 </Box>
                 {activityReportList.map((each: any) =>
                     <Box key={each}>
-                        <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
+                        <Box className="data-table data-table-header"
+                             style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
                             {getTitle(each)}
                         </Box>
                         {activityReportdataList.length > 0 && activityReportdataList.map((item, index) => {
@@ -532,7 +534,7 @@ const DataList = () => {
             )}
             </Box>
         </Box>
-          
+
     )
 }
 
