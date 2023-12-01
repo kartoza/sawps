@@ -238,7 +238,9 @@ The user group is configurable from the User Table in the [Django Admin](../../.
 
      2. **Species Table**: The species report table displays data of the species for the property.
 
-     3. **Edit Icon**: Click on the `Edit` icon, to update the species record.
+     3. **Edit Icon**: Click on the `Edit` icon, to update the species record. When the user clicks on the edit icon the online form step 1 opens. Users can update the species details here.
+
+        ![Species Report](./img/reports-14.png)
 
      **Report Columns**
 
