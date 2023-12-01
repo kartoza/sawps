@@ -1,8 +1,9 @@
 from frontend.tests.base_view import RegisteredBaseViewTestBase
 from frontend.views.map import MapView
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 
 
 class TestHomeView(RegisteredBaseViewTestBase):
@@ -19,6 +20,7 @@ class TestHomeView(RegisteredBaseViewTestBase):
 class RedirectViewTests(TestCase):
     def setUp(self):
         self.client = Client()
+        self.factory = RequestFactory()
 
     def test_redirect_to_report(self):
         response = self.client.get(reverse('reports'))
@@ -45,3 +47,10 @@ class RedirectViewTests(TestCase):
         self.assertIsInstance(response, HttpResponseRedirect)
         self.assertEqual(response['location'], f"{reverse('map')}?tab=0")
 
+    def test_data_consumer_access_upload(self):
+        request = self.factory.get(f"{reverse('map')}?tab=4")
+        request.user = self.user_2
+        view = MapView()
+        view.setup(request)
+        with self.assertRaises(PermissionDenied):
+            context = view.get_context_data()

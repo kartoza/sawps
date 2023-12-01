@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from stakeholder.models import (
@@ -12,6 +13,14 @@ from frontend.serializers.stakeholder import (
 )
 from django.contrib import messages
 from datetime import datetime
+from frontend.static_mapping import (
+    DATA_CONSUMERS,
+    PROVINCIAL_DATA_SCIENTIST,
+    NATIONAL_DATA_SCIENTIST
+)
+from frontend.utils.user_roles import get_user_roles
+
+User = get_user_model()
 
 
 def get_user_notifications(request):
@@ -52,6 +61,14 @@ def get_user_notifications(request):
                 'user_notifications': []
             }
         )
+
+
+def validate_if_user_can_access_data_upload(user: User):
+    """Check if user is not Data Consumer and Data Scientiest."""
+    groups = [PROVINCIAL_DATA_SCIENTIST, NATIONAL_DATA_SCIENTIST]
+    groups.extend(DATA_CONSUMERS)
+    user_roles = get_user_roles(user)
+    return not (set(user_roles) & set(groups))
 
 
 class OrganisationBaseView(TemplateView):
@@ -142,6 +159,15 @@ class OrganisationBaseView(TemplateView):
         ctx['current_organisation_id'] = current_organisation_id
         ctx['organisations'] = self.get_organisation_list(self.request)
         get_user_notifications(self.request)
+        # add context for disabling Upload
+        ctx['can_user_do_upload_data'] = False
+        if self.request.user.is_superuser:
+            ctx['can_user_do_upload_data'] = True
+        else:
+            # Data Consumers and Scientist are not allowed to upload data
+            ctx['can_user_do_upload_data'] = (
+                validate_if_user_can_access_data_upload(self.request.user)
+            )
         return ctx
 
 
