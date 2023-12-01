@@ -34,6 +34,10 @@ from species.scripts.data_upload import (
     string_to_number
 )
 from species.scripts.upload_file_scripts import SHEET_TITLE
+from stakeholder.factories import (
+    organisationRepresentativeFactory,
+    organisationUserFactory
+)
 
 
 def mocked_run_func(encoding):
@@ -46,13 +50,28 @@ class TestUploadSpeciesApiView(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.client = APIClient()
-        self.user = UserF()
+        self.user = UserF(is_superuser=True)
         self.property = PropertyFactory(
             name="Luna"
+        )
+        # not belong to any organisation
+        self.non_superuser_1 = UserF()
+        # as manager
+        self.non_superuser_2 = UserF()
+        organisationRepresentativeFactory.create(
+            organisation=self.property.organisation,
+            user=self.non_superuser_2
+        )
+        # as member
+        self.non_superuser_3 = UserF()
+        organisationUserFactory.create(
+            organisation=self.property.organisation,
+            user=self.non_superuser_3
         )
         Property.objects.filter(id=self.property.id).update(
             short_code='Luna'
         )
+        self.property.refresh_from_db()
         self.token = '8f1c1181-982a-4286-b2fe-da1abe8f7174'
         self.api_url = '/api/upload-species/'
         ActivityType.objects.create(
@@ -1030,3 +1049,100 @@ class TestUploadSpeciesApiView(TestCase):
             activity_type__name="Translocation (Offtake)",
             total=20
         ).exists())
+
+    def test_upload_data_permission(self):
+        # test upload with organisation member
+        upload_session = UploadSpeciesCSV.objects.create(
+            property=self.property,
+            uploader=self.non_superuser_3
+        )
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test.csv')
+        with open(csv_path, 'rb') as data:
+            upload_session.process_file.save('test.csv', File(data))
+        upload_species_data(upload_session.id)
+        upload_session.refresh_from_db()
+        self.assertTrue(upload_session.success_notes)
+        self.assertEqual(upload_session.success_notes, '1 rows uploaded successfully.')
+        self.assertFalse(upload_session.error_file)
+        AnnualPopulation.objects.filter(
+            property=self.property,
+            taxon=self.lion,
+            year=2017
+        ).delete()
+        # test upload with organisation manager
+        upload_session.uploader = self.non_superuser_2
+        upload_session.save(update_fields=['uploader'])
+        upload_species_data(upload_session.id)
+        upload_session.refresh_from_db()
+        self.assertTrue(upload_session.success_notes)
+        self.assertEqual(upload_session.success_notes, '1 rows uploaded successfully.')
+        self.assertFalse(upload_session.error_file)
+        AnnualPopulation.objects.filter(
+            property=self.property,
+            taxon=self.lion,
+            year=2017
+        ).delete()
+        # test upload with non-organisation member
+        upload_session.uploader = self.non_superuser_1
+        upload_session.save(update_fields=['uploader'])
+        upload_species_data(upload_session.id)
+        upload_session.refresh_from_db()
+        self.assertFalse(upload_session.success_notes)
+        self.assertTrue(upload_session.error_file)
+        with open(upload_session.error_file.path, encoding='utf-8-sig') as csv_file:
+            error_file = csv.DictReader(csv_file)
+            headers = error_file.fieldnames
+            self.assertTrue('error_message' in headers)
+            errors = []
+            for row in error_file:
+                errors.append(row['error_message'])
+            self.assertIn("You are not allowed to add data to property {}".format(
+                    self.property.short_code), errors)
+
+    def test_update_data_permission(self):
+        upload_session = UploadSpeciesCSV.objects.create(
+            property=self.property,
+            uploader=self.non_superuser_3
+        )
+        csv_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'test.csv')
+        with open(csv_path, 'rb') as data:
+            upload_session.process_file.save('test.csv', File(data))
+        upload_species_data(upload_session.id)
+        upload_session.refresh_from_db()
+        self.assertTrue(upload_session.success_notes)
+        self.assertEqual(upload_session.success_notes, '1 rows uploaded successfully.')
+        self.assertFalse(upload_session.error_file)
+        # uploader can update the data
+        upload_species_data(upload_session.id)
+        upload_session.refresh_from_db()
+        self.assertTrue(upload_session.success_notes)
+        self.assertEqual(upload_session.success_notes, '1 rows already exist and have been overwritten.')
+        self.assertFalse(upload_session.error_file)
+        # test upload with organisation manager
+        upload_session.uploader = self.non_superuser_2
+        upload_session.save(update_fields=['uploader'])
+        upload_species_data(upload_session.id)
+        upload_session.refresh_from_db()
+        self.assertTrue(upload_session.success_notes)
+        self.assertEqual(upload_session.success_notes, '1 rows already exist and have been overwritten.')
+        self.assertFalse(upload_session.error_file)
+        # test upload with non-organisation member
+        upload_session.uploader = self.non_superuser_1
+        upload_session.save(update_fields=['uploader'])
+        upload_species_data(upload_session.id)
+        upload_session.refresh_from_db()
+        self.assertFalse(upload_session.success_notes)
+        self.assertTrue(upload_session.error_file)
+        with open(upload_session.error_file.path, encoding='utf-8-sig') as csv_file:
+            error_file = csv.DictReader(csv_file)
+            headers = error_file.fieldnames
+            self.assertTrue('error_message' in headers)
+            errors = []
+            for row in error_file:
+                errors.append(row['error_message'])
+            self.assertIn("You are not allowed to update data of property {} and species {} in year {}".format(
+                    self.property.short_code, self.lion.scientific_name, 2017), errors)
