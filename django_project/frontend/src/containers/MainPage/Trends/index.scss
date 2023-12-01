@@ -35,9 +35,13 @@
       border-color: #86BC8B;
     }
   }
-  &.SectionEmpty {
-    display: none;
-  }  
+  .SectionEmpty {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-weight: bold;
+  }
 }
 
 .PopulationTrendChartContainer {
