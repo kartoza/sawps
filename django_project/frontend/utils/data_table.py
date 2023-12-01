@@ -104,7 +104,6 @@ def get_queryset(user_roles: List[str], request):
                 annualpopulation__property__province=organisation.province,
                 taxon_rank__name="Species"
             ).distinct().order_by("scientific_name")
-            print(queryset)
         else:
             queryset = Taxon.objects.filter(
                 annualpopulation__property__organisation_id=organisation_id,
@@ -418,7 +417,6 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     filters['property__id__in'] = list(
         properties.values_list('id', flat=True)
     )
-    print(filters)
 
     return filters
 
