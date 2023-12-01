@@ -1,21 +1,18 @@
-from frontend.utils.organisation import get_current_organisation_id
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from frontend.static_mapping import (
+    PROVINCIAL_DATA_CONSUMER
+)
+from frontend.utils.organisation import get_current_organisation_id
+from frontend.utils.user_roles import get_user_roles
+from stakeholder.models import Organisation
 from .models import Taxon
 from .serializers import (
     FrontPageTaxonSerializer,
     TaxonSerializer,
     TrendPageTaxonSerializer
-)
-from stakeholder.models import Organisation
-from frontend.utils.user_roles import get_user_roles
-from frontend.static_mapping import (
-    DATA_CONTRIBUTORS,
-    DATA_SCIENTISTS,
-    DATA_CONSUMERS,
-    PROVINCIAL_DATA_CONSUMER
 )
 
 
@@ -47,9 +44,13 @@ class TaxonListAPIView(APIView):
                     annualpopulation__taxon__taxon_rank__name__iexact="Species"
                 ).order_by("scientific_name").distinct()
             else:
+                filters = {
+                    ('annualpopulation__'
+                     'property__organisation_id'): organisation_id,
+                    'taxon_rank__name': "Species"
+                }
                 taxon = Taxon.objects.filter(
-                    annualpopulation__property__organisation_id=organisation_id,
-                    taxon_rank__name="Species"
+                    **filters
                 ).order_by("scientific_name").distinct()
 
         return Response(
