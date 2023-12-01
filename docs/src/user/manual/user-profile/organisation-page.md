@@ -22,9 +22,45 @@ This page offers the following functionality:
 * Deleting organisation members provided the user has the right permissions.
 * Searching to see if a member exists within an organisation.
 
+## My Profile Organisation Tab
+
+![My Profile](./img/organisation-page-8.png)
+
+1. **My Profile**: Click on the My Profile link to access the profile configuration page.
+
+![My Profile](./img/organisation-page-9.png)
+
+1. **Organisations**: Click on the `ORGANISATIONS` tab to perform actions related to organisations.
+
+2. **Active**: The `Active` button indicates the currently active organisation.
+
+3. **Set Active**: Click on the `Set Active` button to designate the selected organisation as the current active organisation.
+
+4. **Organisation Name**: Click on the name of the organisation to navigate to its home page.
+
+    ![Organisation Home Page](./img/organisation-page-10.png)
+
+5. **Read More**: Click on the Read More link to explore data use permissions. Users can adjust data use permissions by toggling the provided buttons.
+
+    ![Read More](./img/organisation-page-11.png)
+
+6. **Pagination**: Click on the number to go to the preferred page.
+
+    ![Pagination](./img/organisation-page-12.png)
+
+    1. **Numbers**: Shows the page numbers.
+
+## Profile Dropdown
+
+![Dropdown](./img/organisation-page-7.png)
+
+1. **Dropdown**: Click on the dropdown to view the organisation options.
+
+2. **Organisation Name**: Click on the name of the organisation to open organisation home page.
+
 ## Organisation home page
 
-![Organisation Page 2](./img/organisation-page-2.png)
+![Organisation Home Page](./img/organisation-page-2.png)
 
 1. **Organisation name**: This is a heading that indicates to the user the current organisation they are viewing.
 2. **Add people button**: When clicked will evoke a popup modal.
