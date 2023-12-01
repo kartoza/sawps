@@ -216,19 +216,19 @@ class AddUserToOrganisationTestCase(TestCase):
     def test_is_user_already_joined(self):
         view = AddUserToOrganisation()
         self.assertTrue(
-            view.is_user_already_joined(
+            view.is_user_invited(
                 self.user_email,
                 self.organisation_name
             )
         )
         self.assertFalse(
-            view.is_user_already_joined(
+            view.is_user_invited(
             'another@example.com',
             self.organisation_name
             )
         )
         self.assertFalse(
-            view.is_user_already_joined(
+            view.is_user_invited(
             self.user_email,
             'Nonexistent Organisation'
             )

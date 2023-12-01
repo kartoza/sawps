@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models.signals import post_save, post_delete, pre_save
@@ -6,8 +8,10 @@ from django.utils import timezone
 
 from property.models import Province
 from stakeholder.utils import (
-    add_user_to_organisation_group,
-    remove_organisation_user_from_group
+    add_user_to_org_member,
+    add_user_to_org_manager,
+    remove_user_from_org_member,
+    remove_user_from_org_manager
 )
 
 MEMBER = 'Member'
@@ -254,6 +258,11 @@ class OrganisationInvites(models.Model):
         (MANAGER, 'Manager'),
     ]
     email = models.CharField(max_length=200, null=True, blank=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True
+    )
     organisation = models.ForeignKey(
         Organisation,
         on_delete=models.CASCADE,
@@ -274,6 +283,11 @@ class OrganisationInvites(models.Model):
         max_length=50,
         choices=ASSIGNED_CHOICES,
         default=MEMBER
+    )
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        null=False,
+        blank=True
     )
 
     class Meta:
@@ -388,7 +402,7 @@ def post_create_organisation_user(
     Handle OrganisationUser creation by
     automatically add them to Organisation Member group.
     """
-    add_user_to_organisation_group(instance, OrganisationInvites, Group)
+    add_user_to_org_member(instance, OrganisationInvites, Group)
 
 
 @receiver(post_delete, sender=OrganisationUser)
@@ -403,4 +417,62 @@ def post_delete_organisation_user(
     from Data contributor and Organisation Member group, if they are no longer
     part of any organisation.
     """
-    remove_organisation_user_from_group(instance)
+    remove_user_from_org_member(instance)
+
+
+@receiver(post_save, sender=OrganisationUser)
+def post_create_organisation_user(
+    sender,
+    instance: OrganisationUser,
+    created,
+    **kwargs
+):
+    """
+    Handle OrganisationUser creation by
+    automatically add them to Organisation Member group.
+    """
+    add_user_to_org_member(instance, OrganisationInvites, Group)
+
+
+@receiver(post_delete, sender=OrganisationUser)
+def post_delete_organisation_user(
+    sender,
+    instance: OrganisationUser,
+    *args,
+    **kwargs
+):
+    """
+    Handle OrganisationUser deletion by removing them
+    from Data contributor and Organisation Member group, if they are no longer
+    part of any organisation.
+    """
+    remove_user_from_org_member(instance)
+
+
+@receiver(post_save, sender=OrganisationRepresentative)
+def post_create_organisation_representative(
+    sender,
+    instance: OrganisationRepresentative,
+    created,
+    **kwargs
+):
+    """
+    Handle OrganisationRepresentative creation by
+    automatically add them to Organisation Manager group.
+    """
+    add_user_to_org_manager(instance, Group)
+
+
+@receiver(post_delete, sender=OrganisationRepresentative)
+def post_delete_organisation_user(
+    sender,
+    instance: OrganisationRepresentative,
+    *args,
+    **kwargs
+):
+    """
+    Handle OrganisationRepresentative deletion by removing them
+    from Data contributor and Organisation Manager group, if they are no longer
+    part of any organisation.
+    """
+    remove_user_from_org_manager(instance)

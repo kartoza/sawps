@@ -297,12 +297,12 @@ class OrganisationUsersViewTest(TestCase):
     def test_is_user_registered(self):
         view = OrganisationUsersView()
 
-        response = view.is_user_registerd(self.user.email)
+        response = view.is_user_registered(self.user.email)
 
         self.assertEqual(response, True)
 
         # test none registered user
-        response = view.is_user_registerd('new@new.com')
+        response = view.is_user_registered('new@new.com')
 
         self.assertEqual(response, False)
 

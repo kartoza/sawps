@@ -9,7 +9,12 @@ from frontend.static_mapping import (
     ORGANISATION_MANAGER
 )
 from stakeholder.models import (
-    OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
+    OrganisationUser,
+    OrganisationInvites,
+    OrganisationRepresentative,
+    MANAGER,
+    UserProfile,
+    Organisation
 )
 from frontend.utils.organisation import get_current_organisation_id
 from sawps.models import ExtendedGroup
@@ -50,11 +55,6 @@ def is_organisation_manager(
     :return: True if the user is a manager of the organisation,
         otherwise False.
     """
-
-    # TODO: Update organisation member checking to use group
-    # Since user with OrganisationUser record will be added to
-    # organisation member/manager group.
-
     if not UserProfile.objects.filter(
             user=user
     ).exists():
@@ -63,15 +63,9 @@ def is_organisation_manager(
     if not user.user_profile.current_organisation and not organisation:
         return False
 
-    # TODO: Add the user object to organisation invites,
-    #  because users can change their email.
-    return OrganisationInvites.objects.filter(
-        email=user.email,
-        organisation=(
-            organisation if organisation else
-            user.user_profile.current_organisation
-        ),
-        assigned_as=MANAGER
+    return OrganisationRepresentative.objects.filter(
+        user=user,
+        organisation=user.user_profile.current_organisation
     ).exists()
 
 

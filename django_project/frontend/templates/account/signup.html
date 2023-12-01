@@ -44,12 +44,12 @@
                                         {% endif %}
                                     </div>
                                     <div class="form-row">
-                                    {% elif field.name == 'organisation' %}
+                                    {% elif field.name == 'invitation_uuid' %}
                                     <div class="form-group" style="display: none;">
                                         <label for="{{ field.label }}">{{ field.label }}</label>
                                         {{ field }}
                                     </div>
-                                    <input type="hidden" id="organisationInput" name="{{ field.html_name }}">
+                                    <input type="hidden" id="invitationInput" name="{{ field.html_name }}">
                                     {% else %}
                                     <div class="form-group col-md-6">
                                         <label for="{{ field.label }}">{{ field.label }}</label>
@@ -102,12 +102,12 @@
         // var organisationValue = url.searchParams.get('organisation');
         const decodedUrl = decodeURIComponent(url.toString().replace(/&amp;/g, '&'));
         const searchParams = new URLSearchParams(decodedUrl);
-        var organisationValue = searchParams.get('organisation');
+        var uuidValue = searchParams.get('uuid');
 
-        var organisationField = document.getElementById("organisationInput");
+        var uuidField = document.getElementById("invitationInput");
 
-        if (organisationValue !== null)
-            organisationField.value = organisationValue;
+        if (uuidValue !== null)
+            uuidField.value = uuidValue;
 
         // Prepopulate the email field with the URL value
         var emailInput = document.getElementById('emailInput');
