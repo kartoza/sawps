@@ -21,7 +21,8 @@ const PropertyCountPerCategoryChart = (props: any) => {
     chartId,
     chartTitle,
     xLabel,
-    url
+    url,
+    isDataConsumer
   } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [propertyData, setPropertyData] = useState([]);
@@ -44,11 +45,10 @@ const PropertyCountPerCategoryChart = (props: any) => {
   
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
-    axios
-      .get(
-        `${url}?year=${year}&species=${selectedSpecies}&property=${propertyId}`
-      )
-      .then((response) => {
+    let fullUrl = `${url}?year=${year}&species=${selectedSpecies}`
+    fullUrl = isDataConsumer ? fullUrl : `${fullUrl}&property=${propertyId}`
+
+    axios.get(fullUrl).then((response) => {
         setLoading(false);
         if (response.data) {
           setPropertyData(response.data);

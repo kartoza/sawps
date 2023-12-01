@@ -22,6 +22,7 @@ const AreaAvailableLineChart = (props: any) => {
         national
     } = props
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const [loading, setLoading] = useState(false)
     const [areaData, setAreaData] = useState([])
 
@@ -51,7 +52,7 @@ const AreaAvailableLineChart = (props: any) => {
 
     const fetchAreaAvailableLineData = () => {
         setLoading(true)
-        let url = `${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}`
+        let url = `${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}`
         if (!national) {
             url = `${url}&property=${propertyId}`
         }

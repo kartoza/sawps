@@ -67,7 +67,7 @@ function Filter(props: any) {
     const [selectedActivity, setSelectedActivity] = useState<number[]>([]);
     const [localStartYear, setLocalStartYear] = useState(startYear);
     const [localEndYear, setLocalEndYear] = useState(endYear);
-    const [selectedInfo, setSelectedInfo] = useState<string[]>(['Activity report']);
+    const [selectedInfo, setSelectedInfo] = useState<string[]>(['Species report']);
     const [selectedOrganisation, setSelectedOrganisation] = useState([]);
     const [tab, setTab] = useState<string>('')
     const startYearDisabled = ['map', 'charts'].includes(tab);
