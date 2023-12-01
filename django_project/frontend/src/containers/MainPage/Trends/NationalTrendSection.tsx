@@ -86,7 +86,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                             <Grid container flexDirection={'column'} className='national-trend-left-side'>
                                 <Grid item>
                                     {!loadingTrendData ?
-                                        <PopulationTrendChart chartId='national-population-trend' chartTitle='National Population Trend' data={populationTrendData} />
+                                        <PopulationTrendChart chartId='national-population-trend' chartTitle={capitalizeSentence(`${props.species} National Population Trend`)} data={populationTrendData} />
                                     : <Loading containerStyle={{minHeight: 160}}/>}
                                 </Grid>
                                 <Grid item></Grid>
