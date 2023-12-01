@@ -82,8 +82,8 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                 </Grid>
                 <Grid item>
                     <Grid container flexDirection={'row'} spacing={1}>
-                        <Grid item md={4} sm={12} lg={4}>
-                            <Grid container flexDirection={'column'}>
+                        <Grid item sm={12} md={12} lg={5}>
+                            <Grid container flexDirection={'column'} className='national-trend-left-side'>
                                 <Grid item>
                                     {!loadingTrendData ?
                                         <PopulationTrendChart chartId='national-population-trend' chartTitle='National Population Trend' data={populationTrendData} />
@@ -100,7 +100,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item sm={12} lg={8}>
+                        <Grid item sm={12} md={12} lg={7}>
                             {!loadingGrowthData ?
                                 <Grid container flexDirection={'column'} spacing={1}>
                                     <Grid item>
