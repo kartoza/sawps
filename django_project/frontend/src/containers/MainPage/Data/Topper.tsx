@@ -6,6 +6,7 @@ import {
     useGetTaxonDetailQuery,
     TaxonDetail
 } from "../../../services/api";
+import { displayDateTime } from "../../../utils/Helpers";
 
 
 interface TopperProps {
@@ -15,6 +16,12 @@ interface TopperProps {
     endYear: number;
     startYear: number;
     species: string;
+}
+
+const getTrendsTitle = (taxonDetail: TaxonDetail) => {
+    if (taxonDetail.model_updated_on)
+        return `These trend models were created on ${displayDateTime(taxonDetail?.model_updated_on, '-')} using the South African Wildlife Population System (SAWPS). `
+    return 'Insufficient amount of data for this species to generate trend models. '
 }
 
 
@@ -71,8 +78,7 @@ const Topper = () => {
                   </Box>
                   <Box>
                       <Box>
-                          This report was generated on the {todayStr} using the South African Wildlife Population System
-                          (SAWPS).
+                          {tab === 'trends' ? getTrendsTitle(taxonDetail)  : `This report was generated on the ${todayStr} using the South African Wildlife Population System (SAWPS). `}
                           The data presented is based on the following criteria.
                       </Box>
                       <Box className={'topper-detail'}>

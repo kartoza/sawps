@@ -53,6 +53,7 @@ export interface TaxonDetail {
   total_population: number
   total_area: number
   colour: string
+  model_updated_on: Date
 }
 
 export interface Activity {
