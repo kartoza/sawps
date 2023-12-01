@@ -128,10 +128,6 @@ const DataList = () => {
 
     const fetchDataList = () => {
         setLoading(true)
-        let activityParams = activityId
-        if (activityList) {
-            activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
-        }
         let _data = {
             'species': selectedSpeciesList,
             'reports': selectedInfo.replace(/ /g, '_'),
@@ -139,8 +135,11 @@ const DataList = () => {
             'end_year': endYear,
             'property': propertyId,
             'organisation': organisationId,
-            'activity': activityParams,
+            'activity': activityId,
             'spatial_filter_values': spatialFilterValues,
+        }
+        if (isDataConsumer(userInfoData)) {
+            delete _data['property']
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
             setLoading(false)
@@ -418,117 +417,122 @@ const DataList = () => {
 
 
     return (
-          showReports ? (
-            <Box>
+        <Box className='main-content-wrap'>
+            <Box className='main-content-area'>
+            {showReports ? (
                 <Box>
-                    <Modal
-                      id={'pdf-modal'}
-                      open={modalOpen}
-                    >
-                        <Box>
-                            <Typography variant="h6" component="h2">
-                                Generating PDF!
-                            </Typography>
-                            <Typography id="modal-modal-description" sx={{mt: 2}}>
-                                This might take a while.
-                            </Typography>
-                            <Loading />
-                        </Box>
-                    </Modal>
-                </Box>
-                <Box className='dataContainer buttonsBuffer' id={'dataContainer'}>
-                    <Topper></Topper>
-                    <Box className="bgGreen">
-                        <Box className="selectBox">
-                            <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label" shrink={false}>Filter columns</InputLabel>
-                                <Select
-                                  labelId="demo-multiple-checkbox-label"
-                                  id="demo-multiple-checkbox"
-                                  multiple
-                                  value={selectedColumns}
-                                  onChange={handleChange}
-                                  renderValue={(selected: any) => selected.join(', ')}
-                                  MenuProps={MenuProps}
-                                >
-                                    {columns.map((column) => (
-                                      <MenuItem key={column.headerName} value={column.headerName}>
-                                          <Checkbox checked={selectedColumns.indexOf(column.headerName) > -1} />
-                                          <ListItemText primary={column.headerName} />
-                                      </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Box>
+                    <Box>
+                        <Modal
+                        id={'pdf-modal'}
+                        open={modalOpen}
+                        >
+                            <Box>
+                                <Typography variant="h6" component="h2">
+                                    Generating PDF!
+                                </Typography>
+                                <Typography id="modal-modal-description" sx={{mt: 2}}>
+                                    This might take a while.
+                                </Typography>
+                                <Loading />
+                            </Box>
+                        </Modal>
                     </Box>
-                    {loading ? <Loading /> :
-                      <Box className="dataTable-auto">
-                          <Box className="dataTable">
-                              {data.length > 0 ?
-                                <Box>{tableData}
-                                    {activityTableGrid}
-                                </Box> :
-                                <Typography>
-                                    No Data To Show
-                                </Typography>}
-                          </Box>
-                      </Box>}
+                    <Box className='dataContainer buttonsBuffer' id={'dataContainer'}>
+                        <Topper></Topper>
+                        <Box className="bgGreen">
+                            <Box className="selectBox">
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label" shrink={false}>Filter columns</InputLabel>
+                                    <Select
+                                    labelId="demo-multiple-checkbox-label"
+                                    id="demo-multiple-checkbox"
+                                    multiple
+                                    value={selectedColumns}
+                                    onChange={handleChange}
+                                    renderValue={(selected: any) => selected.join(', ')}
+                                    MenuProps={MenuProps}
+                                    >
+                                        {columns.map((column) => (
+                                        <MenuItem key={column.headerName} value={column.headerName}>
+                                            <Checkbox checked={selectedColumns.indexOf(column.headerName) > -1} />
+                                            <ListItemText primary={column.headerName} />
+                                        </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        </Box>
+                        {loading ? <Loading /> :
+                        <Box className="dataTable-auto">
+                            <Box className="dataTable">
+                                {data.length > 0 ?
+                                    <Box>{tableData}
+                                        {activityTableGrid}
+                                    </Box> :
+                                    <Typography>
+                                        No Data To Show
+                                    </Typography>}
+                            </Box>
+                        </Box>}
+                    </Box>
+                    {loading ? <Loading/> : (
+                    <Box className="downlodBtn">
+                        <Button onClick={handleDownloadPdf} variant="contained" color="primary">
+                            Download data Report
+                        </Button>
+                        <Button id="download-data"
+                            aria-controls={open ? 'download-data-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            variant="contained"
+                            disableElevation
+                            onClick={handleClick}
+                            endIcon={<KeyboardArrowDownIcon />}
+                            color="primary">
+                            Download data
+                        </Button>
+                        <Menu
+                            id="download-data-menu"
+                            MenuListProps={{
+                            'aria-labelledby': 'download-data',
+                            }}
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={handleExportCsv} disableRipple>
+                            Download data CSV
+                            </MenuItem>
+                            <MenuItem onClick={handleExportExcel} disableRipple>
+                            Download data XLSX
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                    )}
                 </Box>
-                {loading ? <Loading/> : (
-                  <Box className="downlodBtn">
-                    <Button onClick={handleDownloadPdf} variant="contained" color="primary">
-                        Download data Report
-                    </Button>
-                    <Button id="download-data"
-                        aria-controls={open ? 'download-data-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
-                        variant="contained"
-                        disableElevation
-                        onClick={handleClick}
-                        endIcon={<KeyboardArrowDownIcon />}
-                        color="primary">
-                        Download data
-                    </Button>
-                      <Menu
-                        id="download-data-menu"
-                        MenuListProps={{
-                          'aria-labelledby': 'download-data',
-                        }}
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                      >
-                        <MenuItem onClick={handleExportCsv} disableRipple>
-                          Download data CSV
-                        </MenuItem>
-                          <MenuItem onClick={handleExportExcel} disableRipple>
-                          Download data XLSX
-                        </MenuItem>
-                      </Menu>
+            ) : (
+                <Box>
+                <Box className='dataContainer' id={'dataContainer'}>
+                        <Grid container
+                            justifyContent="center" alignItems="center"
+                            flexDirection={'column'}>
+                            <Grid item className={'explore-message'}>
+                                <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                                    Ready to explore?
+                                </Typography>
+                            </Grid>
+                            <Grid item className={'explore-message'}>
+                                <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                    Choose a species to view the data as table.
+                                </Typography>
+                            </Grid>
+                        </Grid>
                 </Box>
-                )}
+                </Box>
+            )}
             </Box>
-          ) : (
-            <Box>
-               <Box className='dataContainer' id={'dataContainer'}>
-                    <Grid container
-                          justifyContent="center" alignItems="center"
-                          flexDirection={'column'}>
-                        <Grid item className={'explore-message'}>
-                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                                Ready to explore?
-                            </Typography>
-                        </Grid>
-                        <Grid item className={'explore-message'}>
-                            <Typography variant="body1" color="textPrimary" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                                Choose a species to view the data as table.
-                            </Typography>
-                        </Grid>
-                    </Grid>
-               </Box>
-            </Box>
-          )
+        </Box>
+          
     )
 }
 

@@ -9,6 +9,8 @@ interface CustomNavControlActions {
 
 export default class CustomNavControl extends maplibregl.NavigationControl {
 
+    _dimSwitcher: HTMLButtonElement;
+    _dimSwitcherIcon: HTMLElement;
     _themeSwitcher: HTMLButtonElement;
     _themeSwitcherIcon: HTMLElement;
     _print: HTMLButtonElement;
@@ -21,8 +23,24 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
       super(options);
 
       this._exportControl = new CustomExportControl()
-  
       this._currentTheme = customOptions.initialTheme
+
+      // add 3d map switcher icon
+      this._dimSwitcher = this._createButton('maplibregl-ctrl-dim-switch', (e) => {
+        if (this._map) {
+          if (this._map.getPitch() > 0) {
+            this._map.setPitch(0)
+            this._dimSwitcherIcon.classList.remove('selected')
+          } else {
+            this._map.setPitch(60)
+            this._dimSwitcherIcon.classList.add('selected')
+          }
+        }
+        e.preventDefault()
+      });
+      this._dimSwitcherIcon = this._create_element('span', 'maplibregl-ctrl-icon mapboxgl-ctrl-dim-switch-icon', this._dimSwitcher);
+      this._dimSwitcherIcon.setAttribute('aria-hidden', 'true');
+
       // add theme switcher icon
       this._themeSwitcher = this._createButton('maplibregl-ctrl-theme-switcher', (e) => {
         if (this._map && this._map.isSourceLoaded('sanbi') && this._map.isSourceLoaded('sanbi-dynamic')) {
@@ -55,6 +73,9 @@ export default class CustomNavControl extends maplibregl.NavigationControl {
         this._themeSwitcher.title = 'Toggle Light Mode'
         this._themeSwitcher.ariaLabel = 'Toggle Light Mode'        
       }
+
+      this._dimSwitcher.title = 'Toggle 3D view'
+      this._dimSwitcher.ariaLabel = 'Toggle 3D view'
 
       this._print.title = 'Print'
       this._print.ariaLabel = 'Print'
