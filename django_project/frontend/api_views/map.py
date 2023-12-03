@@ -129,7 +129,7 @@ class MapSessionBase(APIView):
         return self.request.data.get('species', None)
 
     def get_data_consumer_filter(self, parameter, user_roles):
-        """Return 'all' for Data Consumer role, otherwise get from parameter."""
+        """Return 'all' for Data Consumer role, otherwise get from param."""
         filter = self.request.data.get(parameter, None)
         if SUPER_USER in user_roles:
             return filter
