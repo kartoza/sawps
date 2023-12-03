@@ -112,6 +112,7 @@ class MapSessionBase(APIView):
                 self.request.data.get('property', None)
             )
         if self.can_view_province_layer() and filter_species:
+            user_roles = get_user_roles(self.request.user)
             generate_map_view(
                 session, True,
                 self.request.data.get('end_year', None),
@@ -119,13 +120,22 @@ class MapSessionBase(APIView):
                 self.request.data.get('organisation', None),
                 self.request.data.get('activity', None),
                 self.request.data.get('spatial_filter_values', None),
-                self.request.data.get('property', None)
+                self.get_data_consumer_filter('property', user_roles)
             )
         return session
 
     def get_species_filter(self):
         """Return species filter if any from POST data."""
         return self.request.data.get('species', None)
+
+    def get_data_consumer_filter(self, parameter, user_roles):
+        """Return 'all' for Data Consumer role, otherwise get from parameter."""
+        filter = self.request.data.get(parameter, None)
+        if SUPER_USER in user_roles:
+            return filter
+        if set(user_roles) & set(DATA_CONSUMERS):
+            return 'all'
+        return filter
 
     def get_current_session_or_404(self):
         """Retrieve map filter session or return 404."""
