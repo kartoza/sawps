@@ -403,6 +403,9 @@ export default function Map(props: MapInterface) {
       if (_legendObj.getCurrentZoom() === zoom) return;
       updateMapLegends(zoom, selectedSpecies, endYear, provinceCounts, propertiesCounts)
     }
+    if (zoom < MIN_SELECT_PROPERTY_ZOOM_LEVEL && selectedProperty?.id) {
+      dispatch(resetSelectedProperty())
+    }
   }, [zoom])
 
   useEffect(() => {
@@ -456,7 +459,7 @@ export default function Map(props: MapInterface) {
       map.current.on('styledata', mapStyleOnLoaded)
       map.current.on('zoom', () => {
         let _zoom = Math.trunc(map.current.getZoom())
-        if (_zoom < MAX_PROVINCE_ZOOM_LEVEL && mapPopupRef.current) {
+        if (_zoom < MIN_SELECT_PARCEL_ZOOM_LEVEL && mapPopupRef.current) {
           // close popup
           mapPopupRef.current.remove()
           mapPopupRef.current = null
