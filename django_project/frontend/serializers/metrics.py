@@ -37,7 +37,7 @@ class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
         Params:
             obj (Taxon): The Taxon instance representing the species.
         """
-        return obj.common_name_varbatim
+        return obj.common_name_verbatim
 
     def get_species_colour(self, obj: Taxon) -> str:
         """Get the color of the species.
@@ -91,7 +91,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
         populations = AnnualPopulation.objects.values(
-            "taxon__common_name_varbatim").filter(taxon=obj)
+            "taxon__common_name_verbatim").filter(taxon=obj)
         if property_list:
             populations = populations.filter(
                 property__id__in=property_list,
@@ -108,7 +108,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
         """Get the species name.
         Params: obj (Taxon): The Taxon instance.
         """
-        return obj.common_name_varbatim
+        return obj.common_name_verbatim
 
     def get_activities(self, obj) -> List[dict]:
         """Calculate activity percentage data for species.
@@ -117,7 +117,7 @@ class ActivityMatrixSerializer(serializers.ModelSerializer):
         property = self.context['request'].GET.get('property')
         property_list = property.split(',') if property else []
         populations = AnnualPopulation.objects.values(
-            "taxon__common_name_varbatim"
+            "taxon__common_name_verbatim"
         ).filter(taxon=obj)
 
         if property_list:
@@ -197,7 +197,7 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
                 ) if property_ids else Q(),
                 Q(
                     Q(
-                        taxon__common_name_varbatim=(
+                        taxon__common_name_verbatim=(
                             species_name
                         )
                     ) |
@@ -287,7 +287,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         )
         year_range = (int(start_year), int(end_year))
         populations = AnnualPopulation.objects.values(
-            "taxon__common_name_varbatim").filter(
+            "taxon__common_name_verbatim").filter(
             taxon=obj,
             year__range=year_range
         )
@@ -308,7 +308,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         """Get the species name.
         Params: obj (Taxon): The Taxon instance.
         """
-        return obj.common_name_varbatim
+        return obj.common_name_verbatim
 
 
     def get_activities(self, obj) -> List[dict]:
@@ -426,7 +426,7 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = Taxon
-        fields = ["age_group", "graph_icon", "common_name_varbatim", "colour"]
+        fields = ["age_group", "graph_icon", "common_name_verbatim", "colour"]
 
     def get_age_group(self, obj) -> dict:
         """ Calculate population per age group.
@@ -459,7 +459,7 @@ class PopulationPerAgeGroupSerialiser(serializers.ModelSerializer):
 
         age_groups_totals = (
             AnnualPopulation.objects
-            .values("taxon__common_name_varbatim")
+            .values("taxon__common_name_verbatim")
             .filter(**filters)
             .annotate(
                 **{
@@ -517,7 +517,7 @@ class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Taxon
-        fields = ["area", "common_name_varbatim"]
+        fields = ["area", "common_name_verbatim"]
 
     def get_area(self, obj) -> list:
         """ Calculate and get total area and available area.

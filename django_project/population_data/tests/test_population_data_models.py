@@ -33,7 +33,7 @@ class PopulationCountTestCase(TestCase):
         """SetUpTestData for population count test case."""
         taxon = TaxonFactory.create(
             scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
@@ -104,7 +104,7 @@ class AnnualPopulationPerActivityTestCase(TestCase):
         """SetUpTestData for population count test case."""
         taxon = Taxon.objects.create(
             scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )

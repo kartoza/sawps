@@ -81,12 +81,12 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                     <Divider />
                 </Grid>
                 <Grid item>
-                    <Grid container flexDirection={'row'} spacing={1}>
-                        <Grid item md={4} sm={12} lg={4}>
-                            <Grid container flexDirection={'column'}>
+                    {(loadingTrendData || loadingGrowthData || populationTrendData.length > 0) ? <Grid container flexDirection={'row'} spacing={1}>
+                        <Grid item sm={12} md={12} lg={5}>
+                            <Grid container flexDirection={'column'} className='national-trend-left-side'>
                                 <Grid item>
                                     {!loadingTrendData ?
-                                        <PopulationTrendChart chartId='national-population-trend' chartTitle='National Population Trend' data={populationTrendData} />
+                                        <PopulationTrendChart chartId='national-population-trend' chartTitle={capitalizeSentence(`${props.species} National Population Trend`)} data={populationTrendData} />
                                     : <Loading containerStyle={{minHeight: 160}}/>}
                                 </Grid>
                                 <Grid item></Grid>
@@ -100,7 +100,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item sm={12} lg={8}>
+                        <Grid item sm={12} md={12} lg={7}>
                             {!loadingGrowthData ?
                                 <Grid container flexDirection={'column'} spacing={1}>
                                     <Grid item>
@@ -116,6 +116,11 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                             : <Loading containerStyle={{minHeight: 160}}/>}
                         </Grid>
                     </Grid>
+                    : null}
+                    {(!loadingTrendData && !loadingGrowthData && populationTrendData.length === 0) ? <Box className='SectionEmpty'>
+                        {'Insufficient amount of data for this species to generate trend charts.'}
+                    </Box>
+                    :null}
                 </Grid>
             </Grid>
         </Box>

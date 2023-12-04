@@ -1,6 +1,6 @@
 import base64
 import os
-from unittest import mock
+import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -23,6 +23,8 @@ from species.factories import (
 from species.models import Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
 from stakeholder.factories import organisationFactory
+from frontend.models.base_task import DONE
+from frontend.tests.model_factories import SpeciesModelOutputF
 
 
 def mocked_clear_cache(self, *args, **kwargs):
@@ -76,7 +78,7 @@ class TaxonTestCase(TestCase):
         )
         cls.taxon = TaxonFactory.create(
             scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=cls.taxonRank,
             show_on_front_page=False
@@ -174,7 +176,7 @@ class TaxonTestCase(TestCase):
         """Test fetch taxon list for frontpage."""
         taxon = TaxonFactory.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_1',
+            common_name_verbatim='taxon_1',
             colour_variant=False,
             taxon_rank=self.taxonRank,
             show_on_front_page=True
@@ -237,7 +239,7 @@ class TaxonTestCase(TestCase):
         """Test fetch taxon detil for trend page."""
         taxon = TaxonFactory.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_1',
+            common_name_verbatim='taxon_1',
             colour_variant=False,
             taxon_rank=self.taxonRank,
             show_on_front_page=True
@@ -255,6 +257,7 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.json()['total_population'], 0)
         self.assertEqual(response.json()['species_name'], taxon.scientific_name)
         self.assertIsNone(response.json()['graph_icon'])
+        self.assertIsNone(response.json()['model_updated_on'])
         user_1 = User.objects.create_user(username='testuser_taxon_1', password='12345')
         user_2 = User.objects.create_user(username='testuser_taxon_2', password='12345')
         # create two years of data
@@ -290,6 +293,13 @@ class TaxonTestCase(TestCase):
             property=property_2,
             area_available_to_species=1
         )
+        # create statistical model output
+        SpeciesModelOutputF.create(
+            taxon=taxon,
+            is_latest=True,
+            status=DONE,
+            generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
+        )
         response = client.get(
             reverse('taxon-trend-page'),
             {
@@ -301,12 +311,13 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.json()['total_population'], 57)
         self.assertEqual(response.json()['total_area'], 3)
         self.assertIsNone(response.json()['graph_icon'])
+        self.assertIsNotNone(response.json()['model_updated_on'])
 
     def test_create_taxon_no_graph_icon(self):
         """Test create taxon without graph icon."""
         taxon = TaxonFactory.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_11',
+            common_name_verbatim='taxon_11',
             colour_variant=False,
             taxon_rank=self.taxonRank,
             show_on_front_page=False,
@@ -387,7 +398,7 @@ class TaxonTestCase(TestCase):
         with self.assertRaises(Exception) as raised:
             Taxon.objects.create(
                 scientific_name='taxon_1',
-                common_name_varbatim='taxon_0',
+                common_name_verbatim='taxon_0',
                 colour_variant=False,
                 taxon_rank=self.taxonRank,
             )
@@ -398,7 +409,7 @@ class TaxonTestCase(TestCase):
 
         Taxon.objects.create(
             scientific_name='taxon_2',
-            common_name_varbatim='taxon_2',
+            common_name_verbatim='taxon_2',
             colour_variant=False,
             infraspecific_epithet='infra_2',
             taxon_rank=self.taxonRank,
@@ -411,7 +422,7 @@ class TaxonTestCase(TestCase):
         with self.assertRaises(Exception) as raised:
             Taxon.objects.create(
                 scientific_name='taxon_0',
-                common_name_varbatim='taxon_0',
+                common_name_verbatim='taxon_0',
                 colour_variant=False,
                 infraspecific_epithet='infra_1',
                 taxon_rank=self.taxonRank,
@@ -421,7 +432,7 @@ class TaxonTestCase(TestCase):
         """Test taxon relation to self."""
         self.taxon2 = Taxon.objects.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_1',
+            common_name_verbatim='taxon_1',
             colour_variant=False,
             taxon_rank=self.taxonRank,
             parent=self.taxon,
@@ -440,7 +451,7 @@ class TaxonTestCase(TestCase):
     def test_taxon_admin_list(self):
         taxon2 = Taxon.objects.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_1',
+            common_name_verbatim='taxon_1',
             colour_variant=False,
             taxon_rank=self.taxonRank
         )
@@ -463,7 +474,7 @@ class TaxonSurveyMethodTestCase(TestCase):
         """SetUpTestData for Taxon survey method count test case."""
         cls.taxon = Taxon.objects.create(
             scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
@@ -496,7 +507,7 @@ class TaxonSurveyMethodTestCase(TestCase):
         """Test update Taxon survey method count."""
         taxon = TaxonFactory.create(
             scientific_name='taxon',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )

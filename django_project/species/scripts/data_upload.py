@@ -308,7 +308,7 @@ class SpeciesCSVUpload(object):
             try:
                 taxon = Taxon.objects.get(
                     scientific_name=scientific_name,
-                    common_name_varbatim=common_name
+                    common_name_verbatim=common_name
                 )
             except Taxon.DoesNotExist:
                 return
