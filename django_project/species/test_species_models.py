@@ -525,7 +525,7 @@ class TaxonTestCase(TestCase):
             response.json(),
             [
                 {
-                    'common_name_varbatim': self.taxon.common_name_varbatim,
+                    'common_name_verbatim': self.taxon.common_name_verbatim,
                     'id': self.taxon.id,
                     'scientific_name': self.taxon.scientific_name
                 }
