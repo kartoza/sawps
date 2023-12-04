@@ -4,7 +4,8 @@ from frontend.serializers.property import PropertySerializer
 from frontend.serializers.report import (
     SamplingReportSerializer,
     PropertyReportSerializer,
-    SpeciesReportSerializer
+    SpeciesReportSerializer,
+    ActivityReportSerializer
 )
 from frontend.tests.test_data_table import AnnualPopulationTestMixins
 from population_data.models import (
@@ -37,7 +38,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "organisation_name": self.organisation_1.name,
             "organisation_short_code": self.organisation_1.short_code,
             "scientific_name": self.taxon.scientific_name,
-            "common_name": self.taxon.common_name_varbatim,
+            "common_name": self.taxon.common_name_verbatim,
             "year": annual_population.year,
             "group": None,
             "total": annual_population.total,
@@ -111,7 +112,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "organisation_name": self.annual_population.property.organisation.name,
             "organisation_short_code": self.annual_population.property.organisation.short_code,
             "scientific_name": self.annual_population.taxon.scientific_name,
-            "common_name": self.annual_population.taxon.common_name_varbatim,
+            "common_name": self.annual_population.taxon.common_name_verbatim,
             "owner": "",
             "owner_email": self.annual_population.property.owner_email,
             "property_type": self.annual_population.property.property_type.name,
@@ -137,7 +138,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "organisation_short_code": self.organisation_1.short_code,
             "year": annual_population.year,
             "scientific_name": self.taxon.scientific_name,
-            "common_name": self.taxon.common_name_varbatim,
+            "common_name": self.taxon.common_name_verbatim,
             "population_status": "",
             "population_estimate_category": "",
             "survey_method": "",
@@ -149,6 +150,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             serializer.data,
             expected_value
         )
+
 
 class TestPropertySerializer(TestCase):
     def setUp(self) -> None:
@@ -165,3 +167,13 @@ class TestPropertySerializer(TestCase):
             sorted(list(serializer.data.keys())),
             sorted(expected_value)
         )
+
+
+class TestActivityReportSerializer(TestCase):
+
+    def test_activity_not_specified(self):
+        with self.assertRaises(ValueError):
+            ActivityReportSerializer(
+                [],
+                many=True
+            )

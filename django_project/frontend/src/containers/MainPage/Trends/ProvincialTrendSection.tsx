@@ -117,7 +117,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                     <Divider />
                 </Grid>
                 <Grid item>
-                    <Grid container flexDirection={'column'} spacing={1}>
+                    {(loadingTrendData || loadingGrowthData || Object.keys(populationTrendData).length > 0) ? <Grid container flexDirection={'column'} spacing={1}>
                         <Grid item>
                             {!loadingTrendData ? 
                             <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 8, xl: 12 }}>
@@ -145,6 +145,11 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                             : <Loading containerStyle={{minHeight: 160}}/>}
                         </Grid>
                     </Grid>
+                    : null}
+                    {(!loadingTrendData && !loadingGrowthData && Object.keys(populationTrendData).length === 0) ? <Box className='SectionEmpty'>
+                        {'Insufficient amount of data for this species to generate trend charts.'}
+                    </Box>
+                    :null}
                 </Grid>
             </Grid>
         </Box>

@@ -367,7 +367,7 @@ class FetchPopulationData(APIView):
             data={
                 'taxon_id': annual_population.taxon.id,
                 'taxon_name': annual_population.taxon.scientific_name,
-                'common_name': annual_population.taxon.common_name_varbatim,
+                'common_name': annual_population.taxon.common_name_verbatim,
                 'year': annual_population.year,
                 'property_id': annual_population.property.id,
                 'annual_population': AnnualPopulationFormSerializer(

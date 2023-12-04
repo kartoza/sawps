@@ -24,6 +24,10 @@ from species.scripts.upload_file_scripts import *  # noqa
 from frontend.utils.statistical_model import (
     mark_model_output_as_outdated_by_species_list
 )
+from stakeholder.models import (
+    OrganisationRepresentative,
+    OrganisationUser
+)
 
 logger = logging.getLogger('sawps')
 
@@ -304,7 +308,7 @@ class SpeciesCSVUpload(object):
             try:
                 taxon = Taxon.objects.get(
                     scientific_name=scientific_name,
-                    common_name_varbatim=common_name
+                    common_name_verbatim=common_name
                 )
             except Taxon.DoesNotExist:
                 return
@@ -398,6 +402,11 @@ class SpeciesCSVUpload(object):
             )
         return pop
 
+    def check_if_not_superuser(self):
+        if self.upload_session.uploader is None:
+            return True
+        return not self.upload_session.uploader.is_superuser
+
     def process_data(self, row):
         """Processing row of csv file."""
 
@@ -485,6 +494,42 @@ class SpeciesCSVUpload(object):
         count_total = self.row_value(row, COUNT_TOTAL)
         presence = self.row_value(row, PRESENCE)
         pop_certainty = self.row_value(row, POPULATION_ESTIMATE_CERTAINTY)
+
+        if property and taxon and self.check_if_not_superuser():
+            is_organisation_manager = (
+                OrganisationRepresentative.objects.filter(
+                    organisation=property.organisation,
+                    user=self.upload_session.uploader
+                )
+            )
+            existing_data = AnnualPopulation.objects.filter(
+                year=int(string_to_number(year)),
+                taxon=taxon,
+                property=property
+            ).first()
+            if existing_data:
+                # validate if user can update the data: uploader or manager
+                if (
+                    not is_organisation_manager and
+                    existing_data.user.id != self.upload_session.uploader.id
+                ):
+                    self.error_row(
+                        message="You are not allowed to update data of "
+                                "property {} and species {} in year {}".format(
+                                    property_code, scientific_name, year
+                                )
+                    )
+            else:
+                # validate if user can add data to the property
+                is_organisation_member = OrganisationUser.objects.filter(
+                    organisation=property.organisation,
+                    user=self.upload_session.uploader
+                )
+                if not is_organisation_manager and not is_organisation_member:
+                    self.error_row(
+                        message="You are not allowed to add data to "
+                                "property {}".format(property_code)
+                    )
 
         if len(self.row_error) > 0:
             return

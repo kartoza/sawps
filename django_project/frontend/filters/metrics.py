@@ -23,7 +23,7 @@ class BaseMetricsFilter(django_filters.FilterSet):
     def filter_species(self, queryset: QuerySet, name: str, value: str) \
         -> QuerySet:
         """
-        Filter species based on common_name_varbatim.
+        Filter species based on common_name_verbatim.
 
         Params:
             queryset (QuerySet): The base queryset of Taxon model.

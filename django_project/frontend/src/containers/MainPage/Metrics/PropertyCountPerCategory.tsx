@@ -21,7 +21,8 @@ const PropertyCountPerCategoryChart = (props: any) => {
     chartId,
     chartTitle,
     xLabel,
-    url
+    url,
+    isDataConsumer
   } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [propertyData, setPropertyData] = useState([]);
@@ -37,18 +38,17 @@ const PropertyCountPerCategoryChart = (props: any) => {
   })
 
   // Extract the species name
-  const species = propertyData.length > 0 ? propertyData[0].common_name_varbatim : '';
+  const species = propertyData.length > 0 ? propertyData[0].common_name_verbatim : '';
 
   // Define the labels (category) dynamically from propertyData and sort them from highest to lowest
   const labels = propertyData.map((data: any) => data.category);
   
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
-    axios
-      .get(
-        `${url}?year=${year}&species=${selectedSpecies}&property=${propertyId}`
-      )
-      .then((response) => {
+    let fullUrl = `${url}?year=${year}&species=${selectedSpecies}`
+    fullUrl = isDataConsumer ? fullUrl : `${fullUrl}&property=${propertyId}`
+
+    axios.get(fullUrl).then((response) => {
         setLoading(false);
         if (response.data) {
           setPropertyData(response.data);
