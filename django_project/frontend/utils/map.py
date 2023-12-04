@@ -15,7 +15,6 @@ from core.settings.utils import absolute_path
 from species.models import Taxon
 from frontend.models.map_session import MapSession
 from frontend.utils.color import linear_gradient
-from stakeholder.models import OrganisationUser
 from activity.models import ActivityType
 
 
@@ -627,12 +626,6 @@ def generate_map_view(
         drop_map_materialized_view(session.province_view_name)
     else:
         drop_map_materialized_view(session.properties_view_name)
-    if filter_organisation == 'all' and not session.user.is_superuser:
-        # get user organisation ids
-        org_ids = OrganisationUser.objects.filter(
-            user=session.user
-        ).values_list('organisation_id', flat=True).distinct()
-        filter_organisation = ','.join(map(str, org_ids))
     is_choropleth_layer = True if filter_species_name else False
     if is_choropleth_layer:
         if is_province_view:
