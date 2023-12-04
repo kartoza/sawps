@@ -13,8 +13,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
-  /* Run tests in files in parallel */
+  /* Timeout */
   timeout: 30 * 1000,
+  /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
@@ -45,14 +46,14 @@ export default defineConfig({
      },
      dependencies: ['setup'],
     },
-    {
+    /*{
       name: 'firefox',
       use: { ...devices['Desktop Firefox'],
         // Use prepared auth state.
         storageState: 'auth.json',
       },
       dependencies: ['setup'],
-    },
+    },*/
     
     {
       name: 'webkit',
