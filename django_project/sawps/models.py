@@ -86,6 +86,14 @@ class ExtendedGroup(models.Model):
                 "can_edit_species_population_data",
                 "Can edit species population data",
             ),
+            (
+                "can_view_report_as_data_consumer",
+                "Can view report as data consumer"
+            ),
+            (
+                "can_view_report_as_provincial_data_consumer",
+                "Can view report as provincial data consumer"
+            )
         ]
 
 

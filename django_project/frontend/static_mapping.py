@@ -36,3 +36,10 @@ DATA_SCIENTISTS = [
     PROVINCIAL_DATA_SCIENTIST,
     SUPER_USER
 ]
+
+DATA_CONSUMERS_EXCLUDE_PERMISSIONS = [
+    'Can view properties trends data',
+    'Can edit species population data',
+    'Can view property filter',
+    'Can view properties layer in the map'
+]

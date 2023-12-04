@@ -46,7 +46,7 @@ import {
     useGetUserInfoQuery,
     useGetProvinceQuery, UserInfo
 } from "../../../services/api";
-import {isMapDisplayed} from "../../../utils/Helpers";
+import {isMapDisplayed, isDataConsumer} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
 import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 import {SeachPlaceResult} from '../../../utils/SearchPlaces';
@@ -115,15 +115,6 @@ function Filter(props: any) {
     const roleExists = (role: string) => {
         if (!userInfoData || !userInfoData.user_roles) return false;
         return userInfoData.user_roles.includes(role);
-    }
-
-    function isDataConsumer(userInfo: UserInfo) {
-        if (!userInfo?.user_roles) return false;
-        const dataConsumers = new Set([
-          "National data consumer",
-            "Provincial data consumer"
-        ])
-        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
     }
 
     if (userInfoData) {

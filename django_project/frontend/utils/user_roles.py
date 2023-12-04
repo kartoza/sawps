@@ -6,7 +6,10 @@ from django.contrib.contenttypes.models import ContentType
 from frontend.static_mapping import (
     SUPER_USER,
     ORGANISATION_MEMBER,
-    ORGANISATION_MANAGER
+    ORGANISATION_MANAGER,
+    DATA_CONSUMERS,
+    DATA_CONSUMERS_EXCLUDE_PERMISSIONS,
+    PROVINCIAL_DATA_CONSUMER
 )
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
@@ -134,5 +137,15 @@ def get_user_permissions(user: User) -> List[str]:
             ).values_list('name', flat=True)
         )
         permissions = permissions.union(allowed_permission)
+
+    if not user.is_superuser:
+        user_roles = get_user_roles(user)
+        if set(user_roles) & set(DATA_CONSUMERS):
+            permissions = (
+                permissions - set(DATA_CONSUMERS_EXCLUDE_PERMISSIONS)
+            )
+            permissions.add('Can view report as data consumer')
+            if PROVINCIAL_DATA_CONSUMER in user_roles:
+                permissions.add('Can view report as provincial data consumer')
 
     return sorted(list(permissions))
