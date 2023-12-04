@@ -3,10 +3,9 @@
 """
 import django_filters
 from django.db.models.query import QuerySet
+
 from property.models import Property
 from species.models import Taxon
-from frontend.utils.user_roles import get_user_roles
-from frontend.static_mapping import DATA_CONSUMERS
 
 
 class BaseMetricsFilter(django_filters.FilterSet):

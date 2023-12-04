@@ -35,7 +35,6 @@ from population_data.models import (
     AnnualPopulationPerActivity
 )
 from property.models import Property
-from property.models import Province
 from species.models import Taxon
 from stakeholder.models import OrganisationRepresentative, Organisation
 
@@ -529,7 +528,9 @@ def national_level_activity_report(
         organisation_id = get_current_organisation_id(request.user)
         if organisation_id:
             organisation = Organisation.objects.get(id=organisation_id)
-            filters["annual_population__property__province"] = organisation.province
+            filters[
+                "annual_population__property__province"
+            ] = organisation.province
 
     serializer = NationalLevelActivityReport(
         queryset,
