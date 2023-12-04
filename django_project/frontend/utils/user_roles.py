@@ -143,5 +143,5 @@ def get_user_permissions(user: User) -> List[str]:
             permissions = (
                 permissions - set(DATA_CONSUMERS_EXCLUDE_PERMISSIONS)
             )
-            permissions = permissions.union({'Can view report as data consumer'})
+            permissions.add('Can view report as data consumer')
     return sorted(list(permissions))
