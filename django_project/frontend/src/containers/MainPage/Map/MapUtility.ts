@@ -158,10 +158,10 @@ export const isContextLayerSelected = (contextLayers: ContextLayerInterface[], c
  * @param lngLat
  * @param callback
  */
-export const searchParcel = (lngLat: maplibregl.LngLat, propertyId: number, currentZoom: number, callback: (parcel: ParcelInterface) => void) => {
+export const searchParcel = (lngLat: maplibregl.LngLat, propertyId: number, currentZoom: number, callback: (parcels: ParcelInterface[]) => void) => {
     axios.get(SEARCH_PARCEL_URL + `?lat=${lngLat.lat}&lng=${lngLat.lng}&property_id=${propertyId}&zoom=${currentZoom}`).then((response) => {
         if (response.data) {
-            callback(response.data as ParcelInterface)
+            callback(response.data as ParcelInterface[])
         } else {
             callback(null)
         }

@@ -9,7 +9,7 @@ import { debounce } from '@mui/material/utils';
 import {useAppDispatch, useAppSelector } from '../../../app/hooks';
 import {
   setMapReady,
-  toggleParcelSelectedState,
+  addParcelsAsSelected,
   setSelectedProperty,
   resetSelectedProperty,
   selectedParcelsOnRenderFinished,
@@ -478,16 +478,16 @@ export default function Map(props: MapInterface) {
   const mapOnClick = useCallback((e: any) => {
     if (contextLayers.length === 0) return;
     if (selectionMode === MapSelectionMode.None) return;
-    let _parcelLayer = findParcelLayer(contextLayers)
+    const _parcelLayer = findParcelLayer(contextLayers)
     if (typeof _parcelLayer === 'undefined') return;
     let _mapZoom = Math.trunc(map.current.getZoom())
     if (selectionMode === MapSelectionMode.Parcel) {
       // skip search if not in the parcel zoom
       if (_mapZoom < MIN_SELECT_PARCEL_ZOOM_LEVEL) return;
       // find parcel
-      searchParcel(e.lngLat, selectedProperty.id, _mapZoom, (parcel: ParcelInterface) => {
-        if (parcel) {
-          dispatch(toggleParcelSelectedState(parcel))
+      searchParcel(e.lngLat, selectedProperty.id, _mapZoom, (parcels: ParcelInterface[]) => {
+        if (parcels) {
+          dispatch(addParcelsAsSelected(parcels))
         }
       })
     } else if (selectionMode === MapSelectionMode.Property && uploadMode === UploadMode.None) {
@@ -498,7 +498,6 @@ export default function Map(props: MapInterface) {
         // skip search if not in the properties layer minZoom
         _areaSourceLayers.push('properties')
       }
-      const _parcelLayer = findParcelLayer(contextLayers)
       let _fillParcelLayers:string[] = []
       if (_mapZoom >= MIN_SEARCH_PARCEL_ZOOM_LEVEL && _parcelLayer && _parcelLayer.isSelected) {
         // need to use invisible parcel layers

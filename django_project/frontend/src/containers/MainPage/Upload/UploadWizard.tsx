@@ -40,7 +40,7 @@ export default function UploadWizard(props: UploadWizardInterface) {
                 >
                         <Tab key={0} label={'STEP 1'} {...a11yProps(0)} sx={{flex:1}} />
                         <Tab key={1} label={'STEP 2'} {...a11yProps(1)} disabled={!isPropertyInfoValid} sx={{flex:1}} />
-                        <Tab key={2} label={'STEP 3'} {...a11yProps(2)} disabled={property.id===0} sx={{flex:1}} />
+                        <Tab key={2} label={'SUMMARY'} {...a11yProps(2)} disabled={property.id===0} sx={{flex:1}} />
                 </Tabs>
             </Box>
             <Box className='TabPanels FlexContainerFill'>

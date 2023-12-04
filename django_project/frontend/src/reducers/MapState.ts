@@ -87,6 +87,22 @@ export const MapStateSlice = createSlice({
                 state.selectedParcels = [...state.selectedParcels, action.payload]
             }
         },
+        addParcelsAsSelected: (state, action: PayloadAction<ParcelInterface[]>) => {
+            if (action.payload.length === 0) {
+                state.selectedParcels = resetSelectedParcels(state.selectedParcels)
+                return;
+            }
+            let _selection = [...state.selectedParcels]
+            for (let _parcel of action.payload) {
+                let _idx = state.selectedParcels.findIndex((element) => element.id === _parcel.id && element.layer === _parcel.layer)
+                if (_idx > -1) {
+                    _selection[_idx].isRemoved = true
+                } else {
+                    _selection.push(_parcel)
+                }
+            }
+            state.selectedParcels = _selection
+        },
         setSelectedParcels: (state, action: PayloadAction<ParcelInterface[]>) => {
             // current selectedParcels must be empty or the action.payload must be empty
             if (state.selectedParcels.length === 0 && action.payload.length) {
@@ -95,6 +111,15 @@ export const MapStateSlice = createSlice({
                 // remove selectedParcels if not selected parcel mode
                 state.selectedParcels = resetSelectedParcels(state.selectedParcels)
             }
+        },
+        clearSelectedParcelByLayer: (state, action: PayloadAction<string[]>) => {
+            let _selection = [...state.selectedParcels]
+            _selection.forEach((element) => {
+                if (action.payload.includes(element.layer)) {
+                    element.isRemoved = true
+                }
+            })
+            state.selectedParcels = [..._selection]
         },
         setSelectedProperty: (state, action: PayloadAction<PropertyInterface>) => {
             state.selectedProperty = {...action.payload}
@@ -105,10 +130,10 @@ export const MapStateSlice = createSlice({
         },
         selectedParcelsOnRenderFinished: (state, action: PayloadAction<null>) => {
             // called when selected parcels have been rendered
-            let _selection = [...state.selectedParcels]
-            _selection.forEach(function(item, index, object) {
-                if (item.isRemoved) {
-                  object.splice(index, 1);
+            let _selection: ParcelInterface[] = []
+            state.selectedParcels.forEach(function(item, index, object) {
+                if (!item.isRemoved) {
+                    _selection.push(item)
                 }
             })
             state.selectedParcels = _selection
@@ -117,10 +142,11 @@ export const MapStateSlice = createSlice({
             state.mapEvents = [...state.mapEvents, action.payload]
         },
         onMapEventProcessed: (state, action: PayloadAction<MapEventInterface[]>) => {
-            let _events = [...state.mapEvents]
-            _events.forEach(function(item, index, object) {
-                if (action.payload.find((e: MapEventInterface) => e.id === item.id)) {
-                    object.splice(index, 1)
+            let _events:MapEventInterface[] = []
+            state.mapEvents.forEach(function(item, index, object) {
+                let _idx = action.payload.findIndex((e: MapEventInterface) => e.id === item.id)
+                if (_idx === -1) {
+                    _events.push(item)
                 }
             })
             state.mapEvents = _events
@@ -170,7 +196,9 @@ export const {
     setInitialMapTheme,
     resetMapState,
     setPopulationCountLegends,
-    setDynamicMapSession
+    setDynamicMapSession,
+    addParcelsAsSelected,
+    clearSelectedParcelByLayer
 } = MapStateSlice.actions
 
 export default MapStateSlice.reducer;

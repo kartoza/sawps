@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import ParcelInterface from '../../../models/Parcel';
 import {capitalize} from '../../../utils/Helpers';
 
@@ -16,6 +17,7 @@ interface SelectedParcelTableInterface {
     parcels: ParcelInterface[];
     onRemoveParcel: (parcel: ParcelInterface) => void;
     onParcelHovered?: (parcel: ParcelInterface) => void;
+    onRemoveParcelByLayer: (layer_names: string[]) => void;
 }
 
 interface RowInterface {
@@ -68,7 +70,7 @@ export default function SelectedParcelTable(props: SelectedParcelTableInterface)
         <TableContainer component={Paper}>
             <Table className='PropertySiteDetailTable' aria-label="property site detail table" size='medium'>
                 <TableHead>
-                    <TableRow>
+                    <TableRow key={'table-header'}>
                         <TableCell style={{width: '60%'}}>Parcel ID</TableCell>
                         <TableCell style={{width: '30%'}}>Parcel Type</TableCell>
                         <TableCell style={{width: '10%'}}></TableCell>
@@ -76,21 +78,31 @@ export default function SelectedParcelTable(props: SelectedParcelTableInterface)
                 </TableHead>
                 <TableBody>
                     { parentFarms.length > 0 &&
-                        <TableRow>
-                            <TableCell colSpan={3} className='SelectedParcelSection'>Parent Farm</TableCell>
+                        <TableRow key={'table-parent-farm'}>
+                            <TableCell colSpan={2} className='SelectedParcelSection'>Parent Farm</TableCell>
+                            <TableCell>
+                                <IconButton aria-label='Clear all parent farms' title='Clear all parent farms' onClick={() => props.onRemoveParcelByLayer(['parent_farm'])}>
+                                    <DeleteSweepIcon />
+                                </IconButton>
+                            </TableCell>
                         </TableRow>
                     }
                     { parentFarms.length > 0 && parentFarms.map((parcel: ParcelInterface, index: number) => {
-                        return <Row index={index} parcel={parcel} onRemoveParcel={props.onRemoveParcel} onParcelHovered={props.onParcelHovered} />
+                        return <Row key={`parent-farm-${index}`} index={index} parcel={parcel} onRemoveParcel={props.onRemoveParcel} onParcelHovered={props.onParcelHovered} />
                     })
                     }
-                    { parentFarms.length > 0 && others.length > 0 &&
-                        <TableRow>
-                            <TableCell colSpan={3} className='SelectedParcelSection'>Others (Erf, Holding, Farm Portion)</TableCell>
+                    { others.length > 0 && others.length > 0 &&
+                        <TableRow key={'table-others'}>
+                            <TableCell colSpan={2} className='SelectedParcelSection'>Others (Erf, Holding, Farm Portion)</TableCell>
+                            <TableCell>
+                                <IconButton aria-label='Clear all others' title='Clear all others' onClick={() => props.onRemoveParcelByLayer(['erf', 'holding', 'farm_portion'])}>
+                                    <DeleteSweepIcon />
+                                </IconButton>
+                            </TableCell>
                         </TableRow>
                     }
                     { others.map((parcel: ParcelInterface, index: number) => {
-                        return <Row index={index} parcel={parcel} onRemoveParcel={props.onRemoveParcel} onParcelHovered={props.onParcelHovered} />
+                        return <Row key={`others-${index}`} index={index} parcel={parcel} onRemoveParcel={props.onRemoveParcel} onParcelHovered={props.onParcelHovered} />
                     })
                     }
                 </TableBody>

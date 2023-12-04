@@ -29,6 +29,11 @@ class ParcelBase(models.Model):
         db_index=True
     )
 
+    @classmethod
+    def get_table_name(cls):
+        db_table = cls._meta.db_table
+        return db_table.replace('layer"."', '')
+
     class Meta:
         """Meta class for ParcelBase."""
         abstract = True

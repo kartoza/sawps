@@ -10,7 +10,8 @@ import {
     toggleParcelSelectionMode,
     toggleParcelSelectedState,
     triggerMapEvent,
-    toggleDigitiseSelectionMode
+    toggleDigitiseSelectionMode,
+    clearSelectedParcelByLayer
 } from '../../../reducers/MapState';
 import {RootState} from '../../../app/store';
 import {postData} from "../../../utils/Requests";
@@ -115,6 +116,9 @@ export default function Step2(props: Step2Interface) {
                                         'payload': []
                                     }))
                                 }
+                            }}
+                            onRemoveParcelByLayer={(layer_names: string[]) => {
+                                dispatch(clearSelectedParcelByLayer(layer_names))
                             }}
                         />
                     </Grid>

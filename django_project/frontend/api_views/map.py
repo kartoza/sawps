@@ -16,7 +16,7 @@ from django.http import HttpResponse, Http404, HttpResponseForbidden
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, GEOSGeometry
 from django.utils import timezone
 from property.models import (
     Property,
@@ -55,6 +55,11 @@ PROVINCE_LAYER_ZOOMS = (5, 8)
 PROPERTIES_LAYER_ZOOMS = (9, 24)
 PROPERTIES_POINT_LAYER_ZOOMS = (5, 24)
 PARENT_FARM_LAYER_ZOOMS = (9, 11)
+PARCELS_SERIALIZERS = {
+    Erf: ErfParcelSerializer,
+    Holding: HoldingParcelSerializer,
+    FarmPortion: FarmPortionParcelSerializer
+}
 
 
 def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
@@ -456,11 +461,29 @@ class FindParcelByCoord(APIView):
     permission_classes = [IsAuthenticated]
 
     def find_parcel(self, cls, cls_serializer, point: Point):
-        """Find parcel by point."""
+        """Find first parcel by point."""
         parcel = cls.objects.filter(geom__contains=point)
-        if parcel:
+        if parcel.exists():
             return cls_serializer(
                 parcel.first()
+            ).data
+        return None
+
+    def find_parcel_within(self, cls, cls_serializer, geom: GEOSGeometry,
+                           existing_property_id: int):
+        """Find parcel that is within a geom."""
+        geom = geom.buffer(0.5)
+        parcels = cls.objects.filter(geom__within=geom)
+        used_parcels = Parcel.objects.filter(
+            source=cls.get_table_name()
+        ).values('source_id')
+        if existing_property_id:
+            used_parcels = used_parcels.exclude(
+                property_id=existing_property_id)
+        parcels = parcels.exclude(id__in=used_parcels)
+        if parcels.exists():
+            return cls_serializer(
+                parcels, many=True
             ).data
         return None
 
@@ -469,6 +492,22 @@ class FindParcelByCoord(APIView):
         if existing_property_id:
             parcels = parcels.exclude(property_id=existing_property_id)
         return parcels.exists()
+
+    def find_parent_farm_and_subset(self, point: Point,
+                                    existing_property_id: int):
+        parent_farm = ParentFarm.objects.filter(
+            geom__contains=point
+        ).first()
+        if parent_farm is None:
+            return None
+        results = [ParentFarmParcelSerializer(parent_farm).data]
+        for parcel_cls, parcel_serializer in PARCELS_SERIALIZERS.items():
+            subset = self.find_parcel_within(
+                parcel_cls, parcel_serializer,
+                parent_farm.geom, existing_property_id)
+            if subset:
+                results.extend(subset)
+        return results
 
     def get(self, *args, **kwargs):
         lat = self.request.GET.get('lat', 0)
@@ -481,26 +520,18 @@ class FindParcelByCoord(APIView):
             zoom >= PARENT_FARM_LAYER_ZOOMS[0] and
             zoom <= PARENT_FARM_LAYER_ZOOMS[1]
         ):
-            # find parent_farm
-            parcel = self.find_parcel(ParentFarm, ParentFarmParcelSerializer,
-                                      point)
-            if parcel:
-                if self.check_used_parcel(parcel['cname'], property_id):
-                    return Response(status=404)
-                return Response(status=200, data=parcel)
+            parcels = self.find_parent_farm_and_subset(
+                point, property_id)
+            if parcels:
+                return Response(status=200, data=parcels)
         else:
-            map_serializers = {
-                Erf: ErfParcelSerializer,
-                Holding: HoldingParcelSerializer,
-                FarmPortion: FarmPortionParcelSerializer
-            }
-            for parcel_class, parcel_serializer in map_serializers.items():
-                parcel = self.find_parcel(parcel_class,
+            for parcel_cls, parcel_serializer in PARCELS_SERIALIZERS.items():
+                parcel = self.find_parcel(parcel_cls,
                                           parcel_serializer, point)
                 if parcel:
                     if self.check_used_parcel(parcel['cname'], property_id):
                         return Response(status=404)
-                    return Response(status=200, data=parcel)
+                    return Response(status=200, data=[parcel])
         return Response(status=404)
 
 
