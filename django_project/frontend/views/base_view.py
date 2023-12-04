@@ -13,12 +13,7 @@ from frontend.serializers.stakeholder import (
 )
 from django.contrib import messages
 from datetime import datetime
-from frontend.static_mapping import (
-    DATA_CONSUMERS,
-    PROVINCIAL_DATA_SCIENTIST,
-    NATIONAL_DATA_SCIENTIST
-)
-from frontend.utils.user_roles import get_user_roles
+from frontend.utils.user_roles import check_user_has_permission
 
 User = get_user_model()
 
@@ -64,11 +59,8 @@ def get_user_notifications(request):
 
 
 def validate_if_user_can_access_data_upload(user: User):
-    """Check if user is not Data Consumer and Data Scientiest."""
-    groups = [PROVINCIAL_DATA_SCIENTIST, NATIONAL_DATA_SCIENTIST]
-    groups.extend(DATA_CONSUMERS)
-    user_roles = get_user_roles(user)
-    return not (set(user_roles) & set(groups))
+    """Check if user has permission to upload data."""
+    return check_user_has_permission(user, 'Can add species population data')
 
 
 class OrganisationBaseView(TemplateView):

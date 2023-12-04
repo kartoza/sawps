@@ -85,6 +85,10 @@ class ExtendedGroup(models.Model):
             # Used in species report
             # Organisation Manager + Member should have this
             (
+                "can_add_species_population_data",
+                "Can add species population data",
+            ),
+            (
                 "can_edit_species_population_data",
                 "Can edit species population data",
             ),

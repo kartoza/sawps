@@ -8,7 +8,9 @@ from frontend.static_mapping import (
     ORGANISATION_MEMBER,
     ORGANISATION_MANAGER,
     DATA_CONSUMERS,
-    DATA_CONSUMERS_EXCLUDE_PERMISSIONS
+    DATA_CONSUMERS_EXCLUDE_PERMISSIONS,
+    DATA_SCIENTISTS,
+    DATA_SCIENTIST_EXCLUDE_PERMISSIONS
 )
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
@@ -138,10 +140,14 @@ def get_user_permissions(user: User) -> Set[str]:
         permissions = permissions.union(allowed_permission)
 
     if not user.is_superuser:
-        user_roles = get_user_roles(user)
-        if set(user_roles) & set(DATA_CONSUMERS):
+        user_roles = set(get_user_roles(user))
+        if user_roles & set(DATA_CONSUMERS):
             permissions = (
                 permissions - DATA_CONSUMERS_EXCLUDE_PERMISSIONS
+            )
+        if user_roles & set(DATA_SCIENTISTS):
+            permissions = (
+                permissions - DATA_SCIENTIST_EXCLUDE_PERMISSIONS
             )
 
     return permissions
