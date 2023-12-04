@@ -3,7 +3,7 @@ import axios from "axios";
 import {Box, Button, Grid, Typography} from "@mui/material";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
-import {useGetTaxonDetailQuery} from "../../../services/api";
+import {useGetTaxonDetailQuery, useGetUserInfoQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import './index.scss';
 import NationalTrendSection from "./NationalTrendSection";
@@ -20,6 +20,7 @@ const Trends = () => {
   const contentRef = useRef(null);
   const {data: taxonDetail, isLoading: isTaxonDetailLoading, isSuccess} = useGetTaxonDetailQuery(selectedSpecies)
   const [isDownloadingJson, setIsDownloadingJson] = useState(false)
+  const { data: userInfoData, isLoading: isUserInfoLoading, isSuccess: IsUserInfoSuccess } = useGetUserInfoQuery()
 
   // Declare errorMessage as a state variable
   const [showCharts, setShowCharts] = useState(false);
@@ -106,7 +107,7 @@ const Trends = () => {
                   <ProvincialTrendSection species={selectedSpecies} province={provinceName}/>
                 </Grid>
               )}
-              {selectedSpecies && rerender && (
+              {selectedSpecies && rerender && userInfoData?.user_permissions.includes('Can view properties trends data') && (
                 <Grid item xs={12} md={12} className="SectionItem" key={'PropertySectionItem'}>
                   <PropertyTrendSection species={selectedSpecies} property={propertyId} />
                 </Grid>
