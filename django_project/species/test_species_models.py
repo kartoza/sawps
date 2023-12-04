@@ -76,7 +76,7 @@ class TaxonTestCase(TestCase):
         )
         cls.taxon = TaxonFactory.create(
             scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=cls.taxonRank,
             show_on_front_page=False
@@ -174,7 +174,7 @@ class TaxonTestCase(TestCase):
         """Test fetch taxon list for frontpage."""
         taxon = TaxonFactory.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_1',
+            common_name_verbatim='taxon_1',
             colour_variant=False,
             taxon_rank=self.taxonRank,
             show_on_front_page=True
@@ -237,7 +237,7 @@ class TaxonTestCase(TestCase):
         """Test fetch taxon detil for trend page."""
         taxon = TaxonFactory.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_1',
+            common_name_verbatim='taxon_1',
             colour_variant=False,
             taxon_rank=self.taxonRank,
             show_on_front_page=True
@@ -306,7 +306,7 @@ class TaxonTestCase(TestCase):
         """Test create taxon without graph icon."""
         taxon = TaxonFactory.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_11',
+            common_name_verbatim='taxon_11',
             colour_variant=False,
             taxon_rank=self.taxonRank,
             show_on_front_page=False,
@@ -387,7 +387,7 @@ class TaxonTestCase(TestCase):
         with self.assertRaises(Exception) as raised:
             Taxon.objects.create(
                 scientific_name='taxon_1',
-                common_name_varbatim='taxon_0',
+                common_name_verbatim='taxon_0',
                 colour_variant=False,
                 taxon_rank=self.taxonRank,
             )
@@ -398,7 +398,7 @@ class TaxonTestCase(TestCase):
 
         Taxon.objects.create(
             scientific_name='taxon_2',
-            common_name_varbatim='taxon_2',
+            common_name_verbatim='taxon_2',
             colour_variant=False,
             infraspecific_epithet='infra_2',
             taxon_rank=self.taxonRank,
@@ -411,7 +411,7 @@ class TaxonTestCase(TestCase):
         with self.assertRaises(Exception) as raised:
             Taxon.objects.create(
                 scientific_name='taxon_0',
-                common_name_varbatim='taxon_0',
+                common_name_verbatim='taxon_0',
                 colour_variant=False,
                 infraspecific_epithet='infra_1',
                 taxon_rank=self.taxonRank,
@@ -421,7 +421,7 @@ class TaxonTestCase(TestCase):
         """Test taxon relation to self."""
         self.taxon2 = Taxon.objects.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_1',
+            common_name_verbatim='taxon_1',
             colour_variant=False,
             taxon_rank=self.taxonRank,
             parent=self.taxon,
@@ -440,7 +440,7 @@ class TaxonTestCase(TestCase):
     def test_taxon_admin_list(self):
         taxon2 = Taxon.objects.create(
             scientific_name='taxon_1',
-            common_name_varbatim='taxon_1',
+            common_name_verbatim='taxon_1',
             colour_variant=False,
             taxon_rank=self.taxonRank
         )
@@ -463,7 +463,7 @@ class TaxonSurveyMethodTestCase(TestCase):
         """SetUpTestData for Taxon survey method count test case."""
         cls.taxon = Taxon.objects.create(
             scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
@@ -496,7 +496,7 @@ class TaxonSurveyMethodTestCase(TestCase):
         """Test update Taxon survey method count."""
         taxon = TaxonFactory.create(
             scientific_name='taxon',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
