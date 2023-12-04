@@ -112,7 +112,6 @@ class MapSessionBase(APIView):
                 self.request.data.get('property', None)
             )
         if self.can_view_province_layer() and filter_species:
-            user_roles = get_user_roles(self.request.user)
             generate_map_view(
                 session, True,
                 self.request.data.get('end_year', None),
