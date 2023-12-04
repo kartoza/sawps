@@ -51,7 +51,7 @@ If the representative you are looking for is still not there, then you will need
 
 ### Add User(s)
 
-If you would like to add user, you can click on 1️⃣ the `ADD USER` button.
+If you would like to add a user, you can click on 1️⃣ the `ADD USER` button.
 
 ![Users Page 6](./img/users-page-6.png)
 

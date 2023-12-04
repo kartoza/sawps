@@ -211,13 +211,13 @@ If you confirm the deletion of the taxon/taxa then you will be redirected back t
 
 If you clicked on the `Taxon Ranks` link on the landing page, you will be redirected to a page that has 1️⃣ a list of the platform's taxon ranks.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 1](./img/taxon-ranks-1.png)
 
 ### Search for Taxon Rank(s)
 
 If you do not see the taxon rank you would like to see in the list due to the length of the list, you can utilise the `Search` functionality. To do so, click on 1️⃣ the `Search` field and type a few characters (i.e. letters in the taxon rank's name), and then click on 2️⃣ the `Search` button to filter the list of taxon ranks.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 2](./img/taxon-ranks-2.png)
 
 If the taxon rank you are looking for is still not there, then you will need to follow the steps below to add it.
 
@@ -227,20 +227,20 @@ If the taxon rank you are looking for is still not there, then you will need to 
 
 If you would like to add another sanctioned taxon rank, you can click on 1️⃣ the `ADD TAXON RANK` button.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 3](./img/taxon-ranks-3.png)
 
 When you click on the `ADD TAXON RANK` button, you will be redirected to the `Add Taxon Rank` page. You should fill in 1️⃣ the taxon rank name:
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 4](./img/taxon-ranks-4.png)
 
 Once you have filled in the taxon rank name, you have three options to proceed forward:
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 5](./img/taxon-ranks-5.png)
 
 - `Save and add another`: Which will allow you to save the current taxon rank and move forward with adding a new one.
 - `Save and continue editing`: Which will allow you to save the current taxon rank and then edit the current manager.
 - `SAVE`: Allows you to save and then redirects you back to the `Taxon Ranks` page and displays a success message.
-        ![Taxon Ranks ](./img/taxon-ranks-.png)
+        ![Taxon Ranks 6](./img/taxon-ranks-6.png)
 
 ### Manage Taxon Rank(s)
 
@@ -248,30 +248,30 @@ Once you have filled in the taxon rank name, you have three options to proceed f
 
 If you would like to change any details regarding a taxon rank, you can click on 1️⃣ the taxon rank's ID in the list on the `Taxon Rank` page.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 7](./img/taxon-ranks-7.png)
 
 This will redirect you to the `Change Taxon Ranks` page. On this page you can change the taxon rank's name.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 8](./img/taxon-ranks-8.png)
 
 Once you have made your necessary changes you can click on 1️⃣ any one of the three save options or click on 2️⃣ the `Delete` button to remove the taxon rank.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 9](./img/taxon-ranks-9.png)
 
 The three save options will have different actions:
 
 - `Save and add another`: Which will allow you to save the current taxon rank and move forward with adding a new one.
 - `Save and continue editing`: Which will allow you to save the current taxon rank and then edit the current taxon rank.
 - `SAVE`: Allows you to save and then redirects you back to the `Taxon Ranks` page and displays a success message.
-        ![Taxon Ranks ](./img/taxon-ranks-.png)
+        ![Taxon Ranks 10](./img/taxon-ranks-10.png)
 
 If you clicked on the `Delete` button, you will be redirected to a page where you can either 1️⃣ confirm deleting the taxon rank or 2️⃣ cancel and return to the list of taxon ranks.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 11](./img/taxon-ranks-11.png)
 
 If you confirm the deletion of the taxon rank then you will be redirected back to the `Taxon Ranks` page and shown a success message.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 12](./img/taxon-ranks-12.png)
 
 ### Delete Taxon Rank(s)
 
@@ -281,16 +281,16 @@ If you would like to delete a taxon rank, or multiple taxon ranks, you can do so
 
 > **Note:** Clicking on the topmost checkbox will select all of the taxon ranks.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 13](./img/taxon-ranks-13.png)
 
 Then you click on 1️⃣ the `Action` dropdown menu, select 2️⃣ the `Delete selected taxon ranks` option, and then click on 3️⃣ the `Go` button.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 14](./img/taxon-ranks-14.png)
 
 This will redirect you to a page where you can either 1️⃣ confirm deleting the taxon rank(s) or 2️⃣ cancel and return to the list of taxon ranks. Depending on the number of taxon ranks you are deleting the **Summary** and **Objects** will automatically be updated.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 15](./img/taxon-ranks-15.png)
 
 If you confirm the deletion of the taxon rank(s) then you will be redirected back to the `Taxon Ranks` page and shown a success message.
 
-![Taxon Ranks ](./img/taxon-ranks-.png)
+![Taxon Ranks 16](./img/taxon-ranks-16.png)
