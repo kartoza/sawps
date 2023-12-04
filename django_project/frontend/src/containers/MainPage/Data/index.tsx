@@ -11,7 +11,7 @@ import Loading from '../../../components/Loading';
 import axios from "axios";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
-import {getTitle} from "../../../utils/Helpers";
+import {getTitle, isDataConsumer} from "../../../utils/Helpers";
 import {Activity, useGetActivityAsObjQuery, useGetUserInfoQuery, UserInfo} from "../../../services/api";
 import Topper from "./Topper";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -77,15 +77,6 @@ const DataList = () => {
         "Planned hunt/cull": {color:"#FF5252",width:130.2},
         "Planned euthanasia": {color:"#9F89BF",width:130.2},
         "Unplanned/illegal hunting": {color:"#696969",width:147}
-    }
-
-    function isDataConsumer(userInfo: UserInfo) {
-        if (!userInfo?.user_roles) return false;
-        const dataConsumers = new Set([
-          "National data consumer",
-            "Provincial data consumer"
-        ])
-        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
     }
 
     if (isSuccess) {

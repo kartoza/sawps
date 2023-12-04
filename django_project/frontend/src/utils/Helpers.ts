@@ -1,3 +1,5 @@
+import {UserInfo} from "../services/api";
+
 /**
  * Change string to singular
  */
@@ -59,4 +61,17 @@ export const isMapDisplayed = () => {
  */
 export function capitalizeSentence(str: string) {
   return str.split(' ').map((word) => capitalize(word)).join(' ').trim()
+}
+
+/**
+ * Check whether user is a data consumer
+ * @param userInfo: user info object from /user-info endpoint
+ */
+export function isDataConsumer(userInfo: UserInfo) {
+    if (!userInfo?.user_roles) return false;
+    const dataConsumers = new Set([
+      "National data consumer",
+        "Provincial data consumer"
+    ])
+    return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
 }
