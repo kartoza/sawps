@@ -46,7 +46,7 @@ On the landing page of the administration site you will see links to the various
 
 ## Lookup tables that you should not edit
 
-The tables should not be edited/touched without a core developer present to guide you are:
+The tables that should not be edited/touched without a core developer present to guide you are:
 
 - Activities
 - Everything under Front-end heading
