@@ -420,35 +420,6 @@ def post_delete_organisation_user(
     remove_user_from_org_member(instance)
 
 
-@receiver(post_save, sender=OrganisationUser)
-def post_create_organisation_user(
-    sender,
-    instance: OrganisationUser,
-    created,
-    **kwargs
-):
-    """
-    Handle OrganisationUser creation by
-    automatically add them to Organisation Member group.
-    """
-    add_user_to_org_member(instance, OrganisationInvites, Group)
-
-
-@receiver(post_delete, sender=OrganisationUser)
-def post_delete_organisation_user(
-    sender,
-    instance: OrganisationUser,
-    *args,
-    **kwargs
-):
-    """
-    Handle OrganisationUser deletion by removing them
-    from Data contributor and Organisation Member group, if they are no longer
-    part of any organisation.
-    """
-    remove_user_from_org_member(instance)
-
-
 @receiver(post_save, sender=OrganisationRepresentative)
 def post_create_organisation_representative(
     sender,
@@ -464,7 +435,7 @@ def post_create_organisation_representative(
 
 
 @receiver(post_delete, sender=OrganisationRepresentative)
-def post_delete_organisation_user(
+def post_delete_organisation_representative(
     sender,
     instance: OrganisationRepresentative,
     *args,

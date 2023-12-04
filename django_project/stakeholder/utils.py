@@ -125,7 +125,9 @@ def remove_user_from_org_manager(instance):
     from stakeholder.models import OrganisationRepresentative
     from django.contrib.auth.models import Group
 
-    organisation_reps = OrganisationRepresentative.objects.filter(user=instance.user)
+    organisation_reps = OrganisationRepresentative.objects.filter(
+        user=instance.user
+    )
 
     # Remove from Data Contributor groups if user is
     # no longer assigned to any organisation

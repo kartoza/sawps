@@ -8,16 +8,14 @@ from frontend.static_mapping import (
     ORGANISATION_MEMBER,
     ORGANISATION_MANAGER
 )
+from frontend.utils.organisation import get_current_organisation_id
+from sawps.models import ExtendedGroup
 from stakeholder.models import (
     OrganisationUser,
-    OrganisationInvites,
     OrganisationRepresentative,
-    MANAGER,
     UserProfile,
     Organisation
 )
-from frontend.utils.organisation import get_current_organisation_id
-from sawps.models import ExtendedGroup
 
 
 def is_organisation_member(user: User) -> bool:
