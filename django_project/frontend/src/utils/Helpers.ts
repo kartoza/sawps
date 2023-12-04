@@ -65,33 +65,15 @@ export function capitalizeSentence(str: string) {
 
 
 /**
- * Check if user has a Data Consumer role
- * @param userInfo user info from API
- * @returns True if user has group/role of Data Consumer
+ * Format datetime to text
+ * @param dateTime 
+ * @param defaultText text value if dateTime is null
+ * @returns formatted datetime in DD/MM/YYYY hh:mm:ss
  */
-export function isDataConsumer(userInfo: UserInfo) {
-  if (!userInfo?.user_roles) return false;
-  if (userInfo.user_roles.includes('Super user')) return false;
-  const dataConsumers = new Set([
-    "National data consumer",
-      "Provincial data consumer"
-  ])
-  return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
+export function displayDateTime(dateTime: Date, defaultText?: string) {
+  if (dateTime == null && defaultText) return defaultText;
+  if (dateTime == null && !defaultText) return ' ';
+  let _date = new Date(dateTime)
+  return _date.toLocaleDateString('en-gb', { year:"numeric", month:"numeric", day:"numeric"}) + ' ' +
+    _date.toLocaleTimeString('en-gb', {hour:"numeric", minute:"numeric", second:"numeric"})
 }
-
-
-/**
- * Check if user has a Data Scientiest role
- * @param userInfo user info from API
- * @returns True if user has group/role of Data Consumer
- */
-export function isDataScientiest(userInfo: UserInfo) {
-  if (!userInfo?.user_roles) return false;
-  if (userInfo.user_roles.includes('Super user')) return false;
-  const dataScientiests = new Set([
-    "National data scientist",
-      "Provincial data scientist"
-  ])
-  return userInfo.user_roles.some(userRole => dataScientiests.has(userRole))
-}
-

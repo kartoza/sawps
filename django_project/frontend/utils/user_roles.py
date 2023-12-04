@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set
 
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -6,7 +6,9 @@ from django.contrib.contenttypes.models import ContentType
 from frontend.static_mapping import (
     SUPER_USER,
     ORGANISATION_MEMBER,
-    ORGANISATION_MANAGER
+    ORGANISATION_MANAGER,
+    DATA_CONSUMERS,
+    DATA_CONSUMERS_EXCLUDE_PERMISSIONS
 )
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
@@ -100,13 +102,13 @@ def get_user_roles(user: User) -> List[str]:
     return roles
 
 
-def get_user_permissions(user: User) -> List[str]:
+def get_user_permissions(user: User) -> Set[str]:
     """
     Retrieve the permissions associated with a given user.
 
     :param user: The user object
-    :return: A list containing the names of all
-        roles associated with the user
+    :return: A set containing the names of all
+        permissions associated with the user
     """
     permissions = set()
     groups = user.groups.all()
@@ -135,4 +137,21 @@ def get_user_permissions(user: User) -> List[str]:
         )
         permissions = permissions.union(allowed_permission)
 
-    return sorted(list(permissions))
+    if not user.is_superuser:
+        user_roles = get_user_roles(user)
+        if set(user_roles) & set(DATA_CONSUMERS):
+            permissions = (
+                permissions - DATA_CONSUMERS_EXCLUDE_PERMISSIONS
+            )
+
+    return permissions
+
+
+def check_user_has_permission(user: User, permission: str):
+    """
+    Test if a user has permission.
+    """
+    if user.is_superuser:
+        return True
+    permissions = get_user_permissions(user)
+    return permission in permissions

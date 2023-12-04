@@ -1,12 +1,17 @@
 import json
 
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, Group
 from django.core.serializers.json import DjangoJSONEncoder
 from django.test import RequestFactory, TestCase, Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.contenttypes.models import ContentType
 
-from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
+from frontend.static_mapping import (
+    PROVINCIAL_DATA_CONSUMER,
+    NATIONAL_DATA_CONSUMER,
+    DATA_CONSUMERS_EXCLUDE_PERMISSIONS,
+    ORGANISATION_MEMBER
+)
 from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
 from sawps.models import ExtendedGroup
@@ -435,3 +440,52 @@ class UserApiTest(TestCase):
             response.json()['user_permissions'],
             sorted(list(all_permissions.values_list('name', flat=True)))
         )
+
+    def test_get_user_info_data_consumer(self):
+        """
+        Test getting data consumer user info.
+
+        Simulate that user also belongs to organisation member group which
+        has all permissions. 
+        """
+        client = Client()
+        user = User.objects.create_user(
+            username='testuser',
+            password='testpassword',
+            email='test@gmail.com'
+        )
+        group_1, _ = Group.objects.get_or_create(name=ORGANISATION_MEMBER)
+        group_2 = GroupF.create(name=NATIONAL_DATA_CONSUMER)
+        content_type = ContentType.objects.get_for_model(ExtendedGroup)
+        all_permissions = Permission.objects.filter(content_type=content_type)
+        for perm in all_permissions:
+            group_1.permissions.add(perm)
+        user.groups.add(group_1)
+        user.groups.add(group_2)
+        login = client.login(
+            username='testuser',
+            password='testpassword'
+        )
+        self.assertTrue(login, True)
+        device = TOTPDevice(
+            user=user,
+            name='device_name'
+        )
+        device.save()
+        # add organisation
+        data_use_permission = DataUsePermission.objects.create(
+            name="test"
+        )
+        organisation = Organisation.objects.create(
+            name="test_organisation",
+            data_use_permission=data_use_permission,
+            national=True
+        )
+        user.user_profile.current_organisation = organisation
+        user.save()
+        response = client.get('/api/user-info/')
+        self.assertEqual(response.data['current_organisation_id'], organisation.id)
+        self.assertEqual(response.data['current_organisation'], organisation.name)
+        # ensure excluded permission is not in the response
+        perms = set(response.json()['user_permissions'])
+        self.assertFalse(perms & set(DATA_CONSUMERS_EXCLUDE_PERMISSIONS))

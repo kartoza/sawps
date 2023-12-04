@@ -432,12 +432,12 @@ def national_level_species_report(
     report_data = AnnualPopulation.objects. \
         filter(**filters, taxon__in=queryset). \
         values(
-            'taxon__common_name_varbatim',
+            'taxon__common_name_verbatim',
             'taxon__scientific_name',
             'year'
         ). \
         annotate(
-            common_name=F("taxon__common_name_varbatim"),
+            common_name=F("taxon__common_name_verbatim"),
             scientific_name=F("taxon__scientific_name"),
             total_property_area=Sum("property__property_size_ha"),
             total_area_available=Sum("area_available_to_species"),

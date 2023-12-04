@@ -46,12 +46,12 @@ class TestSpeciesTrend(TestCase):
             taxon_rank = TaxonRankFactory.create(name="Species")
 
         self.taxon = Taxon.objects.create(
-            taxon_rank=taxon_rank, common_name_varbatim="Lion",
+            taxon_rank=taxon_rank, common_name_verbatim="Lion",
             scientific_name = "Penthera leo"
         )
 
         self.taxon1 = Taxon.objects.create(
-            taxon_rank=taxon_rank, common_name_varbatim="Cheetah",
+            taxon_rank=taxon_rank, common_name_verbatim="Cheetah",
             scientific_name = "Cheetah"
         )
 
