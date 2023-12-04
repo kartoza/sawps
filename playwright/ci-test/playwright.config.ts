@@ -40,21 +40,28 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'],
-      // Use prepared auth state.
-      storageState: 'auth.json',
+        // Use prepared auth state.
+        storageState: 'auth.json',
      },
      dependencies: ['setup'],
     },
-    //
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-    //
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'],
+        // Use prepared auth state.
+        storageState: 'auth.json',
+      },
+      dependencies: ['setup'],
+    },
+    
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'],
+        // Use prepared auth state.
+        storageState: 'auth.json',
+      },
+      dependencies: ['setup'],
+    },
 
     /* Test against mobile viewports. */
     // {
