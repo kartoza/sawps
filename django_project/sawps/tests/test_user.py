@@ -210,7 +210,7 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertTrue(org_invite.joined)
 
         # invite_2 is a manager invitation, so Organisation Representative
-        # should be created instead of Organisation User
+        # and Organisation User are both created
         view.adduser(self.invite_2.uuid)
         org_user2 = OrganisationUser.objects.filter(
             user=self.user,
@@ -218,7 +218,7 @@ class AddUserToOrganisationTestCase(TestCase):
         org_rep = OrganisationRepresentative.objects.filter(
             user=self.user,
             organisation=self.organisation2).first()
-        self.assertIsNone(org_user2)
+        self.assertIsNotNone(org_user2)
         self.assertIsNotNone(org_rep)
 
     def test_is_user_invited(self):

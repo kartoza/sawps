@@ -92,6 +92,19 @@ class AddUserToOrganisation(View):
                     user.user_profile.current_organisation = org
                     user.user_profile.save()
 
+                # check if not already added to prevent duplicates
+                org_user = OrganisationUser.objects.filter(
+                    user=org_invite.user,
+                    organisation=org
+                ).first()
+                if not org_user:
+                    # add user to organisation users
+                    org_user = OrganisationUser.objects.create(
+                        user=org_invite.user,
+                        organisation=org
+                    )
+                    org_user.save()
+
                 if org_invite.assigned_as == MANAGER:
                     # check if not already added to prevent duplicates
                     org_rep = OrganisationRepresentative.objects.filter(
@@ -101,19 +114,6 @@ class AddUserToOrganisation(View):
                     if not org_rep:
                         # add user to organisation users
                         org_rep = OrganisationRepresentative.objects.create(
-                            user=org_invite.user,
-                            organisation=org
-                        )
-                        org_rep.save()
-                else:
-                    # check if not already added to prevent duplicates
-                    org_rep = OrganisationUser.objects.filter(
-                        user=org_invite.user,
-                        organisation=org
-                    ).first()
-                    if not org_rep:
-                        # add user to organisation users
-                        org_rep = OrganisationUser.objects.create(
                             user=org_invite.user,
                             organisation=org
                         )
