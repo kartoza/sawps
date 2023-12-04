@@ -39,17 +39,11 @@ class CustomSignupForm(SignupForm):
         user.is_active = False
         user.save()
         # add user to organisation
-        try:
-            print(self.cleaned_data)
-        except Exception as e:
-            print(e)
-        print('=================================')
         if self.cleaned_data.get('invitation_uuid'):
             add_user_view = AddUserToOrganisation()
             is_user_invited = add_user_view.is_user_invited(
                 self.cleaned_data['invitation_uuid']
             )
-            print(is_user_invited)
             if is_user_invited:
                 add_user_view.adduser(self.cleaned_data['invitation_uuid'])
             else:
