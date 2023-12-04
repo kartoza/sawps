@@ -65,21 +65,6 @@ export function capitalizeSentence(str: string) {
 
 
 /**
- * Check if user has a Data Consumer role
- * @param userInfo user info from API
- * @returns True if user has group/role of Data Consumer
- */
-export function isDataConsumer(userInfo: UserInfo) {
-  if (!userInfo?.user_roles) return false;
-  if (userInfo.user_roles.includes('Super user')) return false;
-  const dataConsumers = new Set([
-    "National data consumer",
-      "Provincial data consumer"
-  ])
-  return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
-}
-
-/**
  * Format datetime to text
  * @param dateTime 
  * @param defaultText text value if dateTime is null
@@ -88,7 +73,6 @@ export function isDataConsumer(userInfo: UserInfo) {
 export function displayDateTime(dateTime: Date, defaultText?: string) {
   if (dateTime == null && defaultText) return defaultText;
   if (dateTime == null && !defaultText) return ' ';
-  console.log('dateTime ', dateTime)
   let _date = new Date(dateTime)
   return _date.toLocaleDateString('en-gb', { year:"numeric", month:"numeric", day:"numeric"}) + ' ' +
     _date.toLocaleTimeString('en-gb', {hour:"numeric", minute:"numeric", second:"numeric"})

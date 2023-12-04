@@ -46,7 +46,7 @@ import {
     useGetUserInfoQuery,
     useGetProvinceQuery
 } from "../../../services/api";
-import {isDataConsumer, isMapDisplayed} from "../../../utils/Helpers";
+import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
 import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 import {SeachPlaceResult} from '../../../utils/SearchPlaces';
@@ -464,7 +464,7 @@ function Filter(props: any) {
             setOrganisationSelection(true);
         }
 
-        if (userInfoData.user_permissions.includes("Can view property filter") && !isDataConsumer(userInfoData)) {
+        if (userInfoData.user_permissions.includes("Can view property filter")) {
             setPropertiesSelection(true);
         }
     }, [isSuccess, userInfoData]);
