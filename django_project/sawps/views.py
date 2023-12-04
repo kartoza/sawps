@@ -75,7 +75,7 @@ class AddUserToOrganisation(View):
             org_invite = OrganisationInvites.objects.filter(
                 uuid=invitation_uuid
             ).order_by('id').last()
-            print('org_invite', org_invite)
+            print('org_invite', org_invite.organisation, org_invite.email)
             if org_invite:
                 # Update the joined field to True
                 org_invite.joined = True
@@ -94,34 +94,35 @@ class AddUserToOrganisation(View):
 
                 if org_invite.assigned_as == MANAGER:
                     # check if not already added to prevent duplicates
-                    org_user = OrganisationRepresentative.objects.filter(
+                    org_rep = OrganisationRepresentative.objects.filter(
                         user=org_invite.user,
                         organisation=org
                     ).first()
-                    if not org_user:
+                    if not org_rep:
                         # add user to organisation users
-                        org_user = OrganisationRepresentative.objects.create(
+                        org_rep = OrganisationRepresentative.objects.create(
                             user=org_invite.user,
                             organisation=org
                         )
-                        org_user.save()
+                        org_rep.save()
                 else:
                     # check if not already added to prevent duplicates
-                    org_user = OrganisationUser.objects.filter(
+                    org_rep = OrganisationUser.objects.filter(
                         user=org_invite.user,
                         organisation=org
                     ).first()
-                    if not org_user:
+                    if not org_rep:
                         # add user to organisation users
-                        org_user = OrganisationUser.objects.create(
+                        org_rep = OrganisationUser.objects.create(
                             user=org_invite.user,
                             organisation=org
                         )
-                        org_user.save()
+                        org_rep.save()
         except Organisation.DoesNotExist:
+            print('except Organisation.DoesNotExist')
             org = None
-        except Exception as e:
-            print(e)
+        except Exception:
+            print('except Exception')
             return None
 
     def is_user_invited(self, invitation_uuid):
@@ -130,17 +131,12 @@ class AddUserToOrganisation(View):
         """
 
         try:
-            invitation = OrganisationInvites.objects.get(
+            OrganisationInvites.objects.get(
                 uuid=invitation_uuid
             )
-            if invitation:
-                return True
-            else:
-                return False
+            return True
         except OrganisationInvites.DoesNotExist:
             return False
-        except Organisation.DoesNotExist:
-            return None
 
     def send_invitation_email(self, email_details):
         subject = 'SAWPS Organisation Invitation'

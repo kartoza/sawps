@@ -1,3 +1,5 @@
+﻿import uuid
+
 from django.core import mail
 from django.test import (
     Client,
@@ -22,7 +24,12 @@ from stakeholder.models import (
     Organisation,
     OrganisationInvites,
     OrganisationUser,
+    OrganisationRepresentative,
+    MEMBER,
+    MANAGER
 )
+from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER, SUPER_USER, ORGANISATION_MEMBER, ORGANISATION_MANAGER
+
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
 
@@ -150,10 +157,6 @@ class CustomPasswordResetCompleteViewTest(TestCase):
 
         # Check that the response is a rendered template
         self.assertIn('SAWPS', response.content.decode('utf-8'))
-        # self.assertContains(
-        #     response.content.decode('utf-8'),
-        #     'Your password has been successfully reset. You can now log in using your new password.'
-        #     )
 
 
 class AddUserToOrganisationTestCase(TestCase):
@@ -186,14 +189,15 @@ class AddUserToOrganisationTestCase(TestCase):
             email=self.user_email,
             organisation=self.organisation
         )
-        self.invite = OrganisationInvites.objects.create(
+        self.invite_2 = OrganisationInvites.objects.create(
             email=self.user_email,
-            organisation=self.organisation2
+            organisation=self.organisation2,
+            assigned_as=MANAGER
         )
 
     def test_add_user(self):
         view = AddUserToOrganisation()
-        view.adduser(self.user_email, self.organisation_name)
+        view.adduser(self.invite.uuid)
         org_user = OrganisationUser.objects.filter(
             user=self.user,
             organisation=self.organisation).first()
@@ -205,32 +209,28 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertIsNotNone(org_invite)
         self.assertTrue(org_invite.joined)
 
-        view.adduser('fake_user', self.organisation_name)
-        view.adduser(self.user_email, 'fake_organisation')
-        view.adduser(self.user_email, 'organisation2')
+        # invite_2 is a manager invitation, so Organisation Representative
+        # should be created instead of Organisation User
+        view.adduser(self.invite_2.uuid)
         org_user2 = OrganisationUser.objects.filter(
             user=self.user,
             organisation=self.organisation2).first()
-        self.assertIsNotNone(org_user2)
+        org_rep = OrganisationRepresentative.objects.filter(
+            user=self.user,
+            organisation=self.organisation2).first()
+        self.assertIsNone(org_user2)
+        self.assertIsNotNone(org_rep)
 
-    def test_is_user_already_joined(self):
+    def test_is_user_invited(self):
         view = AddUserToOrganisation()
         self.assertTrue(
             view.is_user_invited(
-                self.user_email,
-                self.organisation_name
+                self.invite.uuid
             )
         )
         self.assertFalse(
             view.is_user_invited(
-            'another@example.com',
-            self.organisation_name
-            )
-        )
-        self.assertFalse(
-            view.is_user_invited(
-            self.user_email,
-            'Nonexistent Organisation'
+                uuid.uuid4().hex
             )
         )
 
@@ -250,14 +250,13 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertFalse(fail)
 
 
-    def test_add_user_view(self):
+    def test_add_user_view_member(self):
         url = reverse(
             'adduser',
-            args=[self.user_email, self.organisation_name]
+            args=[self.invite.uuid]
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        # self.assertRedirects(response, reverse('home'))
         org_user = OrganisationUser.objects.filter(
             user=self.user,
             organisation=self.organisation).first()
@@ -267,12 +266,33 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertIsNotNone(org_user)
         self.assertIsNotNone(org_invite)
         self.assertTrue(org_invite.joined)
+        self.assertEquals(org_invite.user, self.user)
+        self.assertEquals(org_invite.user.user_profile.current_organisation, self.organisation)
+        self.assertTrue(
+            ORGANISATION_MEMBER in self.user.groups.values_list('name', flat=True)
+        )
 
+    def test_add_user_view_manager(self):
         url = reverse(
             'adduser',
-            args=[self.user_email, 'fake_org']
+            args=[self.invite_2.uuid]
         )
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        org_user = OrganisationRepresentative.objects.filter(
+            user=self.user,
+            organisation=self.organisation2).first()
+        org_invite = OrganisationInvites.objects.filter(
+            email=self.user_email,
+            organisation=self.organisation2).first()
+        self.assertIsNotNone(org_user)
+        self.assertIsNotNone(org_invite)
+        self.assertTrue(org_invite.joined)
+        self.assertEquals(org_invite.user, self.user)
+        self.assertEquals(org_invite.user.user_profile.current_organisation, self.organisation2)
+        self.assertTrue(
+            ORGANISATION_MANAGER in self.user.groups.values_list('name', flat=True)
+        )
 
 
 class SendRequestEmailTestCase(TestCase):

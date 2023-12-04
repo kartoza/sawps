@@ -63,10 +63,16 @@ def is_organisation_manager(
     if not user.user_profile.current_organisation and not organisation:
         return False
 
-    return OrganisationRepresentative.objects.filter(
-        user=user,
-        organisation=user.user_profile.current_organisation
-    ).exists()
+    if organisation:
+        return OrganisationRepresentative.objects.filter(
+            user=user,
+            organisation=organisation
+        ).exists()
+    else:
+        return OrganisationRepresentative.objects.filter(
+            user=user,
+            organisation=user.user_profile.current_organisation
+        ).exists()
 
 
 def get_user_roles(user: User) -> List[str]:

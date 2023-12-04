@@ -8,7 +8,11 @@ from regulatory_permit.models import DataUsePermission
 from stakeholder.models import (
     Organisation,
     OrganisationUser,
-    OrganisationInvites, MANAGER, create_user_profile, save_user_profile
+    OrganisationInvites,
+    OrganisationRepresentative,
+    MANAGER,
+    create_user_profile,
+    save_user_profile
 )
 from sawps.tests.models.account_factory import GroupF
 
@@ -46,10 +50,9 @@ class TestUserRoles(TestCase):
         self.assertTrue(ORGANISATION_MEMBER in user_roles)
 
     def test_get_user_roles_as_organisation_manager(self):
-        OrganisationInvites.objects.create(
-            email=self.user.email,
-            organisation=self.organisation,
-            assigned_as=MANAGER
+        OrganisationRepresentative.objects.create(
+            user=self.user,
+            organisation=self.organisation
         )
         self.user.user_profile.current_organisation = self.organisation
         self.user.save()

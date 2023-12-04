@@ -299,12 +299,12 @@ class OrganisationUsersViewTest(TestCase):
 
         response = view.is_user_registered(self.user.email)
 
-        self.assertEqual(response, True)
+        self.assertEqual(response, (True, self.user))
 
         # test none registered user
         response = view.is_user_registered('new@new.com')
 
-        self.assertEqual(response, False)
+        self.assertEqual(response, (False, None))
 
     def test_calculate_rows_per_page(self):
         view = OrganisationUsersView()

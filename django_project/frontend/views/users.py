@@ -293,12 +293,6 @@ class OrganisationUsersView(
                 organisation_id=get_current_organisation_id(request.user)
             )
         )
-        organisation_reps_list = list(
-            OrganisationRepresentative.objects.filter(
-                organisation_id=get_current_organisation_id(request.user)
-            )
-        )
-        print(organisation_reps_list)
         organisation_users = []
 
         for user in organisation_user_list:
@@ -335,6 +329,13 @@ class OrganisationUsersView(
 
             organisation_users.append(object_to_save)
 
+        organisation_reps_list = list(
+            OrganisationRepresentative.objects.filter(
+                organisation_id=get_current_organisation_id(request.user)
+            ).exclude(
+                user__in=[uid['id'] for uid in organisation_users]
+            )
+        )
         for user in organisation_reps_list:
             object_to_save = {
                 "id": user.user.id,
