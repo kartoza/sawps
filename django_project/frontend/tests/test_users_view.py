@@ -15,7 +15,8 @@ from stakeholder.factories import userRoleTypeFactory
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
-    OrganisationUser
+    OrganisationUser,
+    OrganisationRepresentative
 )
 
 
@@ -92,8 +93,16 @@ class OrganisationUsersViewTest(TestCase):
         self.assertJSONEqual(response.content, {'status': 'failed'})
 
 
-    def test_invite_post(self):
+    def test_invite_post_manager(self):
         # Create a request object with the required POST data
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
+        self.client.login(
+            username='testuser', password='testpassword'
+        )
         response = self.client.post(
             '/users/',
             {
@@ -106,10 +115,7 @@ class OrganisationUsersViewTest(TestCase):
 
         OrganisationInvites.objects.filter(organisation=self.organisation)
 
-        # expected_json = {'status': "'current_organisation_id'"}
-
         self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.json(), expected_json)
 
         # test with read permissions
         response = self.client.post(
@@ -123,8 +129,38 @@ class OrganisationUsersViewTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'Invitation already sent')
+
+    def test_invite_post_member(self):
+        # Create a request object with the required POST data
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
+        self.client.login(
+            username='testuser', password='testpassword'
+        )
+        response = self.client.post(
+            '/users/',
+            {
+                'action': 'invite',
+                'email': 'test@example.com',
+                'inviteAs': 'member',
+                'memberRole': 'write'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
 
     def test_get_organisation_users(self):
+        user = User.objects.create_user(
+            username='testuser_2',
+            password='testpassword',
+            email='test@gmail.com'
+        )
+        OrganisationRepresentative.objects.create(
+            organisation=self.organisation, user=user
+        )
 
         factory = RequestFactory()
         request = factory.post('/users/')
@@ -162,18 +198,41 @@ class OrganisationUsersViewTest(TestCase):
 
         self.assertIsNotNone(response)
 
+        # test page not a number
+        request = factory.post('/users/?users_page=a')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_users(request)
+        self.assertIsNotNone(response)
+
+        # test empty page
+        request = factory.post('/users/?users_page=999')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_users(request)
+        self.assertIsNotNone(response)
+
     def test_get_organisation_invites(self):
         factory = RequestFactory()
         request = factory.post('/users/')
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
-
         view = OrganisationUsersView()
-
-        response = view.get_organisation_users(request)
-
+        response = view.get_organisation_invites(request)
         self.assertIsNotNone(response)
 
+        # test page not a number
+        request = factory.post('/users/?invites_page=a')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_invites(request)
+        self.assertIsNotNone(response)
+
+        # test empty page
+        request = factory.post('/users/?invites_page=999')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_invites(request)
+        self.assertIsNotNone(response)
 
     def test_search_user_table(self):
         # Create a request object with the required POST data

@@ -129,12 +129,6 @@ def remove_user_from_org_manager(instance):
         user=instance.user
     )
 
-    # Remove from Data Contributor groups if user is
-    # no longer assigned to any organisation
-    group = Group.objects.filter(name='Data contributor').first()
-    if group:
-        instance.user.groups.remove(group)
-
     if not organisation_reps.exists():
         group = Group.objects.filter(name=ORGANISATION_MANAGER).first()
         if group:

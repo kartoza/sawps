@@ -1,36 +1,36 @@
 ﻿import uuid
 
+from django.contrib.auth.models import User
 from django.core import mail
 from django.test import (
     Client,
     TestCase,
     RequestFactory
 )
+from unittest.mock import patch
+from django.urls import reverse
+from django_otp.plugins.otp_totp.models import TOTPDevice
+
+from frontend.static_mapping import ORGANISATION_MEMBER, ORGANISATION_MANAGER
 from regulatory_permit.models import DataUsePermission
+from sawps.forms.account_forms import CustomSignupForm, CustomLoginForm, CustomChangePasswordForm
 from sawps.tests.models.account_factory import (
     UserF,
     GroupF,
 )
-from sawps.forms.account_forms import CustomSignupForm
-from django.contrib.auth.models import User
-from django.urls import reverse
 from sawps.views import (
     CustomPasswordResetView,
     AddUserToOrganisation,
     custom_password_reset_complete_view
 )
-from django.contrib.auth.models import User
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
     OrganisationUser,
     OrganisationRepresentative,
-    MEMBER,
     MANAGER
 )
-from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER, SUPER_USER, ORGANISATION_MEMBER, ORGANISATION_MANAGER
-
-from django_otp.plugins.otp_totp.models import TOTPDevice
+from stakeholder.factories import OrganisationInvitesFactory
 
 
 class TestCustomSignupForm(TestCase):
@@ -63,6 +63,95 @@ class TestCustomSignupForm(TestCase):
         user = form.custom_signup(request, user)
         self.assertEqual(user.first_name, request['first_name'])
         self.assertFalse(user.is_active)
+
+    def test_user_form_invitation_exist(self):
+        group = GroupF.create(id=1, name='Test')
+        group.save()
+
+        org_invite = OrganisationInvitesFactory.create(
+            email='faneva@kartoza.com',
+            assigned_as=MANAGER
+        )
+
+        request = {
+            'first_name': 'Fan',
+            'last_name': 'Andria',
+            'email': 'faneva@kartoza.com',
+            'password1': 'Test02-0000J,sdl',
+            'password2': 'Test02-0000J,sdl',
+            'invitation_uuid': org_invite.uuid
+        }
+
+        user = UserF.create()
+
+        form = CustomSignupForm(data=request)
+        self.assertEqual(form.is_valid(), True)
+
+        User.objects.create(
+            email='faneva@kartoza.com',
+            username='faneva'
+        )
+        user = form.custom_signup(request, user)
+        self.assertEqual(user.first_name, request['first_name'])
+        self.assertFalse(user.is_active)
+
+        org_rep = OrganisationRepresentative.objects.filter(
+            user__email='faneva@kartoza.com',
+            organisation=org_invite.organisation
+        )
+        self.assertTrue(org_rep.exists())
+
+    def test_user_form_invitation_not_exist(self):
+        group = GroupF.create(id=1, name='Test')
+        group.save()
+
+        request = {
+            'first_name': 'Fan',
+            'last_name': 'Andria',
+            'email': 'faneva@kartoza.com',
+            'password1': 'Test02-0000J,sdl',
+            'password2': 'Test02-0000J,sdl',
+            'invitation_uuid': uuid.uuid4().hex
+        }
+
+        user = UserF.create()
+
+        form = CustomSignupForm(data=request)
+        self.assertEqual(form.is_valid(), True)
+
+        User.objects.create(
+            email='faneva@kartoza.com',
+            username='faneva'
+        )
+        response = form.custom_signup(request, user)
+
+        # Since no invitation contains sent UUID, redirect to login page.
+        self.assertEqual(response.status_code, 302)
+
+        org_rep = OrganisationRepresentative.objects.filter(
+            user__email='faneva@kartoza.com'
+        )
+        self.assertFalse(org_rep.exists())
+
+
+class TestCustomLoginForm(TestCase):
+    "Test login form."
+
+    def test_form(self):
+        form = CustomLoginForm()
+        self.assertEqual(form.fields['login'].label, 'Email')
+        self.assertEqual(form.label_suffix, '')
+
+
+class TestPasswordChangeForm(TestCase):
+    "Test password change form."
+
+    def test_form(self):
+        form = CustomChangePasswordForm()
+        self.assertEqual(form.fields['password2'].label, 'Confirm New Password')
+        self.assertEqual(form.fields['password2'].widget.attrs['class'], 'form-control')
+        self.assertEqual(form.fields['password2'].widget.attrs['placeholder'], '')
+        self.assertEqual(form.label_suffix, '')
 
 
 class CustomPasswordResetViewTest(TestCase):
@@ -296,12 +385,7 @@ class AddUserToOrganisationTestCase(TestCase):
 
 
 class SendRequestEmailTestCase(TestCase):
-    def test_send_email_success(self):
-        user = User.objects.create_user(
-            username='testuser',
-            email='test@gmail.com',
-            password='testpass'
-        )
+    def _send_email_success(self, user):
         self.client = Client()
         device = TOTPDevice(
             user=user,
@@ -331,3 +415,57 @@ class SendRequestEmailTestCase(TestCase):
         })
         self.assertEqual(request.status_code, 200)
 
+    def test_send_email_success_user_has_no_name(self):
+        user = User.objects.create_user(
+            username='testuser',
+            email='test@gmail.com',
+            password='testpass'
+        )
+        self._send_email_success(user)
+
+    def test_send_email_success_user_has_no_last_name(self):
+        user = User.objects.create_user(
+            username='testuser',
+            email='test@gmail.com',
+            password='testpass',
+            first_name='Test'
+        )
+        self._send_email_success(user)
+
+    def test_send_email_success_user_has_full_last_name(self):
+        user = User.objects.create_user(
+            username='testuser',
+            email='test@gmail.com',
+            password='testpass',
+            first_name='Test',
+            last_name='User',
+        )
+        self._send_email_success(user)
+
+    @patch('sawps.views.send_mail', autospec=True)
+    def test_send_email_failed(self, mock_send_email):
+        mock_send_email.side_effect = ValueError('some-error')
+        user = User.objects.create_user(
+            username='testuser',
+            email='test@gmail.com',
+            password='testpass',
+            first_name='Test',
+            last_name='User',
+        )
+        self.client = Client()
+        device = TOTPDevice(
+            user=user,
+            name='device_name'
+        )
+        device.save()
+        resp = self.client.login(
+            username='testuser', password='testpass')
+        self.assertTrue(resp)
+        request = self.client.post(reverse('sendrequest'), data={
+            'action': 'sendrequest',
+            'organisationName': 'Test Org',
+            'message': 'Test message',
+        })
+        self.assertEqual(request.status_code, 200)
+        response_data = request.json()
+        self.assertEqual(response_data['status'], 'some-error')

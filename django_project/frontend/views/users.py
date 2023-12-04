@@ -163,7 +163,6 @@ class OrganisationUsersView(
         return JsonResponse({'status': 'success'})
 
     def invite_post(self, request):
-
         # retrieve data from front end/html template
         email = request.POST.get('email')
         assign_as = request.POST.get('inviteAs')
@@ -177,7 +176,6 @@ class OrganisationUsersView(
 
         # get role by name
         user_role = self.get_user_role(role)
-
         try:
             # add invitation to model
             is_new_invitation = self.is_new_invitation(
@@ -383,7 +381,6 @@ class OrganisationUsersView(
         rows_per_page = request.GET.get('invites_per_page', 5)
 
         paginator = Paginator(paginated_organisation_invites, rows_per_page)
-
         try:
             invites = paginator.page(invites_page)
         except PageNotAnInteger:

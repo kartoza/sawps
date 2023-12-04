@@ -11,7 +11,6 @@ from django.utils.encoding import force_str
 from django.views.generic import View
 from core.settings.contrib import SUPPORT_EMAIL
 from stakeholder.models import (
-    Organisation,
     OrganisationInvites,
     OrganisationUser,
     OrganisationRepresentative,
@@ -82,8 +81,6 @@ class AddUserToOrganisation(View):
                 user = org_invite.user
                 if not user:
                     user = User.objects.filter(email=org_invite.email).first()
-                    if not user:
-                        return None
                 org_invite.user = user
                 org_invite.save()
 
@@ -117,8 +114,6 @@ class AddUserToOrganisation(View):
                             organisation=org
                         )
                         org_rep.save()
-        except Organisation.DoesNotExist:
-            return None
         except Exception:
             return None
 
@@ -213,14 +208,7 @@ class CustomPasswordResetView(View):
 
         try:
             user = User.objects.get(email=user_email)
-            user_name = ''
-            try:
-                if user.username is not None:
-                    user_name = user.username
-                elif user.first_name is not None:
-                    user_name = user.first_name
-            except AttributeError:
-                user_name = user_email
+            user_name = user.username
             # Generate the reset token and UID
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
