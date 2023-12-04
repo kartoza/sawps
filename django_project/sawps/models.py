@@ -88,6 +88,11 @@ class ExtendedGroup(models.Model):
                 "can_edit_species_population_data",
                 "Can edit species population data",
             ),
+            # Used in trends tab
+            (
+                'can_view_properties_trends_data',
+                'Can view properties trends data'
+            )
         ]
 
 

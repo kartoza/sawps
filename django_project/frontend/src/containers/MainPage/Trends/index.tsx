@@ -107,7 +107,7 @@ const Trends = () => {
                   <ProvincialTrendSection species={selectedSpecies} province={provinceName}/>
                 </Grid>
               )}
-              {selectedSpecies && rerender && (
+              {selectedSpecies && rerender && userInfoData?.user_permissions.includes('Can view properties trends data') && (
                 <Grid item xs={12} md={12} className="SectionItem" key={'PropertySectionItem'}>
                   <PropertyTrendSection species={selectedSpecies} property={propertyId} />
                 </Grid>

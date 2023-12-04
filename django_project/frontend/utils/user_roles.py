@@ -6,7 +6,9 @@ from django.contrib.contenttypes.models import ContentType
 from frontend.static_mapping import (
     SUPER_USER,
     ORGANISATION_MEMBER,
-    ORGANISATION_MANAGER
+    ORGANISATION_MANAGER,
+    DATA_CONSUMERS,
+    DATA_CONSUMERS_EXCLUDE_PERMISSIONS
 )
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
@@ -134,5 +136,12 @@ def get_user_permissions(user: User) -> List[str]:
             ).values_list('name', flat=True)
         )
         permissions = permissions.union(allowed_permission)
+
+    if not user.is_superuser:
+        user_roles = get_user_roles(user)
+        if set(user_roles) & set(DATA_CONSUMERS):
+            permissions = (
+                permissions - set(DATA_CONSUMERS_EXCLUDE_PERMISSIONS)
+            )
 
     return sorted(list(permissions))

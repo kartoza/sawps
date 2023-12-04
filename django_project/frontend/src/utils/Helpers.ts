@@ -1,5 +1,3 @@
-import { UserInfo } from "../services/api";
-
 /**
  * Change string to singular
  */
