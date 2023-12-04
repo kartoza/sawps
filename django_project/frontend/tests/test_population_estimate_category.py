@@ -45,7 +45,7 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
             taxon_rank = TaxonRankFactory.create(name="Species")
 
         taxon = Taxon.objects.create(
-            taxon_rank=taxon_rank, common_name_varbatim="Lion",
+            taxon_rank=taxon_rank, common_name_verbatim="Lion",
             scientific_name="Penthera leo"
         )
 
