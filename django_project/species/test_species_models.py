@@ -1,6 +1,6 @@
 import base64
 import os
-from unittest import mock
+import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -23,6 +23,8 @@ from species.factories import (
 from species.models import Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
 from stakeholder.factories import organisationFactory
+from frontend.models.base_task import DONE
+from frontend.tests.model_factories import SpeciesModelOutputF
 
 
 def mocked_clear_cache(self, *args, **kwargs):
@@ -255,6 +257,7 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.json()['total_population'], 0)
         self.assertEqual(response.json()['species_name'], taxon.scientific_name)
         self.assertIsNone(response.json()['graph_icon'])
+        self.assertIsNone(response.json()['model_updated_on'])
         user_1 = User.objects.create_user(username='testuser_taxon_1', password='12345')
         user_2 = User.objects.create_user(username='testuser_taxon_2', password='12345')
         # create two years of data
@@ -290,6 +293,13 @@ class TaxonTestCase(TestCase):
             property=property_2,
             area_available_to_species=1
         )
+        # create statistical model output
+        SpeciesModelOutputF.create(
+            taxon=taxon,
+            is_latest=True,
+            status=DONE,
+            generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
+        )
         response = client.get(
             reverse('taxon-trend-page'),
             {
@@ -301,6 +311,7 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.json()['total_population'], 57)
         self.assertEqual(response.json()['total_area'], 3)
         self.assertIsNone(response.json()['graph_icon'])
+        self.assertIsNotNone(response.json()['model_updated_on'])
 
     def test_create_taxon_no_graph_icon(self):
         """Test create taxon without graph icon."""
