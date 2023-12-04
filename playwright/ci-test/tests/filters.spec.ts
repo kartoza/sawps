@@ -11,6 +11,8 @@ test('filter tests', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Explore' }).click();
 
+  await page.waitForLoadState('domcontentloaded');
+
   await page.getByText('Search place').isVisible();
 
   await expect(page.getByPlaceholder('Search place')).toBeEditable();

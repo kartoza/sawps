@@ -22,7 +22,7 @@ test('test', async ({ page }) => {
 
   await page.waitForLoadState('domcontentloaded');
 
-  await expect(page.locator('div').filter({ hasText: /^Activity$/ })).toBeVisible();
+  await expect(page.locator('div').filter({ hasText: /^Activity$/ }).first()).toBeVisible();
 
   await page.locator('nav').filter({ hasText: 'Activities selected' }).getByLabel('Open').click();
 
@@ -77,7 +77,7 @@ test('test', async ({ page }) => {
 
   await expect(page.getByText('Year')).toBeVisible();
 
-  await expect(page.locator('div').filter({ hasText: /^Activity$/ })).toBeVisible();
+  await expect(page.locator('div').filter({ hasText: /^Activity$/ }).first()).toBeVisible();
 
   await page.getByRole('tab', { name: 'CHARTS' }).click();
 
