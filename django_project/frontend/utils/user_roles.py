@@ -6,12 +6,14 @@ from django.contrib.contenttypes.models import ContentType
 from frontend.static_mapping import (
     SUPER_USER,
     ORGANISATION_MEMBER,
-    ORGANISATION_MANAGER
+    ORGANISATION_MANAGER,
+    DATA_CONSUMERS_EXCLUDE_PERMISSIONS
 )
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
 )
 from frontend.utils.organisation import get_current_organisation_id
+from frontend.static_mapping import DATA_CONSUMERS
 from sawps.models import ExtendedGroup
 
 
@@ -135,4 +137,11 @@ def get_user_permissions(user: User) -> List[str]:
         )
         permissions = permissions.union(allowed_permission)
 
+    if not user.is_superuser:
+        user_roles = get_user_roles(user)
+        if set(user_roles) & set(DATA_CONSUMERS):
+            permissions = (
+                permissions - set(DATA_CONSUMERS_EXCLUDE_PERMISSIONS)
+            )
+            permissions = permissions.union({'Can view report as data consumer'})
     return sorted(list(permissions))

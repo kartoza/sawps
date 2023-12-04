@@ -68,10 +68,6 @@ export function capitalizeSentence(str: string) {
  * @param userInfo: user info object from /user-info endpoint
  */
 export function isDataConsumer(userInfo: UserInfo) {
-    if (!userInfo?.user_roles) return false;
-    const dataConsumers = new Set([
-      "National data consumer",
-        "Provincial data consumer"
-    ])
-    return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
+    if (!userInfo?.user_permissions) return false;
+    return userInfo.user_permissions.includes('Can view report as data consumer')
 }
