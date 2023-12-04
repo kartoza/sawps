@@ -6,7 +6,6 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import SpeciesCountPerProvinceChart from "./SpeciesCountPerProvinceChart";
-import SpeciesCountAsPercentage from "./SpeciesCountAsPercentage";
 import TotalCountPerActivity from "./TotalCountPerActivity";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
@@ -14,6 +13,7 @@ import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery, 
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
 import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
+
 
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 

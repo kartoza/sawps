@@ -1,10 +1,9 @@
 from django.db.models import Sum
-from rest_framework import serializers
-
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
+from rest_framework import serializers
 
 
 class BaseReportSerializer(serializers.Serializer):
@@ -23,7 +22,7 @@ class BaseReportSerializer(serializers.Serializer):
         return obj.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulation) -> str:
-        return obj.taxon.common_name_varbatim
+        return obj.taxon.common_name_verbatim
 
     def get_property_name(self, obj: AnnualPopulation) -> str:
         return obj.property.name
@@ -160,7 +159,7 @@ class PropertyReportSerializer(
         return obj.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulation) -> str:
-        return obj.taxon.common_name_varbatim
+        return obj.taxon.common_name_verbatim
 
     def get_owner(self, obj: AnnualPopulation) -> str:
         return obj.property.created_by.first_name
@@ -225,7 +224,7 @@ class ActivityReportSerializer(
         return obj.annual_population.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulationPerActivity) -> str:
-        return obj.annual_population.taxon.common_name_varbatim
+        return obj.annual_population.taxon.common_name_verbatim
 
     def get_property_name(self, obj: AnnualPopulationPerActivity) -> str:
         return obj.annual_population.property.name
@@ -271,7 +270,7 @@ class ActivityReportSerializer(
 class NationalLevelSpeciesReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        del instance['taxon__common_name_varbatim']
+        del instance['taxon__common_name_verbatim']
         del instance['taxon__scientific_name']
         return instance
 
@@ -302,8 +301,8 @@ class NationalLevelPropertyReport(serializers.Serializer):
             data = {
                 "year": year,
                 "common_name": (
-                    instance.common_name_varbatim if
-                    instance.common_name_varbatim else '-'
+                    instance.common_name_verbatim if
+                    instance.common_name_verbatim else '-'
                 ),
                 "scientific_name": instance.scientific_name,
                 property_type_field: property_entry["population"],
@@ -370,7 +369,7 @@ class NationalLevelActivityReport(serializers.Serializer):
 
             data = {
                 "year": activity_entry["year"],
-                "common_name": instance.common_name_varbatim,
+                "common_name": instance.common_name_verbatim,
                 "scientific_name": instance.scientific_name,
                 activity_field: activity_entry["population"],
             }
@@ -409,7 +408,7 @@ class NationalLevelProvinceReport(serializers.Serializer):
         for province_entry in province_data:
             data = {
                 "year": province_entry.year,
-                "common_name": instance.common_name_varbatim,
+                "common_name": instance.common_name_verbatim,
                 "scientific_name": instance.scientific_name,
             }
             year = province_entry.year
