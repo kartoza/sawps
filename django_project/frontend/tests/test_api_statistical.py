@@ -3,6 +3,8 @@ from django.urls import reverse
 from collections import OrderedDict
 import mock
 import json
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group, Permission
 from rest_framework.test import APIRequestFactory
 from django.core.files.base import ContentFile
 from frontend.tests.model_factories import UserF
@@ -22,8 +24,10 @@ from frontend.api_views.statistical import (
 from frontend.models.base_task import DONE
 from stakeholder.factories import organisationUserFactory
 from sawps.tests.models.account_factory import GroupF
+from sawps.models import ExtendedGroup
 from frontend.static_mapping import (
-    NATIONAL_DATA_CONSUMER
+    NATIONAL_DATA_CONSUMER,
+    ORGANISATION_MEMBER
 )
 
 
@@ -76,14 +80,21 @@ class TestAPIStatistical(TestCase):
     def setUp(self) -> None:
         self.factory = APIRequestFactory()
         self.user_1 = UserF.create(username='test_1')
+        group_1, _ = Group.objects.get_or_create(name=ORGANISATION_MEMBER)
+        content_type = ContentType.objects.get_for_model(ExtendedGroup)
+        all_permissions = Permission.objects.filter(content_type=content_type)
+        for perm in all_permissions:
+            group_1.permissions.add(perm)
         # add user_1 as organisation member
         organisationUserFactory.create(
             user=self.user_1
         )
+        self.user_1.groups.add(group_1)
         self.superuser = UserF.create(is_superuser=True)
         self.taxon = TaxonF.create()
         # create another user for data consumer
         self.user_2 = UserF.create(username='test_2')
+        self.user_2.groups.add(group_1)
         self.data_consumer_group = GroupF.create(name=NATIONAL_DATA_CONSUMER)
         self.user_2.groups.add(self.data_consumer_group)
 
