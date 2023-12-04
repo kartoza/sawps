@@ -527,10 +527,9 @@ def national_level_activity_report(
 
     if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
-        province_ids = Province.objects.filter(
-            property__organisation_id=organisation_id
-        ).values_list("id", flat=True).distinct()
-        filters["annual_population__property__province__id__in"] = province_ids
+        if organisation_id:
+            organisation = Organisation.objects.get(id=organisation_id)
+            filters["annual_population__property__province"] = organisation.province
 
     serializer = NationalLevelActivityReport(
         queryset,
