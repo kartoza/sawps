@@ -86,7 +86,7 @@ class TestUploadSpeciesApiView(TestCase):
             name="Translocation (Offtake)")
         self.lion = Taxon.objects.create(
             scientific_name='Panthera leo',
-            common_name_varbatim='Lion'
+            common_name_verbatim='Lion'
         )
 
         OpenCloseSystem.objects.create(

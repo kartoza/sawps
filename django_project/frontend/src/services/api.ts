@@ -42,7 +42,7 @@ export interface Organisation {
 export interface Species {
   id: number
   scientific_name: string
-  common_name_varbatim: string
+  common_name_verbatim: string
 }
 
 export interface TaxonDetail {

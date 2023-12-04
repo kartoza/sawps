@@ -56,7 +56,7 @@ export const SpeciesFilterSlice = createSlice({
 
       const selectedSpecies = action.payload
         .filter(obj => obj.is_selected)
-        .map(obj => obj.common_name_varbatim);
+        .map(obj => obj.common_name_verbatim);
       state.selectedSpecies = selectedSpecies.join(',');
     },
     setSelectedSpecies: (state, action: PayloadAction<number[]>) => {
@@ -72,7 +72,7 @@ export const SpeciesFilterSlice = createSlice({
 
       const selectedSpecies = _updatedData
         .filter(obj => obj.is_selected)
-        .map(obj => obj.common_name_varbatim);
+        .map(obj => obj.common_name_verbatim);
       state.selectedSpecies = selectedSpecies.join(',');
     },
     toggleSpecies: (state, action: PayloadAction<string>) => {

@@ -1730,7 +1730,7 @@
             <child column="parent_id" foreignKey="taxon_parent_id_4645e052_fk_taxon_id" implied="false" onDeleteCascade="false" schema="public" table="taxon"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="scientific_name" nullable="false" remarks="" size="250" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="common_name_varbatim" nullable="true" remarks="" size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="common_name_verbatim" nullable="true" remarks="" size="250" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="colour_variant" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="infraspecific_epithet" nullable="true" remarks="" size="250" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="parent_id" nullable="true" remarks="" size="19" type="int8" typeCode="-5">

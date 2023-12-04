@@ -14,7 +14,7 @@ class TaxonSerializer(serializers.ModelSerializer):
             "scientific_name",
             # common name is used to autofill common
             # name in online form
-            "common_name_varbatim"
+            "common_name_verbatim"
         ]
 
 

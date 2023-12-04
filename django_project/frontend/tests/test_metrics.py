@@ -29,7 +29,7 @@ class BaseTestCase(TestCase):
             taxon_rank = TaxonRankFactory.create(name="Species")
 
         self.taxon = TaxonFactory.create(
-            taxon_rank=taxon_rank, common_name_varbatim="Lion",
+            taxon_rank=taxon_rank, common_name_verbatim="Lion",
             scientific_name = "Penthera leo"
         )
 
@@ -616,12 +616,12 @@ class TestPropertyCountPerPopulationSizeCategory(
                 {
                     'category': '28 - 30',
                     self.new_property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_varbatim': self.taxon.common_name_varbatim
+                    'common_name_verbatim': self.taxon.common_name_verbatim
                 },
                 {
                     'category': '>30',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_varbatim': self.taxon.common_name_varbatim
+                    'common_name_verbatim': self.taxon.common_name_verbatim
                 }
             ]
         )
@@ -651,14 +651,14 @@ class TestPropertyCountPerPopulationSizeCategory(
             [
                 {
                     'category': '1 - 30',
-                    'common_name_varbatim': self.taxon.common_name_varbatim,
+                    'common_name_verbatim': self.taxon.common_name_verbatim,
                     new_property.property_type.name.lower().replace(' ', '_'): 1,
                     self.new_property.property_type.name.lower().replace(' ', '_'): 1
                 },
                 {
                     'category': '>30',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_varbatim': self.taxon.common_name_varbatim
+                    'common_name_verbatim': self.taxon.common_name_verbatim
                 }
             ]
         )
@@ -698,7 +698,7 @@ class TestPropertyCountPerPopulationDensityCategory(
                 {
                     'category': '10.0 - 10.0',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_varbatim': self.taxon.common_name_varbatim
+                    'common_name_verbatim': self.taxon.common_name_verbatim
                 }
             ]
         )
@@ -738,7 +738,7 @@ class TestPropertyCountPerAreaCategory(
                 {
                     'category': '198 - 200',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_varbatim': self.taxon.common_name_varbatim
+                    'common_name_verbatim': self.taxon.common_name_verbatim
                 }
             ]
         )
@@ -778,7 +778,7 @@ class TestPropertyCountPerAreaAvailableToSpeciesCategory(
                 {
                     'category': '8 - 10',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
-                    'common_name_varbatim': self.taxon.common_name_varbatim
+                    'common_name_verbatim': self.taxon.common_name_verbatim
                 }
             ]
         )
