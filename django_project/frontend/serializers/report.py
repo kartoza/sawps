@@ -347,7 +347,6 @@ class NationalLevelActivityReport(serializers.Serializer):
 
     def to_representation(self, instance):
         all_data = {}
-        print(self.context['filters'])
         activity_data = AnnualPopulationPerActivity.objects.values(
             "activity_type__name",
             "year"
@@ -357,7 +356,6 @@ class NationalLevelActivityReport(serializers.Serializer):
         ).annotate(
             population=Sum("total"),
         ).order_by('-year')
-        print(activity_data)
 
         activity_fields = set()
         for activity_entry in activity_data:

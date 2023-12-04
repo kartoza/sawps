@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set
 
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -103,13 +103,13 @@ def get_user_roles(user: User) -> List[str]:
     return roles
 
 
-def get_user_permissions(user: User) -> List[str]:
+def get_user_permissions(user: User) -> Set[str]:
     """
     Retrieve the permissions associated with a given user.
 
     :param user: The user object
-    :return: A list containing the names of all
-        roles associated with the user
+    :return: A set containing the names of all
+        permissions associated with the user
     """
     permissions = set()
     groups = user.groups.all()
@@ -142,10 +142,20 @@ def get_user_permissions(user: User) -> List[str]:
         user_roles = get_user_roles(user)
         if set(user_roles) & set(DATA_CONSUMERS):
             permissions = (
-                permissions - set(DATA_CONSUMERS_EXCLUDE_PERMISSIONS)
+                permissions - DATA_CONSUMERS_EXCLUDE_PERMISSIONS
             )
             permissions.add('Can view report as data consumer')
             if PROVINCIAL_DATA_CONSUMER in user_roles:
                 permissions.add('Can view report as provincial data consumer')
 
-    return sorted(list(permissions))
+    return permissions
+
+
+def check_user_has_permission(user: User, permission: str):
+    """
+    Test if a user has permission.
+    """
+    if user.is_superuser:
+        return True
+    permissions = get_user_permissions(user)
+    return permission in permissions

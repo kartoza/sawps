@@ -15,6 +15,7 @@ import Loading from "../../../components/Loading";
 import {isDataConsumer} from "../../../utils/Helpers";
 import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
 
+
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'
 
 const Metrics = () => {
