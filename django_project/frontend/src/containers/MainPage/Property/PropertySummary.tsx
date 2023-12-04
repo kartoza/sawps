@@ -1,16 +1,19 @@
 import React from 'react';
 import Grid from "@mui/material/Grid";
 import {RootState} from '../../../app/store';
-import { useAppSelector } from '../../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import { resetSelectedProperty } from '../../../reducers/MapState';
 import PropertySummaryTable from '../../../components/PropertySummaryTable';
 import SpeciesSideBarChart from '../Metrics/SpeciesSideBarChart';
 import ActivityBarChart from '../Metrics/ActivityBarChart';
 
 
 export default function PropertySummary() {
+    const dispatch = useAppDispatch()
     const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
 
     return (
@@ -23,6 +26,11 @@ export default function PropertySummary() {
                             <Grid item className='SiteDetailTitle'>
                                 <span className='SiteDetailIcon'></span>
                                 <span>Property Information</span>
+                            </Grid>
+                            <Grid item>
+                                <IconButton aria-label='Close' title='Close' onClick={() => dispatch(resetSelectedProperty())}>
+                                    <CloseIcon />
+                                </IconButton>
                             </Grid>
                         </Grid>
                     </Grid>

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Box, Button, Checkbox, Grid, ListItemText, Modal, Typography} from "@mui/material";
 import InputLabel from '@mui/material/InputLabel';
 import Menu from '@mui/material/Menu';
@@ -61,6 +61,7 @@ const DataList = () => {
         isLoading: isActivityLoading,
         isSuccess: isActivitySuccess
     } = useGetActivityAsObjQuery()
+    const cancelTokenSourceRef = useRef(null);
 
     let dataset: any[] = []
     let reportList: any[] = []
@@ -127,6 +128,12 @@ const DataList = () => {
     }, [activityList]);
 
     const fetchDataList = () => {
+        // Cancel the previous request
+        if (cancelTokenSourceRef.current) {
+            cancelTokenSourceRef.current.cancel("Cancelling previous request");
+        }
+        cancelTokenSourceRef.current = axios.CancelToken.source();
+
         setLoading(true)
         let _data = {
             'species': selectedSpeciesList,
@@ -141,14 +148,20 @@ const DataList = () => {
         if (isDataConsumer(userInfoData)) {
             delete _data['property']
         }
-        axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
+        axios.post(
+            FETCH_AVAILABLE_DATA, _data, {
+                cancelToken: cancelTokenSourceRef.current.token
+            }
+        ).then((response) => {
             setLoading(false)
             if (response.data) {
                 setData(response.data)
             }
         }).catch((error) => {
             setLoading(false)
-            console.log(error)
+            if (!axios.isCancel(error)) {
+                console.log(error);
+            }
         })
     }
 
@@ -168,6 +181,11 @@ const DataList = () => {
         } else {
             setShowReports(false);
         }
+        return () => {
+            if (cancelTokenSourceRef.current) {
+                cancelTokenSourceRef.current.cancel("Component unmounted");
+            }
+        };
     }, [selectedSpeciesList, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
 
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
@@ -258,7 +276,7 @@ const DataList = () => {
         if (!isSuccess) return;
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
             <Box key={each}>
-                <Box className="data-table data-grid"
+                <Box className="data-table data-grid data-table-header"
                      style={{
                          backgroundColor: (customColorWidth as any)[each]?.color,
                          marginTop: '20px'
@@ -308,6 +326,7 @@ const DataList = () => {
                                     key={index}
                                     rows={cellRows}
                                     columns={filteredColumns}
+                                    getRowHeight={() => 'auto'}
                                     disableRowSelectionOnClick
                                     components={{
                                         Pagination: null,
@@ -332,7 +351,8 @@ const DataList = () => {
                 </Box>
                 {activityReportList.map((each: any) =>
                     <Box key={each}>
-                        <Box className="data-table" style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
+                        <Box className="data-table data-table-header"
+                             style={{  backgroundColor: (customColorWidth as any)[each]?.color }}>
                             {getTitle(each)}
                         </Box>
                         {activityReportdataList.length > 0 && activityReportdataList.map((item, index) => {
@@ -532,7 +552,7 @@ const DataList = () => {
             )}
             </Box>
         </Box>
-          
+
     )
 }
 

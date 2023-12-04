@@ -76,7 +76,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 ...data,
                 taxon_id: value,
                 taxon_name: _selected.scientific_name,
-                common_name: _selected.common_name_varbatim,
+                common_name: _selected.common_name_verbatim,
                 annual_population: {...data.annual_population},
                 intake_populations: [...data.intake_populations],
                 offtake_populations: [...data.offtake_populations]            

@@ -68,7 +68,7 @@ export interface UploadSpeciesDetailInterface {
 
 export interface TaxonMetadata {
     id: number;
-    common_name_varbatim: string;
+    common_name_verbatim: string;
     scientific_name: string
 }
 

@@ -52,7 +52,7 @@ test.describe('admin operations', () => {
         await page.getByRole('link', { name: 'Taxa' }).click();
         await page.getByRole('link', { name: 'Add Taxon' }).click();
         await page.getByLabel('Scientific name:').fill('Panthera leo');
-        await page.getByLabel('Common name varbatim:').fill('Lion');
+        await page.getByLabel('Common name verbatim:').fill('Lion');
         //await page.getByLabel('Infraspecific epithet:');
         await page.getByLabel('Show on front page').check();
         await page.getByLabel('Is selected').check();
@@ -68,7 +68,7 @@ test.describe('admin operations', () => {
         await page.getByRole('link', { name: 'Django Admin' }).click();
 
         await page.waitForURL('**/admin/');
-  
+
         await page.getByRole('link', { name: 'Users', exact: true }).click();
 
         await page.getByRole('link', { name: 'admin', exact: true }).click();
@@ -90,7 +90,7 @@ test.describe('admin operations', () => {
         await page.getByRole('button', { name: 'Save', exact: true }).click();
 
         const finalURL = page.url();
-        
+
         expect(finalURL).not.toBe(initialURL);
     });
 });
