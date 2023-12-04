@@ -21,11 +21,7 @@ from frontend.models import (
     PROPERTY_TREND,
     PROVINCIAL_GROWTH
 )
-from frontend.static_mapping import (
-    DATA_CONSUMERS,
-    SUPER_USER
-)
-from frontend.utils.user_roles import get_user_roles
+from frontend.utils.user_roles import check_user_has_permission
 
 
 class SpeciesNationalTrend(APIView):
@@ -92,10 +88,10 @@ class SpeciesTrend(SpeciesNationalTrend):
         return [trend for trend in trends if trend['property'] in properties]
 
     def can_view_properties_trends(self):
-        user_roles = get_user_roles(self.request.user)
-        if SUPER_USER in user_roles:
-            return True
-        return not (set(user_roles) & set(DATA_CONSUMERS))
+        return (
+            check_user_has_permission(self.request.user,
+                                      'Can view properties trends data')
+        )
 
     def get(self, request):
         species_name = request.GET.get("species")

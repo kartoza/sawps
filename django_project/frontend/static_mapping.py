@@ -39,9 +39,9 @@ DATA_SCIENTISTS = [
 
 
 # Do not allow data consumer to have this permissions
-DATA_CONSUMERS_EXCLUDE_PERMISSIONS = [
+DATA_CONSUMERS_EXCLUDE_PERMISSIONS = set([
     'Can view properties trends data',
     'Can edit species population data',
     'Can view property filter',
     'Can view properties layer in the map'
-]
+])
