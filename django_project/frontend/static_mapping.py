@@ -43,5 +43,13 @@ DATA_CONSUMERS_EXCLUDE_PERMISSIONS = set([
     'Can view properties trends data',
     'Can edit species population data',
     'Can view property filter',
+    'Can view organisation filter',
     'Can view properties layer in the map'
+])
+
+
+# These are permissions for Data Consumer
+DATA_CONSUMERS_PERMISSIONS = set([
+    'Can view report as data consumer',
+    'Can view report as provincial data consumer'
 ])

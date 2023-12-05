@@ -9,6 +9,7 @@ from frontend.static_mapping import (
     ORGANISATION_MANAGER,
     DATA_CONSUMERS,
     DATA_CONSUMERS_EXCLUDE_PERMISSIONS,
+    DATA_CONSUMERS_PERMISSIONS,
     PROVINCIAL_DATA_CONSUMER
 )
 from stakeholder.models import (
@@ -126,6 +127,9 @@ def get_user_permissions(user: User) -> Set[str]:
     if user.is_superuser:
         ext_group_permissions_set = set(
             ext_group_permissions.values_list('name', flat=True)
+        )
+        ext_group_permissions_set = (
+            ext_group_permissions_set - DATA_CONSUMERS_PERMISSIONS
         )
         permissions = permissions.union(ext_group_permissions_set)
         permissions.add('Can view province report')

@@ -592,7 +592,7 @@ function Filter(props: any) {
                 }
 
                 {
-                    allowOrganisationSelection && !isDataConsumer(userInfoData) && organisationInputField()
+                    allowOrganisationSelection && organisationInputField()
                 }
 
                 {
@@ -626,7 +626,7 @@ function Filter(props: any) {
                 }
 
                 {
-                    allowPropertiesSelection && !isDataConsumer(userInfoData) && propertyInputField()
+                    allowPropertiesSelection && propertyInputField()
                 }
 
                 {tab !== 'trends' &&

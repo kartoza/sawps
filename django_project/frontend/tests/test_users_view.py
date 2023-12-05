@@ -10,7 +10,8 @@ from frontend.static_mapping import (
     PROVINCIAL_DATA_CONSUMER,
     NATIONAL_DATA_CONSUMER,
     DATA_CONSUMERS_EXCLUDE_PERMISSIONS,
-    ORGANISATION_MEMBER
+    ORGANISATION_MEMBER,
+    DATA_CONSUMERS_PERMISSIONS
 )
 from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
@@ -427,7 +428,9 @@ class UserApiTest(TestCase):
             is_superuser=True
         )
         content_type = ContentType.objects.get_for_model(ExtendedGroup)
-        all_permissions = Permission.objects.filter(content_type=content_type)
+        all_permissions = Permission.objects.exclude(
+            name__in=list(DATA_CONSUMERS_PERMISSIONS)
+        ).filter(content_type=content_type)
 
         login = client.login(
             username='testuser',
