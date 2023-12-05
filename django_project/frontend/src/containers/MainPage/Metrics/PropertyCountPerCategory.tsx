@@ -109,7 +109,6 @@ const PropertyCountPerCategoryChart = (props: any) => {
   }
 
   let data = null;
-  console.debug(labels)
 
   if (labels.length > 0 && datasets.length > 0) {
     data = {
