@@ -35,12 +35,10 @@ from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_species_count_per_province,
     calculate_total_area_per_property_type,
-    calculate_base_population_of_species,
-    calculate_species_count_per_province
 )
 from frontend.utils.organisation import (
     get_current_organisation_id,
-    get_organisation_ids
+    get_organisation_ids,
 )
 from frontend.utils.user_roles import get_user_roles
 from population_data.models import AnnualPopulation
