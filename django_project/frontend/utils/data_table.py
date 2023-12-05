@@ -434,8 +434,6 @@ def national_level_species_report(
     """
     user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
-    print(queryset)
-    print(filters)
 
     report_data = AnnualPopulation.objects. \
         filter(**filters, taxon__in=queryset). \
