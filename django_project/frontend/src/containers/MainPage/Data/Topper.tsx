@@ -55,6 +55,12 @@ const Topper = () => {
         setTab(pathname)
     }, [window.location.pathname])
 
+    useEffect(() => {
+        if (tab === 'reports') {
+            setSpeciesIcon("/static/images/default-species-topper.svg")
+        }
+    }, [tab])
+
 
     useEffect(() => {
         if (tab === 'reports') {
