@@ -29,7 +29,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
 5. **Message**: A helpful and informative message prompts users to explore and view charts.
 
-3. **Download Data Visualisation**: The `DOWNLOAD DATA VISUALISATION` button is a convenient feature that enables the user to download the charts and visualisations displayed on the page.
+6. **Download Data Visualisation**: The `DOWNLOAD DATA VISUALISATION` button is a convenient feature that enables the user to download the charts and visualisations displayed on the page.
 # Topper
 
 ![Topper](./img/charts-5.png)
