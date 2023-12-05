@@ -125,20 +125,17 @@ class OrganisationBaseView(TemplateView):
                     id=user_profile.current_organisation.id
                 )
         else:
-            organisations = []
-            for Model in [OrganisationUser, OrganisationRepresentative]:
-                user_organisations = Model.objects.filter(
-                    user=user
-                ).order_by('organisation_id')
-                if user_profile and user_profile.current_organisation:
-                    user_organisations = user_organisations.exclude(
-                        id=user_profile.current_organisation.id
-                    )
-                organisations.extend(
-                    [org_user.organisation for org_user in user_organisations]
+            user_organisations = OrganisationUser.objects.filter(
+                user=user
+            ).order_by('organisation_id')
+            if user_profile and user_profile.current_organisation:
+                user_organisations = user_organisations.exclude(
+                    id=user_profile.current_organisation.id
                 )
+            organisations = (
+                [org_user.organisation for org_user in user_organisations]
+            )
 
-        organisations = sorted(organisations, key=lambda a: a.name)
         return OrganisationSerializer(organisations, many=True).data
 
     def get_context_data(self, **kwargs):

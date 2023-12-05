@@ -27,11 +27,7 @@ def switch_organisation(request, organisation_id):
             user=request.user,
             organisation__id=organisation_id
         )
-        organisation_rep = OrganisationRepresentative.objects.filter(
-            user=request.user,
-            organisation__id=organisation_id
-        )
-        if not organisation_user.exists() and not organisation_rep.exists():
+        if not organisation_user.exists():
             return HttpResponseForbidden()
 
     # Update the current organisation in the user's profile

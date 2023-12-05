@@ -202,24 +202,14 @@ class OrganisationUsersView(
                         '&uuid=' + quote(invitation_uuid)
                     )
 
-                if assign_as == 'manager':
-                    create_invite = OrganisationInvites(
-                        email=email,
-                        organisation_id=org_id,
-                        user_role=user_role,
-                        assigned_as=MANAGER,
-                        user=user,
-                        uuid=invitation_uuid
-                    )
-                else:
-                    create_invite = OrganisationInvites(
-                        email=email,
-                        organisation_id=org_id,
-                        user_role=user_role,
-                        assigned_as=MEMBER,
-                        user=user,
-                        uuid=invitation_uuid
-                    )
+                create_invite = OrganisationInvites(
+                    email=email,
+                    organisation_id=org_id,
+                    user_role=user_role,
+                    assigned_as=MANAGER if assign_as == 'manager' else MEMBER,
+                    user=user,
+                    uuid=invitation_uuid
+                )
 
                 # object to pass to view function
                 email_details = {
@@ -286,12 +276,27 @@ class OrganisationUsersView(
             return JsonResponse({'status': 'failed'})
 
     def get_organisation_users(self, request):
-        organisation_user_list = list(
-            OrganisationUser.objects.filter(
-                organisation_id=get_current_organisation_id(request.user)
-            )
+        # Get manager
+        organisation_reps_list = OrganisationRepresentative.objects.filter(
+            organisation_id=get_current_organisation_id(request.user)
         )
         organisation_users = []
+        for user in organisation_reps_list:
+            object_to_save = {
+                "id": user.user.id,
+                "organisation_user": str(user.user),
+                "role": MANAGER,
+                "assigned_as": MANAGER,
+                "joined": True
+            }
+            organisation_users.append(object_to_save)
+
+        # Get member
+        organisation_user_list = OrganisationUser.objects.filter(
+            organisation_id=get_current_organisation_id(request.user)
+        ).exclude(
+            user__in=[uid.user for uid in organisation_reps_list]
+        )
 
         for user in organisation_user_list:
             # get role from organisation invites
@@ -327,22 +332,6 @@ class OrganisationUsersView(
 
             organisation_users.append(object_to_save)
 
-        organisation_reps_list = list(
-            OrganisationRepresentative.objects.filter(
-                organisation_id=get_current_organisation_id(request.user)
-            ).exclude(
-                user__in=[uid['id'] for uid in organisation_users]
-            )
-        )
-        for user in organisation_reps_list:
-            object_to_save = {
-                "id": user.user.id,
-                "organisation_user": str(user.user),
-                "role": MANAGER,
-                "assigned_as": MANAGER,
-                "joined": True
-            }
-            organisation_users.append(object_to_save)
 
         users_page = request.GET.get('users_page', 1)
 
