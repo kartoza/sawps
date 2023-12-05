@@ -10,9 +10,9 @@ class TaxonAdmin(admin.ModelAdmin):
     """Admin page for Taxon model
 
     """
-    list_display = ('scientific_name', 'common_name_varbatim',
+    list_display = ('scientific_name', 'common_name_verbatim',
                     'taxon_rank', 'show_on_front_page', 'display_color')
-    search_fields = ['scientific_name', 'common_name_varbatim',
+    search_fields = ['scientific_name', 'common_name_verbatim',
                      'taxon_rank__name']
     form = TaxonForm
     readonly_fields = ['topper_icon', 'icon']

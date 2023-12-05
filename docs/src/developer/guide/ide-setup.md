@@ -84,3 +84,19 @@ docker exec -it deployment-db-1 /bin/bash
 cd /home
 pg_restore -h 127.0.0.1 -U docker -d django -n layer sanbi_layer_db_compact.dump
 ```
+
+#### Load Fixtures
+
+To load fixtures into your database, you can use the `loaddata` management command.
+
+Run this command to load all the fixtures.
+```
+cd django_project
+python manage.py loaddata fixtures/*.json
+```
+
+Run this command to load the specific fixture.
+```
+cd django_project
+python manage.py loaddata fixtures/<name of the fixture>.json
+```

@@ -34,7 +34,7 @@ const AgeGroupBarChart = (props: any) => {
   const filteredData = ageGroupData;
 
   // Extract the species name
-  const species = ageGroupData.length > 0 ? ageGroupData[0].taxon__common_name_varbatim : '';
+  const species = ageGroupData.length > 0 ? ageGroupData[0].taxon__common_name_verbatim : '';
 
 
   // Define the labels (years) dynamically from ageGroupData and sort them from highest to lowest

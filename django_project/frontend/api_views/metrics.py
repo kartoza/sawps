@@ -489,7 +489,7 @@ class BasePropertyCountAPIView(APIView):
 
                 result = {
                     'category': category_annotation,
-                    'common_name_varbatim': common_name
+                    'common_name_verbatim': common_name
                 }
                 for count in counts:
                     result[
@@ -518,7 +518,7 @@ class PropertyCountPerPopulationSizeCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_varbatim
+        common_name = queryset.first().taxon.common_name_verbatim
         results = self.get_results(
             data,
             queryset,
@@ -552,7 +552,7 @@ class PropertyCountPerAreaCategoryAPIView(BasePropertyCountAPIView):
 
         data = queryset.values_list('property_size_ha', flat=True).distinct()
 
-        common_name = annual_populations.first().taxon.common_name_varbatim
+        common_name = annual_populations.first().taxon.common_name_verbatim
         results = self.get_results(
             data,
             queryset,
@@ -584,7 +584,7 @@ class PropertyPerAreaAvailableCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_varbatim
+        common_name = queryset.first().taxon.common_name_verbatim
         results = self.get_results(
             data,
             queryset,
@@ -620,7 +620,7 @@ class PropertyPerPopDensityCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_varbatim
+        common_name = queryset.first().taxon.common_name_verbatim
         results = self.get_results(
             data,
             queryset,

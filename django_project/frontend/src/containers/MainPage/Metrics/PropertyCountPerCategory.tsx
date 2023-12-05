@@ -38,7 +38,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
   })
 
   // Extract the species name
-  const species = propertyData.length > 0 ? propertyData[0].common_name_varbatim : '';
+  const species = propertyData.length > 0 ? propertyData[0].common_name_verbatim : '';
 
   // Define the labels (category) dynamically from propertyData and sort them from highest to lowest
   const labels = propertyData.map((data: any) => data.category);
@@ -109,7 +109,6 @@ const PropertyCountPerCategoryChart = (props: any) => {
   }
 
   let data = null;
-  console.debug(labels)
 
   if (labels.length > 0 && datasets.length > 0) {
     data = {
