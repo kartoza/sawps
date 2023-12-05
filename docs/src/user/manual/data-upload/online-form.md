@@ -43,35 +43,41 @@ The data upload online form provides a convenient and structured way to enter sp
 
 11. **Population Status**: Specify the population status by selecting an option from the dropdown menu.
 
-12. **Adult Males**: Enter the number of adult males for the species.
+12. **Total Adult**: The total number of adult species.
 
-13. **Adult Females**: Enter the number of adult females for the species.
+13. **Adult Males**: Enter the number of adult males for the species.
 
-14. **Subadult Males**: Enter the number of subadult males for the species.
+14. **Adult Females**: Enter the number of adult females for the species.
 
-15. **Subadult Females**: Enter the number of subadult females for the species.
+15. **Total Sub-adult**: The total number of sub-adult species.
 
-16. **Juvenile Males**: Enter the number of juvenile males for the species.
+16. **Sub-adult Males**: Enter the number of subadult males for the species.
 
-17. **Juvenile Females**: Enter the number of juvenile females for the species.
+17. **Sub-adult Females**: Enter the number of subadult females for the species.
 
-18. **Total Count**: The total count will be automatically calculated based on the individual counts entered.
+18. **Total Juvenile**: The total number of juvenile species.
 
-19. **Area Available to Species**: Specify the area available to the species in hectares. This field is mandatory.
+19. **Juvenile Males**: Enter the number of juvenile males for the species.
 
-20. **Number of Groups (Prides, Herds, etc.)**: Enter the number of groups, prides, herds, or similar groupings.
+20. **Juvenile Females**: Enter the number of juvenile females for the species.
 
-21. **Population Estimate Certainty**: Select the certainty level of the population estimate from the dropdown menu. This field is mandatory.
+21. **Total Count**: The total count will be automatically calculated based on the individual counts entered.
 
-22. **Certainty of Bounds**: Provide additional information regarding the certainty of population bounds.
+22. **Area Available to Species**: Specify the area available to the species in hectares. This field is mandatory.
 
-23. **Upper Confidence Level**: Enter the upper confidence level.
+23. **Number of Groups (Prides, Herds, etc.)**: Enter the number of groups, prides, herds, or similar groupings.
 
-24. **Lower Confidence Level**: Enter the lower confidence level.
+24. **Population Estimate Certainty**: Select the certainty level of the population estimate from the dropdown menu. This field is mandatory.
 
-25. **SAVE DRAFT**: Click on this button to save the current form as a draft, allowing the user to return to it later and continue with data entry.
+25. **Certainty of Bounds**: Provide additional information regarding the certainty of population bounds.
 
-26. **NEXT**: Click on this button to proceed to the next step of the data upload process.
+26. **Upper Confidence Level**: Enter the upper confidence level.
+
+27. **Lower Confidence Level**: Enter the lower confidence level.
+
+28. **SAVE DRAFT**: Click on this button to save the current form as a draft, allowing the user to return to it later and continue with data entry.
+
+29. **NEXT**: Click on this button to proceed to the next step of the data upload process.
 
 ### Summary
 
@@ -79,7 +85,7 @@ The data upload online form streamlines the process of entering detailed species
 
 ## Online Form Step 2 (Activity detail)
 
-The second step introduces the `Introduction/Reintroduction` and `Off-take` sections, each with its own table and form. These sections allow the user to record important information related to species introduction or reintroduction and off-take data.
+The second step introduces the `Introduction/Reintroduction` and `Off-take` sections, each with its table and form. These sections allow the user to record important information related to species introduction or reintroduction and off-take data.
 
 ### Activity Detail
 
@@ -87,7 +93,7 @@ The second step introduces the `Introduction/Reintroduction` and `Off-take` sect
 
 1. **Activity Detail**: Second step of data upload online form `ACTIVITY DETAIL`.
 
-2. **Introduction/Reintroduction**: The `Introduction/Reintroduction` section displays the table and form. table for relevant data in a structured tabular format, and  form for entering detailed information related to species introduction or reintroduction.
+2. **Introduction/Reintroduction**: The `Introduction/Reintroduction` section displays the table and form. table for relevant data in a structured tabular format, and form for entering detailed information related to species introduction or reintroduction.
 
     **Introduction/Reintroduction Table and Form**
 
@@ -131,7 +137,7 @@ The second step introduces the `Introduction/Reintroduction` and `Off-take` sect
 
     1. **Off-take Table**: The `Off-take` table displays relevant data in a structured tabular format, making it easy to review and manage the user's Off-take records.
 
-    2. **Off-take Form**: The `Off-take` is same as the `Introduction/Reintroduction`. Enter the information related to off-take and add it by clicking on the `ADD` button.
+    2. **Off-take Form**: The `Off-take` is the same as the `Introduction/Reintroduction`. Enter the information related to off-take and add it by clicking on the `ADD` button.
 
 4. **Save Draft**: Use the `SAVE DRAFT` button to save the user's progress and store the data that the user has entered in the forms. This allows the user to return to the user's work at a later time.
 
@@ -141,7 +147,7 @@ The second step introduces the `Introduction/Reintroduction` and `Off-take` sect
 
 ### Summary
 
-Step 2 of the data upload online form  introduces the `Introduction/Reintroduction` and `Off-take` sections, each comprising a table and a form for data entry. These sections are critical for recording and managing information related to species introduction or reintroduction and off-take. The provided navigation buttons, including `SAVE DRAFT`, `BACK`, and `NEXT`, give the user control over the user's data entry process and progression through the data management steps.
+Step 2 of the data upload online form introduces the `Introduction/Reintroduction` and `Off-take` sections, each comprising a table and a form for data entry. These sections are critical for recording and managing information related to species introduction or reintroduction and off-take. The provided navigation buttons, including `SAVE DRAFT`, `BACK`, and `NEXT`, give the user control over the user's data entry process and progression through the data management steps.
 
 ## Online Form Step 3 (Review & Submit)
 
@@ -153,7 +159,7 @@ Step 3, `Review & Submit`, is the final stage of the data management process, wh
 
 ![Review & Submit](./img/online-form-5.png)
 
-1. **Species Detail**: The `Species Detail` section displays a summary of the species-specific information the user has entered, providing an overview of species' counts and other relevant details.
+1. **Species Detail**: The `Species Detail` section displays a summary of the species-specific information the user has entered, providing an overview of species counts and other relevant details.
 
 2. **Edit Note Icon**: For editing the species detail, simply click on the `Edit Note` icon to access and modify the species-related information.
 
