@@ -405,11 +405,14 @@ class UserApiTest(TestCase):
         # - It is not allowed for organisation member or manager
         self.assertEqual(
             sorted(response.data['user_permissions']),
-            sorted([
-                all_permissions[0].name,
-                'Can view province report',
-                'Can view report as data consumer'
-            ])
+            sorted(
+                [
+                    all_permissions[0].name,
+                    'Can view province report',
+                    'Can view report as data consumer',
+                    'Can view report as provincial data consumer'
+                ]
+            )
         )
 
     def test_get_user_info_superuser(self):

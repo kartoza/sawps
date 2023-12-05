@@ -78,6 +78,7 @@ export function displayDateTime(dateTime: Date, defaultText?: string) {
     _date.toLocaleTimeString('en-gb', {hour:"numeric", minute:"numeric", second:"numeric"})
 }
 
+
 /**
  * Check whether user is a data consumer
  * @param userInfo: user info object from /user-info endpoint

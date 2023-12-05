@@ -44,7 +44,7 @@ import {
     useGetPropertyQuery,
     useGetSpeciesQuery,
     useGetUserInfoQuery,
-    useGetProvinceQuery
+    useGetProvinceQuery, UserInfo
 } from "../../../services/api";
 import {isMapDisplayed, isDataConsumer} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
@@ -190,7 +190,7 @@ function Filter(props: any) {
     // Select all activities by default
     useEffect(() => {
         if (activityList) {
-            setSelectedActivity(activityList.map((activity: Activity) => activity.id))
+            setSelectedActivity([])
         }
     }, [activityList]);
 

@@ -12,9 +12,14 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 from rest_framework import status
 
 from core.settings.utils import absolute_path
+from frontend.static_mapping import (
+    PROVINCIAL_DATA_CONSUMER
+)
 from occurrence.models import SurveyMethod
 from population_data.factories import AnnualPopulationF
 from property.factories import PropertyFactory
+from property.factories import ProvinceFactory
+from sawps.tests.models.account_factory import GroupF
 from species.factories import (
     TaxonFactory,
     TaxonRankFactory,
@@ -23,6 +28,11 @@ from species.factories import (
 from species.models import Taxon, TaxonRank, TaxonSurveyMethod
 from species.serializers import TaxonSerializer
 from stakeholder.factories import organisationFactory
+from stakeholder.factories import (
+    organisationUserFactory,
+    userRoleTypeFactory,
+)
+from stakeholder.models import OrganisationInvites, MANAGER
 from frontend.models.base_task import DONE
 from frontend.tests.model_factories import SpeciesModelOutputF
 
@@ -465,6 +475,86 @@ class TaxonTestCase(TestCase):
         response = client.get(reverse('admin:species_taxon_changelist'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, 'Colour')
+
+    def _setup_data_provincial_data_consumer(self, set_organisation=True):
+        user = User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd'
+        )
+
+        province = ProvinceFactory.create(
+            name='Limpopo'
+        )
+        organisation_1 = organisationFactory.create(
+            province=province
+        )
+        organisationUserFactory.create(
+            user=user,
+            organisation=organisation_1
+        )
+
+        group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
+        user.groups.add(group)
+
+        OrganisationInvites.objects.create(
+            email=user.email,
+            assigned_as=MANAGER
+        )
+
+        if set_organisation:
+            user.user_profile.current_organisation = organisation_1
+            user.save()
+
+        property_obj = PropertyFactory.create(
+            organisation=organisation_1,
+            name='PropertyA',
+            province=province
+        )
+
+        AnnualPopulationF.create_batch(
+            5,
+            taxon=self.taxon,
+            user=user,
+            property=property_obj,
+            total=10,
+            adult_male=4,
+            adult_female=6
+        )
+        return user
+
+    def test_get_taxon_provincial_data_consumer(self):
+        """Taxon list API test when user is provincial data consumer"""
+        self._setup_data_provincial_data_consumer()
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        client = Client()
+        response = client.get(self.url, **auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'common_name_verbatim': self.taxon.common_name_verbatim,
+                    'id': self.taxon.id,
+                    'scientific_name': self.taxon.scientific_name
+                }
+            ]
+        )
+
+    def test_get_taxon_provincial_data_consumer_no_organisation(self):
+        """Taxon list API test when user is provincial data consumer
+        and has no active organisation."""
+        self._setup_data_provincial_data_consumer(set_organisation=False)
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        client = Client()
+        response = client.get(self.url, **auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), [])
 
 
 class TaxonSurveyMethodTestCase(TestCase):

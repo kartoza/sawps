@@ -9,11 +9,11 @@ import SpeciesCountPerProvinceChart from "./SpeciesCountPerProvinceChart";
 import TotalCountPerActivity from "./TotalCountPerActivity";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
-import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery, UserInfo} from "../../../services/api";
+import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
-import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
 import {isDataConsumer} from "../../../utils/Helpers";
+import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
 
 
 const FETCH_ACTIVITY_PERCENTAGE_URL = '/api/activity-percentage/'

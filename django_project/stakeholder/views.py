@@ -36,7 +36,6 @@ from stakeholder.models import (
     Reminders
 )
 from stakeholder.tasks import send_reminder_emails
-
 logger = logging.getLogger(__name__)
 
 
