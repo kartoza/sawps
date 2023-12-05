@@ -14,9 +14,9 @@ context_id: GD6YdjhPx43u8TKLi3eNNE
 
 # Filter Side Panel Documentation
 
-> **Disclaimer:** Please read the following information carefully. The screenshots may vary slightly due to various user roles on the platform.
-
 The filter side panel allows users to refine and narrow down data based on specific criteria. There are different types of filters are available for customisation.
+
+> **Disclaimer:** Please read the following information carefully. The screenshots may vary slightly due to various user roles on the platform.
 
 ## Map Tab Filter Panel Overview
 
