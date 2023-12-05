@@ -16,15 +16,13 @@ context_id: D8iDsgCfuAwq2Zy8A63Cry
 * When a user on the platform wishes to have an organisation. They can request for one.
 * The SANBI administrator will review the request and if they approve will create the organisation for the user and notify them via email.
 
-## Request organisation button
-
 ![Request Organisation 1](./img/request-organisation-1.png)
 
 1. **Request Organisation Button**:
 
-    * This button is in the organisation tab of the My Profile link.  
-    * The button is only visible to members without an organisation.
-    * When the button is clicked a popup modal is evoked.
+    * The `REQUEST ORGANISATION` button is located in the `ORGANISATION` tab of the `My Profile` page.
+    * This button is only visible to users who do not currently have an assigned organisation. If the user already has an organisation and would like to request another one, they can contact the SANBI team. Click [here](../help-contact.md) to get in touch with the SANBI team.
+    * Clicking the Request Organisation button will evoke a popup modal for further actions.
 
 ### Request organisation popup modal
 

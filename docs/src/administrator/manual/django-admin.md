@@ -251,8 +251,8 @@ In the top right corner of the administration panel, administrators will find a 
 
     - **User roles**: The `User roles` table is used for storing the user roles records. User roles define the permissions and access levels for different users within the SAWPS. By adding user roles, administrators can control what users can and cannot do in the system. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing user roles.
 
-- For more information, click [here](django-table.md) to view the table documentation.
+* For more information on the detailed documentation for the tables, click [here](django-table.md).
 
-- For more information, click [here](django-add-data.md) to view how to add new data.
+* For more information on how to add new data, click [here](django-add-data.md).
 
-- For more information, click [here](django-change-data.md) to view how to edit data.
+* For more information on how to edit data, click [here](django-change-data.md).

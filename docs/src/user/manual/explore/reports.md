@@ -26,11 +26,11 @@ The main area of the page displays the user's dataset in a tabular format. Each 
 1. **Explore**: Click on the `EXPLORE` link available on the navigation bar to open the explore page.
 2. **Reports**: Click on the `REPORTS` link to view the data.
 3. **Filters**: Utilise the filters provided on the page to refine the user's data view. These filters include:
-     * **Organisation Filter:** Filter data by organisation.
+     * **Species Filter:** Filter data by species.
      * **Report Type Filter:** Filter data by report type.
+     * **Organisation Filter:** Filter data by organisation.
      * **Property Filter:** Filter data by property.
      * **Year Range Filter:** Filter data by a specified year range.
-     * **Species Filter:** Filter data by species.
      * **Activity Filter:** Filter data by activity type.
      * **Spatial Filter:** Filter data by spatial criteria.
 
@@ -41,8 +41,23 @@ The main area of the page displays the user's dataset in a tabular format. Each 
      * Each filter is designed to help the user narrow down their dataset to view only the data that's relevant to their analysis.
 
 4. **Column Search**: Users can search for specific values within columns by selecting the column. This feature is especially useful when the user needs to locate specific data points within a large dataset. The table will dynamically filter to display the selected column.
-5. **XLSX Format:** Click on the `DOWNLOAD DATA REPORT` button to download the current dataset in XLSX format.
-6. **CSV Format:** Click on the `DOWNLOAD DATA CSV` button to download the current dataset in CSV format.
+5. **DOWNLOAD DATA** In the `DOWNLOAD DATA` dropdown, users can select the preferred file format for downloading.
+    ![Download Data Dropdown](./img/reports-10.png)
+
+    1. **CSV Format:** Click on the `DOWNLOAD DATA CSV` button to download the current dataset in CSV format. Each CSV download generates separate files for individual data entries, providing a comprehensive yet modular view of the dataset.
+
+        ![Downloaded CSV File](./img/reports-11.png)
+
+    2. **XLSX Format:** Click on the `DOWNLOAD DATA XLSX` button to download the current dataset in XLSX format. This option consolidates all data into a single Excel file with different tabs, allowing users to conveniently navigate and analyze diverse aspects of the dataset within a unified document.
+
+        ![Downloaded CSV File](./img/reports-12.png)
+
+        - **Sheet 1:** Species report.
+        - **Sheet 2:** Property report.
+
+6. **DOWNLOAD DATA REPORT:** Click on the `DOWNLOAD DATA REPORT` button to download the current dataset in PDF format. The downloaded PDF document encapsulates the entire dataset in a cohesive report, featuring a structured layout with a header that provides an overview of the data. This format is ideal for presenting a comprehensive snapshot of the dataset.
+
+    ![Downloaded PDF](./img/reports-13.png)
 
 ### Report Type
 
@@ -55,26 +70,13 @@ Only members of `National data consumer` group can see this report.
 Members of `National data consumer` or `Provincial data consumer` **CAN NOT** see this report.
 
 The user group is configurable from the User Table in the [Django Admin](../../../administrator/manual/django-admin.md).
-
-#### Activity Report
-
-![Activity Report](./img/reports-2.png)
-
-Activity Report columns consisted of base columns and custom columns.
-
-1. **Base columns**: Hardcoded.
-2. **Custom columns**: Configurable from the Django admin site by the site administrator.
-See the activities section in the [Django Admin](../../../administrator/manual/django-admin.md) for the details.
-
 ### Reports Page with Reports Filter
-
-#### Report Type Filter
 
 ![Reports Type](./img/reports-3.png)
 
 1. **Report Type**: Report type filter with the reports type.
 
-2. **Species**: The species icon is displayed with the scientific name of the selected species.
+2. **Species**: The species icon is displayed with the count of selected species.
 
 3. **Organisation**: The organisation icon is displayed with the count of selected organisations.
 
@@ -84,11 +86,13 @@ See the activities section in the [Django Admin](../../../administrator/manual/d
 
 6. **Activity**: The activity icon is displayed with the count of selected activities.
 
-7. **Organisation List**: Displays the names of the selected organisations.
+7. **Species List**: Displays the names of the selected species.
 
-8. **Property List**: Show the name of the selected properties.
+8. **Organisation List**: Displays the names of the selected organisations.
 
-9. **Activity List**: Show the name of the selected activities.
+9. **Property List**: Displays the names of the selected properties.
+
+10. **Activity List**: Displays the names of the selected activities.
 
      **Activity Report Filter**
 
@@ -168,45 +172,31 @@ See the activities section in the [Django Admin](../../../administrator/manual/d
 
      The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analysing and managing property-related information in an organised and structured manner.
 
-     **Species Report**
+     **Province Report**
 
-     ![Species Report](./img/reports-7.png)
+     ![Province Report](./img/reports-9.png)
 
-     1. **Species Report**: Selected `Species report`.
+     1. **Province Report**: Select the `Province Report` option to generate a report specifically for provinces.
 
-     2. **Species Table**: The species report table displays data of the species for the property.
+     2. **Province Table**: The Province report table displays data related to the provinces, including population information.
 
      **Report Columns**
 
-     The Species Report includes the following columns:
-
-     * **Property Name**: The name of the property associated with the species data.
-
-     * **Scientific Name**: The scientific name of the species.
-
-     * **Common Name**: The common name of the species.
+     The Province Report includes the following columns:
 
      * **Year**: The specific year for which the data is recorded.
 
-     * **Group**: Information about the group to which the species belongs.
+     * **Common Name**: The common name of the species associated with the province.
 
-     * **Total**: The total count of the species in the specified year.
+     * **Scientific Name**: The scientific name of the species.
 
-     * **Adult Males**: The count of adult male individuals within the species.
+     * **Total Population**: The total population of the species within the province for the specified year.
 
-     * **Adult Females**: The count of adult female individuals within the species.
-
-     * **Juvenile Males**: The count of juvenile male individuals within the species.
-
-     * **Juvenile Females**: The count of juvenile female individuals within the species.
-
-     * **Sub-Adult Males**: The count of sub-adult male individuals within the species.
-
-     * **Sub-Adult Females**: The count of sub-adult female individuals within the species.
+     * **Total Population Province Name**: The total population of the species within the respective province. This column is repeated for each province, and each entry represents the total population of the species in that specific province for the given year.
 
      **Summary**
 
-     The Species Report is a vital filter for reporting on various species. It provides comprehensive information on species-specific data, including counts, age groups, and associated property details. This report is essential for detailed analysis and management of species-related information.
+     The Province Report serves as a valuable filter for reporting on provincial data related to species. It provides essential information on the total population of species within each province, as well as details about the species' common name, scientific name, and the year of data collection. This report is indispensable for in-depth analysis and management of species-related information at the provincial level.
 
      **Sampling Report Documentation**
 
@@ -240,31 +230,49 @@ See the activities section in the [Django Admin](../../../administrator/manual/d
 
      The Sampling Report is a crucial tool for documenting and reporting on sampling efforts and population estimates for different species. It provides detailed information on property details, species information, and key metrics related to the population and the methods used for data collection. This report is essential for assessing population health and the effectiveness of conservation and management efforts.
 
-     **Province Report**
+     **Species Report**
 
-     ![Province Report](./img/reports-9.png)
+     ![Species Report](./img/reports-7.png)
 
-     1. **Province Report**: Select the `Province Report` option to generate a report specifically for provinces.
+     1. **Species Report**: Selected `Species report`.
 
-     2. **Province Table**: The Province report table displays data related to the provinces, including population information.
+     2. **Species Table**: The species report table displays data of the species for the property.
+
+     3. **Edit Icon**: Click on the `Edit` icon, to update the species record. When the user clicks on the edit icon the online form step 1 opens. Users can update the species details here.
+
+        ![Species Report](./img/reports-14.png)
 
      **Report Columns**
 
-     The Province Report includes the following columns:
+     The Species Report includes the following columns:
 
-     * **Year**: The specific year for which the data is recorded.
-
-     * **Common Name**: The common name of the species associated with the province.
+     * **Property Name**: The name of the property associated with the species data.
 
      * **Scientific Name**: The scientific name of the species.
 
-     * **Total Population**: The total population of the species within the province for the specified year.
+     * **Common Name**: The common name of the species.
 
-     * **Total Population Province Name**: The total population of the species within the respective province. This column is repeated for each province, and each entry represents the total population of the species in that specific province for the given year.
+     * **Year**: The specific year for which the data is recorded.
+
+     * **Group**: Information about the group to which the species belongs.
+
+     * **Total**: The total count of the species in the specified year.
+
+     * **Adult Males**: The count of adult male individuals within the species.
+
+     * **Adult Females**: The count of adult female individuals within the species.
+
+     * **Juvenile Males**: The count of juvenile male individuals within the species.
+
+     * **Juvenile Females**: The count of juvenile female individuals within the species.
+
+     * **Sub-Adult Males**: The count of sub-adult male individuals within the species.
+
+     * **Sub-Adult Females**: The count of sub-adult female individuals within the species.
 
      **Summary**
 
-     The Province Report serves as a valuable filter for reporting on provincial data related to species. It provides essential information on the total population of species within each province, as well as details about the species' common name, scientific name, and the year of data collection. This report is indispensable for in-depth analysis and management of species-related information at the provincial level.
+     The Species Report is a vital filter for reporting on various species. It provides comprehensive information on species-specific data, including counts, age groups, and associated property details. This report is essential for detailed analysis and management of species-related information.
 
 ### Summary
 

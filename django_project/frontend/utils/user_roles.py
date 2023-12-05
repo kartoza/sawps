@@ -14,11 +14,14 @@ from frontend.static_mapping import (
     DATA_CONSUMERS_PERMISSIONS,
     PROVINCIAL_DATA_CONSUMER
 )
-from stakeholder.models import (
-    OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
-)
 from frontend.utils.organisation import get_current_organisation_id
 from sawps.models import ExtendedGroup
+from stakeholder.models import (
+    OrganisationUser,
+    OrganisationRepresentative,
+    UserProfile,
+    Organisation
+)
 
 
 def is_organisation_member(user: User) -> bool:
@@ -56,11 +59,6 @@ def is_organisation_manager(
     :return: True if the user is a manager of the organisation,
         otherwise False.
     """
-
-    # TODO: Update organisation member checking to use group
-    # Since user with OrganisationUser record will be added to
-    # organisation member/manager group.
-
     if not UserProfile.objects.filter(
             user=user
     ).exists():
@@ -69,16 +67,16 @@ def is_organisation_manager(
     if not user.user_profile.current_organisation and not organisation:
         return False
 
-    # TODO: Add the user object to organisation invites,
-    #  because users can change their email.
-    return OrganisationInvites.objects.filter(
-        email=user.email,
-        organisation=(
-            organisation if organisation else
-            user.user_profile.current_organisation
-        ),
-        assigned_as=MANAGER
-    ).exists()
+    if organisation:
+        return OrganisationRepresentative.objects.filter(
+            user=user,
+            organisation=organisation
+        ).exists()
+    else:
+        return OrganisationRepresentative.objects.filter(
+            user=user,
+            organisation=user.user_profile.current_organisation
+        ).exists()
 
 
 def get_user_roles(user: User) -> List[str]:

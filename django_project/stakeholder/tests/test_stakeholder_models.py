@@ -312,18 +312,12 @@ class OrganizationUserTestCase(TestCase):
 
     def test_create_organisation_user_manager(self):
         """Test creating organisation user as manager."""
-        OrganisationInvites.objects.create(
-            email=self.user.email,
-            joined=True,
-            assigned_as=MANAGER,
-            organisation=self.organisation
-        )
-        organisation_user = organisationUserFactory(
+        OrganisationRepresentative.objects.create(
             user=self.user,
             organisation=self.organisation
         )
         self.assertEqual(
-            organisation_user.user.groups.first().name,
+            self.user.groups.first().name,
             ORGANISATION_MANAGER
         )
 
@@ -365,7 +359,7 @@ class OrganizationUserTestCase(TestCase):
         OrganisationInvites.objects.create(
             email=self.user.email,
             joined=True,
-            assigned_as=MANAGER,
+            assigned_as=MEMBER,
             organisation=self.organisation
         )
         organisation_user_3 = organisationUserFactory(
@@ -375,9 +369,9 @@ class OrganizationUserTestCase(TestCase):
         organisation_user_4 = organisationUserFactory(
             user=self.user
         )
-        self.assertEqual(
-            sorted(organisation_user_3.user.groups.values_list('name', flat=True)),
-            [ORGANISATION_MANAGER, ORGANISATION_MEMBER]
+        self.assertEquals(
+            list(organisation_user_3.user.groups.values_list('name', flat=True)),
+            [ORGANISATION_MEMBER]
         )
 
         # delete organizationUser
@@ -398,11 +392,14 @@ class OrganizationUserTestCase(TestCase):
         )
 
         # delete organisation_user_4
-        # user would not be removed from group Organisation Manager
-        # because is still a manager of other organisation
+        # user would not be removed from group Organisation Member
+        # because is still a member of other organisation
         organisation_user_4.delete()
         self.assertEqual(OrganisationUser.objects.count(), 1)
-        self.assertTrue(ORGANISATION_MANAGER in self.user.groups.values_list('name', flat=True))
+        self.assertEquals(
+            list(self.user.groups.values_list('name', flat=True)),
+            [ORGANISATION_MEMBER]
+        )
 
 
 class OrganizationRepresentativeTestCase(TestCase):
