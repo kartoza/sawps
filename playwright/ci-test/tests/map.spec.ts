@@ -24,7 +24,7 @@ test('test', async ({ page }) => {
 
   await expect(page.locator('div').filter({ hasText: /^Activity$/ }).first()).toBeVisible();
 
-  await page.locator('nav').filter({ hasText: 'Activities selected' }).getByLabel('Open').click();
+  await page.locator('nav').filter({ hasText: 'Select' }).last().getByLabel('Open').click();
 
   await expect(page.getByLabel('Map')).toBeVisible();
   
