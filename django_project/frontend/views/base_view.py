@@ -123,7 +123,7 @@ class OrganisationBaseView(TemplateView):
             )
             if user_profile and user_profile.current_organisation:
                 organisations = organisations.exclude(
-                    organisation_id=user_profile.current_organisation.id
+                    id=user_profile.current_organisation.id
                 )
         else:
             user_organisations = OrganisationUser.objects.filter(

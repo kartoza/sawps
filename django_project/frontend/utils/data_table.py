@@ -104,6 +104,8 @@ def get_queryset(user_roles: List[str], request):
                 taxon_rank__name="Species"
             ).distinct().order_by("scientific_name")
         else:
+            print(organisation_id)
+            print(prop_ids)
             queryset = Taxon.objects.filter(
                 annualpopulation__property__organisation_id=organisation_id,
                 annualpopulation__property_id__in=prop_ids,
@@ -434,6 +436,8 @@ def national_level_species_report(
     """
     user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
+    print(queryset)
+    print(filters)
 
     report_data = AnnualPopulation.objects. \
         filter(**filters, taxon__in=queryset). \
