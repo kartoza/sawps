@@ -44,9 +44,9 @@ import {
     useGetPropertyQuery,
     useGetSpeciesQuery,
     useGetUserInfoQuery,
-    useGetProvinceQuery
+    useGetProvinceQuery, UserInfo
 } from "../../../services/api";
-import {isMapDisplayed} from "../../../utils/Helpers";
+import {isMapDisplayed, isDataConsumer} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
 import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 import {SeachPlaceResult} from '../../../utils/SearchPlaces';
@@ -190,7 +190,7 @@ function Filter(props: any) {
     // Select all activities by default
     useEffect(() => {
         if (activityList) {
-            setSelectedActivity(activityList.map((activity: Activity) => activity.id))
+            setSelectedActivity([])
         }
     }, [activityList]);
 
@@ -406,6 +406,27 @@ function Filter(props: any) {
         dispatch(setEndYear(yearRangeEnd));
     }
 
+    const organisationInputField = () => {
+        return (
+          <Box>
+            <Box className='sidebarBoxHeading'>
+                <img src="/static/images/organisation.svg" alt='Organisation image' />
+                <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
+            </Box>
+            <List className='ListItem' component="nav" aria-label="">
+                {loading || isLoading || isOrganisationLoading? <Loading /> :
+                    <AutoCompleteCheckbox
+                        options={organisationList}
+                        selectedOption={selectedOrganisation}
+                        singleTerm={'Organisation'}
+                        pluralTerms={'Organisations'}
+                        setSelectedOption={setSelectedOrganisation}
+                      />
+                }
+            </List>
+        </Box>)
+    }
+
     const propertyInputField = () => {
         return (
             <Tooltip
@@ -571,23 +592,7 @@ function Filter(props: any) {
                 }
 
                 {
-                    allowOrganisationSelection && <Box>
-                        <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/organisation.svg" alt='Organisation image' />
-                            <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
-                        </Box>
-                        <List className='ListItem' component="nav" aria-label="">
-                            {loading || isLoading || isOrganisationLoading? <Loading /> :
-                                <AutoCompleteCheckbox
-                                    options={organisationList}
-                                    selectedOption={selectedOrganisation}
-                                    singleTerm={'Organisation'}
-                                    pluralTerms={'Organisations'}
-                                    setSelectedOption={setSelectedOrganisation}
-                                  />
-                            }
-                        </List>
-                    </Box>
+                    allowOrganisationSelection && organisationInputField()
                 }
 
                 {

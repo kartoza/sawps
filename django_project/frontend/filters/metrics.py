@@ -3,6 +3,7 @@
 """
 import django_filters
 from django.db.models.query import QuerySet
+
 from property.models import Property
 from species.models import Taxon
 

@@ -10,7 +10,8 @@ from frontend.static_mapping import (
     PROVINCIAL_DATA_CONSUMER,
     NATIONAL_DATA_CONSUMER,
     DATA_CONSUMERS_EXCLUDE_PERMISSIONS,
-    ORGANISATION_MEMBER
+    ORGANISATION_MEMBER,
+    DATA_CONSUMERS_PERMISSIONS
 )
 from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
@@ -405,7 +406,14 @@ class UserApiTest(TestCase):
         # - It is not allowed for organisation member or manager
         self.assertEqual(
             sorted(response.data['user_permissions']),
-            sorted([all_permissions[0].name, 'Can view province report'])
+            sorted(
+                [
+                    all_permissions[0].name,
+                    'Can view province report',
+                    'Can view report as data consumer',
+                    'Can view report as provincial data consumer'
+                ]
+            )
         )
 
     def test_get_user_info_superuser(self):
@@ -420,7 +428,9 @@ class UserApiTest(TestCase):
             is_superuser=True
         )
         content_type = ContentType.objects.get_for_model(ExtendedGroup)
-        all_permissions = Permission.objects.filter(content_type=content_type)
+        all_permissions = Permission.objects.exclude(
+            name__in=list(DATA_CONSUMERS_PERMISSIONS)
+        ).filter(content_type=content_type)
 
         login = client.login(
             username='testuser',
