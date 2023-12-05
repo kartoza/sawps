@@ -6,7 +6,11 @@ from django.contrib.auth.models import User
 from stakeholder.factories import (
     organisationFactory
 )
-from stakeholder.models import OrganisationInvites, MANAGER
+from stakeholder.models import (
+    OrganisationInvites,
+    OrganisationRepresentative,
+    MANAGER
+)
 from frontend.templatetags.custom_tags import is_organisation_manager
 
 
@@ -67,6 +71,18 @@ class IsOrganisationManagerTest(TestCase):
             assigned_as=MANAGER
         )
 
+        self.assertFalse(
+            is_organisation_manager(
+                self.user.id, self.organisation.id
+            )
+        )
+
+        OrganisationRepresentative.objects.create(
+            user=self.user,
+            organisation=self.organisation
+        )
         self.assertTrue(
             is_organisation_manager(
-                self.user.id, self.organisation.id))
+                self.user.id, self.organisation.id
+            )
+        )

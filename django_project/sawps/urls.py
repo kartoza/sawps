@@ -15,7 +15,7 @@ urlpatterns = [
         name='activate',
     ),
     path(
-        'adduser/<user_email>/<organisation>/',
+        'adduser/<invitation_uuid>/',
         AddUserToOrganisation.as_view(),
         name='adduser'
     ),
