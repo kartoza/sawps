@@ -21,13 +21,24 @@ The data upload feature enables the user to seamlessly upload their data for ana
 
 1. **Download Template**: Click on the `DOWNLOAD TEMPLATE` button to obtain a blank template that the user can use as a starting point for entering the user's species population data. This template is designed to assist the user in organising the user's data correctly.
 
-2. **Upload data**: Click on the `UPLOAD DATA` button, a upload data popup window will appear, providing the user with easy-to-use tools for uploading the user's data.
+2. **Upload data**: Click on the `UPLOAD DATA` button, and the upload data popup window will appear, providing the user with easy-to-use tools for uploading the user's data.
 
 3. **Browse Button**: Click on the `Browse` button to select the file that the user wishes to upload. A user can choose a file from the user's local storage that is in either CSV or XLSX format. This file should contain the data the user wants to integrate into the system for further analysis.
 
 4. **Upload File Button**: After selecting the file, click on the `UPLOAD FILE` button to begin the data upload process. The system will validate and process the data, making it available for the user to use.
 
-5. **Close Button**: If the user decides to not to proceed with the upload or wishes to cancel the operation, the user can click on the `CLOSE` button. This will close the upload popup without initiating the data upload process.
+5. **Close Button**: If the user decides not to proceed with the upload or wishes to cancel the operation, the user can click on the `CLOSE` button. This will close the upload popup without initiating the data upload process.
+
+## Update data
+
+![Update Data](./img/template-upload-2.png)
+
+1. **Success Message**: The users can update species data through the data upload feature. To initiate an update, simply upload the same file containing the revised data. The system will process the upload, and upon completion, the data will be successfully updated. This streamlined process ensures an efficient and straightforward method for keeping species information current.
+## Error
+
+![Error](./img/template-upload-3.png)
+
+1. **Error Message**: The error message provides details about the specific issue encountered during the data upload using either the CSV or XLSX file. This message is designed to offer clear and precise information about any errors that may occur, aiding users in identifying and addressing issues effectively.
 
 ## Summary
 
