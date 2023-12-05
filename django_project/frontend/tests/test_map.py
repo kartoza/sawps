@@ -56,6 +56,9 @@ from frontend.utils.map import (
     generate_map_view,
     generate_population_count_categories
 )
+from frontend.static_mapping import (
+    NATIONAL_DATA_CONSUMER
+)
 
 
 def mocked_spatial_filter_task(cache_key, allowed, redis_time_cache):
@@ -137,6 +140,12 @@ class TestMapAPIViews(TestCase):
             codename='can_view_map_province_layer'
         ).first()
         self.group_2.permissions.add(view_province_perm)
+        # create another user for data consumer
+        self.user_3 = UserF.create(username='test_4')
+        self.data_consumer_group = GroupF.create(name=NATIONAL_DATA_CONSUMER)
+        self.user_3.groups.add(self.data_consumer_group)
+        self.user_3.groups.add(self.group_1)
+        self.data_consumer_group.permissions.add(view_province_perm)
         # insert geom 1 and 2
         geom_path = absolute_path(
             'frontend', 'tests',
@@ -496,6 +505,26 @@ class TestMapAPIViews(TestCase):
         self.assertTrue(
             is_materialized_view_exists(session.province_view_name))
         self.assertTrue(len(response.data['properties']) > 0)
+        self.assertTrue(len(response.data['province']) > 0)
+        # test if data consumer should not have access to properties
+        request = self.factory.post(
+            reverse('properties-map-legends'),
+            data=data, format='json'
+        )
+        request.user = self.user_3
+        view = PopulationCountLegends.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data['session'])
+        session = MapSession.objects.filter(
+            uuid=response.data['session']
+        ).first()
+        self.assertTrue(session)
+        self.assertFalse(
+            is_materialized_view_exists(session.properties_view_name))
+        self.assertTrue(
+            is_materialized_view_exists(session.province_view_name))
+        self.assertTrue(len(response.data['properties']) == 0)
         self.assertTrue(len(response.data['province']) > 0)
 
     def test_generate_population_count_categories_base(self):
