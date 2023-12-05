@@ -73,7 +73,11 @@
         {% endif %}
         {% if user.is_authenticated %}
         <li class="nav-item">
-            <a class="nav-link navbar-text" href="/upload">UPLOAD DATA</a>
+            {% if can_user_do_upload_data %}
+                <a class="nav-link navbar-text" href="/upload">UPLOAD DATA</a>
+            {% else %}
+                <span class="navbar-text" aria-disabled="true">UPLOAD DATA</span>
+            {% endif %}
         </li>
         {% endif %}
         <li class="nav-item">

@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from stakeholder.models import (
@@ -12,6 +13,9 @@ from frontend.serializers.stakeholder import (
 )
 from django.contrib import messages
 from datetime import datetime
+from frontend.utils.user_roles import check_user_has_permission
+
+User = get_user_model()
 
 
 def get_user_notifications(request):
@@ -52,6 +56,11 @@ def get_user_notifications(request):
                 'user_notifications': []
             }
         )
+
+
+def validate_if_user_can_access_data_upload(user: User):
+    """Check if user has permission to upload data."""
+    return check_user_has_permission(user, 'Can add species population data')
 
 
 class OrganisationBaseView(TemplateView):
@@ -142,6 +151,15 @@ class OrganisationBaseView(TemplateView):
         ctx['current_organisation_id'] = current_organisation_id
         ctx['organisations'] = self.get_organisation_list(self.request)
         get_user_notifications(self.request)
+        # add context for disabling Upload
+        ctx['can_user_do_upload_data'] = False
+        if self.request.user.is_superuser:
+            ctx['can_user_do_upload_data'] = True
+        else:
+            # Data Consumers and Scientist are not allowed to upload data
+            ctx['can_user_do_upload_data'] = (
+                validate_if_user_can_access_data_upload(self.request.user)
+            )
         return ctx
 
 
