@@ -254,28 +254,31 @@ def get_query_condition_for_population_query(
     query_values = []
     sql_conditions.append('t.scientific_name=%s')
     query_values.append(filter_species_name)
-    if filter_activity and filter_activity != 'all':
+    if filter_activity:
+        if filter_activity == 'all':
+            activity_types = ActivityType.objects.all().values_list(
+                'id', flat=True)
+            filter_activity = ','.join(map(str, activity_types))
         activities = ast.literal_eval('(' + filter_activity + ',)')
-        if ActivityType.objects.count() != len(activities):
-            filter_years = ''
-            if filter_year:
-                filter_years = (
-                    """AND appa.year=%s"""
-                )
-            activity_sql = (
-                """
-                SELECT 1 FROM annual_population_per_activity appa
-                WHERE appa.annual_population_id=ap.id
-                AND appa.activity_type_id IN %s
-                {filter_years}
-                """
-            ).format(filter_years=filter_years)
-            sql_conditions.append(
-                'exists({activity_sql})'.format(activity_sql=activity_sql)
+        filter_years = ''
+        if filter_year:
+            filter_years = (
+                """AND appa.year=%s"""
             )
-            query_values.append(activities)
-            if filter_years:
-                query_values.append(filter_year)
+        activity_sql = (
+            """
+            SELECT 1 FROM annual_population_per_activity appa
+            WHERE appa.annual_population_id=ap.id
+            AND appa.activity_type_id IN %s
+            {filter_years}
+            """
+        ).format(filter_years=filter_years)
+        sql_conditions.append(
+            'exists({activity_sql})'.format(activity_sql=activity_sql)
+        )
+        query_values.append(activities)
+        if filter_years:
+            query_values.append(filter_year)
     if filter_year:
         sql_conditions.append('ap.year=%s')
         query_values.append(filter_year)
@@ -392,11 +395,12 @@ def get_properties_population_query(
     sql_view = (
         """
         select p2.id, p2.name, COALESCE(population_summary.count, 0) as count
-        from property p2 left join ({sub_sql}) as population_summary
+        from property p2 {join_sql} ({sub_sql}) as population_summary
         on p2.id=population_summary.id
         {where_sql}
         """
     ).format(
+        join_sql='inner join' if filter_activity else 'left join',
         sub_sql=sql,
         where_sql=(
             f'where {where_sql_properties}' if where_sql_properties else ''
