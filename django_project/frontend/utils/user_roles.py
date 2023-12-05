@@ -8,7 +8,8 @@ from frontend.static_mapping import (
     ORGANISATION_MEMBER,
     ORGANISATION_MANAGER,
     DATA_CONSUMERS,
-    DATA_CONSUMERS_EXCLUDE_PERMISSIONS
+    DATA_CONSUMERS_EXCLUDE_PERMISSIONS,
+    PROVINCIAL_DATA_CONSUMER
 )
 from stakeholder.models import (
     OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
@@ -143,6 +144,9 @@ def get_user_permissions(user: User) -> Set[str]:
             permissions = (
                 permissions - DATA_CONSUMERS_EXCLUDE_PERMISSIONS
             )
+            permissions.add('Can view report as data consumer')
+            if PROVINCIAL_DATA_CONSUMER in user_roles:
+                permissions.add('Can view report as provincial data consumer')
 
     return permissions
 

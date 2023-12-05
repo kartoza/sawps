@@ -92,7 +92,18 @@ class ExtendedGroup(models.Model):
             (
                 'can_view_properties_trends_data',
                 'Can view properties trends data'
-            )
+            ),
+            # Used in report
+            # Data consumer should have this
+            (
+                "can_view_report_as_data_consumer",
+                "Can view report as data consumer"
+            ),
+            # Provincial data consumer should have this
+            (
+                "can_view_report_as_provincial_data_consumer",
+                "Can view report as provincial data consumer"
+            ),
         ]
 
 

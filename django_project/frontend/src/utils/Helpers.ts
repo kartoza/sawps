@@ -1,3 +1,5 @@
+import {UserInfo} from "../services/api";
+
 /**
  * Change string to singular
  */
@@ -74,4 +76,14 @@ export function displayDateTime(dateTime: Date, defaultText?: string) {
   let _date = new Date(dateTime)
   return _date.toLocaleDateString('en-gb', { year:"numeric", month:"numeric", day:"numeric"}) + ' ' +
     _date.toLocaleTimeString('en-gb', {hour:"numeric", minute:"numeric", second:"numeric"})
+}
+
+
+/**
+ * Check whether user is a data consumer
+ * @param userInfo: user info object from /user-info endpoint
+ */
+export function isDataConsumer(userInfo: UserInfo) {
+    if (!userInfo?.user_permissions) return false;
+    return userInfo.user_permissions.includes('Can view report as data consumer')
 }

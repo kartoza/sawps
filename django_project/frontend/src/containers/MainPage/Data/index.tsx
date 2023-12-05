@@ -11,7 +11,7 @@ import Loading from '../../../components/Loading';
 import axios from "axios";
 import {useAppSelector} from "../../../app/hooks";
 import {RootState} from "../../../app/store";
-import {getTitle} from "../../../utils/Helpers";
+import {getTitle, isDataConsumer} from "../../../utils/Helpers";
 import {Activity, useGetActivityAsObjQuery, useGetUserInfoQuery, UserInfo} from "../../../services/api";
 import Topper from "./Topper";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -79,15 +79,6 @@ const DataList = () => {
         "Unplanned/illegal hunting": {color:"#696969",width:147}
     }
 
-    function isDataConsumer(userInfo: UserInfo) {
-        if (!userInfo?.user_roles) return false;
-        const dataConsumers = new Set([
-          "National data consumer",
-            "Provincial data consumer"
-        ])
-        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
-    }
-
     if (isSuccess) {
         if (isDataConsumer(userInfoData)) {
             dataset = data.flatMap((each) => Object.keys(each));
@@ -147,6 +138,9 @@ const DataList = () => {
         }
         if (isDataConsumer(userInfoData)) {
             delete _data['property']
+            if (userInfoData.user_permissions.includes("Can view report as provincial data consumer")) {
+                delete _data['organisation']
+            }
         }
         axios.post(
             FETCH_AVAILABLE_DATA, _data, {
