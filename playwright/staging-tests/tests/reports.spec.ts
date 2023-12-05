@@ -21,9 +21,9 @@ test('test', async ({ page }) => {
   
   await page.getByRole('option', { name: 'Limpopo, South Africa' }).click();
 
-  await page.getByPlaceholder('Select').click();
+  await page.getByPlaceholder('Select').first().click();
 
-  await page.getByPlaceholder('Select').fill('pa');
+  await page.getByPlaceholder('Select').first().fill('pa');
 
   await page.getByRole('option', { name: 'Panthera leo' }).click();
 
@@ -33,6 +33,14 @@ test('test', async ({ page }) => {
 
   await page.locator('label').filter({ hasText: 'Select All' }).getByTestId('CheckBoxOutlineBlankIcon').click();
   
+  await page.getByRole('button', { name: 'Close' }).click();
+
+  await expect(page.locator('div').filter({ hasText: /^Activity$/ })).toBeVisible();
+
+  await page.getByLabel('Open').nth(4).click();
+
+  await page.locator('label').filter({ hasText: 'Select All' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+
   await page.getByRole('button', { name: 'Close' }).click();
 
   await expect(page.locator('#dataContainer')).toContainText('SAWPS SUMMARY REPORT');
@@ -133,7 +141,7 @@ test('test', async ({ page }) => {
 
   await page.getByLabel('Open').first().click();
 
-  await page.getByPlaceholder('Select').fill('pa');
+  await page.getByPlaceholder('Select').first().fill('pa');
 
   await page.getByRole('option', { name: 'Panthera leo' }).click();
 
