@@ -344,7 +344,7 @@ The filter panel empowers users to customise their data views efficiently, allow
 
     ![Province filter](./img/filters-20.png)
 
-1. **Province Filter:** In the province filter, all provinces are initially selected as the default setting. Users have the freedom to hand-pick a provice of their choice.
+1. **Province Filter:** In the province filter, all provinces are initially selected as the default setting. Users have the freedom to hand-pick a province of their choice.
 
 #### 4. Property Filter
 
