@@ -33,9 +33,17 @@ from stakeholder.models import (
     Organisation,
     UserRoleType,
     UserTitle,
-    Reminders
+    Reminders,
+    OrganisationUser
 )
 from stakeholder.tasks import send_reminder_emails
+from frontend.static_mapping import (
+    PROVINCIAL_ROLES,
+    NATIONAL_ROLES
+)
+from frontend.utils.user_roles import (
+    get_user_roles
+)
 logger = logging.getLogger(__name__)
 
 
@@ -632,13 +640,37 @@ class OrganisationAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         organisation_id = get_current_organisation_id(request.user)
-        organisation = Organisation.objects.get(id=organisation_id)
-        if organisation.national:
-            queryset = Organisation.objects.all().order_by("name")
-        else:
-            queryset = Organisation.objects.filter(
-                province=organisation.province
-            ).order_by("name")
+        organisation = None
+        if organisation_id:
+            organisation = Organisation.objects.get(id=organisation_id)
+        queryset = Organisation.objects.all().order_by('name')
+        user_roles = set(get_user_roles(self.request.user))
+        if not request.user.is_superuser:
+            if PROVINCIAL_ROLES & user_roles:
+                if organisation and organisation.province:
+                    # provincial roles can see all organisations
+                    # in the same province as current organisation
+                    queryset = Organisation.objects.filter(
+                        province=organisation.province
+                    ).order_by('name')
+                else:
+                    # when current org does not have province
+                    # then return empty
+                    # else user can see other organisation without province
+                    queryset = Organisation.objects.none()
+            elif NATIONAL_ROLES & user_roles:
+                # national roles can access all organisations
+                pass
+            else:
+                # for organisation member/manager, then
+                # fetch organisations that he belongs to
+                queryset = (
+                    Organisation.objects.filter(
+                        id__in=OrganisationUser.objects.filter(
+                            user=request.user
+                        ).values('organisation_id').distinct()
+                    ).order_by('name')
+                )
         return Response(
             status=200,
             data=OrganisationSerializer(queryset, many=True).data
