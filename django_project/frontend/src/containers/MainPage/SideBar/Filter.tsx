@@ -406,6 +406,27 @@ function Filter(props: any) {
         dispatch(setEndYear(yearRangeEnd));
     }
 
+    const organisationInputField = () => {
+        return (
+          <Box>
+            <Box className='sidebarBoxHeading'>
+                <img src="/static/images/organisation.svg" alt='Organisation image' />
+                <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
+            </Box>
+            <List className='ListItem' component="nav" aria-label="">
+                {loading || isLoading || isOrganisationLoading? <Loading /> :
+                    <AutoCompleteCheckbox
+                        options={organisationList}
+                        selectedOption={selectedOrganisation}
+                        singleTerm={'Organisation'}
+                        pluralTerms={'Organisations'}
+                        setSelectedOption={setSelectedOrganisation}
+                      />
+                }
+            </List>
+        </Box>)
+    }
+
     const propertyInputField = () => {
         return (
             <Tooltip
@@ -571,23 +592,7 @@ function Filter(props: any) {
                 }
 
                 {
-                    allowOrganisationSelection && <Box>
-                        <Box className='sidebarBoxHeading'>
-                            <img src="/static/images/organisation.svg" alt='Organisation image' />
-                            <Typography color='#75B37A' fontSize='medium'>Organisation</Typography>
-                        </Box>
-                        <List className='ListItem' component="nav" aria-label="">
-                            {loading || isLoading || isOrganisationLoading? <Loading /> :
-                                <AutoCompleteCheckbox
-                                    options={organisationList}
-                                    selectedOption={selectedOrganisation}
-                                    singleTerm={'Organisation'}
-                                    pluralTerms={'Organisations'}
-                                    setSelectedOption={setSelectedOrganisation}
-                                  />
-                            }
-                        </List>
-                    </Box>
+                    allowOrganisationSelection && organisationInputField()
                 }
 
                 {
@@ -621,7 +626,7 @@ function Filter(props: any) {
                 }
 
                 {
-                    allowPropertiesSelection && !isDataConsumer(userInfoData) && propertyInputField()
+                    allowPropertiesSelection && propertyInputField()
                 }
 
                 {tab !== 'trends' &&
