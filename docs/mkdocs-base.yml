@@ -138,7 +138,10 @@ nav:
                       - developer/api/index.md
                       - Reference: developer/api/manual/index.md
                       - Guide: developer/api/guide/index.md
-                  - Documentation Writing: developer/documentation/index.md
+                  - Documentation Writing:
+                      - developer/documentation/index.md
+                      - Overview: developer/documentation/overview.md
+                      - Context Help: developer/documentation/context-help.md
                   - License: about/license.md
         - DevOps:
                   - devops/index.md
