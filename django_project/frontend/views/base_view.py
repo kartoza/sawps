@@ -1,20 +1,21 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from datetime import datetime
+
+from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.generic import TemplateView
+
+from frontend.serializers.stakeholder import (
+    OrganisationSerializer
+)
+from frontend.utils.user_roles import check_user_has_permission
 from stakeholder.models import (
     OrganisationUser,
-    OrganisationRepresentative,
     Organisation,
     Reminders,
     UserProfile
 )
-from frontend.serializers.stakeholder import (
-    OrganisationSerializer
-)
-from django.contrib import messages
-from datetime import datetime
-from frontend.utils.user_roles import check_user_has_permission
 
 User = get_user_model()
 
