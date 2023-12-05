@@ -44,9 +44,9 @@ import {
     useGetPropertyQuery,
     useGetSpeciesQuery,
     useGetUserInfoQuery,
-    useGetProvinceQuery
+    useGetProvinceQuery, UserInfo
 } from "../../../services/api";
-import {isMapDisplayed} from "../../../utils/Helpers";
+import {isMapDisplayed, isDataConsumer} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
 import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 import {SeachPlaceResult} from '../../../utils/SearchPlaces';
@@ -190,7 +190,7 @@ function Filter(props: any) {
     // Select all activities by default
     useEffect(() => {
         if (activityList) {
-            setSelectedActivity(activityList.map((activity: Activity) => activity.id))
+            setSelectedActivity([])
         }
     }, [activityList]);
 
@@ -621,7 +621,7 @@ function Filter(props: any) {
                 }
 
                 {
-                    allowPropertiesSelection && propertyInputField()
+                    allowPropertiesSelection && !isDataConsumer(userInfoData) && propertyInputField()
                 }
 
                 {tab !== 'trends' &&
