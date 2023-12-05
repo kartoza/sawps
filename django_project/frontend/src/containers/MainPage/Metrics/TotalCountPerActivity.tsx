@@ -16,7 +16,8 @@ const TotalCountPerActivity = (props: any) => {
     startYear,
     endYear,
     selectedSpecies,
-    activityTypeList
+    activityTypeList,
+    activityIds
   } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [totalPopulation, setTotalPopulation] = useState(0);
@@ -36,7 +37,7 @@ const TotalCountPerActivity = (props: any) => {
     setLoading(true);
     axios
       .get(
-          `${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=all&property=${propertyId}`
+          `${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityIds}&property=${propertyId}`
       )
       .then((response) => {
         setLoading(false);
@@ -56,7 +57,7 @@ const TotalCountPerActivity = (props: any) => {
 
   useEffect(() => {
     fetchActivityTotalCount();
-  }, [propertyId, startYear, endYear, selectedSpecies]);
+  }, [propertyId, startYear, endYear, selectedSpecies, activityIds]);
 
   useEffect(() => {
     if (activityTypeList) {

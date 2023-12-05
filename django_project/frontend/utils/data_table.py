@@ -121,10 +121,14 @@ def get_queryset(user_roles: List[str], request):
 def get_taxon_queryset(request):
     organisation_id = get_current_organisation_id(request.user)
     property_ids = get_param_from_request(request, 'property')
+    organisation_ids = get_param_from_request(request, 'organisation')
     prop_ids = property_ids.split(",") if property_ids else []
+    org_ids = property_ids.split(",") if organisation_ids else []
+    if len(org_ids) == 0:
+        org_ids.append(organisation_id)
     query_filter = BaseMetricsFilter
     queryset = Taxon.objects.filter(
-        annualpopulation__property__organisation_id=organisation_id,
+        annualpopulation__property__organisation_id__in=org_ids,
         annualpopulation__property_id__in=prop_ids,
         taxon_rank__name="Species"
     ).distinct().order_by("scientific_name")

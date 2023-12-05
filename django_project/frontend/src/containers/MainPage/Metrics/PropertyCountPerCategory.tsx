@@ -16,6 +16,8 @@ const PropertyCountPerCategoryChart = (props: any) => {
   const {
     propertyId,
     year,
+    activityIds,
+    spatialFilterValues,
     selectedSpecies,
     propertyTypeList,
     chartId,
@@ -45,7 +47,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
   
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
-    let fullUrl = `${url}?year=${year}&species=${selectedSpecies}`
+    let fullUrl = `${url}?year=${year}&species=${selectedSpecies}&activity=${activityIds}&spatial_filter_values=${spatialFilterValues}`
     fullUrl = isDataConsumer ? fullUrl : `${fullUrl}&property=${propertyId}`
 
     axios.get(fullUrl).then((response) => {
@@ -64,7 +66,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
 
   useEffect(() => {
     fetchPopulationEstimateCategoryCount();
-  }, [propertyId, year, selectedSpecies]);
+  }, [propertyId, year, selectedSpecies, activityIds, spatialFilterValues]);
 
   useEffect(() => {
     if (propertyTypeList) {

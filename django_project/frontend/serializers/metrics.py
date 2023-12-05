@@ -175,6 +175,12 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
         species_name = self.context["request"].GET.get("species")
         property_list = self.context['request'].GET.get('property')
         property_ids = property_list.split(',') if property_list else []
+        activity_filter = self.context['request'].GET.get('activity', "")
+        spatial_filter_values = self.context['request'].GET.get(
+            'spatial_filter_values', "").split(',')
+        spatial_filter_values = list(
+            filter(None, spatial_filter_values)
+        )
 
         # Initialize a dictionary to store the results
         result = {}
@@ -203,6 +209,14 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
                     ) |
                     Q(taxon__scientific_name=species_name)
                 ) if species_name else Q(),
+                Q(
+                    annualpopulationperactivity__activity_type_id__in=
+                    [int(act) for act in activity_filter.split(',')]
+                ) if activity_filter else Q(),
+                Q(**{
+                    'property__spatialdatamodel__spatialdatavaluemodel__'
+                    'context_layer_value__in': spatial_filter_values
+                }) if spatial_filter_values else Q(),
                 year=max_year,
             )
         )
@@ -286,6 +300,7 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             "end_year", datetime.datetime.now().year
         )
         year_range = (int(start_year), int(end_year))
+        activity_filter = self.context['request'].GET.get('activity', "")
         populations = AnnualPopulation.objects.values(
             "taxon__common_name_verbatim").filter(
             taxon=obj,
@@ -294,6 +309,13 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         if property_list:
             populations = populations.filter(
                 property__id__in=property_list,
+            )
+
+        if activity_filter:
+            populations = populations.filter(
+                annualpopulationperactivity__activity_type_id__in=[
+                    int(act) for act in activity_filter.split(',')
+                ]
             )
 
         populations = populations.annotate(
@@ -322,10 +344,15 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             "end_year", datetime.datetime.now().year
         )
         year_range = (int(start_year), int(end_year))
+        activity_filter = self.context['request'].GET.get('activity', "")
 
         q_filters = Q(annual_population__taxon=obj, year__range=year_range)
         if property_list:
             q_filters &= Q(annual_population__property_id__in=property_list)
+        if activity_filter:
+            q_filters &= Q(activity_type_id__in=[
+                int(act) for act in activity_filter.split(',')
+            ])
 
         populations = AnnualPopulationPerActivity.objects.values(
             'year',
