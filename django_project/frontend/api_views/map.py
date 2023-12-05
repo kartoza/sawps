@@ -48,6 +48,7 @@ from frontend.serializers.property import (
 )
 from stakeholder.models import OrganisationUser
 from frontend.utils.organisation import get_current_organisation_id
+from frontend.utils.user_roles import check_user_has_permission
 
 
 User = get_user_model()
@@ -66,11 +67,16 @@ class MapSessionBase(APIView):
     """Base class for map filter session."""
 
     def can_view_properties_layer(self):
-        return self.request.user.has_perm(
-            'sawps.can_view_map_properties_layer')
+        return (
+            check_user_has_permission(self.request.user,
+                                      'Can view properties layer in the map')
+        )
 
     def can_view_province_layer(self):
-        return self.request.user.has_perm('sawps.can_view_map_province_layer')
+        return (
+            check_user_has_permission(self.request.user,
+                                      'Can view province layer in the map')
+        )
 
     def generate_session(self):
         """

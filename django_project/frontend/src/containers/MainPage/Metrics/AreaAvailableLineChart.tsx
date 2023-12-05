@@ -159,7 +159,7 @@ const AreaAvailableLineChart = (props: any) => {
         <>
             {!loading ? (
             <ChartContainer title={`Total area vs area available to ${selectedSpecies}`}>
-                <div style={{ width: '100%', height: 460}}>
+                <div className="AreaAvailableLineChartContainer">
                     <Line
                         data={AreaDataValue}
                         options={AreaOptions}

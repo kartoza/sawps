@@ -1,8 +1,7 @@
 import base64
 import csv
-import json
-import shutil
 import os
+import shutil
 
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -215,35 +214,35 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             [
                 {
                     "year": int(self.annual_populations[4].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 0,
                 },
                 {
                     "year": int(self.annual_populations[3].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 0,
                 },
                 {
                     "year": int(self.annual_populations[2].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 0,
                 },
                 {
                     "year": int(self.annual_populations[1].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 0,
                 },
                 {
                     "year": int(self.annual_populations[0].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 20,
@@ -459,7 +458,7 @@ class NationalUserTestCase(TestCase):
             {
                 PROPERTY_REPORT: [{
                     'year': int(self.annual_populations[0].year),
-                    'common_name': self.taxon.common_name_varbatim,
+                    'common_name': self.taxon.common_name_verbatim,
                     'scientific_name': self.taxon.scientific_name,
                     f'total_population_{self.property.property_type.name}_property': 10,
                     f'total_area_{self.property.property_type.name}_property': 200,
@@ -470,7 +469,7 @@ class NationalUserTestCase(TestCase):
         ]
         expected_response[0][PROPERTY_REPORT].extend([{
             'year': int(self.annual_populations[i].year),
-            'common_name': self.taxon.common_name_varbatim,
+            'common_name': self.taxon.common_name_verbatim,
             'scientific_name': self.taxon.scientific_name,
             f'total_population_{self.property.property_type.name}_property': 10,
             f'total_area_{self.property.property_type.name}_property': 200,
@@ -505,7 +504,7 @@ class NationalUserTestCase(TestCase):
             ).values_list('name', flat=True)
             base_dict = {
                 'year': int(self.annual_populations[i].year),
-                'common_name': self.taxon.common_name_varbatim,
+                'common_name': self.taxon.common_name_verbatim,
                 'scientific_name': self.taxon.scientific_name,
                 f'total_population_{self.annual_populations[i].annualpopulationperactivity_set.first().activity_type.name}': 100  # noqa
             }
@@ -535,7 +534,7 @@ class NationalUserTestCase(TestCase):
             {
                 SPECIES_REPORT: [{
                     'year': int(self.annual_populations[i].year),
-                    'common_name': self.taxon.common_name_varbatim,
+                    'common_name': self.taxon.common_name_verbatim,
                     'scientific_name': self.taxon.scientific_name,
                     "total_property_area": 200,
                     "total_area_available": 10,
@@ -577,7 +576,7 @@ class NationalUserTestCase(TestCase):
             {
                 PROVINCE_REPORT: [{
                     'year': int(self.annual_populations[0].year),
-                    'common_name': self.taxon.common_name_varbatim,
+                    'common_name': self.taxon.common_name_verbatim,
                     'scientific_name': self.taxon.scientific_name,
                     f'total_population_{self.property.province.name}': 10,
                     f'total_population_{annual_population.property.province.name}': 21
@@ -586,7 +585,7 @@ class NationalUserTestCase(TestCase):
         ]
         expected_response[0][PROVINCE_REPORT].extend([{
             'year': int(self.annual_populations[i].year),
-            'common_name': self.taxon.common_name_varbatim,
+            'common_name': self.taxon.common_name_verbatim,
             'scientific_name': self.taxon.scientific_name,
             f'total_population_{self.property.province.name}': 10,
             f'total_population_{annual_population.property.province.name}': 0
@@ -642,14 +641,19 @@ class RegionalUserTestCase(TestCase):
                 username='testuserd',
                 password='testpasswordd'
             )
-        self.organisation_1 = organisationFactory.create()
+        self.province = ProvinceFactory.create(
+            name='Limpopo'
+        )
+        self.organisation_1 = organisationFactory.create(
+            province=self.province
+        )
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
             user=user,
             organisation=self.organisation_1
         )
         self.role_organisation_manager = userRoleTypeFactory.create(
-            name="Regional data consumer",
+            name="Provincial data consumer",
         )
 
         group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
@@ -688,16 +692,38 @@ class RegionalUserTestCase(TestCase):
         session.save()
 
 
-    def test_regional_data_consumer(self) -> None:
-        """Test data table filter by regional data consumer"""
+    def test_no_province_data(self) -> None:
+        """Test data table filter by regional data consumer.
+        The response would be empty since there are no Annual Population data
+        for the user's organisation's province.
+        """
         data = {
             "reports": "Activity_report,Species_report,Property_report",
             "activity": ",".join(
                 [
                     str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
                 ]
-            ),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            )
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_has_province_data(self) -> None:
+        """Test data table filter by regional data consumer.
+        The response would not be empty since there are Annual Population data
+        for the user's organisation's province.
+        """
+        self.property.province = self.organisation_1.province
+        self.property.save()
+        data = {
+            "reports": "Activity_report,Species_report,Property_report",
+            "activity": ",".join(
+                [
+                    str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
+                ]
+            )
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)

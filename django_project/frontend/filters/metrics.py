@@ -3,6 +3,7 @@
 """
 import django_filters
 from django.db.models.query import QuerySet
+
 from property.models import Property
 from species.models import Taxon
 
@@ -23,7 +24,7 @@ class BaseMetricsFilter(django_filters.FilterSet):
     def filter_species(self, queryset: QuerySet, name: str, value: str) \
         -> QuerySet:
         """
-        Filter species based on common_name_varbatim.
+        Filter species based on common_name_verbatim.
 
         Params:
             queryset (QuerySet): The base queryset of Taxon model.

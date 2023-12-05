@@ -6,7 +6,7 @@ from django.test import RequestFactory, TestCase, Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.contenttypes.models import ContentType
 
-from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
+from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER, DATA_CONSUMERS_PERMISSIONS
 from frontend.views.users import OrganisationUsersView
 from regulatory_permit.models import DataUsePermission
 from sawps.models import ExtendedGroup
@@ -15,7 +15,8 @@ from stakeholder.factories import userRoleTypeFactory
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
-    OrganisationUser
+    OrganisationUser,
+    OrganisationRepresentative
 )
 
 
@@ -92,8 +93,16 @@ class OrganisationUsersViewTest(TestCase):
         self.assertJSONEqual(response.content, {'status': 'failed'})
 
 
-    def test_invite_post(self):
+    def test_invite_post_manager(self):
         # Create a request object with the required POST data
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
+        self.client.login(
+            username='testuser', password='testpassword'
+        )
         response = self.client.post(
             '/users/',
             {
@@ -106,10 +115,7 @@ class OrganisationUsersViewTest(TestCase):
 
         OrganisationInvites.objects.filter(organisation=self.organisation)
 
-        # expected_json = {'status': "'current_organisation_id'"}
-
         self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.json(), expected_json)
 
         # test with read permissions
         response = self.client.post(
@@ -123,8 +129,38 @@ class OrganisationUsersViewTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'Invitation already sent')
+
+    def test_invite_post_member(self):
+        # Create a request object with the required POST data
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
+        self.client.login(
+            username='testuser', password='testpassword'
+        )
+        response = self.client.post(
+            '/users/',
+            {
+                'action': 'invite',
+                'email': 'test@example.com',
+                'inviteAs': 'member',
+                'memberRole': 'write'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
 
     def test_get_organisation_users(self):
+        user = User.objects.create_user(
+            username='testuser_2',
+            password='testpassword',
+            email='test@gmail.com'
+        )
+        OrganisationRepresentative.objects.create(
+            organisation=self.organisation, user=user
+        )
 
         factory = RequestFactory()
         request = factory.post('/users/')
@@ -162,18 +198,41 @@ class OrganisationUsersViewTest(TestCase):
 
         self.assertIsNotNone(response)
 
+        # test page not a number
+        request = factory.post('/users/?users_page=a')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_users(request)
+        self.assertIsNotNone(response)
+
+        # test empty page
+        request = factory.post('/users/?users_page=999')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_users(request)
+        self.assertIsNotNone(response)
+
     def test_get_organisation_invites(self):
         factory = RequestFactory()
         request = factory.post('/users/')
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
-
         view = OrganisationUsersView()
-
-        response = view.get_organisation_users(request)
-
+        response = view.get_organisation_invites(request)
         self.assertIsNotNone(response)
 
+        # test page not a number
+        request = factory.post('/users/?invites_page=a')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_invites(request)
+        self.assertIsNotNone(response)
+
+        # test empty page
+        request = factory.post('/users/?invites_page=999')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_invites(request)
+        self.assertIsNotNone(response)
 
     def test_search_user_table(self):
         # Create a request object with the required POST data
@@ -297,14 +356,14 @@ class OrganisationUsersViewTest(TestCase):
     def test_is_user_registered(self):
         view = OrganisationUsersView()
 
-        response = view.is_user_registerd(self.user.email)
+        response = view.is_user_registered(self.user.email)
 
-        self.assertEqual(response, True)
+        self.assertEqual(response, (True, self.user))
 
         # test none registered user
-        response = view.is_user_registerd('new@new.com')
+        response = view.is_user_registered('new@new.com')
 
-        self.assertEqual(response, False)
+        self.assertEqual(response, (False, None))
 
     def test_calculate_rows_per_page(self):
         view = OrganisationUsersView()
@@ -400,7 +459,12 @@ class UserApiTest(TestCase):
         # - It is not allowed for organisation member or manager
         self.assertEqual(
             sorted(response.data['user_permissions']),
-            sorted([all_permissions[0].name, 'Can view province report'])
+            sorted([
+                all_permissions[0].name,
+                'Can view province report',
+                'Can view report as data consumer',
+                'Can view report as provincial data consumer'
+            ])
         )
 
     def test_get_user_info_superuser(self):
@@ -416,7 +480,6 @@ class UserApiTest(TestCase):
         )
         content_type = ContentType.objects.get_for_model(ExtendedGroup)
         all_permissions = Permission.objects.filter(content_type=content_type)
-
         login = client.login(
             username='testuser',
             password='testpassword'
@@ -433,5 +496,9 @@ class UserApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json()['user_permissions'],
-            sorted(list(all_permissions.values_list('name', flat=True)))
+            sorted(list(
+                all_permissions.values_list('name', flat=True).exclude(
+                    name__in=DATA_CONSUMERS_PERMISSIONS
+                )
+            ))
         )

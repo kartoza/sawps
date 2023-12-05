@@ -95,6 +95,7 @@ class OrganisationRepresentativeAdmin(admin.ModelAdmin):
     """Admin page for OrganisationRepresentative model
 
     """
+    autocomplete_fields = ["user", "organisation"]
     list_display = ("user", "organisation")
     search_fields = [
         "user__username",
@@ -120,6 +121,8 @@ class OrganisationInvitesAdmin(admin.ModelAdmin):
         "user_role__name",
         "assigned_as"
     ]
+    autocomplete_fields = ["user", "organisation"]
+    list_filter = ['assigned_as', 'joined']
 
 
 @admin.register(Reminders)

@@ -25,7 +25,7 @@ class Taxon(models.Model):
     """Taxon model."""
 
     scientific_name = models.CharField(max_length=250, unique=True)
-    common_name_varbatim = models.CharField(
+    common_name_verbatim = models.CharField(
         max_length=250,
         null=True, blank=True)
     colour_variant = models.BooleanField(null=True, blank=True)
