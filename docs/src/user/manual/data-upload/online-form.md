@@ -17,6 +17,8 @@ context_id: LYLRXyeg6UmdwSjPjfUxuZ
 
 The data upload online form provides a convenient and structured way to enter species population data for the user's selected property. This form is designed to capture detailed information about species populations, including scientific names, counts, survey methods, and more. In addition, the form displays an image of the selected property in the top left corner, along with property information.
 
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform.
+
 ### Species detail
 
 ![Species Detail](./img/online-form-1.png)

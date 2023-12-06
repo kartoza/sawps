@@ -15,6 +15,8 @@ context_id: GWy6g9HwvM2cBb3JgtYcyj
 
 Welcome to the documentation for map layers available in application. This document provides an overview of the map layers, how to access them, and how to interact with and customise their appearance.
 
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform.
+
 **Layers**
 
 ![Layers](./img/layers-1.png)
@@ -126,7 +128,7 @@ Welcome to the documentation for map layers available in application. This docum
 
     * **Layer Visibility**: You can control the visibility of the NGI aerial imagery layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to NGI aerial imagery.
 
-* **Displaying All Layers on the Map**: User can display multiple layers simultaneously to enhance data exploration experience. To display all layers on the map just select all the layers from the side panel. User can also select specific layers according to his/her need.
+* **Displaying All Layers on the Map**: User can display multiple layers simultaneously to enhance data exploration experience. To display all layers on the map just select all the layers from the side panel. Users can also select specific layers according to their needs.
 
     ![Displaying All layers on the Map](./img/layers-12.png)
 
