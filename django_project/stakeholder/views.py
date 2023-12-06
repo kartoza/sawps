@@ -44,6 +44,7 @@ from frontend.static_mapping import (
 from frontend.utils.user_roles import (
     get_user_roles
 )
+from property.models import Property
 logger = logging.getLogger(__name__)
 
 
@@ -649,9 +650,11 @@ class OrganisationAPIView(APIView):
             if PROVINCIAL_ROLES & user_roles:
                 if organisation and organisation.province:
                     # provincial roles can see all organisations
-                    # in the same province as current organisation
+                    # that have property in the same province
                     queryset = Organisation.objects.filter(
-                        province=organisation.province
+                        id__in=Property.objects.filter(
+                            province=organisation.province
+                        ).values('organisation_id').distinct()
                     ).order_by('name')
                 else:
                     # when current org does not have province

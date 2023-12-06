@@ -306,21 +306,22 @@ class PropertyList(APIView):
 
         # If role is PROVINCIAL_ROLES and not a super user,
         # limit properties by current organisation province
-        # If role is NATIONAL_ROLES and not a super user,
+        # If role is NATIONAL_ROLES/Manager/Member and not a super user,
         # do not filter properties
         if not self.request.user.is_superuser:
             user_roles = set(get_user_roles(self.request.user))
-            if user_roles & PROVINCIAL_ROLES and current_organisation_id:
-                current_organisation = Organisation.objects.get(
-                    id=current_organisation_id)
-                if current_organisation.province:
-                    properties = properties.filter(
-                        province=current_organisation.province
-                    ).order_by('name')
+            if user_roles & PROVINCIAL_ROLES:
+                if current_organisation_id:
+                    current_organisation = Organisation.objects.get(
+                        id=current_organisation_id)
+                    if current_organisation.province:
+                        properties = properties.filter(
+                            province=current_organisation.province
+                        ).order_by('name')
+                    else:
+                        properties = Property.objects.none()
                 else:
                     properties = Property.objects.none()
-            else:
-                properties = properties
         return Response(
             status=200,
             data=PropertySerializer(properties, many=True).data
