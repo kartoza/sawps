@@ -207,7 +207,7 @@ test('test', async ({ page }) => {
 
   await expect(page.getByText('Luna\'s testing farm', { exact: true })).toBeVisible();
 
-  await expect(page.locator('div:nth-child(6) > .ChartContainerBox > .ChartContainer > .ChartBox > .PopulationTrendChartContainer > .PopulationTrendChart')).toBeVisible();
+  await expect(page.locator('div:nth-child(6) > .ChartContainerBox > .ChartContainer > .ChartBox > .PopulationTrendChartContainer > .PopulationTrendChart').first()).toBeVisible();
 
   await expect(page.getByText('test', { exact: true })).toBeVisible();
 
