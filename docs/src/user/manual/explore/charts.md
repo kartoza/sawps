@@ -42,9 +42,9 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
 4. **DOWNLOAD DATA VISUALISATION**: The `DOWNLOAD DATA VISUALISATION` button serves as a convenient feature, allowing users to download the charts and visualisations presented on the current page. This functionality provides users with the option to retain and share the visualised data for further analysis or documentation.
 
-# Charts
+## Charts
 
-## Number of properties per population category (count) of species for year chart
+### Number of properties per population category (count) of species for year chart
 
 ![Number of properties per population category chart (count)](./img/charts-6.png)
 
@@ -64,7 +64,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
 6. **Bars**: These represent the population distribution. Users can hover over each bar to access information about the property type, population range, and the specific count of the property of that type.
 
-## Number of properties per population category (population density) of species for year chart
+### Number of properties per population category (population density) of species for year chart
 
 ![Number of properties per population category chart (population density)](./img/charts-9.png)
 
@@ -84,7 +84,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
 6. **Bars**: These bars represent the distribution of properties based on different population density categories. Users can hover over each bar to access information about the property type, the corresponding population range, and the specific count of properties within that category.
 
-## Number of properties per categories of area (ha) for species for year chart
+### Number of properties per categories of area (ha) for species for year chart
 
 ![Number of properties per categories of area (ha)](./img/charts-12.png)
 
@@ -104,7 +104,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
 6. **Bars**: These bars represent the distribution of properties based on different area size categories. Users can hover over each bar to access information about the property type, the corresponding population range, and the specific count of properties within that category.
 
-## Number of properties per categories of area (ha) available to species for year chart
+### Number of properties per categories of area (ha) available to species for year chart
 
 ![Number of properties per categories of area (ha) available to species](./img/charts-15.png)
 
@@ -124,7 +124,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
 6. **Bars**: These bars represent the distribution of properties based on different area size categories. Users can hover over each bar to access information about the property type, the corresponding population range, and the specific count of properties within that category.
 
-## Total count of species per province chart
+### Total count of species per province chart
 
 ![Total count of species per province chart](./img/charts-24.png)
 
@@ -140,7 +140,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
     ![Downloaded Chart](./img/charts-25.png)
 
-## Activity count as % of total population chart
+### Activity count as % of total population chart
 
 ![Activity Chart](./img/charts-18.png)
 
@@ -160,7 +160,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
 6. **Bars**: These bars represent the distribution of activities as a percentage of the total population. Users can hover over each bar to access information about the activity name, the corresponding percentage, and the specific count of that activity type.
 
-## Total count per population estimate category for species for year chart
+### Total count per population estimate category for species for year chart
 
 ![Total count per population estimate category](./img/charts-21.png)
 
@@ -178,7 +178,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
     ![Downloaded Chart](./img/charts-23.png)
 
-## Mean and standard deviation of age classes for species chart
+### Mean and standard deviation of age classes for species chart
 
 ![Mean and standard deviation of age classes for species chart](./img/charts-26.png)
 
@@ -199,7 +199,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
     ![Downloaded Chart](./img/charts-28.png)
 
-# Summary
+## Summary
 
 Welcome to the `Charts Page`, where the site presents visual insights into various aspects of data. Explore the distribution of properties based on area sizes and population categories, understand the total count of species across provinces, and delve into the age structure of a specified species with mean and standard deviation values for different age classes. While these charts offer a convenient way to comprehend complex information.
 
