@@ -70,6 +70,7 @@ Only members of `National data consumer` group can see this report.
 Members of `National data consumer` or `Provincial data consumer` **CAN NOT** see this report.
 
 The user group is configurable from the User Table in the [Django Admin](../../../administrator/manual/django-admin.md).
+
 ### Reports Page with Reports Filter
 
 ![Reports Type](./img/reports-3.png)
@@ -94,33 +95,33 @@ The user group is configurable from the User Table in the [Django Admin](../../.
 
 10. **Activity List**: Displays the names of the selected activities.
 
-     **Activity Report Filter**
+#### Activity Report Filter
 
-     ![Reports Type Filter](./img/reports-4.png)
+![Reports Type Filter](./img/reports-4.png)
 
-     1. **Activity Report**: Selected `Activity report`.
+1. **Activity Report**: Selected `Activity report`.
 
-     **Activity Report Tables**
+##### Activity Report Tables
 
-     ![Activity Reports Table](./img/reports-5.png)
+![Activity Reports Table](./img/reports-5.png)
 
-     **Activity Types**
+##### Activity Types
 
-     The Activity Report includes information for the following activity types:
+The Activity Report includes information for the following activity types:
 
-     1. **Translocation (Intake)**: This table provides details on translocation activities related to the intake of species, for properties per year.
+1. **Translocation (Intake)**: This table provides details on translocation activities related to the intake of species, for properties per year.
 
-     2. **Translocation (Offtake)**: This table displays information about translocation activities related to off-take,  for properties per year.
+2. **Translocation (Offtake)**: This table displays information about translocation activities related to off-take,  for properties per year.
 
-     3. **Planned Hunt/Cull**: This table contains data related to planned hunting or culling activities,  for properties per year.
+3. **Planned Hunt/Cull**: This table contains data related to planned hunting or culling activities,  for properties per year.
 
-     4. **Planned Euthanasia/DCA**: This table presents information on planned euthanasia or disease control activities, for properties per year.
+4. **Planned Euthanasia/DCA**: This table presents information on planned euthanasia or disease control activities, for properties per year.
 
-     5. **Unplanned/Illegal Hunting**: This table offers insights into unplanned or illegal hunting activities,  for properties per year.
+5. **Unplanned/Illegal Hunting**: This table offers insights into unplanned or illegal hunting activities,  for properties per year.
 
-     **Table Columns**
+    **Table Columns**
 
-     Each of the tables associated with the activity types contains the following columns:
+    Each of the tables associated with the activity types contains the following columns:
 
      * **Property Name**: The name of the property where the activity took place.
      * **Scientific Name**: The scientific name of the species involved in the activity.
@@ -132,17 +133,17 @@ The user group is configurable from the User Table in the [Django Admin](../../.
      * **Juvenile Male**: The count of juvenile male individuals.
      * **Juvenile Female**: The count of juvenile female individuals.
 
-     **Summary**
+##### Summary
 
-     The `Activity Report` is a valuable filter for generating detailed reports on a variety of wildlife management activities. It provides specific information for each activity type, including property details, species information, and counts related to the activities. This report allows for a comprehensive view of wildlife management efforts, enabling informed decision-making and analysis of data related to different activities.
+The `Activity Report` is a valuable filter for generating detailed reports on a variety of wildlife management activities. It provides specific information for each activity type, including property details, species information, and counts related to the activities. This report allows for a comprehensive view of wildlife management efforts, enabling informed decision-making and analysis of data related to different activities.
 
-     **Property Report**
+#### Property Report
 
-     ![Property Reports](./img/reports-6.png)
+![Property Reports](./img/reports-6.png)
 
-     1. **Property Report**: Selected `Property report`.
+1. **Property Report**: Selected `Property report`.
 
-     2. **Property Table**: The property table displays data for the properties.
+2. **Property Table**: The property table displays data for the properties.
 
      **Report Columns**
 
@@ -168,17 +169,17 @@ The user group is configurable from the User Table in the [Django Admin](../../.
 
      * **Open/Close Systems**: Indicates whether the property employs open or closed systems for wildlife management.
 
-     **Summary**
+##### Summary
 
-     The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analysing and managing property-related information in an organised and structured manner.
+The `Property Report` is a critical filter for reporting on various properties. It provides information on property details, ownership, type, location, and specific data related to species habitat and wildlife management systems. This report is essential for analysing and managing property-related information in an organised and structured manner.
 
-     **Province Report**
+#### Province Report
 
-     ![Province Report](./img/reports-9.png)
+![Province Report](./img/reports-9.png)
 
-     1. **Province Report**: Select the `Province Report` option to generate a report specifically for provinces.
+1. **Province Report**: Select the `Province Report` option to generate a report specifically for provinces.
 
-     2. **Province Table**: The Province report table displays data related to the provinces, including population information.
+2. **Province Table**: The Province report table displays data related to the provinces, including population information.
 
      **Report Columns**
 
@@ -194,17 +195,17 @@ The user group is configurable from the User Table in the [Django Admin](../../.
 
      * **Total Population Province Name**: The total population of the species within the respective province. This column is repeated for each province, and each entry represents the total population of the species in that specific province for the given year.
 
-     **Summary**
+##### Summary
 
-     The Province Report serves as a valuable filter for reporting on provincial data related to species. It provides essential information on the total population of species within each province, as well as details about the species' common name, scientific name, and the year of data collection. This report is indispensable for in-depth analysis and management of species-related information at the provincial level.
+The Province Report serves as a valuable filter for reporting on provincial data related to species. It provides essential information on the total population of species within each province, as well as details about the species' common name, scientific name, and the year of data collection. This report is indispensable for in-depth analysis and management of species-related information at the provincial level.
 
-     **Sampling Report Documentation**
+#### Sampling Report Documentation
 
-     ![Sampling Report](./img/reports-8.png)
+![Sampling Report](./img/reports-8.png)
 
-     1. **Sampling Report**: Selected `Sampling report`.
+1. **Sampling Report**: Selected `Sampling report`.
 
-     2. **Sampling Table**: The sampling report table displays data of the species for the property.
+2. **Sampling Table**: The sampling report table displays data of the species for the property.
 
      **Report Columns**
 
@@ -226,53 +227,53 @@ The user group is configurable from the User Table in the [Django Admin](../../.
 
      * **Population Estimate Certainty**: This represents the level of certainty of the estimated population.
 
-     **Summary**
+##### Summary
 
-     The Sampling Report is a crucial tool for documenting and reporting on sampling efforts and population estimates for different species. It provides detailed information on property details, species information, and key metrics related to the population and the methods used for data collection. This report is essential for assessing population health and the effectiveness of conservation and management efforts.
+The Sampling Report is a crucial tool for documenting and reporting on sampling efforts and population estimates for different species. It provides detailed information on property details, species information, and key metrics related to the population and the methods used for data collection. This report is essential for assessing population health and the effectiveness of conservation and management efforts.
 
-     **Species Report**
+#### Species Report
 
-     ![Species Report](./img/reports-7.png)
+![Species Report](./img/reports-7.png)
 
-     1. **Species Report**: Selected `Species report`.
+1. **Species Report**: Selected `Species report`.
 
-     2. **Species Table**: The species report table displays data of the species for the property.
+2. **Species Table**: The species report table displays data of the species for the property.
 
-     3. **Edit Icon**: Click on the `Edit` icon, to update the species record. When the user clicks on the edit icon the online form step 1 opens. Users can update the species details here.
+3. **Edit Icon**: Click on the `Edit` icon, to update the species record. When the user clicks on the edit icon the online form step 1 opens. Users can update the species details here.
 
-        ![Species Report](./img/reports-14.png)
+![Species Report](./img/reports-14.png)
 
-     **Report Columns**
+##### Report Columns
 
-     The Species Report includes the following columns:
+The Species Report includes the following columns:
 
-     * **Property Name**: The name of the property associated with the species data.
+* **Property Name**: The name of the property associated with the species data.
 
-     * **Scientific Name**: The scientific name of the species.
+* **Scientific Name**: The scientific name of the species.
 
-     * **Common Name**: The common name of the species.
+* **Common Name**: The common name of the species.
 
-     * **Year**: The specific year for which the data is recorded.
+* **Year**: The specific year for which the data is recorded.
 
-     * **Group**: Information about the group to which the species belongs.
+* **Group**: Information about the group to which the species belongs.
 
-     * **Total**: The total count of the species in the specified year.
+* **Total**: The total count of the species in the specified year.
 
-     * **Adult Males**: The count of adult male individuals within the species.
+* **Adult Males**: The count of adult male individuals within the species.
 
-     * **Adult Females**: The count of adult female individuals within the species.
+* **Adult Females**: The count of adult female individuals within the species.
 
-     * **Juvenile Males**: The count of juvenile male individuals within the species.
+* **Juvenile Males**: The count of juvenile male individuals within the species.
 
-     * **Juvenile Females**: The count of juvenile female individuals within the species.
+* **Juvenile Females**: The count of juvenile female individuals within the species.
 
-     * **Sub-Adult Males**: The count of sub-adult male individuals within the species.
+* **Sub-Adult Males**: The count of sub-adult male individuals within the species.
 
-     * **Sub-Adult Females**: The count of sub-adult female individuals within the species.
+* **Sub-Adult Females**: The count of sub-adult female individuals within the species.
 
-     **Summary**
+##### Summary
 
-     The Species Report is a vital filter for reporting on various species. It provides comprehensive information on species-specific data, including counts, age groups, and associated property details. This report is essential for detailed analysis and management of species-related information.
+The Species Report is a vital filter for reporting on various species. It provides comprehensive information on species-specific data, including counts, age groups, and associated property details. This report is essential for detailed analysis and management of species-related information.
 
 ### Summary
 
