@@ -23,6 +23,7 @@ import Metrics from './Metrics';
 import Trends from './Trends';
 import { HelperContainerWithToggle } from "../../components/HelperContainer";
 
+const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
 
 enum RightSideBarMode {
   None = -1,
@@ -64,7 +65,6 @@ function MainPage() {
   }, [location.search]);
 
   useEffect(() => {
-    const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
     const selectedTabName = tabNames[selectedTab];
     const newPath = `/${selectedTabName}`;
     if ([1, 2, 3].includes(selectedTab)) {
@@ -189,7 +189,7 @@ function MainPage() {
                       {
                         rightSideBarMode === RightSideBarMode.Upload ?
                         <HelperContainerWithToggle key={'/upload/'} relativeUrl='/upload/'/>:
-                        <HelperContainerWithToggle key={'/map/'} relativeUrl='/map/'/>
+                        <HelperContainerWithToggle key={`/${tabNames[selectedTab]}/`} relativeUrl={`/${tabNames[selectedTab]}/`} />
                       }
                     </div>
                   </div>
