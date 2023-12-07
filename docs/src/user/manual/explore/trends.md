@@ -8,7 +8,7 @@ some_url: https://github.com/kartoza/sawps/
 copyright: Copyright 2023, SANBI
 contact: PROJECT_CONTACT
 license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
-context_id: 7eb5TeyNcVuDHbhYxp9UnB
+context_id: K4nUFdAsbhg5Ptyt4fPJkD
 ---
 
 # Trends Tab Documentation
@@ -29,7 +29,7 @@ The Trends Tab provides a comprehensive analysis of population dynamics at diffe
 
 5. **Clear All**: Click on `Clear All` to remove all applied filters and reset the trends view.
 
-## Trends Topper
+### Trends Topper
 
 ![Topper](./img/charts-5.png)
 
@@ -41,11 +41,11 @@ The Trends Tab provides a comprehensive analysis of population dynamics at diffe
 
 4. **DOWNLOAD JSON DOCUMENT**: To download the trends data in JSON format, click on the `DOWNLOAD JSON DOCUMENT` button.
 
-# National Level Trends
+## National Level Trends
 
 At the national level, users can explore and analyse overarching population trends that span the entire country.
 
-## Species National Population Trend
+### Species National Population Trend
 
 ![Species National Population Trend Chart](./img/trends-3.png)
 
@@ -61,7 +61,7 @@ At the national level, users can explore and analyse overarching population tren
 
     ![Downloaded Trends Chart](./img/trends-4.png)
 
-## Large Species Populations
+### Large Species Populations
 
 ![Large Species Populations](./img/trends-5.png)
 
@@ -71,7 +71,7 @@ At the national level, users can explore and analyse overarching population tren
 
     ![Chart with Specific Bars](./img/trends-6.png)
 
-2. **Tooltip**: The tooltip feature provides additional details about each data point on the chart. It specifically shows the conditions, percentage, along with corresponding colors. Users can interact with the chart by clicking on the condition in the Tooltip, enabling them to selectively remove bars from the chart. This interactive functionality allows users to focus on and explore specific condition of their choice within the chart.
+3. **Tooltip**: The tooltip feature provides additional details about each data point on the chart. It specifically shows the conditions, percentage, along with corresponding colors. Users can interact with the chart by clicking on the condition in the Tooltip, enabling them to selectively remove bars from the chart. This interactive functionality allows users to focus on and explore specific condition of their choice within the chart.
 
 4. **Information Icon**: Hover over the information icon to access details about the chart.
 
@@ -79,13 +79,13 @@ At the national level, users can explore and analyse overarching population tren
 
     ![Downloaded Chart](./img/trends-7.png)
 
-## Total area vs area available to species
+### Total area vs area available to species
 
 ![Total area vs area available to species](./img/trends-8.png)
 
 1. **Chart Title**: The chart title displays the title of the chart with selected species scientific name.
 
-2. **Lines**: The lines in this chart provide a visual representation of the distribution of area available to species in comparison to the total area of the property. Each line is distinctly colored, adding a visual element to differentiate between various data series.
+2. **Lines**: The lines in this chart provide a visual representation of the distribution of area available to species in comparison to the total area of the property. Each line is distinctly coloured, adding a visual element to differentiate between various data series.
 
 3. **Tooltip**: The tooltip is designed to provide detailed information for each data point on the line chart. It specifically displays the comparison between the area available to species and the total area of the property. Users can interact with the chart by clicking on a specific area value in the tooltip. This interactive functionality allows users to selectively remove lines from the chart, enabling them to focus on and explore specific areas of interest within the context of the area available to species versus the total property area. The corresponding colors in the tooltip enhance visual association, aiding users in comprehending the data distribution on the line chart.
 
@@ -95,7 +95,7 @@ At the national level, users can explore and analyse overarching population tren
 
     ![Downloaded Chart](./img/trends-9.png)
 
-## Medium Species Populations
+### Medium Species Populations
 
 ![Medium Species Populations](./img/trends-10.png)
 
@@ -105,7 +105,7 @@ At the national level, users can explore and analyse overarching population tren
 
     ![Chart with Specific Bars](./img/trends-11.png)
 
-2. **Tooltip**: The tooltip feature in this context provides additional insights into each data point on the chart. It specifically displays information about the conditions, percentage, and corresponding colors related to medium species populations. Users can interact with the chart by clicking on a condition in the tooltip, allowing them to selectively remove bars and focus on exploring specific conditions of their choice within the chart.
+3. **Tooltip**: The tooltip feature in this context provides additional insights into each data point on the chart. It specifically displays information about the conditions, percentage, and corresponding colors related to medium species populations. Users can interact with the chart by clicking on a condition in the tooltip, allowing them to selectively remove bars and focus on exploring specific conditions of their choice within the chart.
 
 4. **Information Icon**: Hover over the information icon to access details about the chart.
 
@@ -113,7 +113,7 @@ At the national level, users can explore and analyse overarching population tren
 
     ![Downloaded Chart](./img/trends-12.png)
 
-## Small Species Populations
+### Small Species Populations
 
 ![Small Species Populations](./img/trends-13.png)
 
@@ -123,7 +123,7 @@ At the national level, users can explore and analyse overarching population tren
 
     ![Chart with Specific Bars](./img/trends-14.png)
 
-2. **Tooltip**: The tooltip feature offers additional insights into each data point on the chart. It specifically showcases information about conditions, percentage, and corresponding colors related to small species populations. Users can interact with the chart by clicking on a condition in the tooltip, facilitating the selective removal of bars and enabling a focused exploration of specific conditions within the chart.
+3. **Tooltip**: The tooltip feature offers additional insights into each data point on the chart. It specifically showcases information about conditions, percentage, and corresponding colors related to small species populations. Users can interact with the chart by clicking on a condition in the tooltip, facilitating the selective removal of bars and enabling a focused exploration of specific conditions within the chart.
 
 4. **Information Icon**: Hover over the information icon to access details about the chart.
 
@@ -131,11 +131,11 @@ At the national level, users can explore and analyse overarching population tren
 
     ![Downloaded Chart](./img/trends-15.png)
 
-# Provincial Level Trends
+## Provincial Level Trends
 
 Delving deeper, the Province Level Population Trends offer a regional breakdown of demographic patterns. Users can examine the population trends specific to each province.
 
-## Province Population Trend Charts
+### Province Population Trend Charts
 
 ![Province Population Trend Charts](./img/trends-16.png)
 
@@ -149,7 +149,7 @@ Delving deeper, the Province Level Population Trends offer a regional breakdown 
 
 - **Download Icon**: Each chart comes with a download icon, allowing users to save the currently displayed province-level population trends chart for further analysis or documentation.
 
-## Province Population Percentage Charts
+### Province Population Percentage Charts
 
 ![Province Population Percentage Charts](./img/trends-17.png)
 
@@ -165,7 +165,7 @@ Delving deeper, the Province Level Population Trends offer a regional breakdown 
 
 All the charts in this set share the same user-friendly functionality, providing a consistent and comprehensive exploration of province population percentage trends. Users can easily compare and analyse the demographic dynamics of different provinces over various time intervals.
 
-## Property Population Trend Charts
+### Property Population Trend Charts
 
 ![Property Population Trend Charts](./img/trends-18.png)
 
