@@ -99,7 +99,10 @@
         "name": "Properties",
         "is_static": false,
         "layer_names": [
-            "properties"
+            "properties",
+            "properties-points",
+            "properties-label",
+            "properties-extrude"
         ]
     }
 },
