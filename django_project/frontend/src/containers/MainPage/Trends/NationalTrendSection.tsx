@@ -16,6 +16,17 @@ interface NationalTrendSectionInterface {
 
 const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/'
 
+interface CategoryLabelInterface {
+    [key: string]: string;
+}
+
+const getGrowthChartTitle = (species: string, cat_label: string, labels: CategoryLabelInterface) => {
+    let _title = `${cat_label} ${species} Populations`
+    if (cat_label in labels) {
+        _title = _title + ` (${labels[cat_label]} individuals)`
+    }
+    return capitalizeSentence(_title)
+}
 
 const NationalTrendSection = (props: NationalTrendSectionInterface) => {
     const [populationTrendData, setPopulationTrendData] = useState<PopulationTrendItem[]>([])
@@ -24,6 +35,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
     const [smallPopulationGrowthData, setSmallPopulationGrowthData] = useState<GrowthDataItem[]>([])
     const [loadingTrendData, setLoadingTrendData] = useState(false)
     const [loadingGrowthData, setLoadingGrowthData] = useState(false)
+    const [categoryLabels, setCategoryLabels] = useState<CategoryLabelInterface>({})
 
     const fetchNationalTrendData = (species: string) => {
         setLoadingTrendData(true)
@@ -48,6 +60,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                 let _large: GrowthDataItem[] = []
                 let _medium: GrowthDataItem[] = []
                 let _small: GrowthDataItem[] = []
+                let _labels: CategoryLabelInterface = {}
                 for (let i = 0; i < response.data.length; i++) {
                     let _item = response.data[i] as GrowthDataItem
                     if (_item.pop_size_cat === 'large') {
@@ -57,10 +70,14 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                     } else if (_item.pop_size_cat === 'small') {
                         _small.push(_item)
                     }
+                    if (_item.pop_size_cat_label) {
+                        _labels[_item.pop_size_cat] = _item.pop_size_cat_label
+                    }
                 }
                 setLargePopulationGrowthData(_large)
                 setMediumPopulationGrowthData(_medium)
                 setSmallPopulationGrowthData(_small)
+                setCategoryLabels(_labels)
             }
         }).catch((error) => {
             setLoadingGrowthData(false)
@@ -104,13 +121,13 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                             {!loadingGrowthData ?
                                 <Grid container flexDirection={'column'} spacing={1}>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='large-national-growth-chart' title={capitalizeSentence(`Large ${props.species} Populations`)} data={largePopulationGrowthData} />
+                                        <GroupedGrowthChart chartId='large-national-growth-chart' title={getGrowthChartTitle(props.species, 'large', categoryLabels)} data={largePopulationGrowthData} />
                                     </Grid>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='medium-national-growth-chart' title={capitalizeSentence(`Medium ${props.species} Populations`)} data={mediumPopulationGrowthData} />
+                                        <GroupedGrowthChart chartId='medium-national-growth-chart' title={getGrowthChartTitle(props.species, 'medium', categoryLabels)} data={mediumPopulationGrowthData} />
                                     </Grid>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='small-national-growth-chart' title={capitalizeSentence(`Small ${props.species} Populations`)} data={smallPopulationGrowthData} />                                    
+                                        <GroupedGrowthChart chartId='small-national-growth-chart' title={getGrowthChartTitle(props.species, 'small', categoryLabels)} data={smallPopulationGrowthData} />                                    
                                     </Grid>
                                 </Grid>
                             : <Loading containerStyle={{minHeight: 160}}/>}
