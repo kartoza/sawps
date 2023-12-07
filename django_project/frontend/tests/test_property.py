@@ -515,9 +515,10 @@ class TestPropertyAPIViews(TestCase):
         # PropertyC is not returned because it does not belong to
         # user's current organisation
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 3)
         self.assertEqual(response.data[0]['name'], "PropertyA")
         self.assertEqual(response.data[1]['name'], "PropertyB")
+        self.assertEqual(response.data[2]['name'], "PropertyC")
 
     def test_property_list_multiple_organisations_data_scientist(self):
         """
