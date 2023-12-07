@@ -301,6 +301,11 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         )
         year_range = (int(start_year), int(end_year))
         activity_filter = self.context['request'].GET.get('activity', "")
+        spatial_filter = self.context['request'].GET.get(
+            'spatial_filter_values', "").split(',')
+        spatial_filter = list(
+            filter(None, spatial_filter)
+        )
         populations = AnnualPopulation.objects.values(
             "taxon__common_name_verbatim").filter(
             taxon=obj,
@@ -317,6 +322,10 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
                     int(act) for act in activity_filter.split(',')
                 ]
             )
+        if spatial_filter:
+            populations = populations.filter(**{
+                'property__spatialdatamodel__spatialdatavaluemodel__'
+                'context_layer_value__in': spatial_filter})
 
         populations = populations.annotate(
             total_population=Sum("total")
@@ -345,6 +354,11 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
         )
         year_range = (int(start_year), int(end_year))
         activity_filter = self.context['request'].GET.get('activity', "")
+        spatial_filter = self.context['request'].GET.get(
+            'spatial_filter_values', "").split(',')
+        spatial_filter = list(
+            filter(None, spatial_filter)
+        )
 
         q_filters = Q(annual_population__taxon=obj, year__range=year_range)
         if property_list:
@@ -353,6 +367,12 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             q_filters &= Q(activity_type_id__in=[
                 int(act) for act in activity_filter.split(',')
             ])
+        if spatial_filter:
+            q_filters &= Q(**{
+                'annual_population__property__spatialdatamodel__'
+                'spatialdatavaluemodel__'
+                'context_layer_value__in': spatial_filter
+            })
 
         populations = AnnualPopulationPerActivity.objects.values(
             'year',

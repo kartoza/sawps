@@ -299,6 +299,7 @@ const Metrics = () => {
                                             endYear={endYear}
                                             activityTypeList={activityList}
                                             activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                         />
                                     </Grid>
                                 )}
