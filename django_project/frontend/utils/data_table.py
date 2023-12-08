@@ -25,7 +25,7 @@ from frontend.serializers.report import (
     NationalLevelProvinceReport
 )
 from frontend.static_mapping import (
-    DATA_CONTRIBUTORS, DATA_SCIENTISTS, DATA_CONSUMERS
+    DATA_CONSUMERS
 )
 from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
 from frontend.utils.organisation import get_current_organisation_id
@@ -56,27 +56,19 @@ def get_param_from_request(request, param, default_value=None):
 
 def get_queryset(user_roles: List[str], request):
     organisation_id = get_current_organisation_id(request.user)
-    show_detail = set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
-        and not set(user_roles) & set(DATA_CONSUMERS)
+    show_detail = request.user.is_superuser \
+        or not set(user_roles) & set(DATA_CONSUMERS)
     property_ids = get_param_from_request(request, 'property')
     prop_ids = property_ids.split(",") if property_ids else []
+    organisation_ids = get_param_from_request(request, 'organisation')
+    org_ids = organisation_ids.split(",") if organisation_ids else []
     if show_detail:
         query_filter = DataContributorsFilter
-        organisation = get_param_from_request(request, 'organisation')
-        if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
-            org_ids = organisation.split(",") if organisation else []
-            queryset = Property.objects.filter(
-                organisation_id__in=org_ids,
-                id__in=prop_ids,
-                annualpopulation__taxon__taxon_rank__name="Species"
-            ).distinct().order_by("name")
-        else:
-            queryset = Property.objects.filter(
-                organisation_id=organisation_id,
-                id__in=prop_ids,
-                annualpopulation__taxon__taxon_rank__name="Species"
-            ).distinct().order_by("name")
-
+        queryset = Property.objects.filter(
+            organisation_id__in=org_ids,
+            id__in=prop_ids,
+            annualpopulation__taxon__taxon_rank__name="Species"
+        ).distinct().order_by("name")
         spatial_filter_values = get_param_from_request(
             request,
             'spatial_filter_values',
@@ -105,7 +97,7 @@ def get_queryset(user_roles: List[str], request):
             ).distinct().order_by("scientific_name")
         else:
             queryset = Taxon.objects.filter(
-                annualpopulation__property__organisation_id=organisation_id,
+                annualpopulation__property__organisation_id__in=org_ids,
                 annualpopulation__property_id__in=prop_ids,
                 taxon_rank__name="Species"
             ).distinct().order_by("scientific_name")
@@ -119,13 +111,10 @@ def get_queryset(user_roles: List[str], request):
 
 
 def get_taxon_queryset(request):
-    organisation_id = get_current_organisation_id(request.user)
     property_ids = get_param_from_request(request, 'property')
     organisation_ids = get_param_from_request(request, 'organisation')
     prop_ids = property_ids.split(",") if property_ids else []
-    org_ids = property_ids.split(",") if organisation_ids else []
-    if len(org_ids) == 0:
-        org_ids.append(organisation_id)
+    org_ids = organisation_ids.split(",") if organisation_ids else []
     query_filter = BaseMetricsFilter
     queryset = Taxon.objects.filter(
         annualpopulation__property__organisation_id__in=org_ids,
