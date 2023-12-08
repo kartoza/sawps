@@ -2,7 +2,7 @@ import base64
 import json
 
 import mock
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -36,6 +36,9 @@ from property.models import Parcel, Property, PropertyType
 from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
+)
+from frontend.static_mapping import (
+    PROVINCIAL_DATA_SCIENTIST
 )
 
 
@@ -312,7 +315,6 @@ class TestPropertyAPIViews(TestCase):
         request = self.factory.get(
             reverse('property-list')
         )
-        self.user_2.user_profile = self.user_2.user_profile
         self.user_2.user_profile.current_organisation = self.organisation
         self.user_2.save()
 
@@ -325,6 +327,80 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(_property['id'], property.id)
         self.assertEqual(_property['name'], property.name)
         self.assertEqual(_property['short_code'], property.short_code)
+        # test provincial data scientist
+        provincial_ds_group, _ = Group.objects.get_or_create(name=PROVINCIAL_DATA_SCIENTIST)
+        self.user_2.groups.add(provincial_ds_group)
+        organisation_2 = organisationFactory.create(
+            national=False,
+            province=self.province
+        )
+        property_2 = PropertyFactory.create(
+            province=self.province,
+            organisation=organisation_2
+        )
+        # test with empty current organisation
+        self.user_2.user_profile.current_organisation = None
+        self.user_2.save()
+        request = self.factory.get(
+            reverse('property-list')
+        )
+        request.user = self.user_2
+        view = PropertyList.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+        # test with empty province
+        self.user_2.user_profile.current_organisation = organisation_2
+        self.user_2.save()
+        organisation_2.province = None
+        organisation_2.save()
+        request = self.factory.get(
+            reverse('property-list')
+        )
+        request.user = self.user_2
+        view = PropertyList.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+        # test if provincial role then can see property in same province
+        organisation_2.province = self.province
+        organisation_2.save()
+        request = self.factory.get(
+            reverse('property-list')
+        )
+        request.user = self.user_2
+        view = PropertyList.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        find_property = [prop for prop in response.data if prop['id'] == property_2.id]
+        self.assertEqual(len(find_property), 1)
+        # test if provincial role then cannot see property in other province
+        property_3 = PropertyFactory.create(
+            organisation=organisation_2
+        )
+        request = self.factory.get(
+            reverse('property-list')
+        )
+        request.user = self.user_2
+        view = PropertyList.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        find_property = [prop for prop in response.data if prop['id'] == property_3.id]
+        self.assertEqual(len(find_property), 0)
+        # test if other roles, then can only see from organisation parameters
+        self.user_2.groups.remove(provincial_ds_group)
+        request = self.factory.get(
+            reverse('property-list')
+        )
+        request.user = self.user_2
+        view = PropertyList.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+        find_property = [prop for prop in response.data if prop['id'] == property_3.id]
+        self.assertEqual(len(find_property), 1)
 
     def test_get_property_list_for_organisations(self):
         """Taxon list API test for organisations."""
@@ -439,9 +515,10 @@ class TestPropertyAPIViews(TestCase):
         # PropertyC is not returned because it does not belong to
         # user's current organisation
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 3)
         self.assertEqual(response.data[0]['name'], "PropertyA")
         self.assertEqual(response.data[1]['name'], "PropertyB")
+        self.assertEqual(response.data[2]['name'], "PropertyC")
 
     def test_property_list_multiple_organisations_data_scientist(self):
         """
