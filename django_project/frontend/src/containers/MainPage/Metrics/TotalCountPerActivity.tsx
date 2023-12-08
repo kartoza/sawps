@@ -146,7 +146,7 @@ const TotalCountPerActivity = (props: any) => {
         <BarChart
             chartData={data}
             chartId={'TotalCountPerActivity'}
-            chartTitle={'Activity count as % of total population'}
+            chartTitle={`Activity count as % of total population of ${selectedSpecies} for ${endYear}`}
             yLabel={'Percentage'}
             xLabel={'Activities'}
             indexAxis={'x'}

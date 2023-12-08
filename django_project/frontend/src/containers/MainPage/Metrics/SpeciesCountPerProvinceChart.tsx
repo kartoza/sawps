@@ -135,7 +135,7 @@ const SpeciesCountPerProvinceChart = (props: any) => {
     datasets: datasets
   };
 
-  const chartTitle = `Total count of species per province for ${endYear}`;
+  const chartTitle = `Total count of ${selectedSpecies} per province for ${endYear}`;
 
   return (
     <Grid>

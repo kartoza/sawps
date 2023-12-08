@@ -130,7 +130,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
         <BarChart
             chartData={data}
             chartId={chartId}
-            chartTitle={chartTitle.replace('{species}', species).replace('{year}', year)}
+            chartTitle={chartTitle.replace('{species}', selectedSpecies).replace('{year}', year)}
             yLabel={'Count'}
             xLabel={xLabel}
             indexAxis={'x'}

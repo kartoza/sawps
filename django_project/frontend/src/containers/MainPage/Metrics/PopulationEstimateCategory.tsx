@@ -118,9 +118,9 @@ const PopulationEstimateCategoryCount = (props: any) => {
 
   if (selectedSpecies) {
     if (Object.keys(speciesData).length > 0) {
-      chartTitle = `Total count per population estimate category for ${selectedSpecies}`;
+      chartTitle = `Total count per population estimate category of ${selectedSpecies}`;
       if (year) {
-        chartTitle += ` year ${year}`;
+        chartTitle += ` for ${year}`;
       }
     } else {
       chartTitle = "No data available for current filter selections";

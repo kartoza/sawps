@@ -324,7 +324,7 @@ const Metrics = () => {
                                                 propertyIds={propertyId}
                                                 activityIds={activityId}
                                                 spatialFilterValues={spatialFilterValues}
-                                                title={`Mean and standard deviation of age classes for ${selectedSpecies}`}/>
+                                                title={`Mean and standard deviation of age classes of ${selectedSpecies} for ${endYear}`}/>
                                         </Grid>
                                     )}
 
