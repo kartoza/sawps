@@ -397,7 +397,7 @@ class TestAddReminderAndScheduleTask(TestCase):
             'reminder': 'Test Reminder Note2',
             'date': date_str,
             'timezone': 'Africa/Johannesburg',
-            'reminder_type': 'everyone',
+            'reminder_type': 'all',
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
 
@@ -689,7 +689,7 @@ class TestRemindersView(TestCase):
                 'status': 'passed',
                 'date': date_str,
                 'timezone': 'Africa/Johannesburg',
-                'reminder_type': 'everyone',
+                'reminder_type': 'all',
                 'reminder': 'Updated Reminder Note',
                 'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
             }
@@ -714,7 +714,7 @@ class TestRemindersView(TestCase):
                 'status': 'active',
                 'date': date_str,
                 'timezone': 'Africa/Johannesburg',
-                'reminder_type': 'everyone',
+                'reminder_type': 'all',
                 'reminder': 'Updated Reminder Note',
                 'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
             }
