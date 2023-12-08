@@ -29,13 +29,12 @@ const availableColors: AvailableColors = {
   'Unspecified': 'rgba(204, 204, 204, 1)'
 };
 const AgeGroupBarChart = (props: any) => {
-  const {loading, ageGroupData} = props;
+  const {loading, ageGroupData, scientificName} = props;
 
   const filteredData = ageGroupData;
 
-  // Extract the species name
-  const species = ageGroupData.length > 0 ? ageGroupData[0].taxon__common_name_verbatim : '';
-
+  // Extract the species scientific name
+  const species = scientificName ? scientificName : '';
 
   // Define the labels (years) dynamically from ageGroupData and sort them from highest to lowest
   const labels = filteredData.map((data: any) => data.total_year).sort((a: number, b: number) => b - a);
