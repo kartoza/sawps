@@ -358,6 +358,7 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         """
         super().setUp()
         self.url = reverse("total_area_available_to_species")
+        self.organisations = [self.organisation_1.id]
 
     def test_total_area_available_to_species(self) -> None:
         """
@@ -366,6 +367,7 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         url = self.url
         data = {
             'property': ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "organisation": ','.join([str(id) for id in self.organisations]),
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -373,6 +375,7 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         self.assertEqual(response.data[0]['area'], 10)
         
         data = {
+            "organisation": ','.join([str(id) for id in self.organisations]),
             'property': self.annual_populations[0].property_id,
             'species': "Penthera leo",
             'start_year': self.annual_populations[0].year,
@@ -389,18 +392,10 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         Test total area available to species filtered by property.
         """
         prop_id = self.annual_populations[0].property_id
-        data = {'property': prop_id}
-        url = self.url
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['property_name'], 'PropertyA')
-
-    def test_total_area_available_to_species_filter_by_property(self) -> None:
-        """
-        Test total area available to species filtered by property.
-        """
-        prop_id = self.annual_populations[0].property_id
-        data = {'property': prop_id}
+        data = {
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            'property': prop_id
+        }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
