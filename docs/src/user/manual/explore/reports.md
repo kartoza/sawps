@@ -15,6 +15,8 @@ context_id: BYbnmQvaLxzHsfjUtsaAFn
 
 The Reports Table Page is the central hub for viewing and interacting with the user's data. This page offers a user-friendly interface for exploring and manipulating the user's dataset. Users can use a variety of features to customise their data view, including filters, column search, and data export options.
 
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
+
 ## Reports Display
 
 The main area of the page displays the user's dataset in a tabular format. Each row represents a record, and each column represents a data attribute.
@@ -178,7 +180,7 @@ The `Property Report` is a critical filter for reporting on various properties. 
 ![Province Report](./img/reports-9.png)
 
 1. **Province Report**: Select the `Province Report` option to generate a report specifically for provinces.
-
+> DISCLAIMER: 
 2. **Province Table**: The Province report table displays data related to the provinces, including population information.
 
      **Report Columns**

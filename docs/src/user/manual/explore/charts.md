@@ -15,6 +15,8 @@ context_id: ZSVG5K6yFRsQVQF5WQFqJR
 
 The `Charts` tab is a powerful tool for visualising data through various charts and graphs. This documentation outlines the functionality of the `Download Data Visualisation` feature, which allows the user to download the charts presented on the page.
 
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
+
 ## Charts Tab
 
 ![Charts Page](./img/charts-1.png)

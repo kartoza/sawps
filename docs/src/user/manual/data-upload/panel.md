@@ -15,7 +15,7 @@ context_id: 68fJQQ7PvJEFMUySB6QArg
 
 The Data Upload Page is a key component for managing and uploading user data. This page provides an intuitive interface for adding new data and customising the user's view. It also includes a map with interactive features to help the user visualise spatial data.
 
-> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform.
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
 
 ## Data upload
 

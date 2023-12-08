@@ -17,7 +17,7 @@ context_id: LYLRXyeg6UmdwSjPjfUxuZ
 
 The data upload online form provides a convenient and structured way to enter species population data for the user's selected property. This form is designed to capture detailed information about species populations, including scientific names, counts, survey methods, and more. In addition, the form displays an image of the selected property in the top left corner, along with property information.
 
-> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform.
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
 
 ### Species detail
 

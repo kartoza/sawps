@@ -15,7 +15,7 @@ context_id: GWy6g9HwvM2cBb3JgtYcyj
 
 Welcome to the documentation for map layers available in application. This document provides an overview of the map layers, how to access them, and how to interact with and customise their appearance.
 
-> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform.
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
 
 **Layers**
 
