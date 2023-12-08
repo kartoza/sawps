@@ -12,7 +12,6 @@ import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
 import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
-import {isDataConsumer} from "../../../utils/Helpers";
 import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
 
 
@@ -67,8 +66,7 @@ const Metrics = () => {
     const fetchActivityPercentageData = () => {
         setLoading(true)
 
-        let fullUrl = `${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}`
-        fullUrl = isDataConsumer(userInfoData) ? fullUrl : `${fullUrl}&property=${propertyId}`
+        let fullUrl = `${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`
 
         axios.get(fullUrl).then((response) => {
             setLoading(false)
@@ -198,7 +196,6 @@ const Metrics = () => {
                                             chartTitle={'Number of properties per population category (count) of {species} for {year}'}
                                             xLabel={'Population size category (Count)'}
                                             url={'/api/property-count-per-population-category-size/'}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                 )}
@@ -220,7 +217,6 @@ const Metrics = () => {
                                             chartTitle={'Number of properties per population category (population density) of {species} for {year}'}
                                             xLabel={'Population size categories (population density)'}
                                             url={'/api/property-count-per-population-density-category/'}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                 )}
@@ -242,7 +238,6 @@ const Metrics = () => {
                                             chartTitle={'Number of properties per categories of area (ha) for {species} for {year}'}
                                             xLabel={'Area size category (ha)'}
                                             url={'/api/property-count-per-area-category/'}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                 )}
@@ -264,7 +259,6 @@ const Metrics = () => {
                                             chartTitle={'Number of properties per categories of area (ha) available to {species} for {year}'}
                                             xLabel={'Area size category (ha)'}
                                             url={'/api/property-count-per-area-available-to-species-category/'}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                 )}
@@ -317,7 +311,6 @@ const Metrics = () => {
                                             activityData={activityData}
                                             activityIds={activityId}
                                             spatialFilterValues={spatialFilterValues}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                     )}

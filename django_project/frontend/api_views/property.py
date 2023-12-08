@@ -36,7 +36,7 @@ from frontend.serializers.property import (
     ProvinceSerializer
 )
 from frontend.serializers.stakeholder import OrganisationSerializer
-from frontend.static_mapping import DATA_CONTRIBUTORS, SUPER_USER
+from frontend.static_mapping import PROVINCIAL_ROLES
 from frontend.utils.organisation import get_current_organisation_id
 from frontend.utils.parcel import find_province
 from frontend.utils.user_roles import get_user_roles
@@ -304,15 +304,24 @@ class PropertyList(APIView):
                     organisation_id=organisation_id
                 ).order_by('name')
 
-        user_roles = get_user_roles(self.request.user)
-
-        # If role is DATA_CONTRIBUTORS and not a super user, limit properties
-        if set(user_roles) & set(DATA_CONTRIBUTORS) and \
-            SUPER_USER not in user_roles:
-            properties = properties.filter(
-                organisation_id=current_organisation_id
-            ).order_by('name')
-
+        # If role is PROVINCIAL_ROLES and not a super user,
+        # limit properties by current organisation province
+        # If role is NATIONAL_ROLES/Manager/Member and not a super user,
+        # do not filter properties
+        if not self.request.user.is_superuser:
+            user_roles = set(get_user_roles(self.request.user))
+            if user_roles & PROVINCIAL_ROLES:
+                if current_organisation_id:
+                    current_organisation = Organisation.objects.get(
+                        id=current_organisation_id)
+                    if current_organisation.province:
+                        properties = properties.filter(
+                            province=current_organisation.province
+                        ).order_by('name')
+                    else:
+                        properties = Property.objects.none()
+                else:
+                    properties = Property.objects.none()
         return Response(
             status=200,
             data=PropertySerializer(properties, many=True).data

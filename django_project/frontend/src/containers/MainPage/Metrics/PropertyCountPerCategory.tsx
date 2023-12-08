@@ -3,9 +3,6 @@ import "./index.scss";
 import Loading from '../../../components/Loading';
 import BarChart from "../../../components/BarChart";
 import axios from "axios";
-import {
-    PropertyType
-} from "../../../services/api";
 
 type AvailableColors = {
   [key: string]: string;
@@ -23,8 +20,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
     chartId,
     chartTitle,
     xLabel,
-    url,
-    isDataConsumer
+    url
   } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [propertyData, setPropertyData] = useState([]);
@@ -47,8 +43,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
   
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
-    let fullUrl = `${url}?year=${year}&species=${selectedSpecies}&activity=${activityIds}&spatial_filter_values=${spatialFilterValues}`
-    fullUrl = isDataConsumer ? fullUrl : `${fullUrl}&property=${propertyId}`
+    let fullUrl = `${url}?year=${year}&species=${selectedSpecies}&property=${propertyId}&activity=${activityIds}&spatial_filter_values=${spatialFilterValues}`
 
     axios.get(fullUrl).then((response) => {
         setLoading(false);

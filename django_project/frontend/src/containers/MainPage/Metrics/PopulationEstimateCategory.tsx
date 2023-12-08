@@ -35,8 +35,7 @@ const PopulationEstimateCategoryCount = (props: any) => {
     endYear,
     activityData,
     activityIds,
-    spatialFilterValues,
-    isDataConsumer
+    spatialFilterValues
   } = props;
   let year: number | null = null;
   const [speciesData, setSpeciesData] = useState([]);
@@ -59,8 +58,7 @@ const PopulationEstimateCategoryCount = (props: any) => {
 
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
-    let fullUrl = `${FETCH_POPULATION_ESTIMATE_CATEGORY_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityIds}&spatial_filter_values=${spatialFilterValues}`
-    fullUrl = isDataConsumer ? fullUrl : `${fullUrl}&property=${propertyId}`
+    let fullUrl = `${FETCH_POPULATION_ESTIMATE_CATEGORY_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&activity=${activityIds}&spatial_filter_values=${spatialFilterValues}`
     axios.get(fullUrl).then((response) => {
         setLoading(false);
         if (response.data) {
