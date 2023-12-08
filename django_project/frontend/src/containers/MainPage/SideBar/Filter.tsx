@@ -46,7 +46,7 @@ import {
     useGetUserInfoQuery,
     useGetProvinceQuery, UserInfo
 } from "../../../services/api";
-import {isMapDisplayed, isDataConsumer} from "../../../utils/Helpers";
+import {isMapDisplayed} from "../../../utils/Helpers";
 import Button from "@mui/material/Button";
 import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 import {SeachPlaceResult} from '../../../utils/SearchPlaces';

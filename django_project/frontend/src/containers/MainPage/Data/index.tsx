@@ -136,12 +136,6 @@ const DataList = () => {
             'activity': activityId,
             'spatial_filter_values': spatialFilterValues,
         }
-        if (isDataConsumer(userInfoData)) {
-            delete _data['property']
-            if (userInfoData.user_permissions.includes("Can view report as provincial data consumer")) {
-                delete _data['organisation']
-            }
-        }
         axios.post(
             FETCH_AVAILABLE_DATA, _data, {
                 cancelToken: cancelTokenSourceRef.current.token
