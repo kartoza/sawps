@@ -608,6 +608,34 @@ class TestRemindersView(TestCase):
         self.assertIn('can_set_reminder_type', context)
         self.assertTrue(context['can_set_reminder_type'])
 
+    def test_get_context_data_with_empty_organisation(self):
+        test_manager = User.objects.create_user(
+            username='test_manager',
+            password='testpassword123454$',
+            email='test_manager@gamil.com'
+        )
+        OrganisationRepresentative.objects.create(
+            organisation=self.organisation,
+            user=test_manager
+        )
+        logged_in = self.client.login(
+            username=test_manager.username,
+            password='testpassword123454$'
+        )
+        self.assertTrue(logged_in)
+        url = reverse('reminders', kwargs={'slug': test_manager.username})
+
+        response = self.client.get(url)
+        view = RemindersView()
+        view.setup(request=response.wsgi_request)
+        reminders = []
+        view.get_reminders = lambda request: reminders
+
+        context = view.get_context_data()
+        self.assertIn('can_set_reminder_type', context)
+        self.assertFalse(context['can_set_reminder_type'])
+
+
     def test_edit_reminder(self):
         # Create a test reminder
         reminder = Reminders.objects.create(
