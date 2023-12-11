@@ -619,7 +619,13 @@ def write_report_to_rows(queryset, request, report_functions=None):
         csv_reports = []
         for report_name in reports_list:
             if report_name in report_functions:
-                rows = report_functions[report_name](queryset, request)
+                if report_name == PROVINCE_REPORT:
+                    taxon_qs = get_taxon_queryset(request)
+                    rows = report_functions[
+                        report_name
+                    ](taxon_qs, request)
+                else:
+                    rows = report_functions[report_name](queryset, request)
                 dataframe = pd.DataFrame(rows)
                 filename = "data_report_" + report_name
                 filename = (
@@ -658,8 +664,11 @@ def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         'annualpopulationperactivity__'
         'activity_type_id__in'
     )
-    activity_type_ids = filters[activity_field]
-    del filters[activity_field]
+    if activity_field in filters:
+        activity_type_ids = filters[activity_field]
+        del filters[activity_field]
+    else:
+        activity_type_ids = ActivityType.objects.values_list('id', flat=True)
     valid_activities = ActivityType.objects.filter(id__in=activity_type_ids)
     activity_data = AnnualPopulationPerActivity.objects.filter(
         annual_population__property__in=queryset,
