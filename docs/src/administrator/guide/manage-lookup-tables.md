@@ -25,6 +25,8 @@ When you are adding/managing/deleting records on the administration site you wil
 
 On the popup that opens you will be able to edit the record within the lookup table.
 
+The `Sort id` field is used to specify the order in which the records appear in the various dropdown menus. If you do not have a preferred order for the records you can leave the field blank (this will automatically sort the records in ascending alphabetical order) but if you would like a specific order you must specify a numeric value in the field (e.g. High would be 1, medium would be 2, and low would be 3).
+
 ![Manage Lookup Tables 2](./img/manage-lookup-tables-2.png)
 
 Once you have made your changes you can click on 1️⃣ the `Save` button.

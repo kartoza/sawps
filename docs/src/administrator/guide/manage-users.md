@@ -95,6 +95,8 @@ To make changes to an existing user, you can click on 1️⃣ the username of th
 
 This will redirect you to a `Change Organisation` page where you can edit the information previously used to populate the invitation, or you can delete the invitation.
 
+In the `Groups:` section, the user should always be part of the `Organisation member` group and then depending on whether the organisation they are a part of is National or Provincial, you should select the relevant `National` or `Provincial` user group(s) (i.e. A National Organsiation would have a National data consumer).
+
 ![Users Page 15](./img/users-page-15.png)
 
 Once you have changed the necessary information, scroll down and then you can click on 1️⃣ any one of the three save options or click on 2️⃣ the `Delete` button to remove the user.
