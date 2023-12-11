@@ -76,7 +76,7 @@ class UserLogin(models.Model):
         try:
             return self.user.username
         except User.DoesNotExist:
-            return self.id
+            return str(self.id)
 
     class Meta:
         verbose_name = 'User login'
@@ -218,7 +218,7 @@ class UserProfile(models.Model):
         try:
             return self.user.username
         except User.DoesNotExist:
-            return self.id
+            return str(self.id)
 
     class Meta:
         verbose_name = 'User'

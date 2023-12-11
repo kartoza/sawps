@@ -179,7 +179,7 @@ class TestUser(TestCase):
         self.user_profile.user_id = 99999999999
         self.assertEqual(
             self.user_profile.__str__(),
-            self.user_profile.id
+            str(self.user_profile.id)
         )
 
 
@@ -218,7 +218,7 @@ class TestUserLogin(TestCase):
         self.user_login.user_id = 99999999999
         self.assertEqual(
             self.user_login.__str__(),
-            self.user_login.id
+            str(self.user_login.id)
         )
 
 
