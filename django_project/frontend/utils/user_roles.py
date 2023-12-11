@@ -20,9 +20,7 @@ from stakeholder.models import (
     OrganisationUser,
     OrganisationRepresentative,
     UserProfile,
-    Organisation,
-	OrganisationInvites, 
-	MANAGER
+    Organisation
 )
 
 
