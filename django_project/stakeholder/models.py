@@ -93,10 +93,6 @@ class Organisation(models.Model):
         null=False,
         blank=True
     )
-    data_use_permission = models.ForeignKey(
-        'regulatory_permit.dataUsePermission',
-        on_delete=models.CASCADE
-    )
     national = models.BooleanField(null=True, blank=True)
     province = models.ForeignKey(
         Province,
