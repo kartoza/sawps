@@ -143,7 +143,7 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 
 ![Change Statistical Model](./img/django-change-data-12.png)
 
-3. **Delete Checkbox**: Check mark the checkbox to delete the associat statistical output type.
+3. **Delete Checkbox**: Check mark the checkbox to delete the associated statistical output type.
 
 4. **Delete**: The administrator can delete the statistical model by clicking on the `Delete` button. It will ask for confirmation to delete the statistical model object.
 
