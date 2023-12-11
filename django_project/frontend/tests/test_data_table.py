@@ -911,6 +911,26 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         path = os.path.join(settings.MEDIA_ROOT, "download_data")
         self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
 
+    def test_download_xlsx_data_all_reports_without_activity_filter(self) -> None:
+        """Test download data table filter by activity name"""
+        url = self.url
+
+        data = {
+            "file": "xlsx",
+            "species": "SpeciesA",
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test if file output is xlsx
+        self.assertEqual(response.data['file'], "/media/download_data/data_report.xlsx")
+
+        # check if xlsx files exists in the folder
+        path = os.path.join(settings.MEDIA_ROOT, "download_data")
+        self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
+
 
 class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
     """Test Case for download data"""
