@@ -23,7 +23,7 @@ def calculate_species_count_per_province(
     ).values(
         'year', 'property__province__name', 'taxon__scientific_name'
     ).annotate(
-        total_population=Sum('total')
+        total_population=Sum('total', distinct=True)
     ).order_by('-year', '-total_population')
     result_data = list()
     for pop_data in annual_populations:
