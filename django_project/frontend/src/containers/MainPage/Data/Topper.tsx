@@ -55,6 +55,12 @@ const Topper = () => {
         setTab(pathname)
     }, [window.location.pathname])
 
+    useEffect(() => {
+        if (tab === 'reports') {
+            setSpeciesIcon("/static/images/default-species-topper.svg")
+        }
+    }, [tab])
+
 
     useEffect(() => {
         if (tab === 'reports') {
@@ -136,7 +142,7 @@ const Topper = () => {
           </Box>
           <Box className={'topper-grey'} padding={'10px'}>
               <Box>
-                  <b>Species list</b>: {selectedSpeciesList}
+                  <b>Species list</b>: {tab === 'reports' ? selectedSpeciesList: selectedSpecies}
               </Box>
               <Box>
                   <b>Organisation list</b>: {organisationName}

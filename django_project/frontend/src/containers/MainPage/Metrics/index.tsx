@@ -9,7 +9,7 @@ import SpeciesCountPerProvinceChart from "./SpeciesCountPerProvinceChart";
 import TotalCountPerActivity from "./TotalCountPerActivity";
 import PopulationEstimateCategoryCount from "./PopulationEstimateCategory";
 import PropertyCountPerCategoryChart from "./PropertyCountPerCategory";
-import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery, UserInfo} from "../../../services/api";
+import {useGetActivityAsObjQuery, useGetPropertyTypeQuery, useGetUserInfoQuery} from "../../../services/api";
 import Topper from "../Data/Topper";
 import Loading from "../../../components/Loading";
 import StandardDeviationMeanChart from "./StandardDeviationMeanChart";
@@ -21,6 +21,8 @@ const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
+    const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
+    const spatialFilterValues = useAppSelector((state: RootState) => state.SpeciesFilter.spatialFilterValues)
     // start year on charts is taken from Filter's endYear.
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -49,15 +51,6 @@ const Metrics = () => {
         isSuccess: isPropertyTypesSuccess
     } = useGetPropertyTypeQuery()
 
-    function isDataConsumer(userInfo: UserInfo) {
-        if (!userInfo?.user_roles) return false;
-        const dataConsumers = new Set([
-          "National data consumer",
-            "Provincial data consumer"
-        ])
-        return userInfo.user_roles.some(userRole => dataConsumers.has(userRole))
-    }
-
     let activityParams = activityId;
     if (activityList) {
         activityParams = activityId.split(',').length === activityList.length ? 'all': activityId
@@ -73,8 +66,7 @@ const Metrics = () => {
     const fetchActivityPercentageData = () => {
         setLoading(true)
 
-        let fullUrl = `${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}`
-        fullUrl = isDataConsumer(userInfoData) ? fullUrl : `${fullUrl}&property=${propertyId}`
+        let fullUrl = `${FETCH_ACTIVITY_PERCENTAGE_URL}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityParams}&property=${propertyId}`
 
         axios.get(fullUrl).then((response) => {
             setLoading(false)
@@ -196,13 +188,14 @@ const Metrics = () => {
                                             propertyTypeList={propertyTypes}
                                             propertyId={propertyId}
                                             year={endYear}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                             chartId={'property-count-per-population-category-chart'}
                                             chartTitle={'Number of properties per population category (count) of {species} for {year}'}
                                             xLabel={'Population size category (Count)'}
                                             url={'/api/property-count-per-population-category-size/'}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                 )}
@@ -216,13 +209,14 @@ const Metrics = () => {
                                             propertyTypeList={propertyTypes}
                                             propertyId={propertyId}
                                             year={endYear}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                             chartId={'property-count-per-population-density-category'}
                                             chartTitle={'Number of properties per population category (population density) of {species} for {year}'}
                                             xLabel={'Population size categories (population density)'}
                                             url={'/api/property-count-per-population-density-category/'}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                 )}
@@ -236,13 +230,14 @@ const Metrics = () => {
                                             propertyTypeList={propertyTypes}
                                             propertyId={propertyId}
                                             year={endYear}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                             chartId={'property-count-per-area-category-chart'}
                                             chartTitle={'Number of properties per categories of area (ha) for {species} for {year}'}
                                             xLabel={'Area size category (ha)'}
                                             url={'/api/property-count-per-area-category/'}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                 )}
@@ -256,13 +251,14 @@ const Metrics = () => {
                                             propertyTypeList={propertyTypes}
                                             propertyId={propertyId}
                                             year={endYear}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                             chartId={'property-count-per-area-available-to-species-category-chart'}
                                             chartTitle={'Number of properties per categories of area (ha) available to {species} for {year}'}
                                             xLabel={'Area size category (ha)'}
                                             url={'/api/property-count-per-area-available-to-species-category/'}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
                                         />
                                     </Grid>
                                 )}
@@ -276,6 +272,9 @@ const Metrics = () => {
                                             propertyId={propertyId}
                                             startYear={startYear}
                                             endYear={endYear}
+                                            organisationIds={organisationId}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                         />
@@ -293,6 +292,8 @@ const Metrics = () => {
                                             startYear={startYear}
                                             endYear={endYear}
                                             activityTypeList={activityList}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                         />
                                     </Grid>
                                 )}
@@ -308,7 +309,8 @@ const Metrics = () => {
                                             startYear={startYear}
                                             endYear={endYear}
                                             activityData={activityData}
-                                            isDataConsumer={isDataConsumer(userInfoData)}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                         />
                                     </Grid>
                                     )}
@@ -320,7 +322,9 @@ const Metrics = () => {
                                             <StandardDeviationMeanChart
                                                 species={selectedSpecies}
                                                 propertyIds={propertyId}
-                                                title={`Mean and standard deviation of age classes for ${selectedSpecies}`}/>
+                                                activityIds={activityId}
+                                                spatialFilterValues={spatialFilterValues}
+                                                title={`Mean and standard deviation of age classes of ${selectedSpecies} for ${endYear}`}/>
                                         </Grid>
                                     )}
 

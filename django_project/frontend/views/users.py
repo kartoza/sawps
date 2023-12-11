@@ -1,9 +1,12 @@
 import json
+import uuid
+
 from sawps.views import AddUserToOrganisation
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
     OrganisationUser,
+    OrganisationRepresentative,
     UserProfile,
     UserRoleType, MANAGER, MEMBER
 )
@@ -96,12 +99,12 @@ class OrganisationUsersView(
             return True
         return False
 
-    def is_user_registerd(self, email):
+    def is_user_registered(self, email):
         user = User.objects.filter(email=email).first()
         if user:
-            return True
+            return (True, user)
         else:
-            return False
+            return (False, None)
 
 
     def calculate_rows_per_page(self, data):
@@ -159,10 +162,9 @@ class OrganisationUsersView(
         return JsonResponse({'status': 'success'})
 
     def invite_post(self, request):
-
         # retrieve data from front end/html template
         email = request.POST.get('email')
-        role = request.POST.get('inviteAs')
+        assign_as = request.POST.get('inviteAs')
         permissions = request.POST.get('memberRole')
 
         # assign role from the roles defined in the db
@@ -173,7 +175,6 @@ class OrganisationUsersView(
 
         # get role by name
         user_role = self.get_user_role(role)
-
         try:
             # add invitation to model
             is_new_invitation = self.is_new_invitation(
@@ -182,37 +183,32 @@ class OrganisationUsersView(
             )
             org_id = get_current_organisation_id(request.user)
             if not is_new_invitation:
-                if role == 'manager':
-                    create_invite = OrganisationInvites(
-                        email=email,
-                        organisation_id=org_id,
-                        user_role=user_role,
-                        assigned_as=MANAGER
-                    )
-                else:
-                    create_invite = OrganisationInvites(
-                        email=email,
-                        organisation_id=org_id,
-                        user_role=user_role,
-                        assigned_as=MEMBER
-                    )
-
                 organisation = Organisation.objects.get(id=org_id)
 
                 # assert if user is registered on platform
-                registered = self.is_user_registerd(email)
+                registered, user = self.is_user_registered(email)
+                invitation_uuid = uuid.uuid4().hex
                 if registered:
+                    return_url = (
+                        Site.objects.get_current().domain +
+                        f'/adduser/{invitation_uuid}/'
+                    )
+                else:
                     encoded_email = quote(email, safe='')
                     return_url = (
                         Site.objects.get_current().domain +
-                        f'/adduser/{encoded_email}/{organisation.name}/'
+                        '/accounts/signup/?email=' + encoded_email +
+                        '&uuid=' + quote(invitation_uuid)
                     )
-                else:
-                    return_url = (
-                        Site.objects.get_current().domain +
-                        '/accounts/signup/?email=' + quote(email) +
-                        '&organisation=' + quote(organisation.name)
-                    )
+
+                create_invite = OrganisationInvites(
+                    email=email,
+                    organisation_id=org_id,
+                    user_role=user_role,
+                    assigned_as=MANAGER if assign_as == 'manager' else MEMBER,
+                    user=user,
+                    uuid=invitation_uuid
+                )
 
                 # object to pass to view function
                 email_details = {
@@ -279,9 +275,27 @@ class OrganisationUsersView(
             return JsonResponse({'status': 'failed'})
 
     def get_organisation_users(self, request):
-        organisation_user_list = OrganisationUser.objects.filter(
-            organisation_id=get_current_organisation_id(request.user))
+        # Get manager
+        organisation_reps_list = OrganisationRepresentative.objects.filter(
+            organisation_id=get_current_organisation_id(request.user)
+        )
         organisation_users = []
+        for user in organisation_reps_list:
+            object_to_save = {
+                "id": user.user.id,
+                "organisation_user": str(user.user),
+                "role": MANAGER,
+                "assigned_as": MANAGER,
+                "joined": True
+            }
+            organisation_users.append(object_to_save)
+
+        # Get member
+        organisation_user_list = OrganisationUser.objects.filter(
+            organisation_id=get_current_organisation_id(request.user)
+        ).exclude(
+            user__in=[uid.user for uid in organisation_reps_list]
+        )
 
         for user in organisation_user_list:
             # get role from organisation invites
@@ -314,8 +328,9 @@ class OrganisationUsersView(
                     "assigned_as": assigned_as,
                     "joined": False
                 }
-            if not user.user == request.user:
-                organisation_users.append(object_to_save)
+
+            organisation_users.append(object_to_save)
+
 
         users_page = request.GET.get('users_page', 1)
 
@@ -354,7 +369,6 @@ class OrganisationUsersView(
         rows_per_page = request.GET.get('invites_per_page', 5)
 
         paginator = Paginator(paginated_organisation_invites, rows_per_page)
-
         try:
             invites = paginator.page(invites_page)
         except PageNotAnInteger:

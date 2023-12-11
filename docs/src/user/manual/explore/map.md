@@ -13,6 +13,8 @@ context_id: 7eb5TeyNcVuDHbhYxp9UnB
 
 # Map Functionalities Documentation
 
+> **Disclaimer:** The images on the map depict property locations represented as points. It's important to note that the map displays the location of the data on the map itself unless you are a data consumer.
+
 This documentation outlines the functionalities available in the map view, including features that allow the user to interact with and customise the map display for their needs.
 
 ### Map
@@ -21,7 +23,7 @@ This documentation outlines the functionalities available in the map view, inclu
 
 1. **Map**: The `Map` tab.
 
-2. **Question Mark Icon**: Click on the `Question Mark Icon` to know the valuable insights into optimising the use of the Map page. Explore the helpful tips and guidelines provided in this sidebar to enhance the efficiency in navigating and utilising the map features. Click on the `visit our Documentation` link to visit the documentation
+2. **Question Mark Icon**: Click on the `Question Mark Icon` to learn valuable insights into optimising the use of the Map page. Explore the helpful tips and guidelines provided in this sidebar to enhance the efficiency in navigating and utilising the map features. Click on the `visit our Documentation` link to visit the documentation.
     ![Side Bar](./img/map-4.png)
 
 3. **Points**: Upon landing on the page, users are greeted with a visual representation of property locations in the form of points, providing an immediate overview of the geographical distribution of properties (unless the user is designated as a data consumer).

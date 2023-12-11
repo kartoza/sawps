@@ -33,10 +33,19 @@ from stakeholder.models import (
     Organisation,
     UserRoleType,
     UserTitle,
-    Reminders
+    Reminders,
+    OrganisationUser,
+    OrganisationRepresentative
 )
 from stakeholder.tasks import send_reminder_emails
-
+from frontend.static_mapping import (
+    PROVINCIAL_ROLES,
+    NATIONAL_ROLES
+)
+from frontend.utils.user_roles import (
+    get_user_roles
+)
+from property.models import Property
 logger = logging.getLogger(__name__)
 
 
@@ -328,10 +337,10 @@ class RemindersView(RegisteredOrganisationBaseView):
             adjusted_datetime = adjust_date_to_server_time(request)
             timezone_value = request.POST.get('timezone')
 
-            if request.POST.get('reminder_type') == 'personal':
-                reminder_type = Reminders.PERSONAL
-            else:
+            if request.POST.get('reminder_type') == 'all':
                 reminder_type = Reminders.EVERYONE
+            else:
+                reminder_type = Reminders.PERSONAL
             try:
                 organisation = Organisation.objects.get(
                     id=get_current_organisation_id(request.user)
@@ -442,10 +451,10 @@ class RemindersView(RegisteredOrganisationBaseView):
         reminder_val = request.POST.get('reminder')
         email_sent = False
         cancel_task = False
-        if type == 'personal':
-            type = Reminders.PERSONAL
-        else:
+        if type == 'all':
             type = Reminders.EVERYONE
+        else:
+            type = Reminders.PERSONAL
         if status == 'active':
             status = Reminders.ACTIVE
             email_sent = False
@@ -511,11 +520,22 @@ class RemindersView(RegisteredOrganisationBaseView):
         else:
             return super().dispatch(request, *args, **kwargs)
 
+    def is_organisation_manager(self):
+        if self.request.user.is_superuser:
+            return True
+        current_organisation_id = get_current_organisation_id(
+            self.request.user)
+        if current_organisation_id:
+            return OrganisationRepresentative.objects.filter(
+                user=self.request.user,
+                organisation_id=current_organisation_id
+            )
+        return False
 
     def get_context_data(self, **kwargs):
         context = super(RemindersView, self).get_context_data(**kwargs)
         context['reminders'] = self.get_reminders(self.request)
-
+        context['can_set_reminder_type'] = self.is_organisation_manager()
         return context
 
 
@@ -633,13 +653,39 @@ class OrganisationAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         organisation_id = get_current_organisation_id(request.user)
-        organisation = Organisation.objects.get(id=organisation_id)
-        if organisation.national:
-            queryset = Organisation.objects.all().order_by("name")
-        else:
-            queryset = Organisation.objects.filter(
-                province=organisation.province
-            ).order_by("name")
+        organisation = None
+        if organisation_id:
+            organisation = Organisation.objects.get(id=organisation_id)
+        queryset = Organisation.objects.all().order_by('name')
+        user_roles = set(get_user_roles(self.request.user))
+        if not request.user.is_superuser:
+            if PROVINCIAL_ROLES & user_roles:
+                if organisation and organisation.province:
+                    # provincial roles can see all organisations
+                    # that have property in the same province
+                    queryset = Organisation.objects.filter(
+                        id__in=Property.objects.filter(
+                            province=organisation.province
+                        ).values('organisation_id').distinct()
+                    ).order_by('name')
+                else:
+                    # when current org does not have province
+                    # then return empty
+                    # else user can see other organisation without province
+                    queryset = Organisation.objects.none()
+            elif NATIONAL_ROLES & user_roles:
+                # national roles can access all organisations
+                pass
+            else:
+                # for organisation member/manager, then
+                # fetch organisations that he belongs to
+                queryset = (
+                    Organisation.objects.filter(
+                        id__in=OrganisationUser.objects.filter(
+                            user=request.user
+                        ).values('organisation_id').distinct()
+                    ).order_by('name')
+                )
         return Response(
             status=200,
             data=OrganisationSerializer(queryset, many=True).data

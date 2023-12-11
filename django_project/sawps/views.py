@@ -11,9 +11,10 @@ from django.utils.encoding import force_str
 from django.views.generic import View
 from core.settings.contrib import SUPPORT_EMAIL
 from stakeholder.models import (
-    Organisation,
     OrganisationInvites,
-    OrganisationUser
+    OrganisationUser,
+    OrganisationRepresentative,
+    MANAGER
 )
 from sawps.email_verification_token import email_verification_token
 from django.template.loader import render_to_string
@@ -46,7 +47,7 @@ class ActivateAccount(View):
                 backend='django.contrib.auth.backends.ModelBackend',
             )
             messages.success(request, ('Your account have been confirmed.'))
-            return redirect('/accounts/two_factor/setup')
+            return redirect('/accounts/two-factor/setup')
         else:
             messages.warning(
                 request,
@@ -59,62 +60,75 @@ class ActivateAccount(View):
 
 
 class AddUserToOrganisation(View):
-    def get(self, request, user_email, organisation, *args, **kwargs):
-        self.adduser(user_email, organisation, *args, **kwargs)
+    def get(self, request, invitation_uuid, *args, **kwargs):
+        self.adduser(invitation_uuid, *args, **kwargs)
         return redirect('home')
 
-    def adduser(self, user_email, organisation, *args, **kwargs):
+    def adduser(self, invitation_uuid, *args, **kwargs):
         '''when the user has been invited to join an organisation
         this view will Add the User to the OrganisationUser
         and update the linked models
         OrganisationInvites'''
 
         try:
-            org = Organisation.objects.get(name=str(organisation))
-            user = User.objects.filter(email=user_email).first()
-            if user:
-                org_invites = OrganisationInvites.objects.filter(
-                    email=user.email, organisation=org)
-                if org_invites:
-                    for invite in org_invites:
-                        # Update the joined field to True
-                        invite.joined = True
-                        invite.save()
-                        # check if not already added to prevent duplicates
-                        org_user = OrganisationUser.objects.filter(
-                            user=user,
+            org_invite = OrganisationInvites.objects.filter(
+                uuid=invitation_uuid
+            ).order_by('id').last()
+            if org_invite:
+                # Update the joined field to True
+                org_invite.joined = True
+                org = org_invite.organisation
+                user = org_invite.user
+                if not user:
+                    user = User.objects.filter(email=org_invite.email).first()
+                org_invite.user = user
+                org_invite.save()
+
+                if user.user_profile:
+                    user.user_profile.current_organisation = org
+                    user.user_profile.save()
+
+                # check if not already added to prevent duplicates
+                org_user = OrganisationUser.objects.filter(
+                    user=org_invite.user,
+                    organisation=org
+                ).first()
+                if not org_user:
+                    # add user to organisation users
+                    org_user = OrganisationUser.objects.create(
+                        user=org_invite.user,
+                        organisation=org
+                    )
+                    org_user.save()
+
+                if org_invite.assigned_as == MANAGER:
+                    # check if not already added to prevent duplicates
+                    org_rep = OrganisationRepresentative.objects.filter(
+                        user=org_invite.user,
+                        organisation=org
+                    ).first()
+                    if not org_rep:
+                        # add user to organisation users
+                        org_rep = OrganisationRepresentative.objects.create(
+                            user=org_invite.user,
                             organisation=org
-                        ).first()
-                        if not org_user:
-                            # add user to organisation users
-                            user = OrganisationUser.objects.create(
-                                user=user,
-                                organisation=org
-                            )
-                            org_user.save()
-        except Organisation.DoesNotExist:
-            org = None
+                        )
+                        org_rep.save()
         except Exception:
             return None
 
-
-    def is_user_already_joined(self, email, organisation):
+    def is_user_invited(self, invitation_uuid):
         """
-        Check if user already joined the organisation
+        Check if user invited to the organisation
         """
 
         try:
-            org = Organisation.objects.get(name=str(organisation))
-            joined = OrganisationInvites.objects.get(
-                email=email, organisation_id=org)
-            if joined:
-                return True
-            else:
-                return False
+            OrganisationInvites.objects.get(
+                uuid=invitation_uuid
+            )
+            return True
         except OrganisationInvites.DoesNotExist:
             return False
-        except Organisation.DoesNotExist:
-            return None
 
     def send_invitation_email(self, email_details):
         subject = 'SAWPS Organisation Invitation'
@@ -194,14 +208,7 @@ class CustomPasswordResetView(View):
 
         try:
             user = User.objects.get(email=user_email)
-            user_name = ''
-            try:
-                if user.username is not None:
-                    user_name = user.username
-                elif user.first_name is not None:
-                    user_name = user.first_name
-            except AttributeError:
-                user_name = user_email
+            user_name = user.username
             # Generate the reset token and UID
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))

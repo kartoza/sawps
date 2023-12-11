@@ -1,8 +1,7 @@
 import base64
 import csv
-import json
-import shutil
 import os
+import shutil
 
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -112,6 +111,7 @@ class AnnualPopulationTestMixins:
             spatial_data=self.spatial_data,
             context_layer_value='spatial filter test'
         )
+        self.organisations = [self.organisation_1.id]
 
 
 class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
@@ -124,6 +124,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "species": "SpeciesA",
             "activity": str(value.activity_type.id),
             "reports": "Property_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -143,6 +144,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "species": "SpeciesA",
             "activity": '',
             "reports": "Property_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -188,6 +190,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "species": "SpeciesA",
             "activity": '',
             "reports": "Activity_report,Property_report,Province_report,Sampling_report,Species_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -258,6 +261,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "activity": str(value.activity_type.id),
             "reports": "Property_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -277,6 +281,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "end_year": self.annual_populations[0].year,
             "spatial_filter_values": "spatial filter test",
             "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "reports": "Property_report"
         }
         response = self.client.get(self.url, data, **self.auth_headers)
@@ -332,6 +337,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "end_year": year,
             "reports": "Activity_report",
             "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -349,6 +355,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "end_year": year,
             "reports": "Sampling_report",
             "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -371,6 +378,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "end_year": year,
             "reports": "Sampling_report",
             "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.post(url, data, **self.auth_headers)
@@ -408,6 +416,8 @@ class NationalUserTestCase(TestCase):
         )
         user.user_profile.current_organisation = self.organisation_1
         user.save()
+        self.national_data_consumer_group, _ = Group.objects.get_or_create(name=NATIONAL_DATA_CONSUMER)
+        user.groups.add(self.national_data_consumer_group)
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
@@ -440,6 +450,7 @@ class NationalUserTestCase(TestCase):
             spatial_data=self.spatial_data,
             context_layer_value='spatial filter test'
         )
+        self.organisations = [self.organisation_1.id]
 
     def test_national_property_report_all_activity(self) -> None:
         """Test property report for national data consumer"""
@@ -452,6 +463,7 @@ class NationalUserTestCase(TestCase):
         url = self.url
         params = {
             'activity': '',
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
@@ -491,6 +503,7 @@ class NationalUserTestCase(TestCase):
         params = {
             'activity': ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             'reports': ACTIVITY_REPORT,
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
@@ -527,6 +540,7 @@ class NationalUserTestCase(TestCase):
         params = {
             'activity': ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             'reports': SPECIES_REPORT,
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
@@ -569,6 +583,7 @@ class NationalUserTestCase(TestCase):
         params = {
             'activity': '',
             'reports': PROVINCE_REPORT,
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
@@ -608,7 +623,25 @@ class NationalUserTestCase(TestCase):
         data = {
             "species": "SpeciesA",
             "property": property,
-            "organisation": organisation,
+            "organisation": '',
+            "start_year": year,
+            "end_year": year,
+            "reports": (
+                "Activity_report,Province_report,"
+                "Species_report,Property_report"
+            ),
+            "activity": str(value.activity_type.id),
+            'spatial_filter_values': 'spatial filter test',
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+        # test with organisation
+        data = {
+            "species": "SpeciesA",
+            "property": property,
+            "organisation": f'{str(organisation)}',
             "start_year": year,
             "end_year": year,
             "reports": (
@@ -642,14 +675,19 @@ class RegionalUserTestCase(TestCase):
                 username='testuserd',
                 password='testpasswordd'
             )
-        self.organisation_1 = organisationFactory.create()
+        self.province = ProvinceFactory.create(
+            name='Limpopo'
+        )
+        self.organisation_1 = organisationFactory.create(
+            province=self.province
+        )
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
             user=user,
             organisation=self.organisation_1
         )
         self.role_organisation_manager = userRoleTypeFactory.create(
-            name="Regional data consumer",
+            name="Provincial data consumer",
         )
 
         group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
@@ -688,16 +726,38 @@ class RegionalUserTestCase(TestCase):
         session.save()
 
 
-    def test_regional_data_consumer(self) -> None:
-        """Test data table filter by regional data consumer"""
+    def test_no_province_data(self) -> None:
+        """Test data table filter by regional data consumer.
+        The response would be empty since there are no Annual Population data
+        for the user's organisation's province.
+        """
         data = {
             "reports": "Activity_report,Species_report,Property_report",
             "activity": ",".join(
                 [
                     str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
                 ]
-            ),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            )
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_has_province_data(self) -> None:
+        """Test data table filter by regional data consumer.
+        The response would not be empty since there are Annual Population data
+        for the user's organisation's province.
+        """
+        self.property.province = self.organisation_1.province
+        self.property.save()
+        data = {
+            "reports": "Activity_report,Species_report,Property_report",
+            "activity": ",".join(
+                [
+                    str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
+                ]
+            )
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
@@ -765,6 +825,7 @@ class DataScientistTestCase(TestCase):
         self.client = Client()
         session = self.client.session
         session.save()
+        self.organisations = [self.organisation_1.id]
 
     def test_regional_data_scientist(self) -> None:
         """Test data table filter by regional data scientist"""
@@ -774,6 +835,7 @@ class DataScientistTestCase(TestCase):
                 "Species_report,Property_report"
             ),
             "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         url = self.url
@@ -796,6 +858,7 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
             "species": "SpeciesA",
             "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             "reports": "Activity_report,Property_report,Sampling_report,Species_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
@@ -871,6 +934,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             "species": "SpeciesA",
             "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             "reports": "Activity_report,Property_report,Species_report,Province_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)

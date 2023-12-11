@@ -18,15 +18,15 @@ The Profile tab is the first tab on the profile configuration page. The page con
 
 ![Profile Page](img/profile.png)
 
-1. **The profile tab**: A tab that displays the user profile information
-2. **Profile picture**: An area that displays the uploaded profile image
-3. **Upload profile picture link**: Opens the upload profile picture popup (see profile picture popup)
-4. **Update password button**: Opens the update password form for the user to make a new password for the platform (see update password form)
-5. **First name field**: A text field for the user to add their first name which is saved to the database
-6. **Last name field**: A text field for the user to add their last name which is saved to the database
-7. **Title dropdown**: A drop-down for the user to select their title which is saved to the database
-8. **Email address field**: A text field for the user to add their email address which is saved to the database
-9. **Update button**: When clicked all changes made to the profile page field are saved to the database
+1. **The profile tab**: A tab that displays the user profile information.
+2. **Profile picture**: An area that displays the uploaded profile image.
+3. **Upload profile picture link**: Opens the upload profile picture popup (see profile picture popup).
+4. **Update password button**: Opens the update password form for the user to make a new password for the platform (see update password form).
+5. **First name field**: A text field for the user to add their first name which is saved to the database.
+6. **Last name field**: A text field for the user to add their last name which is saved to the database.
+7. **Title dropdown**: A drop-down for the user to select their title which is saved to the database.
+8. **Email address field**: A text field for the user to add their email address which is saved to the database.
+9. **Update button**: When clicked all changes made to the profile page field are saved to the database.
 
 ## Profile picture popup
 

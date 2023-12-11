@@ -8,13 +8,22 @@ from frontend.static_mapping import (
     ORGANISATION_MEMBER,
     ORGANISATION_MANAGER,
     DATA_CONSUMERS,
-    DATA_CONSUMERS_EXCLUDE_PERMISSIONS
-)
-from stakeholder.models import (
-    OrganisationUser, OrganisationInvites, MANAGER, UserProfile, Organisation
+    DATA_CONSUMERS_EXCLUDE_PERMISSIONS,
+    DATA_SCIENTISTS,
+    DATA_SCIENTIST_EXCLUDE_PERMISSIONS,
+    DATA_CONSUMERS_PERMISSIONS,
+    PROVINCIAL_DATA_CONSUMER
 )
 from frontend.utils.organisation import get_current_organisation_id
 from sawps.models import ExtendedGroup
+from stakeholder.models import (
+    OrganisationUser,
+    OrganisationRepresentative,
+    UserProfile,
+    Organisation,
+	OrganisationInvites, 
+	MANAGER
+)
 
 
 def is_organisation_member(user: User) -> bool:
@@ -52,10 +61,6 @@ def is_organisation_manager(
     :return: True if the user is a manager of the organisation,
         otherwise False.
     """
-
-    # Since user with OrganisationUser record will be added to
-    # organisation member/manager group, use group to check role.
-
     if not UserProfile.objects.filter(
             user=user
     ).exists():
@@ -64,20 +69,16 @@ def is_organisation_manager(
     if not user.user_profile.current_organisation and not organisation:
         return False
 
-    # TODO: Add the user object to organisation invites,
-    #  because users can change their email.
-    org_invite_exists = OrganisationInvites.objects.filter(
-        email=user.email,
-        organisation=(
-            organisation if organisation else
-            user.user_profile.current_organisation
-        ),
-        assigned_as=MANAGER
-    ).exists()
-    group_exists = 'Organisation Manager'.lower() in [
-        name.lower() for name in user.groups.values_list('name', flat=True)
-    ]
-    return org_invite_exists or group_exists
+    if organisation:
+        return OrganisationRepresentative.objects.filter(
+            user=user,
+            organisation=organisation
+        ).exists()
+    else:
+        return OrganisationRepresentative.objects.filter(
+            user=user,
+            organisation=user.user_profile.current_organisation
+        ).exists()
 
 
 def get_user_roles(user: User) -> List[str]:
@@ -129,6 +130,9 @@ def get_user_permissions(user: User) -> Set[str]:
         ext_group_permissions_set = set(
             ext_group_permissions.values_list('name', flat=True)
         )
+        ext_group_permissions_set = (
+            ext_group_permissions_set - DATA_CONSUMERS_PERMISSIONS
+        )
         permissions = permissions.union(ext_group_permissions_set)
         permissions.add('Can view province report')
 
@@ -141,10 +145,17 @@ def get_user_permissions(user: User) -> Set[str]:
         permissions = permissions.union(allowed_permission)
 
     if not user.is_superuser:
-        user_roles = get_user_roles(user)
-        if set(user_roles) & set(DATA_CONSUMERS):
+        user_roles = set(get_user_roles(user))
+        if user_roles & set(DATA_CONSUMERS):
             permissions = (
                 permissions - DATA_CONSUMERS_EXCLUDE_PERMISSIONS
+            )
+            permissions.add('Can view report as data consumer')
+            if PROVINCIAL_DATA_CONSUMER in user_roles:
+                permissions.add('Can view report as provincial data consumer')
+        if user_roles & set(DATA_SCIENTISTS):
+            permissions = (
+                permissions - DATA_SCIENTIST_EXCLUDE_PERMISSIONS
             )
 
     return permissions
