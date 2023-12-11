@@ -405,6 +405,12 @@ class BasePropertyCountAPIView(APIView):
         property_list = self.request.GET.get("property")
         year_filter = self.request.GET.get('year', None)
         taxon_filter = self.request.GET.get('species', None)
+        activity_filter = self.request.GET.get('activity', "")
+        spatial_filter = self.request.GET.get(
+            'spatial_filter_values', "").split(',')
+        spatial_filter = list(
+            filter(None, spatial_filter)
+        )
 
         filters = {}
 
@@ -416,6 +422,14 @@ class BasePropertyCountAPIView(APIView):
         if property_list:
             property_ids = property_list.split(",")
             filters['property_id__in'] = property_ids
+
+        if activity_filter:
+            filters['annualpopulationperactivity__activity_type_id__in'] = [
+                int(act) for act in activity_filter.split(',')
+            ]
+        if spatial_filter:
+            filters['property__spatialdatamodel__spatialdatavaluemodel__'
+                    'context_layer_value__in'] = spatial_filter
 
         queryset = AnnualPopulation.objects.filter(
             **filters
