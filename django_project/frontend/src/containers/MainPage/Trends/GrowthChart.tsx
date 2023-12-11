@@ -21,6 +21,7 @@ export interface GrowthDataItem {
     sort?: number;
     pop_size_cat?: string;
     province?: string;
+    pop_size_cat_label?: string;
 }
 
 interface GrowthChartInterface {
