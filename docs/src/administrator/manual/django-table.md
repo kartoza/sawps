@@ -17,7 +17,7 @@ context_id: e6Vaw8mReGPoc8vk4ZrqS9
 
 ![Django Admin Table](./img/django-table-1.png)
 
-1. **Add button**: Clicking on this button will allow administrators to add a new record in the table. Clicking [here](django-add-data.md) will redirect users to the add data record documentation.
+1. **Add button**: Clicking on this button will allow administrators to add a new record to the table. Clicking [here](django-add-data.md) will redirect users to the add data record documentation.
 
 2. **Search**: Feature to allow for searching of a specific object in the table using keywords.
 
@@ -33,7 +33,7 @@ context_id: e6Vaw8mReGPoc8vk4ZrqS9
 
 ![Group Table](./img/django-table-2.png)
 
-This table is used to store existing user groups, that will affect the available options in the [Report](../../user/manual/explore/reports.md) and 
+This table is used to store existing user groups, that will affect the available options in the [Report](../../user/manual/explore/reports.md) and
 available charts in the [Charts](../../user/manual/explore/charts.md).
 
 Administrators can assign a user to groups in the User Table.
@@ -44,7 +44,7 @@ Administrators can assign a user to groups in the User Table.
 
 3. **Edit Record**: Clicking on the object will allow administrators to change/edit a particular record. Click [here](django-change-data.md) to see detailed documentation about editing a group.
 
-Admnistrator can also configure what charts available to each group, by adding the necessary permission to each group.
+Administrators can also configure what charts are available to each group, by adding the necessary permission to each group.
 ![Group Permission](./img/django-table-9.png)
 
 
@@ -107,3 +107,23 @@ The Taxon table within the Django Admin interface provides administrators with t
 4. **Go Button**: The administrators can execute the selected action by clicking this button.
 
 5. **Edit Taxon**: Clicking on a specific taxon entry enables administrators to modify or edit the corresponding record. For detailed instructions on editing a taxon, refer to the documentation on [editing a taxon](django-change-data.md).
+
+## Statistical Table
+
+The Statistical table within the Django Admin interface equips administrators with powerful tools to efficiently manage statistical models.
+
+1. **Add Statistical Model**: Initiate the addition of a new statistical model by clicking the `ADD STATISTICAL MODEL` button. Detailed instructions on adding a new statistical model can be found in the documentation on [adding a statistical model](./django-add-data.md).
+
+2. **Search Functionality**: Utilise the search functionality to efficiently locate specific statistical model records.
+
+3. **Actions Dropdown**: The Actions dropdown provides the following options for managing statistical models:
+
+    - **Delete Selected Statistical Models**: Administrators can efficiently delete multiple selected statistical model records in bulk.
+
+    - **Restart Plumber Process**: This action facilitates the restart of the plumber process associated with the statistical models, ensuring updated and accurate results.
+
+4. **Go Button**: Execute the selected action by clicking the `Go` button.
+
+5. **Edit Statistical Model**: Modify or edit a specific statistical model entry by clicking on it. Refer to the documentation on [editing a statistical model](./django-change-data.md) for detailed instructions.
+
+Efficiently manage your statistical models with the comprehensive functionalities provided by the Statistical table in the Django Admin interface.
