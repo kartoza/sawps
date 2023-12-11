@@ -24,14 +24,17 @@ export interface SpeciesFilterInterface {
   selectedProvinceCount: number,
 }
 
+export const DEFAULT_START_YEAR_FILTER = 1960
+export const DEFAULT_END_YEAR_FILTER = new Date().getFullYear()
+
 const initialState: SpeciesFilterInterface = {
   SpeciesFilterList: [],
   selectedSpecies: "",
   selectedSpeciesList: "",
   months: [],
   selectedMonths: "",
-  startYear: 1960,
-  endYear:new Date().getFullYear(),
+  startYear: DEFAULT_START_YEAR_FILTER,
+  endYear:DEFAULT_END_YEAR_FILTER,
   propertyId:"",
   selectedInfoList:"",
   organisationId:"",

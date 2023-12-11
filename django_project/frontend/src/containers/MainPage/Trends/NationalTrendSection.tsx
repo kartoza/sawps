@@ -8,6 +8,7 @@ import './index.scss';
 import Loading from '../../../components/Loading';
 import AreaAvailableLineChart from "../Metrics/AreaAvailableLineChart";
 import { capitalizeSentence } from '../../../utils/Helpers';
+import { DEFAULT_START_YEAR_FILTER, DEFAULT_END_YEAR_FILTER } from '../../../reducers/SpeciesFilter';
 
 
 interface NationalTrendSectionInterface {
@@ -110,8 +111,8 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                                 <Grid item style={{ marginTop: 15 }}>
                                     <AreaAvailableLineChart
                                         propertyId={''}
-                                        startYear={1960}
-                                        endYear={new Date().getFullYear()}
+                                        startYear={DEFAULT_START_YEAR_FILTER}
+                                        endYear={DEFAULT_END_YEAR_FILTER}
                                         national={true}
                                     />
                                 </Grid>
