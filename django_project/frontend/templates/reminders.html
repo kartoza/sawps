@@ -49,7 +49,7 @@
                                 <textarea style="background-image: none;" class="form-control" id="reminder" name="reminder" required></textarea>
                                 <div class="invalid-feedback">Please provide a valid Reminder.</div>
                             </div>
-                            {% if user.is_superuser or user.user_profile.user_role_type_id == 'Admin' %}
+                            {% if can_set_reminder_type %}
                             <div class="form-group">
                                 <label for="reminderType">Reminder Type</label>
                                 <select style="background-image: none;" class="form-control" id="reminderType" name="reminderType">
