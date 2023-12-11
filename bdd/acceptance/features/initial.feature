@@ -8,8 +8,5 @@ Feature: testing website navigation
             Given user is on 'landingpage'
              When user clicks on 'Log in'
              Then page is 'landingpage with explore and upload data button visible'
-
-        Scenario: accessing map page
-            Given user is on the landingpage
-             When user clicks on 'Explore' link
+             Then user clicks on 'Explore' link
              Then the page is the'map' page

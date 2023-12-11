@@ -8,12 +8,12 @@ use_step_matcher("re")
 
 # global variables
 chrome_options = Options()
-#chrome_options.add_argument("--headless")
+# chrome_options.add_argument("--headless")
 
 
 @given("the user is on the landingpage")
 def step_user_is_on_homepage(context):
-    context.selenium = webdriver.chrome(options=chrome_options)
+    context.selenium = webdriver.Chrome(options=chrome_options)
     # homepage
     context.selenium.get(f"http://127.0.0.1:61100/")
 
@@ -29,50 +29,55 @@ def step_page_is_homepage(context):
 
 @given("user is on 'landingpage'")
 def step_user_is_on_landingpage(context):
-    context.selenium = webdriver.chrome(options=chrome_options)
-    # login to admin panel
+    context.selenium = webdriver.Chrome(options=chrome_options)
+    expected_title = "SAWPS"
+    # login to site
     # homepage
     context.selenium.get(f"http://127.0.0.1:61100/")
-    context.selenium.find_element(By.LINK_TEXT, 'Admin Page').click()
+    assert context.selenium.title == expected_title
 
 
 @when("user clicks on 'Log in'")
 def step_clicks_on_login(context):
+    # assert title matches page
+    # expected_title = "SAWPS - Login"
+    # assert context.selenium.title == expected_title
+
     # fill in login information
+    context.selenium.find_element(By.LINK_TEXT, 'LOGIN').click()
+
+    # fill in credentials
     username = context.selenium.find_element(By.ID, 'id_login')
     username.send_keys("admin@example.com")
     password = context.selenium.find_element(By.ID, 'id_password')
     password.send_keys("admin")
 
     # locate login button and click on it
-    context.selenium.find_element(By.XPATH, '//input[@value="Log in"]').click()
+    context.selenium.find_element(By.XPATH, "//button[@type='submit']").click()
 
 
 @then("page is 'landingpage with explore and upload data button visible'")
 def step_page_is_on_landingpage(context):
-    # Assert that the title matches the expected title
-    expected_title = "Landing page"
+    expected_title = "SAWPS"
+
     assert context.selenium.title == expected_title
-    # Close the browser window
-    context.selenium.quit()
+    context.selenium.find_element(By.XPATH, "//button[@buttontext='Explore']")
+    context.selenium.find_element(By.XPATH, "//button[@buttontext='Upload your data']")
 
 
-@given("user is on the landingpage")
-def step_user_is_on_homepage(context):
-    context.selenium = webdriver.chrome(options=chrome_options)
-    # homepage
-    context.selenium.get(f"http://127.0.0.1:61100/")
-
-
-@when("user clicks on 'Explore' link")
+@then("user clicks on 'Explore' link")
 def step_clicks_on_poi(context):
-    context.selenium.find_element(By.LINK_TEXT, 'Explore').click()
+    context.selenium.find_element(By.XPATH, "//button[@buttontext='Explore']").click()
 
 
 @then("the page is the'map' page")
 def step_page_is_poi(context):
     # Assert that the title matches the expected title
-    expected_title = "map"
+    expected_title = "SAWPS"
     assert context.selenium.title == expected_title
+
+    # check if map element is presents
+
+
     # Close the browser window
     context.selenium.quit()
