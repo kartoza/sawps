@@ -98,7 +98,7 @@ function Upload() {
                 <Grid container className='UploadContainer'>
                     { uploadMode === UploadMode.SelectProperty &&
                     <Grid item className='SearchArea'>
-                        <SearchPlace isAllowedToSearchProperty={true} onPlaceSelected={(place: SeachPlaceResult) => {
+                        <SearchPlace onPlaceSelected={(place: SeachPlaceResult) => {
                             if (place && place.bbox && place.bbox.length === 4) {
                                 // trigger zoom to property
                                 let _bbox = place.bbox.map(String)

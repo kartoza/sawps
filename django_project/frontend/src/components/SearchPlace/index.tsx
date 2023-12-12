@@ -9,7 +9,7 @@ import './index.scss';
 
 
 interface SearchPlaceInterface {
-    isAllowedToSearchProperty: boolean;
+    mapSession?: string;
     onPlaceSelected: (place: SeachPlaceResult) => void;
 }
 
@@ -25,11 +25,11 @@ export default function SearchPlace(props: SearchPlaceInterface) {
                     request: { input: string },
                     callback: (results: SeachPlaceResult[]) => void,
                 ) => {
-                    searchPlaces(request.input, props.isAllowedToSearchProperty, callback)
+                    searchPlaces(request.input, callback, props.mapSession)
                 },
                 400,
             ),
-        [props.isAllowedToSearchProperty],
+        [props.mapSession],
     )
 
     useEffect(() => {
