@@ -1,7 +1,8 @@
 """Test case for population data models.
 """
+import mock
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from population_data.factories import (
@@ -96,6 +97,21 @@ class PopulationCountTestCase(TestCase):
             population_instance = AnnualPopulation(**data)
             population_instance.clean()
 
+    def test_population_str_representation(self):
+        self.assertEqual(str(self.population_count),
+                         "{} {}".format(self.population_count.property.name, self.population_count.year))
+        population_2 = AnnualPopulationF(
+            total=120,
+            adult_male=19,
+            adult_female=100,
+            adult_total=119,
+            year=2023
+        )
+        # mock property field to raise ObjectDoesNotExist
+        with mock.patch.object(AnnualPopulation, 'property', new_callable=mock.PropertyMock) as mocked_obj:
+            mocked_obj.side_effect = ObjectDoesNotExist('error')
+            self.assertEqual(str(population_2),
+                             "Population of year {} with total {}".format(2023, 120))
 
 class AnnualPopulationPerActivityTestCase(TestCase):
     """Population count test case."""
@@ -165,6 +181,22 @@ class AnnualPopulationPerActivityTestCase(TestCase):
             msg="The count of AnnualPopulationPerActivity"
             "instances did not decrease by 1 after deletion."
         )
+
+    def test_activity_str_representation(self):
+        self.assertEqual(str(self.population_count),
+                         "{} {} {}".format(self.population_count.annual_population.property.name, self.population_count.year, self.population_count.activity_type.name))
+        activity_2 = AnnualPopulationPerActivityFactory(
+            annual_population=self.population_count.annual_population,
+            intake_permit='1',
+            offtake_permit='1',
+            year=2023,
+            total=120
+        )        
+        # mock property field to raise ObjectDoesNotExist
+        with mock.patch.object(AnnualPopulation, 'property', new_callable=mock.PropertyMock) as mocked_obj:
+            mocked_obj.side_effect = ObjectDoesNotExist('error')
+            self.assertEqual(str(activity_2),
+                             "Activity of year {} total {}".format(2023, 120))
 
 
 class TestCertainty(TestCase):

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.core.files.base import ContentFile
 from django.core.validators import FileExtensionValidator
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class TaxonRank(models.Model):
@@ -127,7 +128,10 @@ class OwnedSpecies(models.Model):
     area_available_to_species = models.FloatField(default=0.0)
 
     def __str__(self):
-        return self.property.name
+        try:
+            return self.property.name
+        except ObjectDoesNotExist:
+            return f'OwnedSpecies-{self.id}'
 
     class Meta:
         verbose_name = "Owned Species"
