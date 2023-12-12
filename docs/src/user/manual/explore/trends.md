@@ -33,7 +33,7 @@ The Trends Tab provides a comprehensive analysis of population dynamics at diffe
 
 ### Trends Topper
 
-![Topper](./img/charts-5.png)
+![Topper](./img/trends-2.png)
 
 1. **Selected Species**: Indicates the currently chosen species.
 
