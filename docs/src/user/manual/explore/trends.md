@@ -67,7 +67,7 @@ At the national level, users can explore and analyse overarching population tren
 
 ![Large Species Populations](./img/trends-5.png)
 
-1. **Chart Title**: The chart title displays the title of the chart with selected species scientific name.
+1. **Chart Title**: The chart title displays the title of the chart with the selected species scientific name and range of individuals.
 
 2. **Bars**: These bars visually depict the distribution of percentage. The hover feature displays the percentage range calculated over specified time intervals, such as the last 10 years, last 5 years, and last 3 years. This information allows users to evaluate and understand the population trends for large species over different temporal scopes, providing a dynamic perspective on their changes and variations.
 
@@ -91,6 +91,8 @@ At the national level, users can explore and analyse overarching population tren
 
 3. **Tooltip**: The tooltip is designed to provide detailed information for each data point on the line chart. It specifically displays the comparison between the area available to species and the total area of the property. Users can interact with the chart by clicking on a specific area value in the tooltip. This interactive functionality allows users to selectively remove lines from the chart, enabling them to focus on and explore specific areas of interest within the context of the area available to species versus the total property area. The corresponding colors in the tooltip enhance visual association, aiding users in comprehending the data distribution on the line chart.
 
+    ![Chart with Specific Lines](./img/trends-19.png)
+
 4. **Information Icon**: Hover over the information icon to access details about the chart.
 
 5. **Download Icon**: Click the download icon to save the currently displayed chart.
@@ -101,7 +103,7 @@ At the national level, users can explore and analyse overarching population tren
 
 ![Medium Species Populations](./img/trends-10.png)
 
-1. **Chart Title**: The chart title provides a clear identification of the chart, focusing on trends related to medium species populations with selected species scientific name.
+1. **Chart Title**: The chart title provides a clear identification of the chart, focusing on trends related to medium species populations with the selected species scientific name and range of individuals.
 
 2. **Bars**: These bars visually represent the distribution of percentage for medium species populations. The hover feature presents the percentage range calculated over specific time intervals, such as the last 10 years, last 5 years, and last 3 years. This functionality enables users to assess and comprehend the population trends for medium species over different temporal scopes, offering a dynamic perspective on their changes and variations.
 
@@ -119,7 +121,7 @@ At the national level, users can explore and analyse overarching population tren
 
 ![Small Species Populations](./img/trends-13.png)
 
-1. **Chart Title**: The chart title provides a clear identification of the chart, emphasising trends related to small species populations with the selected species' scientific name.
+1. **Chart Title**: The chart title provides a clear identification of the chart, emphasising trends related to small species populations with the selected species scientific name and range of individuals.
 
 2. **Bars**: These bars visually depict the distribution of percentage for small species populations. The hover feature reveals the percentage range calculated over specific time intervals, including the last 10 years, last 5 years, and last 3 years. Users can utilise this feature to assess and comprehend the population trends for small species across different temporal scopes, gaining a dynamic perspective on their changes and variations.
 
