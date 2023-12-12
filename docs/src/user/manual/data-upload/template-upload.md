@@ -15,6 +15,8 @@ context_id: Xu33eTuuKEVPKAF6MmcL8F
 
 The data upload feature enables the user to seamlessly upload their data for analysis and integration into the system. When the user clicks on the `DATA UPLOAD` option, an upload data popup window will appear, providing the user with easy-to-use tools for uploading their data. The supported file formats for upload are CSV and XLSX.
 
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
+
 ## Uploading Data
 
 ![Upload Data](./img/template-upload-1.png)

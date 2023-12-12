@@ -20,6 +20,16 @@ Click on the profile navigation menu 1️⃣, and then click on `My Profile` 2�
 
 ![Profile Page 1](img/profile-page-1.png)
 
+## Updating your information
+
+On your profile page, in the `PROFILE` tab you will be able to update your information.
+
+![Profile Page 2](img/profile-page-2.png)
+
+Once you have made changes, you can click on 1️⃣ the `UPDATE` button to save your changes.
+
+![Profile Page 3](img/profile-page-3.png)
+
 ## Reminders page
 
 The Reminders feature has a multiple functions including allowing an organisation to set a reminder for everyone within the organisation, a user to set a personal reminder, a reminder to be edited (to change its state from active, draft and passed or altering other details etc.), a reminder to be deleted, and to send the reminder via email while also notifying the user via the platform.

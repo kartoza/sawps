@@ -60,3 +60,13 @@ A confirmation will be returned to the user to let them know their invitation ha
 ![Request Organisation 3](./img/request-organisation-3.png)
 
 After these steps have been completed, the user will need to wait to receive feedback from the SANBI administrator.
+
+## Switch active organisation
+
+If you are part of multiple organisations, you can switch which organisation is your active one. To do so, navigate to 1️⃣ the profile dropdown menu in the navigation bar and then click on 2️⃣ the `My Profile` link to be redirected to your profile.
+
+![Switch Organisations 1](./img/switch-organisations-1.png)
+
+Once on your profile, navigate to 1️⃣ the organisations tab and then click on 2️⃣ the `SET ACTIVE` button next to whichever organisation you would like to choose as your active organisation (i.e. the organisation that you will upload species data to).
+
+![Switch Organisations 2](./img/switch-organisations-2.png)

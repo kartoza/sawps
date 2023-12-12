@@ -13,7 +13,7 @@ context_id: 7eb5TeyNcVuDHbhYxp9UnB
 
 # Map Functionalities Documentation
 
-> **Disclaimer:** The images on the map depict property locations represented as points. It's important to note that the map displays the location of the data on the map itself unless you are a data consumer.
+> **Disclaimer:** The images on the map depict property locations represented as points. It's important to note that the map displays the location of the data on the map itself unless you are a data consumer. Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
 
 This documentation outlines the functionalities available in the map view, including features that allow the user to interact with and customise the map display for their needs.
 
