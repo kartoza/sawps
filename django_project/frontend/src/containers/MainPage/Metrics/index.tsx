@@ -353,7 +353,7 @@ const Metrics = () => {
                 {showCharts && (
                     <Box className="download-btn-box" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
                         <Button onClick={handleDownloadPdf} variant="contained" color="primary">
-                            Download data visualizations
+                            Download data visualisations
                         </Button>
                     </Box>
                 )}
