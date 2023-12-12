@@ -4,11 +4,6 @@ import axios from "axios";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from '@mui/icons-material/Search';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import {RootState} from '../../../app/store';
@@ -103,7 +98,7 @@ function Upload() {
                 <Grid container className='UploadContainer'>
                     { uploadMode === UploadMode.SelectProperty &&
                     <Grid item className='SearchArea'>
-                        <SearchPlace onPlaceSelected={(place: SeachPlaceResult) => {
+                        <SearchPlace isAllowedToSearchProperty={true} onPlaceSelected={(place: SeachPlaceResult) => {
                             if (place && place.bbox && place.bbox.length === 4) {
                                 // trigger zoom to property
                                 let _bbox = place.bbox.map(String)

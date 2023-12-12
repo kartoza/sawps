@@ -88,12 +88,25 @@ const searchAddressNominatim = (searchText: string):Promise<SeachPlaceResult[]> 
     })
 }
 
-export const searchPlaces = (searchText: string, callback: (results: SeachPlaceResult[]) => void) =>  {
-    Promise.all([
-        searchProperty(searchText),
-        searchAddressNominatim(searchText)
-    ]).then(([result1, result2]) => {
-        callback([...result1, ...result2])
+/**
+ * Search places by combining the results from property and places from Nominatim API
+ * 
+ * @param searchText search text input
+ * @param isAllowedToSearchProperty True if user has permission to view properties
+ * @param callback List of SeachPlaceResult
+ */
+export const searchPlaces = (searchText: string, isAllowedToSearchProperty: boolean, callback: (results: SeachPlaceResult[]) => void) =>  {
+    let _searchList = []
+    if (isAllowedToSearchProperty) {
+        _searchList.push(searchProperty(searchText))
+    }
+    _searchList.push(searchAddressNominatim(searchText))
+    Promise.all(_searchList).then((resultList) => {
+        let _finalResults = []
+        for (let _result of resultList) {
+            _finalResults.push(..._result)
+        }
+        callback(_finalResults)
     }).catch((error) => {
         callback([])
     })

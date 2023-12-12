@@ -519,7 +519,7 @@ function Filter(props: any) {
                         />
                         <Typography color='#75B37A' fontSize='medium'>Search place</Typography>
                     </Box>
-                    <SearchPlace onPlaceSelected={(place: SeachPlaceResult) => {
+                    <SearchPlace isAllowedToSearchProperty={allowPropertiesSelection} onPlaceSelected={(place: SeachPlaceResult) => {
                         if (place && place.bbox && place.bbox.length === 4) {
                             // trigger zoom to property
                             let _bbox = place.bbox.map(String)
