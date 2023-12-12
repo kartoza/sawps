@@ -24,6 +24,7 @@ This documentation outlines the functionalities available in the map view, inclu
 1. **Map**: The `Map` tab.
 
 2. **Question Mark Icon**: Click on the `Question Mark Icon` to learn valuable insights into optimising the use of the Map page. Explore the helpful tips and guidelines provided in this sidebar to enhance the efficiency in navigating and utilising the map features. Click on the `visit our Documentation` link to visit the documentation.
+
     ![Side Bar](./img/map-4.png)
 
 3. **Points**: Upon landing on the page, users are greeted with a visual representation of property locations in the form of points, providing an immediate overview of the geographical distribution of properties (unless the user is designated as a data consumer).
@@ -32,7 +33,7 @@ This documentation outlines the functionalities available in the map view, inclu
 
 5. **Zooming Out Icon**: The zooming-out icon is represented by a minus sign (-). Click on this icon to zoom out on the map, reducing the size of the displayed area and providing a broader view.
 
-6.  **Compass Icon**: The `Compass Icon` serves as a visual guide within the map view, enhancing the user's ability to explore a 3D representation of the environment. Represented by a compass symbol, this icon provides users with a quick reference to the cardinal directions, facilitating orientation while navigating the 3D map. The Compass Icon dynamically adjusts its orientation based on the user's movements, consistently pointing toward Geographic North. Users can interact with the icon to reset the map orientation to its default north-facing position.
+6.  **3D Icon**: The `3D Icon` serves as a visual guide within the map view, enhancing the user's ability to explore a 3D representation of the environment. Represented by a 3D symbol, this icon provides users with a quick reference to the cardinal directions, facilitating orientation while navigating the 3D map. The Compass Icon dynamically adjusts its orientation based on the user's movements, consistently pointing toward Geographic North. Users can interact with the icon to reset the map orientation to its default north-facing position.
 
     ![3D view](./img/map-7.png)
 

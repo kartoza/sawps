@@ -103,6 +103,7 @@ to allow the user group (e.g. `National data scientist`) to see the property fil
     ![Activity filter](./img/filters-8.png)
 
 1. **Selected Activity:** Choose the activity type to filter the displayed data based on the selected activities.
+
 #### 7. Spatial Filter
 
 * **Filter Description:** This filter allows users to filter data based on spatial information.
@@ -198,7 +199,7 @@ The filter side panel provides a robust toolset for users to refine and explore 
 
     ![Activity filter](./img/filters-12.png)
 
-1. **Activity Filter:** All activities are selected by default. Users can choose the activities of their choice.
+1. **Activity Filter:** Users can choose the activities of their choice.
 
 #### 7. Spatial Filter
 
@@ -281,7 +282,7 @@ The filter side panel provides a robust toolset for users to refine and explore 
 
     ![Activity filter](./img/filters-12.png)
 
-1. **Activity Filter:** All activities are selected by default. Users can choose the activities of their choice.
+1. **Activity Filter:** Users can choose the activities of their choice.
 
 #### 6. Spatial Filter
 
