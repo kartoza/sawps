@@ -122,10 +122,18 @@ class AnnualPopulation(AnnualPopulationAbstract):
         null=True, blank=True, choices=[(i, i) for i in range(1, 11)]
     )
     population_estimate_category_other = models.TextField(
-        null=True, blank=True
+        null=True, blank=True,
+        help_text=(
+            'If population estimate category is other, '
+            'then please explain'
+        )
     )
     survey_method_other = models.TextField(
-        null=True, blank=True
+        null=True, blank=True,
+        help_text=(
+            'If survey method is other, '
+            'then please explain'
+        )
     )
 
     def __str__(self):
