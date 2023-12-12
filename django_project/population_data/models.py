@@ -1,6 +1,6 @@
 """Models for population data package.
 """
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -137,10 +137,11 @@ class AnnualPopulation(AnnualPopulationAbstract):
     )
 
     def __str__(self):
-        return "{} {}".format(
-            self.property.name,
-            self.year
-        )
+        try:
+            return "{} {}".format(self.property.name, self.year)
+        except ObjectDoesNotExist:
+            return "Population of year {} with total {}".format(
+                self.year, self.total)
 
     def clean(self):
         """
@@ -194,10 +195,14 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     offtake_permit = models.CharField(null=True, blank=True, max_length=100)
 
     def __str__(self):
-        return "{} {} {}".format(
-            self.annual_population.property.name,
-            self.year,
-            self.activity_type.name)
+        try:
+            return "{} {} {}".format(
+                self.annual_population.property.name,
+                self.year,
+                self.activity_type.name)
+        except ObjectDoesNotExist:
+            return "Activity of year {} total {}".format(
+                self.year, self.total)
 
     class Meta:
         verbose_name = "Population count per activity"
