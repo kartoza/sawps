@@ -2,11 +2,14 @@ import base64
 import json
 
 import mock
+import datetime
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework.test import APIRequestFactory
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
 from core.settings.utils import absolute_path
 from frontend.api_views.property import (
@@ -40,6 +43,11 @@ from stakeholder.factories import (
 from frontend.static_mapping import (
     PROVINCIAL_DATA_SCIENTIST
 )
+from sawps.models import ExtendedGroup
+from sawps.tests.model_factories import GroupF
+from frontend.models.map_session import MapSession
+from frontend.tests.test_map import is_materialized_view_exists
+from frontend.utils.map import generate_map_view
 
 
 class TestPropertyAPIViews(TestCase):
@@ -55,6 +63,14 @@ class TestPropertyAPIViews(TestCase):
         self.factory = OrganisationAPIRequestFactory(self.organisation)
         self.user_1 = UserF.create(username='test_1')
         self.user_2 = UserF.create(username='test_2')
+        # add group and permission
+        self.group_1 = GroupF.create()
+        content_type = ContentType.objects.get_for_model(ExtendedGroup)
+        view_properties_perm = Permission.objects.filter(
+            content_type=content_type,
+            codename='can_view_map_properties_layer'
+        ).first()
+        self.group_1.permissions.add(view_properties_perm)
         # insert province
         self.province = ProvinceFactory.create()
         # insert geom 1 and 2
@@ -754,6 +770,13 @@ class TestPropertyAPIViews(TestCase):
         view = PropertySearch.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 3)
+        # add to the group
+        self.user_2.groups.add(self.group_1)
+        request.user = self.user_2
+        view = PropertySearch.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 4)
         # search by short_code
         request = self.factory.get(
@@ -766,6 +789,33 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'],
                          f'{property.name} ({property.short_code})')
+        # test using map session
+        filter_organisation = 'all'
+        filter_spatial = ''
+        filter_property = 'all'
+        filter_year = 2023
+        filter_species_name = ''
+        filter_activity = ''
+        session = MapSession.objects.create(
+            user=self.user_1,
+            created_date=datetime.datetime(2000, 8, 14, 8, 8, 8),
+            expired_date=datetime.datetime(2000, 8, 14, 8, 8, 8),
+            species=filter_species_name
+        )
+        # generate materialized view for properties layer
+        generate_map_view(session, False, filter_year,
+                          filter_species_name, filter_organisation,
+                          filter_activity, filter_spatial, filter_property)
+        self.assertTrue(
+            is_materialized_view_exists(session.properties_view_name))
+        request = self.factory.get(
+            reverse('property-search') + f'?search_text=sea&session={str(session.uuid)}'
+        )
+        request.user = self.user_2
+        view = PropertySearch.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 4)
 
     def test_check_property_name(self):
         data = {
