@@ -115,12 +115,8 @@ class DeleteReminderAndNotificationTest(TestCase):
             password='testpassword123454$',
             email='email@gamil.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
         self.user.user_profile.current_organisation = self.organisation
         self.user.save()
@@ -335,12 +331,8 @@ class TestAddReminderAndScheduleTask(TestCase):
             username='testuser',
             password='testpassword'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
@@ -430,12 +422,8 @@ class TestRemindersView(TestCase):
             password='testpassword123454$',
             email='email@gamil.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
@@ -732,12 +720,8 @@ class SearchRemindersOrNotificationsTest(TestCase):
             password='testpassword123454$',
             email='email@gamil.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.user.user_profile.current_organisation = (
             self.organisation
@@ -837,12 +821,8 @@ class GetReminderOrNotificationTest(TestCase):
             password='testpassword',
             email='testuser@example.com',
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
@@ -891,12 +871,8 @@ class GetOrganisationRemindersTest(TestCase):
             password='testpassword',
             email='testuser@example.com',
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.user.user_profile.current_organisation = (
             self.organisation
@@ -963,12 +939,8 @@ class RemindersViewTest(TestCase):
             password='testpassword',
             email='testuser@example.com',
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.reminder1 = Reminders.objects.create(
             user=self.user,
@@ -1101,12 +1073,8 @@ class NotificationsViewTest(TestCase):
             password='testpassword123454$',
             email='email@gamil.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
