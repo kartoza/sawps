@@ -374,20 +374,23 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
                 'context_layer_value__in': spatial_filter
             })
 
-        populations = AnnualPopulationPerActivity.objects.values(
+        populations = AnnualPopulationPerActivity.objects.filter(
+            q_filters
+        ).values(
             'year',
-            'activity_type__name',
-            'total',
-        ).filter(q_filters)
+            'activity_type__name'
+        ).annotate(
+            activity_total=Sum('total')
+        ).order_by()
 
         activities_list = [
             {
                 "activity_type": item["activity_type__name"],
                 "year": item["year"],
-                "total": item["total"],
+                "total": item["activity_total"],
             }
             for item in populations
-            if item["activity_type__name"] and item["total"]
+            if item["activity_type__name"] and item["activity_total"]
         ]
         return activities_list
 
