@@ -32,12 +32,8 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
         )
 
     def test_get_total_counts_per_population_estimate(self):
-        data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=data_use_permission
+            name="test_organisation"
         )
 
         taxon_rank = TaxonRank.objects.filter(name="Species").first()

@@ -6,6 +6,7 @@ import Chart from "chart.js/auto";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
 import Loading from "../Loading";
+import { DEFAULT_START_YEAR_FILTER, DEFAULT_END_YEAR_FILTER } from "../../reducers/SpeciesFilter";
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -46,8 +47,8 @@ const PopulationCategoryChart = () => {
     }, []);
 
     const fetchPopulationCategoryData = (selectedSpecies: string[]) => {
-        const startYear = 1960;
-        const endYear = new Date().getFullYear();
+        const startYear = DEFAULT_START_YEAR_FILTER;
+        const endYear = DEFAULT_END_YEAR_FILTER;
         const fetchDataPromises = selectedSpecies.map((speciesName) => {
             return axios.get(`${FETCH_SPECIES_DENSITY}?start_year=${startYear}&end_year=${endYear}&species=${speciesName}`)
                 .then((response) => {

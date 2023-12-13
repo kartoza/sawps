@@ -35,7 +35,6 @@ export interface Organisation {
   use_of_data_by_sanbi_only: boolean
   hosting_through_sanbi_platforms: boolean
   allowing_sanbi_to_expose_data: boolean
-  data_use_permission: number
   province: number
 }
 

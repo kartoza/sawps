@@ -1,8 +1,8 @@
+import mock
 from django.test import TestCase
-from population_data.factories import AnnualPopulationF, AnnualPopulationPerActivityFactory
+from django.core.exceptions import ObjectDoesNotExist
 from sawps.tests.models.account_factory import (
     UserF,
-    GroupF,
 )
 from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
 from species.models import OwnedSpecies
@@ -109,3 +109,20 @@ class TestMigrationFunction(TestCase):
 
         # The annual population total would be 30, coming from 20 + 10
         self.assertEqual(an_pop_pa.annual_population.total, 30)
+
+    def test_owned_species_representation(self):
+        taxon = TaxonFactory.create()
+        property_obj = PropertyFactory.create()
+        user = UserF.create()
+        owned_species = OwnedSpecies.objects.create(
+            taxon=taxon,
+            property=property_obj,
+            user=user,
+            area_available_to_species=5
+        )
+        self.assertEqual(str(owned_species), property_obj.name)
+        # mock property field to raise ObjectDoesNotExist
+        with mock.patch.object(OwnedSpecies, 'property', new_callable=mock.PropertyMock) as mocked_obj:
+            mocked_obj.side_effect = ObjectDoesNotExist('error')
+            self.assertEqual(str(owned_species),
+                             "OwnedSpecies-{}".format(owned_species.id))

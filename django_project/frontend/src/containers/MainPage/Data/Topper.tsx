@@ -142,7 +142,7 @@ const Topper = () => {
           </Box>
           <Box className={'topper-grey'} padding={'10px'}>
               <Box>
-                  <b>Species list</b>: {selectedSpeciesList}
+                  <b>Species list</b>: {tab === 'reports' ? selectedSpeciesList: selectedSpecies}
               </Box>
               <Box>
                   <b>Organisation list</b>: {organisationName}

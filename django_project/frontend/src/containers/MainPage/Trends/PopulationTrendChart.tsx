@@ -85,6 +85,7 @@ const PopulationTrendChart = (props: PopulationTrendChartInterface) => {
         maintainAspectRatio: false,
         scales: {
             y: {
+              beginAtZero: true,
               grace:50,
               title: {
                 display: true,
@@ -103,6 +104,10 @@ const PopulationTrendChart = (props: PopulationTrendChartInterface) => {
                   size: 14,
                 },
               },
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45
+              }
             },
         },
         plugins: {

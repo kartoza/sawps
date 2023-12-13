@@ -21,6 +21,8 @@ const Metrics = () => {
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
     const propertyId = useAppSelector((state: RootState) => state.SpeciesFilter.propertyId)
+    const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
+    const spatialFilterValues = useAppSelector((state: RootState) => state.SpeciesFilter.spatialFilterValues)
     // start year on charts is taken from Filter's endYear.
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
@@ -186,6 +188,8 @@ const Metrics = () => {
                                             propertyTypeList={propertyTypes}
                                             propertyId={propertyId}
                                             year={endYear}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                             chartId={'property-count-per-population-category-chart'}
@@ -205,6 +209,8 @@ const Metrics = () => {
                                             propertyTypeList={propertyTypes}
                                             propertyId={propertyId}
                                             year={endYear}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                             chartId={'property-count-per-population-density-category'}
@@ -224,6 +230,8 @@ const Metrics = () => {
                                             propertyTypeList={propertyTypes}
                                             propertyId={propertyId}
                                             year={endYear}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                             chartId={'property-count-per-area-category-chart'}
@@ -243,6 +251,8 @@ const Metrics = () => {
                                             propertyTypeList={propertyTypes}
                                             propertyId={propertyId}
                                             year={endYear}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                             chartId={'property-count-per-area-available-to-species-category-chart'}
@@ -262,6 +272,9 @@ const Metrics = () => {
                                             propertyId={propertyId}
                                             startYear={startYear}
                                             endYear={endYear}
+                                            organisationIds={organisationId}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                             loading={loading}
                                             setLoading={setLoading}
                                         />
@@ -279,6 +292,8 @@ const Metrics = () => {
                                             startYear={startYear}
                                             endYear={endYear}
                                             activityTypeList={activityList}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                         />
                                     </Grid>
                                 )}
@@ -294,6 +309,8 @@ const Metrics = () => {
                                             startYear={startYear}
                                             endYear={endYear}
                                             activityData={activityData}
+                                            activityIds={activityId}
+                                            spatialFilterValues={spatialFilterValues}
                                         />
                                     </Grid>
                                     )}
@@ -305,7 +322,9 @@ const Metrics = () => {
                                             <StandardDeviationMeanChart
                                                 species={selectedSpecies}
                                                 propertyIds={propertyId}
-                                                title={`Mean and standard deviation of age classes for ${selectedSpecies}`}/>
+                                                activityIds={activityId}
+                                                spatialFilterValues={spatialFilterValues}
+                                                title={`Mean and standard deviation of age classes of ${selectedSpecies} for ${endYear}`}/>
                                         </Grid>
                                     )}
 
@@ -334,7 +353,7 @@ const Metrics = () => {
                 {showCharts && (
                     <Box className="download-btn-box" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
                         <Button onClick={handleDownloadPdf} variant="contained" color="primary">
-                            Download data visualizations
+                            Download data visualisations
                         </Button>
                     </Box>
                 )}

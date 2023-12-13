@@ -179,7 +179,7 @@ class TestUser(TestCase):
         self.user_profile.user_id = 99999999999
         self.assertEqual(
             self.user_profile.__str__(),
-            self.user_profile.id
+            str(self.user_profile.id)
         )
 
 
@@ -218,7 +218,7 @@ class TestUserLogin(TestCase):
         self.user_login.user_id = 99999999999
         self.assertEqual(
             self.user_login.__str__(),
-            self.user_login.id
+            str(self.user_login.id)
         )
 
 
@@ -439,11 +439,8 @@ class OrganisationInvitesModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username='testuser', password='testpassword')
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test")
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
@@ -489,12 +486,8 @@ class RemindersModelTest(TestCase):
             username='testuser',
             password='testpassword'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,

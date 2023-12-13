@@ -34,7 +34,8 @@ from stakeholder.models import (
     UserRoleType,
     UserTitle,
     Reminders,
-    OrganisationUser
+    OrganisationUser,
+    OrganisationRepresentative
 )
 from stakeholder.tasks import send_reminder_emails
 from frontend.static_mapping import (
@@ -336,10 +337,10 @@ class RemindersView(RegisteredOrganisationBaseView):
             adjusted_datetime = adjust_date_to_server_time(request)
             timezone_value = request.POST.get('timezone')
 
-            if request.POST.get('reminder_type') == 'personal':
-                reminder_type = Reminders.PERSONAL
-            else:
+            if request.POST.get('reminder_type') == 'all':
                 reminder_type = Reminders.EVERYONE
+            else:
+                reminder_type = Reminders.PERSONAL
             try:
                 organisation = Organisation.objects.get(
                     id=get_current_organisation_id(request.user)
@@ -450,10 +451,10 @@ class RemindersView(RegisteredOrganisationBaseView):
         reminder_val = request.POST.get('reminder')
         email_sent = False
         cancel_task = False
-        if type == 'personal':
-            type = Reminders.PERSONAL
-        else:
+        if type == 'all':
             type = Reminders.EVERYONE
+        else:
+            type = Reminders.PERSONAL
         if status == 'active':
             status = Reminders.ACTIVE
             email_sent = False
@@ -519,11 +520,22 @@ class RemindersView(RegisteredOrganisationBaseView):
         else:
             return super().dispatch(request, *args, **kwargs)
 
+    def is_organisation_manager(self):
+        if self.request.user.is_superuser:
+            return True
+        current_organisation_id = get_current_organisation_id(
+            self.request.user)
+        if current_organisation_id:
+            return OrganisationRepresentative.objects.filter(
+                user=self.request.user,
+                organisation_id=current_organisation_id
+            )
+        return False
 
     def get_context_data(self, **kwargs):
         context = super(RemindersView, self).get_context_data(**kwargs)
         context['reminders'] = self.get_reminders(self.request)
-
+        context['can_set_reminder_type'] = self.is_organisation_manager()
         return context
 
 

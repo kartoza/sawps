@@ -3,9 +3,6 @@ import "./index.scss";
 import Loading from '../../../components/Loading';
 import BarChart from "../../../components/BarChart";
 import axios from "axios";
-import {
-    PropertyType
-} from "../../../services/api";
 
 type AvailableColors = {
   [key: string]: string;
@@ -16,6 +13,8 @@ const PropertyCountPerCategoryChart = (props: any) => {
   const {
     propertyId,
     year,
+    activityIds,
+    spatialFilterValues,
     selectedSpecies,
     propertyTypeList,
     chartId,
@@ -44,7 +43,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
   
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
-    let fullUrl = `${url}?year=${year}&species=${selectedSpecies}&property=${propertyId}`
+    let fullUrl = `${url}?year=${year}&species=${selectedSpecies}&property=${propertyId}&activity=${activityIds}&spatial_filter_values=${spatialFilterValues}`
 
     axios.get(fullUrl).then((response) => {
         setLoading(false);
@@ -62,7 +61,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
 
   useEffect(() => {
     fetchPopulationEstimateCategoryCount();
-  }, [propertyId, year, selectedSpecies]);
+  }, [propertyId, year, selectedSpecies, activityIds, spatialFilterValues]);
 
   useEffect(() => {
     if (propertyTypeList) {
@@ -131,7 +130,7 @@ const PropertyCountPerCategoryChart = (props: any) => {
         <BarChart
             chartData={data}
             chartId={chartId}
-            chartTitle={chartTitle.replace('{species}', species).replace('{year}', year)}
+            chartTitle={chartTitle.replace('{species}', selectedSpecies).replace('{year}', year)}
             yLabel={'Count'}
             xLabel={xLabel}
             indexAxis={'x'}

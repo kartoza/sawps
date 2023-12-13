@@ -186,10 +186,6 @@ const DataList = () => {
     };
 
     const handleExportCsv = (): void => {
-        let activityParams = activityId;
-        if (activityList) {
-            activityParams = activityId.split(',').length === activityList.length ? 'all': activityId;
-        }
         let _data = {
             'file': 'csv',
             'species': selectedSpeciesList,
@@ -198,7 +194,7 @@ const DataList = () => {
             'end_year': endYear,
             'property': propertyId,
             'organisation': organisationId,
-            'activity': activityParams,
+            'activity': activityId,
             'spatial_filter_values': spatialFilterValues,
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
@@ -213,10 +209,6 @@ const DataList = () => {
     };
 
     const handleExportExcel = (): void => {
-        let activityParams = activityId;
-        if (activityList) {
-            activityParams = activityId.split(',').length === activityList.length ? 'all': activityId;
-        }
         let _data = {
             'file': 'xlsx',
             'species': selectedSpeciesList,
@@ -225,7 +217,7 @@ const DataList = () => {
             'end_year': endYear,
             'property': propertyId,
             'organisation': organisationId,
-            'activity': activityParams,
+            'activity': activityId,
             'spatial_filter_values': spatialFilterValues,
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {

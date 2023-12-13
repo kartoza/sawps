@@ -63,13 +63,8 @@ from stakeholder.models import OrganisationInvites, MANAGER
 
 class SpeciesCountPerProvinceTest(APITestCase):
     def setUp(self):
-
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
 
         taxon_rank = TaxonRank.objects.filter(name="Species").first()
@@ -197,10 +192,12 @@ class SpeciesCountPerProvinceTest(APITestCase):
         )
 
         self.url = reverse('species_count_per_province')
+        self.organisations = [self.organisation.id]
 
     def test_calculate_species_count_per_province(self):
         data = {
             "species": "Penthera leo",
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         # self.client.force_login(self.user)
@@ -227,6 +224,7 @@ class SpeciesCountPerProvinceTest(APITestCase):
             "species": "Penthera leo",
             "start_year": 2023,
             "end_year": 2023,
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         # self.client.force_login(self.user)

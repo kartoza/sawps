@@ -9,11 +9,16 @@ from species.factories import (
     TaxonFactory,
     TaxonRankFactory,
 )
+from activity.models import ActivityType
 from population_data.models import AnnualPopulation, PopulationEstimateCategory
-from population_data.factories import AnnualPopulationF
+from population_data.factories import AnnualPopulationF, AnnualPopulationPerActivityFactory
 from species.models import TaxonRank
 from property.models import Property
 from stakeholder.factories import organisationFactory, organisationUserFactory
+from frontend.tests.model_factories import (
+    SpatialDataModelF,
+    SpatialDataModelValueF
+)
 
 
 class BaseTestCase(TestCase):
@@ -247,6 +252,15 @@ class TotalCountPerActivityTestCase(BaseTestCase):
         # test using superuser
         response = self.client.get(url, data, **self.auth_headers_superuser)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # test with activity id and spatial filter
+        activity_type = ActivityType.objects.create(name='test_activity')
+        data = {
+            'property': self.property.id,
+            'activity': f'{str(activity_type.id)}',
+            'spatial_filter_values': 'test'
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class SpeciesPopulationDensityPerPropertyTestCase(BaseTestCase):
@@ -344,6 +358,7 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         """
         super().setUp()
         self.url = reverse("total_area_available_to_species")
+        self.organisations = [self.organisation_1.id]
 
     def test_total_area_available_to_species(self) -> None:
         """
@@ -352,6 +367,7 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         url = self.url
         data = {
             'property': ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "organisation": ','.join([str(id) for id in self.organisations]),
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -359,6 +375,7 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         self.assertEqual(response.data[0]['area'], 10)
         
         data = {
+            "organisation": ','.join([str(id) for id in self.organisations]),
             'property': self.annual_populations[0].property_id,
             'species': "Penthera leo",
             'start_year': self.annual_populations[0].year,
@@ -375,18 +392,10 @@ class TotalAreaAvailableToSpeciesTestCase(BaseTestCase):
         Test total area available to species filtered by property.
         """
         prop_id = self.annual_populations[0].property_id
-        data = {'property': prop_id}
-        url = self.url
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['property_name'], 'PropertyA')
-
-    def test_total_area_available_to_species_filter_by_property(self) -> None:
-        """
-        Test total area available to species filtered by property.
-        """
-        prop_id = self.annual_populations[0].property_id
-        data = {'property': prop_id}
+        data = {
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            'property': prop_id
+        }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -590,7 +599,7 @@ class TestPropertyCountPerPopulationSizeCategory(
         super().setUp()
         self.url = reverse("property-count-per-population-category-size")
         self.new_property = PropertyFactory.create()
-        AnnualPopulation.objects.create(
+        self.population = AnnualPopulation.objects.create(
             total=30,
             property=self.new_property,
             year=self.annual_populations[1].year,
@@ -663,6 +672,86 @@ class TestPropertyCountPerPopulationSizeCategory(
             ]
         )
 
+    def test_with_activity_spatial_filters(self) -> None:
+        """
+        Test filtered total property count per population category.
+        """
+        activity_type = ActivityType.objects.create(name='test_activity')
+        AnnualPopulationPerActivityFactory.create(
+            activity_type=activity_type,
+            annual_population=self.population,
+            intake_permit='1',
+            offtake_permit='1'
+        )
+        for pop in self.annual_populations:
+            AnnualPopulationPerActivityFactory.create(
+                activity_type=activity_type,
+                annual_population=pop,
+                intake_permit='1',
+                offtake_permit='1'
+            )
+        year = self.annual_populations[1].year
+        # test filter using activity type id
+        data = {
+            'year': year,
+            'species': self.annual_populations[1].taxon.scientific_name,
+            'activity': f'{str(activity_type.id)}'
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '28 - 30',
+                    self.new_property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_verbatim': self.taxon.common_name_verbatim
+                },
+                {
+                    'category': '>30',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_verbatim': self.taxon.common_name_verbatim
+                }
+            ]
+        )
+        # create spatial values
+        spatial_data_1 = SpatialDataModelF.create(
+            property=self.new_property
+        )
+        SpatialDataModelValueF.create(
+            spatial_data=spatial_data_1,
+            context_layer_value='spatial filter test'
+        )
+        spatial_data_2 = SpatialDataModelF.create(
+            property=self.property
+        )
+        SpatialDataModelValueF.create(
+            spatial_data=spatial_data_2,
+            context_layer_value='spatial filter test'
+        )
+        # test filter using spatial value
+        data = {
+            'year': year,
+            'species': self.annual_populations[1].taxon.scientific_name,
+            'spatial_filter_values': 'spatial filter test'
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '28 - 30',
+                    self.new_property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_verbatim': self.taxon.common_name_verbatim
+                },
+                {
+                    'category': '>30',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_verbatim': self.taxon.common_name_verbatim
+                }
+            ]
+        )
 
 class TestPropertyCountPerPopulationDensityCategory(
     TestPropertyCountPerCategoryMixins,
