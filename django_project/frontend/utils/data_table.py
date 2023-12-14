@@ -37,6 +37,7 @@ from population_data.models import (
 from property.models import Property
 from species.models import Taxon
 from stakeholder.models import OrganisationRepresentative, Organisation
+from frontend.models.spatial import SpatialDataValueModel
 
 logger = logging.getLogger('sawps')
 
@@ -80,12 +81,12 @@ def get_queryset(user_roles: List[str], request):
         )
 
         if spatial_filter_values:
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('pk'),
+                context_layer_value__in=spatial_filter_values
+            )
             queryset = queryset.filter(
-                **({
-                    'spatialdatamodel__spatialdatavaluemodel__'
-                    'context_layer_value__in':
-                        spatial_filter_values
-                })
+                Exists(spatial_qs)
             )
     else:
         query_filter = BaseMetricsFilter
@@ -383,12 +384,12 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     )
 
     if spatial_filter_values:
+        spatial_qs = SpatialDataValueModel.objects.filter(
+            spatial_data__property=OuterRef('pk'),
+            context_layer_value__in=spatial_filter_values
+        )
         properties = properties.filter(
-            **({
-                'spatialdatamodel__spatialdatavaluemodel__'
-                'context_layer_value__in':
-                    spatial_filter_values
-            })
+            Exists(spatial_qs)
         )
 
     activity = get_param_from_request(request, "activity", "")

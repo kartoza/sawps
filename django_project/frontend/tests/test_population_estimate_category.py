@@ -16,6 +16,11 @@ import base64
 from django.urls import reverse
 from rest_framework import status
 from django.contrib.auth.models import User
+from frontend.tests.model_factories import (
+    SpatialDataModelF,
+    SpatialDataModelValueF
+)
+
 
 class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
     def setUp(self):
@@ -166,6 +171,20 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
             total=25,
             year=self.pop2.year
         )
+        # add spatial value for property1
+        spatial_data = SpatialDataModelF.create(
+            property=self.property1
+        )
+        self.spatial_value1 = 'spatial filter test 1'
+        self.spatial_value2 = 'spatial filter test 2'
+        SpatialDataModelValueF.create(
+            spatial_data=spatial_data,
+            context_layer_value=self.spatial_value1
+        )
+        SpatialDataModelValueF.create(
+            spatial_data=spatial_data,
+            context_layer_value=self.spatial_value1
+        )
 
     def test_get_total_counts_per_population_estimate(self):
         data = {
@@ -233,6 +252,43 @@ class TotalCountPerPopulationEstimateSerializerTestCase(TestCase):
             'start_year': "2020",
             'end_year': "2022",
             'activity': f"{self.activity_type1.id},{self.activity_type2.id}"
+        }
+
+        auth_headers = {
+            "HTTP_AUTHORIZATION": "Basic "
+                                  + base64.b64encode(b"testuserd:testpasswordd").decode("ascii"),
+        }
+        client = Client()
+
+        session = client.session
+        session.save()
+
+        url = reverse("total-count-per-population-estimate")
+        response = client.get(url, data, **auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Call the method you want to test
+        result = response.data
+        # Define the expected result
+        expected_result = {
+            'Category A': {
+                'count': 1,
+                'percentage': 1.0,
+                'total': 100,
+                'years': [2022],
+            }
+        }
+
+        # Assert that the result matches the expected result
+        self.assertEqual(result, expected_result)
+
+    def test_get_total_counts_per_pop_estimate_with_spatial_filter(self):
+        data = {
+            'species': "Penthera leo",
+            'property': f"{self.property1.id},{self.property2.id},{self.property3.id}",
+            'start_year': "2020",
+            'end_year': "2022",
+            'spatial_filter_values': f"{self.spatial_value1},{self.spatial_value2}"
         }
 
         auth_headers = {

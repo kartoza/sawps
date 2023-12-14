@@ -35,6 +35,10 @@ from species.models import TaxonRank
 from stakeholder.factories import (
     organisationUserFactory,
 )
+from frontend.tests.model_factories import (
+    SpatialDataModelF,
+    SpatialDataModelValueF
+)
 
 
 class SpeciesCountPerProvinceTest(APITestCase):
@@ -191,6 +195,20 @@ class SpeciesCountPerProvinceTest(APITestCase):
             total=25,
             year=self.pop1.year
         )
+        # add spatial value for property3
+        spatial_data = SpatialDataModelF.create(
+            property=self.property3
+        )
+        self.spatial_value1 = 'spatial filter test 1'
+        self.spatial_value2 = 'spatial filter test 2'
+        SpatialDataModelValueF.create(
+            spatial_data=spatial_data,
+            context_layer_value=self.spatial_value1
+        )
+        SpatialDataModelValueF.create(
+            spatial_data=spatial_data,
+            context_layer_value=self.spatial_value1
+        )
 
         self.url = reverse('species_count_per_province')
         self.organisations = [self.organisation.id]
@@ -266,3 +284,25 @@ class SpeciesCountPerProvinceTest(APITestCase):
             ]
         )
 
+    def test_calculate_species_count_per_province_spatial_filter(self):
+        data = {
+            "species": "Penthera leo",
+            "start_year": 2023,
+            "end_year": 2023,
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "spatial_filter_values": f"{self.spatial_value1},{self.spatial_value2}"
+        }
+        # self.client.force_login(self.user)
+        response = self.client.get(self.url, data, **self.auth_headers)
+        result_data = response.json()
+
+        # Perform assertions based on the expected results
+        self.assertEqual(len(result_data), 1)
+
+        self.assertEqual(
+            result_data,
+            [
+                {"year": 2023, "count": 60, "province": "Province2", "species": "Penthera leo"},
+            ]
+        )

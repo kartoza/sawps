@@ -49,6 +49,7 @@ from population_data.models import (
 )
 from property.models import Property
 from species.models import Taxon
+from frontend.models.spatial import SpatialDataValueModel
 
 
 class SpeciesPopulationCountPerYearAPIView(APIView):
@@ -426,10 +427,6 @@ class BasePropertyCountAPIView(APIView):
             property_ids = property_list.split(",")
             filters['property_id__in'] = property_ids
 
-        if spatial_filter:
-            filters['property__spatialdatamodel__spatialdatavaluemodel__'
-                    'context_layer_value__in'] = spatial_filter
-
         queryset = AnnualPopulation.objects.filter(
             **filters
         )
@@ -441,6 +438,13 @@ class BasePropertyCountAPIView(APIView):
                 ]
             )
             queryset = queryset.filter(Exists(activity_qs))
+
+        if spatial_filter:
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('property'),
+                context_layer_value__in=spatial_filter
+            )
+            queryset = queryset.filter(Exists(spatial_qs))
         return queryset.distinct()
 
     def get_upper_lower_bound(self, categories, idx, category, query_field):
