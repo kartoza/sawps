@@ -6,4 +6,4 @@ Feature: SAWPS login page
         Then I see in title "SAWPS - Login"
         Then I fill in login details: "admin@example.com" and "admin"
         Then I can proceed to "LOGIN"
-        Then I assert if "Explore" and "Upload your data  is visible
+        Then I assert if "Explore" and "Upload your data" is visible

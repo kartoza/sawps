@@ -3,6 +3,8 @@ import { createBdd } from 'playwright-bdd';
 
 const { Given, When, Then } = createBdd();
 
+/* Scenario: Check title */
+
 Given('I open url {string}', async ({ page }, url) => {
   await page.goto(url);
 });
@@ -22,4 +24,9 @@ Then('I fill in login details: {string} and {string}', async ({ page }, name, pa
 
 Then('I can proceed to {string}', async ({ page }, name) => {
   await page.getByRole('button', { name }).click();
+});
+
+Then('I assert if {string} and {string} is visible', async ({ page }, explore, uploadData) => {
+  await expect(page.getByRole('button', { explore }).first()).toBeVisible();
+  await expect(page.getByRole('button', { uploadData }).first()).toBeVisible();
 });
