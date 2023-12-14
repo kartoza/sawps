@@ -21,13 +21,27 @@ test('test', async ({ page }) => {
   
   await page.getByRole('option', { name: 'Limpopo, South Africa' }).click();
 
-  await page.getByPlaceholder('Select').click();
+  await page.getByPlaceholder('Select').first().click();
 
-  await page.getByPlaceholder('Select').fill('pa');
+  await page.getByPlaceholder('Select').first().fill('pa');
 
   await page.getByRole('option', { name: 'Panthera leo' }).click();
 
   await page.getByRole('tab', { name: 'REPORTS' }).click();
+
+  await page.locator('nav').filter({ hasText: 'Report selected' }).getByLabel('Open').click();
+
+  await page.locator('label').filter({ hasText: 'Select All' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+  
+  await page.getByRole('button', { name: 'Close' }).click();
+
+  await expect(page.locator('div').filter({ hasText: /^Activity$/ })).toBeVisible();
+
+  await page.getByLabel('Open').nth(4).click();
+
+  await page.locator('label').filter({ hasText: 'Select All' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+
+  await page.getByRole('button', { name: 'Close' }).click();
 
   await expect(page.locator('#dataContainer')).toContainText('SAWPS SUMMARY REPORT');
 
@@ -43,13 +57,21 @@ test('test', async ({ page }) => {
 
   await expect(page.locator('#dataContainer')).toContainText('Species list: Panthera leo');
 
-  await expect(page.getByText('Species Report')).toBeVisible();
+  await expect(page.getByText('Activity Report')).toBeVisible();
 
-  await expect(page.getByText('Venetia Limpopo NR', { exact: true })).toBeVisible();
+  await expect(page.locator('#dataContainer')).toContainText('Translocation (Intake)');
+
+  await expect(page.locator('#dataContainer')).toContainText('Planned Hunt/Cull');
+
+  await expect(page.locator('#dataContainer')).toContainText('Unplanned/Illegal Hunting');
+
+  await expect(page.locator('#dataContainer')).toContainText('Other');
+
+  await expect(page.getByText('Venetia Limpopo NR', { exact: true }).first()).toBeVisible();
 
   await expect(page.getByText('amy\'s shape').nth(1)).toBeVisible();
 
-  await expect(page.getByText('Mapungubwe GR', { exact: true })).toBeVisible();
+  await expect(page.getByText('Mapungubwe GR', { exact: true }).first()).toBeVisible();
 
   await page.locator('span').filter({ hasText: '1960' }).nth(1).click();
 
@@ -57,7 +79,7 @@ test('test', async ({ page }) => {
 
   await page.getByText('19602023').click();
 
-  await expect(page.getByText('Mapungubwe GR', { exact: true })).toBeVisible();
+  await expect(page.getByText('Mapungubwe GR', { exact: true }).first()).toBeVisible();
 
   await page.getByRole('tab', { name: 'CHARTS' }).click();
 
@@ -119,7 +141,7 @@ test('test', async ({ page }) => {
 
   await page.getByLabel('Open').first().click();
 
-  await page.getByPlaceholder('Select').fill('pa');
+  await page.getByPlaceholder('Select').first().fill('pa');
 
   await page.getByRole('option', { name: 'Panthera leo' }).click();
 
@@ -185,7 +207,7 @@ test('test', async ({ page }) => {
 
   await expect(page.getByText('Luna\'s testing farm', { exact: true })).toBeVisible();
 
-  await expect(page.locator('div:nth-child(6) > .ChartContainerBox > .ChartContainer > .ChartBox > .PopulationTrendChartContainer > .PopulationTrendChart')).toBeVisible();
+  await expect(page.locator('div:nth-child(6) > .ChartContainerBox > .ChartContainer > .ChartBox > .PopulationTrendChartContainer > .PopulationTrendChart').first()).toBeVisible();
 
   await expect(page.getByText('test', { exact: true })).toBeVisible();
 

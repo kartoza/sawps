@@ -29,10 +29,8 @@ class TestUserRoles(TestCase):
         self.group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
         self.user.groups.add(self.group)
 
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test")
         self.organisation = Organisation.objects.create(
-            name="test_organisation", data_use_permission=self.data_use_permission)
+            name="test_organisation")
 
     def test_get_user_roles(self):
         user_roles = get_user_roles(self.user)

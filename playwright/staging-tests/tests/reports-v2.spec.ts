@@ -19,9 +19,9 @@ test('test', async ({ page }) => {
 
   await page.getByRole('option', { name: 'Limpopo, South Africa' }).click();
 
-  await page.getByPlaceholder('Select').click();
+  await page.getByPlaceholder('Select').first().click();
 
-  await page.getByPlaceholder('Select').fill('panth');
+  await page.getByPlaceholder('Select').first().fill('panth');
 
   await page.getByRole('option', { name: 'Panthera leo' }).click();
 

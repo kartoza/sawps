@@ -63,13 +63,8 @@ from stakeholder.models import OrganisationInvites, MANAGER
 
 class SpeciesCountPerProvinceTest(APITestCase):
     def setUp(self):
-
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
 
         taxon_rank = TaxonRank.objects.filter(name="Species").first()
