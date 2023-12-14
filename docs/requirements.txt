@@ -1,10 +1,10 @@
-
-mkdocs-with-pdf
 mkdocs-material
+mkdocs-material-extensions
 mdx_gh_links
+mkdocs-with-pdf
 mkdocs-pdf-export-plugin
+mkdocs-asciinema
 mkdocstrings-python
-mkdocs-video
 # needed for the create-uuid.py helper script
 shortuuid
 # Needed for mkdocstrings python documentation generator
