@@ -15,6 +15,7 @@ from activity.models import ActivityType
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
 from frontend.serializers.report import (
+    BaseSpeciesReportSerializer,
     SpeciesReportSerializer,
     SamplingReportSerializer,
     PropertyReportSerializer,
@@ -211,18 +212,23 @@ def species_report(queryset: QuerySet, request) -> List:
         property_id__in=queryset.values_list('id', flat=True),
         **filters
     ).distinct()
-    # fetch organisations ids where user is manager
-    managed_ids = OrganisationRepresentative.objects.filter(
-        user=request.user
-    ).values_list('organisation_id', flat=True)
-    species_reports = SpeciesReportSerializer(
-        species_population_data,
-        many=True,
-        context={
-            'user': request.user,
-            'managed_ids': managed_ids
-        }
-    ).data
+    if get_param_from_request(request, "file"):
+        species_reports = BaseSpeciesReportSerializer(
+            species_population_data, many=True,
+        ).data
+    else:
+        # fetch organisations ids where user is manager
+        managed_ids = OrganisationRepresentative.objects.filter(
+            user=request.user
+        ).values_list('organisation_id', flat=True)
+        species_reports = SpeciesReportSerializer(
+            species_population_data,
+            many=True,
+            context={
+                'user': request.user,
+                'managed_ids': managed_ids
+            }
+        ).data
     return species_reports
 
 
