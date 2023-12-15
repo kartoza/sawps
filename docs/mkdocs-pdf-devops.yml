@@ -1,5 +1,5 @@
       output_path: ../pdfs/5-SAWPSDevops.pdf
-      cover_subtitle: Part 5: SANBI WPS Devops Guide.
+      cover_subtitle: 'Part 5 - SANBI WPS Devops Guide.'
       exclude_pages:
           #- 'about/'
           - 'administrator/'
