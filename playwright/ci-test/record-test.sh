@@ -16,7 +16,7 @@ then
   echo "npx playwright test tests/mytest.spec.py"
   exit
 else
-  echo "Recording test to tests\$1"
+  echo "Recording test to tests/${1}"
 fi
 
 if [ -w "tests/${1}.spec.ts" ]; then
@@ -34,6 +34,7 @@ TESTNAME=$1
 $PLAYWRIGHT \
 	codegen \
 	--target playwright-test \
+  #--viewport-size=1200,680 \
 	--load-storage=auth.json \
 	-o tests/$1.spec.ts \
 	$BASE_URL

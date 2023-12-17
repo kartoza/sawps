@@ -12,7 +12,7 @@ test('upload geojson', async ({ page }) => {
   
   await page.goto(url);
 
-  //const initialURL = page.url();
+  const initialURL = page.url();
 
   await page.getByRole('link', { name: 'UPLOAD DATA' }).click();
 
@@ -56,25 +56,21 @@ test('upload geojson', async ({ page }) => {
 
   await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
 
-  //await page.getByRole('button', { name: 'PROCESSING FILES...' }).waitFor({state: 'detached'});
+  await page.getByRole('button', { name: 'PROCESSING FILES...' }).waitFor({state: 'detached'});
 
-  //await uploadPromise.isHidden();
+  await uploadPromise.isHidden();
   
-  //await page.waitForLoadState('domcontentloaded');
+  await page.waitForLoadState('domcontentloaded');
 
-  //const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
+  const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
-  //await saveBoundary.isEnabled();
+  await saveBoundary.isEnabled();
 
-  //await saveBoundary.click();
+  await saveBoundary.click();
 
-  //await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
+  await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
+ 
+  const finalURL = page.url();
 
-  //await page.getByRole('link', { name: 'ONLINE FORM' }).click();
-
-  //await page.waitForURL('**/upload-data/**')
-
-  //const finalURL = page.url();
-
-  //expect(finalURL).not.toBe(initialURL);
+  expect(finalURL).not.toBe(initialURL);
 });
