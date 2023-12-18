@@ -83,7 +83,7 @@ jobs:
           docker cp sanbi_layer_db.dump sanbi_db_1:/home/sanbi_layer_db.dump
           cat << EOF | docker-compose exec -T db bash
           cd /home
-          PGPASSWORD=docker pg-restore --clean --if-exists -h 127.0.0.1 -U docker -d django
+          PGPASSWORD=docker pg_restore --clean --if-exists -h 127.0.0.1 -U docker -d django
           EOF
       - name: Run Coverage test
         working-directory: deployment
