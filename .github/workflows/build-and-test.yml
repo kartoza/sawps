@@ -77,6 +77,14 @@ jobs:
             echo "Curl command failed"
             exit 1
           fi
+      - name: Restore map layer schema
+        working-directory: deployment
+        run: |
+          docker cp sawps-compress.gz db:/home/sawps-compress.gz
+          cat << EOF | docker-compose exec -T db bash
+          cd /home
+          gunzip sawps-compress.gz | PGPASSWORD=docker psql -h 127.0.0.1 -U docker -d django
+          EOF
       - name: Run Coverage test
         working-directory: deployment
         run: |
