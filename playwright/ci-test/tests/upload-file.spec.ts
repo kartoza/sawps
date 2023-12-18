@@ -50,9 +50,9 @@ test('upload geojson', async ({ page }) => {
 
   const fileChooser = await fileChooserPromise;
 
-  await fileChooser.setFiles('tests/fixtures/parcel.geojson');
+  await fileChooser.setFiles('tests/fixtures/plot1.gpkg');
 
-  await expect(page.getByText('parcel.geojson')).toBeVisible();
+  await expect(page.getByText('plot1.gpkg')).toBeVisible();
 
   await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
 
@@ -64,7 +64,7 @@ test('upload geojson', async ({ page }) => {
 
   const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
-  await saveBoundary.isVisible();
+  await saveBoundary.waitFor({state: "attached"});
 
   await saveBoundary.click();
 
