@@ -37,10 +37,27 @@ class BaseReportSerializer(serializers.Serializer):
         return obj.property.organisation.short_code
 
 
-class SpeciesReportSerializer(
+class BaseSpeciesReportSerializer(
     serializers.ModelSerializer,
     BaseReportSerializer
 ):
+    """
+    Serializer for Species Report (for exporting to csv/excel).
+    """
+
+    class Meta:
+        model = AnnualPopulation
+        fields = [
+            "property_name", "property_short_code",
+            "organisation_name", "organisation_short_code",
+            "scientific_name", "common_name",
+            "year", "group", "total", "adult_male", "adult_female",
+            "juvenile_male", "juvenile_female", "sub_adult_male",
+            "sub_adult_female"
+        ]
+
+
+class SpeciesReportSerializer(BaseSpeciesReportSerializer):
     """
     Serializer for Species Report.
     """
