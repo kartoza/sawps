@@ -15,15 +15,24 @@ def calculate_species_count_per_province(
         taxon,
         filters
 ) -> Dict[str, int]:
-
+    activity_field = (
+        'annualpopulationperactivity__activity_type_id__in'
+    )
+    activity_filter = None
+    if activity_field in filters:
+        activity_filter = filters[activity_field]
+        del filters[activity_field]
     annual_populations = AnnualPopulation.objects.select_related(
         'property__province'
     ).filter(
         **filters, taxon=taxon
-    ).values(
+    )
+    if activity_filter:
+        annual_populations = annual_populations.filter(activity_filter)
+    annual_populations = annual_populations.values(
         'year', 'property__province__name', 'taxon__scientific_name'
     ).annotate(
-        total_population=Sum('total', distinct=True)
+        total_population=Sum('total')
     ).order_by('-year', '-total_population')
     result_data = list()
     for pop_data in annual_populations:

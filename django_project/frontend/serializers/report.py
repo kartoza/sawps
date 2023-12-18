@@ -279,10 +279,20 @@ class NationalLevelPropertyReport(serializers.Serializer):
 
     def to_representation(self, instance):
         all_data = {}
-
+        filters = self.context['filters']
+        activity_field = (
+            'annualpopulationperactivity__activity_type_id__in'
+        )
+        activity_filter = None
+        if activity_field in filters:
+            activity_filter = filters[activity_field]
+            del filters[activity_field]
         property_data = AnnualPopulation.objects.filter(
-            **self.context['filters'], taxon=instance
-        ).values(
+            **filters, taxon=instance
+        )
+        if activity_filter:
+            property_data = property_data.filter(activity_filter)
+        property_data = property_data.values(
             "property__property_type__name",
             "year",
         ).annotate(
@@ -396,12 +406,22 @@ class NationalLevelProvinceReport(serializers.Serializer):
 
     def to_representation(self, instance):
         all_data = {}
-
+        filters = self.context['filters']
+        activity_field = (
+            'annualpopulationperactivity__activity_type_id__in'
+        )
+        activity_filter = None
+        if activity_field in filters:
+            activity_filter = filters[activity_field]
+            del filters[activity_field]
         province_data = AnnualPopulation.objects.select_related(
             'property__province'
         ).filter(
-            **self.context['filters'], taxon=instance
-        ).order_by('-year')
+            **filters, taxon=instance
+        )
+        if activity_filter:
+            province_data = province_data.filter(activity_filter)
+        province_data = province_data.order_by('-year')
 
         province_fields = set()
 

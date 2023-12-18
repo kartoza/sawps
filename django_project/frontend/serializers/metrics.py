@@ -4,7 +4,9 @@ from typing import List
 from django.db.models import (
     F,
     Q,
-    Sum
+    Sum,
+    Exists,
+    OuterRef
 )
 from rest_framework import serializers
 
@@ -14,6 +16,7 @@ from population_data.models import (
 )
 from property.models import Property
 from species.models import Taxon
+from frontend.models.spatial import SpatialDataValueModel
 
 
 class SpeciesPopuationCountPerYearSerializer(serializers.ModelSerializer):
@@ -209,17 +212,25 @@ class TotalCountPerPopulationEstimateSerializer(serializers.Serializer):
                     ) |
                     Q(taxon__scientific_name=species_name)
                 ) if species_name else Q(),
-                Q(
-                    annualpopulationperactivity__activity_type_id__in=
-                    [int(act) for act in activity_filter.split(',')]
-                ) if activity_filter else Q(),
-                Q(**{
-                    'property__spatialdatamodel__spatialdatavaluemodel__'
-                    'context_layer_value__in': spatial_filter_values
-                }) if spatial_filter_values else Q(),
                 year=max_year,
             )
         )
+        if activity_filter:
+            activity_qs = AnnualPopulationPerActivity.objects.filter(
+                annual_population=OuterRef('pk'),
+                activity_type_id__in=[
+                    int(act) for act in activity_filter.split(',')
+                ]
+            )
+            annual_populations = annual_populations.filter(
+                Exists(activity_qs))
+        if spatial_filter_values:
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('property'),
+                context_layer_value__in=spatial_filter_values
+            )
+            annual_populations = annual_populations.filter(
+                Exists(spatial_qs))
 
         # Iterate through filtered records
         for record in annual_populations:
@@ -317,15 +328,19 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
             )
 
         if activity_filter:
-            populations = populations.filter(
-                annualpopulationperactivity__activity_type_id__in=[
+            activity_qs = AnnualPopulationPerActivity.objects.filter(
+                annual_population=OuterRef('pk'),
+                activity_type_id__in=[
                     int(act) for act in activity_filter.split(',')
                 ]
             )
+            populations = populations.filter(Exists(activity_qs))
         if spatial_filter:
-            populations = populations.filter(**{
-                'property__spatialdatamodel__spatialdatavaluemodel__'
-                'context_layer_value__in': spatial_filter})
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('property'),
+                context_layer_value__in=spatial_filter
+            )
+            populations = populations.filter(Exists(spatial_qs))
 
         populations = populations.annotate(
             total_population=Sum("total")
@@ -368,26 +383,29 @@ class TotalCountPerActivitySerializer(serializers.ModelSerializer):
                 int(act) for act in activity_filter.split(',')
             ])
         if spatial_filter:
-            q_filters &= Q(**{
-                'annual_population__property__spatialdatamodel__'
-                'spatialdatavaluemodel__'
-                'context_layer_value__in': spatial_filter
-            })
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('annual_population__property'),
+                context_layer_value__in=spatial_filter
+            )
+            q_filters &= Q(Exists(spatial_qs))
 
-        populations = AnnualPopulationPerActivity.objects.values(
+        populations = AnnualPopulationPerActivity.objects.filter(
+            q_filters
+        ).values(
             'year',
-            'activity_type__name',
-            'total',
-        ).filter(q_filters)
+            'activity_type__name'
+        ).annotate(
+            activity_total=Sum('total')
+        ).order_by()
 
         activities_list = [
             {
                 "activity_type": item["activity_type__name"],
                 "year": item["year"],
-                "total": item["total"],
+                "total": item["activity_total"],
             }
             for item in populations
-            if item["activity_type__name"] and item["total"]
+            if item["activity_type__name"] and item["activity_total"]
         ]
         return activities_list
 
