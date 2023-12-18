@@ -64,7 +64,7 @@ test('upload geojson', async ({ page }) => {
 
   const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
-  await saveBoundary.isEnabled();
+  await saveBoundary.isVisible();
 
   await saveBoundary.click();
 
