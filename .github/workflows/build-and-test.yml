@@ -80,7 +80,7 @@ jobs:
       - name: Restore map layer schema
         working-directory: deployment
         run: |
-          docker cp sawps-compress.gz db:/home/sawps-compress.gz
+          docker cp sawps-compress.gz sanbi_db_1:/home/sawps-compress.gz
           cat << EOF | docker-compose exec -T db bash
           cd /home
           gunzip sawps-compress.gz | PGPASSWORD=docker psql -h 127.0.0.1 -U docker -d django
