@@ -8,7 +8,7 @@ test.use({
 
 test('upload geojson', async ({ page }) => {
 
-  //test.setTimeout(120000)
+  test.setTimeout(360000)
   
   await page.goto(url);
 
@@ -56,19 +56,21 @@ test('upload geojson', async ({ page }) => {
 
   await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
 
-  await page.getByRole('button', { name: 'PROCESSING FILES...' }).waitFor({state: 'detached'});
+  await page.waitForLoadState('domcontentloaded');
 
-  await uploadPromise.isHidden();
+  //await page.getByRole('button', { name: 'PROCESSING FILES...' }).waitFor({state: 'detached'});
+
+  await expect(uploadPromise).toBeHidden();
   
   await page.waitForLoadState('domcontentloaded');
 
   const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
-  await saveBoundary.waitFor({state: "attached"});
+  await expect(saveBoundary).toBeEnabled({timeout: 180000});
 
   await saveBoundary.click();
 
-  await page.getByText('Upload Species Population Data').isVisible({timeout: 60000});
+  await expect(page.getByText('Upload Species Population Data')).toBeVisible({timeout: 10000});
  
   const finalURL = page.url();
 
