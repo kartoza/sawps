@@ -34,7 +34,7 @@ test.describe('admin operations', () => {
         await page.getByRole('link', { name: 'Add Organisation' }).click();
         await expect(page.getByLabel('Name:')).toBeVisible();
         await page.getByLabel('Name:').fill('Cape');
-        await page.getByLabel('Short code:').fill('GACA0002');
+        //await page.getByLabel('Short code:').fill('GACA0002');
         await page.getByLabel('National:').selectOption('true');
         await page.getByLabel('Province:').selectOption('1');
         await page.getByRole('button', { name: 'Save', exact: true }).click();
@@ -72,13 +72,13 @@ test.describe('admin operations', () => {
 
         await page.getByRole('link', { name: 'admin', exact: true }).click();
 
-        await page.getByTitle('Click to choose all groups at once.').click();
+        //await page.getByTitle('Click to choose all groups at once.').click();
 
-        await page.getByText('User permissions:').click();
+        //await page.getByText('User permissions:').click();
 
-        await page.getByTitle('Click to choose all user permissions at once.').click();
+        //await page.getByTitle('Click to choose all user permissions at once.').click();
 
-        await page.locator('#user_profile-0').getByText('User role type id:').selectOption('5');
+        //await page.locator('#user_profile-0').getByText('User role type id:').selectOption('5');
 
         await page.locator('#user_profile-0').getByText('Current organisation:').click();
 

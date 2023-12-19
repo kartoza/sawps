@@ -8,7 +8,7 @@ test.use({
 
 test('upload geojson', async ({ page }) => {
 
-  test.setTimeout(360000)
+  //test.setTimeout(360000)
   
   await page.goto(url);
 
@@ -66,7 +66,7 @@ test('upload geojson', async ({ page }) => {
 
   const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
-  await expect(saveBoundary).toBeEnabled({timeout: 180000});
+  await expect(saveBoundary).toBeEnabled({timeout: 20000});
 
   await saveBoundary.click();
 
