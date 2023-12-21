@@ -4,7 +4,8 @@ from sawps.views import (
     SendRequestEmail,
     AddUserToOrganisation,
     CustomPasswordResetView,
-    custom_password_reset_complete_view
+    custom_password_reset_complete_view,
+    health
 )
 from django.contrib.auth import views as auth_views
 
@@ -41,4 +42,9 @@ urlpatterns = [
         custom_password_reset_complete_view,
         name='password_reset_complete'
     ),
+    path(
+        'healthz/',
+        health,
+        name='healthz'
+    )
 ]
