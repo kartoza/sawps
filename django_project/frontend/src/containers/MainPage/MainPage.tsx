@@ -22,6 +22,7 @@ import DataList from './Data';
 import Metrics from './Metrics';
 import Trends from './Trends';
 import { HelperContainerWithToggle } from "../../components/HelperContainer";
+import { setStartYear, DEFAULT_START_YEAR_FILTER } from '../../reducers/SpeciesFilter';
 
 const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
 
@@ -161,6 +162,10 @@ function MainPage() {
                       value={selectedTab}
                       onChange={(event: React.SyntheticEvent, newValue: number) => {
                         const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
+                        // if navigated from reports tab, then reset the startYear value back to DEFAULT_START_YEAR_FILTER
+                        if (selectedTab === 1 && newValue !== 1) {
+                          dispatch(setStartYear(DEFAULT_START_YEAR_FILTER))
+                        }
                         const selectedTabName = tabNames[newValue];
                         setSelectedTab(newValue);
                         if (selectedTabName === 'upload') {

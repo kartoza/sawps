@@ -9,6 +9,7 @@ echo "./create-auth.sh"
 
 $PLAYWRIGHT \
     test \
+    --ui \
     --project chromium
 
 echo "--done--"

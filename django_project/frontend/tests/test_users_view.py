@@ -30,10 +30,8 @@ class OrganisationUsersViewTest(TestCase):
             password='testpassword',
             email='test@gmail.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test")
         self.organisation = Organisation.objects.create(
-            name="test_organisation", data_use_permission=self.data_use_permission)
+            name="test_organisation")
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation, user=self.user)
         self.org_invitation = OrganisationInvites.objects.create(
@@ -108,8 +106,7 @@ class OrganisationUsersViewTest(TestCase):
             {
                 'action': 'invite',
                 'email': 'test@example.com',
-                'inviteAs': 'manager',
-                'memberRole': 'write'
+                'inviteAs': 'manager'
             }
         )
 
@@ -123,8 +120,7 @@ class OrganisationUsersViewTest(TestCase):
             {
                 'action': 'invite',
                 'email': 'test@example.com',
-                'inviteAs': 'manager',
-                'memberRole': 'read'
+                'inviteAs': 'manager'
             }
         )
 
@@ -146,8 +142,7 @@ class OrganisationUsersViewTest(TestCase):
             {
                 'action': 'invite',
                 'email': 'test@example.com',
-                'inviteAs': 'member',
-                'memberRole': 'write'
+                'inviteAs': 'member'
             }
         )
         self.assertEqual(response.status_code, 200)
@@ -437,14 +432,10 @@ class UserApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertTrue(PROVINCIAL_DATA_CONSUMER in response.data['user_roles'])
-        data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
 
         # Test with organisation
         organisation = Organisation.objects.create(
             name="test_organisation",
-            data_use_permission=data_use_permission,
             national=True
         )
         user.user_profile.current_organisation = organisation

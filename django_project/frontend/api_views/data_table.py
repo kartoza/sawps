@@ -8,8 +8,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from frontend.static_mapping import (
-    DATA_CONTRIBUTORS,
-    DATA_SCIENTISTS,
     DATA_CONSUMERS,
     PROVINCIAL_DATA_CONSUMER
 )
@@ -58,9 +56,8 @@ class DataTableAPIView(APIView):
 
         user_roles = get_user_roles(self.request.user)
         queryset = self.get_queryset(user_roles)
-        show_detail = set(user_roles) & \
-            set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
-            and not set(user_roles) & set(DATA_CONSUMERS)
+        show_detail = self.request.user.is_superuser \
+            or not set(user_roles) & set(DATA_CONSUMERS)
         if show_detail:
             if get_param_from_request(request, "file"):
                 return Response({

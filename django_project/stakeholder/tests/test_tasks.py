@@ -30,12 +30,8 @@ class SendReminderEmailsTestCase(TestCase):
             password='testpassword',
             email='test@gmail.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,

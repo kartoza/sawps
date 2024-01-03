@@ -1,4 +1,4 @@
-﻿import uuid
+import uuid
 
 from django.contrib.auth.models import User
 from django.core import mail
@@ -259,16 +259,11 @@ class AddUserToOrganisationTestCase(TestCase):
             first_name='test_user',
             last_name='last_name'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name=self.organisation_name,
-            data_use_permission = self.data_use_permission
+            name=self.organisation_name
         )
         self.organisation2 = Organisation.objects.create(
-            name='organisation2',
-            data_use_permission = self.data_use_permission
+            name='organisation2'
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,

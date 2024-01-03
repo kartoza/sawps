@@ -17,7 +17,8 @@ from stakeholder.views import (
 )
 from stakeholder.models import (
     Organisation,
-    OrganisationUser
+    OrganisationUser,
+    OrganisationRepresentative
 )
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -114,12 +115,8 @@ class DeleteReminderAndNotificationTest(TestCase):
             password='testpassword123454$',
             email='email@gamil.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
         self.user.user_profile.current_organisation = self.organisation
         self.user.save()
@@ -334,12 +331,8 @@ class TestAddReminderAndScheduleTask(TestCase):
             username='testuser',
             password='testpassword'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
@@ -396,7 +389,7 @@ class TestAddReminderAndScheduleTask(TestCase):
             'reminder': 'Test Reminder Note2',
             'date': date_str,
             'timezone': 'Africa/Johannesburg',
-            'reminder_type': 'everyone',
+            'reminder_type': 'all',
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
 
@@ -429,12 +422,8 @@ class TestRemindersView(TestCase):
             password='testpassword123454$',
             email='email@gamil.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
@@ -547,6 +536,92 @@ class TestRemindersView(TestCase):
         # Check the context variables
         self.assertIn('reminders', context)
         self.assertEqual(context['reminders'], reminders)
+        # check if member cannot see reminder type
+        self.assertIn('can_set_reminder_type', context)
+        self.assertFalse(context['can_set_reminder_type'])
+
+    def test_get_context_data_with_superuser(self):
+        # test with superuser
+        test_superuser = User.objects.create_user(
+            username='test_superuser',
+            password='testpassword123454$',
+            email='test_superuser@gamil.com',
+            is_superuser=True
+        )
+        logged_in = self.client.login(
+            username=test_superuser.username,
+            password='testpassword123454$'
+        )
+        self.assertTrue(logged_in)
+        url = reverse('reminders', kwargs={'slug': test_superuser.username})
+
+        response = self.client.get(url)
+        view = RemindersView()
+        view.setup(request=response.wsgi_request)
+        reminders = []
+        view.get_reminders = lambda request: reminders
+
+        context = view.get_context_data()
+        self.assertIn('can_set_reminder_type', context)
+        self.assertTrue(context['can_set_reminder_type'])
+
+    def test_get_context_data_with_manager(self):
+        test_manager = User.objects.create_user(
+            username='test_manager',
+            password='testpassword123454$',
+            email='test_manager@gamil.com'
+        )
+        test_manager.user_profile.current_organisation = (
+            self.organisation
+        )
+        test_manager.save()
+        OrganisationRepresentative.objects.create(
+            organisation=self.organisation,
+            user=test_manager
+        )
+        logged_in = self.client.login(
+            username=test_manager.username,
+            password='testpassword123454$'
+        )
+        self.assertTrue(logged_in)
+        url = reverse('reminders', kwargs={'slug': test_manager.username})
+
+        response = self.client.get(url)
+        view = RemindersView()
+        view.setup(request=response.wsgi_request)
+        reminders = []
+        view.get_reminders = lambda request: reminders
+
+        context = view.get_context_data()
+        self.assertIn('can_set_reminder_type', context)
+        self.assertTrue(context['can_set_reminder_type'])
+
+    def test_get_context_data_with_empty_organisation(self):
+        test_manager = User.objects.create_user(
+            username='test_manager',
+            password='testpassword123454$',
+            email='test_manager@gamil.com'
+        )
+        OrganisationRepresentative.objects.create(
+            organisation=self.organisation,
+            user=test_manager
+        )
+        logged_in = self.client.login(
+            username=test_manager.username,
+            password='testpassword123454$'
+        )
+        self.assertTrue(logged_in)
+        url = reverse('reminders', kwargs={'slug': test_manager.username})
+
+        response = self.client.get(url)
+        view = RemindersView()
+        view.setup(request=response.wsgi_request)
+        reminders = []
+        view.get_reminders = lambda request: reminders
+
+        context = view.get_context_data()
+        self.assertIn('can_set_reminder_type', context)
+        self.assertFalse(context['can_set_reminder_type'])
 
 
     def test_edit_reminder(self):
@@ -602,7 +677,7 @@ class TestRemindersView(TestCase):
                 'status': 'passed',
                 'date': date_str,
                 'timezone': 'Africa/Johannesburg',
-                'reminder_type': 'everyone',
+                'reminder_type': 'all',
                 'reminder': 'Updated Reminder Note',
                 'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
             }
@@ -627,7 +702,7 @@ class TestRemindersView(TestCase):
                 'status': 'active',
                 'date': date_str,
                 'timezone': 'Africa/Johannesburg',
-                'reminder_type': 'everyone',
+                'reminder_type': 'all',
                 'reminder': 'Updated Reminder Note',
                 'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
             }
@@ -645,12 +720,8 @@ class SearchRemindersOrNotificationsTest(TestCase):
             password='testpassword123454$',
             email='email@gamil.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.user.user_profile.current_organisation = (
             self.organisation
@@ -750,12 +821,8 @@ class GetReminderOrNotificationTest(TestCase):
             password='testpassword',
             email='testuser@example.com',
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.client = Client()
         self.reminder_1 = Reminders.objects.create(
@@ -804,12 +871,8 @@ class GetOrganisationRemindersTest(TestCase):
             password='testpassword',
             email='testuser@example.com',
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.user.user_profile.current_organisation = (
             self.organisation
@@ -876,12 +939,8 @@ class RemindersViewTest(TestCase):
             password='testpassword',
             email='testuser@example.com',
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.reminder1 = Reminders.objects.create(
             user=self.user,
@@ -1014,12 +1073,8 @@ class NotificationsViewTest(TestCase):
             password='testpassword123454$',
             email='email@gamil.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission = self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,

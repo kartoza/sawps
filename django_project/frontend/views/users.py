@@ -117,7 +117,6 @@ class OrganisationUsersView(
 
         return rows_per_page
 
-
     def search_user_table(self, request):
         query = request.POST.get('query')
         organisation = request.POST.get('current_organisation')
@@ -166,14 +165,8 @@ class OrganisationUsersView(
         # retrieve data from front end/html template
         email = request.POST.get('email')
         assign_as = request.POST.get('inviteAs')
-        permissions = request.POST.get('memberRole')
-
-        # assign role from the roles defined in the db
-        if permissions == 'write':
-            role = 'Admin'
-        else:
-            role = 'Base user'
-
+        # assign role as base user
+        role = 'Base user'
         # get role by name
         user_role = self.get_user_role(role)
         try:

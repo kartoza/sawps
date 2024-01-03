@@ -25,9 +25,9 @@ test('test', async ({ page }) => {
 
   await expect(page.getByPlaceholder('Search place')).toBeEmpty();
 
-  await expect(page.getByPlaceholder('Select')).toBeEmpty();
+  await expect(page.getByPlaceholder('Select').first()).toBeEmpty();
   
-  await expect(page.locator('#left-sidebar-container')).toContainText('6 Activities selected');
+  await expect(page.locator('#left-sidebar-container')).toContainText('Activity');
 
   await expect(page.locator('#left-sidebar-container')).toContainText('21 Organisations selected');
 
@@ -94,7 +94,10 @@ test('test', async ({ page }) => {
 
   await page.getByLabel('Toggle Light Mode').click();
 
-  await page.getByLabel('Reset bearing to north').click();
+  // Updated to 3D
+  await page.getByLabel('Toggle 3D view').click();
+
+  await page.getByLabel('Toggle 3D view').click();
 
   await page.getByPlaceholder('Search place').click();
 
@@ -102,9 +105,9 @@ test('test', async ({ page }) => {
 
   await page.getByRole('option', { name: 'Gauteng, South Africa' }).click();
 
-  await page.getByPlaceholder('Select').click();
+  await page.getByPlaceholder('Select').first().click();
 
-  await page.getByPlaceholder('Select').fill('pan');
+  await page.getByPlaceholder('Select').first().fill('pan');
 
   await page.getByRole('option', { name: 'Panthera leo' }).click();
 

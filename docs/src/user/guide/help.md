@@ -18,7 +18,7 @@ The help and contact pages are there to ensure that you, as a user, can be assis
 
 Once logged in, navigate to the `HELP` button on the navigation bar. This will redirect you to the help page of the platform. Here you will see 1️⃣ the help desk system that displays some of the documentation. If you would like to view the full documentation site you can click on 2️⃣ `Visit our Documentation` or you can click on 3️⃣ the `CONTACT US` button to be redirected to the `Contact Us` page.
 
-![Help 1](./img/help-1.png) <!-- Image to be updated when site is finished -->
+![Help 1](./img/help-1.png)
 
 ## How do I make contact with the SAWPS team?
 

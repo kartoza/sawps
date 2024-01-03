@@ -76,7 +76,7 @@ class UserLogin(models.Model):
         try:
             return self.user.username
         except User.DoesNotExist:
-            return self.id
+            return str(self.id)
 
     class Meta:
         verbose_name = 'User login'
@@ -92,10 +92,6 @@ class Organisation(models.Model):
         max_length=50,
         null=False,
         blank=True
-    )
-    data_use_permission = models.ForeignKey(
-        'regulatory_permit.dataUsePermission',
-        on_delete=models.CASCADE
     )
     national = models.BooleanField(null=True, blank=True)
     province = models.ForeignKey(
@@ -218,7 +214,7 @@ class UserProfile(models.Model):
         try:
             return self.user.username
         except User.DoesNotExist:
-            return self.id
+            return str(self.id)
 
     class Meta:
         verbose_name = 'User'

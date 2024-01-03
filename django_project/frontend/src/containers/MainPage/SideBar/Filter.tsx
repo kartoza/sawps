@@ -28,7 +28,8 @@ import {
     toggleSpecies,
     toggleSpeciesList,
     setSelectedProvinceName,
-    setSelectedProvinceCount
+    DEFAULT_START_YEAR_FILTER,
+    DEFAULT_END_YEAR_FILTER
 } from '../../../reducers/SpeciesFilter';
 import './index.scss';
 import {MapEvents} from '../../../models/Map';
@@ -52,8 +53,8 @@ import {AutoCompleteCheckbox} from "../../../components/SideBar/index";
 import {SeachPlaceResult} from '../../../utils/SearchPlaces';
 import SearchPlace from '../../../components/SearchPlace';
 
-const yearRangeStart = 1960;
-const yearRangeEnd = new Date().getFullYear();
+const yearRangeStart = DEFAULT_START_YEAR_FILTER;
+const yearRangeEnd = DEFAULT_END_YEAR_FILTER;
 const FETCH_PROPERTY_DETAIL_URL = '/api/property/detail/'
 
 function Filter(props: any) {
@@ -79,6 +80,7 @@ function Filter(props: any) {
     const [provinceOptions, setProvinceOptions] = useState([])
     const isStartYearValid = localStartYear >= yearRangeStart && localStartYear <= yearRangeEnd
     const isEndYearValid = localEndYear >= yearRangeStart && localEndYear <= yearRangeEnd
+    const dynamicMapSession = useAppSelector((state: RootState) => state.mapState.dynamicMapSession)
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
     const {
         data: organisationList,
@@ -231,6 +233,10 @@ function Filter(props: any) {
     const handleSelectedSpecies = (value: string) => {
         setSelectedSpecies(value);
     };
+
+    useEffect(() => {
+        setLocalStartYear(startYear)
+    }, [startYear])
 
     useEffect(() => {
         if (selectedSpeciesList.length === 0 && selectedSpecies !== "") {
@@ -514,7 +520,7 @@ function Filter(props: any) {
                         />
                         <Typography color='#75B37A' fontSize='medium'>Search place</Typography>
                     </Box>
-                    <SearchPlace onPlaceSelected={(place: SeachPlaceResult) => {
+                    <SearchPlace mapSession={dynamicMapSession} onPlaceSelected={(place: SeachPlaceResult) => {
                         if (place && place.bbox && place.bbox.length === 4) {
                             // trigger zoom to property
                             let _bbox = place.bbox.map(String)

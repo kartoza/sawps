@@ -14,9 +14,9 @@ context_id: GD6YdjhPx43u8TKLi3eNNE
 
 # Filter Side Panel Documentation
 
-> **Disclaimer:** Please read the following information carefully. The screenshots may vary slightly due to various user roles on the platform.
-
 The filter side panel allows users to refine and narrow down data based on specific criteria. There are different types of filters are available for customisation.
+
+> **Disclaimer:** Please read the following information carefully. The screenshots may vary slightly due to various user roles on the platform. Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
 
 ## Map Tab Filter Panel Overview
 
@@ -103,6 +103,7 @@ to allow the user group (e.g. `National data scientist`) to see the property fil
     ![Activity filter](./img/filters-8.png)
 
 1. **Selected Activity:** Choose the activity type to filter the displayed data based on the selected activities.
+
 #### 7. Spatial Filter
 
 * **Filter Description:** This filter allows users to filter data based on spatial information.
@@ -198,7 +199,7 @@ The filter side panel provides a robust toolset for users to refine and explore 
 
     ![Activity filter](./img/filters-12.png)
 
-1. **Activity Filter:** All activities are selected by default. Users can choose the activities of their choice.
+1. **Activity Filter:** Users can choose the activities of their choice.
 
 #### 7. Spatial Filter
 
@@ -281,7 +282,7 @@ The filter side panel provides a robust toolset for users to refine and explore 
 
     ![Activity filter](./img/filters-12.png)
 
-1. **Activity Filter:** All activities are selected by default. Users can choose the activities of their choice.
+1. **Activity Filter:** Users can choose the activities of their choice.
 
 #### 6. Spatial Filter
 

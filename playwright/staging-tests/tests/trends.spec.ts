@@ -17,9 +17,9 @@ test('test', async ({ page }) => {
 
   await page.getByRole('option', { name: 'Limpopo, South Africa' }).click();
 
-  await page.getByPlaceholder('Select').click();
+  await page.getByPlaceholder('Select').first().click();
 
-  await page.getByPlaceholder('Select').fill('panthera');
+  await page.getByPlaceholder('Select').first().fill('panthera');
 
   await page.getByRole('option', { name: 'Panthera leo' }).click();
 
@@ -35,7 +35,7 @@ test('test', async ({ page }) => {
 
   await expect(page.getByLabel('TRENDS')).toContainText('National');
 
-  await expect(page.locator('div').filter({ hasText: /^National Population Trend$/ }).nth(1)).toBeVisible();
+  await expect(page.locator('div').filter({ hasText: /^Panthera Leo National Population Trend$/ }).nth(1)).toBeVisible();
 
   await expect(page.locator('div').filter({ hasText: /^Large Panthera Leo Populations$/ }).nth(1)).toBeVisible();
 

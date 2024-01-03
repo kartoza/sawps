@@ -92,8 +92,6 @@ class organisationFactory(factory.django.DjangoModelFactory):
         model = Organisation
 
     name = factory.Faker('company')
-    data_use_permission = factory.SubFactory(
-        'regulatory_permit.factories.DataUsePermissionFactory')
 
 
 class organisationUserFactory(factory.django.DjangoModelFactory):
