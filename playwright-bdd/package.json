@@ -9,6 +9,8 @@
   "author": "jeff",
   "license": "ISC",
   "devDependencies": {
+    "@cucumber/cucumber": "^9.2.0",
+    "@playwright/test": "^1.40.1",
     "playwright-bdd": "^5.6.0"
   }
 }
