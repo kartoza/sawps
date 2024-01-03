@@ -4,7 +4,7 @@ import datetime
 from typing import List
 
 import jenkspy
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Exists
 from django.db.models import FloatField
 from django.db.models.functions import Cast
 from django.db.models.query import QuerySet, F
@@ -43,9 +43,13 @@ from frontend.utils.organisation import (
     get_organisation_ids
 )
 from frontend.utils.user_roles import get_user_roles
-from population_data.models import AnnualPopulation
+from population_data.models import (
+    AnnualPopulation,
+    AnnualPopulationPerActivity
+)
 from property.models import Property
 from species.models import Taxon
+from frontend.models.spatial import SpatialDataValueModel
 
 
 class SpeciesPopulationCountPerYearAPIView(APIView):
@@ -423,18 +427,25 @@ class BasePropertyCountAPIView(APIView):
             property_ids = property_list.split(",")
             filters['property_id__in'] = property_ids
 
-        if activity_filter:
-            filters['annualpopulationperactivity__activity_type_id__in'] = [
-                int(act) for act in activity_filter.split(',')
-            ]
-        if spatial_filter:
-            filters['property__spatialdatamodel__spatialdatavaluemodel__'
-                    'context_layer_value__in'] = spatial_filter
-
         queryset = AnnualPopulation.objects.filter(
             **filters
-        ).distinct()
-        return queryset
+        )
+        if activity_filter:
+            activity_qs = AnnualPopulationPerActivity.objects.filter(
+                annual_population=OuterRef('pk'),
+                activity_type_id__in=[
+                    int(act) for act in activity_filter.split(',')
+                ]
+            )
+            queryset = queryset.filter(Exists(activity_qs))
+
+        if spatial_filter:
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('property'),
+                context_layer_value__in=spatial_filter
+            )
+            queryset = queryset.filter(Exists(spatial_qs))
+        return queryset.distinct()
 
     def get_upper_lower_bound(self, categories, idx, category, query_field):
         lower_bound = category

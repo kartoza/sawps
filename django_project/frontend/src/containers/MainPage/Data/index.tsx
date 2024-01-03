@@ -252,8 +252,7 @@ const DataList = () => {
         return uniqueColumns
     }
 
-    useEffect(() => {
-        if (!isSuccess) return;
+    const generateTableData = (isPdfExport?: boolean) => {
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
             <Box key={each}>
                 <Box className="data-table data-grid data-table-header"
@@ -283,7 +282,7 @@ const DataList = () => {
                                     columns.push(value)
                                 }
                             }
-                            if (each === 'Species_report' && userInfoData?.user_permissions.includes('Can edit species population data')) {
+                            if (each === 'Species_report' && userInfoData?.user_permissions.includes('Can edit species population data') && !isPdfExport) {
                                 filteredColumns.push({
                                     field: '',
                                     headerName: 'Action',
@@ -318,6 +317,13 @@ const DataList = () => {
                 }
             </Box>
         )
+
+        return dataGrid
+    }
+
+    useEffect(() => {
+        if (!isSuccess) return;
+        
         const activityDataGrid = isDataConsumer(userInfoData) && activityDataSet.length > 0 ?
           null : activityDataSet.map((each: any) =>
             <Box key={each}>
@@ -378,7 +384,7 @@ const DataList = () => {
 
         const uniqueColumns = getUniqueColumn()
         setColumns(uniqueColumns)
-        setTableData(dataGrid)
+        setTableData(generateTableData())
     }, [data, selectedColumns, isSuccess])
 
     useEffect(() => {
@@ -393,26 +399,37 @@ const DataList = () => {
         // downloads all charts rendered on page
     const handleDownloadPdf = async () => {
         setModalOpen(true)
-        const data = document.getElementById('dataContainer');
-        html2canvas(data, {scale: 2}).then((canvas:any) => {
-          const imgWidth = 208;
-          const pageHeight = 295;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let heightLeft = imgHeight;
-          let position = 0;
-          heightLeft -= pageHeight;
-          const doc = new jsPDF('p', 'mm');
-          doc.setFillColor('245');
-          doc.addImage(canvas, 'PNG', 1, position, imgWidth, imgHeight, '', 'FAST');
-          while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            doc.addPage();
-            doc.addImage(canvas, 'PNG', 1, position, imgWidth, imgHeight, '', 'FAST');
-            heightLeft -= pageHeight;
-          }
-          setModalOpen(false)
-          doc.save(`${selectedSpeciesList} - reports.pdf`);
-        });
+        setTableData(generateTableData(true))
+        // wait 800ms until table is re-rendered 
+        setTimeout(() => {
+            const data = document.getElementById('dataContainer');
+            html2canvas(data, {scale: 2}).then((canvas:any) => {
+                const imgWidth = 208;
+                const pageHeight = 295;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+                heightLeft -= pageHeight;
+                const doc = new jsPDF('p', 'mm');
+                doc.setFillColor('245');
+                doc.addImage(canvas, 'PNG', 1, position, imgWidth, imgHeight, '', 'FAST');
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(canvas, 'PNG', 1, position, imgWidth, imgHeight, '', 'FAST');
+                    heightLeft -= pageHeight;
+                }
+                setTableData(generateTableData(false))
+                setModalOpen(false)
+                doc.save(`${selectedSpeciesList} - reports.pdf`);
+            }).catch((error) => {
+                console.log(error)
+                setTableData(generateTableData(false))
+                setModalOpen(false)
+                alert('There is an unexpected error while generating the pdf! Please try again or contact Administrator!')
+            });
+        }, 800)
+        
     }
 
 
