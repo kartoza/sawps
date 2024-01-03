@@ -100,6 +100,7 @@ jobs:
         run: |
           npm install
           npm ci
+          npx playwright install --with-deps
           npx bddgen && npx playwright test
       - name: Update dependencies
         working-directory: ./playwright/ci-test
