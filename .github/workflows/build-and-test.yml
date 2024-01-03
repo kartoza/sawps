@@ -95,6 +95,12 @@ jobs:
           python manage.py createsuperuser --no-input --username admin --email 'admin@example.com'
           python manage.py loaddata fixtures/*.json
           EOF
+      - name: Playwright-BDD tests
+        working-directory: ./playwright-bdd
+        run: |
+          npm install
+          npm ci
+          npx bddgen && npx playwright test
       - name: Update dependencies
         working-directory: ./playwright/ci-test
         run: npm install
