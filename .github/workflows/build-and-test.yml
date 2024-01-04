@@ -116,6 +116,7 @@ jobs:
         working-directory: ./playwright/ci-test
         run: npx playwright test
       - name: Debug playwright upload
+        working-directory: deployment
         if: always()
         run: |
           cat << EOF | docker-compose exec -T dev bash
