@@ -40,6 +40,12 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.SUCCESS(f'AsyncResult status: {res.state}')
                 )
+                self.stdout.write(
+                    self.style.ERROR(f'Failure: {res.result}')
+                )
+                self.stdout.write(
+                    self.style.ERROR(f'Failure: {res.traceback}')
+                )
         else:
             self.stdout.write(
                 self.style.ERROR('There is no boundary search request!')
