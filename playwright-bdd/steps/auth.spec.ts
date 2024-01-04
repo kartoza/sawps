@@ -7,6 +7,10 @@ const { Given, When, Then } = createBdd();
 
 Given('I am at {string}', async ({ page }, url) => {
   await page.goto(url);
+  await page.getByRole('link', { name: "LOGIN" } ).click();
+  await page.getByPlaceholder('E-mail address').fill('admin@example.com');
+  await page.getByPlaceholder('Password').fill('admin');
+  await page.getByRole('button', { name: 'LOGIN' }).click();
 });
 
 //When('I click {string}', async ({ page }, name) => {
@@ -18,6 +22,6 @@ Then('The title is {string}', async ({ page }, keyword) => {
 });
 
 Then('I check if {string} and {string} are both visible', async ({ page }, explore, uploadData) => {
-  await expect(page.getByRole('button', { explore }).first()).toBeVisible();
-  await expect(page.getByRole('button', { uploadData }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: explore }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: uploadData }).first()).toBeVisible();
 });

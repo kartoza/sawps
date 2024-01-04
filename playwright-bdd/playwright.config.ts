@@ -14,7 +14,7 @@ import { defineBddConfig } from 'playwright-bdd';
 /* Test directory with features and steps */
 const testDir = defineBddConfig({
   paths: ['features/*.feature'],
-  require: ['steps/*.spec.ts'],
+  require: ['steps/*.ts'],
   verbose: true,
 });
 
@@ -43,12 +43,14 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    //{ name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'],
       // Use prepared auth state.
-      storageState: 'auth.json',
+      //storageState: 'auth.json',
      },
+     //dependencies: ['setup'],
     },
 
     //{

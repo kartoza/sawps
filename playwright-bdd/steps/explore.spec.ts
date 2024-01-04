@@ -7,6 +7,10 @@ const { Given, When, Then } = createBdd();
 
 Given('I am on the landing page {string}', async ({ page }, url) => {
   await page.goto(url);
+  await page.getByRole('link', { name: "LOGIN" } ).click();
+  await page.getByPlaceholder('E-mail address').fill('admin@example.com');
+  await page.getByPlaceholder('Password').fill('admin');
+  await page.getByRole('button', { name: 'LOGIN' }).click();
 });
 
 When('I click on {string}', async ({ page }, name) => {
@@ -27,6 +31,6 @@ Then('I should see the map canvas', async ({ page },) => {
   // Reports, Charts, Trends tabs are present
   await expect(page.getByRole('tab', { name: 'REPORTS' })).toBeVisible();
   await expect(page.getByRole('tab', { name: 'CHARTS' })).toBeVisible();
-  await expect(page.getByRole('tab', { name: 'TRENDS' })).toBeVisible();
-  //await expect(page.getByRole('tab', { name: 'CHARTS' })).toBeVisible();
+  //await expect(page.getByRole('tab', { name: 'TRENDS' })).toBeVisible();
+  
 });

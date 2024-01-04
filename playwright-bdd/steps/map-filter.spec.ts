@@ -7,6 +7,10 @@ const { Given, When, Then } = createBdd();
 
 Given('I am on the project landing page {string}', async ({ page }, url) => {
   await page.goto(url);
+  await page.getByRole('link', { name: "LOGIN" } ).click();
+  await page.getByPlaceholder('E-mail address').fill('admin@example.com');
+  await page.getByPlaceholder('Password').fill('admin');
+  await page.getByRole('button', { name: 'LOGIN' }).click();
 });
 
 When('I click on {string} button', async ({ page }, name) => {
@@ -48,6 +52,6 @@ Then('I should see data on the map and legend should be visible', async ({ page 
 
     // Map canvas is visible
     const map = 'canvas.maplibregl-canvas.mapboxgl-canvas';
-    
+
     await expect(page.locator(map)).toBeVisible();
   });
