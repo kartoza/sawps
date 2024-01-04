@@ -115,6 +115,12 @@ jobs:
       - name: Run Playwright tests
         working-directory: ./playwright/ci-test
         run: npx playwright test
+      - name: Debug playwright upload
+        if: always()
+        run: |
+          cat << EOF | docker-compose exec -T dev bash
+          python manage.py check_search_request
+          EOF
       - uses: actions/upload-artifact@v3
         if: always()
         with:

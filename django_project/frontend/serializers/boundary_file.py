@@ -18,3 +18,11 @@ class BoundarySearchRequestGeoJsonSerializer(GeoFeatureModelSerializer):
         model = BoundarySearchRequest
         geo_field = 'geometry'
         fields = ['session']
+
+
+class BoundarySearchRequestSerializer(serializers.ModelSerializer):
+    """Serializer for BoundarySearchRequest."""
+
+    class Meta:
+        model = BoundarySearchRequest
+        fields = '__all__'
