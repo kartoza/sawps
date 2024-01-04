@@ -18,7 +18,7 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        time.sleep(60)
+        time.sleep(30)
         last_request = BoundarySearchRequest.objects.last()
         if last_request:
             data = BoundarySearchRequestSerializer(last_request).data
