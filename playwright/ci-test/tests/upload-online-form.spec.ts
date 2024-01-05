@@ -70,7 +70,7 @@ test.describe('navigation', () => {
     await page.getByLabel('Juvenile Females').click();
     await page.getByLabel('Juvenile Females').fill('05');
     await page.getByLabel('Area available to species *').click();
-    await page.getByLabel('Area available to species *').fill('50');
+    await page.getByLabel('Area available to species *').fill('20');
     //await page.getByRole('button', { name: 'SAVE DRAFT' }).click();
 
     // Form saved
