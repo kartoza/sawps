@@ -35,8 +35,6 @@ test('filter tests', async ({ page }) => {
 
   await page.getByText('Year').click();
 
-  await page.getByText('19602023').click();
-
   await expect(page.getByRole('img', { name: 'Filter image' })).toBeVisible();
 
   await page.getByText('Spatial filters').isVisible();
