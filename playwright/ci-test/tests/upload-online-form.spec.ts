@@ -144,36 +144,6 @@ test.describe('navigation', () => {
     await expect(page.getByRole('button', { name: 'OK' })).toBeVisible();
     await page.getByRole('button', { name: 'OK' }).click();
     // Done updating details by filling forms
-
-
-    // Another test
-    await page.goto('**/map/?tab=1');
-    await page.goto('**/reports');
-    await page.getByLabel('Open').first().click();
-    await page.getByLabel('Panthera leo').check();
-    await expect(page.getByText('SAWPS SUMMARY REPORT')).toBeVisible();
-    await expect(page.getByRole('img', { name: 'Species image', exact: true })).toBeVisible();
-    await expect(page.locator('#dataContainer').getByRole('img', { name: 'Organisation image' })).toBeVisible();
-    await expect(page.locator('#dataContainer').getByRole('img', { name: 'Property image' })).toBeVisible();
-    await expect(page.getByRole('img', { name: 'Clock image' })).toBeVisible();
-    await expect(page.getByRole('img', { name: 'Activity image' })).toBeVisible();
-    await expect(page.getByText('Species list: Panthera leo')).toBeVisible();
-    await expect(page.getByText('Organisation list: Cape')).toBeVisible();
-    await expect(page.getByText('Property list: admin-property')).toBeVisible();
-    await page.getByRole('tab', { name: 'CHARTS' }).click();
-    await page.getByLabel('Open').first().click();
-    await page.getByRole('option', { name: 'Panthera leo' }).click();
-    await expect(page.getByRole('tab', { name: 'CHARTS' })).toBeVisible();
-    await page.locator('div').filter({ hasText: /^Number of properties per population category \(count\) of Panthera leo for 2023$/ }).nth(1).click();
-    await expect(page.locator('div:nth-child(2) > .ChartContainerBox')).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Number of properties per categories of area \(ha\) for Panthera leo for 2023$/ }).nth(1)).toBeVisible();
-    await expect(page.locator('div:nth-child(4) > .ChartContainerBox')).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Total count of Panthera leo per province for 2023$/ }).nth(2)).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Activity count as % of total population of Panthera leo for 2023$/ }).nth(1)).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Total count per population estimate category of Panthera leo for 2023$/ }).nth(1)).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Mean and standard deviation of age classes of Panthera leo for 2023$/ }).nth(1)).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Download data visualisations' })).toBeVisible();
-    await page.getByRole('button', { name: 'Download data visualisations' }).click();
   });
 
   test('Test updated data', async ({ page }) => {
@@ -181,7 +151,7 @@ test.describe('navigation', () => {
 
     await page.goto('**/reports');
 
-    await page.getByLabel('Open').first().click();
+    await page.getByPlaceholder('Select').first().click();
 
     await page.getByLabel('Panthera leo').check();
 
