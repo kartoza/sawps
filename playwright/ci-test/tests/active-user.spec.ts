@@ -52,7 +52,8 @@ test.describe('admin operations', () => {
         await page.getByRole('link', { name: 'Add Taxon' }).click();
         await page.getByLabel('Scientific name:').fill('Panthera leo');
         await page.getByLabel('Common name verbatim:').fill('Lion');
-        await page.getByLabel('Parent:').selectOption('Panthera leo');
+        await page.getByLabel('Colour variant:').selectOption('true');
+        await page.getByLabel('Taxon rank:').selectOption('1');
         await page.getByLabel('Show on front page').check();
         await page.getByLabel('Is selected').check();
         await page.getByRole('button', { name: 'Save', exact: true }).click();
