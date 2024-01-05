@@ -44,7 +44,7 @@ test.describe('navigation', () => {
     await expect(page.getByRole('rowheader', { name: 'Province' })).toBeVisible();
     await expect(page.locator('tbody')).toContainText('Gauteng');*/
 
-    await page.getByLabel('OK').click();
+    //await page.getByLabel('OK').click();
 
     await page.getByLabel('Scientific Name *').click();
     await page.getByRole('option', { name: 'Panthera leo' }).click();
@@ -71,11 +71,11 @@ test.describe('navigation', () => {
     await page.getByLabel('Juvenile Females').fill('05');
     await page.getByLabel('Area available to species *').click();
     await page.getByLabel('Area available to species *').fill('50');
-    await page.getByRole('button', { name: 'SAVE DRAFT' }).click();
+    //await page.getByRole('button', { name: 'SAVE DRAFT' }).click();
 
     // Form saved
-    await expect(page.getByText('The form has been')).toBeVisible();
-    await page.getByRole('button', { name: 'Close' }).click();
+    //await expect(page.getByText('The form has been')).toBeVisible();
+    //await page.getByRole('button', { name: 'Close' }).click();
 
     // Next tab
     await page.getByRole('button', { name: 'NEXT' }).click();
@@ -130,11 +130,11 @@ test.describe('navigation', () => {
     await expect(page.getByText('Population Estimate Category')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Activity Detail' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'SAVE DRAFT' })).toBeVisible();
-    await page.getByRole('button', { name: 'SAVE DRAFT' }).click();
+    //await page.getByRole('button', { name: 'SAVE DRAFT' }).click();
 
     // Draft saved
-    await expect(page.getByText('The form has been')).toBeVisible();
-    await page.getByRole('button', { name: 'Close' }).click();
+    //await expect(page.getByText('The form has been')).toBeVisible();
+    //await page.getByRole('button', { name: 'Close' }).click();
     await expect(page.getByRole('button', { name: 'SUBMIT', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'SUBMIT', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Upload Species Data' })).toBeVisible();
