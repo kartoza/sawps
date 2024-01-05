@@ -44,6 +44,8 @@ test.describe('navigation', () => {
     await expect(page.getByRole('rowheader', { name: 'Province' })).toBeVisible();
     await expect(page.locator('tbody')).toContainText('Gauteng');*/
 
+    await page.getByLabel('OK').click();
+
     await page.getByLabel('Scientific Name *').click();
     await page.getByRole('option', { name: 'Panthera leo' }).click();
 
@@ -77,13 +79,16 @@ test.describe('navigation', () => {
 
     // Next tab
     await page.getByRole('button', { name: 'NEXT' }).click();
+    await page.waitForLoadState("domcontentloaded");
     await page.getByLabel('Population Estimate Category *').click();
     await page.getByText('Rough guess (guesstimate)').click();
     await page.getByText('0', { exact: true }).click();
     await page.getByText('7', { exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Population Estimate Certainty' })).toBeVisible();
     await page.getByRole('button', { name: 'Submit' }).click();
+
     await page.getByRole('button', { name: 'NEXT' }).click();
+    await page.waitForLoadState("domcontentloaded");
     await expect(page.getByRole('button', { name: 'ACTIVITY DETAIL' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Introduction/Reintroduction' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Off-take' })).toBeVisible();
