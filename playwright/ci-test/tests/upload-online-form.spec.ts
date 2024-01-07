@@ -149,7 +149,9 @@ test.describe('navigation', () => {
   test('Test updated data', async ({ page }) => {
     await page.goto(url);
 
-    await page.goto('**/reports');
+    await page.getByRole('button', { name: 'Explore' }).click();
+
+    await page.getByRole('tab', { name: 'REPORTS' }).click();
 
     await page.getByPlaceholder('Select').first().click();
 
