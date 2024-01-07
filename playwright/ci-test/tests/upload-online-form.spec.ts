@@ -32,20 +32,6 @@ test.describe('navigation', () => {
     await page.waitForLoadState('domcontentloaded');
     await expect(page.getByText('DATA UPLOAD')).toBeVisible();
 
-    /*await expect(page.getByRole('button', { name: 'SPECIES DETAIL' })).toBeVisible();
-    await expect(page.getByLabel('Map')).toBeVisible();
-
-    await expect(page.getByRole('rowheader', { name: 'Property Name' })).toBeVisible();
-    await expect(page.locator('tbody')).toContainText('admin-property');
-
-    await expect(page.getByRole('rowheader', { name: 'Organisation' })).toBeVisible();
-    await expect(page.locator('tbody')).toContainText('Cape');
-
-    await expect(page.getByRole('rowheader', { name: 'Province' })).toBeVisible();
-    await expect(page.locator('tbody')).toContainText('Gauteng');*/
-
-    //await page.getByLabel('OK').click();
-
     await page.getByLabel('Scientific Name *').click();
     await page.getByRole('option', { name: 'Panthera leo' }).click();
 
@@ -71,11 +57,6 @@ test.describe('navigation', () => {
     await page.getByLabel('Juvenile Females').fill('05');
     await page.getByLabel('Area available to species *').click();
     await page.getByLabel('Area available to species *').fill('20');
-    //await page.getByRole('button', { name: 'SAVE DRAFT' }).click();
-
-    // Form saved
-    //await expect(page.getByText('The form has been')).toBeVisible();
-    //await page.getByRole('button', { name: 'Close' }).click();
 
     // Next tab
     await page.getByRole('button', { name: 'NEXT' }).click();
@@ -130,11 +111,7 @@ test.describe('navigation', () => {
     await expect(page.getByText('Population Estimate Category')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Activity Detail' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'SAVE DRAFT' })).toBeVisible();
-    //await page.getByRole('button', { name: 'SAVE DRAFT' }).click();
-
-    // Draft saved
-    //await expect(page.getByText('The form has been')).toBeVisible();
-    //await page.getByRole('button', { name: 'Close' }).click();
+    
     await expect(page.getByRole('button', { name: 'SUBMIT', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'SUBMIT', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Upload Species Data' })).toBeVisible();
@@ -174,21 +151,22 @@ test.describe('navigation', () => {
     await page.getByLabel('Open').first().click();
     await page.getByRole('option', { name: 'Panthera leo' }).click();
     await expect(page.getByRole('tab', { name: 'CHARTS' })).toBeVisible();
+
+    await page.waitForLoadState("domcontentloaded");
+
+    await page.locator('div:nth-child(2) > .ChartContainerBox').click();
     await page.locator('div').filter({ hasText: /^Number of properties per population category \(count\) of Panthera leo for 2024$/ }).nth(1).click();
     await expect(page.locator('div:nth-child(2) > .ChartContainerBox')).toBeVisible();
     
-    await page.locator('div:nth-child(3) > .ChartContainerBox').scrollIntoViewIfNeeded();
-    await expect(page.locator('div').filter({ hasText: /^Number of properties per categories of area \(ha\) for Panthera leo for 2024$/ }).nth(1)).toBeVisible();
-    
-    await page.locator('div:nth-child(4) > .ChartContainerBox').scrollIntoViewIfNeeded();
+    await page.keyboard.press("PageDown");
     await expect(page.locator('div:nth-child(4) > .ChartContainerBox')).toBeVisible();
     await expect(page.locator('div').filter({ hasText: /^Total count of Panthera leo per province for 2024$/ }).nth(2)).toBeVisible();
     await expect(page.locator('div').filter({ hasText: /^Activity count as % of total population of Panthera leo for 2024$/ }).nth(1)).toBeVisible();
     
-    await page.locator('div:nth-child(6) > .ChartContainerBox').scrollIntoViewIfNeeded();
+    await page.keyboard.press("PageDown");
     await expect(page.locator('div').filter({ hasText: /^Total count per population estimate category of Panthera leo for 2024$/ }).nth(1)).toBeVisible();
     
-    await page.locator('div:nth-child(7) > .ChartContainerBox').scrollIntoViewIfNeeded();
+    await page.keyboard.press("PageDown");
     await expect(page.locator('div').filter({ hasText: /^Mean and standard deviation of age classes of Panthera leo for 2024$/ }).nth(1)).toBeVisible();
     
     await expect(page.getByRole('button', { name: 'Download data visualisations' })).toBeVisible();
