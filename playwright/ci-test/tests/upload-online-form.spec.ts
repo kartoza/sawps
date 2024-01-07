@@ -176,12 +176,21 @@ test.describe('navigation', () => {
     await expect(page.getByRole('tab', { name: 'CHARTS' })).toBeVisible();
     await page.locator('div').filter({ hasText: /^Number of properties per population category \(count\) of Panthera leo for 2024$/ }).nth(1).click();
     await expect(page.locator('div:nth-child(2) > .ChartContainerBox')).toBeVisible();
+    
+    await page.locator('div:nth-child(3) > .ChartContainerBox').scrollIntoViewIfNeeded();
     await expect(page.locator('div').filter({ hasText: /^Number of properties per categories of area \(ha\) for Panthera leo for 2024$/ }).nth(1)).toBeVisible();
+    
+    await page.locator('div:nth-child(4) > .ChartContainerBox').scrollIntoViewIfNeeded();
     await expect(page.locator('div:nth-child(4) > .ChartContainerBox')).toBeVisible();
     await expect(page.locator('div').filter({ hasText: /^Total count of Panthera leo per province for 2024$/ }).nth(2)).toBeVisible();
     await expect(page.locator('div').filter({ hasText: /^Activity count as % of total population of Panthera leo for 2024$/ }).nth(1)).toBeVisible();
+    
+    await page.locator('div:nth-child(6) > .ChartContainerBox').scrollIntoViewIfNeeded();
     await expect(page.locator('div').filter({ hasText: /^Total count per population estimate category of Panthera leo for 2024$/ }).nth(1)).toBeVisible();
+    
+    await page.locator('div:nth-child(7) > .ChartContainerBox').scrollIntoViewIfNeeded();
     await expect(page.locator('div').filter({ hasText: /^Mean and standard deviation of age classes of Panthera leo for 2024$/ }).nth(1)).toBeVisible();
+    
     await expect(page.getByRole('button', { name: 'Download data visualisations' })).toBeVisible();
     await page.getByRole('button', { name: 'Download data visualisations' }).click();
   });
