@@ -39,6 +39,13 @@ test.describe('navigation', () => {
     await expect(page.getByText('Common Name')).toBeVisible();
 
     await expect(page.getByText('Year of Count *')).toBeVisible();
+    await page.getByPlaceholder('YYYY').click();
+    page.once('dialog', dialog => {
+      console.log(`Dialog message: ${dialog.message()}`);
+      dialog.dismiss().catch(() => {});
+    });
+    await page.getByPlaceholder('YYYY').fill('2024');
+
     await page.getByLabel('Survey Method *').click();
 
     await page.getByRole('option', { name: 'Estimate' }).click();
