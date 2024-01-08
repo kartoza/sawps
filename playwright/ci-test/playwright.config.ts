@@ -55,14 +55,14 @@ export default defineConfig({
       dependencies: ['setup'],
     },*/
     
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'],
-        // Use prepared auth state.
-        storageState: 'auth.json',
-      },
-      dependencies: ['setup'],
-    },
+    //{
+    //  name: 'webkit',
+    //  use: { ...devices['Desktop Safari'],
+    //    // Use prepared auth state.
+    //    storageState: 'auth.json',
+    //  },
+    //  dependencies: ['setup'],
+    //},
 
     /* Test against mobile viewports. */
     // {
