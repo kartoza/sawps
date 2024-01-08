@@ -29,7 +29,7 @@ test('filter tests', async ({ page }) => {
 
   await page.getByText('Organisation', { exact: true }).click();
 
-  await page.getByText('Property').click();
+  await expect(page.getByText('Property').first()).toBeVisible();
 
   await expect(page.getByRole('img', { name: 'watch image' })).toBeVisible();
 
@@ -38,6 +38,24 @@ test('filter tests', async ({ page }) => {
   await expect(page.getByRole('img', { name: 'Filter image' })).toBeVisible();
 
   await page.getByText('Spatial filters').isVisible();
+
+  await page.getByPlaceholder('Search place').click();
+
+  await page.getByPlaceholder('Search place').fill('limpopo');
+
+  await page.getByRole('option', { name: 'Limpopo, South Africa' }).click();
+
+  await page.locator('#combo-box-demo').click();
+
+  await page.getByRole('option', { name: 'Panthera leo' }).click();
+
+  await expect(page.getByText('Panthera leo population (2024)')).toBeVisible();
+
+  await page.locator('span').filter({ hasText: '2024' }).nth(1).click();
+
+  await page.getByRole('spinbutton').nth(1).click();
+
+  await page.getByRole('spinbutton').nth(1).fill('2023');
 
   await page.getByRole('tab', { name: 'REPORTS' }).click();
 

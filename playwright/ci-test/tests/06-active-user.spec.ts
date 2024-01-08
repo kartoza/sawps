@@ -36,7 +36,7 @@ test.describe('admin operations', () => {
         await page.getByLabel('Name:').fill('Cape');
         //await page.getByLabel('Short code:').fill('GACA0002');
         await page.getByLabel('National:').selectOption('true');
-        await page.getByLabel('Province:').selectOption('1');
+        await page.getByLabel('Province:').selectOption('2');
         await page.getByRole('button', { name: 'Save', exact: true }).click();
 
         // Add population estimation
