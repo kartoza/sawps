@@ -29,7 +29,7 @@ The filter side panel enhances the user experience by allowing them to focus on 
 1. **Explore:** Open the Explore page by clicking on `EXPLORE` on the navigation bar.
 2. **Filter:** Open the filter side panel by clicking on the `FILTERS` option. Inside the side panel, the user will find all of the filters. For each filter, a user can interact with the available options or input fields to customise their filter criteria. The user can click on the dropdown and select the filter.
 3. **Map:** Click on the `MAP` tab to view the map.
-4. **Clear All:** Click on the `Clear All` button to clear all the filters.
+4. **Clear All:** Click on the `Clear All` button to clear all the filters. If you click `Clear All`, you will be required to select an organisation or property (or both) before you can view species.
 
 - **Layers**: click [here](./layers.md) to view detailed documentation on layers.
 
@@ -136,7 +136,7 @@ The filter side panel provides a robust toolset for users to refine and explore 
 1. **Filter:** Available filters on the reports tab.
 2. **Reports:** Click on the `REPORTS` tab to view the reports.
 3. **Message:** Instructive message to view the reports.
-4. **Clear All:** Click on the `Clear All` button to clear all the filters.
+4. **Clear All:** Click on the `Clear All` button to clear all the filters. If you click `Clear All`, you will be required to select an organisation or property (or both) before you can view species.
 
 #### 1. Species Filter
 
@@ -233,7 +233,7 @@ The filter side panel provides a robust toolset for users to refine and explore 
 1. **Filter:** Available filters on the charts tab.
 2. **Charts:** Click on the `CHARTS` tab to view the charts.
 3. **Message:** Instructive message to view the charts.
-4. **Clear All:** Click on the `Clear All` button to clear all the filters.
+4. **Clear All:** Click on the `Clear All` button to clear all the filters. If you click `Clear All`, you will be required to select an organisation or property (or both) before you can view species.
 
 #### 1. Species Filter
 
@@ -316,7 +316,7 @@ The filter panel empowers users to customise their data views efficiently, allow
 1. **Filter:** Available filters on the trends tab.
 2. **Trends:** Click on the `TRENDS` tab to view the trends.
 3. **Message:** Instructive message to view the trends.
-4. **Clear All:** Click on the `Clear All` button to clear all the filters.
+4. **Clear All:** Click on the `Clear All` button to clear all the filters. If you click `Clear All`, you will be required to select an organisation or property (or both) before you can view species.
 
 #### 1. Species Filter
 

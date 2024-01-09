@@ -27,7 +27,7 @@ The `Charts` tab is a powerful tool for visualising data through various charts 
 
 3. **Filters**: Enhance chart visualisation by utilising the available filters for more precise data representation.
 
-4. **Clear All**: Click on `Clear All` to remove all applied filters and reset the chart view.
+4. **Clear All**: Click on `Clear All` to remove all applied filters and reset the chart view. If you click `Clear All`, you will be required to select an organisation or property (or both) before you can view species.
 
 5. **Message**: A helpful and informative message prompts users to explore and view charts.
 
