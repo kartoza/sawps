@@ -35,9 +35,9 @@ Welcome to the documentation for map layers available in the application. This d
 
     ![Rivers layer with map](./img/layers-3.png)
 
-    1. **Rivers**: `Rivers` layer allows the user to see the rivers on the map.
+    1. **Rivers**: The `Rivers` layer allows the user to see the rivers on the map.
 
-    2. **Rivers On Map**: Blue lines display the rivers on the map.
+    2. **Rivers On Map**: The blue lines display the rivers on the map.
 
     * **Layer Visibility**: You can control the visibility of the Rivers layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to rivers.
 
@@ -45,9 +45,9 @@ Welcome to the documentation for map layers available in the application. This d
 
     ![Roads layer with map](./img/layers-4.png)
 
-    1. **Roads**: `Roads` layer allows the user to see the roads on the map.
+    1. **Roads**: The `Roads` layer allows the user to see the roads on the map.
 
-    2. **Roads On Map**: Thin white lines display the roads on the map.
+    2. **Roads On Map**: The thin grey lines display the roads on the map.
 
     * **Layer Visibility**: The user can control the visibility of the road layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to roads.
 

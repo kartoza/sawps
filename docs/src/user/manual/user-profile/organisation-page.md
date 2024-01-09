@@ -89,7 +89,7 @@ This page offers the following functionality:
 
 ### Email invitation
 
-**Email Invitation Email**: The individual who is invited to the organisation will receive this email.
+**Email Invitation Email**: The individual being invited to the organisation will receive this email.
 
 ![Organisation Page 5](./img/organisation-page-5.png)
 

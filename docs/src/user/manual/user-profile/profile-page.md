@@ -47,4 +47,4 @@ The update password form opens when the update password button is clicked on the
 1. **Current Password:** The field where the user must input their current password.
 2. **New Password:** The field where the user must input their new password.
 3. **Confirm New Password:** The field where the user must confirm their new password.
-4. **Save Button:** The button that the user must click to save their updated password.
+4. **`SAVE` Button:** The button that the user must click to save their updated password.

@@ -137,7 +137,7 @@ The `DIGITISE` button is a powerful tool that allows the user to digitise parcel
 
 6. **Digitised parcel**: Digitised parcel is shown.
 
-7. **Save boundary**: After the user has successfully digitised and outlined the parcel boundary using the above options, they can finalise the process by clicking the `SAVE BOUNDARY` button. This saves the digitised boundary and incorporates it into the user's property data.
+7. **Save boundary**: After the user has successfully digitised and outlined the parcel boundary using the above options, they can finalise the process by clicking the `SAVE BOUNDARY` button. This saves the digitised boundary and incorporates it into the user's property's data.
 
 By utilising the digitisation options, the user can accurately define parcel boundaries, which is essential for geospatial data and mapping applications. This tool provides the user with the flexibility to create precise boundaries and make adjustments as needed during the digitisation process.
 

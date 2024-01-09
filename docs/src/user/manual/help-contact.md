@@ -42,7 +42,7 @@ The Contact Page features a user-friendly contact form where users can provide t
 
 1. **Name**: Users are required to enter their name in this field.  It is where they should input their full name or a name by which they want to be addressed.
 
-2. **Email**: This field is for users to provide their email address. The platform needs to have a way to reach out to users, so this is a required field.
+2. **Email**: This field is for users to provide their email address. It is important for the platform needs to have a way to reach out to users, so this is a required field.
 
 3. **Subject**: Users can specify the subject or topic of their message in this field. It helps categorise and route messages appropriately.
 
@@ -54,4 +54,4 @@ The Contact Page features a user-friendly contact form where users can provide t
 
 ## Summary
 
-The Contact Page offers a straightforward and user-friendly contact form for users to get in touch. Users can provide their name, and email, specify the subject, and compose their message. Additionally, there is an option to request a copy of the message they are sending. The `SEND` button is used to send the message to the platform. This page is an essential communication channel for users to connect with the organisation.
+The Contact Page offers a straightforward and user-friendly contact form for users to get in touch. Users can provide their name, email address, specify the subject, and compose their message. Additionally, there is an option to request a copy of the message they are sending. The `SEND` button is used to send the message to the platform. This page is an essential communication channel for users to connect with the organisation.

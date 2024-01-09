@@ -29,7 +29,7 @@ These include:
 3. **Add Device**: Clicking this button will evoke a popup modal requiring the user to enter the new device details before saving.
 4. **2FA Devices**: This is the table that shows the current 2FA devices the user uses to log on to the platform.
 5. **Delete Icon**: Clicking this will evoke a popup modal prompting the user if they are sure they want to remove the device before proceeding to remove it.
-6. **Recovery Options**: Under this header, list the backup tokens the user can use to log on to the platform in case they have lost their device.
+6. **Recovery Options**: Under this header, is a list of the backup tokens the user can use to log on to the platform in case they have lost their device.
 7. **Generate Backup Token**: The user can refresh their backup tokens as well as create new ones when they have just registered onto the platform.
 
 ### Add device popup modal
