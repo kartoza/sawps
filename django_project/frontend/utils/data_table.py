@@ -7,7 +7,7 @@ from zipfile import ZipFile
 
 import pandas as pd
 from django.conf import settings
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Exists, OuterRef
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 
@@ -15,6 +15,7 @@ from activity.models import ActivityType
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
 from frontend.serializers.report import (
+    BaseSpeciesReportSerializer,
     SpeciesReportSerializer,
     SamplingReportSerializer,
     PropertyReportSerializer,
@@ -37,6 +38,7 @@ from population_data.models import (
 from property.models import Property
 from species.models import Taxon
 from stakeholder.models import OrganisationRepresentative, Organisation
+from frontend.models.spatial import SpatialDataValueModel
 
 logger = logging.getLogger('sawps')
 
@@ -80,12 +82,12 @@ def get_queryset(user_roles: List[str], request):
         )
 
         if spatial_filter_values:
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('pk'),
+                context_layer_value__in=spatial_filter_values
+            )
             queryset = queryset.filter(
-                **({
-                    'spatialdatamodel__spatialdatavaluemodel__'
-                    'context_layer_value__in':
-                        spatial_filter_values
-                })
+                Exists(spatial_qs)
             )
     else:
         query_filter = BaseMetricsFilter
@@ -211,18 +213,23 @@ def species_report(queryset: QuerySet, request) -> List:
         property_id__in=queryset.values_list('id', flat=True),
         **filters
     ).distinct()
-    # fetch organisations ids where user is manager
-    managed_ids = OrganisationRepresentative.objects.filter(
-        user=request.user
-    ).values_list('organisation_id', flat=True)
-    species_reports = SpeciesReportSerializer(
-        species_population_data,
-        many=True,
-        context={
-            'user': request.user,
-            'managed_ids': managed_ids
-        }
-    ).data
+    if get_param_from_request(request, "file"):
+        species_reports = BaseSpeciesReportSerializer(
+            species_population_data, many=True,
+        ).data
+    else:
+        # fetch organisations ids where user is manager
+        managed_ids = OrganisationRepresentative.objects.filter(
+            user=request.user
+        ).values_list('organisation_id', flat=True)
+        species_reports = SpeciesReportSerializer(
+            species_population_data,
+            many=True,
+            context={
+                'user': request.user,
+                'managed_ids': managed_ids
+            }
+        ).data
     return species_reports
 
 
@@ -383,20 +390,26 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     )
 
     if spatial_filter_values:
+        spatial_qs = SpatialDataValueModel.objects.filter(
+            spatial_data__property=OuterRef('pk'),
+            context_layer_value__in=spatial_filter_values
+        )
         properties = properties.filter(
-            **({
-                'spatialdatamodel__spatialdatavaluemodel__'
-                'context_layer_value__in':
-                    spatial_filter_values
-            })
+            Exists(spatial_qs)
         )
 
     activity = get_param_from_request(request, "activity", "")
     activity = urllib.parse.unquote(activity)
     if activity:
-        filters['annualpopulationperactivity__activity_type_id__in'] = [
-            int(act) for act in activity.split(',')
-        ] if activity else []
+        activity_qs = AnnualPopulationPerActivity.objects.filter(
+            annual_population=OuterRef('pk'),
+            activity_type_id__in=[
+                int(act) for act in activity.split(',')
+            ]
+        )
+        filters['annualpopulationperactivity__activity_type_id__in'] = (
+            Exists(activity_qs)
+        )
 
     if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
@@ -427,41 +440,48 @@ def national_level_species_report(
     """
     user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
-
+    activity_field = (
+        'annualpopulationperactivity__activity_type_id__in'
+    )
+    activity_filter = None
+    if activity_field in filters:
+        activity_filter = filters[activity_field]
+        del filters[activity_field]
     report_data = AnnualPopulation.objects. \
-        filter(**filters, taxon__in=queryset). \
-        values(
-            'taxon__common_name_verbatim',
-            'taxon__scientific_name',
-            'year'
-        ). \
-        annotate(
-            common_name=F("taxon__common_name_verbatim"),
-            scientific_name=F("taxon__scientific_name"),
-            total_property_area=Sum("property__property_size_ha"),
-            total_area_available=Sum("area_available_to_species"),
-            total_population=Sum(
-                "total"
-            ),
-            adult_male_total_population=Sum(
-                "adult_male"
-            ),
-            adult_female_total_population=Sum(
-                "adult_female"
-            ),
-            sub_adult_male_total_population=Sum(
-                "sub_adult_male"
-            ),
-            sub_adult_female_total_population=Sum(
-                "sub_adult_female"
-            ),
-            juvenile_male_total_population=Sum(
-                "juvenile_male"
-            ),
-            juvenile_female_total_population=Sum(
-                "juvenile_female"
-            ),
-        ).order_by('-year')
+        filter(**filters, taxon__in=queryset)
+    if activity_filter:
+        report_data = report_data.filter(activity_filter)
+    report_data = report_data.values(
+        'taxon__common_name_verbatim',
+        'taxon__scientific_name',
+        'year'
+    ).annotate(
+        common_name=F("taxon__common_name_verbatim"),
+        scientific_name=F("taxon__scientific_name"),
+        total_property_area=Sum("property__property_size_ha"),
+        total_area_available=Sum("area_available_to_species"),
+        total_population=Sum(
+            "total"
+        ),
+        adult_male_total_population=Sum(
+            "adult_male"
+        ),
+        adult_female_total_population=Sum(
+            "adult_female"
+        ),
+        sub_adult_male_total_population=Sum(
+            "sub_adult_male"
+        ),
+        sub_adult_female_total_population=Sum(
+            "sub_adult_female"
+        ),
+        juvenile_male_total_population=Sum(
+            "juvenile_male"
+        ),
+        juvenile_female_total_population=Sum(
+            "juvenile_female"
+        ),
+    ).order_by('-year')
     return NationalLevelSpeciesReport(report_data, many=True).data
 
 

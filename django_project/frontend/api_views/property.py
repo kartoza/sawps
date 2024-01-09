@@ -8,6 +8,7 @@ from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.core.exceptions import ValidationError
 from django.db.models import F, Value, CharField, Q
+from django.db.models.expressions import RawSQL
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -39,7 +40,10 @@ from frontend.serializers.stakeholder import OrganisationSerializer
 from frontend.static_mapping import PROVINCIAL_ROLES
 from frontend.utils.organisation import get_current_organisation_id
 from frontend.utils.parcel import find_province
-from frontend.utils.user_roles import get_user_roles
+from frontend.utils.user_roles import (
+    get_user_roles,
+    check_user_has_permission
+)
 from population_data.models import OpenCloseSystem
 from population_data.serializers import (
     OpenCloseSystemSerializer,
@@ -52,6 +56,7 @@ from property.models import (
     Province
 )
 from stakeholder.models import Organisation, OrganisationUser
+from frontend.models.map_session import MapSession
 
 
 class CheckPropertyNameIsAvailable(APIView):
@@ -412,6 +417,12 @@ class PropertySearch(APIView):
         PlaceNameLargestScale: PlaceLargestScaleSearchSerializer
     }
 
+    def can_view_properties_layer(self):
+        return (
+            check_user_has_permission(self.request.user,
+                                      'Can view properties layer in the map')
+        )
+
     def search_place(self, cls, serializer_cls, search_text, name_list):
         places = cls.objects.annotate(
             name_type=Concat(F('name'), Value('-'), F('fclass'),
@@ -424,22 +435,41 @@ class PropertySearch(APIView):
         results = serializer_cls(places, many=True).data
         return results, [f'{p["name"]}-{p["fclass"]}' for p in results]
 
-    def get(self, *args, **kwargs):
-        search_text = self.request.GET.get('search_text', '')
-        # filter property from current organisation
-        current_organisation_id = get_current_organisation_id(
-            self.request.user
-        ) or 0
+    def search_property(self, search_text):
+        if not self.can_view_properties_layer():
+            return []
+        session_uuid = self.request.GET.get('session', None)
+        session = None
+        if session_uuid:
+            session = MapSession.objects.filter(uuid=session_uuid).first()
         properties = Property.objects.filter(
             Q(name__istartswith=search_text) |
             Q(short_code__istartswith=search_text)
-        ).filter(
-            organisation_id=current_organisation_id
-        ).order_by('name')[:10]
-        properties_search_results = PropertySearchSerializer(
+        )
+        if session:
+            raw_sql = (
+                'SELECT id from "{}"'
+            ).format(session.properties_view_name)
+            properties = properties.filter(
+                id__in=RawSQL(raw_sql, [])
+            )
+        else:
+            # filter property from current organisation
+            current_organisation_id = get_current_organisation_id(
+                self.request.user
+            ) or 0
+            properties = properties.filter(
+                organisation_id=current_organisation_id
+            )
+        properties = properties.order_by('name')[:10]
+        return PropertySearchSerializer(
             properties,
             many=True
         ).data
+
+    def get(self, *args, **kwargs):
+        search_text = self.request.GET.get('search_text', '')
+        properties_search_results = self.search_property(search_text)
         place_results = []
         name_list = []
         for place_class, place_serializer in self.place_serializers.items():

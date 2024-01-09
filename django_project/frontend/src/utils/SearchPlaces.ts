@@ -23,8 +23,11 @@ export interface SeachPlaceResult {
     bbox?: any;
 }
 
-const searchProperty = (searchText: string):Promise<SeachPlaceResult[]> => {
+const searchProperty = (searchText: string, mapSession?: string):Promise<SeachPlaceResult[]> => {
     let _queryParam = `search_text=${searchText}`
+    if (mapSession) {
+        _queryParam = _queryParam + `&session=${mapSession}`
+    }
     return new Promise<SeachPlaceResult[]>((resolve, reject) => {
         axios.get(`${SEARCH_PROPERTY_URL}?${_queryParam}`)
         .then(
@@ -88,12 +91,24 @@ const searchAddressNominatim = (searchText: string):Promise<SeachPlaceResult[]> 
     })
 }
 
-export const searchPlaces = (searchText: string, callback: (results: SeachPlaceResult[]) => void) =>  {
-    Promise.all([
-        searchProperty(searchText),
+/**
+ * Search places by combining the results from property and places from Nominatim API
+ * 
+ * @param searchText search text input
+ * @param callback List of SeachPlaceResult
+ * @param mapSession (Optional) session from the map preview
+ */
+export const searchPlaces = (searchText: string, callback: (results: SeachPlaceResult[]) => void, mapSession?: string) =>  {
+    let _searchList = [
+        searchProperty(searchText, mapSession),
         searchAddressNominatim(searchText)
-    ]).then(([result1, result2]) => {
-        callback([...result1, ...result2])
+    ]
+    Promise.all(_searchList).then((resultList) => {
+        let _finalResults = []
+        for (let _result of resultList) {
+            _finalResults.push(..._result)
+        }
+        callback(_finalResults)
     }).catch((error) => {
         callback([])
     })

@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth import models
 from django.contrib.auth import login
@@ -264,3 +264,7 @@ def custom_password_reset_complete_view(request):
         'forgot_password_reset.html',
         {'show_password_message': True}
     )
+
+
+def health(request):
+    return HttpResponse("OK")

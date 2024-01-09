@@ -80,6 +80,7 @@ function Filter(props: any) {
     const [provinceOptions, setProvinceOptions] = useState([])
     const isStartYearValid = localStartYear >= yearRangeStart && localStartYear <= yearRangeEnd
     const isEndYearValid = localEndYear >= yearRangeStart && localEndYear <= yearRangeEnd
+    const dynamicMapSession = useAppSelector((state: RootState) => state.mapState.dynamicMapSession)
     const { data: userInfoData, isLoading, isSuccess } = useGetUserInfoQuery()
     const {
         data: organisationList,
@@ -519,7 +520,7 @@ function Filter(props: any) {
                         />
                         <Typography color='#75B37A' fontSize='medium'>Search place</Typography>
                     </Box>
-                    <SearchPlace onPlaceSelected={(place: SeachPlaceResult) => {
+                    <SearchPlace mapSession={dynamicMapSession} onPlaceSelected={(place: SeachPlaceResult) => {
                         if (place && place.bbox && place.bbox.length === 4) {
                             // trigger zoom to property
                             let _bbox = place.bbox.map(String)
