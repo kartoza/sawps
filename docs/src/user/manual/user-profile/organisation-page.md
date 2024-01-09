@@ -83,8 +83,7 @@ This page offers the following functionality:
 
 1. **Email address field**: the user should provide the email address of the individual they wish to invite to the organisation.
 2. **Invite as field**: the user should specify if the individual they’re inviting will have a manager or member role within the organisation.
-3. **Permissions**: the user should specify the permissions the individual they’re inviting will have for the organisation.
-4. **Invite button**: when clicked will send the invitation to the individual being invited to the organisation. A success message (example below) will show if the email has been sent.
+3. **Invite button**: when clicked will send the invitation to the individual being invited to the organisation. A success message (example below) will show if the email has been sent.
 
 ![Organisation Page 4](./img/organisation-page-4.png)
 

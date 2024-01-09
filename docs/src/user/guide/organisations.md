@@ -24,7 +24,7 @@ On the Organisation's page a user can see 1️⃣ the organisation name which in
 
 ![Organisation Page 2](./img/organisation-page-2.png)
 
-The **Add People** popup contains an `Email address` field 1️⃣ that the inviter needs to populate with the email address for the individual they wish to invite to the organisation. The inviter also needs to specify if the individual they’re inviting will have a manager or member role within the organisation using the `Invite as` field 2️⃣ and to set the new user's permissions using the `Permissions` field 3️⃣. To finalise adding a new member, an inviting user needs to click on the `Invite` button 4️⃣ to send the invitation to the individual being invited to the organisation.
+The **Add People** popup contains an `Email address` field 1️⃣ that the inviter needs to populate with the email address for the individual they wish to invite to the organisation. The inviter also needs to specify if the individual they’re inviting will have a manager or member role within the organisation using the `Invite as` field 2️⃣. To finalise adding a new member, an inviting user needs to click on the `Invite` button 3️⃣ to send the invitation to the individual being invited to the organisation.
 
 ![Organisation Page 3](./img/organisation-page-3.png)
 
