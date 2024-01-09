@@ -89,11 +89,11 @@ This page offers the following functionality:
 
 ### Email invitation
 
-**Email Invitation Email**: the individual being invited to the organisation will receive this email.
+**Email Invitation Email**: The individual who is invited to the organisation will receive this email.
 
 ![Organisation Page 5](./img/organisation-page-5.png)
 
-1. **Register button**: the individual being invited should click the register button, they will be redirected to the website to complete their registration.
+1. **Register button**: The individual being invited should click the register button, and they will be redirected to the website to complete their registration.
 
 #### New member registration page
 
