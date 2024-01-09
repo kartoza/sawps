@@ -33,7 +33,6 @@ In the navigation bar at the top of the page, users will find several options:
 3. **Contact**:  The `CONTACT` navigation link navigates to the [contact page](help-contact.md) where the SAWPS team is ready to assist with any inquiries or issues.
 
 4. **Login**: The `LOGIN` button opens the [login form](./login-logout/login-page.md) for registered users.
-4. **Login**: The `LOGIN` button opens the [login form](./login-logout/login-page.md) for registered users.
 
 5. **Register**: The `REGISTER` button opens the [registration form](./register/register-page.md) where users can register for access to the full platform.
 
@@ -41,7 +40,6 @@ In the navigation bar at the top of the page, users will find several options:
 
 7. **Login**: The `LOGIN` button navigates to the [login form](./login-logout/login-page.md) where registered users can securely access the platform using their credentials.
 
-8. **Register**: The `REGISTER` button navigates to the [registration form](./register/register-page.md) where new users can register on the platform. Becoming a registered user opens up a world of data contribution and exploration.
 8. **Register**: The `REGISTER` button navigates to the [registration form](./register/register-page.md) where new users can register on the platform. Becoming a registered user opens up a world of data contribution and exploration.
 
 ### National Population Trends
