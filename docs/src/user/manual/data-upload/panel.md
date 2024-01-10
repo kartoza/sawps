@@ -153,7 +153,8 @@ The `UPLOAD` button is a pivotal element of the `DATA UPLOAD`, allowing the user
 
 The popup window includes the following components:
 
-2. **Browse**: Clicking on the `Browse` button allows the user to select the file(s) they want to upload. Supported formats include zip, json, geojson, gpkg, kml (CRS 4326). These files typically contain geospatial data, and the user will use them to define parcel boundaries.
+2. **Browse**: Clicking on the `Browse` button and allows the user to select the file(s) they want to upload. Supported formats include zip, json, geojson, gpkg, kml (CRS 4326). These files typically contain geospatial data, and the user will use them to define parcel boundaries.
+Please be aware that our system currently does not support `GeoJSON` upload if you are using Windows. In order to successfully upload your data, we recommend saving it in alternative formats (zip, json, gpkg, kml (CRS 4326)) compatible with our system or, as a workaround, renaming the file extension to .json. We apologise for any inconvenience and appreciate your understanding as we work to enhance compatibility. If you encounter any issues or have questions, feel free to reach out to our support team.
 
 3. **Upload Files**: After the user has selected the appropriate files, they can click on the `Upload Files` button to begin the data upload process. This action will upload and process the selected data.
 
