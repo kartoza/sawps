@@ -33,7 +33,11 @@ The data upload online form provides a convenient and structured way to enter sp
 
 5. **Year**: Enter the year of the population count manually or select it from the calendar icon. This field is mandatory.
 
-6. **Survey Method**: Choose the survey method used for data collection from the dropdown menu. This field is mandatory.
+6. **Survey Method**: Choose the survey method used for data collection from the dropdown menu. If `Other - please explain` is selected, an additional adjacent field will appear, prompting users to specify the method used. This field is mandatory.
+
+    ![Select other](./img/online-form-6.png)
+
+    1. **If other please explain**: If the user chooses the option `Other - please explain` in the survey method dropdown, then this field becomes mandatory. Here, the user can provide specific details and explanations about the survey method they utilised.
 
 7. **Sampling Effort Coverage Dropdown**: Select the level of sampling effort coverage from the dropdown menu.
 
@@ -69,7 +73,11 @@ The data upload online form provides a convenient and structured way to enter sp
 
 23. **Number of Groups (Prides, Herds, etc.)**: Enter the number of groups, prides, herds, or similar groupings.
 
-24. **Population Estimate Certainty**: Select the certainty level of the population estimate from the dropdown menu. This field is mandatory.
+24. **Population Estimate Certainty**: Select the certainty level of the population estimate from the dropdown menu. If `Other (please describe how the population size estimate was determined)` is chosen, an additional adjacent field will appear, asking users to specify the certainty method employed. This field is mandatory.
+
+    ![Select other](./img/online-form-7.png)
+
+    1. **If Other, Please Explain**: If the user selects `Other (please describe how the population size estimate was determined)` in the population estimate certainty dropdown, this field becomes mandatory. Use this space to provide specific details and explanations regarding the method used to determine the population size estimate. This ensures a more detailed and accurate record.
 
 25. **Certainty of Bounds**: Provide additional information regarding the certainty of population bounds.
 
