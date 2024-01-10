@@ -48,5 +48,5 @@ These include:
 
 ![Delete Device 1](./img/2fa-delete-device-1.png)
 
-1. **Cancel**: This will prevent the device from being removed. This is in case the user is not sure or clicks the icon by accident.
+1. **Cancel**: This will prevent the device from being removed. This is in case the user is not sure or clicked the icon by accident.
 2. **Delete button**: will remove the device from the platform therefore the user will no longer be able to login using that device.
