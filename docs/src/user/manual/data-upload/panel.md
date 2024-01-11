@@ -103,7 +103,7 @@ The second step of the data upload process on the Data upload involves working w
 
 6. **UPLOAD**: The `UPLOAD` is used for creating parcel boundaries using the supported formats: zip, json, geojson, gpkg, kml (CRS 4326).
 
-7. **SAVE PROPERTY INFORMATION**: If the user needs to update or modify property information, the user can click the `SAVE PROPERTY INFORMATION` button to make changes to the property-level information.
+7. **SAVE PROPERTY INFORMATION**: If the user needs to update or modify the property information, the user can click the `SAVE PROPERTY INFORMATION` button to make changes to the property-level information.
 
 Completing Step 2 ensures that the user's dataset is comprehensive and includes detailed information about individual parcels within the property. This data is essential for various analyses and property management tasks.
 
@@ -143,7 +143,7 @@ By utilising the digitisation options, the user can accurately define parcel bou
 
 ## Upload parcel using the upload data button
 
-The `UPLOAD` button is a pivotal element of the `DATA UPLOAD`, allowing the user to upload essential data for parcel boundaries. By clicking this button, the user initiate the data upload process, which includes defining parcel boundaries and saving them. Here is a step-by-step explanation of this feature:
+The `UPLOAD` button is a pivotal element of the `DATA UPLOAD`, allowing the user to upload essential data for parcel boundaries. By clicking this button, the user initiates the data upload process, which includes defining parcel boundaries and saving them. Here is a step-by-step explanation of this feature:
 
 ### Uploading Data
 
@@ -153,7 +153,7 @@ The `UPLOAD` button is a pivotal element of the `DATA UPLOAD`, allowing the user
 
 The popup window includes the following components:
 
-2. **Browse**: Clicking on the `Browse` button and allows the user to select the file(s) they want to upload. Supported formats include zip, json, geojson, gpkg, kml (CRS 4326). These files typically contain geospatial data, and the user will use them to define parcel boundaries.
+2. **Browse**: Clicking on the `Browse` button allows the user to select the file(s) they want to upload. Supported formats include zip, json, geojson, gpkg, kml (CRS 4326). These files typically contain geospatial data, and the user will use them to define parcel boundaries.
 
 3. **Upload Files**: After the user has selected the appropriate files, they can click on the `Upload Files` button to begin the data upload process. This action will upload and process the selected data.
 
@@ -171,7 +171,7 @@ The `DATA UPLOAD` feature is crucial for geospatial data and mapping application
 
 2. **Parcel Type**: Parcel Type categorises the parcels based on their purpose or characteristics.
 
-3. **Delete icon**: This delete icon allows the user to delete the particular parcel detail.
+3. **Delete icon**: This delete icon allows the user to delete a particular parcel detail.
 
 ## Step 3
 
@@ -185,13 +185,13 @@ Step 3 of the data upload process is a crucial phase that allows the user to upl
 
 2. **Online Form**: Clicking on the `ONLINE FORM` button allows users to access the online data upload form. This option is ideal for manually entering data into a user-friendly interface. Following the provided prompts lets users input species population data.
 ![Online form](./img/panel-10.png)
-Click [here](./online-form.md) to see the detailed documentation for online form.
+Click [here](./online-form.md) to see the detailed documentation for the online form.
 
 3. **Download Template**: Clicking on the `DOWNLOAD TEMPLATE` button allows users to obtain a blank template that they can use as a starting point for entering their species population data. This template is designed to assist the user in organising their data correctly.
 
 4. **Upload Template**: Using the `UPLOAD DATA` button lets users upload a pre-prepared template containing species population data. Templates are useful for bulk data uploads or when the user has data formatted in a specific way. Ensure the user's template adheres to the required format and guidelines for a successful upload.
 ![Upload template](./img/panel-11.png)
-Click [here](./template-upload.md) to see the detailed documentation of template upload.
+Click [here](./template-upload.md) to see the detailed documentation of the template upload.
 
 
 5. **Update Property Boundary**: By clicking the `UPDATE PROPERTY BOUNDARY` button, the user will be redirected to Step 2 of the data upload process. In this step, the user can modify property boundaries.
