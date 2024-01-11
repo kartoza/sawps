@@ -286,7 +286,7 @@ export default function Uploader(props: UploaderInterface) {
                     } else if (_parcels.length > 0 && _usedParcelsMessage !== '') {
                         // warning
                         let _warnMessage = _addedParcelMessage + '\r\nWarning: ' + _usedParcelsMessage
-                        showAlertMessage('warning', _warnMessage, 'Search is finished with warnings')
+                        showAlertMessage('warning', _warnMessage, 'Search is finished with warning')
                     } else if (_usedParcelsMessage !== '') {
                         // error
                         showAlertMessage('error', _usedParcelsMessage)
