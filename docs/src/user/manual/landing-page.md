@@ -14,11 +14,11 @@ context_id: 2NQxCUzNPJyKFJZPVPQpx8
 
 # Landing Page
 
-Welcome to the SAWPS `Landing Page`. The landing page is the entry point to users' data exploration journey. The `Landing Page` provides a user-friendly interface to view aggregated species population data trends for South africa and access features like log in, register a new account, or learn more about the platform.
+Welcome to the SAWPS `Landing Page`. The landing page is the entry point to users' data exploration journey. The `Landing Page` provides a user-friendly interface to view aggregated species population data trends for South Africa and access features like log in, register a new account, or learn more about the platform.
 
 ## Prior to Login
 
-Upon initial interaction with the platform users will be greeted by the landing page
+Upon initial interaction with the platform, users will be greeted by the landing page.
 
 ### Landing Page Header and Navigation Bar
 
@@ -88,7 +88,7 @@ The footer section, located at the bottom of the `Landing Page`, offers links to
 
 ## Landing Page Once Logged In
 
-Once the user has logged in to the SAWPS platform the landing page updates. In the header there are new navigation links to features of the site that users with credentials have access to, their user profile, and the Quick links provide access to site features that users will need frequently.
+Once the user has logged in to the SAWPS platform the landing page updates. In the header, there are new navigation links to features of the site that users with credentials have access to, their user profile, and the Quick links provide access to site features that users will need frequently.
 
 ![Landing Page After Login](./img/landing-page-3.png)
 

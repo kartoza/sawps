@@ -26,7 +26,7 @@ Other functionalities offered on the Reminders Page:
 * Search for specific reminders.
 * Search by filtering reminders.
 * Pagination.
-* Organisation: View all reminders set by different users who have the role to create reminders for all members of that specific organisation.
+* Organisation: View all reminders set by different users who have the role of creating reminders for all members of that specific organisation.
 * User: View personal reminders.
 
 ## Reminders page
