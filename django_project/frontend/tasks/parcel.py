@@ -1,5 +1,6 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from frontend.models.base_task import ERROR
 
 
 logger = get_task_logger(__name__)
@@ -31,7 +32,14 @@ def boundary_files_search(request_id):
     from frontend.models.boundary_search import BoundarySearchRequest
     from frontend.utils.upload_file import search_parcels_by_boundary_files
     search_request = BoundarySearchRequest.objects.get(id=request_id)
-    search_parcels_by_boundary_files(search_request)
+    try:
+        search_parcels_by_boundary_files(search_request)
+    except Exception as ex:
+        logger.error(f'Failed to process boundary search id {search_request.id}')
+        logger.error(ex)
+        search_request.status = ERROR
+        search_request.errors = str(ex)
+        search_request.save(update_fields=['status', 'errors'])
 
 
 @shared_task(name='patch_parcel_sources')

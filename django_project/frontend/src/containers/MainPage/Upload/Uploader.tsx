@@ -290,13 +290,15 @@ export default function Uploader(props: UploaderInterface) {
                     } else if (_usedParcelsMessage !== '') {
                         // error
                         showAlertMessage('error', _usedParcelsMessage)
+                        setRequestSubmitted(false)
                     } else {
                         // empty parcels
                         showAlertMessage('error', 'There is no matching parcel has been found.')
+                        setRequestSubmitted(false)
                     }
                 } else if (_status === ERROR_STATUS) {
                     setSavingBoundaryFiles(false)
-                    showAlertMessage('error', 'Unable to process the files, Please try again!')
+                    showAlertMessage('error', 'Unable to process the files, Please try again or contact the Administrators!')
                     setRequestSubmitted(false)
                 } else if (_status === PROCESSING_STATUS) {
                     showAlertMessage('info', '', 'Processing the uploaded files in background...')
@@ -362,6 +364,7 @@ export default function Uploader(props: UploaderInterface) {
                         onChangeStatus={handleChangeStatus}
                         accept={ALLOWABLE_FILE_TYPES.join(', ')}
                         LayoutComponent={CustomLayout}
+                        canRemove={!requestSubmitted}
                     />
                 </Grid>
                 <Grid item>

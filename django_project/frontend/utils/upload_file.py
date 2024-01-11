@@ -188,8 +188,8 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
         total_progress += get_total_feature_in_file(boundary_file)
     if total_progress == 0:
         total_progress = 1
-    # multiply total_progress with number of parcel types + 1
-    total_progress = total_progress * (len(PARCEL_SERIALIZER_MAP) + 1)
+    # multiply total_progress with number of parcel types + 2
+    total_progress = total_progress * (len(PARCEL_SERIALIZER_MAP) + 2)
     current_progress = 0
     results = []
     parcel_keys = []
@@ -208,12 +208,14 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 except Exception as ex:
                     print(ex)
                 if geom is None:
-                    current_progress += len(PARCEL_SERIALIZER_MAP) + 1
+                    current_progress += len(PARCEL_SERIALIZER_MAP) + 2
                     request.update_progress(current_progress, total_progress)
                     continue
                 if isinstance(geom, Polygon):
                     geom = MultiPolygon([geom], srid=4326)
                 search_geom = geom.transform(3857, clone=True)
+                current_progress += 1
+                request.update_progress(current_progress, total_progress)
                 # iterate from map
                 for parcel_class, parcel_serializer in\
                     PARCEL_SERIALIZER_MAP.items():
