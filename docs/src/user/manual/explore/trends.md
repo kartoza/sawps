@@ -19,6 +19,10 @@ The Trends Tab provides a comprehensive analysis of population dynamics at diffe
 
 > DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
 
+If there is less than 2 years of data for a particular species, the system will not generate trend charts for that species. Please keep in mind that if the user has recently added species information, it may not be immediately reflected in the trends tab. However, the data will be instantly available on all other tabs.
+
+This delay occurs because the system updates trend charts every hour. So, the user might experience a short wait before the trends tab shows the latest information. We appreciate your understanding and patience in this matter. If you have any questions or concerns, feel free to reach out to our support team. Thank you for using our platform!
+
 ![Trends Tab](./img/trends-1.png)
 
 1. **Explore**: To access the Trends, click on the `EXPLORE` option in the navigation bar.
