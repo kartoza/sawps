@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="parcel4" id="parcel4">
+	<SimpleField name="id" type="string"></SimpleField>
+</Schema>
+<Folder><name>parcel4</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#parcel4">
+		<SimpleData name="id">1598738e088844a1e605699a135f75cf</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>28.1043050551127,-26.5613543302886 28.104342740788,-26.5661407918614 28.1105608771629,-26.5654666544401 28.1102970774374,-26.5611520810314 28.1043050551127,-26.5613543302886</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

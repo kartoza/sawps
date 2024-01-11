@@ -1,8 +1,0 @@
-{
-"type": "FeatureCollection",
-"name": "parcel2",
-"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-"features": [
-{ "type": "Feature", "properties": { "id": "48383cf5c7593f2cc19072a431ff10d0" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 27.903805803873123, -26.569375830776455 ], [ 27.911333580056294, -26.571820228632596 ], [ 27.906576616054423, -26.582273682075467 ], [ 27.899771257318037, -26.580094476848167 ], [ 27.903805803873123, -26.569375830776455 ] ] ] ] } }
-]
-}
