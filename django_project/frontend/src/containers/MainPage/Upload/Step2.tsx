@@ -145,7 +145,7 @@ export default function Step2(props: Step2Interface) {
                     </Grid>        
                     <Grid item>
                         <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
-                        <Uploader open={openUploader} onClose={() => setOpenUploader(false)} onErrorMessage={(error: string) => setAlertMessage(error)} />
+                        <Uploader open={openUploader} onClose={() => setOpenUploader(false)} />
                     </Grid>
                 </Grid>
             </Grid>

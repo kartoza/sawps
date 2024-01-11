@@ -165,6 +165,16 @@ def get_uploaded_file_crs(file_obj, type):
     return crs
 
 
+def get_total_feature_in_file(boundary_file):
+    total = 0
+    file_path = boundary_file.file.path
+    if boundary_file.file_type == SHAPEFILE:
+        file_path = f'zip://{boundary_file.file.path}'
+    with fiona.open(file_path, encoding='utf-8') as layer:
+        total = len(layer)
+    return total
+
+
 def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     """Search parcels by uploaded boundary files."""
     request.task_on_started()
@@ -173,7 +183,13 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     request.save()
     # get files from session
     files = BoundaryFile.objects.filter(session=request.session)
-    total_progress = files.count()
+    total_progress = 0
+    for boundary_file in files:
+        total_progress += get_total_feature_in_file(boundary_file)
+    if total_progress == 0:
+        total_progress = 1
+    # multiply total_progress with number of parcel types + 1
+    total_progress = total_progress * (len(PARCEL_SERIALIZER_MAP) + 1)
     current_progress = 0
     results = []
     parcel_keys = []
@@ -192,6 +208,8 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 except Exception as ex:
                     print(ex)
                 if geom is None:
+                    current_progress += len(PARCEL_SERIALIZER_MAP) + 1
+                    request.update_progress(current_progress, total_progress)
                     continue
                 if isinstance(geom, Polygon):
                     geom = MultiPolygon([geom], srid=4326)
@@ -211,14 +229,15 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                         results.extend(parcels)
                     if used_parcels:
                         unavailable_parcels.extend(used_parcels)
+                    current_progress += 1
+                    request.update_progress(current_progress, total_progress)
                 # add to union geom
                 if union_geom:
                     union_geom = union_geom.union(geom)
                 else:
                     union_geom = geom
-        current_progress += 1
-        request.progress = current_progress * 100 / total_progress
-        request.save(update_fields=['progress'])
+                current_progress += 1
+                request.update_progress(current_progress, total_progress)
     request.finished_at = datetime.now()
     request.progress = 100
     request.parcels = results

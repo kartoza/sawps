@@ -178,6 +178,7 @@ class BoundaryFileSearchStatus(APIView):
             status=200,
             data={
                 'status': search_request.status,
+                'progress': search_request.progress,
                 'parcels': search_request.parcels,
                 'used_parcels': search_request.used_parcels,
                 'bbox': (

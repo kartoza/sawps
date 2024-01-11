@@ -259,5 +259,12 @@
             background-color: #FF5252;
             height: 30px;
         }
+        .UploadAlertMessage {
+            text-align: left;
+          
+            .MuiAlert-message {
+              width: 100%;
+            }
+        }
     }
 }
