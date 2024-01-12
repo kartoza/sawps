@@ -691,11 +691,11 @@ const drawGeojsonLayer = (mapObj: maplibregl.Map, geojsonData: any) => {
             'source': _sourceName,
             'layout': {'visibility': 'visible'},
             "paint": {
-                "line-color": '#fff',
-                "line-width": 6
+                "line-color": '#FF731D',
+                "line-width": 4
             }
         }
-        addLayerToMap('geojson-upload-layer', mapObj, _layer)
+        addLayerToMap('geojson-upload-layer', mapObj, _layer, 'erf-select-parcel-line')
     } else {
         _source.setData(geojsonData)
     }
