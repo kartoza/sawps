@@ -195,7 +195,7 @@ class LayerMVTTilesBase(APIView):
     permission_classes = [IsAuthenticated]
 
     def get_geom_field_for_properties_layers(self, layer_name: str):
-        if layer_name == PROPERTIES_POINT_LAYER_ZOOMS:
+        if layer_name == PROPERTIES_POINTS_LAYER:
             return 'centroid'
         if layer_name == PROPERTIES_BOUNDARY_LAYER:
             return 'boundary'
