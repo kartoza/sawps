@@ -56,6 +56,9 @@ PROVINCE_LAYER_ZOOMS = (5, 8)
 PROPERTIES_LAYER_ZOOMS = (9, 24)
 PROPERTIES_POINT_LAYER_ZOOMS = (5, 24)
 PARENT_FARM_LAYER_ZOOMS = (9, 11)
+PROPERTIES_LAYER = 'properties'
+PROPERTIES_POINTS_LAYER = 'properties-points'
+PROPERTIES_BOUNDARY_LAYER = 'properties-boundary'
 
 
 def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
@@ -191,6 +194,13 @@ class LayerMVTTilesBase(APIView):
     """Base class for generating dynamic VT."""
     permission_classes = [IsAuthenticated]
 
+    def get_geom_field_for_properties_layers(self, layer_name: str):
+        if layer_name == PROPERTIES_POINT_LAYER_ZOOMS:
+            return 'centroid'
+        if layer_name == PROPERTIES_BOUNDARY_LAYER:
+            return 'boundary'
+        return 'geometry'
+
     def gzip_tile(self, data):
         """Apply gzip to vector tiles bytes."""
         bytesbuffer = io.BytesIO()
@@ -256,15 +266,12 @@ class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
 
     def get_properties_layer_query(
             self,
-            is_points_layer: bool,
+            layer_name: str,
             session: MapSession,
             z: int, x: int, y: int) -> Tuple[str, List[str]]:
         """Generate SQL query for properties/points using filter session."""
         geom_field = (
-            'centroid' if is_points_layer else 'geometry'
-        )
-        layer_name = (
-            'properties-points' if is_points_layer else 'properties'
+            self.get_geom_field_for_properties_layers(layer_name)
         )
         sql = (
             """
@@ -328,15 +335,24 @@ class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
         if self.can_view_properties_layer():
             if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
                 properties_sql, properties_val = (
-                    self.get_properties_layer_query(False, session, z, x, y)
+                    self.get_properties_layer_query(
+                        PROPERTIES_LAYER, session, z, x, y)
                 )
                 sqls.append(properties_sql)
                 query_values.extend(properties_val)
-            if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
-                propertie_points_sql, properties_points_val = (
-                    self.get_properties_layer_query(True, session, z, x, y)
+                # add properties boundary layer
+                prop_boundary_sql, prop_boundary_val = (
+                    self.get_properties_layer_query(
+                        PROPERTIES_BOUNDARY_LAYER, session, z, x, y)
                 )
-                sqls.append(propertie_points_sql)
+                sqls.append(prop_boundary_sql)
+                query_values.extend(prop_boundary_val)
+            if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
+                properties_points_sql, properties_points_val = (
+                    self.get_properties_layer_query(
+                        PROPERTIES_POINTS_LAYER, session, z, x, y)
+                )
+                sqls.append(properties_points_sql)
                 query_values.extend(properties_points_val)
         if len(sqls) == 0:
             return None, None
@@ -369,14 +385,11 @@ class DefaultPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
 
     def get_default_properties_layer_query(
             self,
-            is_points_layer: bool,
+            layer_name: str,
             z: int, x: int, y: int) -> Tuple[str, List[str]]:
         """Generate SQL query for properties/points using active org."""
         geom_field = (
-            'centroid' if is_points_layer else 'geometry'
-        )
-        layer_name = (
-            'properties-points' if is_points_layer else 'properties'
+            self.get_geom_field_for_properties_layers(layer_name)
         )
         sql = (
             """
@@ -411,15 +424,23 @@ class DefaultPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
             return None, None
         if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
             properties_sql, properties_val = (
-                self.get_default_properties_layer_query(False, z, x, y)
+                self.get_default_properties_layer_query(
+                    PROPERTIES_LAYER, z, x, y)
             )
             sqls.append(properties_sql)
             query_values.extend(properties_val)
-        if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
-            propertie_points_sql, properties_points_val = (
-                self.get_default_properties_layer_query(True, z, x, y)
+            prop_boundary_sql, prop_boundary_val = (
+                self.get_default_properties_layer_query(
+                    PROPERTIES_BOUNDARY_LAYER, z, x, y)
             )
-            sqls.append(propertie_points_sql)
+            sqls.append(prop_boundary_sql)
+            query_values.extend(prop_boundary_val)
+        if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
+            properties_points_sql, properties_points_val = (
+                self.get_default_properties_layer_query(
+                    PROPERTIES_POINTS_LAYER, z, x, y)
+            )
+            sqls.append(properties_points_sql)
             query_values.extend(properties_points_val)
         if len(sqls) == 0:
             return None, None
