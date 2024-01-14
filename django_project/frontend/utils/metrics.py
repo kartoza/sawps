@@ -210,3 +210,25 @@ def calculate_base_population_of_species(data: List[Dict[str, Any]]) \
         "activity_colours": ACTIVITY_COLORS_DICT
     }
     return species_data
+
+
+def round_with_precision_check(value, precision, max_precision=5):
+    """
+    Calculate rounded number of value with decimal precision.
+    If given precision makes the rounded number becomes 0, then
+    increase the precision.
+    Params:
+        value: positive number
+        precision: number of decimal to be rounded of
+        max_precision: maximum precision
+    Return:
+        A rounded number
+    """
+    up_precision = precision
+    for i in range(max_precision + 1):
+        up_precision += i
+        result = round(value, up_precision)
+        if result > 0:
+            return result
+    # if failed, then return with original precision
+    return round(value, precision)
