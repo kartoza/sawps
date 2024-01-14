@@ -1,4 +1,5 @@
 import json
+import mock
 import uuid
 import fiona
 import datetime
@@ -12,6 +13,7 @@ from frontend.models.parcels import (
 )
 from frontend.tests.model_factories import UserF
 from frontend.tests.model_factories import BoundaryFileF
+from frontend.models.base_task import ERROR
 from frontend.models.boundary_search import (
     BoundarySearchRequest, BoundaryFile
 )
@@ -19,7 +21,8 @@ from frontend.utils.upload_file import (
     search_parcels_by_boundary_files
 )
 from frontend.tasks.parcel import (
-    clear_uploaded_boundary_files
+    clear_uploaded_boundary_files,
+    boundary_files_search
 )
 
 
@@ -189,3 +192,19 @@ class TestUploadFileUtils(TestCase):
         self.assertFalse(
             BoundarySearchRequest.objects.filter(session=session).exists()
         )
+
+    @mock.patch(
+        'frontend.utils.upload_file.search_parcels_by_boundary_files'
+    )
+    def test_search_with_exception(self, mocked_search):
+        mocked_search.side_effect = Exception('Unknown error')
+        session = str(uuid.uuid4())
+        search_request = BoundarySearchRequest.objects.create(
+            type='File',
+            session=session,
+            request_by=self.user_1
+        )
+        boundary_files_search(search_request.id)
+        search_request.refresh_from_db()
+        self.assertEqual(search_request.status, ERROR)
+        self.assertTrue(search_request.errors)
