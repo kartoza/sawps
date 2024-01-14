@@ -3,6 +3,7 @@ import json
 
 import mock
 import datetime
+import uuid
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import Client, TestCase
@@ -46,6 +47,7 @@ from frontend.static_mapping import (
 from sawps.models import ExtendedGroup
 from sawps.tests.model_factories import GroupF
 from frontend.models.map_session import MapSession
+from frontend.models.boundary_search import BoundarySearchRequest
 from frontend.tests.test_map import is_materialized_view_exists
 from frontend.utils.map import generate_map_view
 
@@ -172,6 +174,7 @@ class TestPropertyAPIViews(TestCase):
             2
         )
         self.assertEqual(property.short_code, response.data['short_code'])
+        self.assertFalse(property.boundary)
         # get property
         kwargs = {
             'id': property.id
@@ -844,6 +847,87 @@ class TestPropertyAPIViews(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data['available'])
+
+    @mock.patch('frontend.api_views.property.find_province')
+    def test_create_property_from_boundary_search(self, mocked_find_province):
+        mocked_find_province.return_value = self.province
+        property_type = PropertyType.objects.all().first()
+        open_close_system = OpenCloseSystem.objects.all().first()
+        boundary_search = BoundarySearchRequest.objects.create(
+            type='File',
+            session=str(uuid.uuid4()),
+            request_by=self.user_1,
+            geometry=self.erf_1.geom.transform(4326, clone=True)
+        )
+        data = {
+            'name': 'Property A',
+            'owner_email': 'test@test.com',
+            'property_type_id': property_type.id,
+            'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
+            'boundary_search_session': boundary_search.session,
+            'parcels': [
+                {
+                    'id': self.erf_1.id,
+                    'layer': 'erf',
+                    'cname': self.erf_1.cname,
+                    'type': 'urban'
+                },
+                {
+                    'id': self.holding_1.id,
+                    'layer': 'holding',
+                    'cname': self.holding_1.cname,
+                    'type': 'urban'
+                },
+                {
+                    'id': self.holding_1.id,
+                    'layer': 'farm_portion',
+                    'cname': self.holding_1.cname,
+                    'type': 'urban'
+                },
+                {
+                    'id': 1001,
+                    'layer': 'farm_portion',
+                    'cname': 'C1001',
+                    'type': 'urban'
+                },
+                {
+                    'id': 1002,
+                    'layer': 'parent_farm',
+                    'cname': 'C1002',
+                    'type': 'urban'
+                },
+            ]
+        }
+        # add to organisation, should return 201
+        self.user_1.user_profile.current_organisation = self.organisation
+        self.user_1.save()
+        organisationUserFactory.create(
+            user=self.user_1,
+            organisation=self.organisation
+        )
+        request = self.factory.post(
+            reverse('property-create'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = CreateNewProperty.as_view()
+        response = view(request)
+        print(response.data)
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('id', response.data)
+        property = Property.objects.get(id=response.data['id'])
+        self.assertEqual(property.name, data['name'])
+        self.assertEqual(property.property_type.id, data['property_type_id'])
+        self.assertEqual(property.province.id, self.province.id)
+        self.assertEqual(property.organisation.id, data['organisation_id'])
+        self.assertEqual(property.open.id, data['open_id'])
+        self.assertEqual(
+            Parcel.objects.filter(property=property).count(),
+            2
+        )
+        self.assertEqual(property.short_code, response.data['short_code'])
+        self.assertTrue(property.boundary)
 
 
 class TestPropertyTypeList(TestCase):

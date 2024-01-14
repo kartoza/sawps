@@ -236,10 +236,11 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             'centroid': geom.point_on_surface
         }
         # find original boundary
-        boundary_search_id = request.data.get('boundary_search_id')
-        if boundary_search_id:
+        boundary_search_session = request.data.get('boundary_search_session')
+        if boundary_search_session:
             boundary_search = BoundarySearchRequest.objects.filter(
-                id=boundary_search_id
+                session=boundary_search_session,
+                type='File'
             ).first()
             if boundary_search and boundary_search.geometry:
                 data['boundary'] = boundary_search.geometry

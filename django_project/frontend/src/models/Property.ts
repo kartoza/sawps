@@ -17,7 +17,8 @@ export default interface PropertyInterface {
     parcels?: ParcelInterface[],
     bbox?: number[],
     centroid?: number[],
-    short_code?: string
+    short_code?: string,
+    boundary_search_session?: string
 }
 
 export const createNewProperty = ():PropertyInterface => {
