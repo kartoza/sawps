@@ -35,7 +35,8 @@ def boundary_files_search(request_id):
     try:
         search_parcels_by_boundary_files(search_request)
     except Exception as ex:
-        logger.error(f'Failed to process boundary search id {search_request.id}')
+        logger.error(
+            f'Failed to process boundary search id {search_request.id}')
         logger.error(ex)
         search_request.status = ERROR
         search_request.errors = str(ex)
