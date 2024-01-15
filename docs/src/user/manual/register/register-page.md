@@ -33,7 +33,7 @@ The Registration Form is designed to gather the necessary information for creati
 To ensure the security of the user's account, we recommend the following password guidelines:
 
 - Use a minimum of 12 characters.
-- Include a uppercase (A-Z).
+- Include an uppercase (A-Z).
 - Include a lowercase (a-z).
 - Use at least one number (0-9).
 - Include at least one special character (e.g., !, @, #, $, %, etc.).

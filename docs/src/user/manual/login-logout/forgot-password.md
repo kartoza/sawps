@@ -26,7 +26,7 @@ The steps involve:
 
 ![Forgot Password 1](./img/forgot-password-1.png)
 
-1. **Forgot Password Link**: When clicked navigates the password reset page.
+1. **Forgot Password Link**: When clicked navigates to the password reset page.
 
 ### Reset password
 
@@ -40,7 +40,7 @@ The steps involve:
 
 ![Forgot Password 3](./img/forgot-password-3.png)
 
-1. The message: contains instructions the user should follow in order to be able to reset their password.
+1. The message: contains instructions the user should follow to be able to reset their password.
 2. Go back link: when clicked returns the user to the login page.
 
 ### Password reset email
