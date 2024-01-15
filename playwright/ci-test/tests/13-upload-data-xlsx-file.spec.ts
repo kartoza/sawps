@@ -25,10 +25,6 @@ test.describe('upload data from xlsx file', () => {
 
     await page.getByRole('button', { name: 'UPLOAD DATA' }).click();
 
-    //await page.getByText('Browse').click();
-
-    //await page.locator('div').filter({ hasText: 'Upload DataDrag & drop files' }).nth(1).setInputFiles('2023-integrated-dataset-template-V7_1.xlsx');
-
     const fileChooserPromise = page.waitForEvent('filechooser');
 
     await page.getByText('Browse').click();
@@ -43,7 +39,7 @@ test.describe('upload data from xlsx file', () => {
 
     await expect(page.getByRole('alert')).toBeVisible();
 
-    await expect(page.getByText('Success')).toBeVisible();
+    await expect(page.getByText('Success').first()).toBeVisible();
 
     await expect(page.getByTestId('SuccessOutlinedIcon')).toBeVisible();
 
