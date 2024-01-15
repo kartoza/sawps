@@ -35,9 +35,9 @@ test.describe('upload data from xlsx file', () => {
 
     const fileChooser = await fileChooserPromise;
 
-    await fileChooser.setFiles('tests/fixtures/2023-integrated-dataset-template-V7_1.xlsx');
+    await fileChooser.setFiles('tests/fixtures/species-dataset.xlsx');
 
-    await expect(page.getByText('2023-integrated-dataset-')).toBeVisible();
+    await expect(page.getByText('species-dataset')).toBeVisible();
 
     await page.getByRole('button', { name: 'UPLOAD FILE' }).click();
 
