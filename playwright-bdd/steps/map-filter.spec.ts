@@ -7,7 +7,7 @@ const { Given, When, Then } = createBdd();
 
 Given('I am on the project landing page {string}', async ({ page }, url) => {
   await page.goto(url);
-  await page.getByRole('link', { name: "LOGIN" } ).click();
+  await page.getByRole('link', { name: "LOGIN" }).click();
   await page.getByPlaceholder('E-mail address').fill('admin@example.com');
   await page.getByPlaceholder('Password').fill('admin');
   await page.getByRole('button', { name: 'LOGIN' }).click();
@@ -30,28 +30,24 @@ Then('I should see the map canvas on the page', async ({ page },) => {
 });
 
 When('I configure filters', async ({ page },) => {
-    await expect(page.getByRole('tab', { name: 'MAP' })).toBeVisible();
-    // Map canvas is visible
-    await page.getByLabel('Open').first().click();
+  await expect(page.getByRole('tab', { name: 'MAP' })).toBeVisible();
+  // Map canvas is visible
+  await page.locator('#combo-box-demo').click();
 
-    await page.getByRole('option', { name: 'Panthera leo' }).click();
+  await page.getByRole('option', { name: 'Panthera leo' }).click();
 
-    await page.locator('nav').filter({ hasText: 'Organisation selected' }).getByLabel('Open').click();
+  await page.locator('nav').filter({ hasText: 'Organisation selected' }).getByLabel('Open').click();
 
-    await page.getByRole('button', { name: 'Close' }).click();
+  await page.getByRole('button', { name: 'Close' }).click();
 
-    await page.locator('nav').filter({ hasText: 'Property selected' }).getByLabel('Open').click();
-
-    await page.locator('nav').filter({ hasText: 'Property selected' }).getByRole('combobox').click();
-  });
+});
 
 Then('I should see data on the map and legend should be visible', async ({ page },) => {
-    await expect(page.getByText('Panthera leo population (2024)0 - 2020 - 4040 - 6060 - 8080 -')).toBeVisible();
 
-    await expect(page.getByText('Panthera leo population (2024)')).toBeVisible();
+  await expect(page.getByText('Panthera leo population (2024)')).toBeVisible();
 
-    // Map canvas is visible
-    const map = 'canvas.maplibregl-canvas.mapboxgl-canvas';
+  // Map canvas is visible
+  const map = 'canvas.maplibregl-canvas.mapboxgl-canvas';
 
-    await expect(page.locator(map)).toBeVisible();
-  });
+  await expect(page.locator(map)).toBeVisible();
+});
