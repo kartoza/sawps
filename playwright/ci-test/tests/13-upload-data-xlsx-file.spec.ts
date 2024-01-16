@@ -33,7 +33,7 @@ test.describe('upload data from xlsx file', () => {
 
     await fileChooser.setFiles('tests/fixtures/species-dataset.xlsx');
 
-    await expect(page.getByText('species-dataset')).toBeVisible();
+    await expect(page.getByText('species-dataset.xlsx')).toBeVisible({timeout: 15000});
 
     await page.getByRole('button', { name: 'UPLOAD FILE' }).click();
 

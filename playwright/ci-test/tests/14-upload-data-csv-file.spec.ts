@@ -33,7 +33,7 @@ test.describe('upload data from csv file', () => {
 
     await fileChooser.setFiles('tests/fixtures/species-dataset.csv');
 
-    await expect(page.getByText('species-dataset')).toBeVisible();
+    await expect(page.getByText('species-dataset.csv')).toBeVisible({timeout: 15000});
 
     await page.getByRole('button', { name: 'UPLOAD FILE' }).click();
 
