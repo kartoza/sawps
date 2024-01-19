@@ -6,6 +6,8 @@ import fiona
 from fiona.io import (
     MemoryFile
 )
+import logging
+import traceback
 import zipfile
 from django.contrib.gis.geos import GEOSGeometry, Polygon, MultiPolygon
 from django.core.files.storage import default_storage
@@ -15,7 +17,7 @@ from django.core.files.uploadedfile import (
     TemporaryUploadedFile
 )
 from frontend.models.base_task import (
-    DONE
+    DONE, ERROR
 )
 from frontend.models.parcels import (
     Erf,
@@ -47,6 +49,7 @@ PARCEL_SERIALIZER_MAP = {
 }
 
 fiona.drvsupport.supported_drivers['KML'] = 'ro'
+logger = logging.getLogger(__name__)
 
 
 def _store_zip_memory_to_temp_file(file_obj: InMemoryUploadedFile):
@@ -186,8 +189,6 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     total_progress = 0
     for boundary_file in files:
         total_progress += get_total_feature_in_file(boundary_file)
-    if total_progress == 0:
-        total_progress = 1
     # multiply total_progress with number of parcel types + 2
     total_progress = total_progress * (len(PARCEL_SERIALIZER_MAP) + 2)
     current_progress = 0
@@ -206,7 +207,10 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     geom_str = json.dumps(feature['geometry'])
                     geom = GEOSGeometry(geom_str, srid=4326)
                 except Exception as ex:
-                    print(ex)
+                    logger.error(
+                        f'Failed to process geometry in file {file_path}')
+                    logger.error(ex)
+                    logger.error(traceback.format_exc())
                 if geom is None:
                     current_progress += len(PARCEL_SERIALIZER_MAP) + 2
                     request.update_progress(current_progress, total_progress)
@@ -245,5 +249,5 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     request.parcels = results
     request.geometry = union_geom
     request.used_parcels = unavailable_parcels
-    request.status = DONE
+    request.status = DONE if union_geom else ERROR
     request.save()
