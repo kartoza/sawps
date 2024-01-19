@@ -64,6 +64,12 @@ test('upload geojson', async ({ page }) => {
   
   await page.waitForLoadState('domcontentloaded');
 
+  const closeModalButton = page.getByRole('button', { name: 'CLOSE' });
+
+  await expect(closeModalButton).toBeVisible({timeout: 20000});
+
+  await closeModalButton.click();
+
   const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 
   await expect(saveBoundary).toBeEnabled({timeout: 20000});
