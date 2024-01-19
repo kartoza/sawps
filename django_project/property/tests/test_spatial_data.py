@@ -1,10 +1,11 @@
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 
 from django.contrib.admin import AdminSite
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase, RequestFactory
 from django.db import connection
 from django.db.utils import InternalError
+from django.core.exceptions import ObjectDoesNotExist
 
 from frontend.models.spatial import SpatialDataModel
 from property.admin import PropertyAdmin
@@ -20,7 +21,8 @@ from property.spatial_data import (
 from property.factories import PropertyFactory
 from frontend.tests.model_factories import (
     LayerF,
-    ContextLayerF
+    ContextLayerF,
+    SpatialDataModelF
 )
 from property.tasks import generate_spatial_filter_task
 
@@ -182,6 +184,18 @@ class TestSpatialFunctions(TestCase):
             layer=self.layer,
             context_layer_value='1'
         ).exists())
+
+    def test_string_spatial_model(self):
+        spatial_model = SpatialDataModelF.create()
+        self.assertEqual(
+            str(spatial_model),
+            spatial_model.property.name
+        )
+        # mock property field to raise ObjectDoesNotExist
+        with patch.object(SpatialDataModel, 'property', new_callable=PropertyMock) as mocked_obj:
+            mocked_obj.side_effect = ObjectDoesNotExist('error')
+            self.assertEqual(str(spatial_model),
+                             "SpatialDataModel-{}".format(spatial_model.id))
 
 
 class GenerateSpatialFilterTaskTest(TestCase):
