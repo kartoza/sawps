@@ -26,6 +26,7 @@ interface UploaderInterface {
     open: boolean;
     onClose: () => void;
     onErrorMessage: (error: string) => void;
+    onSuccessBoundarySearch?: (boundarySearchSession: string) => void;
 }
 
 const ALLOWABLE_FILE_TYPES = [
@@ -249,6 +250,9 @@ export default function Uploader(props: UploaderInterface) {
                             'date': Date.now(),
                             'payload': _bbox_str
                         }))
+                    }
+                    if (props.onSuccessBoundarySearch) {
+                        props.onSuccessBoundarySearch(session)
                     }
                     onClose()
                 } else if (_status === 'ERROR') {

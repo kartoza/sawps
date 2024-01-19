@@ -77,6 +77,7 @@ class Property(models.Model):
         "population_data.OpenCloseSystem", on_delete=models.CASCADE, null=True
     )
     centroid = models.PointField(srid=4326, null=True, blank=True)
+    boundary = models.MultiPolygonField(srid=4326, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Property'
