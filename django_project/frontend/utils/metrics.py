@@ -225,7 +225,7 @@ def round_with_precision_check(value, precision, max_precision=5):
         A rounded number
     """
     up_precision = precision
-    for i in range(max_precision + 1):
+    for i in range(max_precision):
         up_precision += i
         result = round(value, up_precision)
         if result > 0:

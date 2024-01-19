@@ -19,6 +19,7 @@ from frontend.tests.model_factories import (
     SpatialDataModelF,
     SpatialDataModelValueF
 )
+from frontend.utils.metrics import round_with_precision_check
 
 
 class BaseTestCase(TestCase):
@@ -791,6 +792,13 @@ class TestPropertyCountPerPopulationDensityCategory(
                 }
             ]
         )
+
+    def test_round_with_precision_check(self):
+        value = 0.034
+        result = round_with_precision_check(value, 1, 1)
+        self.assertEqual(result, 0)
+        result = round_with_precision_check(value, 1, 5)
+        self.assertEqual(result, 0.03)
 
 
 class TestPropertyCountPerAreaCategory(
