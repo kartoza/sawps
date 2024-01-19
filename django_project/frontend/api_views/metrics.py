@@ -36,7 +36,8 @@ from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_per_property_type,
     calculate_base_population_of_species,
-    calculate_species_count_per_province
+    calculate_species_count_per_province,
+    round_with_precision_check
 )
 from frontend.utils.organisation import (
     get_current_organisation_id,
@@ -50,6 +51,9 @@ from population_data.models import (
 from property.models import Property
 from species.models import Taxon
 from frontend.models.spatial import SpatialDataValueModel
+
+
+POPULATION_DENSITY_DECIMALS = 3
 
 
 class SpeciesPopulationCountPerYearAPIView(APIView):
@@ -467,8 +471,8 @@ class BasePropertyCountAPIView(APIView):
             upper_bound = categories[idx + 1]
 
         if query_field == 'population_density':
-            lower_bound = round(lower_bound, 2)
-            upper_bound = round(upper_bound, 2)
+            lower_bound = lower_bound
+            upper_bound = upper_bound
         else:
             lower_bound = round(lower_bound)
             upper_bound = round(upper_bound)
@@ -483,7 +487,7 @@ class BasePropertyCountAPIView(APIView):
             n_classes=data.count() if data.count() < 6 else 6
         )
         if query_field == 'population_density':
-            categories = sorted([round(cat, 2) for cat in categories])
+            categories = sorted([cat for cat in categories])
         else:
             categories = sorted([round(cat) for cat in categories])
 
@@ -500,10 +504,19 @@ class BasePropertyCountAPIView(APIView):
                 if lower_bound < 0:
                     continue
 
-                category_annotation = f'{lower_bound} - {upper_bound}'
+                category_annotation = (
+                    f'{round_with_precision_check(lower_bound, 2)} - '
+                    f'{round_with_precision_check(upper_bound, 2)}' if
+                    query_field == 'population_density' else
+                    f'{lower_bound} - {upper_bound}'
+                )
                 filters = {f'{query_field}__range': (lower_bound, upper_bound)}
                 if idx == len(categories) - 2 and len(categories) > 2:
-                    category_annotation = f'>{lower_bound}'
+                    category_annotation = (
+                        f'>{round_with_precision_check(lower_bound, 2)}'
+                        if query_field == 'population_density' else
+                        f'>{lower_bound}'
+                    )
                     filters = {f'{query_field}__gt': lower_bound}
 
                 counts = queryset.filter(

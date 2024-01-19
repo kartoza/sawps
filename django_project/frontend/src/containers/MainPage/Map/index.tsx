@@ -225,7 +225,7 @@ export default function Map(props: MapInterface) {
     // call API
     uploadGeoJsonFile(_geojson, _session, (isSuccess, error) => {
       if (isSuccess) {
-        axios.get(`${UPLOAD_FILE_URL}${_session}/search/`).then((response) => {
+        axios.get(`${UPLOAD_FILE_URL}${_session}/search/?search_type=Digitise`).then((response) => {
             setSavingBoundaryDigitise(true)
             dispatch(setSelectedParcels([]))
         }).catch((error) => {

@@ -154,6 +154,30 @@ class TestUploadAPIViews(TestCase):
         view = BoundaryFileSearch.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 204)
+        search_request = BoundarySearchRequest.objects.filter(
+            session=kwargs['session']
+        ).first()
+        self.assertTrue(search_request)
+        self.assertEqual(search_request.type, 'File')
+        # add using search_type
+        kwargs = {
+            'session': str(uuid.uuid4())
+        }
+        request = self.factory.get(
+            reverse(
+                'boundary-file-search',
+                kwargs=kwargs
+            ) + '?search_type=Digitise'
+        )
+        request.user = self.user_1
+        view = BoundaryFileSearch.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 204)
+        search_request = BoundarySearchRequest.objects.filter(
+            session=kwargs['session']
+        ).first()
+        self.assertTrue(search_request)
+        self.assertEqual(search_request.type, 'Digitise')
 
     def test_file_search_status(self):
         search_request = BoundarySearchRequest.objects.create(
@@ -172,6 +196,7 @@ class TestUploadAPIViews(TestCase):
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'PENDING')
+        self.assertIn('progress', response.data)
 
     def test_file_search_geojson(self):
         search_request = BoundarySearchRequest.objects.create(

@@ -42,6 +42,12 @@ test('test', async ({ page }) => {
   await expect(page.getByText('parcel.geojson')).toBeVisible();
   
   await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
+
+  const closeModalButton = page.getByRole('button', { name: 'CLOSE' });
+
+  await expect(closeModalButton).toBeVisible({timeout: 20000});
+
+  await closeModalButton.click();
   
   const saveBoundary = page.getByRole('button', { name: 'SAVE BOUNDARY' });
 

@@ -37,6 +37,7 @@ export default function Step2(props: Step2Interface) {
     const [savingProperty, setSavingProperty] = useState(false)
     const [alertMessage, setAlertMessage] = useState<string>('')
     const [openUploader, setOpenUploader] = useState(false)
+    const [boundarySearchSession, setBoundarySearchSession] = useState<string>('')
 
     const saveProperty = () => {
         if (selectedParcels.length === 0) {
@@ -47,6 +48,9 @@ export default function Step2(props: Step2Interface) {
         let _data:PropertyInterface = {
             ...props.property,
             parcels: selectedParcels
+        }
+        if (boundarySearchSession) {
+            _data['boundary_search_session'] = boundarySearchSession
         }
         let _url = CREATE_NEW_PROPERTY_URL
         if (props.property.id) {
@@ -145,7 +149,8 @@ export default function Step2(props: Step2Interface) {
                     </Grid>        
                     <Grid item>
                         <AlertMessage message={alertMessage} onClose={() => setAlertMessage('')} />
-                        <Uploader open={openUploader} onClose={() => setOpenUploader(false)} onErrorMessage={(error: string) => setAlertMessage(error)} />
+                        <Uploader open={openUploader} onClose={() => setOpenUploader(false)}
+                            onSuccessBoundarySearch={(session: string) => setBoundarySearchSession(session)} />
                     </Grid>
                 </Grid>
             </Grid>

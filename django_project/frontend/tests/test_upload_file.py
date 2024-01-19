@@ -1,4 +1,5 @@
 import json
+import mock
 import uuid
 import fiona
 import datetime
@@ -12,14 +13,17 @@ from frontend.models.parcels import (
 )
 from frontend.tests.model_factories import UserF
 from frontend.tests.model_factories import BoundaryFileF
+from frontend.models.base_task import ERROR, DONE
 from frontend.models.boundary_search import (
     BoundarySearchRequest, BoundaryFile
 )
 from frontend.utils.upload_file import (
-    search_parcels_by_boundary_files
+    search_parcels_by_boundary_files,
+    normalize_geometry
 )
 from frontend.tasks.parcel import (
-    clear_uploaded_boundary_files
+    clear_uploaded_boundary_files,
+    boundary_files_search,
 )
 
 
@@ -129,6 +133,7 @@ class TestUploadFileUtils(TestCase):
         )
         search_parcels_by_boundary_files(search_request)
         search_request.refresh_from_db()
+        self.assertEqual(search_request.status, DONE)
         self.assertEqual(len(search_request.parcels), 3)
         self.assertEqual(len(search_request.used_parcels), 0)
         self.assertEqual(
@@ -189,3 +194,88 @@ class TestUploadFileUtils(TestCase):
         self.assertFalse(
             BoundarySearchRequest.objects.filter(session=session).exists()
         )
+
+    @mock.patch(
+        'frontend.utils.upload_file.search_parcels_by_boundary_files'
+    )
+    def test_search_with_exception(self, mocked_search):
+        mocked_search.side_effect = Exception('Unknown error')
+        session = str(uuid.uuid4())
+        search_request = BoundarySearchRequest.objects.create(
+            type='File',
+            session=session,
+            request_by=self.user_1
+        )
+        boundary_files_search(search_request.id)
+        search_request.refresh_from_db()
+        self.assertEqual(search_request.status, ERROR)
+        self.assertTrue(search_request.errors)
+
+    def test_search_with_empty_geom(self):
+        geom_path = absolute_path(
+            'frontend', 'tests',
+            'shapefile', 'parcels_data_1_3857.zip')
+        with fiona.open(f'zip://{geom_path}', encoding='utf-8') as layer:
+            for feature_idx, feature in enumerate(layer):
+                geom_str = json.dumps(feature['geometry'])
+                # geom_str without crs info is assumed to be in 4326
+                geom = GEOSGeometry(GEOSGeometry(geom_str).wkt, srid=3857)
+                if isinstance(geom, Polygon):
+                    geom = MultiPolygon([geom], srid=3857)
+                if feature_idx < 3:
+                    Erf.objects.create(
+                        geom=geom,
+                        cname=feature['properties']['cname']
+                    )
+                else:
+                    FarmPortion.objects.create(
+                        geom=geom,
+                        cname=feature['properties']['cname']
+                    )
+        session = str(uuid.uuid4())
+        geojson_path = absolute_path(
+            'frontend', 'tests',
+            'geojson', 'empty_geom.geojson')
+        with open(geojson_path, 'rb') as infile:
+            _file = SimpleUploadedFile(
+                'empty_geom.geojson', infile.read())
+            BoundaryFileF.create(
+                session=session,
+                file_type='GEOJSON',
+                file=_file,
+                uploader=self.user_1
+            )
+        search_request = BoundarySearchRequest.objects.create(
+            type='File',
+            session=session,
+            request_by=self.user_1
+        )
+        search_parcels_by_boundary_files(search_request)
+        search_request.refresh_from_db()
+        self.assertEqual(search_request.status, ERROR)
+
+
+    def test_normalize_geometry(self):
+        # test shapefile with geom z dimension
+        shapefile_path = absolute_path(
+            'frontend', 'tests',
+            'shapefile', 'geom_z.zip')
+        with fiona.open(f'zip://{shapefile_path}', encoding='utf-8') as layer:
+            feature = next(layer)
+            geom_str = json.dumps(feature['geometry'])
+        geom = GEOSGeometry(geom_str, srid=4326)
+        self.assertTrue(geom.hasz)
+        geom = normalize_geometry(geom)
+        self.assertFalse(geom.hasz)
+        self.assertTrue(isinstance(geom, MultiPolygon))
+        # test geojson with polygon
+        geojson_path = absolute_path(
+            'frontend', 'tests',
+            'geojson', 'geom_poly.geojson')
+        with fiona.open(f'{geojson_path}', encoding='utf-8') as layer:
+            feature = next(layer)
+            geom_str = json.dumps(feature['geometry'])
+        geom = GEOSGeometry(geom_str, srid=4326)
+        geom = normalize_geometry(geom)
+        self.assertFalse(geom.hasz)
+        self.assertTrue(isinstance(geom, MultiPolygon))
