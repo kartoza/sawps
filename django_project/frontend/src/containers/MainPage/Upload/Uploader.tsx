@@ -26,6 +26,7 @@ import LinearProgressWithLabel from "../../../components/LinearProgressWithLabel
 interface UploaderInterface {
     open: boolean;
     onClose: () => void;
+    onSuccessBoundarySearch?: (boundarySearchSession: string) => void;
 }
 
 const PENDING_STATUS = 'PENDING'
@@ -283,10 +284,16 @@ export default function Uploader(props: UploaderInterface) {
                     if (_parcels.length > 0 && _usedParcelsMessage === '') {
                         // success
                         showAlertMessage('success', _addedParcelMessage)
+                        if (props.onSuccessBoundarySearch) {
+                            props.onSuccessBoundarySearch(session)
+                        }
                     } else if (_parcels.length > 0 && _usedParcelsMessage !== '') {
                         // warning
                         let _warnMessage = _addedParcelMessage + '\r\nWarning: ' + _usedParcelsMessage
                         showAlertMessage('warning', _warnMessage, 'Search is finished with warning')
+                        if (props.onSuccessBoundarySearch) {
+                            props.onSuccessBoundarySearch(session)
+                        }
                     } else if (_usedParcelsMessage !== '') {
                         // error
                         showAlertMessage('error', _usedParcelsMessage)
