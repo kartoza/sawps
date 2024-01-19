@@ -58,6 +58,12 @@ test.describe('upload files', () => {
 
     await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
 
+    const closeModalButton = page.getByRole('button', { name: 'CLOSE' });
+
+    await expect(closeModalButton).toBeVisible({timeout: 20000});
+
+    await closeModalButton.click();
+
     await page.waitForLoadState('domcontentloaded');
 
     await expect(uploadPromise).toBeHidden();
@@ -122,6 +128,12 @@ test.describe('upload files', () => {
     await expect(page.getByText('parcel2.geojson')).toBeVisible();
 
     await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
+
+    const closeModalButton = page.getByRole('button', { name: 'CLOSE' });
+
+    await expect(closeModalButton).toBeVisible({timeout: 20000});
+
+    await closeModalButton.click();
 
     await page.waitForLoadState('domcontentloaded');
 
@@ -188,6 +200,12 @@ test.describe('upload files', () => {
 
     await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
 
+    const closeModalButton = page.getByRole('button', { name: 'CLOSE' });
+
+    await expect(closeModalButton).toBeVisible({timeout: 20000});
+
+    await closeModalButton.click();
+
     await page.waitForLoadState('domcontentloaded');
 
     await expect(uploadPromise).toBeHidden();
@@ -252,6 +270,12 @@ test.describe('upload files', () => {
     await expect(page.getByText('parcel4.kml')).toBeVisible();
 
     await page.getByRole('button', { name: 'UPLOAD FILES' }).click();
+
+    const closeModalButton = page.getByRole('button', { name: 'CLOSE' });
+
+    await expect(closeModalButton).toBeVisible({timeout: 20000});
+
+    await closeModalButton.click();
 
     await page.waitForLoadState('domcontentloaded');
 

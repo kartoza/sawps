@@ -69,3 +69,11 @@ class BaseTaskRequest(models.Model):
         self.progress = 0
         self.progress_text = None
         self.save()
+
+    def update_progress(self, current_progress, total_progress):
+        """Update progress percentage."""
+        if total_progress == 0:
+            self.progress = 0
+        else:
+            self.progress = current_progress * 100 / total_progress
+        self.save(update_fields=['progress'])

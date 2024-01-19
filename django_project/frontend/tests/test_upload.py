@@ -196,6 +196,7 @@ class TestUploadAPIViews(TestCase):
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'PENDING')
+        self.assertIn('progress', response.data)
 
     def test_file_search_geojson(self):
         search_request = BoundarySearchRequest.objects.create(
