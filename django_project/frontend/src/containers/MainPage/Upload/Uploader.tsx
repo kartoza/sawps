@@ -212,20 +212,20 @@ export default function Uploader(props: UploaderInterface) {
         if (status === 'error_upload') {
             setTimeout(() => {
                 file.remove()
-                let  error = ''
+                let _error = ''
                 try {
                     let response = JSON.parse(xhr.response)
-                    error = response.detail
+                    _error = response.detail
                 } catch (error) {
-                    error = 'There is unexpected error during upload! Please try again later'
+                    _error = 'There is unexpected error during upload! Please try again later'
                 }
-                showAlertMessage('error', error)
+                showAlertMessage('error', _error)
             }, 300)
         }
     }
 
     const handleClose = (event: any, reason: any) => {
-        if (reason && (reason == 'backdropClick' || reason == 'escapeKeyDown'))
+        if (reason && (reason === 'backdropClick' || reason === 'escapeKeyDown'))
             return;
         onClose();
     };

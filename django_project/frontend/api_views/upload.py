@@ -151,9 +151,10 @@ class BoundaryFileSearch(APIView):
 
     def get(self, *args, **kwargs):
         session = kwargs.get('session')
+        search_type = self.request.GET.get('search_type', 'File')
         # create new boundary search request
         boundary_search = BoundarySearchRequest.objects.create(
-            type='File',
+            type=search_type,
             session=session,
             request_by=self.request.user
         )
