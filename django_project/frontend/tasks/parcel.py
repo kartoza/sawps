@@ -1,3 +1,4 @@
+import traceback
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from frontend.models.base_task import ERROR
@@ -38,6 +39,7 @@ def boundary_files_search(request_id):
         logger.error(
             f'Failed to process boundary search id {search_request.id}')
         logger.error(ex)
+        logger.error(traceback.format_exc())
         search_request.status = ERROR
         search_request.errors = str(ex)
         search_request.save(update_fields=['status', 'errors'])

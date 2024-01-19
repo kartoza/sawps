@@ -298,7 +298,7 @@ export default function Uploader(props: UploaderInterface) {
                     }
                 } else if (_status === ERROR_STATUS) {
                     setSavingBoundaryFiles(false)
-                    showAlertMessage('error', 'Unable to process the files, Please try again or contact the Administrators!')
+                    showAlertMessage('error', 'Unable to process the files, please try again or contact the Administrators!')
                     setRequestSubmitted(false)
                 } else if (_status === PROCESSING_STATUS) {
                     showAlertMessage('info', '', 'Processing the uploaded files in background...')

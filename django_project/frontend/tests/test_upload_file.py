@@ -18,11 +18,12 @@ from frontend.models.boundary_search import (
     BoundarySearchRequest, BoundaryFile
 )
 from frontend.utils.upload_file import (
-    search_parcels_by_boundary_files
+    search_parcels_by_boundary_files,
+    normalize_geometry
 )
 from frontend.tasks.parcel import (
     clear_uploaded_boundary_files,
-    boundary_files_search
+    boundary_files_search,
 )
 
 
@@ -252,3 +253,29 @@ class TestUploadFileUtils(TestCase):
         search_parcels_by_boundary_files(search_request)
         search_request.refresh_from_db()
         self.assertEqual(search_request.status, ERROR)
+
+
+    def test_normalize_geometry(self):
+        # test shapefile with geom z dimension
+        shapefile_path = absolute_path(
+            'frontend', 'tests',
+            'shapefile', 'geom_z.zip')
+        with fiona.open(f'zip://{shapefile_path}', encoding='utf-8') as layer:
+            feature = next(layer)
+            geom_str = json.dumps(feature['geometry'])
+        geom = GEOSGeometry(geom_str, srid=4326)
+        self.assertTrue(geom.hasz)
+        geom = normalize_geometry(geom)
+        self.assertFalse(geom.hasz)
+        self.assertTrue(isinstance(geom, MultiPolygon))
+        # test geojson with polygon
+        geojson_path = absolute_path(
+            'frontend', 'tests',
+            'geojson', 'geom_poly.geojson')
+        with fiona.open(f'{geojson_path}', encoding='utf-8') as layer:
+            feature = next(layer)
+            geom_str = json.dumps(feature['geometry'])
+        geom = GEOSGeometry(geom_str, srid=4326)
+        geom = normalize_geometry(geom)
+        self.assertFalse(geom.hasz)
+        self.assertTrue(isinstance(geom, MultiPolygon))

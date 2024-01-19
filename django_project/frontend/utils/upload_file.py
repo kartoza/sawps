@@ -9,7 +9,10 @@ from fiona.io import (
 import logging
 import traceback
 import zipfile
-from django.contrib.gis.geos import GEOSGeometry, Polygon, MultiPolygon
+from django.contrib.gis.geos import (
+    GEOSGeometry, Polygon,
+    MultiPolygon, WKTWriter
+)
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.core.files.uploadedfile import (
@@ -178,6 +181,25 @@ def get_total_feature_in_file(boundary_file):
     return total
 
 
+def normalize_geometry(geometry: GEOSGeometry):
+    """
+    This function will do following:
+    - strip z dimension
+    - convert polygon to multipoylgon
+    """
+    if geometry is None:
+        return geometry
+    result = geometry
+    if geometry.hasz:
+        wkt_w = WKTWriter()
+        wkt_w.outdim = 2
+        temp = wkt_w.write(geometry)
+        result = GEOSGeometry(temp, srid=4326)
+    if isinstance(result, Polygon):
+        result = MultiPolygon([result], srid=4326)
+    return result
+
+
 def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     """Search parcels by uploaded boundary files."""
     request.task_on_started()
@@ -247,7 +269,7 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     request.finished_at = datetime.now()
     request.progress = 100
     request.parcels = results
-    request.geometry = union_geom
+    request.geometry = normalize_geometry(union_geom)
     request.used_parcels = unavailable_parcels
     request.status = DONE if union_geom else ERROR
     request.save()
