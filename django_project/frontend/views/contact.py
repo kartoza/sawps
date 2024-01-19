@@ -1,3 +1,4 @@
+from django.views.generic.edit import FormView
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
@@ -5,7 +6,7 @@ from .base_view import OrganisationBaseView
 from frontend.forms import ContactUsForm
 
 
-class ContactUsView(OrganisationBaseView):
+class ContactUsView(OrganisationBaseView, FormView):
     """
     ContactView
     """
