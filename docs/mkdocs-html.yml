@@ -53,7 +53,7 @@ extra:
       link: https://twitter.com/KartozaGeo
     - icon: fontawesome/brands/facebook
       link: https://kartoza.com
-    - icon: fontawesome/solid/earth-africa
+    - icon: fontawesome/solid/map
       link: https://kartoza.com
 
 extra_css:

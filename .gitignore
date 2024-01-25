@@ -20,9 +20,10 @@ django_project/frontend/bundles/
 django_project/frontend/stats.json
 
 docs/site/*
-docks/mkdocs.yml
+docs/mkdocs.yml
 .direnv
 docs/mkdocs.yml
+docs/pdfs/*.pdf
 
 test-results/
 playwright-report/
@@ -31,3 +32,11 @@ playwright/.cache/
 
 django_project/frontend/e2e/.auth/
 django_project/frontend/.env
+R/.RData 
+R/.Rhistory
+docs/mkdocs-overview.yml
+docs/mkdocs-users.yml
+docs/mkdocs-administrators.yml
+docs/mkdocs-developers.yml
+docs/mkdocs-devops.yml
+
