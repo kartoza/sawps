@@ -14,6 +14,14 @@ context_id: VrfXH5X9kkzfJUTWe6TZKf
 
 # About
 
+## Training Videos
+
+The `Training Videos` provides a valuable resource for users to access instructional and educational content in video format. The section houses a diverse range of training videos covering various topics, functionalities, and best practices within the system.
+
+- For training videos the user can click on the image.
+
+ [![SAWPS Testing Videos](./img/testing-videos-playlist-1.png)](https://www.youtube.com/playlist?list=PLhZmjLdJAZWzRnyuulZerusnxdJCKSXza)
+
 ## License
 
 Published under AGPL-3. See the [full license](license.md) text.
