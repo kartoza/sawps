@@ -71,7 +71,9 @@ Once you have finished digitising your property boundary, you can then move onto
 
 Once you have clicked on the `UPLOAD` button, an Upload popup window will appear where you can upload a supported vector file of your property. You can drag and drop the file(s) or `Browse` on your computer for the correct file(s), once you have uploaded your file(s) it will appear on the popup in the 1️⃣ *Uploaded Files* section.
 
-Make sure you zipped your shapefiles directly, **NOT** the directory containing the shapefiles. Otherwise, the shapefiles inside the zip file will not be detected.
+Make sure you zipped your shapefiles directly, **NOT** the directory containing the shapefiles. Otherwise, the shapefiles inside the zip file will not be detected (e.g. the zip folder will contain a `.cpg`, `.dbf`, a `.prj`, a `.shp`, and a `.shx` file).
+
+> **Disclaimer:** If you upload any geometry type that is not polygon, or multi-polygon, (e.g. line, multi-line, etc.) the site will process for a while and then return an error message. Ensure your data is a polygon, or multi-polygon, and not another geometry type.
 
 ![Upload Data New 10](img/upload-data-new-10.png)
 
@@ -79,7 +81,30 @@ Once you have uploaded your file(s), click on `UPLOAD FILES`, the platform will 
 
 ![Upload Data New 11](img/upload-data-new-11.png)
 
-Once your file(s) have been processed, the platform will redirect you to the map and show the outline of your property boundary, and you can fine tune your property using the panel on the left of the screen.
+A progress bar will appear at the top of the popup window indicating the percentage that your upload is processed.
+
+![Upload Data New 11-2](img/upload-data-new-11-2.png)
+
+Once your file(s) have been processed (i.e. when the progress bar reaches `100%`), the platform will display a message (either success, failure, or warning) and you can click on 1️⃣ the `CLOSE` button.
+
+![Upload Data New 11-3](img/upload-data-new-11-3.png)
+
+##### Upload Message Types
+
+1. **Success Message:** If you have uploaded data that is in the correct CRS (EPSG:4326), is of the polygon/multi-polygon geometry type, and doesn't overlap another user's properties then you will see a success message at the top of the upload popup window.
+    ![Upload Data Message 1](./img/upload-data-message-1.png)
+
+2. **Warning Message:** If you upload data that can be processed but overlaps/contains parcels that have previously been used by another user, then you will receive a warning message.
+    ![Upload Data Message 2](./img/upload-data-message-2.png)
+
+3. **Failure Message:** If you upload data with an incorrect CRS, an incorrect geometry type, or another issue, you will receive an error message.
+    Incorrect CRS:
+    ![Upload Data Message 3](./img/upload-data-message-3.png)
+
+    Incorrect Geometry type:
+    ![Upload Data Message 4](./img/upload-data-message-4.png)
+
+Once you close the popup window, the platform will redirect you to the map and show the outline of your property boundary, and you can fine tune your property using the panel on the left of the screen.
 
 ![Upload Data New 12](img/upload-data-new-12.png)
 
