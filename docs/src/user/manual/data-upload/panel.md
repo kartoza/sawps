@@ -53,7 +53,7 @@ The Data Upload Page is an essential tool for managing the user's data, allowing
 
 The Data Table Page serves as the central hub for viewing and interacting with the user's data. This comprehensive platform offers various features to help the user explore, analyse, and manipulate the user's dataset. To get started, the user will need to upload data, and the first step in this process involves providing property information using the Property Information Form.
 
-## Property Information Form
+### Property Information Form
 
 ![Property Information Form](./img/panel-3.png)
 
@@ -87,7 +87,7 @@ This step ensures that the user's data is organised and ready for further proces
 
 The second step of the data upload process on the Data upload involves working with Parcel ID and Parcel Type. This stage is crucial for adding detailed information related to parcels within the property.
 
-## Parcel Details
+### Parcel Details
 
 ![Parcel Details](./img/panel-4.png)
 
@@ -107,7 +107,7 @@ The second step of the data upload process on the Data upload involves working w
 
 Completing Step 2 ensures that the user's dataset is comprehensive and includes detailed information about individual parcels within the property. This data is essential for various analyses and property management tasks.
 
-## Select parcel using select button
+### Select parcel using select button
 
 ![Select button](./img/panel-5.png)
 
@@ -117,11 +117,11 @@ Completing Step 2 ensures that the user's dataset is comprehensive and includes 
 
 3. **Save Boundary**: Click on `SAVE BOUNDARY` button to save the boundaries. After saving the boundary the user will be able to see the selected parcel id and its type.
 
-## Select parcel using the digitise button
+### Select parcel using the digitise button
 
 The `DIGITISE` button is a powerful tool that allows the user to digitise parcel boundaries. When the user clicks the `DIGITISE` button, they will see a set of options on the left top of the map, giving the user full control over the digitisation process. These options are essential for mapping out parcel boundaries accurately.
 
-### Digitisation Options
+#### Digitisation Options
 
 ![Digitisation Options](./img/panel-6.png)
 
@@ -141,11 +141,13 @@ The `DIGITISE` button is a powerful tool that allows the user to digitise parcel
 
 By utilising the digitisation options, the user can accurately define parcel boundaries, which is essential for geospatial data and mapping applications. This tool provides the user with the flexibility to create precise boundaries and make adjustments as needed during the digitisation process.
 
-## Upload parcel using the upload data button
+### Upload parcel using the upload data button
 
 The `UPLOAD` button is a pivotal element of the `DATA UPLOAD`, allowing the user to upload essential data for parcel boundaries. By clicking this button, the user initiates the data upload process, which includes defining parcel boundaries and saving them. Here is a step-by-step explanation of this feature:
 
-### Uploading Data
+> **Disclaimer:** If users upload any geometry type that is not polygon, or multi-polygon, (e.g. line, multi-line, etc.) the site will process for a while and then return an error message. Users should ensure that their data is a polygon, or multi-polygon, and not another geometry type.
+
+#### Uploading Data
 
 ![Upload Popup](./img/panel-7.png)
 
@@ -153,15 +155,38 @@ The `UPLOAD` button is a pivotal element of the `DATA UPLOAD`, allowing the user
 
 The popup window includes the following components:
 
-2. **Browse**: Clicking on the `Browse` button and allows the user to select the file(s) they want to upload. Supported formats include zip, json, geojson, gpkg, kml (CRS 4326). These files typically contain geospatial data, and the user will use them to define parcel boundaries.
+2. **File Selector:** Clicking on the `Browse` button and allows the user to select the file(s) they want to upload. Supported formats include zip, json, geojson, gpkg, kml (CRS 4326). These files typically contain geospatial data, and the user will use them to define parcel boundaries. Alternatively, users can just drag and drop files from their computer into the green box to begin uploading them.
 
-> Please be aware that our system currently does not support `GeoJSON` upload if you are using Windows. In order to successfully upload your data, we recommend saving it in alternative formats (zip, json, gpkg, kml (CRS 4326)) compatible with our system or, as a workaround, renaming the file extension to .json. We apologise for any inconvenience and appreciate your understanding as we work to enhance compatibility. If you encounter any issues or have questions, feel free to reach out to our support team.
+> Please be aware that our system currently does not support `GeoJSON` upload if users are using Windows. In order to successfully upload their data, we recommend saving it in alternative formats (zip, json, gpkg, kml (CRS 4326)) compatible with our system or, as a workaround, renaming the file extension to .json. We apologise for any inconvenience and appreciate users' understanding as we work to enhance compatibility. If users encounter any issues or have questions, feel free to reach out to our support team.
 
-3. **Upload Files**: After the user has selected the appropriate files, they can click on the `Upload Files` button to begin the data upload process. This action will upload and process the selected data.
+3. **Uploaded Files:** This shows a list of the user's uploaded file(s).
 
-4. **Cancel**: If the user decides not to proceed with the data upload, they can click on the `Cancel` button to close the popup window.
+4. **Upload Files:** After the user has selected the appropriate files, they can click on the `Upload Files` button to begin the data upload process. This action will upload and process the selected data.
 
-5. **SAVE BOUNDARY**: By clicking the `SAVE BOUNDARY` button, the user can store the boundary and incorporate it into their property's dataset.
+5. **Cancel:** If the user decides not to proceed with the data upload, they can click on the `Cancel` button to close the popup window.
+
+##### Processing Uploaded Data
+
+![Upload Popup](./img/panel-7-2.png)
+
+1. **Progress Bar:** This bar displays progress of the processing as a percentage.
+2. **Uploaded Files:** This shows a list of the user's uploaded file(s).
+3. **Processing Files:** The `UPLOAD FILES` button gets greyed out and displays `PROCESSING FILES` while the files are being processed.
+
+##### Upload Messages
+
+1. **Success Message:** If users have uploaded data that is in the correct CRS (EPSG:4326), is of the polygon/multi-polygon geometry type, and doesn't overlap another user's properties then they will see a success message at the top of the upload popup window.
+    ![Upload Data Message 1](./img/upload-data-message-1.png)
+
+2. **Warning Message:** If users upload data that can be processed but overlaps/contains parcels that have previously been used by another user, then they will receive a warning message.
+    ![Upload Data Message 2](./img/upload-data-message-2.png)
+
+3. **Failure Message:** If users upload data with an incorrect CRS, an incorrect geometry type, or another issue, they will receive an error message.
+    Incorrect CRS:
+    ![Upload Data Message 3](./img/upload-data-message-3.png)
+
+    Incorrect Geometry type:
+    ![Upload Data Message 4](./img/upload-data-message-4.png)
 
 The `DATA UPLOAD` feature is crucial for geospatial data and mapping applications, ensuring the users data is accurate and complete.
 
