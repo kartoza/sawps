@@ -1,0 +1,36 @@
+import { expect } from '@playwright/test';
+import { createBdd } from 'playwright-bdd';
+
+const { Given, When, Then } = createBdd();
+const authFile = 'auth.json';
+
+/* Scenario: Check title */
+
+Given('I open url {string}', async ({ page }, url) => {
+  await page.goto(url);
+});
+
+When('I click link {string}', async ({ page }, name) => {
+  await page.getByRole('link', { name }).click();
+});
+
+Then('I see in title {string}', async ({ page }, keyword) => {
+  await expect(page).toHaveTitle(new RegExp(keyword));
+});
+
+Then('I fill in login details: {string} and {string}', async ({ page }, name, password) => {
+  await page.getByPlaceholder('E-mail address').fill(name);
+  await page.getByPlaceholder('Password').fill(password);
+});
+
+Then('I can proceed to {string}', async ({ page }, name) => {
+  await page.getByRole('button', { name }).click();
+});
+
+Then('I assert if {string} and {string} is visible', async ({ page }, explore, uploadData) => {
+  await expect(page.getByRole('button', { explore }).first()).toBeVisible();
+  await expect(page.getByRole('button', { uploadData }).first()).toBeVisible();
+  await page.context().storageState({ path: authFile });
+});
+
+
