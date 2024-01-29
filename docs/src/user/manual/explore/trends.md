@@ -33,7 +33,7 @@ This delay occurs because the system updates trend charts every hour. So, the us
 
 4. **Filters**: Enhance trends visualisation by utilising the available filters for more precise data representation.
 
-5. **Clear All**: Click on `Clear All` to remove all applied filters and reset the trends view.
+5. **Clear All**: Click on `Clear All` to remove all applied filters and reset the trends view. If you click `Clear All`, you will be required to select an organisation or property (or both) before you can view species.
 
 ### Trends Topper
 

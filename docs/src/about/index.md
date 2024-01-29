@@ -14,14 +14,6 @@ context_id: VrfXH5X9kkzfJUTWe6TZKf
 
 # About
 
-## Training Videos
-
-The `Training Videos` provides a valuable resource for users to access instructional and educational content in video format. The section houses a diverse range of training videos covering various topics, functionalities, and best practices within the system.
-
-- For training videos the user can click on the image.
-
- [![SAWPS Testing Videos](./img/testing-videos-playlist-1.png)](https://www.youtube.com/playlist?list=PLhZmjLdJAZWzRnyuulZerusnxdJCKSXza)
-
 ## License
 
 Published under AGPL-3. See the [full license](license.md) text.
@@ -47,6 +39,6 @@ For more information about contributing, click [here](./contributing.md).
 
 This project was conceptualized and initially funded by [South African National Biodiversity Institute](https://www.sanbi.org/).
 
-## Logos
+## Development
 
 Another fine project contributed to by: [Kartoza](https://kartoza.com/) under contract to [IDS](https://ids-cc.co.za/).
