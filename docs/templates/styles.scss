@@ -40,14 +40,14 @@ img {
 .cover-logo {
     background-image: $logo-url;
     background-repeat: no-repeat;
-    width: 440px;
-    height: 440px;
+    width: 700px;
+    height: 360px;
     z-index: 1000;
     /* Center on page */
     margin-left: auto;
     margin-right: auto;
-    margin-top: 40px;
-    width: 50%;
+    margin-top: 120px;
+    width: 100%;
     background-color: #fff;
     /* ensures that svg stretches to fill the container */
     background-size: contain;
@@ -221,27 +221,46 @@ h1 {
     counter-reset: c2;
     counter-reset: c3;
     counter-reset: c4;
+    counter-reset: c5;
+    counter-reset: c6;
 }
 
 h2 {
     counter-increment: c2;
     counter-reset: c3;
     counter-reset: c4;
+    counter-reset: c5;
+    counter-reset: c6;
 }
 
 h3 {
     counter-increment: c3;
     counter-reset: c4;
+    counter-reset: c5;
+    counter-reset: c6;
 }
 
 h4 {
     counter-increment: c4;
+    counter-reset: c5;
+    counter-reset: c6;
+}
+
+h5 {
+    counter-increment: c5;
+    counter-reset: c6;
+}
+
+h6 {
+    counter-increment: c6;
 }
 
 h1:before,
 h2:before,
 h3:before,
-h4:before {
+h4:before,
+h5:before,
+h6:before {
     width: 2cm;
     display: inline-block;
     text-align: right;
@@ -268,10 +287,22 @@ h4:before {
     content: counter(c1) "." counter(c2) "." counter(c3) "." counter(c4);
 }
 
+h5:before {
+    color: $primary-color;
+    content: counter(c1) "." counter(c2) "." counter(c3) "." counter(c4) "." counter(c5);
+}
+
+h6:before {
+    color: $primary-color;
+    content: counter(c1) "." counter(c2) "." counter(c3) "." counter(c4) "." counter(c5) "." counter(c6);
+}
+
 article h1,
 h2,
 h3,
-h4 {
+h4,
+h5,
+h6 {
     width: 100%;
     padding-right: 20pt;
     text-align: right;
@@ -288,27 +319,41 @@ article h1 {
     color: $primary-color;
     padding-top: 24px;
     text-decoration-style: double;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
 article h2 {
     color: $secondary-color;
     border-bottom: 2px solid $secondary-color;
-    padding-top: 12px;
+    padding-top: 16px;
     margin-bottom: 12px;
 }
 
 article h3 {
     border-bottom: none;
     color: $tertiary-color;
-    padding-top: 8px;
+    padding-top: 12px;
     margin-bottom: 8px;
 }
 
 article h4 {
     border-bottom: none;
     color: $primary-color;
-    padding-top: 8px;
+    padding-top: 12px;
+    margin-bottom: 8px;
+}
+
+article h5 {
+    border-bottom: none;
+    color: $primary-color;
+    padding-top: 12px;
+    margin-bottom: 8px;
+}
+
+article h6 {
+    border-bottom: none;
+    color: $primary-color;
+    padding-top: 12px;
     margin-bottom: 8px;
 }
 
@@ -393,8 +438,8 @@ blockquote:before {
     display: block;
     width: 25%;
     position: relative;
-    top: -33px;
-    left: -20px;
+    top: -38px;
+    left: -16px;
     content: '🧑‍🔧 Note:';
     padding: 1em 1em;
     margin-top: 10mm;
