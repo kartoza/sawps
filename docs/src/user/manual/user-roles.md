@@ -133,13 +133,11 @@ context_id: Bov9ysSsFG8VhSLC6oQdRF
 
         4. **Explore page charts tab**: Can see all data on the SAWPS platform for all properties to property level, and can filter by organisation, property and species at a regional scale.
 
-        5. **Data upload**: Can upload property and species data if they are part of an organisation.
+        5. **Automated reporting**: All types of reports are available for regions as per filters applied by the user.
 
-        6. **Automated reporting**: All types of reports are available for regions as per filters applied by the user.
+        6. **Download CSV of data from the filtered table**: Can download all types of reports available for regions as per filters applied by the user.
 
-        7. **Download CSV of data from the filtered table**: Can download all types of reports available for regions as per filters applied by the user.
-
-        8. **Download charts image**: Can download all types of charts available for regions as per filters applied by the user.
+        7. **Download charts image**: Can download all types of charts available for regions as per filters applied by the user.
 
 8. **National data scientist**: A national data reviewer who can view data down to the property level and use the data for e.g. planning and permitting.
 
@@ -157,13 +155,11 @@ context_id: Bov9ysSsFG8VhSLC6oQdRF
 
         4. **Explore page charts tab**: Can see all data on the SAWPS platform for all properties to property level, and can filter by organisation, property and species for all of South Africa.
 
-        5. **Data upload**: Can upload property and species data if they are part of an organisation.
+        5. **Automated reporting**: All types of reports are available for South Africa as per filters applied by the user.
 
-        6. **Automated reporting**: All types of reports are available for South Africa as per filters applied by the user.
+        6. **Download CSV of data from the filtered table**: Can download all types of reports available for South Africa as per filters applied by the user.
 
-        7. **Download CSV of data from the filtered table**: Can download all types of reports available for South Africa as per filters applied by the user.
-
-        8. **Download charts image**: Can download all types of charts available for South Africa as per filters applied by the user.
+        7. **Download charts image**: Can download all types of charts available for South Africa as per filters applied by the user.
 
 9. **Site administrator**: A SANBI staff member with superuser access to all functionality on the site and the Django admin page.
 
