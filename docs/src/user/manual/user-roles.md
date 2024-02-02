@@ -133,7 +133,7 @@ context_id: Bov9ysSsFG8VhSLC6oQdRF
 
         4. **Explore page charts tab**: Can see all data on the SAWPS platform for all properties to property level, and can filter by organisation, property and species at a regional scale.
 
-        5. **Data upload**: Can upload property and species data if they are part of an organisation.
+        5. **Data upload**: Can upload property and species data if they are part of an organisation. Additionally, in the user role as a data scientist, they retain the ability to view data from other organisations.
 
         6. **Automated reporting**: All types of reports are available for regions as per filters applied by the user.
 
@@ -157,7 +157,7 @@ context_id: Bov9ysSsFG8VhSLC6oQdRF
 
         4. **Explore page charts tab**: Can see all data on the SAWPS platform for all properties to property level, and can filter by organisation, property and species for all of South Africa.
 
-        5. **Data upload**: Can upload property and species data if they are part of an organisation.
+        5. **Data upload**: Can upload property and species data if they are part of an organisation. Additionally, in the user role as a data scientist, they retain the ability to view data from other organisations.
 
         6. **Automated reporting**: All types of reports are available for South Africa as per filters applied by the user.
 
