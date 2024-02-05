@@ -42,7 +42,8 @@ const ALLOWABLE_FILE_TYPES = [
     'application/x-zip-compressed',
     'application/vnd.google-earth.kml+xml',
     '.gpkg',
-    '.kml'
+    '.kml',
+    '.geojson'
 ]
 
 const UPLOAD_FILE_URL = '/api/upload/boundary-file/'
