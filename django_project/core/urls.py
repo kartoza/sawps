@@ -27,6 +27,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('accounts/two-factor/', include('allauth_2fa.urls')),
+    path('accounts/logout/', include('frontend.accounts_urls')),
     path('accounts/', include('allauth.urls')),
     path('', include('frontend.urls')),
     path('', include('docs_crawler.urls')),
