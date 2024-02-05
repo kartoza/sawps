@@ -57,7 +57,6 @@ from property.models import (
 )
 from stakeholder.models import Organisation, OrganisationUser
 from frontend.models.map_session import MapSession
-from frontend.models.boundary_search import BoundarySearchRequest
 
 
 class CheckPropertyNameIsAvailable(APIView):
@@ -235,15 +234,6 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             'created_at': datetime.now(),
             'centroid': geom.point_on_surface
         }
-        # find original boundary
-        boundary_search_session = request.data.get('boundary_search_session')
-        if boundary_search_session:
-            boundary_search = BoundarySearchRequest.objects.filter(
-                session=boundary_search_session,
-                type='File'
-            ).first()
-            if boundary_search and boundary_search.geometry:
-                data['boundary'] = boundary_search.geometry
         property = Property.objects.create(**data)
 
         try:

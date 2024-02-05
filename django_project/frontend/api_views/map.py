@@ -58,7 +58,6 @@ PROPERTIES_POINT_LAYER_ZOOMS = (5, 24)
 PARENT_FARM_LAYER_ZOOMS = (9, 11)
 PROPERTIES_LAYER = 'properties'
 PROPERTIES_POINTS_LAYER = 'properties-points'
-PROPERTIES_BOUNDARY_LAYER = 'properties-boundary'
 
 
 def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
@@ -197,8 +196,6 @@ class LayerMVTTilesBase(APIView):
     def get_geom_field_for_properties_layers(self, layer_name: str):
         if layer_name == PROPERTIES_POINTS_LAYER:
             return 'centroid'
-        if layer_name == PROPERTIES_BOUNDARY_LAYER:
-            return 'boundary'
         return 'geometry'
 
     def gzip_tile(self, data):
@@ -340,13 +337,6 @@ class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
                 )
                 sqls.append(properties_sql)
                 query_values.extend(properties_val)
-                # add properties boundary layer
-                prop_boundary_sql, prop_boundary_val = (
-                    self.get_properties_layer_query(
-                        PROPERTIES_BOUNDARY_LAYER, session, z, x, y)
-                )
-                sqls.append(prop_boundary_sql)
-                query_values.extend(prop_boundary_val)
             if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
                 properties_points_sql, properties_points_val = (
                     self.get_properties_layer_query(
@@ -429,12 +419,6 @@ class DefaultPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
             )
             sqls.append(properties_sql)
             query_values.extend(properties_val)
-            prop_boundary_sql, prop_boundary_val = (
-                self.get_default_properties_layer_query(
-                    PROPERTIES_BOUNDARY_LAYER, z, x, y)
-            )
-            sqls.append(prop_boundary_sql)
-            query_values.extend(prop_boundary_val)
         if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
             properties_points_sql, properties_points_val = (
                 self.get_default_properties_layer_query(

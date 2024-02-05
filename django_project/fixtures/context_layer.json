@@ -102,8 +102,7 @@
             "properties",
             "properties-points",
             "properties-label",
-            "properties-extrude",
-            "properties-boundary"
+            "properties-extrude"
         ]
     }
 },

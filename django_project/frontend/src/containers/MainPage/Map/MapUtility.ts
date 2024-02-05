@@ -19,7 +19,6 @@ const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
 }
 export const MIN_PROVINCE_ZOOM_LEVEL = 5
 export const MAX_PROVINCE_ZOOM_LEVEL = 8
-const BOUNDARY_PROPERTY_COLOR = '#A31ACB' //'#FF731D'
 
 /**
  * Determine layer visibility based on selected context layers
@@ -566,21 +565,6 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
           }
     }
     addLayerToMap('properties-label', mapObj, _propertiesLabel, 'erf-highlighted')
-    // add properties boundary layer
-    let _propertiesBoundarylayer = {
-        'id': 'properties-boundary',
-        'type': 'line',
-        "source": "sanbi-dynamic",
-        "source-layer": "properties-boundary",
-        'layout': {'visibility': 'visible'},
-        "minzoom": 9,
-        "maxzoom": 24,
-        "paint": {
-            "line-color": BOUNDARY_PROPERTY_COLOR,
-            "line-width": 4
-        }
-    }
-    addLayerToMap('properties-boundary', mapObj, _propertiesBoundarylayer, 'erf-highlighted')
 }
 
 /**
@@ -595,7 +579,6 @@ export const removePropertiesLayer = (mapObj: maplibregl.Map) => {
     removeLayerFromMap('properties-label', mapObj)
     removeLayerFromMap('province-extrude', mapObj)
     removeLayerFromMap('properties-extrude', mapObj)
-    removeLayerFromMap('properties-boundary', mapObj)
 }
 
 /**
@@ -708,7 +691,7 @@ const drawGeojsonLayer = (mapObj: maplibregl.Map, geojsonData: any) => {
             'source': _sourceName,
             'layout': {'visibility': 'visible'},
             "paint": {
-                "line-color": BOUNDARY_PROPERTY_COLOR,
+                "line-color": '#A31ACB',
                 "line-width": 4
             }
         }
