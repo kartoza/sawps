@@ -52,8 +52,18 @@ def province_post_save(
         update_organisation_property_short_code.delay(instance.id)
 
 
+SELECT_SOURCE_TYPE = 'selection'
+DIGITISE_SOURCE_TYPE = 'digitise'
+BOUNDARY_FILE_SOURCE_TYPE = 'boundary_file'
+
+
 class Property(models.Model):
     """Property model."""
+    SOURCE_TYPE_CHOICES = (
+        (SELECT_SOURCE_TYPE, SELECT_SOURCE_TYPE),
+        (DIGITISE_SOURCE_TYPE, DIGITISE_SOURCE_TYPE),
+        (BOUNDARY_FILE_SOURCE_TYPE, BOUNDARY_FILE_SOURCE_TYPE)
+    )
     name = models.CharField(max_length=300, unique=True)
     short_code = models.CharField(
         max_length=50,
@@ -77,6 +87,14 @@ class Property(models.Model):
         "population_data.OpenCloseSystem", on_delete=models.CASCADE, null=True
     )
     centroid = models.PointField(srid=4326, null=True, blank=True)
+    boundary_source = models.CharField(
+        max_length=255,
+        choices=SOURCE_TYPE_CHOICES,
+        default=SELECT_SOURCE_TYPE,
+        null=True,
+        blank=True
+    )
+
 
     class Meta:
         verbose_name = 'Property'

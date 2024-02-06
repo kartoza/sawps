@@ -19,8 +19,7 @@ from rest_framework.response import Response
 from django.contrib.gis.geos import Point
 from django.utils import timezone
 from property.models import (
-    Property,
-    Parcel
+    Property
 )
 from frontend.models.context_layer import ContextLayer
 from frontend.models.map_session import MapSession
@@ -475,16 +474,9 @@ class FindParcelByCoord(APIView):
             ).data
         return None
 
-    def check_used_parcel(self, cname: str, existing_property_id: int):
-        parcels = Parcel.objects.filter(sg_number=cname)
-        if existing_property_id:
-            parcels = parcels.exclude(property_id=existing_property_id)
-        return parcels.exists()
-
     def get(self, *args, **kwargs):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
-        property_id = self.request.GET.get('property_id', 0)
         zoom = int(self.request.GET.get('zoom', 12))
         point = Point(float(lng), float(lat), srid=4326)
         point.transform(3857)
@@ -496,8 +488,6 @@ class FindParcelByCoord(APIView):
             parcel = self.find_parcel(ParentFarm, ParentFarmParcelSerializer,
                                       point)
             if parcel:
-                if self.check_used_parcel(parcel['cname'], property_id):
-                    return Response(status=404)
                 return Response(status=200, data=parcel)
         else:
             map_serializers = {
@@ -509,8 +499,6 @@ class FindParcelByCoord(APIView):
                 parcel = self.find_parcel(parcel_class,
                                           parcel_serializer, point)
                 if parcel:
-                    if self.check_used_parcel(parcel['cname'], property_id):
-                        return Response(status=404)
                     return Response(status=200, data=parcel)
         return Response(status=404)
 
