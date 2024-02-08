@@ -7,7 +7,7 @@ from django.contrib.gis.geos import GEOSGeometry, Polygon, MultiPolygon
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.settings.utils import absolute_path
-from property.factories import ParcelFactory
+from property.factories import ProvinceFactory
 from frontend.models.parcels import (
     Holding, Erf, FarmPortion
 )
@@ -35,6 +35,8 @@ class TestUploadFileUtils(TestCase):
 
     def setUp(self) -> None:
         self.user_1 = UserF.create(username='test_1')
+        # insert province
+        self.province = ProvinceFactory.create()
         # insert geom 1 and 2
         geom_path = absolute_path(
             'frontend', 'tests',
@@ -65,7 +67,7 @@ class TestUploadFileUtils(TestCase):
                 uploader=self.user_1
             )
         search_request = BoundarySearchRequest.objects.create(
-            type='File',
+            type='Digitise',
             session=session,
             request_by=self.user_1
         )
@@ -74,11 +76,23 @@ class TestUploadFileUtils(TestCase):
             id=search_request.id
         )
         self.assertEqual(len(search_request.parcels), 1)
-        self.assertEqual(len(search_request.used_parcels), 0)
-        # add parcel property with holding_1
-        ParcelFactory.create(
-            sg_number=self.holding_1.cname
-        )
+        self.assertTrue(search_request.geometry)
+        self.assertTrue(search_request.province)
+        self.assertTrue(search_request.property_size_ha > 0)
+
+    def test_search_parcels_from_file(self):
+        session = str(uuid.uuid4())
+        shapefile_path = absolute_path(
+            'frontend', 'tests',
+            'shapefile', 'shapefile_1.zip')
+        with open(shapefile_path, 'rb') as infile:
+            _file = SimpleUploadedFile('shapefile_1.zip', infile.read())
+            BoundaryFileF.create(
+                session=session,
+                file_type='SHAPEFILE',
+                file=_file,
+                uploader=self.user_1
+            )
         search_request = BoundarySearchRequest.objects.create(
             type='File',
             session=session,
@@ -89,8 +103,9 @@ class TestUploadFileUtils(TestCase):
             id=search_request.id
         )
         self.assertEqual(len(search_request.parcels), 0)
-        self.assertEqual(len(search_request.used_parcels), 1)
-        
+        self.assertTrue(search_request.geometry)
+        self.assertTrue(search_request.province)
+        self.assertTrue(search_request.property_size_ha > 0)
 
     def test_search_parcels_select_within(self):
         geom_path = absolute_path(
@@ -127,7 +142,7 @@ class TestUploadFileUtils(TestCase):
                 uploader=self.user_1
             )
         search_request = BoundarySearchRequest.objects.create(
-            type='File',
+            type='Digitise',
             session=session,
             request_by=self.user_1
         )

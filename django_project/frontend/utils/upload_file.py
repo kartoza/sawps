@@ -223,7 +223,6 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     ) + 1
     current_progress = 0
     results = []
-    parcel_keys = []
     union_geom: GEOSGeometry = None
     for boundary_file in files:
         file_path = boundary_file.file.path
@@ -254,14 +253,11 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     # iterate from map
                     for parcel_class, parcel_serializer in\
                         PARCEL_SERIALIZER_MAP.items():
-                        parcels, keys = find_parcel_base(
+                        parcels, _ = find_parcel_base(
                             parcel_class,
                             parcel_serializer,
-                            search_geom,
-                            parcel_keys
+                            search_geom
                         )
-                        if keys:
-                            parcel_keys.extend(keys)
                         if parcels:
                             results.extend(parcels)
                         current_progress += 1
