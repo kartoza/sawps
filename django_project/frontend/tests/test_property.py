@@ -179,6 +179,7 @@ class TestPropertyAPIViews(TestCase):
         )
         self.assertEqual(property.short_code, response.data['short_code'])
         self.assertEqual(property.boundary_source, SELECT_SOURCE_TYPE)
+        self.assertEqual(response.data['boundary_source'], property.boundary_source)
         # get property
         kwargs = {
             'id': property.id
@@ -195,6 +196,7 @@ class TestPropertyAPIViews(TestCase):
         find_parcel = [p for p in response.data['parcels'] if p['id'] == self.erf_1.id and p['layer'] == 'erf']
         self.assertEqual(len(find_parcel), 1)
         self.assertEqual(response.data['short_code'], property.short_code)
+        self.assertEqual(response.data['boundary_source'], property.boundary_source)
         # test insert with existing name should return 400
         request = self.factory.post(
             reverse('property-create'), data=data,
