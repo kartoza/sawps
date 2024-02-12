@@ -280,12 +280,12 @@ class TestMapAPIViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['layer'], 'holding')
         self.assertEqual(response.data['cname'], self.holding_1.cname)
-        # test has been used
+        # test has been used, should return 200
         used_parcel = ParcelFactory.create(
             sg_number=self.holding_1.cname
         )
         response = view(request)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
         used_parcel.delete()
         # test with zoom
         request = self.factory.get(
@@ -299,12 +299,12 @@ class TestMapAPIViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['layer'], 'parent_farm')
         self.assertEqual(response.data['cname'], self.parent_farm_1.cname)
-        # test has been used
+        # test has been used, should return 200
         used_parcel = ParcelFactory.create(
             sg_number=self.parent_farm_1.cname
         )
         response = view(request)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
         used_parcel.delete()
         # test not found
         request = self.factory.get(

@@ -161,7 +161,7 @@ class TestPropertySerializer(TestCase):
         expected_value = [
             'id', 'name', 'owner', 'owner_email', 'property_type', 'property_type_id',
             'province', 'province_id', 'open', 'open_id', 'size', 'organisation',
-            'organisation_id', 'short_code'
+            'organisation_id', 'short_code', 'boundary_source'
         ]
         self.assertEqual(
             sorted(list(serializer.data.keys())),
