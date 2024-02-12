@@ -1,5 +1,7 @@
 import json
 import uuid
+from django.db.models import Value as V, Q
+from django.db.models.functions import Concat
 
 from sawps.views import AddUserToOrganisation
 from stakeholder.models import (
@@ -51,7 +53,11 @@ class OrganisationUsersView(
         return string
 
     def search_users(self, username):
-        users = User.objects.filter(username__icontains=username)
+        users = User.objects.annotate(
+            full_name=Concat('first_name', V(' '), 'last_name')
+        ).filter(
+            Q(full_name__icontains=username) | Q(username__icontains=username)
+        )
         return users
 
     def get_user_email(self, user):
@@ -145,7 +151,7 @@ class OrganisationUsersView(
                 if not org_user.user == self.request.user and invite:
                     data.append({
                         'organisation': str(org_user.organisation),
-                        'user': str(org_user.user),
+                        'user': org_user.user.get_full_name(),
                         'id': org_user.user.id,
                         'role': 'Organisation ' + invite.assigned_as,
                         'joined': invite.joined
@@ -277,7 +283,7 @@ class OrganisationUsersView(
         for user in organisation_reps_list:
             object_to_save = {
                 "id": user.user.id,
-                "organisation_user": str(user.user),
+                "organisation_user": user.user.get_full_name(),
                 "role": MANAGER,
                 "assigned_as": MANAGER,
                 "joined": True
@@ -302,7 +308,7 @@ class OrganisationUsersView(
             if role:
                 object_to_save = {
                     "id": user.user.id,
-                    "organisation_user": str(user.user),
+                    "organisation_user": user.user.get_full_name(),
                     "role": role.user_role,
                     "assigned_as": role.assigned_as,
                     "joined": role.joined
@@ -317,7 +323,7 @@ class OrganisationUsersView(
 
                 object_to_save = {
                     "id": user.user.id,
-                    "organisation_user": str(user.user),
+                    "organisation_user": user.user.get_full_name(),
                     "role": None,
                     "assigned_as": assigned_as,
                     "joined": False
