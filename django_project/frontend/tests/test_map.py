@@ -1,6 +1,7 @@
 import json
 import mock
 import datetime
+from uuid import uuid4
 from importlib import import_module
 from django.db import connection
 from django.conf import settings
@@ -40,7 +41,8 @@ from frontend.api_views.map import (
     FindPropertyByCoord,
     MapAuthenticate,
     SessionPropertiesLayerMVTTiles,
-    PopulationCountLegends
+    PopulationCountLegends,
+    AerialTile
 )
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
 from sawps.models import ExtendedGroup
@@ -92,6 +94,15 @@ def insert_province_geom(id, province_name, geom):
     )
     with connection.cursor() as cursor:
         cursor.execute(sql, [id, geom, province_name])
+
+
+class MockResponse:
+    def __init__(self, status_code):
+        self.content = 'Test'
+        self.status_code = status_code
+        self.headers = {
+            'Content-Type': 'application/octet-stream'
+        }
 
 
 class TestMapAPIViews(TestCase):
@@ -197,6 +208,26 @@ class TestMapAPIViews(TestCase):
         # add session
         engine = import_module(settings.SESSION_ENGINE)
         session_key = None
+        request.session = engine.SessionStore(session_key)
+        view = MapStyles.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        # using session object
+        taxon = TaxonF.create(
+            scientific_name='Loxodonta africana',
+            colour='#a9a9aa'
+        )
+        filter_species_name = taxon.scientific_name
+        session = MapSession.objects.create(
+            user=self.user_1,
+            created_date=datetime.datetime(2000, 8, 14, 8, 8, 8),
+            expired_date=datetime.datetime(2000, 8, 14, 8, 8, 8),
+            species=filter_species_name
+        )
+        request = self.factory.get(
+            reverse('map-style') + f'/?session={str(session.uuid)}'
+        )
+        request.user = self.user_1
         request.session = engine.SessionStore(session_key)
         view = MapStyles.as_view()
         response = view(request)
@@ -376,7 +407,20 @@ class TestMapAPIViews(TestCase):
         view = MapAuthenticate.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 403)
+        # empty token
+        mocked_cache.return_value = None
+        request = self.factory.get(
+            reverse('map-authenticate')
+        )
+        view = MapAuthenticate.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 403)
         # has record in cache, 200
+        request = self.factory.get(
+            reverse('map-authenticate') + (
+                f'/?token={token}'
+            )
+        )
         mocked_cache.return_value = True
         response = view(request)
         self.assertEqual(response.status_code, 200)
@@ -450,6 +494,14 @@ class TestMapAPIViews(TestCase):
         request.user = self.user_2
         response = view(request, **kwargs)
         # query returns a result, but ST_AsMVTGeom returns null geom
+        self.assertEqual(response.status_code, 404)
+        # test with invalid session
+        request = self.factory.get(
+            reverse('session-properties-map-layer', kwargs=kwargs) +
+            f'?session={str(uuid4())}'
+        )
+        request.user = self.user_2
+        response = view(request, **kwargs)
         self.assertEqual(response.status_code, 404)
 
     def test_population_count_legends(self):
@@ -923,3 +975,27 @@ class TestMapAPIViews(TestCase):
             is_materialized_view_exists(session.properties_view_name))
         self.assertFalse(
             is_materialized_view_exists(session.province_view_name))
+
+    @mock.patch('requests.get')
+    def test_get_aerial_tile(self, mocked_requests):
+        mocked_requests.return_value = MockResponse(404)
+        kwargs = {
+            'z': 14,
+            'x': 9455,
+            'y': 9454
+        }
+        request = self.factory.get(
+            reverse('aerial-map-layer', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = AerialTile.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 404)
+        mocked_requests.return_value = MockResponse(200)
+        request = self.factory.get(
+            reverse('aerial-map-layer', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = AerialTile.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
