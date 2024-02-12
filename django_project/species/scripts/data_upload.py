@@ -289,7 +289,6 @@ class SpeciesCSVUpload(object):
         self.finish(self.csv_dict_reader.fieldnames)
 
     def get_property(self, property_code):
-
         property_selected = self.upload_session.property.short_code
         if property_code == property_selected:
             try:
@@ -307,8 +306,8 @@ class SpeciesCSVUpload(object):
         if common_name or scientific_name:
             try:
                 taxon = Taxon.objects.get(
-                    scientific_name=scientific_name,
-                    common_name_verbatim=common_name
+                    scientific_name__iexact=scientific_name,
+                    common_name_verbatim__iexact=common_name
                 )
             except Taxon.DoesNotExist:
                 return
@@ -318,7 +317,10 @@ class SpeciesCSVUpload(object):
         sampling_effort = self.row_value(row, SAMPLING_EFFORT)
         if sampling_effort:
             sampling_eff, c = SamplingEffortCoverage.objects.get_or_create(
-                name=sampling_effort
+                name__iexact=sampling_effort,
+                defaults={
+                    'name': sampling_effort
+                }
             )
             return sampling_eff
         return None
@@ -328,7 +330,7 @@ class SpeciesCSVUpload(object):
         if open_close_sys:
             try:
                 open_sys = OpenCloseSystem.objects.get(
-                    name=open_close_sys
+                    name__iexact=open_close_sys
                 )
             except OpenCloseSystem.DoesNotExist:
                 self.error_row(
@@ -346,7 +348,10 @@ class SpeciesCSVUpload(object):
 
         else:
             survey, created = SurveyMethod.objects.get_or_create(
-                name=survey
+                name__iexact=survey,
+                defaults={
+                    'name': survey
+                }
             )
             return survey
 
@@ -357,7 +362,11 @@ class SpeciesCSVUpload(object):
             return None
         else:
             p, pc = PopulationEstimateCategory.objects.get_or_create(
-                    name=pop_est)
+                    name__iexact=pop_est,
+                    defaults={
+                        'name': pop_est
+                    }
+            )
             return p
 
     def check_compulsory_fields(self, row):
@@ -379,7 +388,7 @@ class SpeciesCSVUpload(object):
         try:
             pop, in_c = AnnualPopulationPerActivity.objects.get_or_create(
                 activity_type=ActivityType.objects.get(
-                    name=activity),
+                    name__iexact=activity),
                 year=int(string_to_number(year)),
                 annual_population=annual_population,
                 total=int(string_to_number(
