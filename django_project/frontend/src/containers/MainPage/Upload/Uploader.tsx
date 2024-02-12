@@ -22,11 +22,12 @@ import '../../../assets/styles/RDU.styles.scss';
 import './index.scss';
 import { MapEvents } from '../../../models/Map';
 import LinearProgressWithLabel from "../../../components/LinearProgressWithLabel";
+import { BoundarySearchResultInterface } from '../../../models/Property';
 
 interface UploaderInterface {
     open: boolean;
     onClose: () => void;
-    onSuccessBoundarySearch?: (boundarySearchSession: string) => void;
+    onSuccessBoundarySearch?: (boundarySearchData: BoundarySearchResultInterface) => void;
 }
 
 const PENDING_STATUS = 'PENDING'
@@ -248,15 +249,12 @@ export default function Uploader(props: UploaderInterface) {
     const getStatus = () => {
         axios.get(`${PROCESS_FILE_URL}${session}/status/`).then((response) => {
             if (response.data) {
-                let _status = response.data['status']
-                let _progress = response.data['progress']
-                setRequestProgress(_progress)
-                setRequestStatus(_status)
-                if (_status === DONE_STATUS) {
+                let _data = response.data as BoundarySearchResultInterface
+                setRequestProgress(_data.progress)
+                setRequestStatus(_data.status)
+                if (_data.status === DONE_STATUS) {
                     setSavingBoundaryFiles(false)
-                    let _parcels = response.data['parcels'] as ParcelInterface[]
-                    dispatch(setSelectedParcels(_parcels))
-                    dispatch(toggleParcelSelectionMode(uploadMode))
+                    dispatch(setSelectedParcels(_data.parcels))
                     // trigger map zoom to bbox
                     let _bbox = response.data['bbox']
                     if (_bbox && _bbox.length === 4) {
@@ -269,46 +267,32 @@ export default function Uploader(props: UploaderInterface) {
                             'payload': _bbox_str
                         }))
                     }
-                    let _usedParcelsMessage = ''
-                    if (response.data['used_parcels'].length > 0) {
-                        let _sliced = response.data['used_parcels'].slice(0, 5)
-                        let _usedParcels = _sliced.join(', ')
-                        if (response.data['used_parcels'].length > 5) {
-                            _usedParcels += ` and ${(response.data['used_parcels'].length - 5)} more`
+                    if (_data.type === 'Digitise') {
+                        dispatch(toggleParcelSelectionMode(uploadMode))
+                        let _addedParcelMessage = `${_data.parcels.length === 1 ? '1 parcel has' : _data.parcels.length + ' parcels have'} been added to the selection.`
+                        if (_data.parcels.length > 0) {
+                            // success
+                            showAlertMessage('success', _addedParcelMessage)
+                            if (props.onSuccessBoundarySearch) {
+                                props.onSuccessBoundarySearch(_data)
+                            }
+                        } else {
+                            // empty parcels
+                            showAlertMessage('error', 'There is no matching parcel has been found.')
+                            setRequestSubmitted(false)
                         }
-                        _usedParcelsMessage = `Following parcel has already been used by another property: ${_usedParcels}.`
-                        if (response.data['used_parcels'].length > 1) {
-                            _usedParcelsMessage = `Following parcels have already been used by another property: ${_usedParcels}.`
-                        }
-                    }
-                    let _addedParcelMessage = `${_parcels.length === 1 ? '1 parcel has' : _parcels.length + ' parcels have'} been added to the selection.`
-                    if (_parcels.length > 0 && _usedParcelsMessage === '') {
-                        // success
-                        showAlertMessage('success', _addedParcelMessage)
-                        if (props.onSuccessBoundarySearch) {
-                            props.onSuccessBoundarySearch(session)
-                        }
-                    } else if (_parcels.length > 0 && _usedParcelsMessage !== '') {
-                        // warning
-                        let _warnMessage = _addedParcelMessage + '\r\nWarning: ' + _usedParcelsMessage
-                        showAlertMessage('warning', _warnMessage, 'Search is finished with warning')
-                        if (props.onSuccessBoundarySearch) {
-                            props.onSuccessBoundarySearch(session)
-                        }
-                    } else if (_usedParcelsMessage !== '') {
-                        // error
-                        showAlertMessage('error', _usedParcelsMessage)
-                        setRequestSubmitted(false)
                     } else {
-                        // empty parcels
-                        showAlertMessage('error', 'There is no matching parcel has been found.')
-                        setRequestSubmitted(false)
+                       // success
+                       showAlertMessage('success', 'The job has successfully processed the boundary file.')
+                       if (props.onSuccessBoundarySearch) {
+                           props.onSuccessBoundarySearch(_data)
+                       } 
                     }
-                } else if (_status === ERROR_STATUS) {
+                } else if (_data.status === ERROR_STATUS) {
                     setSavingBoundaryFiles(false)
                     showAlertMessage('error', 'Unable to process the files, please try again or contact the Administrators!')
                     setRequestSubmitted(false)
-                } else if (_status === PROCESSING_STATUS) {
+                } else if (_data.status === PROCESSING_STATUS) {
                     showAlertMessage('info', '', 'Processing the uploaded files in background...')
                 }
             }

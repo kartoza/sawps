@@ -19,6 +19,7 @@ from django.core.files.uploadedfile import (
     InMemoryUploadedFile,
     TemporaryUploadedFile
 )
+from property.models import Province
 from frontend.models.base_task import (
     DONE, ERROR
 )
@@ -39,7 +40,11 @@ from frontend.models.boundary_search import (
     BoundaryFile,
     SHAPEFILE
 )
-from frontend.utils.parcel import find_parcel_base
+from frontend.utils.parcel import (
+    find_parcel_base,
+    find_province,
+    get_geom_size_in_ha
+)
 
 
 # when searching for parcels,
@@ -212,11 +217,12 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     for boundary_file in files:
         total_progress += get_total_feature_in_file(boundary_file)
     # multiply total_progress with number of parcel types + 2
-    total_progress = total_progress * (len(PARCEL_SERIALIZER_MAP) + 2)
+    # add 1 for find province and calculate property size
+    total_progress = (
+        total_progress * (len(PARCEL_SERIALIZER_MAP) + 2)
+    ) + 1
     current_progress = 0
     results = []
-    parcel_keys = []
-    unavailable_parcels = []
     union_geom: GEOSGeometry = None
     for boundary_file in files:
         file_path = boundary_file.file.path
@@ -242,23 +248,25 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                 search_geom = geom.transform(3857, clone=True)
                 current_progress += 1
                 request.update_progress(current_progress, total_progress)
-                # iterate from map
-                for parcel_class, parcel_serializer in\
-                    PARCEL_SERIALIZER_MAP.items():
-                    parcels, keys, used_parcels = find_parcel_base(
-                        parcel_class,
-                        parcel_serializer,
-                        search_geom,
-                        parcel_keys
-                    )
-                    if keys:
-                        parcel_keys.extend(keys)
-                    if parcels:
-                        results.extend(parcels)
-                    if used_parcels:
-                        unavailable_parcels.extend(used_parcels)
-                    current_progress += 1
-                    request.update_progress(current_progress, total_progress)
+                # search parcel is only for request with type=Digitise
+                if request.type == 'Digitise':
+                    # iterate from map
+                    for parcel_class, parcel_serializer in\
+                        PARCEL_SERIALIZER_MAP.items():
+                        parcels, _ = find_parcel_base(
+                            parcel_class,
+                            parcel_serializer,
+                            search_geom
+                        )
+                        if parcels:
+                            results.extend(parcels)
+                        current_progress += 1
+                        request.update_progress(current_progress,
+                                                total_progress)
+                else:
+                    current_progress += len(PARCEL_SERIALIZER_MAP)
+                    request.update_progress(current_progress,
+                                            total_progress)
                 # add to union geom
                 if union_geom:
                     union_geom = union_geom.union(geom)
@@ -266,10 +274,13 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     union_geom = geom
                 current_progress += 1
                 request.update_progress(current_progress, total_progress)
+    request.geometry = normalize_geometry(union_geom)
+    if request.geometry:
+        request.property_size_ha = get_geom_size_in_ha(request.geometry)
+        request.province = find_province(request.geometry,
+                                         Province.objects.first())
     request.finished_at = datetime.now()
     request.progress = 100
     request.parcels = results
-    request.geometry = normalize_geometry(union_geom)
-    request.used_parcels = unavailable_parcels
     request.status = DONE if union_geom else ERROR
     request.save()

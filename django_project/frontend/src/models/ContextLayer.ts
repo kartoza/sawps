@@ -11,3 +11,9 @@ export default interface ContextLayerInterface {
     isExpanded?: boolean,
     legends: ContextLayerLegendInterface[]
 }
+
+export interface ContextLayerVisibilityPayload {
+    id: number;
+    isVisible: boolean;
+}
+

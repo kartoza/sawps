@@ -1,4 +1,5 @@
 """Common functions for parcel."""
+from area import area
 from django.db import connection
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.db.models.functions import Centroid
@@ -8,9 +9,7 @@ from frontend.models.parcels import (
     FarmPortion,
     ParentFarm
 )
-from property.models import (
-    Parcel, Province
-)
+from property.models import Province
 
 
 def find_layer_by_cname(cname: str):
@@ -53,33 +52,22 @@ def select_parcel_by_centroid(parcels, other: GEOSGeometry):
 
 
 def find_parcel_base(cls, serialize_cls,
-                     other: GEOSGeometry, parcel_keys=[]):
+                     other: GEOSGeometry):
     """Base function to find parcel."""
-    used_parcels = []
     results = []
     cname_list = []
     parcels = cls.objects.filter(geom__bboverlaps=other)
-    if parcel_keys:
-        parcels = parcels.exclude(
-            cname__in=parcel_keys
-        )
     parcels = parcels.annotate(
         centroid=Centroid('geom')).order_by('cname').distinct('cname')
     if parcels.exists():
         selected_parcels, cname_list = select_parcel_by_centroid(
             parcels, other)
-        # check if cnames are already used in property parcels
-        used_parcels = Parcel.objects.filter(
-            sg_number__in=cname_list
-        ).values_list('sg_number', flat=True)
-        filtered_parcels = [a for a in selected_parcels if
-                            a.cname not in used_parcels]
-        if filtered_parcels:
+        if selected_parcels:
             results = serialize_cls(
-                filtered_parcels,
+                selected_parcels,
                 many=True
             ).data
-    return results, cname_list, used_parcels
+    return results, cname_list
 
 
 def find_province(geom: GEOSGeometry, default: Province):
@@ -114,3 +102,16 @@ def find_province(geom: GEOSGeometry, default: Province):
         name=province_name
     ).first()
     return province if province else default
+
+
+def get_geom_size_in_ha(geom: GEOSGeometry):
+    """
+    Calculate geometry size in ha.
+
+    :param geom: Geometry
+    :return: Size in ha
+    """
+    if geom is None:
+        return 0
+    meters_sq = area(geom.geojson)
+    return meters_sq / 10000

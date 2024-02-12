@@ -32,11 +32,16 @@ from frontend.models.places import (
     PlaceNameLargerScale,
     PlaceNameLargestScale
 )
+from frontend.models.boundary_search import BoundarySearchRequest
 from frontend.tests.model_factories import UserF
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
 from population_data.models import OpenCloseSystem
 from property.factories import PropertyFactory, ProvinceFactory, PropertyTypeFactory
-from property.models import Parcel, Property, PropertyType
+from property.models import (
+    Parcel, Property, PropertyType,
+    BOUNDARY_FILE_SOURCE_TYPE, SELECT_SOURCE_TYPE,
+    DIGITISE_SOURCE_TYPE
+)
 from stakeholder.factories import (
     organisationFactory,
     organisationUserFactory,
@@ -47,7 +52,6 @@ from frontend.static_mapping import (
 from sawps.models import ExtendedGroup
 from sawps.tests.model_factories import GroupF
 from frontend.models.map_session import MapSession
-from frontend.models.boundary_search import BoundarySearchRequest
 from frontend.tests.test_map import is_materialized_view_exists
 from frontend.utils.map import generate_map_view
 
@@ -174,7 +178,8 @@ class TestPropertyAPIViews(TestCase):
             2
         )
         self.assertEqual(property.short_code, response.data['short_code'])
-        self.assertFalse(property.boundary)
+        self.assertEqual(property.boundary_source, SELECT_SOURCE_TYPE)
+        self.assertEqual(response.data['boundary_source'], property.boundary_source)
         # get property
         kwargs = {
             'id': property.id
@@ -191,6 +196,7 @@ class TestPropertyAPIViews(TestCase):
         find_parcel = [p for p in response.data['parcels'] if p['id'] == self.erf_1.id and p['layer'] == 'erf']
         self.assertEqual(len(find_parcel), 1)
         self.assertEqual(response.data['short_code'], property.short_code)
+        self.assertEqual(response.data['boundary_source'], property.boundary_source)
         # test insert with existing name should return 400
         request = self.factory.post(
             reverse('property-create'), data=data,
@@ -619,9 +625,7 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.data[0]['name'], "PropertyA")
         self.assertEqual(response.data[1]['name'], "PropertyB")
 
-    @mock.patch('frontend.api_views.property.find_province')
-    def test_update_property(self, mocked_find_province):
-        mocked_find_province.return_value = self.province
+    def test_update_property(self):
         property_type = PropertyType.objects.all().first()
         property = PropertyFactory.create(
             geometry=self.holding_1.geom,
@@ -667,7 +671,9 @@ class TestPropertyAPIViews(TestCase):
         self.assertIn('existing property with name Property ABCD',
                       response.data)
 
-    def test_update_boundaries(self):
+    @mock.patch('frontend.api_views.property.find_province')
+    def test_update_boundaries(self, mocked_find_province):
+        mocked_find_province.return_value = self.province
         property_type = PropertyType.objects.all().first()
         data = {
             'name': 'Property A',
@@ -732,6 +738,47 @@ class TestPropertyAPIViews(TestCase):
         )
         updated = Property.objects.get(id=property_id)
         self.assertEqual(response.data['short_code'], updated.short_code)
+        self.assertEqual(updated.boundary_source, SELECT_SOURCE_TYPE)
+        # test update no province is found
+        mocked_find_province.return_value = None
+        request = self.factory.post(
+            reverse('property-update-boundaries'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = UpdatePropertyBoundaries.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEquals(
+            response.data,
+            'Invalid Province! Please contact administrator to populate province table!'
+        )
+        # test update with invalid parcel type
+        mocked_find_province.return_value = self.province
+        data = {
+            'id': property_id,
+            'parcels': [
+                {
+                    'id': self.holding_1.id,
+                    'layer': 'holding',
+                    'cname': self.holding_1.cname,
+                    'type': 'notype'
+                }
+            ]
+        }
+        request = self.factory.post(
+            reverse('property-update-boundaries'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = UpdatePropertyBoundaries.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEquals(
+            response.data,
+            'Invalid parcel_type: notype'
+        )
+
 
     def test_search_property(self):
         # insert place names
@@ -848,64 +895,36 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data['available'])
 
-    @mock.patch('frontend.api_views.property.find_province')
-    def test_create_property_from_boundary_search(self, mocked_find_province):
-        mocked_find_province.return_value = self.province
-        property_type = PropertyType.objects.all().first()
-        open_close_system = OpenCloseSystem.objects.all().first()
-        boundary_search = BoundarySearchRequest.objects.create(
+    def test_create_new_property_from_boundary_upload(self):
+        search_request = BoundarySearchRequest.objects.create(
             type='File',
             session=str(uuid.uuid4()),
             request_by=self.user_1,
-            geometry=self.erf_1.geom.transform(4326, clone=True)
+            geometry=self.erf_1.geom.transform(4326, clone=True),
+            province=self.province,
+            property_size_ha=10
         )
-        data = {
-            'name': 'Property A',
-            'owner_email': 'test@test.com',
-            'property_type_id': property_type.id,
-            'organisation_id': self.organisation.id,
-            'open_id': open_close_system.id,
-            'boundary_search_session': boundary_search.session,
-            'parcels': [
-                {
-                    'id': self.erf_1.id,
-                    'layer': 'erf',
-                    'cname': self.erf_1.cname,
-                    'type': 'urban'
-                },
-                {
-                    'id': self.holding_1.id,
-                    'layer': 'holding',
-                    'cname': self.holding_1.cname,
-                    'type': 'urban'
-                },
-                {
-                    'id': self.holding_1.id,
-                    'layer': 'farm_portion',
-                    'cname': self.holding_1.cname,
-                    'type': 'urban'
-                },
-                {
-                    'id': 1001,
-                    'layer': 'farm_portion',
-                    'cname': 'C1001',
-                    'type': 'urban'
-                },
-                {
-                    'id': 1002,
-                    'layer': 'parent_farm',
-                    'cname': 'C1002',
-                    'type': 'urban'
-                },
-            ]
-        }
+        property_type = PropertyType.objects.all().first()
+        open_close_system = OpenCloseSystem.objects.all().first()
+        
         # add to organisation, should return 201
+        self.user_1.user_profile = self.user_1.user_profile
         self.user_1.user_profile.current_organisation = self.organisation
         self.user_1.save()
         organisationUserFactory.create(
             user=self.user_1,
             organisation=self.organisation
         )
+        # invalid search session
+        data = {
+            'name': 'Property A',
+            'owner_email': 'test@test.com',
+            'property_type_id': property_type.id,
+            'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
+            'parcels': [],
+            'boundary_search_session': str(uuid.uuid4())
+        }
         request = self.factory.post(
             reverse('property-create'), data=data,
             format='json'
@@ -913,7 +932,24 @@ class TestPropertyAPIViews(TestCase):
         request.user = self.user_1
         view = CreateNewProperty.as_view()
         response = view(request)
-        print(response.data)
+        self.assertEqual(response.status_code, 400)
+        # should success
+        data = {
+            'name': 'Property A',
+            'owner_email': 'test@test.com',
+            'property_type_id': property_type.id,
+            'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
+            'parcels': [],
+            'boundary_search_session': search_request.session
+        }
+        request = self.factory.post(
+            reverse('property-create'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = CreateNewProperty.as_view()
+        response = view(request)
         self.assertEqual(response.status_code, 201)
         self.assertIn('id', response.data)
         property = Property.objects.get(id=response.data['id'])
@@ -922,12 +958,112 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(property.province.id, self.province.id)
         self.assertEqual(property.organisation.id, data['organisation_id'])
         self.assertEqual(property.open.id, data['open_id'])
+        self.assertEqual(property.property_size_ha, search_request.property_size_ha)
         self.assertEqual(
             Parcel.objects.filter(property=property).count(),
-            2
+            0
         )
         self.assertEqual(property.short_code, response.data['short_code'])
-        self.assertTrue(property.boundary)
+        self.assertEqual(property.boundary_source, BOUNDARY_FILE_SOURCE_TYPE)
+        # test update with ranndom session
+        data = {
+            'id': property.id,
+            'parcels': [],
+            'boundary_search_session': str(uuid.uuid4())
+        }
+        request = self.factory.post(
+            reverse('property-update-boundaries'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = UpdatePropertyBoundaries.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        # test update should success
+        search_request_2 = BoundarySearchRequest.objects.create(
+            type='File',
+            session=str(uuid.uuid4()),
+            request_by=self.user_1,
+            geometry=self.holding_1.geom.transform(4326, clone=True),
+            province=self.province,
+            property_size_ha=10
+        )
+        data = {
+            'id': property.id,
+            'parcels': [],
+            'boundary_search_session': search_request_2.session
+        }
+        request = self.factory.post(
+            reverse('property-update-boundaries'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = UpdatePropertyBoundaries.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            Parcel.objects.filter(property_id=property.id).count(),
+            0
+        )
+
+    def test_create_new_property_from_digitise(self):
+        search_request = BoundarySearchRequest.objects.create(
+            type='Digitise',
+            session=str(uuid.uuid4()),
+            request_by=self.user_1,
+            geometry=self.erf_1.geom.transform(4326, clone=True),
+            province=self.province,
+            property_size_ha=10
+        )
+        property_type = PropertyType.objects.all().first()
+        open_close_system = OpenCloseSystem.objects.all().first()
+        
+        # add to organisation, should return 201
+        self.user_1.user_profile = self.user_1.user_profile
+        self.user_1.user_profile.current_organisation = self.organisation
+        self.user_1.save()
+        organisationUserFactory.create(
+            user=self.user_1,
+            organisation=self.organisation
+        )
+        data = {
+            'name': 'Property A',
+            'owner_email': 'test@test.com',
+            'property_type_id': property_type.id,
+            'organisation_id': self.organisation.id,
+            'open_id': open_close_system.id,
+            'parcels': [
+                {
+                    'id': self.holding_1.id,
+                    'layer': 'holding',
+                    'cname': self.holding_1.cname,
+                    'type': 'urban'
+                }
+            ],
+            'boundary_search_session': search_request.session
+        }
+        request = self.factory.post(
+            reverse('property-create'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = CreateNewProperty.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('id', response.data)
+        property = Property.objects.get(id=response.data['id'])
+        self.assertEqual(property.name, data['name'])
+        self.assertEqual(property.property_type.id, data['property_type_id'])
+        self.assertEqual(property.province.id, self.province.id)
+        self.assertEqual(property.organisation.id, data['organisation_id'])
+        self.assertEqual(property.open.id, data['open_id'])
+        self.assertTrue(property.property_size_ha > 0)
+        self.assertEqual(
+            Parcel.objects.filter(property=property).count(),
+            1
+        )
+        self.assertEqual(property.short_code, response.data['short_code'])
+        self.assertEqual(property.boundary_source, DIGITISE_SOURCE_TYPE)
 
 
 class TestPropertyTypeList(TestCase):
