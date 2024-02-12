@@ -246,7 +246,7 @@ export default function Step2(props: Step2Interface) {
                                     </Grid>
                                 </Grid>
                             )}
-                            {(boundarySearchData !== null || props.property.id > 0) && (selectedParcels.length === 0) && (
+                            {(boundarySearchData !== null || (props.property.id > 0 && (props.property.boundary_source === BOUNDARY_FILE_SOURCE_TYPE || props.property.boundary_source === '')) || props.property.id === 0) && (selectedParcels.length === 0) && (
                                 <Grid item>
                                     <Button variant='contained' className='Upload' disabled={openUploader || boundarySearchData !== null || (props.property.id > 0 && props.property.boundary_source === BOUNDARY_FILE_SOURCE_TYPE)} onClick={() => setOpenUploader(true)}>UPLOAD</Button>
                                 </Grid>
