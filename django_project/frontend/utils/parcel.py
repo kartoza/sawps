@@ -114,5 +114,4 @@ def get_geom_size_in_ha(geom: GEOSGeometry):
     if geom is None:
         return 0
     meters_sq = area(geom.geojson)
-    acres = meters_sq * 0.000247105381  # meters^2 to acres
-    return acres / 2.471
+    return meters_sq / 10000
