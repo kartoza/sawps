@@ -374,16 +374,16 @@ class OrganisationPersonnel(models.Model):
 class OrganisationRepresentative(OrganisationPersonnel):
     """Organisation representative model."""
     class Meta:
-        verbose_name = 'Organisation representative'
-        verbose_name_plural = 'Organisation representatives'
+        verbose_name = 'Organisation manager'
+        verbose_name_plural = 'Organisation managers'
         db_table = 'organisation_representative'
 
 
 class OrganisationUser(OrganisationPersonnel):
     """Organisation user model."""
     class Meta:
-        verbose_name = 'Organisation user'
-        verbose_name_plural = 'Organisation users'
+        verbose_name = 'Organisation member'
+        verbose_name_plural = 'Organisation members'
         db_table = 'organisation_user'
 
 
