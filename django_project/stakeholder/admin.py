@@ -79,7 +79,7 @@ admin.site.register(User, UserAdmin)
 
 class OrganisationPersonnelBaseAdmin(admin.ModelAdmin):
     list_display = ("get_user_first_name", "get_user_last_name",
-                "organisation")
+                    "organisation")
     search_fields = [
         "user__first_name",
         "user__last_name",

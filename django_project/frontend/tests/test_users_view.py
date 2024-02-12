@@ -26,6 +26,7 @@ class OrganisationUsersViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
+            first_name='test',
             username='testuser',
             password='testpassword',
             email='test@gmail.com'
@@ -244,7 +245,7 @@ class OrganisationUsersViewTest(TestCase):
         expected_data = [
             {
                 'organisation': str(self.organisation),
-                'user': str(self.user),
+                'user': self.user.get_full_name(),
                 'id': self.user.pk,
                 'role': 'Organisation '+self.org_invitation.assigned_as,
                 'joined': self.org_invitation.joined
@@ -269,7 +270,7 @@ class OrganisationUsersViewTest(TestCase):
         expected_data = [
             {
                 'organisation': str(self.organisation),
-                'user': str(self.user),
+                'user': self.user.get_full_name(),
                 'id': self.user.pk,
                 'role': 'Organisation '+self.org_invitation.assigned_as,
                 'joined': self.org_invitation.joined
