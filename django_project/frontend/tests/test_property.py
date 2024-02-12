@@ -738,6 +738,7 @@ class TestPropertyAPIViews(TestCase):
         )
         updated = Property.objects.get(id=property_id)
         self.assertEqual(response.data['short_code'], updated.short_code)
+        self.assertEqual(updated.boundary_source, SELECT_SOURCE_TYPE)
 
     def test_search_property(self):
         # insert place names
