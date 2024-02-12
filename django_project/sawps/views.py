@@ -161,7 +161,7 @@ class SendRequestEmail(View):
     def send_email(self, request):
         organisation = request.POST.get('organisationName')
         request_message = request.POST.get('message')
-        subject = 'Oganisation Request'
+        subject = 'Organisation Request'
         if request.user.first_name:
             if request.user.last_name:
                 name = request.user.first_name + ' ' + request.user.last_name
