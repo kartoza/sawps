@@ -625,9 +625,7 @@ class TestPropertyAPIViews(TestCase):
         self.assertEqual(response.data[0]['name'], "PropertyA")
         self.assertEqual(response.data[1]['name'], "PropertyB")
 
-    @mock.patch('frontend.api_views.property.find_province')
-    def test_update_property(self, mocked_find_province):
-        mocked_find_province.return_value = self.province
+    def test_update_property(self):
         property_type = PropertyType.objects.all().first()
         property = PropertyFactory.create(
             geometry=self.holding_1.geom,
@@ -673,7 +671,9 @@ class TestPropertyAPIViews(TestCase):
         self.assertIn('existing property with name Property ABCD',
                       response.data)
 
-    def test_update_boundaries(self):
+    @mock.patch('frontend.api_views.property.find_province')
+    def test_update_boundaries(self, mocked_find_province):
+        mocked_find_province.return_value = self.province
         property_type = PropertyType.objects.all().first()
         data = {
             'name': 'Property A',
@@ -739,6 +739,46 @@ class TestPropertyAPIViews(TestCase):
         updated = Property.objects.get(id=property_id)
         self.assertEqual(response.data['short_code'], updated.short_code)
         self.assertEqual(updated.boundary_source, SELECT_SOURCE_TYPE)
+        # test update no province is found
+        mocked_find_province.return_value = None
+        request = self.factory.post(
+            reverse('property-update-boundaries'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = UpdatePropertyBoundaries.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEquals(
+            response.data,
+            'Invalid Province! Please contact administrator to populate province table!'
+        )
+        # test update with invalid parcel type
+        mocked_find_province.return_value = self.province
+        data = {
+            'id': property_id,
+            'parcels': [
+                {
+                    'id': self.holding_1.id,
+                    'layer': 'holding',
+                    'cname': self.holding_1.cname,
+                    'type': 'notype'
+                }
+            ]
+        }
+        request = self.factory.post(
+            reverse('property-update-boundaries'), data=data,
+            format='json'
+        )
+        request.user = self.user_1
+        view = UpdatePropertyBoundaries.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertEquals(
+            response.data,
+            'Invalid parcel_type: notype'
+        )
+
 
     def test_search_property(self):
         # insert place names
