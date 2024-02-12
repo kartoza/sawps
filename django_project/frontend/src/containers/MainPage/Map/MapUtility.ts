@@ -139,6 +139,16 @@ export const findAreaLayers = (contextLayers: ContextLayerInterface[]): string[]
 }
 
 /**
+ * Find context layer from Properties
+ * @param contextLayers
+ * @returns
+ */
+export const findPropertiesLayer = (contextLayers: ContextLayerInterface[]): ContextLayerInterface => {
+    return contextLayers.find((element) => element.name.toLowerCase() === 'properties')
+}
+
+
+/**
  * Check if context layer is selected
  * @param contextLayers
  * @returns
@@ -685,20 +695,28 @@ const drawGeojsonLayer = (mapObj: maplibregl.Map, geojsonData: any) => {
             'type': 'geojson',
             'data': geojsonData
         })
-        let _layer = {
-            'id': 'geojson-upload-layer',
-            'type': 'line',
-            'source': _sourceName,
-            'layout': {'visibility': 'visible'},
-            "paint": {
-                "line-color": '#A31ACB',
-                "line-width": 4
-            }
-        }
-        addLayerToMap('geojson-upload-layer', mapObj, _layer, 'erf-select-parcel-line')
     } else {
         _source.setData(geojsonData)
     }
+    let _layer = {
+        'id': 'geojson-upload-layer',
+        'type': 'line',
+        'source': _sourceName,
+        'layout': {'visibility': 'visible'},
+        "paint": {
+            "line-color": '#A31ACB',
+            "line-width": 4
+        }
+    }
+    addLayerToMap('geojson-upload-layer', mapObj, _layer, 'erf-highlighted')
+}
+
+/**
+ * Remove geojson layer from map
+ * @param mapObj 
+ */
+export const removeGeojsonLayer = (mapObj: maplibregl.Map) => {
+    removeLayerFromMap('geojson-upload-layer', mapObj)
 }
 
 /**

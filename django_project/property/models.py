@@ -171,7 +171,7 @@ class ParcelType(models.Model):
 
 class Parcel(models.Model):
     """Parcel model."""
-    sg_number = models.CharField(max_length=100, unique=True)
+    sg_number = models.CharField(max_length=100, unique=False)
     year = models.DateField()
     property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
     parcel_type = models.ForeignKey(ParcelType, on_delete=models.CASCADE)

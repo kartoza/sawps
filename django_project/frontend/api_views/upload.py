@@ -175,15 +175,23 @@ class BoundaryFileSearchStatus(APIView):
         ).order_by('-id').first()
         if not search_request:
             return Response(status=404)
+        uploaded_files = BoundaryFile.objects.filter(
+            session=session
+        ).values_list('name', flat=True)
         return Response(
             status=200,
             data={
                 'status': search_request.status,
                 'progress': search_request.progress,
                 'parcels': search_request.parcels,
-                'province': search_request.province.name,
+                'province': (
+                    search_request.province.name if
+                    search_request.province else ''
+                ),
                 'property_size_ha': search_request.property_size_ha,
                 'type': search_request.type,
+                'session': session,
+                'upload_file_names': uploaded_files,
                 'bbox': (
                     list(search_request.geometry.extent) if
                     search_request.geometry else []

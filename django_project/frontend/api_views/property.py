@@ -210,6 +210,25 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             Parcel.objects.filter(property=property).delete()
         self.add_parcels(property, parcels, filtered_ids)
 
+    def find_boundary_search_session(self):
+        boundary_source = SELECT_SOURCE_TYPE
+        boundary_search = None
+        boundary_search_session = self.request.data.get(
+            'boundary_search_session', None)
+        if boundary_search_session:
+            boundary_search = BoundarySearchRequest.objects.filter(
+                session=boundary_search_session
+            ).first()
+            if boundary_search is None:
+                return None, None
+            if boundary_search.type == 'File':
+                # uploaded file
+                boundary_source = BOUNDARY_FILE_SOURCE_TYPE
+            else:
+                # digitise
+                boundary_source = DIGITISE_SOURCE_TYPE
+        return boundary_source, boundary_search
+
     def post(self, request, *args, **kwargs):
         current_organisation_id = get_current_organisation_id(
             request.user
@@ -235,27 +254,13 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
                     f'There is existing property with name {property_name}! '
                     'Please use other name for the property!'
                 ))
-        # find original boundary
-        boundary_source = SELECT_SOURCE_TYPE
-        boundary_search = None
-        boundary_search_session = request.data.get(
-            'boundary_search_session', None)
-        if boundary_search_session:
-            boundary_search = BoundarySearchRequest.objects.filter(
-                session=boundary_search_session
-            ).first()
-            if boundary_search is None:
-                return Response(
-                    status=400, data=(
-                        'Invalid property session! '
-                        'Please try again or contact administrator!'
-                    ))
-            if boundary_search.type == 'File':
-                # uploaded file
-                boundary_source = BOUNDARY_FILE_SOURCE_TYPE
-            else:
-                # digitise
-                boundary_source = DIGITISE_SOURCE_TYPE
+        boundary_source, boundary_search = self.find_boundary_search_session()
+        if boundary_source is None and boundary_search is None:
+            return Response(
+                status=400, data=(
+                    'Invalid property session! '
+                    'Please try again or contact administrator!'
+                ))
         geom, province, property_size_ha, parcels, filtered_ids = (
             self.get_property_geom(request, boundary_source, boundary_search)
         )
@@ -424,20 +429,13 @@ class UpdatePropertyBoundaries(CreateNewProperty):
             Property,
             id=request.data.get('id')
         )
-        boundary_search = None
-        boundary_source = property.boundary_source
-        if boundary_source == BOUNDARY_FILE_SOURCE_TYPE:
-            boundary_search_session = request.data.get(
-                'boundary_search_session', None)
-            if boundary_search_session:
-                boundary_search = BoundarySearchRequest.objects.filter(
-                    session=boundary_search_session).first()
-            if boundary_search is None:
-                return Response(
-                    status=400, data=(
-                        'Invalid property session! '
-                        'Please try again or contact administrator!'
-                    ))
+        boundary_source, boundary_search = self.find_boundary_search_session()
+        if boundary_source is None and boundary_search is None:
+            return Response(
+                status=400, data=(
+                    'Invalid property session! '
+                    'Please try again or contact administrator!'
+                ))
         geom, province, property_size_ha, parcels, filtered_ids = (
             self.get_property_geom(request, boundary_source, boundary_search)
         )
@@ -451,6 +449,7 @@ class UpdatePropertyBoundaries(CreateNewProperty):
         property.property_size_ha = property_size_ha
         property.centroid = geom.point_on_surface
         property.province = province
+        property.boundary_source = boundary_source
         property.save()
         if boundary_source != BOUNDARY_FILE_SOURCE_TYPE:
             # Selection and digitise will have parcels

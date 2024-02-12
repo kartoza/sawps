@@ -81,7 +81,7 @@ export default function SelectedParcelTable(props: SelectedParcelTableInterface)
                         </TableRow>
                     }
                     { parentFarms.length > 0 && parentFarms.map((parcel: ParcelInterface, index: number) => {
-                        return <Row index={index} parcel={parcel} onRemoveParcel={props.onRemoveParcel} onParcelHovered={props.onParcelHovered} />
+                        return <Row key={`parent-farm-${index}`} index={index} parcel={parcel} onRemoveParcel={props.onRemoveParcel} onParcelHovered={props.onParcelHovered} />
                     })
                     }
                     { parentFarms.length > 0 && others.length > 0 &&
@@ -90,7 +90,7 @@ export default function SelectedParcelTable(props: SelectedParcelTableInterface)
                         </TableRow>
                     }
                     { others.map((parcel: ParcelInterface, index: number) => {
-                        return <Row index={index} parcel={parcel} onRemoveParcel={props.onRemoveParcel} onParcelHovered={props.onParcelHovered} />
+                        return <Row key={`others-${index}`} index={index} parcel={parcel} onRemoveParcel={props.onRemoveParcel} onParcelHovered={props.onParcelHovered} />
                     })
                     }
                 </TableBody>
