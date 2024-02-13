@@ -211,3 +211,7 @@ class PropertyOverlaps(models.Model):
         default=False
     )
     resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Property Overlaps'
+        verbose_name_plural = 'Property Overlaps'
