@@ -277,7 +277,8 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     request.geometry = normalize_geometry(union_geom)
     if request.geometry:
         request.property_size_ha = get_geom_size_in_ha(request.geometry)
-        request.province = find_province(request.geometry,
+        geom_3857 = request.geometry.transform(3857, clone=True)
+        request.province = find_province(geom_3857,
                                          Province.objects.first())
     request.finished_at = datetime.now()
     request.progress = 100
