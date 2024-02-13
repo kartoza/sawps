@@ -133,6 +133,7 @@ def property_check_overlaps_each_other():
                 continue
             if existing.resolved:
                 result.store(existing)
+                new_overlap += 1
     resolved = check_for_resolved_overlaps(results)
     logger.info(f'Overlapping properties resolved count {resolved}')
     return (new_overlap, resolved)

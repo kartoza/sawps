@@ -1,4 +1,5 @@
 import json
+import mock
 from django.utils import timezone
 from rest_framework import status
 from django.urls import reverse
@@ -16,6 +17,10 @@ from property.tasks.check_overlaps import (
     check_overlaps_in_properties,
     property_check_overlaps_each_other
 )
+
+
+def mocked_process(*args, **kwargs):
+    return 1
 
 
 class TestCheckOverlaps(TestCase):
@@ -147,12 +152,40 @@ class TestCheckOverlaps(TestCase):
         self.assertEqual(resolved, 1)
         overlaps.refresh_from_db()
         self.assertTrue(overlaps.resolved)
+        # case: resolved overlaps become overlap again
+        PropertyOverlaps.objects.all().delete()
+        overlaps = PropertyOverlaps.objects.create(
+            property=property_3,
+            other=property_4,
+            reported_at=timezone.now(),
+            resolved=False
+        )
+        overlaps_resolved = PropertyOverlaps.objects.create(
+            property=self.property_1,
+            other=self.property_2,
+            reported_at=timezone.now(),
+            resolved=True
+        )
+        new_overlap, resolved = property_check_overlaps_each_other()
+        self.assertEqual(new_overlap, 1)
+        self.assertEqual(resolved, 1)
+        overlaps.refresh_from_db()
+        self.assertTrue(overlaps.resolved)
+        overlaps_resolved.refresh_from_db()
+        self.assertFalse(overlaps_resolved.resolved)
 
     def test_admin_overlaps_list(self):
         overlaps = PropertyOverlaps.objects.create(
             property=self.property_1,
             other=self.property_2,
             overlap_area_size=100,
+            reported_at=timezone.now(),
+            resolved=False
+        )
+        PropertyOverlaps.objects.create(
+            property=self.property_1,
+            other=self.property_2,
+            overlap_area_size=10000,
             reported_at=timezone.now(),
             resolved=False
         )
@@ -163,6 +196,7 @@ class TestCheckOverlaps(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, 'Lupin_2')
         self.assertContains(response, '100.00 sqm')
+        self.assertContains(response, '1.00 ha')
         response = client.post(
             reverse('admin:property_propertyoverlaps_changelist'),
             {
@@ -174,3 +208,20 @@ class TestCheckOverlaps(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         overlaps.refresh_from_db()
         self.assertTrue(overlaps.resolved)        
+
+    @mock.patch('property.tasks.check_overlaps.'
+                'property_check_overlaps_each_other.delay')
+    def test_admin_property_trigger_check_overlaps(self, mocked_task):
+        mocked_task.side_effect = mocked_process
+        client = Client()
+        client.force_login(self.superuser)
+        response = client.post(
+            reverse('admin:property_property_changelist'),
+            {
+                'action': 'run_check_overlaps',
+                '_selected_action': [self.property_1.id]
+            },
+            follow=True
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mocked_task.assert_called_once()
