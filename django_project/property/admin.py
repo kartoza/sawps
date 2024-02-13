@@ -181,7 +181,7 @@ class PropertyOverlapsAdmin(admin.ModelAdmin):
     def get_overlap_size(self, obj):
         if obj.overlap_area_size < 10000:
             return f'{obj.overlap_area_size:.2f} sqm'
-        return f'{obj.overlap_area_size/10000:.2f} ha'
+        return f'{obj.overlap_area_size / 10000:.2f} ha'
 
     @admin.action(
         description="Resolve overlaps record"

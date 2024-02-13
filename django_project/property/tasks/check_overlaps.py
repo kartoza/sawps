@@ -71,7 +71,11 @@ def check_overlaps_in_properties() -> List[OverlapItem]:
         select a.id as prop_id, b.id as other_id,
             st_intersection(a.geometry, b.geometry) as intersects
         from property a, property b
-        where a.id < b.id and st_overlaps(a.geometry, b.geometry);
+        where a.id < b.id and (
+            st_overlaps(a.geometry, b.geometry) or
+            st_within(a.geometry, b.geometry) or
+            st_contains(a.geometry, b.geometry)
+        ) order by a.id;
         """
     )
     results: List[OverlapItem] = []
@@ -130,4 +134,5 @@ def property_check_overlaps_each_other():
             if existing.resolved:
                 result.store(existing)
     resolved = check_for_resolved_overlaps(results)
+    logger.info(f'Overlapping properties resolved count {resolved}')
     return (new_overlap, resolved)
