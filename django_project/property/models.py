@@ -197,3 +197,21 @@ class Parcel(models.Model):
         verbose_name = 'Parcel'
         verbose_name_plural = 'Parcels'
         db_table = 'parcel'
+
+
+class PropertyOverlaps(models.Model):
+    """Model to store property that overlaps with each other."""
+    property = models.ForeignKey('property.Property', on_delete=models.CASCADE)
+    other = models.ForeignKey('property.Property',
+                              on_delete=models.CASCADE, related_name='other')
+    reported_at = models.DateTimeField()
+    overlap_geom = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    overlap_area_size = models.FloatField(null=True, blank=True)
+    resolved = models.BooleanField(
+        default=False
+    )
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Property Overlaps'
+        verbose_name_plural = 'Property Overlaps'
