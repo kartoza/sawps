@@ -10,6 +10,7 @@ from django.test import (
 from unittest.mock import patch
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.db.models.signals import post_save
 
 from frontend.static_mapping import ORGANISATION_MEMBER, ORGANISATION_MANAGER
 from regulatory_permit.models import DataUsePermission
@@ -28,7 +29,9 @@ from stakeholder.models import (
     OrganisationInvites,
     OrganisationUser,
     OrganisationRepresentative,
-    MANAGER
+    MANAGER, UserProfile,
+    create_user_profile,
+    save_user_profile,
 )
 from stakeholder.factories import OrganisationInvitesFactory
 
@@ -280,13 +283,30 @@ class AddUserToOrganisationTestCase(TestCase):
         )
 
     def test_add_user(self):
+        post_save.disconnect(create_user_profile, sender=User)
+        post_save.disconnect(save_user_profile, sender=User)
         view = AddUserToOrganisation()
-        view.adduser(self.invite.uuid)
+        new_user = User.objects.create_user(
+            username='new_user',
+            email='new_user@email.com',
+            password='testpass',
+            first_name='new_user',
+            last_name='new_user'
+        )
+        self.assertFalse(
+            OrganisationUser.objects.filter(
+                user=new_user).exists()
+        )
+        invite = OrganisationInvites.objects.create(
+            email=new_user.email,
+            organisation=self.organisation
+        )
+        view.adduser(invite.uuid)
         org_user = OrganisationUser.objects.filter(
-            user=self.user,
+            user=new_user,
             organisation=self.organisation).first()
         org_invite = OrganisationInvites.objects.filter(
-            email=self.user_email,
+            email=new_user.email,
             organisation=self.organisation).first()
 
         self.assertIsNotNone(org_user)
@@ -304,6 +324,8 @@ class AddUserToOrganisationTestCase(TestCase):
             organisation=self.organisation2).first()
         self.assertIsNotNone(org_user2)
         self.assertIsNotNone(org_rep)
+        post_save.connect(create_user_profile, sender=User)
+        post_save.connect(save_user_profile, sender=User)
 
     def test_is_user_invited(self):
         view = AddUserToOrganisation()
@@ -332,7 +354,6 @@ class AddUserToOrganisationTestCase(TestCase):
 
         fail = view.send_invitation_email([])
         self.assertFalse(fail)
-
 
     def test_add_user_view_member(self):
         url = reverse(
