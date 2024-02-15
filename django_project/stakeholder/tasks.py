@@ -17,27 +17,24 @@ from stakeholder.models import (
 
 
 @shared_task
-def send_reminder_email(*args):
-    reminder = None
-    recipient_email = None
-    user = None
-
-    if len(args) > 0:
-        reminder = args[0]
-        try:
-            reminder_details = Reminders.objects.get(pk=reminder)
-            user = User.objects.get(pk=reminder_details.user.pk)
-            recipient_email = user.email
-            if len(args) > 1:
-                recipient_email = args[1]
-        except Exception:
-            reminder_details = None
+def send_reminder_email(reminder_id, recipient_id=None):
+    try:
+        reminder_details = Reminders.objects.get(
+            pk=reminder_id)
+        if recipient_id:
+            recipient = User.objects.get(
+                pk=recipient_id)
+        else:
+            recipient = User.objects.get(
+                pk=reminder_details.user.pk)
+    except (Reminders.DoesNotExist, User.DoesNotExist):
+        return
 
     message = render_to_string(
         'emails/reminder_email.html',
         {
             'domain': Site.objects.get_current().domain,
-            'name': user.username,
+            'name': recipient.username,
             'reminder': reminder_details.reminder,
             'date': reminder_details.date,
             'organisation': reminder_details.organisation
@@ -48,7 +45,7 @@ def send_reminder_email(*args):
         subject,
         None,
         settings.SERVER_EMAIL,
-        [recipient_email],
+        [recipient.email],
         html_message=message
     )
 
@@ -73,7 +70,7 @@ def send_reminder_emails(*args):
                 organisation=reminder.organisation
             )
             for org_user in org_users_list:
-                send_reminder_email(reminder.id, org_user.user.email)
+                send_reminder_email(reminder.id, org_user.user.id)
                 update_user_profile(org_user.user)
         reminder.status = Reminders.PASSED
         reminder.email_sent = True
