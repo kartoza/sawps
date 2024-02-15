@@ -55,6 +55,7 @@ export interface AnnualPopulationPerActivityInterface {
 }
 
 export interface UploadSpeciesDetailInterface {
+    id?: number;
     taxon_id: number;
     taxon_name?: string;
     common_name?: string;
@@ -64,6 +65,7 @@ export interface UploadSpeciesDetailInterface {
     annual_population: AnnualPopulationInterface;
     intake_populations: AnnualPopulationPerActivityInterface[];
     offtake_populations: AnnualPopulationPerActivityInterface[];
+    confirm_overwrite?: boolean;
 }
 
 export interface TaxonMetadata {
@@ -215,6 +217,7 @@ export const getDefaultUploadSpeciesDetail = (propertyId: number, initialData?: 
             annual_population: copyAnnualPopulation(initialData.annual_population),
             intake_populations: copyActivityPopulation(initialData.intake_populations),
             offtake_populations: copyActivityPopulation(initialData.offtake_populations),
+            id: initialData.id
         }
         return _cpData
     }
@@ -227,7 +230,8 @@ export const getDefaultUploadSpeciesDetail = (propertyId: number, initialData?: 
         property_id: propertyId,
         annual_population: getDefaultAnnualPopulation(),
         intake_populations: [],
-        offtake_populations: []
+        offtake_populations: [],
+        id: 0
     }
 }
 

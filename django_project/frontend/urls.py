@@ -57,7 +57,8 @@ from frontend.api_views.population import (
     PopulationMeanSDChartApiView,
     PopulationMetadataList,
     UploadPopulationAPIVIew,
-    FetchPopulationData
+    FetchPopulationData,
+    CanWritePopulationData
 )
 from frontend.api_views.property import (
     CreateNewProperty,
@@ -249,6 +250,11 @@ urlpatterns = [
         r'^api/upload/population/fetch/(?P<id>\d+)/?$',
         FetchPopulationData.as_view(),
         name='fetch-population-data'
+    ),
+    re_path(
+        r'^api/upload/population/(?P<property_id>\d+)/check/?$',
+        CanWritePopulationData.as_view(),
+        name='can-upload-population-data'
     ),
     re_path(
         r'^api/upload/population/(?P<property_id>\d+)/?$',

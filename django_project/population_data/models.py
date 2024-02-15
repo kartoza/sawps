@@ -3,6 +3,7 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import User
+from stakeholder.models import OrganisationRepresentative
 
 
 TOTAL_POPULATION_ERROR_MESSAGE = (
@@ -151,6 +152,19 @@ class AnnualPopulation(AnnualPopulationAbstract):
                 })
 
         super().clean()
+
+    def is_editable(self, user: User, managed_organisations = None):
+        if managed_organisations is None:
+            managed_organisations = OrganisationRepresentative.objects.filter(
+                user=user
+            ).values_list('organisation_id', flat=True)
+        if user is None:
+            return False
+        if user.is_superuser:
+            return True
+        if self.property.organisation.id in managed_organisations:
+            return True
+        return self.user.id == user.id if self.user else False
 
     class Meta:
         verbose_name = "Annual Population"
