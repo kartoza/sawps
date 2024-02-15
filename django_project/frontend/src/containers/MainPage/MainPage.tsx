@@ -72,7 +72,14 @@ function MainPage() {
       // dispatch to reset map state in data or charts tab
       dispatch(resetMapState())
     }
-    if (location.pathname !== newPath) {
+
+    const currentPathHasSlash = location.pathname.endsWith('/');
+    const adjustedNewPath = currentPathHasSlash && !newPath.endsWith('/') ? `${newPath}/` : newPath;
+
+    const isHomePage = location.pathname === '/';
+    if (isHomePage && location.pathname !== adjustedNewPath) {
+      window.history.pushState(null, '', adjustedNewPath);
+    } else if (!isHomePage && location.pathname !== adjustedNewPath) {
       navigate(newPath); // Update the URL with the tab name
     }
 
@@ -83,8 +90,10 @@ function MainPage() {
     }
 
     // Replace the tab parameter in the URL
-    const newUrl = window.location.href.replace(/\?tab=\d/, newPath);
-    window.history.replaceState(null, '', newUrl);
+    if (!isHomePage) {
+      const newUrl = window.location.href.replace(/\?tab=\d/, adjustedNewPath);
+      window.history.replaceState(null, '', newUrl);
+    }
   }, [selectedTab, navigate, location.pathname, isUploadUrl]);
 
 
