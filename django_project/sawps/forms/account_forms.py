@@ -47,7 +47,8 @@ class CustomSignupForm(SignupForm):
                 self.cleaned_data['invitation_uuid']
             )
             if is_user_invited:
-                add_user_view.adduser(self.cleaned_data['invitation_uuid'])
+                add_user_view.adduser(
+                    self.cleaned_data['invitation_uuid'])
             else:
                 return redirect('/accounts/login')
 

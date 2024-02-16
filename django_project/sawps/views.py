@@ -50,6 +50,14 @@ class ActivateAccount(View):
             )
             messages.success(request, ('Your account have been confirmed.'),
                              extra_tags='notification')
+            # find invites that user has joined if any
+            org_invite = OrganisationInvites.objects.filter(
+                user=user,
+                joined=True
+            ).order_by('id').last()
+            if org_invite:
+                AddUserToOrganisation.notify_join_organisation_message(
+                    request, org_invite)
             return redirect('/accounts/two-factor/setup')
         else:
             messages.warning(
@@ -80,8 +88,8 @@ class AddUserToOrganisation(UserPassesTestMixin, View):
             return False
         return user.id == self.request.user.id
 
-    def get(self, request, invitation_uuid, *args, **kwargs):
-        org_invite = self.adduser(invitation_uuid, *args, **kwargs)
+    @staticmethod
+    def notify_join_organisation_message(request, org_invite):
         if org_invite:
             messages.success(
                 request,
@@ -101,6 +109,10 @@ class AddUserToOrganisation(UserPassesTestMixin, View):
                 ),
                 extra_tags='notification'
             )
+
+    def get(self, request, invitation_uuid, *args, **kwargs):
+        org_invite = self.adduser(invitation_uuid, *args, **kwargs)
+        self.notify_join_organisation_message(request, org_invite)
         return redirect(
             reverse('organisations', args=[self.request.user.username]))
 
@@ -114,48 +126,49 @@ class AddUserToOrganisation(UserPassesTestMixin, View):
         org_invite = OrganisationInvites.objects.filter(
             uuid=invitation_uuid
         ).order_by('id').last()
-        if org_invite:
-            # Update the joined field to True
-            org_invite.joined = True
-            org = org_invite.organisation
-            user = org_invite.get_invitee()
-            org_invite.user = user
-            org_invite.save()
+        if org_invite is None:
+            return None
+        # Update the joined field to True
+        org_invite.joined = True
+        org = org_invite.organisation
+        user = org_invite.get_invitee()
+        org_invite.user = user
+        org_invite.save()
 
-            try:
-                user_profile = user.user_profile
-            except AttributeError:
-                user_profile = UserProfile.objects.create(
-                    user_id=user.id
-                )
-            user_profile.current_organisation = org
-            user_profile.save()
+        try:
+            user_profile = user.user_profile
+        except AttributeError:
+            user_profile = UserProfile.objects.create(
+                user_id=user.id
+            )
+        user_profile.current_organisation = org
+        user_profile.save()
 
+        # check if not already added to prevent duplicates
+        org_user = OrganisationUser.objects.filter(
+            user=org_invite.user,
+            organisation=org
+        ).first()
+        if not org_user:
+            # add user to organisation users
+            OrganisationUser.objects.create(
+                user=org_invite.user,
+                organisation=org
+            )
+
+        if org_invite.assigned_as == MANAGER:
             # check if not already added to prevent duplicates
-            org_user = OrganisationUser.objects.filter(
+            org_rep = OrganisationRepresentative.objects.filter(
                 user=org_invite.user,
                 organisation=org
             ).first()
-            if not org_user:
+            if not org_rep:
                 # add user to organisation users
-                OrganisationUser.objects.create(
+                org_rep = OrganisationRepresentative.objects.create(
                     user=org_invite.user,
                     organisation=org
                 )
-
-            if org_invite.assigned_as == MANAGER:
-                # check if not already added to prevent duplicates
-                org_rep = OrganisationRepresentative.objects.filter(
-                    user=org_invite.user,
-                    organisation=org
-                ).first()
-                if not org_rep:
-                    # add user to organisation users
-                    org_rep = OrganisationRepresentative.objects.create(
-                        user=org_invite.user,
-                        organisation=org
-                    )
-                    org_rep.save()
+                org_rep.save()
         return org_invite
 
     def is_user_invited(self, invitation_uuid):
