@@ -15,7 +15,8 @@ from stakeholder.models import (
     OrganisationInvites,
     OrganisationUser,
     OrganisationRepresentative,
-    MANAGER
+    MANAGER,
+    UserProfile
 )
 from sawps.email_verification_token import email_verification_token
 from django.template.loader import render_to_string
@@ -104,55 +105,57 @@ class AddUserToOrganisation(UserPassesTestMixin, View):
             reverse('organisations', args=[self.request.user.username]))
 
     def adduser(self, invitation_uuid, *args, **kwargs):
-        '''when the user has been invited to join an organisation
+        '''
+        when the user has been invited to join an organisation
         this view will Add the User to the OrganisationUser
         and update the linked models
-        OrganisationInvites'''
-        org_invite = None
-        try:
-            org_invite = OrganisationInvites.objects.filter(
-                uuid=invitation_uuid
-            ).order_by('id').last()
-            if org_invite:
-                # Update the joined field to True
-                org_invite.joined = True
-                org = org_invite.organisation
-                user = org_invite.get_invitee()
-                org_invite.user = user
-                org_invite.save()
+        OrganisationInvites
+        '''
+        org_invite = OrganisationInvites.objects.filter(
+            uuid=invitation_uuid
+        ).order_by('id').last()
+        if org_invite:
+            # Update the joined field to True
+            org_invite.joined = True
+            org = org_invite.organisation
+            user = org_invite.get_invitee()
+            org_invite.user = user
+            org_invite.save()
 
-                if user.user_profile:
-                    user.user_profile.current_organisation = org
-                    user.user_profile.save()
+            try:
+                user_profile = user.user_profile
+            except AttributeError:
+                user_profile = UserProfile.objects.create(
+                    user_id=user.id
+                )
+            user_profile.current_organisation = org
+            user_profile.save()
 
+            # check if not already added to prevent duplicates
+            org_user = OrganisationUser.objects.filter(
+                user=org_invite.user,
+                organisation=org
+            ).first()
+            if not org_user:
+                # add user to organisation users
+                OrganisationUser.objects.create(
+                    user=org_invite.user,
+                    organisation=org
+                )
+
+            if org_invite.assigned_as == MANAGER:
                 # check if not already added to prevent duplicates
-                org_user = OrganisationUser.objects.filter(
+                org_rep = OrganisationRepresentative.objects.filter(
                     user=org_invite.user,
                     organisation=org
                 ).first()
-                if not org_user:
+                if not org_rep:
                     # add user to organisation users
-                    org_user = OrganisationUser.objects.create(
+                    org_rep = OrganisationRepresentative.objects.create(
                         user=org_invite.user,
                         organisation=org
                     )
-                    org_user.save()
-
-                if org_invite.assigned_as == MANAGER:
-                    # check if not already added to prevent duplicates
-                    org_rep = OrganisationRepresentative.objects.filter(
-                        user=org_invite.user,
-                        organisation=org
-                    ).first()
-                    if not org_rep:
-                        # add user to organisation users
-                        org_rep = OrganisationRepresentative.objects.create(
-                            user=org_invite.user,
-                            organisation=org
-                        )
-                        org_rep.save()
-        except Exception:
-            return None
+                    org_rep.save()
         return org_invite
 
     def is_user_invited(self, invitation_uuid):
