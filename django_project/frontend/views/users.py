@@ -231,7 +231,17 @@ class OrganisationUsersView(
                     return JsonResponse(
                         {
                             'status': 'success',
-                            'updated_invites': serialized_invites
+                            'updated_invites': serialized_invites,
+                            'number': invites.number,
+                            'previous_page_number': (
+                                invites.previous_page_number() if
+                                invites.has_previous() else -1
+                            ),
+                            'next_page_number': (
+                                invites.next_page_number() if
+                                invites.has_next() else -1
+                            ),
+                            'per_page': invites.paginator.per_page
                         }
                     )
                 return JsonResponse({
@@ -350,7 +360,8 @@ class OrganisationUsersView(
 
     def get_organisation_invites(self, request):
         organisation_invites = OrganisationInvites.objects.filter(
-            organisation_id=get_current_organisation_id(request.user))
+            organisation_id=get_current_organisation_id(request.user)
+        ).order_by('-id')
         paginated_organisation_invites = []
 
         for invite in organisation_invites:
