@@ -128,9 +128,12 @@ class CanWritePopulationData(APIView):
                            property: Property, taxon: Taxon):
         """Check if user is able to overwrite annual_population record."""
         user = self.request.user
-        if not annual_population.is_editable(user):
-            return False, self.EDIT_DATA_NO_PERMISSION_MESSAGE, None
         annual_population_id = self.request.data.get('id', 0)
+        if (
+            annual_population_id > 0 and
+            not annual_population.is_editable(user)
+        ):
+            return False, self.EDIT_DATA_NO_PERMISSION_MESSAGE, None
         year = self.request.data.get("year")
         other = None
         if annual_population_id == 0:

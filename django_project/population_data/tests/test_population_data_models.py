@@ -25,6 +25,9 @@ from population_data.models import (
 )
 from species.factories import TaxonFactory, TaxonRankFactory
 from species.models import Taxon
+from frontend.tests.model_factories import UserF
+from property.factories import ProvinceFactory, PropertyFactory
+from stakeholder.factories import organisationFactory, organisationRepresentativeFactory
 
 
 class PopulationCountTestCase(TestCase):
@@ -112,6 +115,40 @@ class PopulationCountTestCase(TestCase):
             mocked_obj.side_effect = ObjectDoesNotExist('error')
             self.assertEqual(str(population_2),
                              "Population of year {} with total {}".format(2023, 120))
+
+    def test_is_population_editable(self):
+        superuser = UserF.create(
+            username='superuser', is_superuser=True,
+            is_staff=True, is_active=True)
+        user_1 = UserF.create(username='user_1')
+        user_2 = UserF.create(username='user_2')
+        organisation = organisationFactory(name='CapeNature')
+        province = ProvinceFactory(name='Western Cape')
+        property_1 = PropertyFactory(
+            name='Lupin',
+            province=province,
+            organisation=organisation,
+            created_by=superuser
+        )
+        population_1 = AnnualPopulationF(
+            total=120,
+            adult_male=19,
+            adult_female=100,
+            adult_total=119,
+            year=2023,
+            user=user_1,
+            property=property_1
+        )
+        self.assertTrue(population_1.is_editable(superuser))
+        self.assertTrue(population_1.is_editable(user_1))
+        self.assertFalse(population_1.is_editable(user_2))
+        # add user_2 as manager
+        organisationRepresentativeFactory.create(
+            organisation=organisation,
+            user=user_2
+        )
+        self.assertTrue(population_1.is_editable(user_2))
+
 
 class AnnualPopulationPerActivityTestCase(TestCase):
     """Population count test case."""
