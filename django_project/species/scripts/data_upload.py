@@ -518,10 +518,7 @@ class SpeciesCSVUpload(object):
             ).first()
             if existing_data:
                 # validate if user can update the data: uploader or manager
-                if (
-                    not is_organisation_manager and
-                    existing_data.user.id != self.upload_session.uploader.id
-                ):
+                if existing_data.is_editable(self.upload_session.uploader):
                     self.error_row(
                         message="You are not allowed to update data of "
                                 "property {} and species {} in year {}".format(
