@@ -128,7 +128,7 @@ class CanWritePopulationData(APIView):
                            property: Property, taxon: Taxon):
         """Check if user is able to overwrite annual_population record."""
         user = self.request.user
-        annual_population_id = self.request.data.get('id', 0)
+        annual_population_id = int(self.request.data.get('id', 0))
         if (
             annual_population_id > 0 and
             not annual_population.is_editable(user)
@@ -159,7 +159,7 @@ class CanWritePopulationData(APIView):
         return True, None, None
 
     def find_existing_annual_population(self, taxon, property):
-        annual_population_id = self.request.data.get('id', 0)
+        annual_population_id = int(self.request.data.get('id', 0))
         annual_population = None
         if annual_population_id == 0:
             annual_population = AnnualPopulation.objects.filter(
