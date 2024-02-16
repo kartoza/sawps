@@ -46,6 +46,19 @@ function MainPage() {
   const initialSelectedTab = initialTabParam !== null ? parseInt(initialTabParam) : 0;
   const [selectedTab, setSelectedTab] = useState(initialSelectedTab);
   const isUploadUrl = location.pathname === '/upload';
+  const [prevPath, setPrevPath] = useState('');
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setPrevPath(location.pathname);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   const tabNameToValue: { [key: string]: number } = {
     'map': 0,
@@ -72,7 +85,14 @@ function MainPage() {
       // dispatch to reset map state in data or charts tab
       dispatch(resetMapState())
     }
-    if (location.pathname !== newPath) {
+
+    const currentPathHasSlash = location.pathname.endsWith('/');
+    const adjustedNewPath = currentPathHasSlash && !newPath.endsWith('/') ? `${newPath}/` : newPath;
+
+    const isHomePage = location.pathname === '/';
+    if (isHomePage && location.pathname !== adjustedNewPath) {
+      window.history.pushState(null, '', adjustedNewPath);
+    } else if (!isHomePage && location.pathname !== adjustedNewPath) {
       navigate(newPath); // Update the URL with the tab name
     }
 
@@ -83,8 +103,17 @@ function MainPage() {
     }
 
     // Replace the tab parameter in the URL
-    const newUrl = window.location.href.replace(/\?tab=\d/, newPath);
-    window.history.replaceState(null, '', newUrl);
+    if (!isHomePage) {
+      const newUrl = window.location.href.replace(/\?tab=\d/, adjustedNewPath);
+      window.history.replaceState(null, '', newUrl);
+    }
+
+    if (prevPath === '/map/' && selectedTabName === 'upload') {
+      navigate('/');
+      window.location.href = '/'
+    }
+    setPrevPath(location.pathname);
+
   }, [selectedTab, navigate, location.pathname, isUploadUrl]);
 
 
