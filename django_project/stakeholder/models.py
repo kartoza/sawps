@@ -298,6 +298,12 @@ class OrganisationInvites(models.Model):
     def __str__(self):
         return str(self.email)
 
+    def get_invitee(self):
+        user = self.user
+        if not user:
+            user = User.objects.filter(email=self.email).first()
+        return user
+
 
 class Reminders(models.Model):
     """Reminders model to store all reminders"""

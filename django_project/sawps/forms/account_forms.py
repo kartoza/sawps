@@ -1,5 +1,6 @@
 from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
+import re
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -9,6 +10,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from sawps.views import AddUserToOrganisation
 from django.shortcuts import redirect
+from stakeholder.models import OrganisationInvites
 
 
 class CustomSignupForm(SignupForm):
@@ -87,7 +89,33 @@ class CustomSignupForm(SignupForm):
 
 class CustomLoginForm(LoginForm):
 
+    def get_initial_email(self, kwargs):
+        request = kwargs.get('request', None)
+        if request is None:
+            return None
+        next_url = request.GET.get('next', None)
+        if next_url is None:
+            return None
+        email = None
+        add_user_re = re.compile(
+            '/adduser/([0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15})/?',
+            re.I
+        )
+        results = add_user_re.search(next_url)
+        if results:
+            invite_uuid = results.group(1)
+            org_invite = OrganisationInvites.objects.filter(
+                uuid=invite_uuid
+            ).order_by('id').last()
+            email = org_invite.email if org_invite else None
+        return email
+
     def __init__(self, *args, **kwargs):
+        email = self.get_initial_email(kwargs)
+        if email:
+            kwargs['initial'] = {
+                'login': email
+            }
         super().__init__(*args, **kwargs)
         self.fields['login'].label = 'Email'
         self.label_suffix = ""
