@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-import mock
+from uuid import uuid4
 from frontend.tests.model_factories import UserF
 from stakeholder.models import (
     OrganisationUser
@@ -14,10 +14,12 @@ from frontend.api_views.population import (
     UploadPopulationAPIVIew,
     FetchDraftPopulationUpload,
     DraftPopulationUpload,
-    FetchPopulationData
+    FetchPopulationData,
+    CanWritePopulationData
 )
 from property.factories import (
-    PropertyFactory
+    PropertyFactory,
+    ProvinceFactory
 )
 from species.factories import TaxonF
 
@@ -29,7 +31,8 @@ from population_data.models import (
     SamplingEffortCoverage
 )
 from population_data.factories import (
-    CertaintyF
+    CertaintyF,
+    AnnualPopulationF
 )
 
 
@@ -50,6 +53,9 @@ class TestPopulationAPIViews(TestCase):
         self.organisation = organisationFactory.create()
         self.factory = OrganisationAPIRequestFactory(self.organisation)
         self.user_1 = UserF.create(username='test_1')
+        self.superuser = UserF.create(
+            username='superuser', is_superuser=True,
+            is_staff=True, is_active=True)
         OrganisationUser.objects.create(
             user=self.user_1,
             organisation=self.organisation
@@ -67,6 +73,83 @@ class TestPopulationAPIViews(TestCase):
             description='Certainty1',
             name='1'
         )
+        self.province = ProvinceFactory(name='Western Cape')
+        self.property_1 = PropertyFactory.create(
+            organisation=self.organisation
+        )
+        self.taxon_1 = TaxonF.create()
+        self.sample_data = {
+            'taxon_id': self.taxon_1.id,
+            'year': 2023,
+            'property_id': self.property_1.id,
+            'month': 7,
+            'annual_population': {
+                'present': True,
+                'total': 20,
+                'adult_male': 5,
+                'adult_female': 7,
+                'sub_adult_male': 8,
+                'adult_total': 12,
+                'sub_adult_total': 8,
+                'juvenile_total': 0,
+                'group': 1,
+                'open_close_id': 1,
+                'area_available_to_species': 5.5,
+                'survey_method_id': 1,
+                'area_covered': 1.2,
+                'note': 'This is notes',
+                'sampling_effort_coverage_id': self.coverage.id,
+                'population_status_id': self.population_status.id,
+                'population_estimate_category_id': self.estimate.id
+            },
+            'intake_populations': [{
+                'activity_type_id': 1,
+                'total': 12,
+                'adult_male': 5,
+                'adult_female': 7,
+                'founder_population': True,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is intake notes'
+            },
+            {
+                'activity_type_id': 100,
+                'total': 12,
+                'adult_male': 5,
+                'adult_female': 7,
+                'founder_population': True,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is intake notes'
+            }],
+            'offtake_populations': [{
+                'activity_type_id': 2,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'translocation_destination': 'Dest A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            },
+            {
+                'activity_type_id': 100,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'translocation_destination': 'Dest A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            },
+            {
+                'activity_type_id': 3,
+                'total': 6,
+                'adult_male': 4,
+                'adult_female': 2,
+                'reintroduction_source': 'Source A',
+                'permit': 900,
+                'note': 'This is invalid notes'
+            }]
+        }
 
     def test_get_metadata_list(self):
         request = self.factory.get(
@@ -89,7 +172,124 @@ class TestPopulationAPIViews(TestCase):
             ]
         )
 
+    def test_can_add_new_population_data(self):
+        # superuser should be allowed
+        kwargs = {
+            'property_id': self.property_1.id
+        }
+        request = self.factory.post(
+            reverse('can-upload-population-data', kwargs=kwargs),
+            data=self.sample_data, format='json'
+        )
+        request.user = self.superuser
+        view = CanWritePopulationData.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['detail'], 'OK')
+        # user_2 should not be allowed
+        user_2 = UserF.create(username='user_2')
+        request = self.factory.post(
+            reverse('can-upload-population-data', kwargs=kwargs),
+            data=self.sample_data, format='json'
+        )
+        request.user = user_2
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'],
+                         CanWritePopulationData.ADD_DATA_NO_PERMISSION_MESSAGE)
+        # user_1 should be allowed
+        request = self.factory.post(
+            reverse('can-upload-population-data', kwargs=kwargs),
+            data=self.sample_data, format='json'
+        )
+        request.user = self.user_1
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['detail'], 'OK')
+
+    def test_can_overwrite_population_data(self):
+        user_2 = UserF.create(username='user_2')
+        population_1 = AnnualPopulationF(
+            total=120,
+            adult_male=19,
+            adult_female=100,
+            adult_total=119,
+            year=self.sample_data['year'],
+            user=self.user_1,
+            property=self.property_1,
+            taxon=self.taxon_1
+        )
+        kwargs = {
+            'property_id': self.property_1.id
+        }
+        # case - user is not the owner/manager
+        data = self.sample_data
+        data['id'] = population_1.id
+        request = self.factory.post(
+            reverse('can-upload-population-data', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = user_2
+        view = CanWritePopulationData.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'], CanWritePopulationData.EDIT_DATA_NO_PERMISSION_MESSAGE)
+        # case - add new data to existing year - user is not allowed to overwrite other data
+        data['id'] = 0
+        request = self.factory.post(
+            reverse('can-upload-population-data', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = user_2
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'],
+                         CanWritePopulationData.EDIT_DATA_NO_PERMISSION_OVERWRITE_MESSAGE.format(data['year']))
+        # case - add new data to existing year - user is allowed to overwrite other data
+        data['id'] = 0
+        request = self.factory.post(
+            reverse('can-upload-population-data', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = self.user_1
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['detail'],
+                         CanWritePopulationData.EDIT_DATA_CONFIRM_OVERWRITE_MESSAGE.format(data['year']))
+        self.assertEqual(response.data['other_id'], population_1.id)
+        # case - change year of existing data - user is allowed to overwrite other data
+        data['id'] = population_1.id
+        data['year'] = 2020
+        request = self.factory.post(
+            reverse('can-upload-population-data', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = self.user_1
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['detail'], 'OK')
+        # case - change year of existing data - user is allowed to overwrite other data
+        # the updated year has already data
+        population_2 = AnnualPopulationF(
+            total=99,
+            year=data['year'],
+            user=self.user_1,
+            property=self.property_1,
+            taxon=self.taxon_1
+        )
+        request = self.factory.post(
+            reverse('can-upload-population-data', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = self.user_1
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['detail'],
+                         CanWritePopulationData.EDIT_DATA_CONFIRM_OVERWRITE_MESSAGE.format(data['year']))
+        self.assertEqual(response.data['other_id'], population_2.id)
+
     def test_upload_population_data(self):
+        user_2 = UserF.create(username='user_2')
         property = PropertyFactory.create(
             organisation=self.organisation
         )
@@ -169,6 +369,16 @@ class TestPopulationAPIViews(TestCase):
         kwargs = {
             'property_id': property.id
         }
+        # test with user non-organisation, should return 403
+        request = self.factory.post(
+            reverse('population-upload', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = user_2
+        view = UploadPopulationAPIVIew.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 403)
+        # test with user that belongs to property organisation
         request = self.factory.post(
             reverse('population-upload', kwargs=kwargs),
             data=data, format='json'
@@ -249,6 +459,16 @@ class TestPopulationAPIViews(TestCase):
         request.user = self.user_1
         view = UploadPopulationAPIVIew.as_view()
         response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'Please confirm to overwrite data at year 2023')
+        data['confirm_overwrite'] = True
+        request = self.factory.post(
+            reverse('population-upload', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = self.user_1
+        view = UploadPopulationAPIVIew.as_view()
+        response = view(request, **kwargs)
         self.assertEqual(response.status_code, 204)
         annual_population.refresh_from_db()
         self.assertEqual(annual_population.total, data['annual_population']['total'])
@@ -268,6 +488,41 @@ class TestPopulationAPIViews(TestCase):
             year=2023,
             activity_type_id=2
         ))
+        # test overwrite other year data - not allowed using user_1
+        OrganisationUser.objects.create(
+            user=user_2,
+            organisation=self.organisation
+        )
+        population_2 = AnnualPopulationF(
+            total=99,
+            year=2010,
+            user=user_2,
+            property=annual_population.property,
+            taxon=annual_population.taxon
+        )
+        data['id'] = annual_population.id
+        data['year'] = population_2.year
+        request = self.factory.post(
+            reverse('population-upload', kwargs=kwargs),
+            data=data, format='json'
+        )
+        request.user = self.user_1
+        view = UploadPopulationAPIVIew.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 403)
+        # test overwrite other year data - allowed using superuser
+        request = self.factory.post(
+            reverse('population-upload', kwargs=kwargs) + f'?uuid={str(uuid4())}',
+            data=data, format='json'
+        )
+        request.user = self.superuser
+        view = UploadPopulationAPIVIew.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 204)
+        annual_population.refresh_from_db()
+        self.assertEqual(annual_population.year, population_2.year)
+        self.assertEqual(annual_population.total, data['annual_population']['total'])
+        self.assertFalse(AnnualPopulation.objects.filter(id=population_2.id).exists())
 
     def test_upload_population_data_future_year(self):
         property = PropertyFactory.create(
