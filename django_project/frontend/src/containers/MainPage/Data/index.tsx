@@ -159,7 +159,6 @@ const DataList = () => {
         propertyId, organisationId, activityId, spatialFilterValues, setData, setLoading]);
 
     useEffect(() => {
-        setColumns([])
         fetchDataList()
         if (selectedSpeciesList) {
             setShowReports(true);
@@ -183,12 +182,15 @@ const DataList = () => {
     }, [startYear, endYear])
 
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
+        const scrollPosition = window.scrollY;
+
         const {
             target: { value },
         } = event;
         setSelectedColumns(
             typeof value === 'string' ? value.split(',') : value,
         );
+        window.scrollTo(0, scrollPosition);
     };
 
     const handleExportCsv = (): void => {
@@ -244,17 +246,17 @@ const DataList = () => {
         setAnchorEl(null);
     };
 
-    const getUniqueColumn = () => {
+    const getUniqueColumn = useCallback((_columns: any) => {
         const uniqueColumns = [];
         const seenFields = new Set();
-        for (const column of columns) {
+        for (const column of _columns) {
             if (!seenFields.has(column.field)) {
                 uniqueColumns.push(column);
                 seenFields.add(column.field);
             }
         }
         return uniqueColumns
-    }
+    }, [])
 
     const generateTableData = (isPdfExport?: boolean) => {
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
@@ -385,14 +387,12 @@ const DataList = () => {
                 )}
             </Box>);
         setActivityTable(activityDataGrid)
-
-        const uniqueColumns = getUniqueColumn()
-        setColumns(uniqueColumns)
         setTableData(generateTableData())
+        setColumns(getUniqueColumn(columns));
     }, [data, selectedColumns, isSuccess])
 
     useEffect(() => {
-        const uniqueColumns = getUniqueColumn()
+        const uniqueColumns = getUniqueColumn(columns)
         setSelectedColumns(
           uniqueColumns
             .filter(col => !['Organisation Name', 'Organisation Short Code', 'Property Short Code'].includes(col.headerName))
