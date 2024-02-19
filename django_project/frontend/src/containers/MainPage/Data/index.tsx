@@ -118,13 +118,13 @@ const DataList = () => {
         }
     }, [activityList]);
 
-    const fetchDataList = () => {
+    const fetchDataList = useCallback(()=> {
         // Cancel the previous request
         if (cancelTokenSourceRef.current) {
             cancelTokenSourceRef.current.cancel("Cancelling previous request");
+            cancelTokenSourceRef.current = null;
         }
         cancelTokenSourceRef.current = axios.CancelToken.source();
-
         setLoading(true)
         let _data = {
             'species': selectedSpeciesList,
@@ -141,25 +141,22 @@ const DataList = () => {
                 cancelToken: cancelTokenSourceRef.current.token
             }
         ).then((response) => {
-            setLoading(false)
             if (response.data) {
                 setData(response.data)
+                setLoading(false)
             }
         }).catch((error) => {
-            setLoading(false)
             if (!axios.isCancel(error)) {
                 console.log(error);
+                setLoading(false)
             }
-        })
-    }
-
-    useEffect(() => {
-      const getData = setTimeout(() => {
-        fetchDataList()
-      }, 500)
-
-      return () => clearTimeout(getData)
-    }, [startYear, endYear])
+        });
+    }, [
+      selectedSpeciesList,
+        selectedInfo,
+        startYear,
+        endYear,
+        propertyId, organisationId, activityId, spatialFilterValues, setData, setLoading]);
 
     useEffect(() => {
         setColumns([])
@@ -172,9 +169,18 @@ const DataList = () => {
         return () => {
             if (cancelTokenSourceRef.current) {
                 cancelTokenSourceRef.current.cancel("Component unmounted");
+                cancelTokenSourceRef.current = null;
             }
         };
-    }, [selectedSpeciesList, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
+    }, [selectedSpeciesList, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues, fetchDataList])
+
+    useEffect(() => {
+      const getData = setTimeout(() => {
+          fetchDataList()
+      }, 500)
+
+      return () => clearTimeout(getData)
+    }, [startYear, endYear])
 
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
         const {
@@ -202,7 +208,6 @@ const DataList = () => {
                 window.location.href=`${response.data['file']}`
             }
         }).catch((error) => {
-            setLoading(false)
             console.log(error)
         })
         handleClose()
@@ -225,7 +230,6 @@ const DataList = () => {
                 window.location.href=`${response.data['file']}`
             }
         }).catch((error) => {
-            setLoading(false)
             console.log(error)
         })
         handleClose()
@@ -323,7 +327,7 @@ const DataList = () => {
 
     useEffect(() => {
         if (!isSuccess) return;
-        
+
         const activityDataGrid = isDataConsumer(userInfoData) && activityDataSet.length > 0 ?
           null : activityDataSet.map((each: any) =>
             <Box key={each}>
@@ -400,7 +404,7 @@ const DataList = () => {
     const handleDownloadPdf = async () => {
         setModalOpen(true)
         setTableData(generateTableData(true))
-        // wait 800ms until table is re-rendered 
+        // wait 800ms until table is re-rendered
         setTimeout(() => {
             const data = document.getElementById('dataContainer');
             html2canvas(data, {scale: 2}).then((canvas:any) => {
@@ -429,7 +433,7 @@ const DataList = () => {
                 alert('There is an unexpected error while generating the pdf! Please try again or contact Administrator!')
             });
         }, 800)
-        
+
     }
 
 
@@ -492,7 +496,7 @@ const DataList = () => {
                             </Box>
                         </Box>}
                     </Box>
-                    {loading ? <Loading/> : (
+                    {loading ? <></> : (
                     <Box className="downlodBtn">
                         <Button onClick={handleDownloadPdf} variant="contained" color="primary">
                             Download data Report
