@@ -46,6 +46,11 @@ from stakeholder.factories import (
 from stakeholder.models import OrganisationInvites, MANAGER
 
 
+def get_path_from_media_url(media_url):
+    data_path = media_url.replace(settings.MEDIA_URL, '')
+    return os.path.join(settings.MEDIA_ROOT, data_path)
+
+
 class AnnualPopulationTestMixins:
 
     def setUp(self):
@@ -865,18 +870,19 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is zip
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.zip")
+        self.assertIn("data_report.zip", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
+        path = os.path.dirname(data_path)
 
-        # check if all csv files eexist in the folder
-        path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.zip")))
+        # check if all csv files exist in the folder
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Species_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Activity_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Property_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Sampling_report.csv")))
 
         # check fields in Activity report
-        activity_path = "/home/web/media/download_data/data_report_Activity_report.csv"
+        activity_path = os.path.join(path, "data_report_Activity_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -905,11 +911,9 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is xlsx
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.xlsx")
-
-        # check if xlsx files exists in the folder
-        path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
+        self.assertIn("data_report.xlsx", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
 
     def test_download_xlsx_data_all_reports_without_activity_filter(self) -> None:
         """Test download data table filter by activity name"""
@@ -925,11 +929,9 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is xlsx
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.xlsx")
-
-        # check if xlsx files exists in the folder
-        path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
+        self.assertIn("data_report.xlsx", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
 
 
 class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
@@ -961,17 +963,18 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is zip
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.zip")
+        self.assertIn("data_report.zip", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
+        path = os.path.dirname(data_path)
 
-        # check if all csv files eexist in the folder
-        path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.zip")))
+        # check if all csv files exist in the folder
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Species_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Activity_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Property_report.csv")))
 
         # check fields in Activity report
-        activity_path = "/home/web/media/download_data/data_report_Activity_report.csv"
+        activity_path = os.path.join(path, "data_report_Activity_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -980,7 +983,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             self.assertTrue("common_name" in headers)
             self.assertTrue("year" in headers)
 
-        activity_path = "/home/web/media/download_data/data_report_Province_report.csv"
+        activity_path = os.path.join(path, "data_report_Province_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -989,7 +992,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             self.assertTrue("common_name" in headers)
             self.assertTrue("year" in headers)
 
-        activity_path = "/home/web/media/download_data/data_report_Species_report.csv"
+        activity_path = os.path.join(path, "data_report_Species_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -997,7 +1000,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             self.assertTrue("common_name" in headers)
             self.assertTrue("year" in headers)
 
-        activity_path = "/home/web/media/download_data/data_report_Property_report.csv"
+        activity_path = os.path.join(path, "data_report_Property_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -1021,11 +1024,9 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is xlsx
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.xlsx")
-
-        # check if xlsx files exists in the folder
-        path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
+        self.assertIn("data_report.xlsx", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
 
     def test_download_one_report(self) -> None:
         """Test download data table with only one report"""
@@ -1040,10 +1041,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         }
         response = self.client.post(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data['file'],
-            '/media/download_data/data_report_Species_report.csv'
-        )
+        self.assertIn("data_report_Species_report.csv", response.data['file'])
 
     def test_path_not_exist(self):
         """Test download data table when file path does not exist"""
@@ -1062,7 +1060,4 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         }
         response = self.client.post(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data['file'],
-            '/media/download_data/data_report_Species_report.csv'
-        )
+        self.assertIn("data_report_Species_report.csv", response.data['file'])
