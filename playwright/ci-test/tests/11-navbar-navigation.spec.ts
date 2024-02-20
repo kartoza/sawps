@@ -59,7 +59,7 @@ test.describe('navbar-navigation', () => {
     await expect(page.getByText('Help', { exact: true })).toBeVisible();
     await page.goBack();
     
-    await page.getByRole('link', { name: 'CONTACT' }).click();
+    await page.locator('#navbarNav').getByRole('link', { name: 'CONTACT' }).click();
     await page.waitForURL('**/contact/');
     const contactURL = page.url();
     expect(contactURL).not.toBe(initialURL);
@@ -86,7 +86,7 @@ test.describe('navbar-navigation', () => {
     await expect(page.getByText('SOUTH AFRICAN WILDLIFE POPULATION SYSTEM (SAWPS)', { exact: true })).toBeVisible();
     await page.goBack();
 
-    await page.getByRole('link', { name: 'EXPLORE' }).click();
+    await page.locator('#navbarNav').getByRole('link', { name: 'EXPLORE' }).click();
     await page.waitForURL('**/map/');
     const exploreURL = page.url();
     expect(exploreURL).not.toBe(initialURL);
@@ -106,7 +106,7 @@ test.describe('navbar-navigation', () => {
     await expect(page.getByText('Help', { exact: true })).toBeVisible();
     await page.goBack();
 
-    await page.getByRole('link', { name: 'CONTACT' }).click();
+    await page.locator('#navbarNav').getByRole('link', { name: 'CONTACT' }).click();
     await page.waitForURL('**/contact/');
     const contactURL = page.url();
     expect(contactURL).not.toBe(initialURL);
