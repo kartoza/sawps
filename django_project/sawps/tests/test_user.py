@@ -13,7 +13,6 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.db.models.signals import post_save
 
 from frontend.static_mapping import ORGANISATION_MEMBER, ORGANISATION_MANAGER
-from regulatory_permit.models import DataUsePermission
 from sawps.forms.account_forms import CustomSignupForm, CustomLoginForm, CustomChangePasswordForm
 from sawps.tests.models.account_factory import (
     UserF,
@@ -29,7 +28,7 @@ from stakeholder.models import (
     OrganisationInvites,
     OrganisationUser,
     OrganisationRepresentative,
-    MANAGER, UserProfile,
+    MANAGER,
     create_user_profile,
     save_user_profile,
 )
@@ -262,6 +261,8 @@ class AddUserToOrganisationTestCase(TestCase):
             first_name='test_user',
             last_name='last_name'
         )
+        TOTPDevice.objects.create(
+            user=self.user, name='Test Device', confirmed=True)
         self.organisation = Organisation.objects.create(
             name=self.organisation_name
         )
@@ -280,6 +281,20 @@ class AddUserToOrganisationTestCase(TestCase):
             email=self.user_email,
             organisation=self.organisation2,
             assigned_as=MANAGER
+        )
+        self.user_2 = User.objects.create_user(
+            username='testuser2',
+            email='testuser2@test.com',
+            password='testpass',
+            first_name='test_user2',
+            last_name='last_name2'
+        )
+        TOTPDevice.objects.create(
+            user=self.user_2, name='Test Device', confirmed=True)
+        self.invite_3 = OrganisationInvites.objects.create(
+            email=self.user_2.email,
+            organisation=self.organisation,
+            user=self.user_2
         )
 
     def test_add_user(self):
@@ -356,11 +371,30 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertFalse(fail)
 
     def test_add_user_view_member(self):
+        # without logged in
         url = reverse(
             'adduser',
             args=[self.invite.uuid]
         )
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        org_user = OrganisationUser.objects.filter(
+            user=self.user,
+            organisation=self.organisation).first()
+        org_invite = OrganisationInvites.objects.filter(
+            email=self.user_email,
+            organisation=self.organisation).first()
+        self.assertIsNotNone(org_user)
+        self.assertIsNotNone(org_invite)
+        self.assertFalse(org_invite.joined)
+        # with logged in user
+        url = reverse(
+            'adduser',
+            args=[self.invite.uuid]
+        )
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
         self.assertEqual(response.status_code, 302)
         org_user = OrganisationUser.objects.filter(
             user=self.user,
@@ -376,13 +410,54 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertTrue(
             ORGANISATION_MEMBER in self.user.groups.values_list('name', flat=True)
         )
+        # test invite with another user
+        url = reverse(
+            'adduser',
+            args=[self.invite_3.uuid]
+        )
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        org_invite = OrganisationInvites.objects.filter(
+            email=self.user_2.email,
+            organisation=self.organisation).first()
+        self.assertIsNotNone(org_invite)
+        self.assertFalse(org_invite.joined)
+        # test with invalid invitation uuid
+        url = reverse(
+            'adduser',
+            args=[uuid.uuid4().hex]
+        )
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # test with user that does not signed up yet
+        invite_3 = OrganisationInvites.objects.create(
+            email='new_user@test.com',
+            organisation=self.organisation2,
+            assigned_as=ORGANISATION_MEMBER
+        )
+        url = reverse(
+            'adduser',
+            args=[invite_3.uuid]
+        )
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        invite_3.refresh_from_db()
+        self.assertFalse(invite_3.joined)
 
     def test_add_user_view_manager(self):
         url = reverse(
             'adduser',
             args=[self.invite_2.uuid]
         )
-        response = self.client.get(url)
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
         self.assertEqual(response.status_code, 302)
         org_user = OrganisationRepresentative.objects.filter(
             user=self.user,

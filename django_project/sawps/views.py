@@ -90,29 +90,20 @@ class AddUserToOrganisation(UserPassesTestMixin, View):
 
     @staticmethod
     def notify_join_organisation_message(request, org_invite):
-        if org_invite:
-            messages.success(
-                request,
-                (
-                    'You have successfully joined organisation '
-                    f'{org_invite.organisation.name} '
-                    'using the invitation link.'
-                ),
-                extra_tags='notification'
-            )
-        else:
-            messages.warning(
-                request,
-                (
-                    'The invitation link was invalid,' +
-                    'possibly because it has already been removed.'
-                ),
-                extra_tags='notification'
-            )
+        messages.success(
+            request,
+            (
+                'You have successfully joined organisation '
+                f'{org_invite.organisation.name} '
+                'using the invitation link.'
+            ),
+            extra_tags='notification'
+        )
 
     def get(self, request, invitation_uuid, *args, **kwargs):
         org_invite = self.adduser(invitation_uuid, *args, **kwargs)
-        self.notify_join_organisation_message(request, org_invite)
+        if org_invite:
+            self.notify_join_organisation_message(request, org_invite)
         return redirect(
             reverse('organisations', args=[self.request.user.username]))
 
