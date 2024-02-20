@@ -99,7 +99,7 @@ class CustomLoginForm(LoginForm):
             return None
         email = None
         add_user_re = re.compile(
-            '/adduser/([0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15})/?',
+            '/adduser/([\da-f-]+)/?',
             re.I
         )
         results = add_user_re.search(next_url)

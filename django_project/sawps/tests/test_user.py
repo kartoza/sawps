@@ -139,10 +139,53 @@ class TestCustomSignupForm(TestCase):
 class TestCustomLoginForm(TestCase):
     "Test login form."
 
+    def setUp(self) -> None:
+        self.organisation = Organisation.objects.create(
+            name='organisation2'
+        )
+
     def test_form(self):
         form = CustomLoginForm()
         self.assertEqual(form.fields['login'].label, 'Email')
         self.assertEqual(form.label_suffix, '')
+
+    def test_form_with_invitation(self):
+        invite = OrganisationInvites.objects.create(
+            email='test@test.com',
+            organisation=self.organisation,
+            assigned_as=ORGANISATION_MEMBER
+        )
+        # test with request None
+        kwargs = {
+            'request': None
+        }
+        form = CustomLoginForm(**kwargs)
+        self.assertNotIn('login', form.initial)
+        # test with next URL none
+        url = reverse('account_login')
+        request = RequestFactory().get(url)
+        # test with request None
+        kwargs = {
+            'request': request
+        }
+        form = CustomLoginForm(**kwargs)
+        self.assertNotIn('login', form.initial)
+        # test with non add user url
+        url = reverse('account_login') + f'?next=/organisations/{str(invite.uuid)}/'
+        request = RequestFactory().get(url)
+        kwargs = {
+            'request': request
+        }
+        form = CustomLoginForm(**kwargs)
+        self.assertNotIn('login', form.initial)
+        # test with adduser url
+        url = reverse('account_login') + f'?next=/adduser/{str(invite.uuid)}/'
+        request = RequestFactory().get(url)
+        kwargs = {
+            'request': request
+        }
+        form = CustomLoginForm(**kwargs)
+        self.assertIn('login', form.initial)
 
 
 class TestPasswordChangeForm(TestCase):
