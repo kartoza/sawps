@@ -45,6 +45,7 @@ const DataList = () => {
     const [columns, setColumns] = useState([])
     const [tableData, setTableData] = useState<any>()
     const [modalOpen, setModalOpen] = useState(false)
+    const [modalMessage, setModalMessage] = useState('')
     const [activityTableGrid, setActivityTable] = useState<any>()
     const activityDataSet = data ? data.filter(item => item?.Activity_report).flatMap((each) => Object.keys(each)) : [];
     const dataTableList = data ? data.map((data, index) => ({ ...data, id: index })) : [];
@@ -194,6 +195,8 @@ const DataList = () => {
     };
 
     const handleExportCsv = (): void => {
+        setModalOpen(true)
+        setModalMessage('Generating report in csv!')
         let _data = {
             'file': 'csv',
             'species': selectedSpeciesList,
@@ -206,16 +209,20 @@ const DataList = () => {
             'spatial_filter_values': spatialFilterValues,
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
+            setModalOpen(false)
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
         }).catch((error) => {
+            setModalOpen(false)
             console.log(error)
         })
         handleClose()
     };
 
     const handleExportExcel = (): void => {
+        setModalOpen(true)
+        setModalMessage('Generating report in excel!')
         let _data = {
             'file': 'xlsx',
             'species': selectedSpeciesList,
@@ -228,10 +235,12 @@ const DataList = () => {
             'spatial_filter_values': spatialFilterValues,
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
+            setModalOpen(false)
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
         }).catch((error) => {
+            setModalOpen(false)
             console.log(error)
         })
         handleClose()
@@ -403,6 +412,7 @@ const DataList = () => {
         // downloads all charts rendered on page
     const handleDownloadPdf = async () => {
         setModalOpen(true)
+        setModalMessage('Generating PDF!')
         setTableData(generateTableData(true))
         // wait 800ms until table is re-rendered
         setTimeout(() => {
@@ -447,9 +457,9 @@ const DataList = () => {
                         id={'pdf-modal'}
                         open={modalOpen}
                         >
-                            <Box>
+                            <Box sx={{p: 2}}>
                                 <Typography variant="h6" component="h2">
-                                    Generating PDF!
+                                    {modalMessage}
                                 </Typography>
                                 <Typography id="modal-modal-description" sx={{mt: 2}}>
                                     This might take a while.
