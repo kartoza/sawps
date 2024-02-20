@@ -10,4 +10,9 @@ class PropertryConfig(AppConfig):
         create_scheduler_task = (
             import_module('core.celery').create_scheduler_task
         )
-        create_scheduler_task('property_check_overlaps_each_other', 'Property check overlaps each other', 1, 'DAYS')
+        create_scheduler_task(
+            'property_check_overlaps_each_other',
+            'Property check overlaps each other',
+            1,
+            'DAYS'
+        )

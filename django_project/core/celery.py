@@ -46,7 +46,7 @@ def create_scheduler_task(task_name, task_name_desc,
                           num_interval, interval_schedule):
     """
     Create periodic scheduler tasks.
-    
+
     :param task_name: task_name
     :param task_name_desc: Name/Description of the task
     :param num_interval: Interval
