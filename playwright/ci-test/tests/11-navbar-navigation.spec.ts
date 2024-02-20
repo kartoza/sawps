@@ -27,7 +27,7 @@ test.describe('navbar-navigation', () => {
   test('test from explore', async ({ page }) => {
     const initialURL = page.url();
     await page.locator('#navbarNav').getByRole('link', { name: 'EXPLORE' }).click();
-    await page.waitForURL('**/map');
+    await page.waitForURL('**/map/');
     const finalURL = page.url();
     expect(finalURL).not.toBe(initialURL);
     await expect(page.getByLabel('Map')).toBeVisible();
@@ -186,7 +186,7 @@ test.describe('navbar-navigation', () => {
     await page.goBack();
 
     await page.locator('#navbarNav').getByRole('link', { name: 'EXPLORE' }).click();
-    await page.waitForURL('**/map');
+    await page.waitForURL('**/map/');
     const exploreURL = page.url();
     expect(exploreURL).not.toBe(initialURL);
     await expect(page.getByRole('tab', { name: 'MAP' })).toBeVisible();
