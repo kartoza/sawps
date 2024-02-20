@@ -357,7 +357,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 value={moment({'year': data.year})}
                                                 onChange={(newValue: Moment) => updateYearDetail(newValue.year())}
                                                 maxDate={moment({'year': new Date().getFullYear()})}
-                                                disabled={isEdit}
                                             />
                                             <FormHelperText>{' '}</FormHelperText>
                                         </LocalizationProvider>

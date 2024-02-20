@@ -268,7 +268,7 @@ class OrganisationUsersView(
                 name=str(current_organisation))
             user = models.User.objects.get(pk=object_id)
             OrganisationInvites.objects.filter(
-                email=user.email,
+                Q(email=user.email) | Q(user=object_id),
                 organisation=current_organisation
             ).delete()
             OrganisationUser.objects.filter(
@@ -336,16 +336,15 @@ class OrganisationUsersView(
                     "organisation_user": user.user.get_full_name(),
                     "role": None,
                     "assigned_as": assigned_as,
-                    "joined": False
+                    "joined": True
                 }
 
             organisation_users.append(object_to_save)
 
-
         users_page = request.GET.get('users_page', 1)
 
         # Get the rows per page value from the query parameters
-        rows_per_page = request.GET.get('users_per_page', 7)
+        rows_per_page = request.GET.get('users_per_page', 5)
 
         paginator = Paginator(organisation_users, rows_per_page)
 
