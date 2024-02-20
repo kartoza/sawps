@@ -1,6 +1,7 @@
 import logging
 import os
 import urllib.parse
+import uuid
 from typing import Dict
 from typing import List
 from zipfile import ZipFile
@@ -586,9 +587,14 @@ def write_report_to_rows(queryset, request, report_functions=None):
     Write report rows.
     """
     reports_list = get_param_from_request(request, "reports", None)
-    path = os.path.join(settings.MEDIA_ROOT, "download_data")
+    request_dir = str(uuid.uuid4())
+    path = os.path.join(
+        settings.MEDIA_ROOT,
+        "download_data",
+        request_dir
+    )
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path)
     if reports_list:
         reports_list = reports_list.split(",")
 
@@ -634,7 +640,7 @@ def write_report_to_rows(queryset, request, report_functions=None):
                             index=False
                         )
                 return settings.MEDIA_URL + 'download_data/' \
-                    + os.path.basename(path_file)
+                    + request_dir + '/' + os.path.basename(path_file)
 
         csv_reports = []
         for report_name in reports_list:
@@ -660,7 +666,7 @@ def write_report_to_rows(queryset, request, report_functions=None):
 
         if len(csv_reports) == 1:
             return settings.MEDIA_URL + 'download_data/' \
-                   + os.path.basename(csv_reports[0])
+                + request_dir + '/' + os.path.basename(csv_reports[0])
         path_zip = os.path.join(path, 'data_report.zip')
         if os.path.exists(path_zip):
             os.remove(path_zip)
@@ -668,7 +674,7 @@ def write_report_to_rows(queryset, request, report_functions=None):
             for file in csv_reports:
                 zip.write(file, os.path.basename(file))
         return settings.MEDIA_URL + 'download_data/' \
-            + os.path.basename(path_zip)
+            + request_dir + '/' + os.path.basename(path_zip)
 
 
 def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
