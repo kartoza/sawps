@@ -27,7 +27,7 @@ test.describe('navbar-navigation', () => {
   test('test from explore', async ({ page }) => {
     const initialURL = page.url();
     await page.locator('#navbarNav').getByRole('link', { name: 'EXPLORE' }).click();
-    await page.waitForURL('**/map');
+    await page.waitForURL('**/map/');
     const finalURL = page.url();
     expect(finalURL).not.toBe(initialURL);
     await expect(page.getByLabel('Map')).toBeVisible();
@@ -59,7 +59,7 @@ test.describe('navbar-navigation', () => {
     await expect(page.getByText('Help', { exact: true })).toBeVisible();
     await page.goBack();
     
-    await page.getByRole('link', { name: 'CONTACT' }).click();
+    await page.locator('#navbarNav').getByRole('link', { name: 'CONTACT' }).click();
     await page.waitForURL('**/contact/');
     const contactURL = page.url();
     expect(contactURL).not.toBe(initialURL);
@@ -86,7 +86,7 @@ test.describe('navbar-navigation', () => {
     await expect(page.getByText('SOUTH AFRICAN WILDLIFE POPULATION SYSTEM (SAWPS)', { exact: true })).toBeVisible();
     await page.goBack();
 
-    await page.getByRole('link', { name: 'EXPLORE' }).click();
+    await page.locator('#navbarNav').getByRole('link', { name: 'EXPLORE' }).click();
     await page.waitForURL('**/map/');
     const exploreURL = page.url();
     expect(exploreURL).not.toBe(initialURL);
@@ -106,7 +106,7 @@ test.describe('navbar-navigation', () => {
     await expect(page.getByText('Help', { exact: true })).toBeVisible();
     await page.goBack();
 
-    await page.getByRole('link', { name: 'CONTACT' }).click();
+    await page.locator('#navbarNav').getByRole('link', { name: 'CONTACT' }).click();
     await page.waitForURL('**/contact/');
     const contactURL = page.url();
     expect(contactURL).not.toBe(initialURL);
@@ -158,7 +158,7 @@ test.describe('navbar-navigation', () => {
     //await page.getByRole('link', { name: 'HELP' }).click();
     await page.goBack();
 
-    await page.getByRole('link', { name: 'CONTACT', exact: true }).click();
+    await page.locator('#navbarNav').getByRole('link', { name: 'CONTACT', exact: true }).click();
     await page.waitForURL('**/contact/');
     const contactURL = page.url();
     expect(contactURL).not.toBe(initialURL);
@@ -186,7 +186,7 @@ test.describe('navbar-navigation', () => {
     await page.goBack();
 
     await page.locator('#navbarNav').getByRole('link', { name: 'EXPLORE' }).click();
-    await page.waitForURL('**/map');
+    await page.waitForURL('**/map/');
     const exploreURL = page.url();
     expect(exploreURL).not.toBe(initialURL);
     await expect(page.getByRole('tab', { name: 'MAP' })).toBeVisible();

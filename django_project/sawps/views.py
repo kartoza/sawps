@@ -9,6 +9,7 @@ from django.utils.http import (
 )
 from django.utils.encoding import force_str
 from django.views.generic import View
+from django.contrib.auth.mixins import UserPassesTestMixin
 from core.settings.contrib import SUPPORT_EMAIL
 from stakeholder.models import (
     OrganisationInvites,
@@ -47,7 +48,16 @@ class ActivateAccount(View):
                 user,
                 backend='django.contrib.auth.backends.ModelBackend',
             )
-            messages.success(request, ('Your account have been confirmed.'))
+            messages.success(request, ('Your account have been confirmed.'),
+                             extra_tags='notification')
+            # find invites that user has joined if any
+            org_invite = OrganisationInvites.objects.filter(
+                user=user,
+                joined=True
+            ).order_by('id').last()
+            if org_invite:
+                AddUserToOrganisation.notify_join_organisation_message(
+                    request, org_invite)
             return redirect('/accounts/two-factor/setup')
         else:
             messages.warning(
@@ -56,14 +66,46 @@ class ActivateAccount(View):
                     'The confirmation link was invalid,' +
                     'possibly because it has already been used.'
                 ),
+                extra_tags='notification'
             )
             return redirect('home')
 
 
-class AddUserToOrganisation(View):
+class AddUserToOrganisation(UserPassesTestMixin, View):
+
+    def test_func(self):
+        if not self.request.user.is_authenticated:
+            return False
+        # validate if user in invitation is the same with logged in user
+        invitation_uuid = self.kwargs.get('invitation_uuid')
+        org_invite = OrganisationInvites.objects.filter(
+            uuid=invitation_uuid
+        ).order_by('id').last()
+        if not org_invite:
+            return False
+        user = org_invite.get_invitee()
+        if user is None:
+            return False
+        return user.id == self.request.user.id
+
+    @staticmethod
+    def notify_join_organisation_message(request, org_invite):
+        messages.success(
+            request,
+            (
+                'You have successfully joined organisation '
+                f'{org_invite.organisation.name} '
+                'using the invitation link.'
+            ),
+            extra_tags='notification'
+        )
+
     def get(self, request, invitation_uuid, *args, **kwargs):
-        self.adduser(invitation_uuid, *args, **kwargs)
-        return redirect('home')
+        org_invite = self.adduser(invitation_uuid, *args, **kwargs)
+        if org_invite:
+            self.notify_join_organisation_message(request, org_invite)
+        return redirect(
+            reverse('organisations', args=[self.request.user.username]))
 
     def adduser(self, invitation_uuid, *args, **kwargs):
         '''
@@ -72,56 +114,53 @@ class AddUserToOrganisation(View):
         and update the linked models
         OrganisationInvites
         '''
-
         org_invite = OrganisationInvites.objects.filter(
             uuid=invitation_uuid
         ).order_by('id').last()
-        if org_invite:
-            # Update the joined field to True
-            org_invite.joined = True
-            org = org_invite.organisation
-            user = org_invite.user
-            if not user:
-                user = User.objects.filter(
-                    email=org_invite.email).first()
-            org_invite.user = user
-            org_invite.save()
+        if org_invite is None:
+            return None
+        # Update the joined field to True
+        org_invite.joined = True
+        org = org_invite.organisation
+        user = org_invite.get_invitee()
+        org_invite.user = user
+        org_invite.save()
 
-            try:
-                user_profile = user.user_profile
-            except AttributeError:
-                user_profile = UserProfile.objects.create(
-                    user_id=user.id
-                )
-            user_profile.current_organisation = org
-            user_profile.save()
+        try:
+            user_profile = user.user_profile
+        except AttributeError:
+            user_profile = UserProfile.objects.create(
+                user_id=user.id
+            )
+        user_profile.current_organisation = org
+        user_profile.save()
 
+        # check if not already added to prevent duplicates
+        org_user = OrganisationUser.objects.filter(
+            user=org_invite.user,
+            organisation=org
+        ).first()
+        if not org_user:
+            # add user to organisation users
+            OrganisationUser.objects.create(
+                user=org_invite.user,
+                organisation=org
+            )
+
+        if org_invite.assigned_as == MANAGER:
             # check if not already added to prevent duplicates
-            org_user = OrganisationUser.objects.filter(
+            org_rep = OrganisationRepresentative.objects.filter(
                 user=org_invite.user,
                 organisation=org
             ).first()
-            if not org_user:
+            if not org_rep:
                 # add user to organisation users
-                OrganisationUser.objects.create(
+                org_rep = OrganisationRepresentative.objects.create(
                     user=org_invite.user,
                     organisation=org
                 )
-
-            if org_invite.assigned_as == MANAGER:
-                # check if not already added to prevent duplicates
-                org_rep = OrganisationRepresentative.objects.filter(
-                    user=org_invite.user,
-                    organisation=org
-                ).first()
-                if not org_rep:
-                    # add user to organisation users
-                    org_rep = OrganisationRepresentative.objects.create(
-                        user=org_invite.user,
-                        organisation=org
-                    )
-                    org_rep.save()
-
+                org_rep.save()
+        return org_invite
 
     def is_user_invited(self, invitation_uuid):
         """
