@@ -158,7 +158,7 @@ test.describe('navbar-navigation', () => {
     //await page.getByRole('link', { name: 'HELP' }).click();
     await page.goBack();
 
-    await page.getByRole('link', { name: 'CONTACT', exact: true }).click();
+    await page.locator('#navbarNav').getByRole('link', { name: 'CONTACT', exact: true }).click();
     await page.waitForURL('**/contact/');
     const contactURL = page.url();
     expect(contactURL).not.toBe(initialURL);
