@@ -90,6 +90,41 @@ class OrganisationUsersViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'failed'})
+        # test delete manager
+        user_2 = User.objects.create_user(
+            first_name='user_2',
+            username='user_2',
+            password='testpassword',
+            email='user_2@gmail.com'
+        )
+        OrganisationUser.objects.create(
+            organisation=self.organisation, user=user_2)
+        OrganisationRepresentative.objects.create(
+            organisation=self.organisation, user=user_2)
+        OrganisationInvites.objects.create(
+            email=user_2.email,
+            organisation=self.organisation
+        )
+        response = self.client.post(
+                '/users/',
+                {
+                    'action': 'delete',
+                    'object_id': user_2.pk,
+                    'current_organisation': self.organisation.name
+                }
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {'status': 'success'})
+
+        # Verify that the OrganisationUser has been deleted
+        self.assertFalse(OrganisationUser.objects.filter(
+            user=user_2).exists())
+        self.assertFalse(OrganisationRepresentative.objects.filter(
+            user=user_2).exists())
+        self.assertFalse(OrganisationInvites.objects.filter(
+            email=user_2.email).exists())
+        
 
 
     def test_invite_post_manager(self):

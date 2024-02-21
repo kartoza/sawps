@@ -275,6 +275,11 @@ class OrganisationUsersView(
                 user=object_id,
                 organisation=current_organisation
             ).delete()
+            # delete from manager as well
+            OrganisationRepresentative.objects.filter(
+                user=object_id,
+                organisation=current_organisation
+            ).delete()
             return JsonResponse({'status': 'success'})
         except Organisation.DoesNotExist:
             return JsonResponse({'status': 'failed'})

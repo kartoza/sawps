@@ -68,7 +68,7 @@
                   <h5 class="modal-title" id="deleteModalLabel" style="color: var(--red)">Delete Confirmation</h5>
                   <hr class="default-separator" style="border-color: var(--red); margin-bottom: 0%;">
                 </div>
-                <div class="modal-body" style="margin-bottom: 5%;">
+                <div class="modal-body" style="margin-bottom: 5%;" id="modal-delete-message">
                   Are you sure you want to delete this organisation member?
                 </div>
                 <div class="modal-footer">
@@ -188,7 +188,7 @@
                    Organisation {% if is_manager %} Manager {% else %} Member {% endif %}</td>
                 {% if user.is_superuser %}
                 <td>
-                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ org_user.id }}"></i>
+                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ org_user.id }}" data-is-manager='{{is_manager|yesno:"1,0"}}'></i>
                 </td>
                 {% endif %}
               </tr>
@@ -331,8 +331,14 @@
     $(document).ready(function() {
       // Event delegation for trash icon click
       $(document).on('click', '.trash-icon', function() {
+        var isManager = $(this).data('is-manager');
         var objectId = $(this).data('object-id');
-        // console.log('triggered', objectId);
+
+        if (isManager) {
+          $('#modal-delete-message').text('Are you sure you want to delete this organisation manager?');
+        } else {
+          $('#modal-delete-message').text('Are you sure you want to delete this organisation member?');
+        }
 
         // Show the confirmation modal
         $('#deleteModal').modal('show');
@@ -520,8 +526,10 @@
                             row += '<td>' + data[i].user + '</td>';
                             row += '<td>' + data[i].role + '</td>';
 
-                            if(current_user_role === "Admin" || current_user_role === "Super user" || '{{ user.is_superuser }}')
-                              row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].id + '></i></td>';
+                            if(current_user_role === "Admin" || current_user_role === "Super user" || '{{ user.is_superuser }}') {
+                              var is_manager = data[i].role.toLowerCase() === 'organisation manager' ? 1 : 0
+                              row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].id + ' data-is-manager='+is_manager+'></i></td>';
+                            }
                             // Add more table cells as needed
                             row += '</tr>';
 
