@@ -126,20 +126,44 @@ class TestOnlineFormViewView(RegisteredBaseViewTestBase):
         self.assertEqual(context['upload_id'], population.id)
 
     def test_upload_with_data_scientist(self):
-        population = AnnualPopulationF.create(
-            property=self.property,
-            user=self.user_2
-        )
-        kwargs = {
-            'property_id': self.property.id
-        }
         # add user_3 to data scientist group
         user_3 = UserF.create()
         user_3.groups.add(self.group_member)
         user_3.groups.add(self.data_scientist_group)
+        population = AnnualPopulationF.create(
+            property=self.property,
+            user=user_3
+        )
+        kwargs = {
+            'property_id': self.property.id
+        }
         request = self.factory.get(reverse(self.view_name, kwargs=kwargs) + f'?upload_id={population.id}')
         request.user = user_3
         view = self.view_cls()
         view.setup(request)
+        # data scientist can edit/upload data
+        context = view.get_context_data(**kwargs)
+        self.assertIn('property_id', context)
+        self.assertEqual(context['property_id'], self.property.id)
+        self.assertIn('upload_id', context)
+        self.assertEqual(context['upload_id'], population.id)
+
+    def test_edit_with_data_consumer(self):
+        # add user_3 to data consumer group
+        user_3 = UserF.create()
+        user_3.groups.add(self.group_member)
+        user_3.groups.add(self.data_consumer_group)
+        population = AnnualPopulationF.create(
+            property=self.property,
+            user=user_3
+        )
+        kwargs = {
+            'property_id': self.property.id
+        }
+        request = self.factory.get(reverse(self.view_name, kwargs=kwargs) + f'?upload_id={population.id}')
+        request.user = user_3
+        view = self.view_cls()
+        view.setup(request)
+        # data consumer cannnot edit/upload data
         with self.assertRaises(PermissionDenied):
             context = view.get_context_data(**kwargs)
