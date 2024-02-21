@@ -82,7 +82,7 @@
 
       <!-- search and filter row -->
       <div class="my-row green-background row" style="  border-radius: 5px; margin-left:0.1%; padding-top:0.5%; padding-bottom: 0.25%;">
-        <div class="col-md-6" style="padding-top: 6px; padding-left: 1%;" >
+        <div class="col-md-9" style="padding-top: 6px; padding-left: 1%;" >
         </div>
         <div class="col-md-3" style="margin:auto; padding-bottom:0.25% ">
           <div class="" style="display:flex; border-radius:5px; border:1px white solid">
@@ -91,15 +91,6 @@
               <i class="fas fa-search"></i>
             </div>
           </div>
-      </div>
-      <div class="col-md-3" style="margin:auto; padding-bottom: 0.25%;">
-        <div class="" style="border:1px white solid; border-radius:5px ">
-          <select id="filterSelect" class="form-control" style="width:100%; border: none;">
-            <option value="">Filter</option>
-            <option value="title">Title</option>
-            <option value="reminder">Reminder</option>
-          </select>
-        </div>
       </div>
       </div>
 
@@ -557,21 +548,12 @@
 
     // SEARCH DB
     function makeSearchQuery(formData){
-      // check if a filter is currently selected
-      var selectBox = document.getElementById('filterSelect');
-      var selectedValue = selectBox.value;
-
-      var filter = ''
-      if (selectedValue !== undefined && selectedValue !== '')
-        filter = selectedValue
-
       $.ajax({
         type: 'POST',
         url: $(this).attr('action'),
         data: {
           'action': 'search_reminders',
           'query': formData,
-          'filter': filter,
           'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function(response) {

@@ -751,7 +751,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         data = {
             'action': 'search_reminders',
             'query': 'Reminder 1',
-            'filter': 'title',
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
         request = self.factory.post(url, data)
@@ -767,7 +766,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         data = {
             'action': 'search_reminders',
             'query': 'Re',
-            'filter': 'reminder',
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
         request = self.factory.post(url, data)
@@ -799,7 +797,6 @@ class SearchRemindersOrNotificationsTest(TestCase):
         data = {
             'action': 'search_reminders',
             'query': 'Reminder 1',
-            'filter': 'reminder',
             'notifications_page': True,
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
@@ -809,7 +806,7 @@ class SearchRemindersOrNotificationsTest(TestCase):
         results = search_reminders_or_notifications(request)
 
         # notifications is empty
-        self.assertEqual(len(results), 0)
+        self.assertEqual(len(results), 1)
 
 
 
@@ -1000,7 +997,6 @@ class RemindersViewTest(TestCase):
         data = {
             'action': 'search_reminders',
             'query': 5,
-            'filter': 'filter',
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
         request = self.factory.get(url, data)
