@@ -40,3 +40,43 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute='*/5'),  # Run every 5 minute
     },
 }
+
+
+def create_scheduler_task(task_name, task_name_desc,
+                          num_interval, interval_schedule):
+    """
+    Create periodic scheduler tasks.
+
+    :param task_name: task_name
+    :param task_name_desc: Name/Description of the task
+    :param num_interval: Interval
+    :param interval_schedule: one of ['DAYS', 'HOURS']
+    """
+    from importlib import import_module
+    try:
+        IntervalSchedule = (
+            import_module('django_celery_beat.models').IntervalSchedule
+        )
+
+        PeriodicTask = (
+            import_module('django_celery_beat.models').PeriodicTask
+        )
+        if interval_schedule == 'HOURS':
+            schedule, _ = IntervalSchedule.objects.get_or_create(
+                every=num_interval,
+                period=IntervalSchedule.HOURS
+            )
+        elif interval_schedule == 'DAYS':
+            schedule, _ = IntervalSchedule.objects.get_or_create(
+                every=num_interval,
+                period=IntervalSchedule.DAYS
+            )
+        PeriodicTask.objects.update_or_create(
+            task=task_name,
+            defaults={
+                'name': task_name_desc,
+                'interval': schedule
+            }
+        )
+    except Exception as e:
+        print(e)

@@ -1,16 +1,28 @@
+import mock
 from django.test import TestCase
-from frontend.apps import (
-    create_clear_uploaded_boundary_files,
-    create_clear_expired_map_session,
-    create_clear_old_statistical_model_output,
-    create_check_outdated_statistical_model
+from django_celery_beat.models import (
+    IntervalSchedule,
+    PeriodicTask
 )
+from core.celery import create_scheduler_task
 
 
 class FrontendConfigTestCase(TestCase):
 
-    def test_ready(self):
-        create_clear_uploaded_boundary_files()
-        create_clear_expired_map_session()
-        create_clear_old_statistical_model_output()
-        create_check_outdated_statistical_model()
+    def test_create_scheduler_task(self):
+        create_scheduler_task('clear_uploaded_boundary_files',
+                              'Clear Uploaded Boundary Files', 30, 'DAYS')
+        task = PeriodicTask.objects.get(task='clear_uploaded_boundary_files')
+        self.assertEqual(task.interval.every, 30)
+        self.assertEqual(task.interval.period, IntervalSchedule.DAYS)
+        create_scheduler_task('clear_uploaded_boundary_files',
+                              'Clear Uploaded Boundary Files', 2, 'HOURS')
+        task.refresh_from_db()
+        self.assertEqual(task.interval.every, 2)
+        self.assertEqual(task.interval.period, IntervalSchedule.HOURS)
+
+    @mock.patch('importlib.import_module',
+                mock.Mock(side_effect=Exception('Test Error')))
+    def test_failed_create_scheduler_task(self):
+        create_scheduler_task('clear_uploaded_boundary_files',
+                              'Clear Uploaded Boundary Files', 5, 'DAYS')
