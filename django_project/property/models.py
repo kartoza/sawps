@@ -205,7 +205,7 @@ class PropertyOverlaps(models.Model):
     other = models.ForeignKey('property.Property',
                               on_delete=models.CASCADE, related_name='other')
     reported_at = models.DateTimeField()
-    overlap_geom = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    overlap_geom = models.GeometryField(srid=4326, null=True, blank=True)
     overlap_area_size = models.FloatField(null=True, blank=True)
     resolved = models.BooleanField(
         default=False
