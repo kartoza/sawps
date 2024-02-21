@@ -52,7 +52,7 @@ test.describe('upload data from csv file', () => {
 
     await page.getByRole('button', { name: 'EXPLORE' }).click();
 
-    await page.waitForURL('**/map');
+    await page.waitForURL('**/map/');
 
     await page.getByRole('tab', { name: 'REPORTS' }).click();
 

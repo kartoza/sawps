@@ -26,6 +26,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    path('accounts/two-factor/', include('frontend.allauth2fa_urls')),
     path('accounts/two-factor/', include('allauth_2fa.urls')),
     path('accounts/logout/', include('frontend.accounts_urls')),
     path('accounts/', include('allauth.urls')),
