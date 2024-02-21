@@ -287,8 +287,8 @@ class OrganisationInvites(models.Model):
     )
 
     class Meta:
-        verbose_name = 'OrganisationInvites'
-        verbose_name_plural = 'OrganisationInvites'
+        verbose_name = 'Organisation invite'
+        verbose_name_plural = 'Organisation invites'
         db_table = "OrganisationInvites"
         permissions = [
             ("can_invite_people_to_organisation",
