@@ -53,9 +53,6 @@ def create_scheduler_task(task_name, task_name_desc,
     :param interval_schedule: one of ['DAYS', 'HOURS']
     """
     from importlib import import_module
-    from django.core.exceptions import ValidationError
-
-    schedule = None
     try:
         IntervalSchedule = (
             import_module('django_celery_beat.models').IntervalSchedule
@@ -74,17 +71,12 @@ def create_scheduler_task(task_name, task_name_desc,
                 every=num_interval,
                 period=IntervalSchedule.DAYS
             )
+        PeriodicTask.objects.update_or_create(
+            task=task_name,
+            defaults={
+                'name': task_name_desc,
+                'interval': schedule
+            }
+        )
     except Exception as e:
         print(e)
-        return
-    if schedule:
-        try:
-            PeriodicTask.objects.update_or_create(
-                task=task_name,
-                defaults={
-                    'name': task_name_desc,
-                    'interval': schedule
-                }
-            )
-        except ValidationError as e:
-            print(e)

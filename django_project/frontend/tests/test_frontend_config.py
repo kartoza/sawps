@@ -1,3 +1,4 @@
+import mock
 from django.test import TestCase
 from django_celery_beat.models import (
     IntervalSchedule,
@@ -19,3 +20,9 @@ class FrontendConfigTestCase(TestCase):
         task.refresh_from_db()
         self.assertEqual(task.interval.every, 2)
         self.assertEqual(task.interval.period, IntervalSchedule.HOURS)
+
+    @mock.patch('importlib.import_module',
+                mock.Mock(side_effect=Exception('Test Error')))
+    def test_failed_create_scheduler_task(self):
+        create_scheduler_task('clear_uploaded_boundary_files',
+                              'Clear Uploaded Boundary Files', 5, 'DAYS')

@@ -36,8 +36,6 @@ class TestCleanDownloadData(TestCase):
             settings.MEDIA_ROOT,
             "download_data"
         )
-        if os.path.exists(self.path):
-            shutil.rmtree(self.path)
         self.dir_path = os.path.join(self.path, self.uuid)
         if not os.path.exists(self.dir_path):
             os.makedirs(self.dir_path, exist_ok=True)
