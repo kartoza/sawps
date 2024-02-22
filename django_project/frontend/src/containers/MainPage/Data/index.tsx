@@ -309,7 +309,7 @@ const DataList = () => {
                             if (each === 'Species_report' && userInfoData?.user_permissions.includes('Can edit species population data') && !isPdfExport) {
                                 filteredColumns.push({
                                     field: '',
-                                    headerName: 'Action',
+                                    headerName: 'Actions',
                                     flex: 0.5,
                                     type: 'actions',
                                     getActions: (params: GridRowParams) => [
