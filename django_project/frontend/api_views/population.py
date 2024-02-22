@@ -416,6 +416,36 @@ class UploadPopulationAPIVIew(CanWritePopulationData):
         return Response(status=204)
 
 
+class DeletePopulationAPIView(APIView):
+    """API to remove population data by id."""
+    permission_classes = [IsAuthenticated]
+    REMOVE_DATA_NO_PERMISSION_MESSAGE = (
+        "You cannot remove data that does not belong to you!"
+    )
+
+    def delete(self, request, *args, **kwargs):
+        population_id = kwargs.get("population_id")
+        annual_population = get_object_or_404(AnnualPopulation,
+                                              id=population_id)
+        if not annual_population.is_editable(request.user):
+            return Response(
+                status=403,
+                data={
+                    "detail": self.REMOVE_DATA_NO_PERMISSION_MESSAGE
+                },
+            )
+        taxon = annual_population.taxon
+        annual_population.delete()
+        # mark statistical model output as outdated
+        mark_model_output_as_outdated_by_species_list([taxon.id])
+        return Response(
+            status=200,
+            data={
+                "detail": "OK"
+            }
+        )
+
+
 class FetchDraftPopulationUpload(APIView):
     """API to fetch draft upload."""
 

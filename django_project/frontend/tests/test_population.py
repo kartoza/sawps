@@ -3,7 +3,8 @@ from django.urls import reverse
 from uuid import uuid4
 from frontend.tests.model_factories import UserF
 from stakeholder.models import (
-    OrganisationUser
+    OrganisationUser,
+    OrganisationRepresentative
 )
 from stakeholder.factories import (
     organisationFactory
@@ -15,7 +16,8 @@ from frontend.api_views.population import (
     FetchDraftPopulationUpload,
     DraftPopulationUpload,
     FetchPopulationData,
-    CanWritePopulationData
+    CanWritePopulationData,
+    DeletePopulationAPIView
 )
 from property.factories import (
     PropertyFactory,
@@ -723,3 +725,41 @@ class TestPopulationAPIViews(TestCase):
         view = FetchPopulationData.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 404)
+
+    def test_delete_population_data(self):
+        user_2 = UserF.create(username='user_2')
+        population_1 = AnnualPopulationF(
+            total=120,
+            adult_male=19,
+            adult_female=100,
+            adult_total=119,
+            year=self.sample_data['year'],
+            user=self.user_1,
+            property=self.property_1,
+            taxon=self.taxon_1
+        )
+        # case - user is not the owner/manager
+        kwargs = {
+            'population_id': population_1.id
+        }
+        request = self.factory.delete(
+            reverse('remove-population-data', kwargs=kwargs)
+        )
+        request.user = user_2
+        view = DeletePopulationAPIView.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'], DeletePopulationAPIView.REMOVE_DATA_NO_PERMISSION_MESSAGE)
+        # case - user is manager
+        OrganisationRepresentative.objects.create(
+            user=user_2,
+            organisation=self.property_1.organisation
+        )
+        request = self.factory.delete(
+            reverse('remove-population-data', kwargs=kwargs)
+        )
+        request.user = user_2
+        view = DeletePopulationAPIView.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(AnnualPopulation.objects.filter(id=population_1.id).exists())
