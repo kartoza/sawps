@@ -51,18 +51,18 @@ test('filter tests', async ({ page }) => {
 
   await expect(page.getByText('Panthera leo population (2024)')).toBeVisible();
   // filter on map tab only has end year filter, no slider
-  await page.getByRole('spinbutton').nth(1).click();
+  await page.getByRole('spinbutton').nth(0).click();
 
-  await page.getByRole('spinbutton').nth(1).fill('2023');
+  await page.getByRole('spinbutton').nth(0).fill('2023');
 
   await page.getByRole('tab', { name: 'REPORTS' }).click();
 
   // filter on reports tab has slider, start-end year filters
-  await page.locator('span').filter({ hasText: '2024' }).nth(1).click();
+  await page.locator('span').filter({ hasText: '2023' }).nth(1).click();
  
   await page.getByRole('spinbutton').nth(1).click();
 
-  await page.getByRole('spinbutton').nth(1).fill('2023');
+  await page.getByRole('spinbutton').nth(1).fill('2022');
 
   await page.getByRole('button', { name: 'Clear All', exact: true }).click();
 
