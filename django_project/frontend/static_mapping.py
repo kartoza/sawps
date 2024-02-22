@@ -57,10 +57,7 @@ DATA_CONSUMERS_EXCLUDE_PERMISSIONS = set([
 ])
 
 # Do not allow data scientist to have this permissions
-DATA_SCIENTIST_EXCLUDE_PERMISSIONS = set([
-    'Can add species population data',
-    'Can edit species population data',
-])
+DATA_SCIENTIST_EXCLUDE_PERMISSIONS = set([])
 
 # These are permissions for Data Consumer
 DATA_CONSUMERS_PERMISSIONS = set([
