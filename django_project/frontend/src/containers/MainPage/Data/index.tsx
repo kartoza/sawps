@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import {DataGrid, GridColDef, GridRowParams, GridActionsCellItem} from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Loading from '../../../components/Loading';
 import axios from "axios";
 import {useAppSelector} from "../../../app/hooks";
@@ -17,6 +18,8 @@ import Topper from "./Topper";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import ConfirmationAlertDialog from '../../../components/ConfirmationAlertDialog';
+import AlertMessage from '../../../components/AlertMessage';
 import './index.scss';
 
 const ITEM_HEIGHT = 48;
@@ -31,6 +34,7 @@ const MenuProps = {
 };
 
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
+const DELETE_POPULATION_DATA = '/api/upload/population/remove/'
 const EXCLUDED_COLUMNS = ['upload_id', 'property_id', 'is_editable']
 
 const DataList = () => {
@@ -63,6 +67,11 @@ const DataList = () => {
         isSuccess: isActivitySuccess
     } = useGetActivityAsObjQuery()
     const cancelTokenSourceRef = useRef(null);
+    const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
+    const [deleteConfirmationLoading, setDeleteConfirmationLoading] = useState(false)
+    const [deleteConfirmationMessage, setDeleteConfirmationMessage] = useState('')
+    const [populationToDelete, setPopulationToDelete] = useState(null)
+    const [alertMessage, setAlertMessage] = useState<string>('')
 
     let dataset: any[] = []
     let reportList: any[] = []
@@ -304,10 +313,13 @@ const DataList = () => {
                                     flex: 0.5,
                                     type: 'actions',
                                     getActions: (params: GridRowParams) => [
-                                        <GridActionsCellItem key={params.id} icon={<EditIcon />} onClick={() => {
+                                        <GridActionsCellItem key={`edit-${params.id}`} icon={<EditIcon />} onClick={() => {
                                             let _speciesReportRow = params.row as any
                                             window.location.replace(window.location.origin + `/upload-data/${_speciesReportRow.property_id}/?upload_id=${_speciesReportRow.upload_id}`)
-                                        }} label="Edit Data" title="Edit Data" hidden={!params.row.is_editable} />
+                                        }} label="Edit Data" title="Edit Data" hidden={!params.row.is_editable} />,
+                                        <GridActionsCellItem key={`delete-${params.id}`} icon={<DeleteIcon />} onClick={() => {
+                                            setPopulationToDelete(params.row as any)
+                                        }} label="Delete Data" title="Delete Data" hidden={!params.row.is_editable} />
                                       ]
                                 })
                             }
@@ -409,7 +421,7 @@ const DataList = () => {
         )
     }, [data])
 
-        // downloads all charts rendered on page
+    // downloads all charts rendered on page
     const handleDownloadPdf = async () => {
         setModalOpen(true)
         setModalMessage('Generating PDF!')
@@ -446,6 +458,53 @@ const DataList = () => {
 
     }
 
+    // confirmation to delete events
+    useEffect(() => {
+        if (populationToDelete === null) {
+            setDeleteConfirmationOpen(false)
+        } else {
+            setDeleteConfirmationOpen(true)
+            setDeleteConfirmationMessage(`Are you sure to delete population data of ${populationToDelete.scientific_name} in ${populationToDelete.year} from property ${populationToDelete.property_name}?`)
+        }
+    }, [populationToDelete])
+
+    const closeConfirmationToDelete = () => {
+        setPopulationToDelete(null)
+    }
+
+    // delete population record
+    const handleConfirmOkToDeletePopulationData = () => {
+        if (populationToDelete === null) {
+            closeConfirmationToDelete()
+            setAlertMessage('Invalid population record! Please try again or contact the administrator!')
+            return;
+        }
+        setDeleteConfirmationLoading(true)
+        axios.delete(
+            `${DELETE_POPULATION_DATA}${populationToDelete.upload_id}/`, {}
+        ).then(
+            response => {
+                setDeleteConfirmationLoading(false)
+                if (populationToDelete) {
+                    setAlertMessage(`The population record of ${populationToDelete.scientific_name} in ${populationToDelete.year} from property ${populationToDelete.property_name} has been successfully removed!`)
+
+                } else {
+                    setAlertMessage('The population record has been successfully removed!')
+                }
+                closeConfirmationToDelete()
+                fetchDataList()
+            }
+        ).catch((error) => {
+            console.log(error)
+            setDeleteConfirmationLoading(false)
+            closeConfirmationToDelete()
+            let _error = 'Unable to delete population record! Please try again or contact the administrator!'
+            if (error.response && 'detail' in error.response.data) {
+                _error = error.response.data['detail']
+            }
+            setAlertMessage(_error)
+        })
+    }
 
     return (
         <Box className='main-content-wrap'>
@@ -561,6 +620,19 @@ const DataList = () => {
                 </Box>
                 </Box>
             )}
+            </Box>
+            <Box>
+                <AlertMessage message={alertMessage} onClose={() => {
+                    setAlertMessage('')
+                }} />
+                <ConfirmationAlertDialog open={deleteConfirmationOpen} alertClosed={closeConfirmationToDelete}
+                    alertConfirmed={handleConfirmOkToDeletePopulationData}
+                    alertDialogTitle={'Delete Upload Record'}
+                    alertDialogDescription={deleteConfirmationMessage}
+                    confirmButtonText='Delete'
+                    confirmButtonProps={{color: 'error', autoFocus: true}}
+                    alertLoading={deleteConfirmationLoading}
+                />
             </Box>
         </Box>
 
