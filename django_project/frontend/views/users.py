@@ -18,6 +18,7 @@ from .base_view import RegisteredOrganisationBaseView
 from django.http import JsonResponse
 
 from django.views.generic import TemplateView
+from frontend.serializers.stakeholder import OrganisationMemberSerializer
 from frontend.utils.organisation import (
     get_current_organisation_id
 )
@@ -26,7 +27,6 @@ from django.core.paginator import (
     EmptyPage,
     PageNotAnInteger
 )
-from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import models
 from django.contrib.sites.models import Site
 from urllib.parse import quote
@@ -44,29 +44,6 @@ class OrganisationUsersView(
     model = OrganisationUser
     context_object_name = 'organisation_users'
 
-    def extract_substring(self, string):
-        '''extract search string from search box on frontend'''
-        if len(string) >= 2:
-            if '=' in string:
-                substring = string.split('=')[1]
-                return substring
-        return string
-
-    def search_users(self, username):
-        users = User.objects.annotate(
-            full_name=Concat('first_name', V(' '), 'last_name')
-        ).filter(
-            Q(full_name__icontains=username) | Q(username__icontains=username)
-        )
-        return users
-
-    def get_user_email(self, user):
-        try:
-            user = User.objects.get(username=user)
-            return user.email
-        except User.DoesNotExist:
-            return None
-
     def get_user_role(self, role):
         try:
             role = UserRoleType.objects.filter(
@@ -75,7 +52,6 @@ class OrganisationUsersView(
             return role
         except UserRoleType.DoesNotExist:
             return None
-
 
     def get_role(self, user, organisation):
         current_user = OrganisationInvites.objects.filter(
@@ -111,57 +87,6 @@ class OrganisationUsersView(
             return (True, user)
         else:
             return (False, None)
-
-
-    def calculate_rows_per_page(self, data):
-        total_rows = len(data)
-
-        desired_rows_per_page = 5
-
-        # Calculate the dynamic number of rows per page
-        rows_per_page = min(desired_rows_per_page, total_rows)
-
-        return rows_per_page
-
-    def search_user_table(self, request):
-        query = request.POST.get('query')
-        organisation = request.POST.get('current_organisation')
-        extracted_string = self.extract_substring(query)
-        matching_users = self.search_users(extracted_string)
-
-        data = []
-
-        # search user within the orginisation
-        for user in matching_users:
-            try:
-                org = Organisation.objects.get(name=str(organisation))
-                org_user = OrganisationUser.objects.get(
-                    user=user,
-                    organisation=org)
-                invite = OrganisationInvites.objects.filter(
-                    email=user.email,
-                    organisation_id=org.id
-                ).first()
-            except Organisation.DoesNotExist:
-                org = None
-                org_user = None
-            except OrganisationUser.DoesNotExist:
-                org_user = None
-            if org_user:
-                if not org_user.user == self.request.user and invite:
-                    data.append({
-                        'organisation': str(org_user.organisation),
-                        'user': org_user.user.get_full_name(),
-                        'id': org_user.user.id,
-                        'role': 'Organisation ' + invite.assigned_as,
-                        'joined': invite.joined
-                    })
-
-        return JsonResponse(
-            {
-                'data': json.dumps(data, cls=DjangoJSONEncoder)
-            }
-        )
 
     def post(self, request):
         # Default post method logic
@@ -290,77 +215,49 @@ class OrganisationUsersView(
             return JsonResponse({'status': 'failed'})
 
     def get_organisation_users(self, request):
-        # Get manager
-        organisation_reps_list = OrganisationRepresentative.objects.filter(
+        search_text = request.GET.get('search_text', '')
+        organisation_user_list = OrganisationUser.objects.annotate(
+            full_name=Concat('user__first_name', V(' '), 'user__last_name')
+        ).filter(
             organisation_id=get_current_organisation_id(request.user)
-        )
-        organisation_users = []
-        for user in organisation_reps_list:
-            object_to_save = {
-                "id": user.user.id,
-                "organisation_user": user.user.get_full_name(),
-                "role": MANAGER,
-                "assigned_as": MANAGER,
-                "joined": True
-            }
-            organisation_users.append(object_to_save)
-
-        # Get member
-        organisation_user_list = OrganisationUser.objects.filter(
-            organisation_id=get_current_organisation_id(request.user)
-        ).exclude(
-            user__in=[uid.user for uid in organisation_reps_list]
-        )
-
-        for user in organisation_user_list:
-            # get role from organisation invites
-            role = OrganisationInvites.objects.filter(
-                email=user.user.email,
-                organisation_id=(
-                    get_current_organisation_id(request.user)
-                )
-            ).first()
-            if role:
-                object_to_save = {
-                    "id": user.user.id,
-                    "organisation_user": user.user.get_full_name(),
-                    "role": role.user_role,
-                    "assigned_as": role.assigned_as,
-                    "joined": role.joined
-                }
-            else:
-                assigned_as = MEMBER
-                if hasattr(user.user, 'user_profile'):
-                    user_profile = user.user.user_profile
-                    role = str(user_profile.user_role_type_id)
-                    if role == 'Admin' or role == 'Super User':
-                        assigned_as = MANAGER
-
-                object_to_save = {
-                    "id": user.user.id,
-                    "organisation_user": user.user.get_full_name(),
-                    "role": None,
-                    "assigned_as": assigned_as,
-                    "joined": True
-                }
-
-            organisation_users.append(object_to_save)
-
+        ).order_by('full_name')
+        if search_text:
+            organisation_user_list = organisation_user_list.filter(
+                full_name__icontains=search_text
+            )
         users_page = request.GET.get('users_page', 1)
-
         # Get the rows per page value from the query parameters
         rows_per_page = request.GET.get('users_per_page', 5)
-
-        paginator = Paginator(organisation_users, rows_per_page)
-
+        paginator = Paginator(organisation_user_list, rows_per_page)
         try:
             users = paginator.page(users_page)
         except PageNotAnInteger:
             users = paginator.page(1)
         except EmptyPage:
             users = paginator.page(paginator.num_pages)
-
-        return users
+        manager_ids = OrganisationRepresentative.objects.filter(
+            organisation_id=get_current_organisation_id(request.user)
+        ).values_list('user__id', flat=True)
+        return {
+            'data': OrganisationMemberSerializer(
+                users,
+                many=True,
+                context={
+                    'manager_ids': manager_ids
+                }
+            ).data,
+            'per_page': users.paginator.per_page,
+            'number': users.number,
+            'previous_page_number': (
+                users.previous_page_number() if
+                users.has_previous() else -1
+            ),
+            'next_page_number': (
+                users.next_page_number() if
+                users.has_next() else -1
+            ),
+            'search_text': search_text
+        }
 
     def get_organisation_invites(self, request):
         organisation_invites = OrganisationInvites.objects.filter(
@@ -399,10 +296,9 @@ class OrganisationUsersView(
         elif request.POST.get('action') == 'delete':
             return self.delete_post(request)
         elif request.POST.get('action') == 'search_user_table':
-            return self.search_user_table(request)
+            return JsonResponse(self.get_organisation_users(request))
         else:
             return super().dispatch(request, *args, **kwargs)
-
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

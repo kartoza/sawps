@@ -225,3 +225,27 @@ class TestCheckOverlaps(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mocked_task.assert_called_once()
+
+    @mock.patch('property.tasks.check_overlaps.area')
+    def test_check_overlaps_ignored(self, mocked_area):
+        mocked_area.return_value = 0.001
+        # case: overlaps
+        geom_path = absolute_path(
+            'property', 'tests',
+            'geojson', 'geom_overlaps.geojson')
+        self.load_test_geom_to_properties(geom_path)
+        results = check_overlaps_in_properties()
+        mocked_area.assert_called_once()
+        self.assertEqual(len(results), 0)
+        # should return 0
+        mocked_area.reset_mock()
+        mocked_area.return_value = 1
+        results = check_overlaps_in_properties()
+        mocked_area.assert_called_once()
+        self.assertEqual(len(results), 0)
+        # should return 1
+        mocked_area.reset_mock()
+        mocked_area.return_value = 1.5
+        results = check_overlaps_in_properties()
+        mocked_area.assert_called_once()
+        self.assertEqual(len(results), 1)

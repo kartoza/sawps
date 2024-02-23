@@ -635,7 +635,7 @@ function Filter(props: any) {
                     allowPropertiesSelection && propertyInputField()
                 }
 
-                {tab !== 'trends' &&
+                {tab !== 'trends' && !startYearDisabled &&
                     <Box>
                       <Box className='sidebarBoxHeading'>
                           <img src="/static/images/Clock.svg" alt='watch image'/>
@@ -651,7 +651,6 @@ function Filter(props: any) {
                             style={{color: 'black'}}
                           />
                       </Box>
-
                       <Box className='formboxInput'>
                           <Box className='form-inputFild'>
                             <Tooltip
@@ -678,6 +677,28 @@ function Filter(props: any) {
                                   />
                               </Tooltip>
                               <Typography className='formtext'>To</Typography>
+                          </Box>
+                      </Box>
+                </Box>
+                }
+
+                {tab !== 'trends' && startYearDisabled &&
+                    <Box>
+                      <Box className='sidebarBoxHeading'>
+                          <img src="/static/images/Clock.svg" alt='watch image'/>
+                          <Typography color='#75B37A' fontSize='medium'>Year</Typography>
+                      </Box>
+                      <Box className='formboxInput'>
+                          <Box className='form-inputFild'>
+                            <Tooltip
+                                title={isEndYearValid ? '' : `Year should range from ${yearRangeStart} to ${yearRangeEnd}`}
+                                placement="top-start"
+                              >
+                                  <TextField type="number" size='small' value={localEndYear}
+                                             onChange={(e: any) => handleEndYearChange(e.target.value)}
+                                             className={isEndYearValid ? '': 'yearFilter-red'}
+                                  />
+                              </Tooltip>
                           </Box>
                       </Box>
                 </Box>
