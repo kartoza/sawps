@@ -1,6 +1,6 @@
 import json
 import uuid
-from django.db.models import Value as V, Q
+from django.db.models import Value as V
 from django.db.models.functions import Concat
 
 from sawps.views import AddUserToOrganisation
