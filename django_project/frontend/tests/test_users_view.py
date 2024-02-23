@@ -1,7 +1,6 @@
 import json
 
 from django.contrib.auth.models import User, Permission
-from django.core.serializers.json import DjangoJSONEncoder
 from django.test import RequestFactory, TestCase, Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.contenttypes.models import ContentType
@@ -242,6 +241,13 @@ class OrganisationUsersViewTest(TestCase):
         view = OrganisationUsersView()
         response = view.get_organisation_users(request)
         self.assertIsNotNone(response)
+    
+        # test with search_text
+        request = factory.post('/users/?search_text=test')
+        request.user = user
+        view = OrganisationUsersView()
+        response = view.get_organisation_users(request)
+        self.assertIsNotNone(response)
 
     def test_get_organisation_invites(self):
         factory = RequestFactory()
@@ -266,72 +272,38 @@ class OrganisationUsersViewTest(TestCase):
         self.assertIsNotNone(response)
 
     def test_search_user_table(self):
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
+        self.client.login(
+            username='testuser', password='testpassword'
+        )
         # Create a request object with the required POST data
         response = self.client.post(
-            '/users/',
+            '/users/?search_text=test',
             {
-                'action': 'search_user_table',
-                'query': 'test',
-                'current_organisation': self.organisation.name
+                'action': 'search_user_table'
             }
         )
 
         # Assert the expected outcome
-        expected_data = [
-            {
-                'organisation': str(self.organisation),
-                'user': self.user.get_full_name(),
-                'id': self.user.pk,
-                'role': 'Organisation '+self.org_invitation.assigned_as,
-                'joined': self.org_invitation.joined
-            }
-        ]
-        expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
+        expected_data = {
+            'data': [{
+                'user_id': 2,
+                'name': 'test',
+                'is_manager': False
+            }],
+            'per_page': 5,
+            'number': 1,
+            'previous_page_number': -1,
+            'next_page_number': -1,
+            'search_text': 'test'
+        }
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_json)
-
-        # test with = in string
-        response = self.client.post(
-            '/users/',
-            {
-                'action': 'search_user_table',
-                'query': 'q=test',
-                'current_organisation': self.organisation.name
-            }
-        )
-
-        # Assert the expected outcome
-        expected_data = [
-            {
-                'organisation': str(self.organisation),
-                'user': self.user.get_full_name(),
-                'id': self.user.pk,
-                'role': 'Organisation '+self.org_invitation.assigned_as,
-                'joined': self.org_invitation.joined
-            }
-        ]
-        expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_json)
-
-        # search with fake org
-        response = self.client.post(
-            '/users/',
-            {
-                'action': 'search_user_table',
-                'query': 'q=test',
-                'current_organisation': 'fake_org'
-            }
-        )
-
-        # Assert the expected outcome
-        expected_data = []
-        expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_json)
+        self.assertEqual(response.json(), expected_data)
 
     def test_get_user_by_email(self):
 
