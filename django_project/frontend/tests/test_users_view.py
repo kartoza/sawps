@@ -304,6 +304,30 @@ class OrganisationUsersViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
+        # update user as superuser
+        self.user.is_superuser = True
+        self.user.save()
+        response = self.client.post(
+            '/users/?search_text=test',
+            {
+                'action': 'search_user_table'
+            }
+        )
+        expected_data = {
+            'data': [{
+                'user_id': self.user.id,
+                'name': 'test',
+                'is_manager': True
+            }],
+            'per_page': 5,
+            'number': 1,
+            'previous_page_number': -1,
+            'next_page_number': -1,
+            'search_text': 'test'
+        }
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_data)
 
     def test_get_role(self):
         view = OrganisationUsersView()
