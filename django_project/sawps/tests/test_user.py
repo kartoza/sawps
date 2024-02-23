@@ -1,4 +1,5 @@
 import uuid
+import mock
 
 from django.contrib.auth.models import User
 from django.core import mail
@@ -33,6 +34,10 @@ from stakeholder.models import (
     save_user_profile,
 )
 from stakeholder.factories import OrganisationInvitesFactory
+
+
+def mocked_sending_email(*args, **kwargs):
+    return True
 
 
 class TestCustomSignupForm(TestCase):
@@ -493,7 +498,9 @@ class AddUserToOrganisationTestCase(TestCase):
         invite_3.refresh_from_db()
         self.assertFalse(invite_3.joined)
 
-    def test_add_user_view_manager(self):
+    @mock.patch('stakeholder.utils.send_mail')
+    def test_add_user_view_manager(self, mocked_send_mail):
+        mocked_send_mail.side_effect = mocked_sending_email
         url = reverse(
             'adduser',
             args=[self.invite_2.uuid]
@@ -516,6 +523,11 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertTrue(
             ORGANISATION_MANAGER in self.user.groups.values_list('name', flat=True)
         )
+        mocked_send_mail.assert_not_called()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=self.user,
+            organisation=self.organisation2
+        ).count(), 1)
 
 
 class SendRequestEmailTestCase(TestCase):

@@ -464,10 +464,10 @@ def post_create_organisation_representative(
         ).first()
         member_invite = OrganisationInvites.objects.filter(
             user=instance.user,
-            joined=True,
-            assigned_as=MEMBER
-        ).exists()
+            joined=True
+        ).first()
         if organisation_user is None:
+            # case when representative is created in admin site
             # create organisation user
             OrganisationUser.objects.create(
                 user=instance.user,
@@ -475,6 +475,10 @@ def post_create_organisation_representative(
             )
             is_made_manager = True
         elif member_invite:
+            # check if previously has been invited as member
+            is_made_manager = member_invite.assigned_as == MEMBER
+        else:
+            # this case could be the member is added through admin site
             is_made_manager = True
     if is_made_manager:
         notify_user_becomes_manager(instance)
