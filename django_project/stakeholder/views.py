@@ -514,7 +514,7 @@ class RemindersView(RegisteredOrganisationBaseView):
             return OrganisationRepresentative.objects.filter(
                 user=self.request.user,
                 organisation_id=current_organisation_id
-            )
+            ).exists()
         return False
 
     def get_context_data(self, **kwargs):

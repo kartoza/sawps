@@ -445,7 +445,7 @@ def post_create_organisation_representative(
         member_invite = OrganisationInvites.objects.filter(
             user=instance.user,
             joined=True,
-            assigned_as=MANAGER
+            assigned_as=MEMBER
         ).exists()
         if organisation_user is None:
             # create organisation user

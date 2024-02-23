@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db.models import Q
 from django.test import TestCase, override_settings
 from django.db.models.signals import post_save
@@ -316,9 +316,17 @@ class OrganizationUserTestCase(TestCase):
             user=self.user,
             organisation=self.organisation
         )
-        self.assertEqual(
-            self.user.groups.first().name,
-            ORGANISATION_MANAGER
+        groups = Group.objects.filter(
+            user=self.user
+        )
+        all_groups = [group.name for group in groups]
+        self.assertIn(
+            ORGANISATION_MANAGER,
+            all_groups
+        )
+        self.assertIn(
+            ORGANISATION_MEMBER,
+            all_groups
         )
 
     def test_create_organisation_user_member(self):
