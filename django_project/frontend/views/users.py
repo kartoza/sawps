@@ -27,7 +27,6 @@ from django.core.paginator import (
     PageNotAnInteger
 )
 from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.auth import models
 from django.contrib.sites.models import Site
 from urllib.parse import quote
 
@@ -266,24 +265,13 @@ class OrganisationUsersView(
         try:
             current_organisation = Organisation.objects.get(
                 name=str(current_organisation))
-            user = models.User.objects.get(pk=object_id)
-            OrganisationInvites.objects.filter(
-                Q(email=user.email) | Q(user=object_id),
-                organisation=current_organisation
-            ).delete()
             OrganisationUser.objects.filter(
                 user=object_id,
                 organisation=current_organisation
             ).delete()
-            # delete from manager as well
-            OrganisationRepresentative.objects.filter(
-                user=object_id,
-                organisation=current_organisation
-            ).delete()
+            # delete from manager will be done in signal
             return JsonResponse({'status': 'success'})
         except Organisation.DoesNotExist:
-            return JsonResponse({'status': 'failed'})
-        except models.User.DoesNotExist:
             return JsonResponse({'status': 'failed'})
         except Exception:
             # when deletion fails

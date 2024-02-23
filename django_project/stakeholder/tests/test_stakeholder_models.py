@@ -405,6 +405,17 @@ class OrganizationUserTestCase(TestCase):
         self.assertTrue(user_profile)
         user_profile.current_organisation = organisation_user_4.organisation
         user_profile.save()
+        # set as manager
+        OrganisationRepresentative.objects.create(
+            user=organisation_user_4.user,
+            organisation=organisation_user_4.organisation
+        )
+        # create invite
+        OrganisationInvites.objects.create(
+            organisation=organisation_user_4.organisation,
+            email=organisation_user_4.user.email,
+            user=organisation_user_4.user,
+        )
         # delete organisation_user_4
         # user would not be removed from group Organisation Member
         # because is still a member of other organisation
@@ -417,6 +428,16 @@ class OrganizationUserTestCase(TestCase):
         # ensure no current_organisation after organisation 4 is deleted
         user_profile.refresh_from_db()
         self.assertFalse(user_profile.current_organisation)
+        # ensure no manager record
+        self.assertFalse(OrganisationRepresentative.objects.filter(
+            user=organisation_user_4.user,
+            organisation=organisation_user_4.organisation
+        ).exists())
+        # ensure no invitation
+        self.assertFalse(OrganisationInvites.objects.filter(
+            user=organisation_user_4.user,
+            organisation=organisation_user_4.organisation
+        ).exists())
 
 
 class OrganizationRepresentativeTestCase(TestCase):

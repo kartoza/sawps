@@ -78,18 +78,6 @@ class OrganisationUsersViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'failed'})
 
-        # test user does not exist
-        response = self.client.post(
-                '/users/',
-                {
-                    'action': 'delete',
-                    'object_id': 55,
-                    'current_organisation': self.organisation.name
-                }
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'status': 'failed'})
         # test delete manager
         user_2 = User.objects.create_user(
             first_name='user_2',

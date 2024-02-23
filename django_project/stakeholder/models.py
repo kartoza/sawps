@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import User, Group
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -429,6 +430,16 @@ def post_delete_organisation_user(
     if profile:
         profile.current_organisation = None
         profile.save(update_fields=['current_organisation'])
+    # when user is removed, ensure that manager is removed as well
+    OrganisationRepresentative.objects.filter(
+        user=instance.user,
+        organisation=instance.organisation
+    ).delete()
+    # ensure invite record is removed
+    OrganisationInvites.objects.filter(
+        Q(email=instance.user.email) | Q(user=instance.user),
+        organisation=instance.organisation
+    ).delete()
 
 
 @receiver(post_save, sender=OrganisationRepresentative)
