@@ -420,6 +420,15 @@ def post_delete_organisation_user(
     part of any organisation.
     """
     remove_user_from_org_member(instance)
+    # when user is removed from organisation
+    # also remove it from current_organisation in UserProfile
+    profile = UserProfile.objects.filter(
+        user=instance.user,
+        current_organisation=instance.organisation
+    ).first()
+    if profile:
+        profile.current_organisation = None
+        profile.save(update_fields=['current_organisation'])
 
 
 @receiver(post_save, sender=OrganisationRepresentative)

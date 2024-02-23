@@ -382,6 +382,11 @@ class OrganizationUserTestCase(TestCase):
         self.assertEqual(len(user.groups.all()), 1)
         self.assertEqual(user.groups.first().name, ORGANISATION_MEMBER)
 
+        # set userprofile to organisation 4
+        user_profile = UserProfile.objects.filter(user=organisation_user_2.user).first()
+        self.assertTrue(user_profile)
+        user_profile.current_organisation = organisation_user_4.organisation
+        user_profile.save()
         # delete organisation_user_2
         # user would be removed from group Organisation Member
         # because he no longer belongs any organisation
@@ -390,7 +395,16 @@ class OrganizationUserTestCase(TestCase):
         self.assertFalse(
             user.groups.exists()
         )
+        # ensure current_organisation is not removed
+        user_profile.refresh_from_db()
+        self.assertTrue(user_profile.current_organisation)
+        self.assertEqual(user_profile.current_organisation.id, organisation_user_4.organisation.id)
 
+        # set userprofile to organisation 4
+        user_profile = UserProfile.objects.filter(user=organisation_user_4.user).first()
+        self.assertTrue(user_profile)
+        user_profile.current_organisation = organisation_user_4.organisation
+        user_profile.save()
         # delete organisation_user_4
         # user would not be removed from group Organisation Member
         # because is still a member of other organisation
@@ -400,6 +414,9 @@ class OrganizationUserTestCase(TestCase):
             list(self.user.groups.values_list('name', flat=True)),
             [ORGANISATION_MEMBER]
         )
+        # ensure no current_organisation after organisation 4 is deleted
+        user_profile.refresh_from_db()
+        self.assertFalse(user_profile.current_organisation)
 
 
 class OrganizationRepresentativeTestCase(TestCase):
