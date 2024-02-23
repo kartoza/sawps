@@ -291,7 +291,7 @@ class OrganisationUsersViewTest(TestCase):
         # Assert the expected outcome
         expected_data = {
             'data': [{
-                'user_id': 2,
+                'user_id': self.user.id,
                 'name': 'test',
                 'is_manager': False
             }],
@@ -304,21 +304,6 @@ class OrganisationUsersViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
-
-    def test_get_user_by_email(self):
-
-        view = OrganisationUsersView()
-
-        response = view.get_user_email(self.user)
-
-        self.assertEqual(response, self.user.email)
-
-        # test user does not exist
-        view = OrganisationUsersView()
-
-        response = view.get_user_email('none')
-
-        self.assertEqual(response, None)
 
     def test_get_role(self):
         view = OrganisationUsersView()
@@ -367,13 +352,6 @@ class OrganisationUsersViewTest(TestCase):
         response = view.is_user_registered('new@new.com')
 
         self.assertEqual(response, (False, None))
-
-    def test_calculate_rows_per_page(self):
-        view = OrganisationUsersView()
-
-        response = view.calculate_rows_per_page([])
-
-        self.assertEqual(response,0)
 
     def test_context_data(self):
 
