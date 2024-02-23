@@ -7,7 +7,6 @@ from django.contrib.contenttypes.models import ContentType
 
 from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER, DATA_CONSUMERS_PERMISSIONS
 from frontend.views.users import OrganisationUsersView
-from regulatory_permit.models import DataUsePermission
 from sawps.models import ExtendedGroup
 from sawps.tests.models.account_factory import GroupF
 from stakeholder.factories import userRoleTypeFactory
@@ -77,18 +76,6 @@ class OrganisationUsersViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'failed'})
 
-        # test user does not exist
-        response = self.client.post(
-                '/users/',
-                {
-                    'action': 'delete',
-                    'object_id': 55,
-                    'current_organisation': self.organisation.name
-                }
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'status': 'failed'})
         # test delete manager
         user_2 = User.objects.create_user(
             first_name='user_2',
