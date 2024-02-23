@@ -150,7 +150,7 @@
               <div class="input-group">
                 <div class="input-group-append">
                   <form id="searchForm" action="{% url 'Users' %}" method="GET" class="input-group">
-                    <input type="text" name="query" placeholder="Search..." class="form-control" id="searchInput">
+                    <input type="text" name="search_text" placeholder="Search..." class="form-control" id="searchInput" value="{{ users.search_text }}">
                     <div class="input-group-append">
                       <button class="btn btn-custom" type="submit" id="searchButton">
                         <i class="fas fa-search"></i>
@@ -179,20 +179,18 @@
               </tr>
             </thead>
             <tbody>
-              {% for org_user in users %}
-              {% if org_user.joined %}
-              {% is_organisation_manager org_user.id current_organisation_id as is_manager %}
+              {% is_organisation_manager user.id current_organisation_id as is_current_manager %}
+              {% for org_user in users.data %}
               <tr>
-                <td>{{ org_user.organisation_user }}</td>
+                <td>{{ org_user.name }}</td>
                 <td>
-                   Organisation {% if is_manager %} Manager {% else %} Member {% endif %}</td>
-                {% if user.is_superuser %}
+                   Organisation {% if org_user.is_manager %} Manager {% else %} Member {% endif %}</td>
+                {% if is_current_manager %}
                 <td>
-                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ org_user.id }}" data-is-manager='{{is_manager|yesno:"1,0"}}'></i>
+                  <i class="fas fa-trash-alt trash-icon" data-object-id="{{ org_user.user_id }}" data-is-manager='{{org_user.is_manager|yesno:"1,0"}}'></i>
                 </td>
                 {% endif %}
               </tr>
-              {% endif %}
               {% endfor %}
             </tbody>
             <tfoot>
@@ -206,17 +204,18 @@
                         </div>
                         <div class="col-auto">
                           <select id="usersRowsPerPage" class="form-control mr-2 small-select" onchange="updateRowsPerPage('users', this)">
-                            <option value="5" {% if users.paginator.per_page == 5 %}selected{% endif %}>5</option>
-                            <option value="10" {% if users.paginator.per_page == 10 %}selected{% endif %}>10</option>
-                            <option value="20" {% if users.paginator.per_page == 20 %}selected{% endif %}>20</option>
+                            <option value="1" {% if users.per_page == 1 %}selected{% endif %}>1</option>
+                            <option value="5" {% if users.per_page == 5 %}selected{% endif %}>5</option>
+                            <option value="10" {% if users.per_page == 10 %}selected{% endif %}>10</option>
+                            <option value="20" {% if users.per_page == 20 %}selected{% endif %}>20</option>
                           </select>
                         </div>
                         <div class="col-auto">
                           <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-end">
-                              {% if users.has_previous %}
+                            <ul id="usersPagination" class="pagination justify-content-end">
+                              {% if users.previous_page_number > -1 %}
                               <li class="page-item">
-                                <a class="page-link" href="?users_page={{ users.previous_page_number }}&users_per_page={{ users.paginator.per_page }}" aria-label="Previous">
+                                <a class="page-link" href="?users_page={{ users.previous_page_number }}&users_per_page={{ users.per_page }}&search_text={{ users.search_text }}" aria-label="Previous">
                                   <span aria-hidden="true">&laquo;</span>
                                   <span class="sr-only">Previous</span>
                                 </a>
@@ -225,9 +224,9 @@
                               <li class="page-item disabled">
                                 <a class="page-link" href="#">{{ users.number }}</a>
                               </li>
-                              {% if users.has_next %}
+                              {% if users.next_page_number > -1 %}
                               <li class="page-item">
-                                <a class="page-link" href="?users_page={{ users.next_page_number }}&users_per_page={{ users.paginator.per_page }}" aria-label="Next">
+                                <a class="page-link" href="?users_page={{ users.next_page_number }}&users_per_page={{ users.per_page }}&search_text={{ users.search_text }}" aria-label="Next">
                                   <span aria-hidden="true">&raquo;</span>
                                   <span class="sr-only">Next</span>
                                 </a>
@@ -372,6 +371,16 @@
       });
     });
 
+    function debounce(fn, delay) {
+      var timer = null;
+      return function () {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          fn.apply(context, args);
+        }, delay);
+      };
+    }
 
     // updating rows per page for the respective tables
     function updateRowsPerPage(table, selectElement) {
@@ -480,72 +489,82 @@
       });
     }
 
-
     // search organisation users table
     $(document).ready(function() {
-      $('#searchInput').on('input', function() {
+      $('#searchInput').keyup(debounce(function() {
         var formData = $(this).val();
-            makeSearchQuery(formData)
-      });
+        makeSearchQuery(formData);
+        // append search_text in current URL so search can still be applied when changing rowsPerPage
+        var url = new URL(window.location.href);        
+        url.searchParams.set('search_text', formData);
+        window.history.pushState(null, document.title, url);
+      }, 300));
     });
 
-    $(document).ready(function () {
-        $('#searchForm').submit(function (event) {
-            event.preventDefault();
-            var formData = $(this).serialize();
-            console.log('submitting ',formData)
-
-            makeSearchQuery(formData)
-        });
-    });
-
-    function makeSearchQuery(formData){
+    function makeSearchQuery(searchText){
       $.ajax({
-                type: 'POST',
-                url: $(this).attr('action'),
-                data: {
-                  'action': 'search_user_table',
-                  'query': formData,
-                  'current_organisation': '{{ current_organisation }}',
-                  'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                // dataType: 'json',
-                success: function (response) {
-                    var data = response.data;
-                    data = JSON.parse(data);
-                    // console.log(data)
-                    var tableBody = $('#organisation_users tbody');
+        type: 'POST',
+        url: "{% url 'Users' %}?users_page=1&users_per_page={{ users.per_page }}&search_text="+searchText,
+        data: {
+          'action': 'search_user_table',
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: 'json',
+        success: function (response) {
+            var data = response.data;
+            var tableBody = $('#organisation_users tbody');
+            tableBody.empty();
+            {% is_organisation_manager user.id current_organisation_id as is_current_manager %}
+            var is_org_manager = '{{ is_current_manager }}' === 'True'
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    var row = '<tr>';
+                    row += '<td>' + data[i].name + '</td>';
+                    row += '<td>' + (data[i].is_manager ? 'Manager' : 'Member') + '</td>';
 
-                    tableBody.empty();
-
-                    var current_user_role = '{{ role }}'
-
-                    if (data.length > 0) {
-                        for (var i = 0; i < data.length; i++) {
-                            var row = '<tr>';
-                            row += '<td>' + data[i].user + '</td>';
-                            row += '<td>' + data[i].role + '</td>';
-
-                            if(current_user_role === "Admin" || current_user_role === "Super user" || '{{ user.is_superuser }}') {
-                              var is_manager = data[i].role.toLowerCase() === 'organisation manager' ? 1 : 0
-                              row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].id + ' data-is-manager='+is_manager+'></i></td>';
-                            }
-                            // Add more table cells as needed
-                            row += '</tr>';
-
-                            tableBody.append(row);
-                            // Update the rows per page value to the maximum
-                            $('#usersRowsPerPage').val('{{ users.paginator.num_pages }}');
-                            $('#usersRowsPerPage').val(20);
-                            $('#usersRowsPerPage option').prop('disabled', false);
-                            $('tfoot').show(); // Hide the table footer
-                        }
-                    } else {
-                      tableBody.append('<tr class="no-results"><td colspan="2">No results found</td></tr>');
-                      $('tfoot').hide(); // Hide the table footer
+                    if(is_org_manager) {
+                      var is_manager = data[i].is_manager ? 1 : 0
+                      row += '<td><i class="fas fa-trash-alt trash-icon" data-object-id='+ data[i].user_id + ' data-is-manager='+is_manager+'></i></td>';
                     }
+                    // Add more table cells as needed
+                    row += '</tr>';
+
+                    tableBody.append(row);
                 }
-            });
+                // update pagination
+                let paginationBody = $('#usersPagination');
+                let paginationBodyHtml = []
+                if (response.previous_page_number >= 0) {
+                  paginationBodyHtml.push(
+                    '<li class="page-item">' +
+                      '<a class="page-link" href="?users_page='+ response.previous_page_number +'&users_per_page='+ response.per_page +'&search_text='+ response.search_text +'" aria-label="Previous">' +
+                        '<span aria-hidden="true">&laquo;</span>' +
+                        '<span class="sr-only">Previous</span>' +
+                        '</a>' +
+                    '</li>'
+                  )
+                }
+                paginationBodyHtml.push(
+                  '<li class="page-item disabled">' +
+                  '<a class="page-link" href="#">'+ response.number +'</a>' +
+                  '</li>'
+                )
+                if (response.next_page_number >= 0) {
+                  paginationBodyHtml.push(
+                    '<li class="page-item">' +
+                      '<a class="page-link" href="?users_page='+ response.next_page_number +'&users_per_page='+ response.per_page +'&search_text='+ response.search_text +'" aria-label="Next">' +
+                        '<span aria-hidden="true">&raquo;</span>' +
+                        '<span class="sr-only">Next</span>' +
+                      '</a>' +
+                    '</li>'
+                  )
+                }
+                paginationBody.html(paginationBodyHtml.join(' '))
+            } else {
+              tableBody.append('<tr class="no-results"><td colspan="2">No results found</td></tr>');
+            }
+        }
+    });
     }
   </script>
 
