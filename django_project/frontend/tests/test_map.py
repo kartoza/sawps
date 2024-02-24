@@ -6,12 +6,13 @@ from importlib import import_module
 from django.db import connection
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
-from django.test import TestCase
+from django.test import TestCase, Client, override_settings
 from django.urls import reverse
+from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from core.settings.utils import absolute_path
+from core.settings.utils import absolute_path, DJANGO_ROOT
 from frontend.utils.map import get_map_template_style
 from activity.factories import ActivityTypeFactory
 from property.factories import (
@@ -60,6 +61,11 @@ from frontend.utils.map import (
 )
 from frontend.static_mapping import (
     NATIONAL_DATA_CONSUMER
+)
+from frontend.models.context_layer import (
+    ContextLayer,
+    ContextLayerLegend,
+    Layer
 )
 
 
@@ -132,8 +138,12 @@ class TestMapAPIViews(TestCase):
         self.group_1.permissions.add(view_properties_perm)
         self.superuser = UserF.create(
             username='test_2',
-            is_superuser=True
+            is_superuser=True,
+            is_staff=True,
+            is_active=True
         )
+        TOTPDevice.objects.create(
+            user=self.superuser, name='Test Device', confirmed=True)
         # set active org for superuser
         self.superuser.user_profile.current_organisation = self.organisation_1
         self.superuser.user_profile.save()
@@ -999,3 +1009,42 @@ class TestMapAPIViews(TestCase):
         view = AerialTile.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
+
+    @override_settings(FIXTURE_DIRS=[DJANGO_ROOT])
+    def test_reload_context_layers(self):
+        # fetch fixtures context layer+legends
+        num_of_context_layer = 0
+        num_of_legends = 0
+        num_of_layers = 0
+        json_path = absolute_path(
+            'fixtures', 'context_layer.json'
+        )
+        with open(json_path) as fixtures_json:
+            data = json.load(fixtures_json)
+            num_of_context_layer = len(data)
+            for context_layer in data:
+                num_of_layers += len(context_layer['fields']['layer_names'])
+        json_path = absolute_path(
+            'fixtures', 'context_layer_legend.json'
+        )
+        with open(json_path) as fixtures_json:
+            data = json.load(fixtures_json)
+            num_of_legends = len(data)
+        self.assertTrue(num_of_context_layer > 0)
+        self.assertTrue(num_of_legends > 0)
+        self.assertTrue(num_of_layers > 0)
+        client = Client()
+        client.force_login(self.superuser)
+        response = client.get(
+            reverse('admin:reload-context-layer-fixtures'))
+        self.assertEqual(response.status_code, 302)
+        # assert the total counts
+        self.assertEqual(
+            ContextLayer.objects.all().count(), num_of_context_layer
+        )
+        self.assertEqual(
+            ContextLayerLegend.objects.all().count(), num_of_legends
+        )
+        self.assertEqual(
+            Layer.objects.count(), num_of_layers
+        )

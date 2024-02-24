@@ -30,16 +30,10 @@ def generate_spatial_filter_for_all_properties():
     properties = Property.objects.all().order_by('id')
     logger.info(
         f'Generating spatial filter for {properties.count()} properties.')
-    count = 0
     for property in properties.iterator(chunk_size=1):
         save_spatial_values_from_property_layers(
             property
         )
-        count += 1
-        if count % 100 == 0:
-            logger.info(
-                'Processing spatial filter for '
-                f'({count}/{properties.count()}) properties.')
     logger.info(
         'Finished generating spatial filter '
         f'for {properties.count()} properties.')

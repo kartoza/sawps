@@ -184,7 +184,8 @@ class ContextLayerAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            path('reload_fixtures/', self.reload_fixtures),
+            path('reload_fixtures/', self.reload_fixtures,
+                 name='reload-context-layer-fixtures'),
         ]
         return my_urls + urls
 
