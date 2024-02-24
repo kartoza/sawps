@@ -331,6 +331,17 @@ class SpeciesModelOutputAdmin(admin.ModelAdmin):
 
 @admin.action(description='Trigger generate spatial filter')
 def trigger_generate_spatial_filter(modeladmin, request, queryset):
+    # check if there is at least one Layer with spatial_filter_field
+    non_empty_layer = Layer.objects.exclude(
+        spatial_filter_field__isnull=True
+    ).exclude(spatial_filter_field__exact='')
+    if non_empty_layer.count() == 0:
+        modeladmin.message_user(
+            request,
+            'Please set spatial_filter_field to at least 1 layer object!',
+            messages.WARNING
+        )
+        return
     generate_spatial_filter_for_all_properties.delay()
     modeladmin.message_user(
         request,
