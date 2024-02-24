@@ -20,16 +20,48 @@
                             prompts to be able to login to this platform </p>
 
                         <div class="login-help text-center">
-                            Did not receive verification email </a>
+                            Did not receive verification email? <span id="timer">(02:00)</span><span id="actionTimer" style="display: none;">Resend</span>
                         </div>
 
-                        <a href="{% url 'account_login' %}"><button class="sawps-from-submit account-button"">Login</button></a>
+                        <a href="{% url 'account_login' %}"><button class="sawps-from-submit account-button">Login</button></a>
 
                     </div>
             </div>
         </div>
     </div>
+    
+    <script>
+        function str_pad_left(string, pad, length) {
+            return (new Array(length + 1).join(pad) + string).slice(-length);
+        }
+        function format_seconds(time) {
+            const minutes = Math.floor(time / 60);
+            const seconds = time - minutes * 60;
+            return str_pad_left(minutes, '0', 2) + ':' + str_pad_left(seconds, '0', 2);
+        }
+        var time;
+        function resetTimer() {
+            var timer = $("#timer");
+            if (!time) {
+                time = 120;
+            }
+            timer.text(`(${format_seconds(time)})`);
+            var intervalTimer = setInterval(function () {
+                time -= 1;
+                timer.text(`(${format_seconds(time)})`);
+                if (time < 1) {
+                    clearInterval(intervalTimer);
+                    timer.hide();
+                    $("#actionTimer").show();
+                }
+            }, 1000);
+        }
+        $(document).ready(function() {
+            resetTimer();
+        });
+    </script>
 </section>
 {% endblock %}
+
 
 </html>
