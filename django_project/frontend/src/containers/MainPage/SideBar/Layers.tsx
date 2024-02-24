@@ -10,6 +10,7 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import Tooltip from '@mui/material/Tooltip';
 import ContextLayerInterface, { ContextLayerLegendInterface } from '../../../models/ContextLayer';
 import {RootState} from '../../../app/store';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
@@ -72,7 +73,9 @@ function Layers() {
                                         onClick={(event) => dispatch(toggleLayer(layer.id)) }
                                     />
                                 </ListItemIcon>
-                                <ListItemText id={labelId} primary={layer.name} />
+                                <Tooltip title={layer.description ? layer.description : layer.name}>
+                                    <ListItemText id={labelId} primary={layer.name} className='LayerName' onClick={(event) => dispatch(toggleLayer(layer.id))} />
+                                </Tooltip>
                                 { layer.legends.length && layer.isExpanded ?  <IconButton onClick={(event) => dispatch(toggleExpandedLayer(layer.id))}><ExpandLess /></IconButton> : null }
                                 { layer.legends.length && !layer.isExpanded ? <IconButton onClick={(event) => dispatch(toggleExpandedLayer(layer.id))}><ExpandMore /></IconButton> : null }
                             </ListItem>
