@@ -29,6 +29,9 @@ from frontend.tasks import (
     start_plumber_process,
     generate_species_statistical_model
 )
+from property.tasks import (
+    generate_spatial_filter_for_all_properties
+)
 
 
 def cancel_other_processing_tasks(task_id=None):
@@ -193,9 +196,18 @@ class ContextLayerAdmin(admin.ModelAdmin):
                      app_label='frontend')
         call_command('loaddata', 'fixtures/context_layer_legend.json',
                      app_label='frontend')
+        # reload Layer tables
+        Layer.objects.all().delete()
+        for context_layer in ContextLayer.objects.all():
+            for layer_name in context_layer.layer_names:
+                Layer.objects.create(name=layer_name,
+                                     context_layer=context_layer)
+        # once layer is created, need to patch spatial filter fields manually
+        # before triggering patching spatial data job
         self.message_user(
             request,
-            'Context layer fixtures has been successfully reloaded!',
+            'Context layer fixtures has been successfully reloaded! '
+            'Please trigger generate spatial filter from layer listing!',
             messages.SUCCESS
         )
         return HttpResponseRedirect('/admin/frontend/contextlayer/')
@@ -317,6 +329,17 @@ class SpeciesModelOutputAdmin(admin.ModelAdmin):
     actions = [trigger_generate_species_statistical_model]
 
 
+@admin.action(description='Trigger generate spatial filter')
+def trigger_generate_spatial_filter(modeladmin, request, queryset):
+    generate_spatial_filter_for_all_properties.delay()
+    modeladmin.message_user(
+        request,
+        'Generate spatial filter for all properties '
+        'will be run in background!',
+        messages.SUCCESS
+    )
+
+
 class LayerAdmin(admin.ModelAdmin):
     """Admin page for Layer model
 
@@ -328,6 +351,7 @@ class LayerAdmin(admin.ModelAdmin):
         'name',
         'context_layer__name'
     ]
+    actions = [trigger_generate_spatial_filter]
 
 
 class SpatialDataValueModelAdmin(admin.StackedInline):
