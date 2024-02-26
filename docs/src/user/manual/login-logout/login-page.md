@@ -25,9 +25,9 @@ The Login Page is the entry point to access the user's account within the applic
 
 3. **Remember Me**: Users should check this box if they want the application to remember their login credentials for future sessions. This feature is optional and can be useful for quick and convenient access.
 
-4. **Login Button**: Click the `LOGIN` button to submit the user's credentials and access their account.
+4. **Login Button**: Click the `LOGIN` button to submit the user's credentials and access their account. Upon clicking this button, the user will be redirected to the Two-Factor Authentication (2FA) page, where they need to enter the authentication code. If the user does not have the token generator, they can follow the [documentation](../../quickstart/index) provided to install it. For detailed information on 2FA, please refer to the documentation [here](./login-2fa-page.md).
 
-5. **Register Here**: The `Register Here` link opens the [register page](../register/register-page.md) for registration.
+5. **Register Here**: The `Register Here` link opens the [registration page](../register/register-page.md) for registration.
 
 6. **Forgot Password**: The `Forgot Password` link opens the [forgot password](forgot-password.md) for reset password.
 
@@ -38,7 +38,6 @@ The `Remember Me` checkbox allows users to opt for the application to remember t
 ### Security
 
 The `Login Page` is designed with security in mind to protect user accounts and sensitive information. It uses encryption protocols and best practices to ensure that users' login credentials are kept secure.
-
 
 ### Logging In
 
