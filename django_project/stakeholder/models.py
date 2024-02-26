@@ -12,7 +12,8 @@ from stakeholder.utils import (
     add_user_to_org_member,
     add_user_to_org_manager,
     remove_user_from_org_member,
-    remove_user_from_org_manager
+    remove_user_from_org_manager,
+    notify_user_becomes_manager
 )
 
 MEMBER = 'Member'
@@ -454,6 +455,33 @@ def post_create_organisation_representative(
     automatically add them to Organisation Manager group.
     """
     add_user_to_org_manager(instance, Group)
+    # check if user becomes manager from member
+    is_made_manager = False
+    if created:
+        organisation_user = OrganisationUser.objects.filter(
+            user=instance.user,
+            organisation=instance.organisation
+        ).first()
+        member_invite = OrganisationInvites.objects.filter(
+            user=instance.user,
+            joined=True
+        ).first()
+        if organisation_user is None:
+            # case when representative is created in admin site
+            # create organisation user
+            OrganisationUser.objects.create(
+                user=instance.user,
+                organisation=instance.organisation
+            )
+            is_made_manager = True
+        elif member_invite:
+            # check if previously has been invited as member
+            is_made_manager = member_invite.assigned_as == MEMBER
+        else:
+            # this case could be the member is added through admin site
+            is_made_manager = True
+    if is_made_manager:
+        notify_user_becomes_manager(instance)
 
 
 @receiver(post_delete, sender=OrganisationRepresentative)

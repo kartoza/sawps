@@ -621,7 +621,9 @@ class TestRemindersView(TestCase):
 
         context = view.get_context_data()
         self.assertIn('can_set_reminder_type', context)
-        self.assertFalse(context['can_set_reminder_type'])
+        # without setting current_organisation in user_profile,
+        # it will be set by OrganisationBaseView
+        self.assertTrue(context['can_set_reminder_type'])
 
 
     def test_edit_reminder(self):

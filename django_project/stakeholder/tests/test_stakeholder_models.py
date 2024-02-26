@@ -1,4 +1,5 @@
-from django.contrib.auth.models import User
+import mock
+from django.contrib.auth.models import User, Group
 from django.db.models import Q
 from django.test import TestCase, override_settings
 from django.db.models.signals import post_save
@@ -37,6 +38,10 @@ from frontend.static_mapping import (
     ORGANISATION_MEMBER
 )
 from species.factories import UserFactory
+
+
+def mocked_sending_email(*args, **kwargs):
+    return True
 
 
 class TestUserRoleType(TestCase):
@@ -316,9 +321,17 @@ class OrganizationUserTestCase(TestCase):
             user=self.user,
             organisation=self.organisation
         )
-        self.assertEqual(
-            self.user.groups.first().name,
-            ORGANISATION_MANAGER
+        groups = Group.objects.filter(
+            user=self.user
+        )
+        all_groups = [group.name for group in groups]
+        self.assertIn(
+            ORGANISATION_MANAGER,
+            all_groups
+        )
+        self.assertIn(
+            ORGANISATION_MEMBER,
+            all_groups
         )
 
     def test_create_organisation_user_member(self):
@@ -471,6 +484,112 @@ class OrganizationRepresentativeTestCase(TestCase):
         """Test deleting organisation representative."""
         self.organizationRep.delete()
         self.assertEqual(OrganisationRepresentative.objects.count(), 0)
+
+    @mock.patch('stakeholder.utils.send_mail')
+    def test_upgrade_to_manager(self, mocked_send_mail):
+        """Test upgrade a member to manager."""
+        mocked_send_mail.side_effect = mocked_sending_email
+        organisation_1 = organisationFactory()
+        # user without email
+        user_0 = User.objects.create_user(
+            username='testuser0',
+            password='testpassword0'
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_0,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_not_called()
+        self.assertTrue(OrganisationUser.objects.filter(
+            user=user_0,
+            organisation=organisation_1
+        ).exists())
+        # from no org_user - possible from admin site
+        mocked_send_mail.reset_mock()
+        user_1 = User.objects.create_user(
+            username='testuser1',
+            password='testpassword1',
+            email='testuser1@test.com'
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_1,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_called_once()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=user_1,
+            organisation=organisation_1
+        ).count(), 1)
+        # from existing org_user with invite = Member
+        mocked_send_mail.reset_mock()
+        user_2 = User.objects.create_user(
+            username='testuser2',
+            password='testpassword2',
+            email='testuser2@test.com'
+        )
+        OrganisationUser.objects.create(
+            user=user_2,
+            organisation=organisation_1
+        )
+        OrganisationInvites.objects.create(
+            user=user_2,
+            joined=True,
+            assigned_as=MEMBER
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_2,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_called_once()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=user_2,
+            organisation=organisation_1
+        ).count(), 1)
+        # from existing org_user with invite = Manager
+        mocked_send_mail.reset_mock()
+        user_3 = User.objects.create_user(
+            username='testuser3',
+            password='testpassword3',
+            email='testuser3@test.com'
+        )
+        OrganisationUser.objects.create(
+            user=user_3,
+            organisation=organisation_1
+        )
+        OrganisationInvites.objects.create(
+            user=user_3,
+            joined=True,
+            assigned_as=MANAGER
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_3,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_not_called()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=user_3,
+            organisation=organisation_1
+        ).count(), 1)
+        # from existing org_user without any invite
+        mocked_send_mail.reset_mock()
+        user_4 = User.objects.create_user(
+            username='testuser4',
+            password='testpassword4',
+            email='testuser4@test.com'
+        )
+        OrganisationUser.objects.create(
+            user=user_4,
+            organisation=organisation_1
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_4,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_called_once()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=user_4,
+            organisation=organisation_1
+        ).count(), 1)
 
 
 class OrganisationInvitesModelTest(TestCase):
