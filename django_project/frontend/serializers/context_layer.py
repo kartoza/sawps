@@ -24,4 +24,4 @@ class ContextLayerSerializer(serializers.ModelSerializer):
     class Meta:
         """Meta class for serializer."""
         model = ContextLayer
-        fields = ['id', 'name', 'layer_names', 'legends']
+        fields = ['id', 'name', 'layer_names', 'legends', 'description']

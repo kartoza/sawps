@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch, PropertyMock
 
 from django.contrib.admin import AdminSite
@@ -24,7 +25,10 @@ from frontend.tests.model_factories import (
     ContextLayerF,
     SpatialDataModelF
 )
-from property.tasks import generate_spatial_filter_task
+from property.tasks import (
+    generate_spatial_filter_task,
+    generate_spatial_filter_for_all_properties
+)
 
 
 class TestSpatialFunctions(TestCase):
@@ -237,3 +241,12 @@ class GenerateSpatialFiltersTest(TestCase):
         self.assertEqual(property_2.spatialdatamodel_set.count(), 0)
 
         self.assertGreaterEqual(mock_task.delay.call_count, 2)
+
+
+class GenerateSpatialFilterAllPropertiesTaskTest(TestCase):
+
+    @patch('property.spatial_data.save_spatial_values_from_property_layers')
+    def test_generate_spatial_filter_task(self, mock_save_spatial):
+        property_obj = PropertyFactory.create()
+        generate_spatial_filter_for_all_properties()
+        mock_save_spatial.assert_called_once_with(property_obj)
