@@ -48,6 +48,7 @@
 
     .InputContainer {
         text-align: left;
+        max-width: 100%;
 
         .Calendar {
             input {
@@ -114,6 +115,7 @@
         }
         input.Mui-disabled {
             -webkit-text-fill-color: unset;
+            text-overflow: ellipsis;
         }
         .MuiInputBase-root.Mui-disabled::before {
             border-bottom-style: none;
