@@ -7,6 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.files import File
 from django.test import TestCase
 from django.urls import reverse
+from django.db import IntegrityError
 from frontend.models.upload import UploadSpeciesCSV
 from frontend.tests.model_factories import UserF
 from population_data.models import (
@@ -34,11 +35,12 @@ from species.scripts.data_upload import (
     string_to_number,
     map_string_to_value
 )
-from species.scripts.upload_file_scripts import SHEET_TITLE
+from species.scripts.upload_file_scripts import *  # noqa
 from stakeholder.factories import (
     organisationRepresentativeFactory,
     organisationUserFactory
 )
+from population_data.factories import AnnualPopulationF
 
 
 def mocked_run_func(encoding):
@@ -580,8 +582,8 @@ class TestUploadSpeciesApiView(TestCase):
             #                 "Planned hunt/culling_Offtake_adult_males and "
             #                 "Planned hunt/culling_Offtake_adult_females must "
             #                 "not exceed Planned hunt/culling_TOTAL." in errors)
-        self.assertEqual(AnnualPopulation.objects.count(), 6)
-        self.assertEqual(upload_session.success_notes, "6 rows uploaded successfully.")
+        self.assertEqual(AnnualPopulation.objects.count(), 7)
+        self.assertEqual(upload_session.success_notes, "7 rows uploaded successfully.")
         self.assertTrue(AnnualPopulation.objects.filter(
             survey_method_other="Test survey"
         ).count(), 1)
@@ -1157,3 +1159,33 @@ class TestUploadSpeciesApiView(TestCase):
             'ABC'
         )
         self.assertFalse(map_string_to_value('null', dict_values))
+
+    def test_row_value_invalid_key(self):
+        row = {
+            'test': 'ABC'
+        }
+        file_upload = SpeciesCSVUpload()
+        self.assertFalse(file_upload.row_value(row, 'null'))
+
+    @mock.patch('population_data.models.AnnualPopulationPerActivity.objects.get_or_create')
+    def test_save_population_per_activity(self, mocked_create):
+        mocked_create.side_effect = IntegrityError('error')
+        file_upload = SpeciesCSVUpload()
+        annual = AnnualPopulationF.create(
+            year=2023
+        )
+        row = {
+            INTRODUCTION_TOTAL: '22',
+            INTRODUCTION_TOTAL_MALES: '22',
+            INTRODUCTION_TOTAL_FEMALES: '22',
+            INTRODUCTION_MALE_JUV: '22',
+            INTRODUCTION_FEMALE_JUV: '22'
+        }
+        intake = file_upload.save_population_per_activity(
+            row, ACTIVITY_TRANSLOCATION_INTAKE, 2023,
+            annual, INTRODUCTION_TOTAL,
+            INTRODUCTION_TOTAL_MALES, INTRODUCTION_TOTAL_FEMALES,
+            INTRODUCTION_MALE_JUV, INTRODUCTION_FEMALE_JUV
+        )
+        self.assertFalse(intake)
+        self.assertEqual(len(file_upload.row_error), 1)
