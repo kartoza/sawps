@@ -16,6 +16,7 @@ context_id: GWy6g9HwvM2cBb3JgtYcyj
 Welcome to the documentation for map layers available in the application. This document provides an overview of the map layers, how to access them, and how to interact with and customise their appearance.
 
 > DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
+The user can view the layer description by hovering over the layer.
 
 **Layers**
 
@@ -95,6 +96,8 @@ Welcome to the documentation for map layers available in the application. This d
 
     2. **Property Boundaries Display**: White lines on the map indicate the property boundaries and land divisions.
 
+    3. **Parent farm Cname:** Click on the map to view the parent farm's Cname.
+
     * **Layer Visibility**: You can control the visibility of the Cadastral Boundaries layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to cadastral boundaries.
 
 7. **Place Names Layer**: The `Place Names` layer provides information on geographic place names and locations across South Africa. It helps users identify specific locations for their research or exploration.
@@ -113,7 +116,7 @@ Welcome to the documentation for map layers available in the application. This d
 
     1. **Properties**: The `Properties` layer provides detailed information about land parcels and properties within South Africa.
 
-    2. **Property on Map**: This layer displays properties on the map.
+    2. **Property on Map**: The red dots display the properties on the map.
 
     * **Layer Visibility**: You can control the visibility of the properties layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to properties.
 
