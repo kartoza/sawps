@@ -31,7 +31,8 @@ from species.tasks.upload_species import (
 from species.scripts.data_upload import (
     SpeciesCSVUpload,
     string_to_boolean,
-    string_to_number
+    string_to_number,
+    map_string_to_value
 )
 from species.scripts.upload_file_scripts import SHEET_TITLE
 from stakeholder.factories import (
@@ -579,8 +580,8 @@ class TestUploadSpeciesApiView(TestCase):
             #                 "Planned hunt/culling_Offtake_adult_males and "
             #                 "Planned hunt/culling_Offtake_adult_females must "
             #                 "not exceed Planned hunt/culling_TOTAL." in errors)
-        self.assertEqual(AnnualPopulation.objects.count(), 5)
-        self.assertEqual(upload_session.success_notes, "5 rows uploaded successfully.")
+        self.assertEqual(AnnualPopulation.objects.count(), 6)
+        self.assertEqual(upload_session.success_notes, "6 rows uploaded successfully.")
         self.assertTrue(AnnualPopulation.objects.filter(
             survey_method_other="Test survey"
         ).count(), 1)
@@ -1146,3 +1147,13 @@ class TestUploadSpeciesApiView(TestCase):
                 errors.append(row['error_message'])
             self.assertIn("You are not allowed to update data of property {} and species {} in year {}".format(
                     self.property.short_code, self.lion.scientific_name, 2017), errors)
+
+    def test_map_string_to_value(self):
+        dict_values = {
+            'test': 'ABC'
+        }
+        self.assertEqual(
+            map_string_to_value('test', dict_values),
+            'ABC'
+        )
+        self.assertFalse(map_string_to_value('null', dict_values))
