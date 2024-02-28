@@ -117,6 +117,10 @@ Completing Step 2 ensures that the user's dataset is comprehensive and includes 
 
 3. **Save Boundary**: Click on `SAVE BOUNDARY` button to save the boundaries. After saving the boundary the user will be able to see the selected parcel id and its type.
 
+    ![property boundary](./img/panel-12.png)
+
+    1. **Parcel ID** The `Parcel ID` displayed in the side panel corresponds to the selected parcel.
+
 ### Select parcel using the digitise button
 
 The `DIGITISE` button is a powerful tool that allows the user to digitise parcel boundaries. When the user clicks the `DIGITISE` button, they will see a set of options on the left top of the map, giving the user full control over the digitisation process. These options are essential for mapping out parcel boundaries accurately.
@@ -132,6 +136,12 @@ The `DIGITISE` button is a powerful tool that allows the user to digitise parcel
 3. **Delete Icon**: The `Delete Icon` is for removing or deleting any selected area that the user no longer needs. This option allows the user to make adjustments as they digitise.
 
 4. **Save Icon**: Click on the `Save Icon` to save the selected area as a digitised parcel boundary. This is a critical step to preserve the boundaries the user has defined.
+
+    ![property boundary](./img/panel-13.png)
+
+    1. **Parent Parcel ID** The `Parent Parcel ID` displayed in the side panel corresponds to the selected parent parcel.
+
+    2. **Other Parcel ID** The `Other Parcel ID` displayed in the side panel corresponds to the other selected parcel. For example, if the user manually selects a portion of another parcel using digitisation, the parcel ID will also be shown in the side panel.
 
 5. **Cross Icon**: The `Cross Icon` is used to cancel or discard any digitisation progress if the user needs to start over or abandon the current selection.
 
