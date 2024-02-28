@@ -96,7 +96,9 @@ The user can view the layer description by hovering over the layer.
 
     2. **Property Boundaries Display**: White lines on the map indicate the property boundaries and land divisions.
 
-    3. **Parent farm Cname:** Click on the map to view the parent farm's Cname.
+    3. **Cadastral Cname:** Click on the map to view a cadastral's Cname. Depending on the zoom level this will be the Parent Farm, Farm Portion, Holding, or Erf.
+
+        ![Erf Name](./img/layers-14.png)
 
     * **Layer Visibility**: You can control the visibility of the Cadastral Boundaries layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to cadastral boundaries.
 
@@ -116,7 +118,11 @@ The user can view the layer description by hovering over the layer.
 
     1. **Properties**: The `Properties` layer provides detailed information about land parcels and properties within South Africa.
 
-    2. **Property on Map**: The red dots display the properties on the map.
+    2. **Property on Map**: The red dots display the properties on the map. Until you zoom in more, the properties are highlighted in red.
+
+        Properties after zooming in
+
+        ![Properties layer with map - zoomed in](./img/layers-13.png)
 
     * **Layer Visibility**: You can control the visibility of the properties layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to properties.
 
