@@ -9,5 +9,12 @@ export default interface ContextLayerInterface {
     layer_names?: string[],
     isSelected?: boolean,
     isExpanded?: boolean,
-    legends: ContextLayerLegendInterface[]
+    legends: ContextLayerLegendInterface[],
+    description?: string
 }
+
+export interface ContextLayerVisibilityPayload {
+    id: number;
+    isVisible: boolean;
+}
+

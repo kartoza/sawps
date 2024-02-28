@@ -27,7 +27,7 @@ class AnnualPopulationAdmin(admin.ModelAdmin):
     ]
     form = AnnualPopulationForm
     autocomplete_fields = [
-        'user', 'owned_species', 'taxon',
+        'user', 'taxon',
         'property', 'population_estimate_category', 'sampling_effort_coverage'
     ]
 

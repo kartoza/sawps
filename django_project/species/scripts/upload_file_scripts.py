@@ -1,7 +1,7 @@
 PROPERTY = "Property_code"
 SCIENTIFIC_NAME = "Scientific_name"
 COMMON_NAME = "Common_name_verbatim"
-OPEN_SYS = "open/close_system"
+OPEN_SYS = "open/closed_system"
 PRESENCE = "presence/absence"
 YEAR = "Year_of_estimate"
 COUNT_TOTAL = "COUNT_TOTAL"
@@ -35,14 +35,14 @@ FOUNDER_POPULATION = "Founder_population"
 INTRODUCTION_SOURCE = "(Re)Introduction_source"
 INTRODUCTION_PERMIT_NUMBER = "(Re)Introduction_permit_number"
 OFFTAKE_TOTAL = "Offtake_TOTAL"
-TRANS_OFFTAKE_TOTAL = "Translocation_offtake_total"
+TRANS_OFFTAKE_TOTAL = "Translocation_(Offtake)_total"
 TRANS_OFFTAKE_ADULTE_MALES = "Translocation_Offtake_adult_males"
 TRANS_OFFTAKE_ADULTE_FEMALES = "Translocation_Offtake_adult_females"
 TRANS_OFFTAKE_MALE_JUV = "Translocation_Offtake_male_juveniles"
 TRANS_OFFTAKE_FEMALE_JUV = "Translocation_Offtake_female_juveniles"
 TRANS_DESTINATION = "Translocation_destination"
 TRANS_OFFTAKE_PERMIT_NUMBER = "Translocation_Offtake_Permit_number"
-PLANNED_HUNT_TOTAL = "Planned hunt/culling_TOTAL"
+PLANNED_HUNT_TOTAL = "Planned_Hunt/Cull_TOTAL"
 PLANNED_HUNT_OFFTAKE_ADULT_MALES = "Planned hunt/culling_Offtake_adult_males"
 PLANNED_HUNT_OFFTAKE_ADULT_FAMALES = \
     "Planned hunt/culling_Offtake_adult_females"
@@ -51,7 +51,7 @@ PLANNED_HUNT_OFFTAKE_MALE_JUV = \
 PLANNED_HUNT_OFFTAKE_FEMALE_JUV = \
     "Planned hunt/culling_Offtake_female_juveniles"
 PLANNED_HUNT_PERMIT_NUMBER = "Planned hunt/culling_Permit_number"
-PLANNED_EUTH_TOTAL = "Planned euthanasia_TOTAL"
+PLANNED_EUTH_TOTAL = "Planned euthanasia/DCA_TOTAL"
 PLANNED_EUTH_OFFTAKE_ADULT_MALES = "Planned euthanasia_Offtake_adult_males"
 PLANNED_EUTH_OFFTAKE_ADULT_FAMALES = "Planned euthanasia_Offtake_adult_females"
 PLANNED_EUTH_OFFTAKE_MALE_JUV = "Planned euthanasia_Offtake_male_juveniles"
@@ -67,21 +67,32 @@ UNPLANNED_HUNT_OFFTAKE_MALE_JUV = \
 UNPLANNED_HUNT_OFFTAKE_FEMALE_JUV = \
     "Unplanned/illegal hunting_Offtake_female_juveniles"
 
+# ACTIVITY TYPES
+ACTIVITY_TRANSLOCATION_INTAKE = 'Translocation (Intake)'
+ACTIVITY_TRANSLOCATION_OFFTAKE = 'Translocation (Offtake)'
+ACTIVITY_PLANNED_HUNT_CULL = 'Planned Hunt/Cull'
+ACTIVITY_PLANNED_EUTH_DCA = 'Planned Euthanasia/DCA'
+ACTIVITY_UNPLANNED_ILLEGAL_HUNTING = 'Unplanned/Illegal Hunting'
 
 COMPULSORY_FIELDS = [
-    "Property_code",
-    "Scientific_name",
-    "Common_name_verbatim",
-    "open/close_system",
-    "presence/absence",
-    "Year_of_estimate",
-    "COUNT_TOTAL",
-    "Area_available_to_population_(total enclosure area)_ha",
-    "Population_estimate_category",
-    "Population_estimate_certainty",
+    PROPERTY,
+    SCIENTIFIC_NAME,
+    COMMON_NAME,
+    OPEN_SYS,
+    PRESENCE,
+    YEAR,
+    COUNT_TOTAL,
+    AREA,
+    POPULATION_ESTIMATE_CATEGORY,
+    POPULATION_ESTIMATE_CERTAINTY,
 ]
 
 SHEET_TITLE = "Dataset pilot"
 IF_OTHER_POPULATION_VAL = "Other (please describe how the population " \
                           "size estimate was determined)"
 IF_OTHER_SURVEY_VAL = "Other - please explain"
+
+PRESENCE_VALUE_MAPPING = {
+    'Present': True,
+    'Absent': False
+}

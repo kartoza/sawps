@@ -1,4 +1,5 @@
 import uuid
+import mock
 
 from django.contrib.auth.models import User
 from django.core import mail
@@ -10,9 +11,9 @@ from django.test import (
 from unittest.mock import patch
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.db.models.signals import post_save
 
 from frontend.static_mapping import ORGANISATION_MEMBER, ORGANISATION_MANAGER
-from regulatory_permit.models import DataUsePermission
 from sawps.forms.account_forms import CustomSignupForm, CustomLoginForm, CustomChangePasswordForm
 from sawps.tests.models.account_factory import (
     UserF,
@@ -28,9 +29,15 @@ from stakeholder.models import (
     OrganisationInvites,
     OrganisationUser,
     OrganisationRepresentative,
-    MANAGER
+    MANAGER,
+    create_user_profile,
+    save_user_profile,
 )
 from stakeholder.factories import OrganisationInvitesFactory
+
+
+def mocked_sending_email(*args, **kwargs):
+    return True
 
 
 class TestCustomSignupForm(TestCase):
@@ -137,10 +144,53 @@ class TestCustomSignupForm(TestCase):
 class TestCustomLoginForm(TestCase):
     "Test login form."
 
+    def setUp(self) -> None:
+        self.organisation = Organisation.objects.create(
+            name='organisation2'
+        )
+
     def test_form(self):
         form = CustomLoginForm()
         self.assertEqual(form.fields['login'].label, 'Email')
         self.assertEqual(form.label_suffix, '')
+
+    def test_form_with_invitation(self):
+        invite = OrganisationInvites.objects.create(
+            email='test@test.com',
+            organisation=self.organisation,
+            assigned_as=ORGANISATION_MEMBER
+        )
+        # test with request None
+        kwargs = {
+            'request': None
+        }
+        form = CustomLoginForm(**kwargs)
+        self.assertNotIn('login', form.initial)
+        # test with next URL none
+        url = reverse('account_login')
+        request = RequestFactory().get(url)
+        # test with request None
+        kwargs = {
+            'request': request
+        }
+        form = CustomLoginForm(**kwargs)
+        self.assertNotIn('login', form.initial)
+        # test with non add user url
+        url = reverse('account_login') + f'?next=/organisations/{str(invite.uuid)}/'
+        request = RequestFactory().get(url)
+        kwargs = {
+            'request': request
+        }
+        form = CustomLoginForm(**kwargs)
+        self.assertNotIn('login', form.initial)
+        # test with adduser url
+        url = reverse('account_login') + f'?next=/adduser/{str(invite.uuid)}/'
+        request = RequestFactory().get(url)
+        kwargs = {
+            'request': request
+        }
+        form = CustomLoginForm(**kwargs)
+        self.assertIn('login', form.initial)
 
 
 class TestPasswordChangeForm(TestCase):
@@ -259,6 +309,8 @@ class AddUserToOrganisationTestCase(TestCase):
             first_name='test_user',
             last_name='last_name'
         )
+        TOTPDevice.objects.create(
+            user=self.user, name='Test Device', confirmed=True)
         self.organisation = Organisation.objects.create(
             name=self.organisation_name
         )
@@ -278,15 +330,46 @@ class AddUserToOrganisationTestCase(TestCase):
             organisation=self.organisation2,
             assigned_as=MANAGER
         )
+        self.user_2 = User.objects.create_user(
+            username='testuser2',
+            email='testuser2@test.com',
+            password='testpass',
+            first_name='test_user2',
+            last_name='last_name2'
+        )
+        TOTPDevice.objects.create(
+            user=self.user_2, name='Test Device', confirmed=True)
+        self.invite_3 = OrganisationInvites.objects.create(
+            email=self.user_2.email,
+            organisation=self.organisation,
+            user=self.user_2
+        )
 
     def test_add_user(self):
+        post_save.disconnect(create_user_profile, sender=User)
+        post_save.disconnect(save_user_profile, sender=User)
         view = AddUserToOrganisation()
-        view.adduser(self.invite.uuid)
+        new_user = User.objects.create_user(
+            username='new_user',
+            email='new_user@email.com',
+            password='testpass',
+            first_name='new_user',
+            last_name='new_user'
+        )
+        self.assertFalse(
+            OrganisationUser.objects.filter(
+                user=new_user).exists()
+        )
+        invite = OrganisationInvites.objects.create(
+            email=new_user.email,
+            organisation=self.organisation
+        )
+        view.adduser(invite.uuid)
         org_user = OrganisationUser.objects.filter(
-            user=self.user,
+            user=new_user,
             organisation=self.organisation).first()
         org_invite = OrganisationInvites.objects.filter(
-            email=self.user_email,
+            email=new_user.email,
             organisation=self.organisation).first()
 
         self.assertIsNotNone(org_user)
@@ -304,6 +387,8 @@ class AddUserToOrganisationTestCase(TestCase):
             organisation=self.organisation2).first()
         self.assertIsNotNone(org_user2)
         self.assertIsNotNone(org_rep)
+        post_save.connect(create_user_profile, sender=User)
+        post_save.connect(save_user_profile, sender=User)
 
     def test_is_user_invited(self):
         view = AddUserToOrganisation()
@@ -333,13 +418,31 @@ class AddUserToOrganisationTestCase(TestCase):
         fail = view.send_invitation_email([])
         self.assertFalse(fail)
 
-
     def test_add_user_view_member(self):
+        # without logged in
         url = reverse(
             'adduser',
             args=[self.invite.uuid]
         )
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        org_user = OrganisationUser.objects.filter(
+            user=self.user,
+            organisation=self.organisation).first()
+        org_invite = OrganisationInvites.objects.filter(
+            email=self.user_email,
+            organisation=self.organisation).first()
+        self.assertIsNotNone(org_user)
+        self.assertIsNotNone(org_invite)
+        self.assertFalse(org_invite.joined)
+        # with logged in user
+        url = reverse(
+            'adduser',
+            args=[self.invite.uuid]
+        )
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
         self.assertEqual(response.status_code, 302)
         org_user = OrganisationUser.objects.filter(
             user=self.user,
@@ -355,13 +458,56 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertTrue(
             ORGANISATION_MEMBER in self.user.groups.values_list('name', flat=True)
         )
+        # test invite with another user
+        url = reverse(
+            'adduser',
+            args=[self.invite_3.uuid]
+        )
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        org_invite = OrganisationInvites.objects.filter(
+            email=self.user_2.email,
+            organisation=self.organisation).first()
+        self.assertIsNotNone(org_invite)
+        self.assertFalse(org_invite.joined)
+        # test with invalid invitation uuid
+        url = reverse(
+            'adduser',
+            args=[uuid.uuid4().hex]
+        )
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # test with user that does not signed up yet
+        invite_3 = OrganisationInvites.objects.create(
+            email='new_user@test.com',
+            organisation=self.organisation2,
+            assigned_as=ORGANISATION_MEMBER
+        )
+        url = reverse(
+            'adduser',
+            args=[invite_3.uuid]
+        )
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        invite_3.refresh_from_db()
+        self.assertFalse(invite_3.joined)
 
-    def test_add_user_view_manager(self):
+    @mock.patch('stakeholder.utils.send_mail')
+    def test_add_user_view_manager(self, mocked_send_mail):
+        mocked_send_mail.side_effect = mocked_sending_email
         url = reverse(
             'adduser',
             args=[self.invite_2.uuid]
         )
-        response = self.client.get(url)
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(url)
         self.assertEqual(response.status_code, 302)
         org_user = OrganisationRepresentative.objects.filter(
             user=self.user,
@@ -377,6 +523,11 @@ class AddUserToOrganisationTestCase(TestCase):
         self.assertTrue(
             ORGANISATION_MANAGER in self.user.groups.values_list('name', flat=True)
         )
+        mocked_send_mail.assert_not_called()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=self.user,
+            organisation=self.organisation2
+        ).count(), 1)
 
 
 class SendRequestEmailTestCase(TestCase):

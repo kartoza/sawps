@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import ContextLayerInterface from '../models/ContextLayer';
+import ContextLayerInterface, {ContextLayerVisibilityPayload} from '../models/ContextLayer';
 
 export interface LayerFilterInterface {
     contextLayers: ContextLayerInterface[];
@@ -44,6 +44,15 @@ export const LayerFilterSlice = createSlice({
                 return layer
             })
             state.contextLayers = [..._layers]
+        },
+        setLayerVisibility: (state, action: PayloadAction<ContextLayerVisibilityPayload>) => {
+            let _layers = state.contextLayers.map((layer) => {
+                if (action.payload.id === layer.id) {
+                    layer.isSelected = action.payload.isVisible
+                }
+                return layer
+            })
+            state.contextLayers = [..._layers]
         }
     }
 })
@@ -52,7 +61,8 @@ export const {
     setContextLayers,
     setSelectedLayers,
     toggleLayer,
-    toggleExpandedLayer
+    toggleExpandedLayer,
+    setLayerVisibility
 } = LayerFilterSlice.actions
 
 export default LayerFilterSlice.reducer;

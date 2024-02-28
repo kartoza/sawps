@@ -3,7 +3,6 @@
 from datetime import datetime
 from itertools import chain
 
-from area import area
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.core.exceptions import ValidationError
@@ -39,7 +38,7 @@ from frontend.serializers.property import (
 from frontend.serializers.stakeholder import OrganisationSerializer
 from frontend.static_mapping import PROVINCIAL_ROLES
 from frontend.utils.organisation import get_current_organisation_id
-from frontend.utils.parcel import find_province
+from frontend.utils.parcel import find_province, get_geom_size_in_ha
 from frontend.utils.user_roles import (
     get_user_roles,
     check_user_has_permission
@@ -53,7 +52,10 @@ from property.models import (
     ParcelType,
     Property,
     PropertyType,
-    Province
+    Province,
+    BOUNDARY_FILE_SOURCE_TYPE,
+    DIGITISE_SOURCE_TYPE,
+    SELECT_SOURCE_TYPE
 )
 from stakeholder.models import Organisation, OrganisationUser
 from frontend.models.map_session import MapSession
@@ -87,11 +89,6 @@ class CheckPropertyNameIsAvailable(APIView):
 class CreateNewProperty(CheckPropertyNameIsAvailable):
     """Create new property API."""
     permission_classes = [IsAuthenticated]
-
-    def get_geom_size_in_ha(self, geom: GEOSGeometry):
-        meters_sq = area(geom.geojson)
-        acres = meters_sq * 0.000247105381  # meters^2 to acres
-        return acres / 2.471
 
     def check_parcel_ids(self, cls, parcel_ids):
         queryset = cls.objects.filter(
@@ -187,17 +184,52 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             Parcel.objects.create(**data)
             cnames.append(cname)
 
+    def get_property_geom(self, request, boundary_source,
+                          boundary_search = None):
+        geom = None
+        filtered_ids = {}
+        province = None
+        property_size_ha = 0
+        parcels = []
+        if boundary_source == BOUNDARY_FILE_SOURCE_TYPE:
+            geom = boundary_search.geometry
+            province = boundary_search.province
+            property_size_ha = boundary_search.property_size_ha
+        else:
+            # union of parcels
+            parcels = request.data.get('parcels')
+            filtered_ids = self.group_parcels(parcels)
+            geom, province = self.get_geometry(filtered_ids)
+            property_size_ha = get_geom_size_in_ha(geom)
+        return geom, province, property_size_ha, parcels, filtered_ids
+
+    def save_property_parcels(self, is_update, property,
+                              parcels, filtered_ids):
+        if is_update:
+            # delete existing parcel
+            Parcel.objects.filter(property=property).delete()
+        self.add_parcels(property, parcels, filtered_ids)
+
+    def find_boundary_search_session(self):
+        boundary_source = SELECT_SOURCE_TYPE
+        boundary_search = None
+        boundary_search_session = self.request.data.get(
+            'boundary_search_session', None)
+        if boundary_search_session:
+            boundary_search = BoundarySearchRequest.objects.filter(
+                session=boundary_search_session
+            ).first()
+            if boundary_search is None:
+                return None, None
+            if boundary_search.type == 'File':
+                # uploaded file
+                boundary_source = BOUNDARY_FILE_SOURCE_TYPE
+            else:
+                # digitise
+                boundary_source = DIGITISE_SOURCE_TYPE
+        return boundary_source, boundary_search
+
     def post(self, request, *args, **kwargs):
-        # union of parcels
-        parcels = request.data.get('parcels')
-        filtered_ids = self.group_parcels(parcels)
-        geom, province = self.get_geometry(filtered_ids)
-        if not province:
-            return Response(
-                status=400, data=(
-                    'Invalid Province! Please contact administrator '
-                    'to populate province table!'
-                ))
         current_organisation_id = get_current_organisation_id(
             request.user
         ) or 0
@@ -222,6 +254,22 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
                     f'There is existing property with name {property_name}! '
                     'Please use other name for the property!'
                 ))
+        boundary_source, boundary_search = self.find_boundary_search_session()
+        if boundary_source is None and boundary_search is None:
+            return Response(
+                status=400, data=(
+                    'Invalid property session! '
+                    'Please try again or contact administrator!'
+                ))
+        geom, province, property_size_ha, parcels, filtered_ids = (
+            self.get_property_geom(request, boundary_source, boundary_search)
+        )
+        if not province:
+            return Response(
+                status=400, data=(
+                    'Invalid Province! Please contact administrator '
+                    'to populate province table!'
+                ))
         data = {
             'name': property_name,
             'owner_email': request.data.get('owner_email'),
@@ -230,26 +278,21 @@ class CreateNewProperty(CheckPropertyNameIsAvailable):
             'open_id': request.data.get('open_id'),
             'organisation_id': request.data.get('organisation_id'),
             'geometry': geom,
-            'property_size_ha': self.get_geom_size_in_ha(geom) if geom else 0,
+            'property_size_ha': property_size_ha,
             'created_by_id': self.request.user.id,
             'created_at': datetime.now(),
-            'centroid': geom.point_on_surface
+            'centroid': geom.point_on_surface,
+            'boundary_source': boundary_source
         }
-        # find original boundary
-        boundary_search_session = request.data.get('boundary_search_session')
-        if boundary_search_session:
-            boundary_search = BoundarySearchRequest.objects.filter(
-                session=boundary_search_session,
-                type='File'
-            ).first()
-            if boundary_search and boundary_search.geometry:
-                data['boundary'] = boundary_search.geometry
         property = Property.objects.create(**data)
 
-        try:
-            self.add_parcels(property, parcels, filtered_ids)
-        except ValidationError as e:
-            return Response(status=400, data=e.message)
+        if boundary_source != BOUNDARY_FILE_SOURCE_TYPE:
+            # Selection and digitise will have parcels
+            try:
+                self.save_property_parcels(False, property,
+                                           parcels, filtered_ids)
+            except ValidationError as e:
+                return Response(status=400, data=e.message)
         return Response(status=201, data=PropertySerializer(property).data)
 
 
@@ -386,19 +429,35 @@ class UpdatePropertyBoundaries(CreateNewProperty):
             Property,
             id=request.data.get('id')
         )
-        parcels = request.data.get('parcels')
-        filtered_ids = self.group_parcels(parcels)
-        geom, province = self.get_geometry(filtered_ids)
-        property.geometry = geom
-        property.property_size_ha = (
-            self.get_geom_size_in_ha(geom) if geom else 0
+        boundary_source, boundary_search = self.find_boundary_search_session()
+        if boundary_source is None and boundary_search is None:
+            return Response(
+                status=400, data=(
+                    'Invalid property session! '
+                    'Please try again or contact administrator!'
+                ))
+        geom, province, property_size_ha, parcels, filtered_ids = (
+            self.get_property_geom(request, boundary_source, boundary_search)
         )
+        if not province:
+            return Response(
+                status=400, data=(
+                    'Invalid Province! Please contact administrator '
+                    'to populate province table!'
+                ))
+        property.geometry = geom
+        property.property_size_ha = property_size_ha
         property.centroid = geom.point_on_surface
         property.province = province
+        property.boundary_source = boundary_source
         property.save()
-        # delete existing parcel
-        Parcel.objects.filter(property=property).delete()
-        self.add_parcels(property, parcels, filtered_ids)
+        if boundary_source != BOUNDARY_FILE_SOURCE_TYPE:
+            # Selection and digitise will have parcels
+            try:
+                self.save_property_parcels(True, property,
+                                           parcels, filtered_ids)
+            except ValidationError as e:
+                return Response(status=400, data=e.message)
         return Response(status=201, data=PropertySerializer(property).data)
 
 

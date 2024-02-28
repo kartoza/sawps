@@ -158,28 +158,13 @@ def convert_reminder_dates(reminders):
 
 def search_reminders_or_notifications(request):
     search_query = request.POST.get('query')
-    filter = request.POST.get('filter')
     notifications_page = request.POST.get('notifications_page')
-    if filter is not None and filter != '':
-        if filter == 'title':
-            reminders = Reminders.objects.filter(
-                Q(user=request.user),
-                Q(organisation=get_current_organisation_id(request.user)),
-                Q(title__icontains=search_query)
-            )
-        else:
-            reminders = Reminders.objects.filter(
-                Q(user=request.user),
-                Q(organisation=get_current_organisation_id(request.user)),
-                Q(reminder__icontains=search_query)
-            )
-    else:
-        reminders = Reminders.objects.filter(
-            Q(user=request.user),
-            Q(organisation=get_current_organisation_id(request.user)),
-            Q(title__icontains=search_query) | Q(
-                reminder__icontains=search_query)
-        )
+    reminders = Reminders.objects.filter(
+        Q(user=request.user),
+        Q(organisation=get_current_organisation_id(request.user)),
+        Q(title__icontains=search_query) | Q(
+            reminder__icontains=search_query)
+    )
     if notifications_page is not None:
         notifications = []
         for reminder in reminders:
@@ -529,7 +514,7 @@ class RemindersView(RegisteredOrganisationBaseView):
             return OrganisationRepresentative.objects.filter(
                 user=self.request.user,
                 organisation_id=current_organisation_id
-            )
+            ).exists()
         return False
 
     def get_context_data(self, **kwargs):

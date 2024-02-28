@@ -3,6 +3,7 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import User
+from stakeholder.models import OrganisationRepresentative
 
 
 TOTAL_POPULATION_ERROR_MESSAGE = (
@@ -22,14 +23,6 @@ class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
     year = models.PositiveIntegerField()
-    # This field is no longer used,
-    # but will be deleted after data
-    # migration success.
-    owned_species = models.ForeignKey(
-        "species.OwnedSpecies",
-        on_delete=models.CASCADE,
-        null=True
-    )
     total = models.IntegerField()
     adult_male = models.IntegerField(null=True, blank=True)
     adult_female = models.IntegerField(null=True, blank=True)
@@ -159,6 +152,19 @@ class AnnualPopulation(AnnualPopulationAbstract):
                 })
 
         super().clean()
+
+    def is_editable(self, user: User, managed_organisations = None):
+        if user is None:
+            return False
+        if user.is_superuser:
+            return True
+        if managed_organisations is None:
+            managed_organisations = OrganisationRepresentative.objects.filter(
+                user=user
+            ).values_list('organisation_id', flat=True)
+        if self.property.organisation.id in managed_organisations:
+            return True
+        return self.user.id == user.id if self.user else False
 
     class Meta:
         verbose_name = "Annual Population"

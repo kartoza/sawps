@@ -63,9 +63,9 @@ class AnnualPopulationFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnnualPopulation
         fields = [
-            'present', 'total', 'adult_male', 'adult_female',
-            'sub_adult_male', 'sub_adult_female',
-            'juvenile_male', 'juvenile_female', 'group',
+            'present', 'total', 'adult_total', 'adult_male', 'adult_female',
+            'sub_adult_total', 'sub_adult_male', 'sub_adult_female',
+            'juvenile_total', 'juvenile_male', 'juvenile_female', 'group',
             'area_available_to_species', 'survey_method_id',
             'survey_method_name', 'note', 'population_estimate_certainty',
             'upper_confidence_level', 'lower_confidence_level',

@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django_otp.plugins.otp_totp.models import TOTPDevice
@@ -12,6 +12,12 @@ from frontend.views.totp_device import (
     return_json
 )
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from stakeholder.models import Organisation, OrganisationUser, UserProfile
+from frontend.views.allauth_2fa import (
+    BackupTokensView,
+    SetupTwoFactorView,
+    RemoveTwoFactorView
+)
 
 
 class UtilityFunctionsTests(TestCase):
@@ -100,3 +106,59 @@ class TOTPDeviceViewTests(TestCase):
 
         # Check that the device is deleted
         self.assertEqual(TOTPDevice.objects.count(), 0)
+
+
+class Custom2FAViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpassword'
+        )
+        self.device = TOTPDevice.objects.create(
+            user=self.user,
+            name='Test Device',
+            confirmed=True
+        )
+        self.factory = RequestFactory()
+        self.organisation = Organisation.objects.create(
+            name='organisation_A'
+        )
+        self.organisation_user = OrganisationUser.objects.create(
+            organisation=self.organisation,
+            user=self.user
+        )
+        self.user_profile = UserProfile.objects.filter(
+            user=self.user
+        ).first()
+        self.user_profile.current_organisation = self.organisation
+        self.user_profile.save()
+
+    def check_ctx(self, ctx):
+        self.assertIn('current_organisation', ctx)
+        self.assertIn('organisations', ctx)
+        self.assertIn('can_user_do_upload_data', ctx)
+
+    def test_backup_token_view(self):
+        request = self.factory.get(f"{reverse('two-factor-setup')}")
+        request.user = self.user
+        view = SetupTwoFactorView()
+        view.setup(request)
+        view._new_device()
+        ctx = view.get_context_data()
+        self.check_ctx(ctx)
+
+    def test_setup_two_factor_view(self):
+        request = self.factory.get(f"{reverse('two-factor-backup-tokens')}")
+        request.user = self.user
+        view = BackupTokensView()
+        view.setup(request)
+        ctx = view.get_context_data()
+        self.check_ctx(ctx)
+
+    def test_remove_two_factor_view(self):
+        request = self.factory.get(f"{reverse('two-factor-remove')}")
+        request.user = self.user
+        view = RemoveTwoFactorView()
+        view.setup(request)
+        ctx = view.get_context_data()
+        self.check_ctx(ctx)

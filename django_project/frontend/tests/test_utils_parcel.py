@@ -12,7 +12,7 @@ from property.factories import (
 from stakeholder.factories import organisationFactory
 from frontend.models.parcels import Erf
 from frontend.tests.model_factories import UserF
-from frontend.utils.parcel import find_province
+from frontend.utils.parcel import find_province, get_geom_size_in_ha
 from frontend.tasks.patch_province import patch_province_in_properties
 from frontend.tasks.parcel import patch_parcel_sources
 
@@ -131,3 +131,7 @@ class TestParcelUtils(TestCase):
         # assert that source and source_id are generated
         self.assertTrue(parcel.source)
         self.assertTrue(parcel.source_id)
+
+    def test_get_geom_size_in_ha(self):
+        self.assertTrue(get_geom_size_in_ha(self.erf_1.geom))
+        self.assertFalse(get_geom_size_in_ha(None))

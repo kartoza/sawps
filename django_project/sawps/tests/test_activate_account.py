@@ -13,6 +13,8 @@ from django.utils.http import (
     urlsafe_base64_encode
 )
 from sawps.email_verification_token import email_verification_token
+from frontend.static_mapping import ORGANISATION_MEMBER
+from stakeholder.models import OrganisationInvites, Organisation
 
 class ActivateAccountTestCase(TestCase):
     def setUp(self):
@@ -59,3 +61,41 @@ class ActivateAccountTestCase(TestCase):
             'The confirmation link was invalid,possibly because it has already been used.',
             messages[0]
         )
+
+    def test_activate_account_from_invite_link(self):
+        # create invite
+        organisation2 = Organisation.objects.create(
+            name='organisation2'
+        )
+        OrganisationInvites.objects.create(
+            email=self.user.email,
+            organisation=organisation2,
+            assigned_as=ORGANISATION_MEMBER,
+            joined=True,
+            user=self.user
+        )
+        url = reverse(
+            'activate',
+            kwargs={'uidb64': self.uidb64, 'token': self.token}
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+        # Check for a success message
+        messages = [str(msg) for msg in get_messages(response.wsgi_request)]
+        self.assertEqual(len(messages), 2)
+        self.assertEqual(
+            'Your account have been confirmed.',
+            messages[0]
+        )
+        self.assertEqual(
+            (
+                'You have successfully joined organisation '
+                f'{organisation2.name} '
+                'using the invitation link.'
+            ),
+            messages[1]
+        )
+
+        # Check if a UserProfile is created
+        self.assertTrue(UserProfile.objects.filter(user=self.user).exists())

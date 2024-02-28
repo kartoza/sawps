@@ -96,10 +96,25 @@ class PopulationMetadataList(APIView):
         )
 
 
-class UploadPopulationAPIVIew(APIView):
-    """Save new upload of population data."""
+class CanWritePopulationData(APIView):
+    """API to check whether user can update the data."""
 
     permission_classes = [IsAuthenticated]
+    ADD_DATA_NO_PERMISSION_MESSAGE = (
+        "You cannot add data to property that "
+        "does not belong to your organisations!"
+    )
+    EDIT_DATA_NO_PERMISSION_MESSAGE = (
+        "You cannot edit data that does not belong to you!"
+    )
+    EDIT_DATA_NO_PERMISSION_OVERWRITE_MESSAGE = (
+        "There is existing population data at year {} for this property. "
+        "You are not allowed to edit data that does not belong to you!"
+    )
+    EDIT_DATA_CONFIRM_OVERWRITE_MESSAGE = (
+        "There is existing population data at year {} for this property. "
+        "Are you sure to overwrite the other data?"
+    )
 
     def can_add_data(self, property: Property):
         # check if user belongs to organisation of property
@@ -108,6 +123,102 @@ class UploadPopulationAPIVIew(APIView):
         return OrganisationUser.objects.filter(
             organisation=property.organisation, user=self.request.user
         ).exists()
+
+    def can_overwrite_data(self, annual_population: AnnualPopulation,
+                           property: Property, taxon: Taxon):
+        """Check if user is able to overwrite annual_population record."""
+        user = self.request.user
+        annual_population_id = int(self.request.data.get('id', 0))
+        if (
+            annual_population_id > 0 and
+            not annual_population.is_editable(user)
+        ):
+            return False, self.EDIT_DATA_NO_PERMISSION_MESSAGE, None
+        year = self.request.data.get("year")
+        other = None
+        if annual_population_id == 0:
+            other = annual_population
+        elif year != annual_population.year:
+            # find other annual_population in the updated year
+            other = AnnualPopulation.objects.filter(
+                year=year,
+                taxon=taxon,
+                property=property
+            ).first()
+        if other:
+            # when there is existing data in that year,
+            # check whether user is also able to edit that data
+            if not other.is_editable(user):
+                msg = (
+                    self.EDIT_DATA_NO_PERMISSION_OVERWRITE_MESSAGE.format(
+                        year)
+                )
+                return False, msg, other
+            msg = self.EDIT_DATA_CONFIRM_OVERWRITE_MESSAGE.format(year)
+            return True, msg, other
+        return True, None, None
+
+    def find_existing_annual_population(self, taxon, property):
+        annual_population_id = int(self.request.data.get('id', 0))
+        annual_population = None
+        if annual_population_id == 0:
+            annual_population = AnnualPopulation.objects.filter(
+                year=self.request.data.get("year"),
+                taxon=taxon,
+                property=property,
+            ).first()
+        else:
+            annual_population = get_object_or_404(
+                AnnualPopulation, id=annual_population_id)
+        return annual_population
+
+    def post(self, request, *args, **kwargs):
+        property_id = kwargs.get("property_id")
+        property_obj = get_object_or_404(Property, id=property_id)
+        taxon_id = request.data.get("taxon_id")
+        taxon = get_object_or_404(Taxon, id=taxon_id)
+        annual_population = self.find_existing_annual_population(
+            taxon, property_obj)
+        if annual_population is None:
+            if not self.can_add_data(property_obj):
+                return Response(
+                    status=403,
+                    data={
+                        "detail": self.ADD_DATA_NO_PERMISSION_MESSAGE
+                    },
+                )
+        else:
+            can_edit, message, other = (
+                self.can_overwrite_data(
+                    annual_population, property_obj, taxon)
+            )
+            if not can_edit:
+                return Response(
+                    status=403,
+                    data={
+                        "detail": message
+                    }
+                )
+            elif message:
+                return Response(
+                    status=200,
+                    data={
+                        "detail": message,
+                        "other_id": other.id
+                    }
+                )
+        return Response(
+            status=200,
+            data={
+                "detail": "OK"
+            }
+        )
+
+
+class UploadPopulationAPIVIew(CanWritePopulationData):
+    """Save new upload of population data."""
+
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         taxon_id = request.data.get("taxon_id")
@@ -124,17 +235,6 @@ class UploadPopulationAPIVIew(APIView):
             )
         property_obj = get_object_or_404(Property, id=property_id)
         taxon = get_object_or_404(Taxon, id=taxon_id)
-        # validate can add data
-        if not self.can_add_data(property_obj):
-            return Response(
-                status=403,
-                data={
-                    "detail": (
-                        "You cannot add data to property that "
-                        "does not belong to your organisations!"
-                    )
-                },
-            )
         annual_population = request.data.get("annual_population")
         intake_populations = request.data.get("intake_populations")
         offtake_populations = request.data.get("offtake_populations")
@@ -167,57 +267,94 @@ class UploadPopulationAPIVIew(APIView):
             population_estimate_category = get_object_or_404(
                 PopulationEstimateCategory, id=population_estimate_category_id
             )
-        annual_population_obj, is_created = (
-            AnnualPopulation.objects.update_or_create(
-                year=year,
-                taxon=taxon,
-                property=property_obj,
-                defaults={
-                    'user': self.request.user,
-                    'area_available_to_species': area_available_to_species,
-                    'total': annual_population.get("total"),
-                    'adult_total': annual_population.get("adult_total", 0),
-                    'adult_male': annual_population.get("adult_male", 0),
-                    'adult_female': annual_population.get("adult_female", 0),
-                    'juvenile_male': annual_population.get(
-                        "juvenile_male", 0),
-                    'juvenile_female': annual_population.get(
-                        "juvenile_female", 0),
-                    'group': annual_population.get("group", 0),
-                    'note': annual_population.get("note", None),
-                    'survey_method': survey_method,
-                    'sub_adult_male': annual_population.get(
-                        "sub_adult_male", 0),
-                    'sub_adult_female': annual_population.get(
-                        "sub_adult_female", 0),
-                    'sub_adult_total': (
-                        annual_population.get("sub_adult_male", 0) +
-                        annual_population.get("sub_adult_female", 0)),
-                    'juvenile_total': (
-                        annual_population.get("juvenile_male", 0) +
-                        annual_population.get("juvenile_female", 0)),
-                    'population_estimate_certainty': annual_population.get(
-                        "population_estimate_certainty", None),
-                    'upper_confidence_level': annual_population.get(
-                        "upper_confidence_level", None),
-                    'lower_confidence_level': annual_population.get(
-                        "lower_confidence_level", None),
-                    'certainty_of_bounds': annual_population.get(
-                        "certainty_of_bounds", None),
-                    'population_estimate_category_other': (
-                        annual_population.get(
-                            "population_estimate_category_other", None)),
-                    'survey_method_other': annual_population.get(
-                        "survey_method_other", None),
-                    'population_status': population_status,
-                    'population_estimate_category': (
-                        population_estimate_category),
-                    'sampling_effort_coverage': sampling_effort_coverage,
-                    'presence': annual_population.get("present")
-                }
+        # build update fields
+        updated_fields = {
+            'year': year,
+            'user': self.request.user,
+            'area_available_to_species': area_available_to_species,
+            'total': annual_population.get("total"),
+            'adult_total': annual_population.get("adult_total", 0),
+            'adult_male': annual_population.get("adult_male", 0),
+            'adult_female': annual_population.get("adult_female", 0),
+            'juvenile_male': annual_population.get(
+                "juvenile_male", 0),
+            'juvenile_female': annual_population.get(
+                "juvenile_female", 0),
+            'group': annual_population.get("group", 0),
+            'note': annual_population.get("note", None),
+            'survey_method': survey_method,
+            'sub_adult_male': annual_population.get(
+                "sub_adult_male", 0),
+            'sub_adult_female': annual_population.get(
+                "sub_adult_female", 0),
+            'sub_adult_total': (
+                annual_population.get("sub_adult_male", 0) +
+                annual_population.get("sub_adult_female", 0)),
+            'juvenile_total': (
+                annual_population.get("juvenile_male", 0) +
+                annual_population.get("juvenile_female", 0)),
+            'population_estimate_certainty': annual_population.get(
+                "population_estimate_certainty", None),
+            'upper_confidence_level': annual_population.get(
+                "upper_confidence_level", None),
+            'lower_confidence_level': annual_population.get(
+                "lower_confidence_level", None),
+            'certainty_of_bounds': annual_population.get(
+                "certainty_of_bounds", None),
+            'population_estimate_category_other': (
+                annual_population.get(
+                    "population_estimate_category_other", None)),
+            'survey_method_other': annual_population.get(
+                "survey_method_other", None),
+            'population_status': population_status,
+            'population_estimate_category': (
+                population_estimate_category),
+            'sampling_effort_coverage': sampling_effort_coverage,
+            'presence': annual_population.get("present")
+        }
+        # validate permission for creating/updating population data
+        annual_population_obj = self.find_existing_annual_population(
+            taxon, property_obj)
+        if annual_population_obj is None:
+            # validate can add new population data
+            if not self.can_add_data(property_obj):
+                return Response(
+                    status=403,
+                    data={
+                        "detail": self.ADD_DATA_NO_PERMISSION_MESSAGE
+                    },
+                )
+            updated_fields['taxon'] = taxon
+            updated_fields['property'] = property_obj
+            annual_population_obj = (
+                AnnualPopulation.objects.create(**updated_fields)
             )
-        )
-        if not is_created:
+        else:
+            can_edit, message, other = (
+                self.can_overwrite_data(
+                    annual_population_obj, property_obj, taxon)
+            )
+            if not can_edit:
+                return Response(
+                    status=403,
+                    data={
+                        "detail": message
+                    }
+                )
+            confirm_overwrite = request.data.get('confirm_overwrite', False)
+            if other and not confirm_overwrite:
+                return Response(status=400, data={
+                    "detail": (
+                        f"Please confirm to overwrite data at year {year}"
+                    )
+                })
+            if other and other.id != annual_population_obj.id:
+                # remove the other data
+                other.delete()
+            AnnualPopulation.objects.filter(
+                id=annual_population_obj.id
+            ).update(**updated_fields)
+            annual_population_obj.refresh_from_db()
             # clear existing activities data
             AnnualPopulationPerActivity.objects.filter(
                 annual_population=annual_population_obj
@@ -277,6 +414,36 @@ class UploadPopulationAPIVIew(APIView):
         if draft_uuid:
             DraftSpeciesUpload.objects.filter(uuid=draft_uuid).delete()
         return Response(status=204)
+
+
+class DeletePopulationAPIView(APIView):
+    """API to remove population data by id."""
+    permission_classes = [IsAuthenticated]
+    REMOVE_DATA_NO_PERMISSION_MESSAGE = (
+        "You cannot remove data that does not belong to you!"
+    )
+
+    def delete(self, request, *args, **kwargs):
+        population_id = kwargs.get("population_id")
+        annual_population = get_object_or_404(AnnualPopulation,
+                                              id=population_id)
+        if not annual_population.is_editable(request.user):
+            return Response(
+                status=403,
+                data={
+                    "detail": self.REMOVE_DATA_NO_PERMISSION_MESSAGE
+                },
+            )
+        taxon = annual_population.taxon
+        annual_population.delete()
+        # mark statistical model output as outdated
+        mark_model_output_as_outdated_by_species_list([taxon.id])
+        return Response(
+            status=200,
+            data={
+                "detail": "OK"
+            }
+        )
 
 
 class FetchDraftPopulationUpload(APIView):
@@ -359,12 +526,15 @@ class FetchPopulationData(APIView):
             activity_type__recruitment=True
         ).select_related('activity_type').order_by('id')
         offtakes = AnnualPopulationPerActivity.objects.filter(
-            annual_population=annual_population,
-            activity_type__recruitment=False
+            annual_population=annual_population
+        ).filter(
+            Q(activity_type__recruitment__isnull=True) |
+            Q(activity_type__recruitment=False)
         ).select_related('activity_type').order_by('id')
         return Response(
             status=200,
             data={
+                'id': annual_population_id,
                 'taxon_id': annual_population.taxon.id,
                 'taxon_name': annual_population.taxon.scientific_name,
                 'common_name': annual_population.taxon.common_name_verbatim,

@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import User, Group
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -11,7 +12,8 @@ from stakeholder.utils import (
     add_user_to_org_member,
     add_user_to_org_manager,
     remove_user_from_org_member,
-    remove_user_from_org_manager
+    remove_user_from_org_manager,
+    notify_user_becomes_manager
 )
 
 MEMBER = 'Member'
@@ -287,8 +289,8 @@ class OrganisationInvites(models.Model):
     )
 
     class Meta:
-        verbose_name = 'OrganisationInvites'
-        verbose_name_plural = 'OrganisationInvites'
+        verbose_name = 'Organisation invite'
+        verbose_name_plural = 'Organisation invites'
         db_table = "OrganisationInvites"
         permissions = [
             ("can_invite_people_to_organisation",
@@ -297,6 +299,12 @@ class OrganisationInvites(models.Model):
 
     def __str__(self):
         return str(self.email)
+
+    def get_invitee(self):
+        user = self.user
+        if not user:
+            user = User.objects.filter(email=self.email).first()
+        return user
 
 
 class Reminders(models.Model):
@@ -374,16 +382,16 @@ class OrganisationPersonnel(models.Model):
 class OrganisationRepresentative(OrganisationPersonnel):
     """Organisation representative model."""
     class Meta:
-        verbose_name = 'Organisation representative'
-        verbose_name_plural = 'Organisation representatives'
+        verbose_name = 'Organisation manager'
+        verbose_name_plural = 'Organisation managers'
         db_table = 'organisation_representative'
 
 
 class OrganisationUser(OrganisationPersonnel):
     """Organisation user model."""
     class Meta:
-        verbose_name = 'Organisation user'
-        verbose_name_plural = 'Organisation users'
+        verbose_name = 'Organisation member'
+        verbose_name_plural = 'Organisation members'
         db_table = 'organisation_user'
 
 
@@ -414,6 +422,25 @@ def post_delete_organisation_user(
     part of any organisation.
     """
     remove_user_from_org_member(instance)
+    # when user is removed from organisation
+    # also remove it from current_organisation in UserProfile
+    profile = UserProfile.objects.filter(
+        user=instance.user,
+        current_organisation=instance.organisation
+    ).first()
+    if profile:
+        profile.current_organisation = None
+        profile.save(update_fields=['current_organisation'])
+    # when user is removed, ensure that manager is removed as well
+    OrganisationRepresentative.objects.filter(
+        user=instance.user,
+        organisation=instance.organisation
+    ).delete()
+    # ensure invite record is removed
+    OrganisationInvites.objects.filter(
+        Q(email=instance.user.email) | Q(user=instance.user),
+        organisation=instance.organisation
+    ).delete()
 
 
 @receiver(post_save, sender=OrganisationRepresentative)
@@ -428,6 +455,33 @@ def post_create_organisation_representative(
     automatically add them to Organisation Manager group.
     """
     add_user_to_org_manager(instance, Group)
+    # check if user becomes manager from member
+    is_made_manager = False
+    if created:
+        organisation_user = OrganisationUser.objects.filter(
+            user=instance.user,
+            organisation=instance.organisation
+        ).first()
+        member_invite = OrganisationInvites.objects.filter(
+            user=instance.user,
+            joined=True
+        ).first()
+        if organisation_user is None:
+            # case when representative is created in admin site
+            # create organisation user
+            OrganisationUser.objects.create(
+                user=instance.user,
+                organisation=instance.organisation
+            )
+            is_made_manager = True
+        elif member_invite:
+            # check if previously has been invited as member
+            is_made_manager = member_invite.assigned_as == MEMBER
+        else:
+            # this case could be the member is added through admin site
+            is_made_manager = True
+    if is_made_manager:
+        notify_user_becomes_manager(instance)
 
 
 @receiver(post_delete, sender=OrganisationRepresentative)

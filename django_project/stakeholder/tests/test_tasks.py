@@ -58,6 +58,44 @@ class SendReminderEmailsTestCase(TestCase):
         self.assertEqual(self.reminder.status, Reminders.ACTIVE)
         self.assertEqual(self.reminder.email_sent, False)
 
+    def test_send_reminder_emails_to_all(self):
+        # Call the task to send reminder emails
+        organisation = Organisation.objects.create(
+            name="test_organisation_2"
+        )
+        user_2 = User.objects.create_user(
+            username='testuser2',
+            password='testpassword',
+            email='test2@gmail.com'
+        )
+        OrganisationUser.objects.create(
+            organisation=organisation,
+            user=self.user
+        )
+        OrganisationUser.objects.create(
+            organisation=organisation,
+            user=user_2
+        )
+        Reminders.objects.create(
+            user=self.user,
+            organisation=organisation,
+            status=Reminders.ACTIVE,
+            type=Reminders.EVERYONE,
+            email_sent=False,
+            title='Test Reminder 2',
+            reminder='Test reminder content 2',
+            date=timezone.now()
+        )
+
+        send_reminder_emails()
+
+        # Check if the reminder was updated
+        self.assertEqual(self.reminder.status, Reminders.ACTIVE)
+        self.assertEqual(self.reminder.email_sent, False)
+        self.assertEqual(len(mail.outbox), 3)
+        self.assertTrue(user_2.email in mail.outbox[2].to)
+        self.assertTrue(user_2.username in str(mail.outbox[2].alternatives))
+
     def test_send_reminder_email(self):
         # Call the task to send a single reminder email
         send_reminder_email.apply(args=[self.reminder.id])

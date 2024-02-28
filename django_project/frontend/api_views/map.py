@@ -19,8 +19,7 @@ from rest_framework.response import Response
 from django.contrib.gis.geos import Point
 from django.utils import timezone
 from property.models import (
-    Property,
-    Parcel
+    Property
 )
 from frontend.models.context_layer import ContextLayer
 from frontend.models.map_session import MapSession
@@ -58,7 +57,6 @@ PROPERTIES_POINT_LAYER_ZOOMS = (5, 24)
 PARENT_FARM_LAYER_ZOOMS = (9, 11)
 PROPERTIES_LAYER = 'properties'
 PROPERTIES_POINTS_LAYER = 'properties-points'
-PROPERTIES_BOUNDARY_LAYER = 'properties-boundary'
 
 
 def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
@@ -197,8 +195,6 @@ class LayerMVTTilesBase(APIView):
     def get_geom_field_for_properties_layers(self, layer_name: str):
         if layer_name == PROPERTIES_POINTS_LAYER:
             return 'centroid'
-        if layer_name == PROPERTIES_BOUNDARY_LAYER:
-            return 'boundary'
         return 'geometry'
 
     def gzip_tile(self, data):
@@ -340,13 +336,6 @@ class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
                 )
                 sqls.append(properties_sql)
                 query_values.extend(properties_val)
-                # add properties boundary layer
-                prop_boundary_sql, prop_boundary_val = (
-                    self.get_properties_layer_query(
-                        PROPERTIES_BOUNDARY_LAYER, session, z, x, y)
-                )
-                sqls.append(prop_boundary_sql)
-                query_values.extend(prop_boundary_val)
             if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
                 properties_points_sql, properties_points_val = (
                     self.get_properties_layer_query(
@@ -429,12 +418,6 @@ class DefaultPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
             )
             sqls.append(properties_sql)
             query_values.extend(properties_val)
-            prop_boundary_sql, prop_boundary_val = (
-                self.get_default_properties_layer_query(
-                    PROPERTIES_BOUNDARY_LAYER, z, x, y)
-            )
-            sqls.append(prop_boundary_sql)
-            query_values.extend(prop_boundary_val)
         if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
             properties_points_sql, properties_points_val = (
                 self.get_default_properties_layer_query(
@@ -491,16 +474,9 @@ class FindParcelByCoord(APIView):
             ).data
         return None
 
-    def check_used_parcel(self, cname: str, existing_property_id: int):
-        parcels = Parcel.objects.filter(sg_number=cname)
-        if existing_property_id:
-            parcels = parcels.exclude(property_id=existing_property_id)
-        return parcels.exists()
-
     def get(self, *args, **kwargs):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
-        property_id = self.request.GET.get('property_id', 0)
         zoom = int(self.request.GET.get('zoom', 12))
         point = Point(float(lng), float(lat), srid=4326)
         point.transform(3857)
@@ -512,8 +488,6 @@ class FindParcelByCoord(APIView):
             parcel = self.find_parcel(ParentFarm, ParentFarmParcelSerializer,
                                       point)
             if parcel:
-                if self.check_used_parcel(parcel['cname'], property_id):
-                    return Response(status=404)
                 return Response(status=200, data=parcel)
         else:
             map_serializers = {
@@ -525,8 +499,6 @@ class FindParcelByCoord(APIView):
                 parcel = self.find_parcel(parcel_class,
                                           parcel_serializer, point)
                 if parcel:
-                    if self.check_used_parcel(parcel['cname'], property_id):
-                        return Response(status=404)
                     return Response(status=200, data=parcel)
         return Response(status=404)
 

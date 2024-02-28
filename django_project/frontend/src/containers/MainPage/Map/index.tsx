@@ -47,13 +47,16 @@ import {
   MIN_PROVINCE_ZOOM_LEVEL,
   showExtrudeLayer,
   removeExtrudeLayer,
-  fetchAndDrawGeojsonLayerFromUpload
+  fetchAndDrawGeojsonLayerFromUpload,
+  findPropertiesLayer,
+  removeGeojsonLayer
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
 import LoadingIndicatorControl from './LoadingIndicatorControl';
 import {useGetUserInfoQuery} from "../../../services/api";
 import LegendControl from './LegendControl';
+import { setLayerVisibility } from '../../../reducers/LayerFilter';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_PROPERTIES_LEGENDS_URL = '/api/map/legends/properties/'
@@ -246,7 +249,7 @@ export default function Map(props: MapInterface) {
     let _mapObj: maplibregl.Map = map.current
     _mapObj.removeControl(mapDraw.current)
     mapDraw.current = null
-    if (success) {
+    if (success === true) {
       dispatch(toggleParcelSelectionMode(uploadMode))
     } else {
       dispatch(toggleDigitiseSelectionMode())
@@ -346,14 +349,21 @@ export default function Map(props: MapInterface) {
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
     if (!map.current) return;
-
     let _mapObj: maplibregl.Map = map.current
     let _parcelLayer = findParcelLayer(contextLayers)
+    let _propertiesLayer = findPropertiesLayer(contextLayers)
     if (typeof _parcelLayer === 'undefined') return;
     if (selectionMode === MapSelectionMode.Parcel) {
       renderHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
     } else {
       removeHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
+    }
+    // toggle visibility of properties layer
+    if (_propertiesLayer) {
+      dispatch(setLayerVisibility({
+        id: _propertiesLayer.id,
+        isVisible: !(selectionMode === MapSelectionMode.Digitise || selectionMode === MapSelectionMode.Parcel)
+      }))
     }
     if (selectionMode === MapSelectionMode.Digitise) {
       // add Draw Control to the map
@@ -617,6 +627,8 @@ export default function Map(props: MapInterface) {
           })
           fetchAndDrawGeojsonLayerFromUpload(_mapObj, _event.payload[4])
         }
+      } else if (_event.name === MapEvents.BOUNDARY_FILES_REMOVED) {
+        removeGeojsonLayer(_mapObj)
       } else if (_event.name === MapEvents.HIGHLIGHT_SELECTED_PARCEL) {
         if (_event.payload && _event.payload.length === 2) {
           if (highlightedParcel.id) {

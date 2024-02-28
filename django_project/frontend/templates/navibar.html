@@ -115,9 +115,11 @@
                 </span>
 
                 <a class="dropdown-item" href="/profile">My Profile</a>
-                {% if '/accounts/two-factor/setup' not in request.path and  '/accounts/two-factor/two_factor/backup_tokens' not in request.path %}
                 <hr class="divider" />
                 <span class="dropdown-header">Active Organisation</span>
+                {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser  %}
+                <button class="btn btn-success btn-sm badge-btn center-button" type="button" data-toggle="modal" data-target="#organisationModal">REQUEST A NEW ORGANISATION</button>
+                {% else %}
                 <span class="dropdown-item font-weight-bolder clickable " onclick="redirectToDesiredPage()">{{ current_organisation }}</span>
                 {% endif %}
 

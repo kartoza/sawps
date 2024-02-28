@@ -16,6 +16,7 @@ from population_data.models import (
     OpenCloseSystem,
     PopulationEstimateCategory,
     SamplingEffortCoverage,
+    PopulationStatus
 )
 from property.models import Property
 from species.models import Taxon
@@ -57,6 +58,13 @@ def string_to_number(string):
         return float(string)
     except ValueError:
         return float(0)
+
+
+def map_string_to_value(string, value_mapping):
+    """Convert a string to the value in dictionary of value_mapping."""
+    if string in value_mapping:
+        return value_mapping[string]
+    return None
 
 
 class SpeciesCSVUpload(object):
@@ -289,7 +297,6 @@ class SpeciesCSVUpload(object):
         self.finish(self.csv_dict_reader.fieldnames)
 
     def get_property(self, property_code):
-
         property_selected = self.upload_session.property.short_code
         if property_code == property_selected:
             try:
@@ -307,8 +314,8 @@ class SpeciesCSVUpload(object):
         if common_name or scientific_name:
             try:
                 taxon = Taxon.objects.get(
-                    scientific_name=scientific_name,
-                    common_name_verbatim=common_name
+                    scientific_name__iexact=scientific_name,
+                    common_name_verbatim__iexact=common_name
                 )
             except Taxon.DoesNotExist:
                 return
@@ -318,7 +325,10 @@ class SpeciesCSVUpload(object):
         sampling_effort = self.row_value(row, SAMPLING_EFFORT)
         if sampling_effort:
             sampling_eff, c = SamplingEffortCoverage.objects.get_or_create(
-                name=sampling_effort
+                name__iexact=sampling_effort,
+                defaults={
+                    'name': sampling_effort
+                }
             )
             return sampling_eff
         return None
@@ -328,7 +338,7 @@ class SpeciesCSVUpload(object):
         if open_close_sys:
             try:
                 open_sys = OpenCloseSystem.objects.get(
-                    name=open_close_sys
+                    name__iexact=open_close_sys
                 )
             except OpenCloseSystem.DoesNotExist:
                 self.error_row(
@@ -346,7 +356,10 @@ class SpeciesCSVUpload(object):
 
         else:
             survey, created = SurveyMethod.objects.get_or_create(
-                name=survey
+                name__iexact=survey,
+                defaults={
+                    'name': survey
+                }
             )
             return survey
 
@@ -357,8 +370,27 @@ class SpeciesCSVUpload(object):
             return None
         else:
             p, pc = PopulationEstimateCategory.objects.get_or_create(
-                    name=pop_est)
+                    name__iexact=pop_est,
+                    defaults={
+                        'name': pop_est
+                    }
+            )
             return p
+
+    def population_status(self, pop_st):
+        """ Fetch Population status.
+        """
+        if not pop_st:
+            return None
+        else:
+            p, pc = PopulationStatus.objects.get_or_create(
+                    name__iexact=pop_st,
+                    defaults={
+                        'name': pop_st
+                    }
+            )
+            return p
+
 
     def check_compulsory_fields(self, row):
         """Check if compulsory fields are empty."""
@@ -376,22 +408,30 @@ class SpeciesCSVUpload(object):
     ):
 
         pop = None
+        activity_type, _ = ActivityType.objects.get_or_create(
+            name__iexact=activity,
+            defaults={
+                'name': activity,
+                'recruitment': activity == ACTIVITY_TRANSLOCATION_INTAKE
+            }
+        )
         try:
             pop, in_c = AnnualPopulationPerActivity.objects.get_or_create(
-                activity_type=ActivityType.objects.get(
-                    name=activity),
+                activity_type=activity_type,
                 year=int(string_to_number(year)),
                 annual_population=annual_population,
-                total=int(string_to_number(
-                    self.row_value(row, total))),
-                adult_male=int(string_to_number(
-                    self.row_value(row, total_males))),
-                adult_female=int(string_to_number(
-                    self.row_value(row, total_females))),
-                juvenile_male=int(string_to_number(
-                    self.row_value(row, male_juv))),
-                juvenile_female=int(string_to_number(
-                    self.row_value(row, female_juv))),
+                defaults={
+                    'total': int(string_to_number(
+                        self.row_value(row, total))),
+                    'adult_male': int(string_to_number(
+                        self.row_value(row, total_males))),
+                    'adult_female': int(string_to_number(
+                        self.row_value(row, total_females))),
+                    'juvenile_male': int(string_to_number(
+                        self.row_value(row, male_juv))),
+                    'juvenile_female': int(string_to_number(
+                        self.row_value(row, female_juv))),
+                }
             )
         except IntegrityError:
             self.error_row(
@@ -471,6 +511,8 @@ class SpeciesCSVUpload(object):
             sur_other = survey_other
 
         open_close_system = self.open_close_system(row)
+        population_st_value = self.row_value(row, POPULATION_STATUS)
+        population_status = self.population_status(population_st_value)
         pop_est = self.row_value(row, POPULATION_ESTIMATE_CATEGORY)
         population_estimate = self.population_estimate_category(pop_est)
         population_other = self.row_value(row, IF_OTHER_POPULATION)
@@ -510,8 +552,8 @@ class SpeciesCSVUpload(object):
             if existing_data:
                 # validate if user can update the data: uploader or manager
                 if (
-                    not is_organisation_manager and
-                    existing_data.user.id != self.upload_session.uploader.id
+                    not existing_data.is_editable(
+                        self.upload_session.uploader)
                 ):
                     self.error_row(
                         message="You are not allowed to update data of "
@@ -565,7 +607,8 @@ class SpeciesCSVUpload(object):
                     'group': int(string_to_number(self.row_value(row, GROUP))),
                     'open_close_system': open_close_system,
                     'survey_method': survey_method,
-                    'presence': string_to_boolean(presence),
+                    'presence': map_string_to_value(
+                        presence, PRESENCE_VALUE_MAPPING),
                     'upper_confidence_level': float(string_to_number(
                         self.row_value(row, UPPER))),
                     'lower_confidence_level': float(string_to_number(
@@ -577,7 +620,8 @@ class SpeciesCSVUpload(object):
                         string_to_number(pop_certainty)),
                     'population_estimate_category': population_estimate,
                     'survey_method_other': sur_other,
-                    'population_estimate_category_other': pop_other
+                    'population_estimate_category_other': pop_other,
+                    'population_status': population_status
                 }
             )
             annual.clean()
@@ -608,7 +652,7 @@ class SpeciesCSVUpload(object):
         # Save AnnualPopulationPerActivity translocation intake
         if self.row_value(row, INTRODUCTION_TOTAL):
             intake = self.save_population_per_activity(
-                row, "Translocation (Intake)", year,
+                row, ACTIVITY_TRANSLOCATION_INTAKE, year,
                 annual, INTRODUCTION_TOTAL,
                 INTRODUCTION_TOTAL_MALES, INTRODUCTION_TOTAL_FEMALES,
                 INTRODUCTION_MALE_JUV, INTRODUCTION_FEMALE_JUV
@@ -632,7 +676,7 @@ class SpeciesCSVUpload(object):
         # Save AnnualPopulationPerActivity translocation offtake
         if self.row_value(row, TRANS_OFFTAKE_TOTAL):
             off_take = self.save_population_per_activity(
-                row, "Translocation (Offtake)", year,
+                row, ACTIVITY_TRANSLOCATION_OFFTAKE, year,
                 annual, TRANS_OFFTAKE_TOTAL,
                 TRANS_OFFTAKE_ADULTE_MALES, TRANS_OFFTAKE_ADULTE_FEMALES,
                 TRANS_OFFTAKE_MALE_JUV, TRANS_OFFTAKE_FEMALE_JUV
@@ -652,7 +696,7 @@ class SpeciesCSVUpload(object):
         # Save AnnualPopulationPerActivity Planned hunt/cull
         if self.row_value(row, PLANNED_HUNT_TOTAL):
             hunt = self.save_population_per_activity(
-                row, "Planned Hunt/Cull", year,
+                row, ACTIVITY_PLANNED_HUNT_CULL, year,
                 annual, PLANNED_HUNT_TOTAL,
                 PLANNED_HUNT_OFFTAKE_ADULT_MALES,
                 PLANNED_HUNT_OFFTAKE_ADULT_FAMALES,
@@ -674,7 +718,7 @@ class SpeciesCSVUpload(object):
         # Save AnnualPopulationPerActivity Planned euthanasia
         if self.row_value(row, PLANNED_EUTH_TOTAL):
             planned = self.save_population_per_activity(
-                row, "Planned Euthanasia/DCA", year,
+                row, ACTIVITY_PLANNED_EUTH_DCA, year,
                 annual, PLANNED_EUTH_TOTAL,
                 PLANNED_EUTH_OFFTAKE_ADULT_MALES,
                 PLANNED_EUTH_OFFTAKE_ADULT_FAMALES,
@@ -695,22 +739,11 @@ class SpeciesCSVUpload(object):
 
         # Save AnnualPopulationPerActivity Unplanned/illegal hunting
         if self.row_value(row, UNPLANNED_HUNT_TOTAL):
-            hunting = self.save_population_per_activity(
-                row, "Unplanned/Illegal Hunting", year,
+            self.save_population_per_activity(
+                row, ACTIVITY_UNPLANNED_ILLEGAL_HUNTING, year,
                 annual, UNPLANNED_HUNT_TOTAL,
                 UNPLANNED_HUNT_OFFTAKE_ADULT_MALES,
                 UNPLANNED_HUNT_OFFTAKE_ADULT_FAMALES,
                 UNPLANNED_HUNT_OFFTAKE_MALE_JUV,
-                PLANNED_EUTH_OFFTAKE_FEMALE_JUV
+                UNPLANNED_HUNT_OFFTAKE_FEMALE_JUV
             )
-            hunting_data = {
-                "offtake_permit": self.row_value(
-                    row, UNPLANNED_HUNT_OFFTAKE_FEMALE_JUV
-                )
-
-            }
-            if hunting:
-                hunting = AnnualPopulationPerActivity.objects.filter(
-                    id=hunting.id
-                )
-                hunting.update(**hunting_data)

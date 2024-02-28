@@ -8,7 +8,8 @@
         "layer_names": [
             "rivers2018",
             "major_rivers2018"
-        ]
+        ],
+        "description": "The rivers layer displays the major rivers and water bodies across South Africa. This layer is useful for understanding the hydrography of the region."
     }
 },
 {
@@ -21,7 +22,8 @@
             "zaf_roads",
             "zaf_highways",
             "midscale_zaf_roads"
-        ]
+        ],
+        "description": "The roads layer provides information about the road network in South Africa. It can be valuable for assessing how transportation infrastructure impacts species distribution and conservation efforts."
     }
 },
 {
@@ -34,7 +36,8 @@
             "ecosystems",
             "ecosystems_midscale",
             "ecosystems_small_scale"
-        ]
+        ],
+        "description": "The biome type layer illustrates the various biomes and ecosystems in South Africa. This layer is essential for understanding the different habitats where species are found."
     }
 },
 {
@@ -48,7 +51,8 @@
             "critical_biodiversity_areas_2019_midscale",
             "critical_biodiversity_areas_2019_small_scale",
             "cba_2019_small_scale"
-        ]
+        ],
+        "description": "The critical biodiversity areas layer highlights regions of significant ecological importance and high species diversity. It aids in identifying key areas for conservation efforts."
     }
 },
 {
@@ -61,7 +65,8 @@
             "protected_areas_2022",
             "protected_areas_2022_midscale",
             "protected_areas_2022_small_scale"
-        ]
+        ],
+        "description": "The protected areas layer displays locations of nature reserves, parks, and conservation areas. It's essential for identifying regions where species are under protection."
     }
 },
 {
@@ -75,7 +80,8 @@
             "farm_portion",
             "holding",
             "parent_farm"
-        ]
+        ],
+        "description": "The cadastral boundaries layer outlines property boundaries and land divisions. It can be valuable for understanding land ownership and land use in relation to species habitats."
     }
 },
 {
@@ -89,7 +95,8 @@
             "place_name_largest_scale",
             "place_name_midscale",
             "place_name_smallest_scale"
-        ]
+        ],
+        "description": "The place names layer provides information on geographic place names and locations across South Africa. It helps users identify specific locations for their research or exploration."
     }
 },
 {
@@ -102,9 +109,9 @@
             "properties",
             "properties-points",
             "properties-label",
-            "properties-extrude",
-            "properties-boundary"
-        ]
+            "properties-extrude"
+        ],
+        "description": "The properties layer displays information about properties or land parcels. Users can explore land attributes, ownership, and potential impacts on species populations."
     }
 },
 {
@@ -115,7 +122,8 @@
         "is_static": true,
         "layer_names": [
             "NGI Aerial Imagery"
-        ]
+        ],
+        "description": "The NGI Aerial Imagery layer provides high-resolution aerial imagery of South Africa. It is valuable for visualising the landscape and habitats in detail."
     }
 }
 ]

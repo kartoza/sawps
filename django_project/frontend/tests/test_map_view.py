@@ -46,8 +46,8 @@ class RedirectViewTests(TestCase):
         # create data scientist group
         self.data_scientist_group = GroupF.create(name=NATIONAL_DATA_SCIENTIST)
         self.user_3 = UserF.create(username='test_3')
-        self.user_2.groups.add(self.data_scientist_group)
-        self.user_2.groups.add(group_1)
+        self.user_3.groups.add(self.data_scientist_group)
+        self.user_3.groups.add(group_1)
 
     def test_redirect_to_report(self):
         response = self.client.get(reverse('reports'))
@@ -87,8 +87,9 @@ class RedirectViewTests(TestCase):
         request.user = self.user_3
         view = MapView()
         view.setup(request)
-        with self.assertRaises(PermissionDenied):
-            view.get_context_data()
+        ctx = view.get_context_data()
+        self.assertIn('can_user_do_upload_data', ctx)
+        self.assertTrue(ctx['can_user_do_upload_data'])
 
     def test_superuser_data_upload_access(self):
         request = self.factory.get(f"{reverse('map')}?tab=4")

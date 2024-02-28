@@ -1,11 +1,16 @@
+import mock
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from rest_framework import status
 
 from frontend.api_views.spatial_filter import SpatialLayerSerializer
-from frontend.tests.model_factories import LayerF
+from frontend.tests.model_factories import LayerF, UserF
+
+
+def mocked_process_func(*args, **kwargs):
+    return True
 
 
 class SpatialLayerSerializerTestCase(TestCase):
@@ -45,3 +50,58 @@ class SpatialFilterListViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['layer_title'], "Layer 1")
+
+
+class SpatialFilterLayerTestCase(TestCase):
+
+    def setUp(self) -> None:
+        self.superuser = UserF.create(
+            username='test_2',
+            is_superuser=True,
+            is_staff=True,
+            is_active=True
+        )
+        TOTPDevice.objects.create(
+            user=self.superuser, name='Test Device', confirmed=True)
+
+    @mock.patch('frontend.admin.generate_spatial_filter_for_all_properties.delay')
+    def test_has_no_valid_layer(self, mocked_process):
+        mocked_process.side_effect = mocked_process_func
+        layer = LayerF.create(
+            layer_title='Layer 1',
+            name='test',
+            spatial_filter_field=''
+        )
+        client = Client()
+        client.force_login(self.superuser)
+        response = client.post(
+            reverse('admin:frontend_layer_changelist'),
+            {
+                'action': 'trigger_generate_spatial_filter',
+                '_selected_action': [layer.id]
+            },
+            follow=True
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mocked_process.assert_not_called()
+
+    @mock.patch('frontend.admin.generate_spatial_filter_for_all_properties.delay')
+    def test_valid_layer(self, mocked_process):
+        mocked_process.side_effect = mocked_process_func
+        layer = LayerF.create(
+            layer_title='Layer 1',
+            name='test',
+            spatial_filter_field='test'
+        )
+        client = Client()
+        client.force_login(self.superuser)
+        response = client.post(
+            reverse('admin:frontend_layer_changelist'),
+            {
+                'action': 'trigger_generate_spatial_filter',
+                '_selected_action': [layer.id]
+            },
+            follow=True
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mocked_process.assert_called_once()

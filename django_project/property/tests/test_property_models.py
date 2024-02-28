@@ -167,11 +167,9 @@ class ParcelTestCase(TestCase):
         self.parcel.save()
         self.assertEqual(Parcel.objects.get(id=self.parcel.id).sg_number, 'SG_1')
 
-    def test_unique_parcel_sg_number_constraint(self):
+    def test_non_unique_parcel_sg_number_constraint(self):
         """Test unique parcel sg number constraint."""
-        with self.assertRaises(Exception) as raised:
-            ParcelFactory(sg_number='SG_1')
-            self.assertEqual(IntegrityError, type(raised.exception))
+        ParcelFactory(sg_number='SG_1')
 
     def test_delete_parcel(self):
         """Test delete parcel."""

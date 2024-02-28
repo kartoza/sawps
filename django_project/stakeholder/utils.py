@@ -1,3 +1,7 @@
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.conf import settings
+from core.settings.contrib import SUPPORT_EMAIL
 from frontend.static_mapping import (
     ORGANISATION_MANAGER,
     ORGANISATION_MEMBER
@@ -133,3 +137,25 @@ def remove_user_from_org_manager(instance):
         group = Group.objects.filter(name=ORGANISATION_MANAGER).first()
         if group:
             instance.user.groups.remove(group)
+
+
+def notify_user_becomes_manager(instance):
+    if not instance.user.email:
+        return
+    # Send email
+    subject = 'SAWPS Organisation - You have been made as a manager'
+    message = render_to_string(
+        'emails/manager_email.html',
+        {
+            'full_name': instance.user.get_full_name(),
+            'organisation': instance.organisation.name,
+            'support_email': SUPPORT_EMAIL
+        }
+    )
+    send_mail(
+        subject,
+        None,
+        settings.SERVER_EMAIL,
+        [instance.user.email],
+        html_message=message
+    )

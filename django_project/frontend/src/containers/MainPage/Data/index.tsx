@@ -7,6 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import {DataGrid, GridColDef, GridRowParams, GridActionsCellItem} from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Loading from '../../../components/Loading';
 import axios from "axios";
 import {useAppSelector} from "../../../app/hooks";
@@ -17,6 +18,8 @@ import Topper from "./Topper";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import ConfirmationAlertDialog from '../../../components/ConfirmationAlertDialog';
+import AlertMessage from '../../../components/AlertMessage';
 import './index.scss';
 
 const ITEM_HEIGHT = 48;
@@ -31,6 +34,7 @@ const MenuProps = {
 };
 
 const FETCH_AVAILABLE_DATA = '/api/data-table/'
+const DELETE_POPULATION_DATA = '/api/upload/population/remove/'
 const EXCLUDED_COLUMNS = ['upload_id', 'property_id', 'is_editable']
 
 const DataList = () => {
@@ -45,6 +49,7 @@ const DataList = () => {
     const [columns, setColumns] = useState([])
     const [tableData, setTableData] = useState<any>()
     const [modalOpen, setModalOpen] = useState(false)
+    const [modalMessage, setModalMessage] = useState('')
     const [activityTableGrid, setActivityTable] = useState<any>()
     const activityDataSet = data ? data.filter(item => item?.Activity_report).flatMap((each) => Object.keys(each)) : [];
     const dataTableList = data ? data.map((data, index) => ({ ...data, id: index })) : [];
@@ -62,6 +67,11 @@ const DataList = () => {
         isSuccess: isActivitySuccess
     } = useGetActivityAsObjQuery()
     const cancelTokenSourceRef = useRef(null);
+    const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
+    const [deleteConfirmationLoading, setDeleteConfirmationLoading] = useState(false)
+    const [deleteConfirmationMessage, setDeleteConfirmationMessage] = useState('')
+    const [populationToDelete, setPopulationToDelete] = useState(null)
+    const [alertMessage, setAlertMessage] = useState<string>('')
 
     let dataset: any[] = []
     let reportList: any[] = []
@@ -118,13 +128,13 @@ const DataList = () => {
         }
     }, [activityList]);
 
-    const fetchDataList = () => {
+    const fetchDataList = useCallback(()=> {
         // Cancel the previous request
         if (cancelTokenSourceRef.current) {
             cancelTokenSourceRef.current.cancel("Cancelling previous request");
+            cancelTokenSourceRef.current = null;
         }
         cancelTokenSourceRef.current = axios.CancelToken.source();
-
         setLoading(true)
         let _data = {
             'species': selectedSpeciesList,
@@ -141,28 +151,24 @@ const DataList = () => {
                 cancelToken: cancelTokenSourceRef.current.token
             }
         ).then((response) => {
-            setLoading(false)
             if (response.data) {
                 setData(response.data)
+                setLoading(false)
             }
         }).catch((error) => {
-            setLoading(false)
             if (!axios.isCancel(error)) {
                 console.log(error);
+                setLoading(false)
             }
-        })
-    }
+        });
+    }, [
+      selectedSpeciesList,
+        selectedInfo,
+        startYear,
+        endYear,
+        propertyId, organisationId, activityId, spatialFilterValues, setData, setLoading]);
 
     useEffect(() => {
-      const getData = setTimeout(() => {
-        fetchDataList()
-      }, 500)
-
-      return () => clearTimeout(getData)
-    }, [startYear, endYear])
-
-    useEffect(() => {
-        setColumns([])
         fetchDataList()
         if (selectedSpeciesList) {
             setShowReports(true);
@@ -172,20 +178,34 @@ const DataList = () => {
         return () => {
             if (cancelTokenSourceRef.current) {
                 cancelTokenSourceRef.current.cancel("Component unmounted");
+                cancelTokenSourceRef.current = null;
             }
         };
-    }, [selectedSpeciesList, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues])
+    }, [selectedSpeciesList, selectedInfo, propertyId, organisationId, activityId, spatialFilterValues, fetchDataList])
+
+    useEffect(() => {
+      const getData = setTimeout(() => {
+          fetchDataList()
+      }, 500)
+
+      return () => clearTimeout(getData)
+    }, [startYear, endYear])
 
     const handleChange = (event: SelectChangeEvent<typeof selectedColumns>) => {
+        const scrollPosition = window.scrollY;
+
         const {
             target: { value },
         } = event;
         setSelectedColumns(
             typeof value === 'string' ? value.split(',') : value,
         );
+        window.scrollTo(0, scrollPosition);
     };
 
     const handleExportCsv = (): void => {
+        setModalOpen(true)
+        setModalMessage('Generating report in csv!')
         let _data = {
             'file': 'csv',
             'species': selectedSpeciesList,
@@ -198,17 +218,20 @@ const DataList = () => {
             'spatial_filter_values': spatialFilterValues,
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
+            setModalOpen(false)
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
         }).catch((error) => {
-            setLoading(false)
+            setModalOpen(false)
             console.log(error)
         })
         handleClose()
     };
 
     const handleExportExcel = (): void => {
+        setModalOpen(true)
+        setModalMessage('Generating report in excel!')
         let _data = {
             'file': 'xlsx',
             'species': selectedSpeciesList,
@@ -221,11 +244,12 @@ const DataList = () => {
             'spatial_filter_values': spatialFilterValues,
         }
         axios.post(FETCH_AVAILABLE_DATA, _data).then((response) => {
+            setModalOpen(false)
             if (response.data) {
                 window.location.href=`${response.data['file']}`
             }
         }).catch((error) => {
-            setLoading(false)
+            setModalOpen(false)
             console.log(error)
         })
         handleClose()
@@ -240,17 +264,17 @@ const DataList = () => {
         setAnchorEl(null);
     };
 
-    const getUniqueColumn = () => {
+    const getUniqueColumn = useCallback((_columns: any) => {
         const uniqueColumns = [];
         const seenFields = new Set();
-        for (const column of columns) {
+        for (const column of _columns) {
             if (!seenFields.has(column.field)) {
                 uniqueColumns.push(column);
                 seenFields.add(column.field);
             }
         }
         return uniqueColumns
-    }
+    }, [])
 
     const generateTableData = (isPdfExport?: boolean) => {
         const dataGrid = dataset.length > 0 && dataset.map((each: any) =>
@@ -285,14 +309,17 @@ const DataList = () => {
                             if (each === 'Species_report' && userInfoData?.user_permissions.includes('Can edit species population data') && !isPdfExport) {
                                 filteredColumns.push({
                                     field: '',
-                                    headerName: 'Action',
+                                    headerName: 'Actions',
                                     flex: 0.5,
                                     type: 'actions',
                                     getActions: (params: GridRowParams) => [
-                                        <GridActionsCellItem key={params.id} icon={<EditIcon />} onClick={() => {
+                                        <GridActionsCellItem key={`edit-${params.id}`} icon={<EditIcon />} onClick={() => {
                                             let _speciesReportRow = params.row as any
                                             window.location.replace(window.location.origin + `/upload-data/${_speciesReportRow.property_id}/?upload_id=${_speciesReportRow.upload_id}`)
-                                        }} label="Edit Data" title="Edit Data" hidden={!params.row.is_editable} />
+                                        }} label="Edit Data" title="Edit Data" hidden={!params.row.is_editable} />,
+                                        <GridActionsCellItem key={`delete-${params.id}`} icon={<DeleteIcon />} onClick={() => {
+                                            setPopulationToDelete(params.row as any)
+                                        }} label="Delete Data" title="Delete Data" hidden={!params.row.is_editable} />
                                       ]
                                 })
                             }
@@ -323,7 +350,7 @@ const DataList = () => {
 
     useEffect(() => {
         if (!isSuccess) return;
-        
+
         const activityDataGrid = isDataConsumer(userInfoData) && activityDataSet.length > 0 ?
           null : activityDataSet.map((each: any) =>
             <Box key={each}>
@@ -381,14 +408,12 @@ const DataList = () => {
                 )}
             </Box>);
         setActivityTable(activityDataGrid)
-
-        const uniqueColumns = getUniqueColumn()
-        setColumns(uniqueColumns)
         setTableData(generateTableData())
+        setColumns(getUniqueColumn(columns));
     }, [data, selectedColumns, isSuccess])
 
     useEffect(() => {
-        const uniqueColumns = getUniqueColumn()
+        const uniqueColumns = getUniqueColumn(columns)
         setSelectedColumns(
           uniqueColumns
             .filter(col => !['Organisation Name', 'Organisation Short Code', 'Property Short Code'].includes(col.headerName))
@@ -396,11 +421,12 @@ const DataList = () => {
         )
     }, [data])
 
-        // downloads all charts rendered on page
+    // downloads all charts rendered on page
     const handleDownloadPdf = async () => {
         setModalOpen(true)
+        setModalMessage('Generating PDF!')
         setTableData(generateTableData(true))
-        // wait 800ms until table is re-rendered 
+        // wait 800ms until table is re-rendered
         setTimeout(() => {
             const data = document.getElementById('dataContainer');
             html2canvas(data, {scale: 2}).then((canvas:any) => {
@@ -429,9 +455,56 @@ const DataList = () => {
                 alert('There is an unexpected error while generating the pdf! Please try again or contact Administrator!')
             });
         }, 800)
-        
+
     }
 
+    // confirmation to delete events
+    useEffect(() => {
+        if (populationToDelete === null) {
+            setDeleteConfirmationOpen(false)
+        } else {
+            setDeleteConfirmationOpen(true)
+            setDeleteConfirmationMessage(`Are you sure to delete population data of ${populationToDelete.scientific_name} in ${populationToDelete.year} from property ${populationToDelete.property_name}?`)
+        }
+    }, [populationToDelete])
+
+    const closeConfirmationToDelete = () => {
+        setPopulationToDelete(null)
+    }
+
+    // delete population record
+    const handleConfirmOkToDeletePopulationData = () => {
+        if (populationToDelete === null) {
+            closeConfirmationToDelete()
+            setAlertMessage('Invalid population record! Please try again or contact the administrator!')
+            return;
+        }
+        setDeleteConfirmationLoading(true)
+        axios.delete(
+            `${DELETE_POPULATION_DATA}${populationToDelete.upload_id}/`, {}
+        ).then(
+            response => {
+                setDeleteConfirmationLoading(false)
+                if (populationToDelete) {
+                    setAlertMessage(`The population record of ${populationToDelete.scientific_name} in ${populationToDelete.year} from property ${populationToDelete.property_name} has been successfully removed!`)
+
+                } else {
+                    setAlertMessage('The population record has been successfully removed!')
+                }
+                closeConfirmationToDelete()
+                fetchDataList()
+            }
+        ).catch((error) => {
+            console.log(error)
+            setDeleteConfirmationLoading(false)
+            closeConfirmationToDelete()
+            let _error = 'Unable to delete population record! Please try again or contact the administrator!'
+            if (error.response && 'detail' in error.response.data) {
+                _error = error.response.data['detail']
+            }
+            setAlertMessage(_error)
+        })
+    }
 
     return (
         <Box className='main-content-wrap'>
@@ -443,9 +516,9 @@ const DataList = () => {
                         id={'pdf-modal'}
                         open={modalOpen}
                         >
-                            <Box>
+                            <Box sx={{p: 2}}>
                                 <Typography variant="h6" component="h2">
-                                    Generating PDF!
+                                    {modalMessage}
                                 </Typography>
                                 <Typography id="modal-modal-description" sx={{mt: 2}}>
                                     This might take a while.
@@ -492,7 +565,7 @@ const DataList = () => {
                             </Box>
                         </Box>}
                     </Box>
-                    {loading ? <Loading/> : (
+                    {loading ? <></> : (
                     <Box className="downlodBtn">
                         <Button onClick={handleDownloadPdf} variant="contained" color="primary">
                             Download data Report
@@ -547,6 +620,19 @@ const DataList = () => {
                 </Box>
                 </Box>
             )}
+            </Box>
+            <Box>
+                <AlertMessage message={alertMessage} onClose={() => {
+                    setAlertMessage('')
+                }} />
+                <ConfirmationAlertDialog open={deleteConfirmationOpen} alertClosed={closeConfirmationToDelete}
+                    alertConfirmed={handleConfirmOkToDeletePopulationData}
+                    alertDialogTitle={'Delete Upload Record'}
+                    alertDialogDescription={deleteConfirmationMessage}
+                    confirmButtonText='Delete'
+                    confirmButtonProps={{color: 'error', autoFocus: true}}
+                    alertLoading={deleteConfirmationLoading}
+                />
             </Box>
         </Box>
 
