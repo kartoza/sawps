@@ -156,9 +156,9 @@ The Species model outputs in the Django Admin interface provide administrators w
 
 ![Organisation Invites Table](./img/django-table-13.png)
 
-The Organisation invites table within the Django Admin interface provides administrators with the tools to invite users to the organisation.
+The `Organisation Invites` table within the Django Admin interface provides administrators with the tools to invite users to the organisation.
 
-1. **Add Organisation Invites**: Clicking on the `ADD ORGANISATION INVITE` button enables administrators to add a new organisation invite. To learn more about adding a new organisation invite, refer to the detailed documentation on [adding a new organisation invite](django-add-data.md#add-organisation-invites-table).
+1. **Add Organisation Invites**: Clicking on the `ADD ORGANISATION INVITE` button enables administrators to add a new organisation invite. To learn more about adding a new organisation invite, refer to the detailed documentation on [adding a new organisation invite](django-add-data.md#add-organisation-invites-record).
 
 2. **Search Functionality**: Administrators can utilise the search functionality to find specific invite records.
 
@@ -173,3 +173,21 @@ The Organisation invites table within the Django Admin interface provides admini
     ![Organisation Invites Table](./img/django-table-14.png)
 
 6. **Edit Organisation Invites**: Clicking on a specific organisation invite entry enables administrators to modify or edit the corresponding record. For detailed instructions on editing a organisation invite, refer to the documentation on [editing a organisation invite](django-change-data.md#change-organisation-invite-record).
+
+## Organisation Manager Table
+
+![Organisation Manager Table](./img/django-table-15.png)
+
+The `Organisation Manager` table within the Django Admin interface provides administrators with the tools to add user to the organisation.
+
+1. **Add Organisation Manager**: Clicking on the `ADD ORGANISATION MANAGER` button enables administrators to add a manager to the organisation. To learn more about adding a new organisation manager, refer to the detailed documentation on [adding the manager to organisation](django-add-data.md#add-organisation-manager-record).
+
+2. **Search Functionality**: Administrators can utilise the search functionality to find specific organisation manager records.
+
+3. **Actions Dropdown**: The `Actions` dropdown provides the following options for managing organisation manager records:
+
+    - **Delete selected Organisation managers**: This action allows administrators to delete the selected organisation manager records individually or in bulk.
+
+4. **Go Button**: The administrators can execute the selected action by clicking this button.
+
+5. **Edit Organisation Manager**: Clicking on a specific organisation manager entry enables administrators to modify or edit the corresponding record. For detailed instructions on editing a organisation manager, refer to the documentation on [editing a organisation manager](django-change-data.md#change-organisation-manager-record).
