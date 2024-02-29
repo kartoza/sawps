@@ -86,14 +86,12 @@ to allow the user group (e.g. `National data scientist`) to see the property fil
 
 #### 5. Year Range Filter
 
-* **Filter Description:** This filter allows users to narrow down data based on a specified year range.
-* **Usage:** Set a range of years to view data within that time frame. For example, selecting a range of "2010-2020" will display data recorded between 2010 and 2020.
+* **Filter Description:** This filter allows users to narrow down data based on a specified year.
+* **Usage:** Enter the desired year to view data for that specific year.
 
     ![Year filter](./img/filters-9.png)
 
-1. **Year Range Bar:** This is the bar that is used for setting the year range.
-2. **From:** This field is constant and does not change. It represents the starting point of the year range.
-3. **To:** This is where the user, can input the ending year value for the year range.
+1. **Input Year Field:** Users can directly input a specific year to filter the data accordingly. An error will be displayed if the entered year falls outside the available range.
 
 #### 6. Activity Filter
 
@@ -265,14 +263,12 @@ The filter side panel provides a robust toolset for users to refine and explore 
 
 ### 4. Year Range Filter
 
-* **Filter Description:** This filter allows users to narrow down data based on a specified year range.
-* **Usage:** Set a range of years to view data within that time frame. For example, selecting a range of "2010-2020" will display data recorded between 2010 and 2020.
+* **Filter Description:** This filter allows users to narrow down data based on a specified year.
+* **Usage:** Enter the desired year to view data for that specific year.
 
     ![Year filter](./img/filters-9.png)
 
-1. **Year Range Bar:** This is the bar that is used for setting the year range.
-2. **From:** This field is constant and does not change. It represents the starting point of the year range.
-3. **To:** This is where the user, can input the ending year value for the year range.
+1. **Input Year Field:** Users can directly input a specific year to filter the data accordingly. An error will be displayed if the entered year falls outside the available range.
 
 ### 5. Activity Filter
 

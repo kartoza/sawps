@@ -20,7 +20,7 @@ This documentation explains how to use the map on the platform as well as how to
 
 ## Switching between dark and light mode on the map
 
-When you first load the explore page, the map is in light mode. If you wish to change to light mode you can switch by simply clicking on 1️⃣ the `Toggle Dark Mode` button.
+When you first load the explore page, the map is in light mode. If you wish to change to dark mode you can switch by simply clicking on 1️⃣ the `Toggle Dark Mode` button.
 
 ![Dark Mode 1](img/dark-mode-1.png)
 
@@ -40,7 +40,7 @@ This will switch your map from dark mode to light mode.
 
 ## Changing zoom levels on the map
 
-There are multiple ways to change zoom levels on the map: you can scroll up and down on your mouse, you can swipe two fingers up and down on your laptop's touch pad, or you can use 1️⃣ the `Zoom in` and `Zoom out` buttons.
+There are multiple ways to change zoom levels on the map: you can scroll up and down on your mouse, you can swipe two fingers up and down on your laptop's touchpad, or you can use 1️⃣ the `Zoom in` and `Zoom out` buttons.
 
 ![Zoom Levels 1](img/zoom-levels-1.png)
 
@@ -48,7 +48,7 @@ Click on the `plus` (`Zoom in`) button to zoom in
 
 ![Zoom Levels 2](img/zoom-levels-2.png)
 
-And click on the `minus` (`Zoom out`) button to zoom out.and click on the `minus` (`Zoom out`) button to zoom out.
+And click on the `minus` (`Zoom out`) button to zoom out and click on the `minus` (`Zoom out`) button to zoom out.
 
 ![Zoom Levels 3](img/zoom-levels-3.png)
 
@@ -128,7 +128,7 @@ If your property/properties had been previously created, you can use 1️⃣ the
 
 ![Filters 5](img/filters-5.png)
 
-If you would like to filter data by year, you can adjust either end of 1️⃣ the `Year` slider, or specify the year interval using 2️⃣ the `From` and `To` fields. Adjustments to the year interval will also result in changes on the interval key.
+If you would like to filter data by year, you can enter in 1️⃣ the `Year Field` to view data for that specific year.
 
 ![Filters 6](img/filters-6.png)
 
@@ -144,7 +144,7 @@ If none of the `Critical Biodiversity Areas` filters are selected, then all of t
 
 ![Filters 8](img/filters-8.png)
 
-However, if only the `Critical Biodiversity Area 2` filter is selected, then only one of the example properties is displayed.
+However, if only the `Ecological Support Area 1` filter is selected, then only those properties displayed that intersect Ecological Support Area 1.
 
 ![Filters 9](img/filters-9.png)
 
@@ -232,9 +232,9 @@ To download the charts, you can click on 1️⃣ the `DOWNLOAD DATA VISUALISATIO
 
 ![Charts 5](./img/charts-5.png)
 
-After which, you wil be redirected to a new tab in your web browser where you can view the PDF of the charts and the charts will be downloaded to your computer.
+After that, the PDF file will be downloaded to your system.
 
-![Charts 6](./img/charts-6.png)
+![Downloaded PDF Charts 6](./img/charts-6.png)
 
 ## Trends
 
