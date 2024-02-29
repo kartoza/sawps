@@ -118,7 +118,7 @@ The user can view the layer description by hovering over the layer.
 
     1. **Properties**: The `Properties` layer provides detailed information about land parcels and properties within South Africa.
 
-    2. **Property on Map**: The red dots display the properties on the map. Until you zoom in more, the properties are highlighted in red.
+    2. **Property on Map**: The red dots display the properties on the map. Until you zoom in more, then the properties are highlighted in red.
 
         Properties after zooming in
 
