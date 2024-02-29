@@ -180,7 +180,7 @@ The `Property Report` is a critical filter for reporting on various properties. 
 ![Province Report](./img/reports-9.png)
 
 1. **Province Report**: Select the `Province Report` option to generate a report specifically for provinces.
-> DISCLAIMER: 
+
 2. **Province Table**: The Province report table displays data related to the provinces, including population information.
 
      **Report Columns**
@@ -241,7 +241,23 @@ The Sampling Report is a crucial tool for documenting and reporting on sampling 
 
 2. **Species Table**: The species report table displays data of the species for the property.
 
+>Note: The users, based on their role, can edit or delete the species details. If the user is an organisational member, they can only edit or delete the records that they have submitted. However, if the user is an organisational manager,  they have the authority to edit or delete any data within that particular organisation.
+This clarification ensures that editing and deletion permissions align with the user's role within the organisation, promoting efficient and secure data management practices.
+Keep  in mind that the user can not update the `Scientific Name` and `Common Name` of the species. If the user want's to do that they need to delete the existing record or add new record.
+
 3. **Edit Icon**: Click on the `Edit` icon, to update the species record. When the user clicks on the edit icon the online form step 1 opens. Users can update the species details here.
+
+4. **Delete Icon:** Click on the `Delete` icon to remove the species record. Upon clicking the delete icon, a confirmation popup will appear, seeking confirmation for the deletion of the species record.
+
+    ![confirmation](./img/reports-15.png)
+
+    Within the popup, two buttons are available.
+
+    1. **Cancel:** Click the `Cancel` button to abort the deletion process.
+
+    2. **Delete:** Click the `Delete` button to confirm and proceed with the permanent deletion of the species record.
+
+    Exercise caution and ensure the accuracy of the users' decision before confirming the deletion. This two-step process is designed to prevent accidental deletions and provide users with an opportunity to reconsider their actions.
 
 ![Species Report](./img/reports-14.png)
 
