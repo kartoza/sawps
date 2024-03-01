@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.contrib.auth import models
 from django.contrib.auth import login
@@ -313,3 +313,42 @@ def custom_password_reset_complete_view(request):
 
 def health(request):
     return HttpResponse("OK")
+
+
+def resend_verification_email(request):
+    """
+    Resend the account verification email to the user if their
+    account is not active.
+    :param request: The HTTP request object containing the email address.
+    """
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            if not user.is_active:
+                token = email_verification_token.make_token(user)
+                subject = 'Activate your SAWPS account'
+                message = render_to_string(
+                    'emails/email_verification.html',
+                    {
+                        'name': user.first_name,
+                        'domain': Site.objects.get_current().domain,
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': token,
+                        'support_email': settings.SUPPORT_EMAIL
+                    },
+                )
+                send_mail(
+                    subject,
+                    None,
+                    settings.SERVER_EMAIL,
+                    [user.email],
+                    html_message=message
+                )
+        except User.DoesNotExist:
+            pass
+
+        return HttpResponse(status=200)
+
+    return HttpResponseRedirect(
+        reverse('account_login'))
