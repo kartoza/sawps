@@ -76,9 +76,9 @@ img {
 
 
     @top-left-corner {
-        /*@if $show-top-left-corner-logo {
+        @if $show-top-left-corner-logo {
             background: $corner-logo-url;
-        }*/
+        }
 
         background-repeat: no-repeat;
         background-position: 0% 0%;
@@ -172,7 +172,7 @@ img {
         background-position: 0% 0%;
         background-size: contain;
         size: 210mm 22mm;
-        /*background: $footer-url;*/
+        background: $footer-url;
         /* Note you cannot do concatenation in CSS content 
           except I figured out this little trick below TS */
         content: " " counter(page) " ";
