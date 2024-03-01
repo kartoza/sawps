@@ -310,9 +310,7 @@
       const updateButtons = document.querySelectorAll(".update-button");
 
       // Define the roles that can see the "Add User" column and enable switches
-      const allowedRoles = ["admin", "super user", "organisation manager"];
-
-      if (!allowedRoles.includes(userRole)) {
+      if ({{ can_change_data_use_permissions }}) {
         // User role does not match, hide the "Add User" column
         table.querySelectorAll("th")[2].style.display = "none"; // Hide the "Add User" header
         table.querySelectorAll("td:nth-child(3)").forEach(function (cell) {
