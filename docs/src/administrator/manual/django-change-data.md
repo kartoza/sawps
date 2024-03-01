@@ -156,3 +156,35 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 7. **Save**: This option saves the current statistical record and redirects administrators to the Django Admin Table/record list.
 
 8. **Data Download Template**: Click on the `Data Download Template` button, to download the CSV file.
+
+## Change Organisation Invites Record
+
+![Change Organisation Invites Record](./img/django-change-data-15.png)
+
+1. **History**: Button to view actions applied to the current record.
+
+2. **Form Fields**: Administrators can edit organisation invite details, including email, user, organisation, joined, user role, assigned as and UUID.
+
+3. **Delete**: The administrators can delete the organisation invite by clicking on this button. The popup will open to confirm the deletion of the organisation invite.
+
+4. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+5. **Save and continue editing**: Save the current record while still showing the current record.
+
+6. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
+
+## Change Organisation Manager Record
+
+![Change Organisation Manager Record](./img/django-change-data-16.png)
+
+1. **History**: Button to view actions applied to the current record.
+
+2. **Form Fields**: Administrators can edit organisation manager details, including organisation and user.
+
+3. **Delete**: The administrators can delete the organisation manager by clicking on this button. The popup will open to confirm the deletion of the organisation manager.
+
+4. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+5. **Save and continue editing**: Save the current record while still showing the current record.
+
+6. **Save**: Save the current record, then redirect to the Django Admin Table/record list.

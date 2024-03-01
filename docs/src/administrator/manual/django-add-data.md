@@ -221,3 +221,45 @@ The administrators will be presented with a form to enter the user's information
 7. **Save**: This option saves the current statistical record and redirects administrators to the Django Admin Table/record list.
 
 8. **Data Download Template**: Click on the `Data Download Template` button, to download the CSV file.
+
+## Add Organisation Invites Record
+
+![Organisation Invites](./img/django-add-data-16.png)
+
+1. **Form Fields**: This form allows administrators to input values for the organisation invite.
+
+    - **Email:** Enter the email of the user being invited.
+
+    - **User Dropdown:** Select a user from the dropdown list if they already exist or create a user by clicking on the plus icon. The administrator can view the selected user's record by clicking on the eye icon and can edit by clicking on the edit icon.
+
+    - **Organisation Dropdown:** Select a organisation from the dropdown list if they already exist or create a organisation by clicking on the plus icon. The administrator can view the selected organisation's record by clicking on the eye icon and can edit by clicking on the edit icon.
+
+    - **Joined Dropdown:** Select the joined status from the dropdown list.
+
+    - **User Role Dropdown:** Select the user role from the dropdown list if it already exists or create a user role by clicking on the plus icon. The administrator can view the selected user role's record by clicking on the eye icon and can edit by clicking on the edit icon.
+
+    - **Assigned As Dropdown:** Select the assigned as status from the dropdown list.
+
+    - **UUID:** The UUID is generated automatically when a record is created in the database.
+
+2. **Save and Add Another**: This option saves the current organisation invites record and redirects administrators to a new page to add another organisation invites record.
+
+3. **Save and Continue Editing**: Choosing this option saves the current organisation invites record while still displaying the current record for further editing.
+
+4. **Save**: This option saves the current organisation invites record and redirects administrators to the Django Admin Table/record list.
+
+## Add Organisation Manager Record
+
+![Organisation Manager](./img/django-add-data-17.png)
+
+1. **Form Fields**: This form allows administrators to input values for the organisation manager.
+
+    - **Organisation Dropdown:** Select a organisation from the dropdown list if they already exist or create a organisation by clicking on the plus icon. The administrator can view the selected organisation's record by clicking on the eye icon and can edit by clicking on the edit icon.
+
+    - **User Dropdown:** Select a user from the dropdown list if they already exist or create a user by clicking on the plus icon. The administrator can view the selected user's record by clicking on the eye icon and can edit by clicking on the edit icon.
+
+2. **Save and Add Another**: This option saves the current organisation manager record and redirects administrators to a new page to add another organisation manager record.
+
+3. **Save and Continue Editing**: Choosing this option saves the current organisation manager record while still displaying the current record for further editing.
+
+4. **Save**: This option saves the current organisation manager record and redirects administrators to the Django Admin Table/record list.
