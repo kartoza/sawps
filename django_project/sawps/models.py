@@ -4,6 +4,15 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+PERM_CAN_ADD_SPECIES_POPULATION_DATA = (
+    'Can add species population data'
+)
+
+PERM_CAN_CHANGE_DATA_USE = (
+    'Can change data use permissions'
+)
+
+
 class ExtendedGroup(models.Model):
     """
     Stores additional attributes for Django's built-in Group model.
@@ -86,7 +95,7 @@ class ExtendedGroup(models.Model):
             # Organisation Manager + Member should have this
             (
                 "can_add_species_population_data",
-                "Can add species population data",
+                PERM_CAN_ADD_SPECIES_POPULATION_DATA
             ),
             (
                 "can_edit_species_population_data",
@@ -107,6 +116,10 @@ class ExtendedGroup(models.Model):
             (
                 "can_view_report_as_provincial_data_consumer",
                 "Can view report as provincial data consumer"
+            ),
+            (
+                "can_change_data_use_permissions",
+                PERM_CAN_CHANGE_DATA_USE
             ),
         ]
 
