@@ -29,3 +29,11 @@ class SitePreferences(SingletonModel):
             'Threshold for checking overlaps between properties (in sqm).'
         )
     )
+
+    @staticmethod  # noqa
+    def preferences() -> "SitePreferences":
+        """Load Site Preference."""
+        return SitePreferences.load()
+
+    def __str__(self):
+        return 'Site Preference'
