@@ -22,6 +22,14 @@ Copy and customize environnment file: Create a copy of the ```deployment/.templa
 ![image](https://user-images.githubusercontent.com/178003/231014472-c77f7a00-1a1d-43d0-8c06-ef9634f2ccc7.png)
 
 
+Add a ```.env``` file in the project root directory with below content:
+
+```
+COMPOSE_PROJECT_NAME=sanbi
+```
+
+This is to ensure the containers that VS Code builds are using that project name. For more information, follow [this link](https://code.visualstudio.com/remote/advancedcontainers/set-docker-compose-project-name).
+
 Ensure Dev Containers extension is installed
 ![image](https://user-images.githubusercontent.com/178003/231014270-65212ed8-6d78-4966-9c2b-f9ebe82f9025.png)
 
