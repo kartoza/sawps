@@ -18,3 +18,14 @@ class ResendVerificationEmailTest(TestCase):
         self.assertIn(
             'Activate your SAWPS account',
             mail.outbox[0].subject)
+
+    def test_resend_email_not_exist(self):
+        email = 'test123@test.com'
+        url = reverse('account_resend_verification')
+        response = self.client.post(url, {'email': email})
+        self.assertEqual(response.status_code, 200)
+
+    def test_resend_email_wrong_method(self):
+        url = reverse('account_resend_verification')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
