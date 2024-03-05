@@ -23,7 +23,8 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('accounts/two-factor/', include('frontend.allauth2fa_urls')),
@@ -32,6 +33,14 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('', include('frontend.urls')),
     path('', include('docs_crawler.urls')),
+    re_path(
+        r'^admin/core/sitepreferences/(add)?/?$',
+        RedirectView.as_view(
+            url='/admin/core/sitepreferences/1/change/',
+            permanent=False
+        ),
+        name='site-preferences'
+    ),
     path('admin/', admin.site.urls),
     path('', include('notification.urls')),
     path('', include('activity.urls')),

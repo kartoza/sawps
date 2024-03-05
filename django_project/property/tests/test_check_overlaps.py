@@ -17,6 +17,7 @@ from property.tasks.check_overlaps import (
     check_overlaps_in_properties,
     property_check_overlaps_each_other
 )
+from core.models.preferences import SitePreferences
 
 
 def mocked_process(*args, **kwargs):
@@ -71,6 +72,21 @@ class TestCheckOverlaps(TestCase):
         self.assertTrue(item.overlap_area_size > 0)
         self.assertTrue(item.is_new())
         self.assertFalse(item.get_existing())
+
+    def test_check_for_overlap_size(self):
+        item = OverlapItem(1, 2, self.geom_1)
+        self.assertTrue(isinstance(item.intersect_geom, MultiPolygon))
+        self.assertTrue(item.overlap_area_size > 0)
+        # test with empty threshold
+        preferences = SitePreferences.preferences()
+        preferences.property_overlaps_threshold = None
+        preferences.save()
+        self.assertTrue(item.check_for_overlap_size())
+        # test with upper threshold
+        preferences = SitePreferences.preferences()
+        preferences.property_overlaps_threshold = item.overlap_area_size + 1
+        preferences.save()
+        self.assertFalse(item.check_for_overlap_size())
 
     def load_test_geom_to_properties(self, geom_path):
         with open(geom_path) as geojson:
