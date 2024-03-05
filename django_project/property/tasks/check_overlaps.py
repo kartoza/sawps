@@ -26,6 +26,7 @@ class OverlapItem(object):
 
     def check_for_overlap_size(self):
         threshold = SitePreferences.preferences().property_overlaps_threshold
+        threshold = threshold if threshold is not None else 0
         return self.overlap_area_size > threshold
 
     def get_queryset(self):
