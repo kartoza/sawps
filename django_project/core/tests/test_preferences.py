@@ -18,7 +18,11 @@ class SitePreferencesTest(TestCase):
         preferences.delete()
         self.assertTrue(SitePreferences.objects.filter(pk=1).exists())
 
-    @override_settings(INSTALLED_APPS=MOCKED_INSTALLED_APPS)
+
+@override_settings(INSTALLED_APPS=MOCKED_INSTALLED_APPS)
+class MockedSitePreferencesTest(TestCase):
+    """Mocked migration without easyaudit."""
+    
     def test_migrate_site_preferences(self):
         preferences = SitePreferences.preferences()
         self.assertTrue(preferences)
