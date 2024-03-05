@@ -110,7 +110,8 @@ def save_permissions(request, organisation_id):
                     None,
                     settings.SERVER_EMAIL,
                     list(User.objects.filter(
-                        is_superuser=True
+                        is_superuser=True,
+                        is_active=True
                     ).values_list('email', flat=True)),
                     html_message=message
                 )
