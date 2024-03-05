@@ -53,7 +53,7 @@ class CustomSignupForm(SignupForm):
                 return redirect('/accounts/login')
 
         token = email_verification_token.make_token(user)
-        subject = 'Sucess! your SAWPS account has been created'
+        subject = 'Success! your SAWPS account has been created'
         message = render_to_string(
             'emails/email_verification.html',
             {
