@@ -23,7 +23,8 @@ from rest_framework.views import APIView
 from core.celery import app
 from frontend.serializers.stakeholder import (
     ReminderSerializer,
-    OrganisationSerializer
+    OrganisationSerializer,
+    NotificationSerializer
 )
 from frontend.utils.organisation import (
     get_current_organisation_id
@@ -547,8 +548,13 @@ class NotificationsView(RegisteredOrganisationBaseView):
     def get_notifications(self, request):
         notifications = self.get_notifications_queryset(request)
         new_notifications = convert_reminder_dates(notifications)
-        serialized_notifications = ReminderSerializer(
-            new_notifications, many=True)
+        serialized_notifications = NotificationSerializer(
+            new_notifications,
+            many=True,
+            context={
+                'user': request.user
+            }
+        )
         notifications_page = request.GET.get('notification_page', 1)
         # Get the rows per page value from the query parameters
         rows_per_page = request.GET.get('notifications_per_page', 5)
@@ -570,7 +576,13 @@ class NotificationsView(RegisteredOrganisationBaseView):
                 if reminder:
                     notification.append(reminder)
         result = convert_reminder_dates(notification)
-        serialized_notification = ReminderSerializer(result, many=True)
+        serialized_notification = NotificationSerializer(
+            result,
+            many=True,
+            context={
+                'user': request.user
+            }
+        )
         return JsonResponse({'data': serialized_notification.data})
 
     def search_notifications(self, request):
@@ -589,7 +601,12 @@ class NotificationsView(RegisteredOrganisationBaseView):
             )
         search_results = convert_reminder_dates(notifications)
         serialized_notifications = ReminderSerializer(
-            search_results, many=True)
+            search_results,
+            many=True,
+            context={
+                'user': request.user
+            }
+        )
         return JsonResponse({'data': serialized_notifications.data})
 
     def delete_notification(self, request):

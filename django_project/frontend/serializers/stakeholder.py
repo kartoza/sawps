@@ -44,6 +44,35 @@ class ReminderSerializer(serializers.ModelSerializer):
         ]
 
 
+class NotificationSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    organisation = serializers.StringRelatedField()
+    date = serializers.DateTimeField(format='%Y-%m-%d %I:%M %p')
+    can_remove = serializers.SerializerMethodField()
+
+    def get_can_remove(self, obj: Reminders):
+        if obj.type == Reminders.EVERYONE:
+            user = self.context['user']
+            # only creator can remove this notification
+            return user == obj.user
+        return True
+
+    class Meta:
+        model = Reminders
+        fields = [
+            'id',
+            'title',
+            'reminder',
+            'user',
+            'organisation',
+            'status',
+            'date',
+            'type',
+            'email_sent',
+            'can_remove'
+        ]
+
+
 class OrganisationMemberSerializer(serializers.ModelSerializer):
     """Organisation member serializer."""
     user_id = serializers.SerializerMethodField()
