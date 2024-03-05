@@ -529,54 +529,57 @@ class NotificationsView(RegisteredOrganisationBaseView):
     model = get_user_model()
     slug_field = 'username'
 
-    def get_notifications(self, request):
-        notifications = Reminders.objects.filter(
-            user=request.user,
-            organisation_id=get_current_organisation_id(request.user),
+    def get_notifications_queryset(self, request):
+        current_organisation = get_current_organisation_id(request.user)
+        return Reminders.objects.filter(
             status=Reminders.PASSED,
             email_sent=True
+        ).filter(
+            Q(
+                type=Reminders.PERSONAL,
+                user=request.user
+            ) | Q(
+                type=Reminders.EVERYONE,
+                organisation=current_organisation
+            )
         )
+
+    def get_notifications(self, request):
+        notifications = self.get_notifications_queryset(request)
         new_notifications = convert_reminder_dates(notifications)
         serialized_notifications = ReminderSerializer(
             new_notifications, many=True)
-
         notifications_page = request.GET.get('notification_page', 1)
-
         # Get the rows per page value from the query parameters
         rows_per_page = request.GET.get('notifications_per_page', 5)
-
         # paginate results
         paginated_rows = paginate(
             serialized_notifications.data,
             rows_per_page, notifications_page
         )
-
         return paginated_rows
 
-
     def get_notification(self, request):
-
-        notification = get_reminder_or_notification(request)
-
-        if isinstance(notification, str):
-            return JsonResponse(
-                {
-                    'status': 'error',
-                    'message': notification
-                }
-            )
-
+        data = json.loads(request.POST.get('ids'))
+        notification = []
+        for element in data:
+            if isinstance(element, str) and element.isdigit():
+                reminder = Reminders.objects.filter(
+                    id=int(element)
+                ).first()
+                if reminder:
+                    notification.append(reminder)
         result = convert_reminder_dates(notification)
-
         serialized_notification = ReminderSerializer(result, many=True)
-
         return JsonResponse({'data': serialized_notification.data})
 
-
     def search_notifications(self, request):
-
-        notifications = search_reminders_or_notifications(request)
-
+        search_query = request.POST.get('query')
+        notifications = self.get_notifications_queryset(request)
+        notifications = notifications.filter(
+            Q(title__icontains=search_query) | Q(
+                reminder__icontains=search_query)
+        )
         if isinstance(notifications, str):
             return JsonResponse(
                 {
@@ -584,19 +587,13 @@ class NotificationsView(RegisteredOrganisationBaseView):
                     'message': notifications
                 }
             )
-
         search_results = convert_reminder_dates(notifications)
-
         serialized_notifications = ReminderSerializer(
             search_results, many=True)
-
         return JsonResponse({'data': serialized_notifications.data})
 
-
     def delete_notification(self, request):
-
         notifications = delete_reminder_and_notification(request)
-
         if isinstance(notifications, str):
             return JsonResponse(
                 {
@@ -604,15 +601,9 @@ class NotificationsView(RegisteredOrganisationBaseView):
                     'message': notifications
                 }
             )
-
-
-
         results = convert_reminder_dates(notifications)
-
         serialized_notifications = ReminderSerializer(results, many=True)
-
         return JsonResponse({'data': serialized_notifications.data})
-
 
     def dispatch(self, request, *args, **kwargs):
         if request.POST.get('action') == 'get_notification':
@@ -624,11 +615,9 @@ class NotificationsView(RegisteredOrganisationBaseView):
         else:
             return super().dispatch(request, *args, **kwargs)
 
-
     def get_context_data(self, **kwargs):
         context = super(NotificationsView, self).get_context_data(**kwargs)
         context['notifications'] = self.get_notifications(self.request)
-
         return context
 
 
