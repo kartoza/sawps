@@ -23,13 +23,13 @@ The Data Upload Page is a key component for managing and uploading user data. Th
 
 1. **Search area**: The central feature of the Data Upload Page is the data search area, where the user can search for specific areas within South Africa This search field allows the user to enter keywords or details related to places within South Africa, or the user's records, to locate specific areas.
 
-2. **Select property**: The Property Selection dropdown is a vital tool for categorising the user's data. Users can choose from existing properties to then associate data with a specific property. This helps organise and categorise users' records effectively.
+2. **Select Property**: The Property Selection dropdown is a vital tool for categorising the user's data. Users can choose from existing properties to then associate data with a specific property. This helps organise and categorise users' records effectively.
 
 3. **Create a new property**: If the property that the user wants to associate their data with does not exist in the dropdown, the user can create a new property. Click on the `CREATE A NEW PROPERTY` button to add a new property category. Users will be prompted to enter a name and details for the new property, and it will be added to the dropdown for future use.
 
 ## Interactive Map
 
-On the Data Upload Page, the user will find an interactive map that allows the user to visualise spatial data. In the bottom left corner of the map there are buttons that provide several options:
+On the Data Upload Page, the user will find an interactive map that allows the user to visualise spatial data. In the bottom left corner of the map, there are buttons that provide several options:
 
 ## Map Visualisation
 
@@ -39,9 +39,11 @@ On the Data Upload Page, the user will find an interactive map that allows the u
 
 2. **Zoom Out**: Click on the minus (-) sign to zoom out and get a broader view of the map.
 
-3. **Dark/Light Mode**: Toggle between a dark and light mode by clicking on the moon and sun icons. This feature provides visual comfort based on the user's preference.
+3. **3D Toggle**: Click on the (3D) icon to toggle between the three-dimensional (3D) and two-dimensional (2D) visualisations. Toggling this icon allows the user to alternate between three-dimensional and two-dimensional representations of the visual content.
 
-4. **Print**: Click on the print icon to generate a printable version of the map for the user's records or to share with others.
+4. **Dark/Light Mode**: Toggle between a dark and light mode by clicking on the moon and sun icons. This feature provides visual comfort based on the user's preference.
+
+5. **Print**: Click on the print icon to generate a printable version of the map for the user's records or to share with others.
 
 The map enhances the user's ability to work with spatial data and provides valuable insights into the geographical aspects of the user's records.
 
@@ -71,11 +73,9 @@ The Property Information Form is the initial stage of data upload. It's designed
 
 6. **Property Type**: Choose the property type from the `Property Type` dropdown menu. This classification helps categorize the property.
 
-7. **Province**: Select the province or region where the property is located from the `Province` dropdown. This information is vital for geographic referencing.
+7. **Organisation**: The `Organisation` displays the name of the organisation.
 
-8. **Organisation**: The `Organisation` displays the name of the organisation.
-
-9. **SAVE PROPERTY INFORMATION**: Once the user has filled in all the necessary details, they can click the `SAVE PROPERTY INFORMATION` button to store this information and proceed with the data upload process.
+8. **SAVE PROPERTY INFORMATION**: Once the user has filled in all the necessary details, they can click the `SAVE PROPERTY INFORMATION` button to store this information and proceed with the data upload process.
 
 The map enhances the user's ability to work with spatial data and provides valuable insights into the geographical aspects of the user's records.
 
@@ -93,35 +93,37 @@ The second step of the data upload process on the Data upload involves working w
 
 1. **Step 2**: Step 2 of data upload.
 
-2. **Parcel ID**: The Parcel ID is a unique identifier for each parcel within the property.
+2. **Message**: Utilise this feature to establish your property boundary. Options include selecting cadastral parcels that form the property, manually digitising the boundary using the provided tools, or uploading a boundary file associated with your property. Choose the method that best suits your preference for defining the property boundary.
 
-3. **Parcel Type**: Parcel Type categorises the parcels based on their purpose or characteristics.
+3. **SELECT**: The `SELECT` button allows the user to choose specific parcels from the map.
 
-4. **SELECT**: The `SELECT` button allows the user to choose specific parcels from the map.
+4. **DIGITISE**: Clicking the `DIGITISE` button initiates the process of mapping parcel boundaries. This step is essential for geospatial data.
 
-5. **DIGITISE**: Clicking the `DIGITISE` button initiates the process of mapping parcel boundaries. This step is essential for geospatial data.
+5. **UPLOAD**: The `UPLOAD` is used for creating parcel boundaries using the supported formats: zip, json, geojson, gpkg, kml (CRS 4326).
 
-6. **UPLOAD**: The `UPLOAD` is used for creating parcel boundaries using the supported formats: zip, json, geojson, gpkg, kml (CRS 4326).
-
-7. **SAVE PROPERTY INFORMATION**: If the user needs to update or modify the property information, the user can click the `SAVE PROPERTY INFORMATION` button to make changes to the property-level information.
+6. **SAVE PROPERTY INFORMATION**: If the user needs to update or modify the property information, the user can click the `SAVE PROPERTY INFORMATION` button to make changes to the property-level information.
 
 Completing Step 2 ensures that the user's dataset is comprehensive and includes detailed information about individual parcels within the property. This data is essential for various analyses and property management tasks.
 
-### Select parcel using select button
+### Select the parcel using the select button
 
 ![Select button](./img/panel-5.png)
 
-1. **Select parcel**: Zoom in the map until parcels are visible, once the user is able to see the parcels they can select parcels.
+1. **Select parcel**: Zoom in the map until parcels are visible, once the user can see the parcels they can select parcels.
 
 2. **Cancel**: Users can cancel the selection of the parcel using this button.
-
-3. **Save Boundary**: Click on `SAVE BOUNDARY` button to save the boundaries. After saving the boundary the user will be able to see the selected parcel id and its type.
 
     ![property boundary](./img/panel-12.png)
 
     1. **Parcel ID** The `Parcel ID` displayed in the side panel corresponds to the selected parcel.
 
-### Select parcel using the digitise button
+    2. **Delete Icon**: The user can delete a particular parcel by clicking on the `Delete` icon. This will remove that parcel.
+
+    3. **CLEAR BOUNDARY**: The user can clear all the selected boundaries by clicking on the `CLEAR BOUNDARY` button this will remove all the selected boundaries from the map.
+
+    4. **SAVE BOUNDARY**: Click on the `SAVE BOUNDARY` button to save the boundaries. Once the user has chosen the boundary, this button will become clickable. The selected parcel ID and its type will then be visible to the user.
+
+### Select the parcel using the digitise button
 
 The `DIGITISE` button is a powerful tool that allows the user to digitise parcel boundaries. When the user clicks the `DIGITISE` button, they will see a set of options on the left top of the map, giving the user full control over the digitisation process. These options are essential for mapping out parcel boundaries accurately.
 
@@ -147,7 +149,7 @@ The `DIGITISE` button is a powerful tool that allows the user to digitise parcel
 
 6. **Digitised parcel**: Digitised parcel is shown.
 
-7. **Save boundary**: After the user has successfully digitised and outlined the parcel boundary using the above options, they can finalise the process by clicking the `SAVE BOUNDARY` button. This saves the digitised boundary and incorporates it into the user's property's data.
+7. **Save boundary**: After the user has successfully digitised and outlined the parcel boundary using the above options, they can finalise the process by clicking the `SAVE BOUNDARY` button. This saves the digitised boundary and incorporates it into the user's property data.
 
 By utilising the digitisation options, the user can accurately define parcel boundaries, which is essential for geospatial data and mapping applications. This tool provides the user with the flexibility to create precise boundaries and make adjustments as needed during the digitisation process.
 
@@ -167,8 +169,6 @@ The popup window includes the following components:
 
 2. **File Selector:** Clicking on the `Browse` button and allows the user to select the file(s) they want to upload. Supported formats include zip, json, geojson, gpkg, kml (CRS 4326). These files typically contain geospatial data, and the user will use them to define parcel boundaries. Alternatively, users can just drag and drop files from their computer into the green box to begin uploading them.
 
-> Please be aware that our system currently does not support `GeoJSON` upload if users are using Windows. In order to successfully upload their data, we recommend saving it in alternative formats (zip, json, gpkg, kml (CRS 4326)) compatible with our system or, as a workaround, renaming the file extension to .json. We apologise for any inconvenience and appreciate users' understanding as we work to enhance compatibility. If users encounter any issues or have questions, feel free to reach out to our support team.
-
 3. **Uploaded Files:** This shows a list of the user's uploaded file(s).
 
 4. **Upload Files:** After the user has selected the appropriate files, they can click on the `Upload Files` button to begin the data upload process. This action will upload and process the selected data.
@@ -179,19 +179,18 @@ The popup window includes the following components:
 
 ![Upload Popup](./img/panel-7-2.png)
 
-1. **Progress Bar:** This bar displays progress of the processing as a percentage.
-2. **Uploaded Files:** This shows a list of the user's uploaded file(s).
-3. **Processing Files:** The `UPLOAD FILES` button gets greyed out and displays `PROCESSING FILES` while the files are being processed.
+1. **Uploaded Files:** This shows a list of the user's uploaded file(s).
+
+2. **Processing Files:** The `UPLOAD FILES` button gets greyed out and displays `PROCESSING FILES` while the files are being processed.
 
 ##### Upload Messages
 
 1. **Success Message:** If users have uploaded data that is in the correct CRS (EPSG:4326), is of the polygon/multi-polygon geometry type, and doesn't overlap another user's properties then they will see a success message at the top of the upload popup window.
+
     ![Upload Data Message 1](./img/upload-data-message-1.png)
 
-2. **Warning Message:** If users upload data that can be processed but overlaps/contains parcels that have previously been used by another user, then they will receive a warning message.
-    ![Upload Data Message 2](./img/upload-data-message-2.png)
+2. **Failure Message:** If users upload data with an incorrect CRS, an incorrect geometry type, or another issue, they will receive an error message.
 
-3. **Failure Message:** If users upload data with an incorrect CRS, an incorrect geometry type, or another issue, they will receive an error message.
     Incorrect CRS:
     ![Upload Data Message 3](./img/upload-data-message-3.png)
 
@@ -214,22 +213,25 @@ The `DATA UPLOAD` feature is crucial for geospatial data and mapping application
 
 Step 3 of the data upload process is a crucial phase that allows the user to upload species population data. In this step, the user will find two buttons for uploading their data, along with an option to download a template for the user's convenience. Additionally, there is a button to update property boundaries, which leads the user to Step 2 where they can make property boundary modifications.
 
-### Data Upload step 3
+### Data Upload Step 3
 
 ![Step 3](./img/panel-9.png)
 
 1. **Step 3**: Step 3 of data upload.
 
 2. **Online Form**: Clicking on the `ONLINE FORM` button allows users to access the online data upload form. This option is ideal for manually entering data into a user-friendly interface. Following the provided prompts lets users input species population data.
-![Online form](./img/panel-10.png)
+
+    ![Online form](./img/panel-10.png)
+
 Click [here](./online-form.md) to see the detailed documentation for the online form.
 
 3. **Download Template**: Clicking on the `DOWNLOAD TEMPLATE` button allows users to obtain a blank template that they can use as a starting point for entering their species population data. This template is designed to assist the user in organising their data correctly.
 
 4. **Upload Template**: Using the `UPLOAD DATA` button lets users upload a pre-prepared template containing species population data. Templates are useful for bulk data uploads or when the user has data formatted in a specific way. Ensure the user's template adheres to the required format and guidelines for a successful upload.
-![Upload template](./img/panel-11.png)
-Click [here](./template-upload.md) to see the detailed documentation of the template upload.
 
+    ![Upload template](./img/panel-11.png)
+
+Click [here](./template-upload.md) to see the detailed documentation of the template upload.
 
 5. **Update Property Boundary**: By clicking the `UPDATE PROPERTY BOUNDARY` button, the user will be redirected to Step 2 of the data upload process. In this step, the user can modify property boundaries.
 
