@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import ContextLayerInterface, {ContextLayerVisibilityPayload} from '../models/ContextLayer';
+import ContextLayerInterface, {ContextLayerVisibilityPayload, NGI_AERIAL_IMAGERY_LAYER, NGI_LAYER_GROUP} from '../models/ContextLayer';
 
 export interface LayerFilterInterface {
     contextLayers: ContextLayerInterface[];
@@ -28,10 +28,35 @@ export const LayerFilterSlice = createSlice({
             state.contextLayers = [..._layers]
         },
         toggleLayer: (state, action: PayloadAction<number>) => {
+            let _payloadLayers = state.contextLayers.filter(a => a.id === action.payload)
+            let _foundLayer: ContextLayerInterface = null;
+            if (_payloadLayers.length) {
+                _foundLayer = {..._payloadLayers[0]}
+            }
+            console.log('foundLayer : ', _foundLayer)
             let _layers = state.contextLayers.map((layer) => {
-                if (action.payload === layer.id) {
-                    layer.isSelected = !layer.isSelected
+                if (_foundLayer && _foundLayer.name === NGI_AERIAL_IMAGERY_LAYER) {
+                    if (!_foundLayer.isSelected) {
+                        // enable NGI Aerial Image and Properties
+                        if (NGI_LAYER_GROUP.includes(layer.name)) {
+                            layer.isSelected = true
+                        } else {
+                            layer.isSelected = false
+                        }
+                    } else {
+                        // disable NGI Aerial Image and enable the rest
+                        if (layer.name === NGI_AERIAL_IMAGERY_LAYER) {
+                            layer.isSelected = false
+                        } else {
+                            layer.isSelected = true
+                        }
+                    }                    
+                } else {
+                    if (action.payload === layer.id) {
+                        layer.isSelected = !layer.isSelected
+                    }
                 }
+                console.log('layer name: ', layer.name, layer.isSelected)
                 return layer
             })
             state.contextLayers = [..._layers]
