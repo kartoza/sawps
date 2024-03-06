@@ -13,6 +13,7 @@ from django.db import connection
 from django.db.utils import ProgrammingError
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, Http404, HttpResponseForbidden
+from django.http import StreamingHttpResponse
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -451,14 +452,19 @@ class AerialTile(APIView):
         x = kwargs.get('x')
         y = kwargs.get('y')
         z = kwargs.get('z')
-        response = requests.get(
+        r = requests.get(
             f'http://aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg'
         )
-        if response.status_code != 200:
+        if r.status_code != 200:
             raise Http404()
-        return HttpResponse(
-            response.content,
-            content_type=response.headers['Content-Type'])
+        response = StreamingHttpResponse(
+            (chunk for chunk in r.iter_content(512 * 1024)),
+            content_type=r.headers['Content-Type'])
+        if 'Cache-Control' in r.headers:
+            response['Cache-Control'] = r.headers['Cache-Control']
+        else:
+            response['Cache-Control'] = 'max-age=86400'
+        return response
 
 
 class FindParcelByCoord(APIView):
