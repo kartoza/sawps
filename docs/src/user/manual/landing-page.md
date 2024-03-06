@@ -56,11 +56,9 @@ On the `Landing Page`, users can view interactive charts that display national p
 
 4. **HOME**: The `HOME` link to return to the main [landing page](#prior-to-login).
 
-5. **EXPLORE**: The `EXPLORE` link navigates the user to the explore page.
+5. **DOCUMENTATION**: The `DOCUMENTATION` link navigates the user to the SAWPS documentation site in a new tab.
 
-6. **DOCUMENTATION**: The `DOCUMENTATION` link navigates the user to the SAWPS documentation site in a new tab.
-
-7. **CONTACT**: The `CONTACT` link navigates to the [contact page](./help-contact.md) where a user can use the contact form to ask any questions, or wish to provide feedback to the SAWPS support team.
+6. **CONTACT**: The `CONTACT` link navigates to the [contact page](./help-contact.md) where a user can use the contact form to ask any questions or wish to provide feedback to the SAWPS support team.
 
 ### Additional Resources and Pages
 
@@ -118,7 +116,7 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 #### National Population Trends
 
-![National Population Trends](./img/landing-page-2.png)
+![National Population Trends](./img/landing-page-8.png)
 
 1. **Image**: Image of the species.
 
@@ -136,7 +134,7 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 ### Additional Resources and Pages
 
-![Additional Resources and Pages](./img/landing-page-4.png)
+![Additional Resources and Pages](./img/landing-page-9.png)
 
 The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
 
