@@ -7,13 +7,13 @@ from django.utils import timezone
 from area import area
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from property.models import PropertyOverlaps
+from core.models.preferences import SitePreferences
 
 
 logger = logging.getLogger(__name__)
 
 
 class OverlapItem(object):
-    OVERLAP_AREA_THRESHOLD_IN_SQM = 1
 
     def __init__(self, property_id, other_id, intersect_geom) -> None:
         self.property_id = property_id
@@ -25,7 +25,9 @@ class OverlapItem(object):
         self.overlap_area_size = area(intersect_geom.geojson)
 
     def check_for_overlap_size(self):
-        return self.overlap_area_size > self.OVERLAP_AREA_THRESHOLD_IN_SQM
+        threshold = SitePreferences.preferences().property_overlaps_threshold
+        threshold = threshold if threshold is not None else 0
+        return self.overlap_area_size > threshold
 
     def get_queryset(self):
         return PropertyOverlaps.objects.filter(

@@ -1,9 +1,22 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load account %}
+{% load static %}
 {% block head_title %}SAWPS - Register{% endblock%}
 
 {% block content %}
+<link href="{% static 'css/account_inactive.css' %}" rel="stylesheet">
+    
+<div id="resendEmailModal" class="modal" style="display:none;">
+    <div class="modal-content account-form">
+        <h4>Resend Verification Email</h4>
+        <p>Please enter your email address to resend the verification email.</p>
+        <form id="resendEmailForm">
+            <input type="email" id="email" name="email" placeholder="Your email address" required>
+            <button type="submit" class="sawps-from-submit account-button">Resend Email</button>
+        </form>
+    </div>
+</div>
 <section class="login-page fs-background" style="background-color: #000000; min-height:var(--min-content-height);">
     <div class="container-fluid full-height">
         <div class="row half-height">
@@ -15,21 +28,27 @@
                         <hr class="separator">
 
                         <p class="text-justify">
-                            A verification email has been sent to your email address
+                            A verification email has been sent to your email address.
                             Please click the verification link in the email and follow the
-                            prompts to be able to login to this platform </p>
+                            prompts to be able to login to this platform. </p>
 
                         <div class="login-help text-center">
-                            Did not receive verification email </a>
+                            <a href="#" id="resendEmailLink">Did not receive verification email?</a>
                         </div>
 
-                        <a href="{% url 'account_login' %}"><button class="sawps-from-submit account-button"">Login</button></a>
+                        <a href="{% url 'account_login' %}"><button class="sawps-from-submit account-button">Login</button></a>
 
                     </div>
             </div>
         </div>
     </div>
 </section>
+
+    <script>
+        let account_resend_verification_url = "{% url 'account_resend_verification' %}";
+        let csrf_token = "{{ csrf_token }}"
+    </script>
+    <script src="{% static 'js/account_inactive.js' %}"></script>
 {% endblock %}
 
 </html>

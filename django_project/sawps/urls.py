@@ -5,7 +5,7 @@ from sawps.views import (
     AddUserToOrganisation,
     CustomPasswordResetView,
     custom_password_reset_complete_view,
-    health
+    health, resend_verification_email
 )
 from django.contrib.auth import views as auth_views
 
@@ -46,5 +46,8 @@ urlpatterns = [
         'healthz/',
         health,
         name='healthz'
-    )
+    ),
+    path('accounts/resend-verification/',
+         resend_verification_email,
+         name='account_resend_verification'),
 ]

@@ -10,6 +10,10 @@ from frontend.serializers.stakeholder import (
     OrganisationSerializer
 )
 from frontend.utils.user_roles import check_user_has_permission
+from sawps.models import (
+    PERM_CAN_ADD_SPECIES_POPULATION_DATA,
+    PERM_CAN_CHANGE_DATA_USE
+)
 from stakeholder.models import (
     OrganisationUser,
     Organisation,
@@ -60,8 +64,10 @@ def get_user_notifications(request):
         )
 
 
-def validate_if_user_can_access_data_upload(user: User):
+def validate_user_permission(user: User, permission_name: str):
     """Check if user has permission to upload data."""
+    if user.is_superuser:
+        return True
     return check_user_has_permission(user, 'Can add species population data')
 
 
@@ -153,15 +159,19 @@ class OrganisationBaseView(TemplateView):
         ctx['current_organisation_id'] = current_organisation_id
         ctx['organisations'] = self.get_organisation_list(self.request)
         get_user_notifications(self.request)
-        # add context for disabling Upload
-        ctx['can_user_do_upload_data'] = False
-        if self.request.user.is_superuser:
-            ctx['can_user_do_upload_data'] = True
-        else:
-            # Data Consumers and Scientist are not allowed to upload data
-            ctx['can_user_do_upload_data'] = (
-                validate_if_user_can_access_data_upload(self.request.user)
-            )
+        # Data Consumers and Scientist are not allowed to upload data
+        ctx['can_user_do_upload_data'] = (
+            validate_user_permission(
+                self.request.user,
+                PERM_CAN_ADD_SPECIES_POPULATION_DATA)
+        )
+
+        ctx['can_change_data_use_permissions'] = (
+            validate_user_permission(
+                self.request.user,
+                PERM_CAN_CHANGE_DATA_USE)
+        )
+
         return ctx
 
 

@@ -25,13 +25,13 @@ Click on the `UPLOAD DATA` button in the navigation bar. This will redirect you 
 
 ### Step 1
 
-In this step/tab, you should enter the information for your property (such as Property Name, whether the property is an Open/Closed System, and the Property Type) and once you have entered all of the relevant information you should click on 1️⃣ `SAVE PROPERTY INFORMATION` button. This will redirect you to `STEP 2`.
+In this step/tab, you should enter the information for your property (such as Property Name, whether the property is an Open/Closed System and the Property Type) and once you have entered all of the relevant information you should click on 1️⃣ `SAVE PROPERTY INFORMATION` button. This will redirect you to `STEP 2`.
 
 ![Upload Data New 2](img/upload-data-new-2.png)
 
 ### Step 2
 
-In this step/tab, zoom into the location of your property on the map and then decide whether you would like to 1️⃣ [select the boundary](#select-parcel-polygons) from the existing parcel polygons, 2️⃣ [digitise your own boundary](#digitise-property), or 3️⃣ [upload a supported vector file(s)](#upload-property) of your property.
+In this step/tab, zoom into the location of your property on the map and then decide whether you would like to 1️⃣ [select the boundary](#select-parcel-polygons) from the existing parcel polygons, 2️⃣ [digitise your boundary](#digitise-property), or 3️⃣ [upload a supported vector file(s)](#upload-property) of your property.
 
 ![Upload Data New 3](img/upload-data-new-3.png)
 
@@ -45,11 +45,14 @@ You can then select your property boundary from the existing parcel polygons. Yo
 
 ![Upload Data New 5](img/upload-data-new-5.png)
 
-Once you have selected your property boundary, you can then move onto [saving Your Property Boundary](#save-boundary).
+Once you have selected your property boundary, you can then move on to [saving Your Property Boundary](#save-boundary).
+The selected parcel 1️⃣ id's will be displayed on the left side. Once you select the boundary, the `UPLOAD` button will change to say 2️⃣ `CLEAR BOUNDARY` you can clear all the selected boundaries by clicking on this button.
+
+![Upload Data New 25](img/upload-data-new-25.png)
 
 #### Digitise property
 
-Once you have clicked on the `DIGITISE` button, the other two buttons will be greyed out and you will be able to select 1️⃣ the polygon tool from the tool bar that appears. If you hover your mouse over the buttons there is a popup that appears with the name of the tool.
+Once you have clicked on the `DIGITISE` button, the other two buttons will be greyed out and you will be able to select 1️⃣ the polygon tool from the toolbar that appears. If you hover your mouse over the buttons there is a popup that appears with the name of the tool.
 
 ![Upload Data New 6](img/upload-data-new-6.png)
 
@@ -65,7 +68,7 @@ Once it has processed the geometry, it will zoom into the bounding box of the po
 
 ![Upload Data New 9](img/upload-data-new-9.png)
 
-Once you have finished digitising your property boundary, you can then move onto [saving Your Property Boundary](#save-boundary).
+Once you have finished digitising your property boundary, you can then move on to [saving Your Property Boundary](#save-boundary).
 
 #### Upload property
 
@@ -108,7 +111,7 @@ Once you close the popup window, the platform will redirect you to the map and s
 
 ![Upload Data New 12](img/upload-data-new-12.png)
 
-Once you are satisfied with your property boundary, you can then move onto [saving Your Property Boundary](#save-boundary).
+Once you are satisfied with your property boundary, you can then move on to [saving Your Property Boundary](#save-boundary).
 
 #### Save Boundary
 
@@ -126,7 +129,7 @@ In this step/tab, you can update the Species Population Data by using 1️⃣ th
 
 #### The Online Form
 
-If you choose to use the `ONLINE FORM` and click on the button of the same name, the site will redirect you to the first part online form (the **SPECIES DETAIL** page). On this page you are required to fill in every field that has an asterisk (little star '*') next to the field title, as these are mandatory. Once you have filled in the required fields, you can click on 1️⃣ `Next` to move onto the next page (the **ACTIVITY DETAIL** page). If you wish to leave and come back to the form later one, you can click on 2️⃣ `SAVE DRAFT`.
+If you choose to use the `ONLINE FORM` and click on the button of the same name, the site will redirect you to the first part online form (the **SPECIES DETAIL** page). On this page, you are required to fill in every field that has an asterisk (little star '*') next to the field title, as these are mandatory. Once you have filled in the required fields, you can click on 1️⃣ `Next` to move on to the next page (the **ACTIVITY DETAIL** page). If you wish to leave and come back to the form later one, you can click on 2️⃣ `SAVE DRAFT`.
 
 ![Upload Data New 15](img/upload-data-new-15.png)
 
@@ -144,9 +147,9 @@ Once you have clicked on `SUBMIT` a popup will appear letting you know your data
 
 ![Upload New Data 18](img/upload-data-new-18.png)
 
-#### Upload Data using template
+#### Upload Data using the template
 
-If you would like to download the data template to then upload it, you can click on 1️⃣ the `DOWNLOAD TEMPLATE` button. This will download the template to your computer as an excel file (a .xlsx file). The 2️⃣ **Property Code** available here will be used in the spreadsheet.
+If you would like to download the data template to then upload it, you can click on 1️⃣ the `DOWNLOAD TEMPLATE` button. This will download the template to your computer as an Excel file (a .xlsx file). The 2️⃣ **Property Code** available here will be used in the spreadsheet.
 
 ![Upload New Data 19](img/upload-data-new-19.png)
 
@@ -174,7 +177,7 @@ The data has now been uploaded and is associated with your property
 
 ##### What happens if there are issues with my upload?
 
-If there is an issue with your uploaded data the site will return a warning or a csv file with information about the issue with your data. These are explained below:
+If there is an issue with your uploaded data the site will return a warning or a CSV file with information about the issue with your data. These are explained below:
 
 ###### Uploading duplicate data
 
@@ -184,11 +187,11 @@ If you attempt to upload data that is populated with previously uploaded data, t
 
 ###### Compulsory fields not filled in
 
-If you attempt to upload data that is missing one (or many) compulsory field(s), the site will not allow for the upload and will then return an error message. If you click on 1️⃣ the `ERROR FILE` button, an error csv file will be downloaded to your computer.
+If you attempt to upload data that is missing one (or many) compulsory field(s), the site will not allow for the upload and will then return an error message. If you click on 1️⃣ the `ERROR FILE` button, an error CSV file will be downloaded to your computer.
 
 ![Data Upload Issue 2](./img/data-upload-issue-2.png)
 
-If you open the error csv file, the first column in the file will contain a message regarding the error the platform has encountered (this example didn't input the scientific name). You need to correct the issue in the file you want to upload.
+If you open the error CSV file, the first column in the file will contain a message regarding the error the platform has encountered (this example didn't input the scientific name). You need to correct the issue in the file you want to upload.
 
 ![Data Upload Issue 3](./img/data-upload-issue-3.png)
 
@@ -196,13 +199,13 @@ Once you have fixed the error in the file you want to upload, click on 1️⃣ t
 
 ![Data Upload Issue 4](./img/data-upload-issue-4.png)
 
-###### Property code provided does not match selected property
+###### The Property code provided does not match the selected property
 
-If you try to upload data that has a project code that does not match with the property code of the property you are trying to upload data to, the platform will not allow the upload to happen and will then return an error message. If you click on 1️⃣ the `ERROR FILE` button, an error csv file will be downloaded to your computer.
+If you try to upload data that has a project code that does not match with the property code of the property you are trying to upload data to, the platform will not allow the upload to happen and will then return an error message. If you click on 1️⃣ the `ERROR FILE` button, an error CSV file will be downloaded to your computer.
 
 ![Data Upload Issue 2](./img/data-upload-issue-2.png)
 
-If you open the error csv file, the first column in the file will contain a message explaining what you need to change your property code to, to be correct.
+If you open the error CSV file, the first column in the file will contain a message explaining what you need to change your property code to, to be correct.
 
 ![Data Upload Issue 5](./img/data-upload-issue-5.png)
 
@@ -231,3 +234,7 @@ You will be redirected to `Step 3`, where the interactive map will now highlight
 If you would like to edit the property's information, click on `STEP 1` and edit the fields as needed. When you are done, click on 1️⃣ the `SAVE PROPERTY INFORMATION` button.
 
 ![Upload Data Existing 3](img/upload-data-existing-3.png)
+
+If you would like to edit the property's boundary information, click on `STEP 2` and edit the boundaries as needed. When you are done, click on 1️⃣ the `SAVE BOUNDARY` button.
+
+![Upload Data Existing 4](img/upload-data-existing-4.png)
