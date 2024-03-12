@@ -102,13 +102,23 @@ def insert_province_geom(id, province_name, geom):
         cursor.execute(sql, [id, geom, province_name])
 
 
+def generate_chunk(x):
+    for i in range(x):
+        yield i
+
+
 class MockResponse:
-    def __init__(self, status_code):
+    def __init__(self, status_code, headers={}):
         self.content = 'Test'
         self.status_code = status_code
         self.headers = {
             'Content-Type': 'application/octet-stream'
         }
+        if headers:
+            self.headers.update(headers)
+
+    def iter_content(self, chunk_size):
+        return generate_chunk(10)
 
 
 class TestMapAPIViews(TestCase):
@@ -1009,6 +1019,21 @@ class TestMapAPIViews(TestCase):
         view = AerialTile.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
+        self.assertIn('Cache-Control', response.headers)
+        self.assertEqual(response.headers['Cache-Control'], 'max-age=86400')
+        # using cache control from mock
+        mocked_requests.return_value = MockResponse(
+            200, headers={'Cache-Control': 'max-age=300'})
+        request = self.factory.get(
+            reverse('aerial-map-layer', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = AerialTile.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Cache-Control', response.headers)
+        self.assertEqual(response.headers['Cache-Control'], 'max-age=300')
+
 
     @override_settings(FIXTURE_DIRS=[DJANGO_ROOT])
     def test_reload_context_layers(self):
