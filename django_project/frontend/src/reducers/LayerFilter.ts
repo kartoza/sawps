@@ -33,7 +33,6 @@ export const LayerFilterSlice = createSlice({
             if (_payloadLayers.length) {
                 _foundLayer = {..._payloadLayers[0]}
             }
-            console.log('foundLayer : ', _foundLayer)
             let _layers = state.contextLayers.map((layer) => {
                 if (_foundLayer && _foundLayer.name === NGI_AERIAL_IMAGERY_LAYER) {
                     if (!_foundLayer.isSelected) {
