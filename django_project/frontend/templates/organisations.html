@@ -6,11 +6,11 @@
 {% block content %}
 <section style="min-height:var(--min-content-height);">
   <div class="container py-5">
-    <div class="my-row">
+    <div class="row">
       {% include "profile_config_base.html" %}
     </div>
 
-    <div class="container" style="margin-left: 0.5%;">
+    <div class="container">
 
       <!-- add user modal -->
       <div class="modal fade" id="adduser" tabindex="-1" role="dialog" aria-labelledby="adduserLabel" aria-hidden="true">
@@ -552,9 +552,6 @@
 
     .pagination-button.active {
       font-weight: bold;
-    }
-    .sawps-text-menu {
-      font-weight: normal;
     }
     .form-control:focus {
       border-color: var(--green);
