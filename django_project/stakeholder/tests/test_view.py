@@ -1127,7 +1127,7 @@ class NotificationsViewTest(TestCase):
         url = reverse('notifications', kwargs={'slug': self.user.username})
         data = {
             'action': 'get_notification',
-            'ids': [json.dumps(self.reminder1.pk)],
+            'ids': json.dumps([self.reminder1.pk]),
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
         request = self.factory.post(url, data)
@@ -1193,7 +1193,7 @@ class NotificationsViewTest(TestCase):
         data = {
             'action': 'get_notification',
             'notifications_page': True,
-            'ids': [self.reminder1.id],
+            'ids': json.dumps([self.reminder1.id]),
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
         }
         request = self.factory.post(url, data)
