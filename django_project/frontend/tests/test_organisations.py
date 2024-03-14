@@ -1,3 +1,4 @@
+from django.core import mail
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User, Group
@@ -229,11 +230,18 @@ class OrganisationTests(TestCase):
 
     def setUp(self):
         self.organisation = organisationFactory.create(
-            name="Test Organisation"
+            name="Test Organisation",
+            hosting_through_sanbi_platforms=True
         )
         self.user = User.objects.create_user(
             username='testuser',
             password='testpassword'
+        )
+        self.superuser = User.objects.create_user(
+            username='superuser',
+            password='testpassword',
+            is_superuser=True,
+            email='super@user.com'
         )
         device = TOTPDevice(
             user=self.user,
@@ -255,6 +263,9 @@ class OrganisationTests(TestCase):
         self.assertTrue(self.organisation.use_of_data_by_sanbi_only)
         self.assertFalse(self.organisation.hosting_through_sanbi_platforms)
         self.assertTrue(self.organisation.allowing_sanbi_to_expose_data)
+        self.assertIn(
+            f'Changes to {self.organisation.name}\'s Permissions Settings',
+            mail.outbox[0].subject)
 
     def test_save_permissions_invalid_request(self):
         data = {}  # Invalid request with missing data
