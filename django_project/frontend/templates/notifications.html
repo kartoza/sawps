@@ -9,37 +9,27 @@
   <div class="row">
     {% include "profile_config_base.html" %}
 
-    <div class="container">
-        
-
-        <!-- view notification modal -->
-        <div id="notificationModal" class="notif_modal">
-          <span class="close-icon" onclick="hideModal()">&#x2716;</span>
-          <h2 id="notificationTitle"></h2>
-          <p id="notificationContent"></p>
-          <p id="notificationDate"></p>
-        </div>   
-          
-
-      
-        <!-- search and filter -->
-        <div class="my-row green-background row" style="  border-radius: 5px; margin-left:0.1%; padding-top:0.5%; padding-bottom: 0.25%;">
-          <div class="col-md-9" style="padding-top: 6px; padding-left: 1%;" >
-          </div>
-          <div class="col-md-3" style="margin:auto; padding-bottom:0.25% ">
-            <div style="display:flex; border-radius:5px; border:1px white solid">
-                <input style="border-radius:0px 0px; border:none;" type="search" id="searchInput" class="form-control" />
-              <div style="background-color:white; border:none; border-radius:0px 0px" class="btn btn-primary">
-                <i class="fas fa-search"></i>
-              </div>
+  <div class="container">
+      <!-- view notification modal -->
+      <div id="notificationModal" class="notif_modal">
+        <span class="close-icon" onclick="hideModal()">&#x2716;</span>
+        <h2 id="notificationTitle"></h2>
+        <p id="notificationContent"></p>
+        <p id="notificationDate"></p>
+      </div>   
+      <!-- search and filter -->
+      <div class="my-row green-background row" style="  border-radius: 5px; margin-left:0.1%; padding-top:0.5%; padding-bottom: 0.25%;">
+        <div class="col-md-9" style="padding-top: 6px; padding-left: 1%;" >
+        </div>
+        <div class="col-md-3" style="margin:auto; padding-bottom:0.25% ">
+          <div style="display:flex; border-radius:5px; border:1px white solid">
+              <input style="border-radius:0px 0px; border:none;" type="search" id="searchInput" class="form-control" />
+            <div style="background-color:white; border:none; border-radius:0px 0px" class="btn btn-primary">
+              <i class="fas fa-search"></i>
             </div>
+          </div>
         </div>
-        </div>
-
-      
-      
-
-
+      </div>
       <!-- notifications table -->
       <div class="my-row" style="margin-top: 1%; margin-left: 0%;">
       <table id="notifications" class="table table-bordereless" cellspacing="0" width="100%">
@@ -57,7 +47,11 @@
               <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.title }}</td>
               <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.date }}</td>
               <td class="clickable-row clickable" data-href="{{ notification.id }}">{{ notification.reminder }}</td>
-              <td><i class="fas fa-trash-alt trash-icon" data-object-id="{{ notification.id }}"></i></td>
+              <td>
+                {% if notification.can_remove %}
+                <i class="fas fa-trash-alt trash-icon" data-object-id="{{ notification.id }}"></i>
+                {% endif %}
+              </td>
             </tr>
           {% endfor %}
         </tbody>        
@@ -115,9 +109,8 @@
                 </div>
               </td>
             </tr>
-          </tfoot>
+        </tfoot>
       </table>
-
     </div> 
   </div>
   
