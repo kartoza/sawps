@@ -12,7 +12,6 @@ context_id: A46Lfi9cWerPMwoLLs6Qgx
 ---
 
 # Upload Data
-<!-- To Be Populated -->
 
 This section of the documentation describes the various elements of the upload data page. It consists of:
 

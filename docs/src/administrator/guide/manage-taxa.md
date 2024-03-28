@@ -21,18 +21,6 @@ After you have logged into the administration site, scroll down on the landing p
 
 ![Managing Taxa 1](./img/manage-taxa-1.png)
 
-<!--
-## Owned Species
-
-#### Search for Owned Species
-
-#### Add Owned Species
-
-#### Manage Owned Species
-
-#### Delete Owned Species
--->
-
 ## Taxa
 
 If you clicked on the `Taxa` link on the landing page, you will be redirected to a page that has 1️⃣ a list of the platform's taxa and their respective common names.

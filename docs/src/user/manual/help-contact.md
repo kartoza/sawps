@@ -12,7 +12,6 @@ context_id: eybYy3Sj9ePW9wPTQZqhD5
 ---
 
 # Help and Contact
-<!-- To Be Populated -->
 
 The Help and Contact pages are valuable resources designed to assist users in navigating and understanding the application. This documentation explains the available features on the two pages.
 

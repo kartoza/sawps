@@ -12,7 +12,6 @@ context_id: RDJ98NC38NpRpGi9Neh6Gg
 ---
 
 # Login and logout
-<!-- To Be Populated -->
 
 This section of documentation describes the various page elements of the login and logout pages. It consists of:
 
