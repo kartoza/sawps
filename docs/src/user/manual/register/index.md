@@ -12,7 +12,6 @@ context_id: Ciue9an6cC6SDnczsFjnc9
 ---
 
 # Register
-<!-- To Be Populated -->
 
 This section of documentation describes the various elements of registering on the platform. It consists of:
 

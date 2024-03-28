@@ -12,7 +12,6 @@ context_id: Ca8Fcipg5T8nhidMoqfiS2
 ---
 
 # Forgot Password Feature
-<!-- These are instructions the user should take when they wish to reset their password -->
 
 When the user has forgotten their password, they can use this feature to reset it.
 The steps involve:
@@ -36,7 +35,6 @@ The steps involve:
 2. Email Field: the user should enter their email address into this field.
 3. Reset Password button: when clicked sends the reset password email and notifies the user.
 4. Go back link: when clicked returns the user to the login page.
-
 
 ![Forgot Password 3](./img/forgot-password-3.png)
 

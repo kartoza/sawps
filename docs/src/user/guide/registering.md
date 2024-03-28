@@ -11,7 +11,6 @@ context_id: 2eVGMmQFandJNZKd6BgDkB
 ---
 
 # Registration and Logging In
-<!-- How to Register and then Login -->
 
 This document will take you through various workflows associated with registering on the platform and, in turn, logging in.
 
