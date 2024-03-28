@@ -1115,29 +1115,28 @@ class NotificationsViewTest(TestCase):
 
         self.assertIsNotNone(response)
 
-
-    @patch('stakeholder.views.get_reminder_or_notification')
-    @patch('stakeholder.views.convert_reminder_dates')
-    @patch('frontend.serializers.stakeholder.ReminderSerializer')
-    def test_get_notification(
-        self,
-        mock_reminder,
-        mock_convert_dates,
-        mock_reminders_serializer):
+    def test_get_notification(self):
+        new_reminder = Reminders.objects.create(
+            title='Test Reminder 3',
+            user=self.user,
+            organisation=self.organisation,
+            reminder='Test Reminder Note',
+            type=Reminders.EVERYONE
+        )
         url = reverse('notifications', kwargs={'slug': self.user.username})
         data = {
             'action': 'get_notification',
-            'ids': [json.dumps(self.reminder1.pk)],
+            'ids': json.dumps([str(self.reminder1.pk), str(new_reminder.pk)]),
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', '')
         }
         request = self.factory.post(url, data)
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation}
-
         view = NotificationsView()
         response = view.get_notification(request)
-
         self.assertIsNotNone(response)
+        response_data = json.loads(response.content)
+        self.assertIn('data', response_data)
+        self.assertEqual(len(response_data['data']), 2)
 
     @patch('stakeholder.views.search_reminders_or_notifications')
     @patch('stakeholder.views.convert_reminder_dates')
@@ -1193,7 +1192,7 @@ class NotificationsViewTest(TestCase):
         data = {
             'action': 'get_notification',
             'notifications_page': True,
-            'ids': [self.reminder1.id],
+            'ids': json.dumps([self.reminder1.id]),
             'csrfmiddlewaretoken': self.client.cookies.get('csrftoken', ''),
         }
         request = self.factory.post(url, data)

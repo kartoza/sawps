@@ -18,3 +18,6 @@ export interface ContextLayerVisibilityPayload {
     isVisible: boolean;
 }
 
+
+export const NGI_AERIAL_IMAGERY_LAYER = 'NGI Aerial Imagery'
+export const NGI_LAYER_GROUP = ['Properties', NGI_AERIAL_IMAGERY_LAYER]
