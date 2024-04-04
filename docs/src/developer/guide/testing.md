@@ -57,13 +57,13 @@ npx playwright install --with-deps
 
 **Note:**
 
-* By default it uses TypeScript(`*.ts`).
+* By default, it uses TypeScript(`*.ts`).
 
 This command will install all the required browsers and other dependencies. The [directory structure](https://playwright.dev/docs/intro#whats-installed) will be as follows:
 
 ### Running tests
 
-**Note:** To run tests locally ensure the django project is being served up locally. For tests on [staging/production](./testing.md/#setting-up-environment), ensure the website is up.
+**Note:** To run tests locally ensure the Django project is being served up locally. For tests on [staging/production](./testing.md/#setting-up-environment), ensure the website is up.
 
 By default, tests will run on three browsers in headless mode.
 
@@ -113,9 +113,9 @@ It uses the `template.test.env` file to set up the environment. Which is copied 
 
 ![testing env](./img/testing-continuous-intergration-2.png)
 
-Testing the django endpoint:
+Testing the Django endpoint:
 
-![testing django endpoint](./img/testing-continuous-intergration-3.png)
+![testing Django endpoint](./img/testing-continuous-intergration-3.png)
 
 Running coverage tests:
 

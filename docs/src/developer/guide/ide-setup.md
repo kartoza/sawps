@@ -22,7 +22,7 @@ Copy and customize environnment file: Create a copy of the ```deployment/.templa
 ![image](https://user-images.githubusercontent.com/178003/231014472-c77f7a00-1a1d-43d0-8c06-ef9634f2ccc7.png)
 
 
-Add a ```.env``` file in the project root directory with below content:
+Add a ```.env``` file in the project root directory with the below content:
 
 ```
 COMPOSE_PROJECT_NAME=sanbi
@@ -49,7 +49,7 @@ Install dependencies inside the container: Press ```Cmd+Shift+P``` (macOS) or ``
 ![image](https://user-images.githubusercontent.com/178003/231016195-5d78356b-e802-40f6-aa33-82404b65925d.png)
 
 
-Run the migrations inside the container: Press ```Cmd+Shift+P``` (macOS) or ```Ctrl+Shift+P``` (Windows/Linux), type ```Tasks: Run Tasks``` and select it. Choose ```Django: Migrate```.
+Run the migrations inside the container: Press ```Cmd+Shift+P``` (macOS) or ```Ctrl+Shift+P``` (Windows/Linux), and type ```Tasks: Run Tasks``` and select it. Choose ```Django: Migrate```.
 
 ![image](https://user-images.githubusercontent.com/178003/231015768-39803d00-95dc-42c7-a08f-ab58ac09fa58.png)
 
@@ -57,7 +57,7 @@ Run the migrations inside the container: Press ```Cmd+Shift+P``` (macOS) or ```C
 
 #### 👩‍💻 Open the developer site
 
-Run the project inside the container: Press ```Cmd+Shift+D``` (macOS) or ```Ctrl+Shift+D``` (Windows/Linux), choose ```Django+React``` in the RUN AND DEBUG dropdown.
+Run the project inside the container: Press ```Cmd+Shift+D``` (macOS) or ```Ctrl+Shift+D``` (Windows/Linux), and choose ```Django+React``` in the RUN AND DEBUG dropdown.
 
 ![image](https://user-images.githubusercontent.com/178003/231016537-cda1d85f-5123-45ef-8f51-c12e90e1d0c9.png)
 

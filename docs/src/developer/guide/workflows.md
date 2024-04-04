@@ -164,4 +164,4 @@ Follow our [commit message conventions](./templates/commit-message-convention.md
 ### Pull Request Template
 
 If it has related issues, add links to the issues(like `#123`) in the description.
-Fill in the [Pull Request Template](./templates/pull-request-template.md) by check your case.
+Fill in the [Pull Request Template](./templates/pull-request-template.md) by checking your case.
