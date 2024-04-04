@@ -24,17 +24,28 @@ The context help system provides an integration between the web application and 
 The following concepts are used:
 
 - **Site:** This is the area for globally setting options relating to the context help system.
-- **Blocks:** These are small components displayed as blocks 1️⃣ in the context help panel. Each block links to a section in the help documentation. ![context help 2](img/context-help-2.png)
-- **Pages:** These are context help panels that are each linked to a particular URL in the application. ![context help 3](img/context-help-3.png)
+
+- **Blocks:** These are small components displayed as blocks 1️⃣ in the context help panel. Each block links to a section in the help documentation. If you would like to view the full documentation site you can click on 2️⃣ `Visit our Documentation`.
+
+![context help 2](img/context-help-2.png)
+
+- **Pages:** These are context help panels that are each linked to a particular URL in the application.
+
+![context help 3](img/context-help-3.png)
+
 - **Page Blocks:** These are links between pages and their constituent blocks. Each page can have many blocks and each block can be used in many pages.
 
 ## Triggering context help
 
-There are three ways to trigger context help:
+There are two ways to trigger context help:
 
-1. From the top nav bar 1️⃣ ![context help 4](img/context-help-4.png)
-2. From the side panel 1️⃣ ![context help 5](img/context-help-5.png)
-3. Next to widgets (not implemented yet)
+1. Click on the 1️⃣ green question mark icon available at the top right corner. This will be visible only on the `EXPLORE` and the `DATA UPLOAD`
+
+![context help 4](img/context-help-4.png)
+
+2. From the top nav bar, click on the 1️⃣ `Help` to view the context help options.
+
+![context help 5](img/context-help-5.png)
 
 ## Managing context help
 
@@ -68,7 +79,7 @@ Now you can edit an existing page 1️⃣ or add a new one 2️⃣:
 
 The page properties you can set are going to determine how the context help panel appears in the application when triggering the help panel 1️⃣:
 
-![image.png](img/context-help-13.png)
+![image.png](img/context-help-12.png)
 
 Here is a detailed breakdown of the options:
 
@@ -82,9 +93,15 @@ Here is a detailed breakdown of the options:
 
 5️⃣ **Intro:** This will be shown as lead-in text for the context help panel. See 2️⃣ above.
 
-![image.png](img/context-help-12.png)
+![image.png](img/context-help-13.png)
 
-On the page form you can also manage the blocks that appear in the context help.
+On the page form you can also manage the blocks that appear in the context help. You can select the available block from the 1️⃣ dropdown if the block is not already created you can create it by clicking on the 2️⃣ `plus` icon. To create a new block component for a page, use 3️⃣  `Add another Page block` link, and then go and choose or create the actual block content. To set the order in which the block appears in the help panel use 4️⃣. For ordering, lower number blocks will be listed before higher number blocks. It is up to you to ensure that each number used for ordering is unique.
+
+![image.png](img/context-help-18.png)
+
+The block will appear in the order we set.
+
+![image.png](img/context-help-19.png)
 
 ## Managing blocks
 
@@ -92,29 +109,31 @@ You can view and manage existing blocks from the documentation center 1️⃣ or
 
 ![image.png](img/context-help-14.png)
 
-We can also create a new block directly from within a page.
-
-- To set a block link within the page use 1️⃣
-- To set the order in which the block appears in the help panel use 2️⃣. For ordering, lower number blocks will be listed before higher number blocks. It is up to you to ensure that each number used for ordering is unique.
-- To create a new block component for a page, use 3️⃣ and then go and choose or create the actual block content.
+We can also create a new block and can edit the existing blocks from here. Click on the 1️⃣ `ADD BLOCK` button to create the all-new block. You can edit the existing block by clicking on the 2️⃣ name of the particular block.
 
 ![image.png](img/context-help-15.png)
 
-Let's create a new block within the context of an existing page (this is the more normal workflow).
+Let's create a new block.
+
+- **Relative Documentation Url:** 1️⃣ (based on the documentation site wide base url preference) to the documentation page
+
+- **Anchor** 2️⃣ - this is optional and should point to a heading/subheading within the page if populated.
+
+- **Title 3️⃣** - title for the block. This is automatically filled in from the page unless you specify an override title. Normally you would leave this blank.
+
+- **Thumbnail 4️⃣** for the block. This is automatically linked to the first image below the anchor in the help document. Usually, you would leave this blank.
+
+- **Description 5️⃣** for the block. This will be automatically populated from the first paragraph in the linked help documentation.
 
 ![image.png](img/context-help-16.png)
 
-Because we have created it within the page form, the block form appears as a popup window. We can deal with the form components as follows:
-
-- **The relative url** 1️⃣ (based on the the documentation site wide base url preference) to the documentation page
-- **The anchor** 2️⃣ - this is optional and should point to a heading / subheading within the page if populated.
-- **The title 3️⃣** - title for the block. This is automatically filled in from the page unless you specify an override title. Normally you would leave this blank.
-- **The thumbnail 4️⃣** for the block. This is automatically linked to the first image below the anchor in the help document. Usually you would leave this blank.
-- **Description 5️⃣** for the block. This will be automatically populated from the first paragraph in the linked help documentation.
-
-⚠️ As you can see, the block definition requires only minimal information - the URL and optionally the anchor on the page. Anything else you specify here will override information harvested from the page and likely make your documentation more difficult to maintain.
+You can also add the child block by choosing from the 1️⃣ dropdown or by creating a new one by clicking on the 2️⃣ `plus` icon. The order number should be unique to show in proper order.
 
 ![image.png](img/context-help-17.png)
+
+Let's edit the existing block. Click on the name of the block you want to edit, upon clicking you will be redirected to the change block page where you can edit the block according to the requirements. Once you have done with the editing click on the save to save the changes.
+
+![image.png](img/context-help-20.png)
 
 ## Page Blocks
 
