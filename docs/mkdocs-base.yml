@@ -117,7 +117,6 @@ nav:
                       - IDE Setup: developer/guide/ide-setup.md
                       - Cloning: developer/guide/cloning.md
                       - Configuration: developer/guide/configuration.md
-                      - Building: developer/guide/building.md
                       - Workflows: developer/guide/workflows.md
                       - Testing: developer/guide/testing.md
                       - "": developer/guide/templates/pull-request-template.md
