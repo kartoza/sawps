@@ -7,6 +7,7 @@ from frontend.models import (
     Holding,
     ParentFarm,
     UploadSpeciesCSV, Layer,
+    Spreadsheet,
 )
 from frontend.tests.model_factories import (
     ContextLayerF,
@@ -15,8 +16,12 @@ from frontend.tests.model_factories import (
     HoldingF,
     ParentFarmF,
     UploadSpeciesCSVF, LayerF, ContextLayerLegendF,
+    SpreadsheetModelF,
 )
 from property.factories import PropertyFactory
+from core.settings.utils import absolute_path
+
+
 
 
 class TestContextLayerModels(TestCase):
@@ -209,3 +214,52 @@ class TestUploadSpeciesCSV(TestCase):
         )
         upload_species_csv.delete()
         self.assertEqual(UploadSpeciesCSV.objects.count(), 0)
+
+
+class TestSpreadsheet(TestCase):
+    """Test spreadsheet model."""
+
+    def test_create_new_spreadsheet(self):
+        """Test creating new spreadsheet."""
+        spreadsheet_path = absolute_path(
+            'frontend', 'tests',
+            'csv', 'excel_error_property.xlsx')
+        SpreadsheetModelF.create(
+            id=1,
+            name='template',
+            spreadsheet_file=spreadsheet_path
+        )
+        self.assertEqual(Spreadsheet.objects.count(), 1)
+        spreadsheet = Spreadsheet.objects.get(
+            id=1
+        )
+        self.assertEqual(
+            spreadsheet.name,
+            'template'
+        )
+        self.assertEqual(
+            spreadsheet.spreadsheet_file.url,
+            'spreadsheet/excel_error_property.xlsx'
+        )
+
+    def test_update_spreadsheet(self):
+        """Test updating a upload species csv."""
+        SpreadsheetModelF.create(
+            id=1,
+            name='template',
+        )
+        spreadsheet = Spreadsheet.objects.get(
+            id=1
+        )
+        spreadsheet.name = 'template_1'
+        spreadsheet.save()
+        self.assertEqual(spreadsheet.name, 'template_1')
+
+    def test_delete_spreadsheet(self):
+        """Test deleting upload species csv."""
+        spreadsheet = SpreadsheetModelF.create(
+            id=1,
+            name='template',
+        )
+        spreadsheet.delete()
+        self.assertEqual(Spreadsheet.objects.count(), 0)

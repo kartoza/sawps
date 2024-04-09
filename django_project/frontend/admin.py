@@ -20,7 +20,8 @@ from frontend.models import (
     StatisticalModelOutput,
     Layer,
     MapSession,
-    SpeciesModelOutput
+    SpeciesModelOutput,
+    Spreadsheet
 )
 from frontend.models.spatial import SpatialDataModel, SpatialDataValueModel
 from frontend.tasks import (
@@ -367,6 +368,13 @@ class MapSessionAdmin(admin.ModelAdmin):
     list_filter = ['user']
 
 
+class SpreadsheetAdmin(admin.ModelAdmin):
+    """Admin page for Spreadsheet model
+
+    """
+    list_display = ('id', 'name', 'spreadsheet_file')
+
+
 admin.site.register(ContextLayer, ContextLayerAdmin)
 admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
@@ -378,3 +386,4 @@ admin.site.register(SpatialDataModel, SpatialDataModelAdmin)
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(MapSession, MapSessionAdmin)
 admin.site.register(SpeciesModelOutput, SpeciesModelOutputAdmin)
+admin.site.register(Spreadsheet, SpreadsheetAdmin)
