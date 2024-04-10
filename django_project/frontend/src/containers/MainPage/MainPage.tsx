@@ -21,7 +21,10 @@ import {resetMapState, resetSelectedProperty, setMapSelectionMode, setSelectedPa
 import DataList from './Data';
 import Metrics from './Metrics';
 import Trends from './Trends';
+import { HelperContainerWithToggle } from "../../components/HelperContainer";
+import { setStartYear, DEFAULT_START_YEAR_FILTER } from '../../reducers/SpeciesFilter';
 
+const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
 
 enum RightSideBarMode {
   None = -1,
@@ -43,6 +46,19 @@ function MainPage() {
   const initialSelectedTab = initialTabParam !== null ? parseInt(initialTabParam) : 0;
   const [selectedTab, setSelectedTab] = useState(initialSelectedTab);
   const isUploadUrl = location.pathname === '/upload';
+  const [prevPath, setPrevPath] = useState('');
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setPrevPath(location.pathname);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   const tabNameToValue: { [key: string]: number } = {
     'map': 0,
@@ -63,14 +79,20 @@ function MainPage() {
   }, [location.search]);
 
   useEffect(() => {
-    const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
     const selectedTabName = tabNames[selectedTab];
     const newPath = `/${selectedTabName}`;
     if ([1, 2, 3].includes(selectedTab)) {
       // dispatch to reset map state in data or charts tab
       dispatch(resetMapState())
     }
-    if (location.pathname !== newPath) {
+
+    const currentPathHasSlash = location.pathname.endsWith('/');
+    const adjustedNewPath = currentPathHasSlash && !newPath.endsWith('/') ? `${newPath}/` : newPath;
+
+    const isHomePage = location.pathname === '/';
+    if (isHomePage && location.pathname !== adjustedNewPath) {
+      window.history.pushState(null, '', adjustedNewPath);
+    } else if (!isHomePage && location.pathname !== adjustedNewPath) {
       navigate(newPath); // Update the URL with the tab name
     }
 
@@ -81,8 +103,17 @@ function MainPage() {
     }
 
     // Replace the tab parameter in the URL
-    const newUrl = window.location.href.replace(/\?tab=\d/, newPath);
-    window.history.replaceState(null, '', newUrl);
+    if (!isHomePage) {
+      const newUrl = window.location.href.replace(/\?tab=\d/, adjustedNewPath);
+      window.history.replaceState(null, '', newUrl);
+    }
+
+    if (prevPath === '/map/' && selectedTabName === 'upload') {
+      navigate('/');
+      window.location.href = '/'
+    }
+    setPrevPath(location.pathname);
+
   }, [selectedTab, navigate, location.pathname, isUploadUrl]);
 
 
@@ -152,7 +183,7 @@ function MainPage() {
               <Grid item
                     xs={12} md={12}
                     lg={12}
-                    sx={{height: '50px' }}
+                    className='ContentTabHeaders'
               >
                 <Box className="TabHeaders" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                   {rightSideBarMode === RightSideBarMode.Upload || isUploadUrl ? null : (
@@ -160,6 +191,10 @@ function MainPage() {
                       value={selectedTab}
                       onChange={(event: React.SyntheticEvent, newValue: number) => {
                         const tabNames = ['map', 'reports', 'charts', 'trends', 'upload'];
+                        // if navigated from reports tab, then reset the startYear value back to DEFAULT_START_YEAR_FILTER
+                        if (selectedTab === 1 && newValue !== 1) {
+                          dispatch(setStartYear(DEFAULT_START_YEAR_FILTER))
+                        }
                         const selectedTabName = tabNames[newValue];
                         setSelectedTab(newValue);
                         if (selectedTabName === 'upload') {
@@ -183,9 +218,16 @@ function MainPage() {
                       <Tab key={3} label={'TRENDS'} {...a11yProps(3)} />
                     </Tabs>
                   )}
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1, paddingRight: "1rem" }}>
+                    <div style={{ width: "100%", display: "flex"}}>
+                      {
+                        rightSideBarMode === RightSideBarMode.Upload ?
+                        <HelperContainerWithToggle key={'/upload/'} relativeUrl='/upload/'/>:
+                        <HelperContainerWithToggle key={`/${tabNames[selectedTab]}/`} relativeUrl={`/${tabNames[selectedTab]}/`} />
+                      }
+                    </div>
+                  </div>
                 </Box>
-
               </Grid>
               <Grid item
                     xs={12} md={12}

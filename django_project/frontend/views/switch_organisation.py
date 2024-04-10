@@ -1,10 +1,11 @@
 """View to switch organisation."""
+from django.contrib.auth.decorators import login_required
 from django.http import (
     HttpResponseRedirect,
     HttpResponseForbidden
 )
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+
 from stakeholder.models import (
     OrganisationUser,
     Organisation
@@ -19,7 +20,7 @@ def switch_organisation(request, organisation_id):
         id=organisation_id
     )
 
-    # Validate if the user can switch organizations
+    # Validate if the user can switch organisations
     # only if the user is not a superadmin
     if not request.user.is_superuser:
         organisation_user = OrganisationUser.objects.filter(

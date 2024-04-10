@@ -4,7 +4,7 @@ import datetime
 from typing import List
 
 import jenkspy
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Exists
 from django.db.models import FloatField
 from django.db.models.functions import Cast
 from django.db.models.query import QuerySet, F
@@ -36,18 +36,27 @@ from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_per_property_type,
     calculate_base_population_of_species,
-    calculate_species_count_per_province
+    calculate_species_count_per_province,
+    round_with_precision_check
 )
 from frontend.utils.organisation import (
-    get_current_organisation_id
+    get_current_organisation_id,
+    get_organisation_ids
 )
 from frontend.utils.user_roles import get_user_roles
-from population_data.models import AnnualPopulation
+from population_data.models import (
+    AnnualPopulation,
+    AnnualPopulationPerActivity
+)
 from property.models import Property
 from species.models import Taxon
+from frontend.models.spatial import SpatialDataValueModel
 
 
-class SpeciesPopuationCountPerYearAPIView(APIView):
+POPULATION_DENSITY_DECIMALS = 3
+
+
+class SpeciesPopulationCountPerYearAPIView(APIView):
     """
     An API view to retrieve species population count per year.
     """
@@ -58,13 +67,16 @@ class SpeciesPopuationCountPerYearAPIView(APIView):
     def get_queryset(self) -> List[Taxon]:
         """
         Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        species within the specified organisation.
         """
-        organisation_id = get_current_organisation_id(self.request.user)
-        queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
-            taxon_rank__name='Species'
-        ).distinct()
+        queryset = Taxon.objects.none()
+        if self.request.user.is_superuser:
+            queryset = Taxon.objects.all().distinct()
+        else:
+            organisation_ids = get_organisation_ids(self.request.user)
+            queryset = Taxon.objects.filter(
+                annualpopulation__property__organisation__in=organisation_ids
+            ).distinct()
         filtered_queryset = BaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
@@ -92,7 +104,7 @@ class ActivityPercentageAPIView(APIView):
     def get_queryset(self) -> List[Taxon]:
         """
         Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        species within the specified organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
@@ -141,13 +153,16 @@ class TotalCountPerActivityAPIView(APIView):
     def get_queryset(self) -> List[Taxon]:
         """
         Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        species within the specified organisation.
         """
-        organisation_id = get_current_organisation_id(self.request.user)
-        queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
-            taxon_rank__name='Species'
-        ).distinct()
+        queryset = Taxon.objects.none()
+        if self.request.user.is_superuser:
+            queryset = Taxon.objects.all().distinct()
+        else:
+            organisation_ids = get_organisation_ids(self.request.user)
+            queryset = Taxon.objects.filter(
+                annualpopulation__property__organisation__in=organisation_ids
+            ).distinct()
         filtered_queryset = ActivityBaseMetricsFilter(
             self.request.GET, queryset=queryset
         ).qs
@@ -174,7 +189,7 @@ class SpeciesPopulationCountPerProvinceAPIView(APIView):
     def get_queryset(self) -> QuerySet[Property]:
         """
         Returns a filtered queryset of property objects
-        within the specified organization.
+        within the specified organisation.
         """
 
     def get(self, request, *args, **kwargs) -> Response:
@@ -203,7 +218,7 @@ class SpeciesPopulationDensityPerPropertyAPIView(APIView):
     def get_queryset(self) -> QuerySet[Property]:
         """
         Returns a filtered queryset of property objects
-        within the specified organization.
+        within the specified organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Property.objects.filter(organisation_id=organisation_id)
@@ -237,13 +252,13 @@ class SpeciesPopulationDensityPerPropertyAPIView(APIView):
 class PropertiesPerPopulationCategoryAPIView(APIView):
     """
     API endpoint to retrieve population categories
-    for properties within an organization.
+    for properties within an organisation.
     """
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self) -> QuerySet[Property]:
         """
-        Get the filtered queryset of properties owned by the organization.
+        Get the filtered queryset of properties owned by the organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Property.objects.filter(organisation_id=organisation_id)
@@ -296,13 +311,13 @@ class TotalAreaAvailableToSpeciesAPIView(APIView):
 class TotalAreaPerPropertyTypeAPIView(APIView):
     """
     API endpoint to retrieve total area per property type
-    for properties within an organization.
+    for properties within an organisation.
     """
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self) -> QuerySet[Property]:
         """
-        Get the filtered queryset of properties owned by the organization.
+        Get the filtered queryset of properties owned by the organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Property.objects.filter(organisation_id=organisation_id)
@@ -331,7 +346,7 @@ class PopulationPerAgeGroupAPIView(APIView):
 
     def get_queryset(self) -> QuerySet[Taxon]:
         """
-        Get the filtered queryset taxon owned by the organization.
+        Get the filtered queryset taxon owned by the organisation.
         """
         organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
@@ -364,11 +379,9 @@ class TotalAreaVSAvailableAreaAPIView(APIView):
     def get_queryset(self) -> List[Taxon]:
         """
         Returns a filtered queryset of Taxon objects representing
-        species within the specified organization.
+        species within the specified organisation.
         """
-        organisation_id = get_current_organisation_id(self.request.user)
         queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
             taxon_rank__name='Species'
         ).distinct()
         filtered_queryset = BaseMetricsFilter(
@@ -400,6 +413,12 @@ class BasePropertyCountAPIView(APIView):
         property_list = self.request.GET.get("property")
         year_filter = self.request.GET.get('year', None)
         taxon_filter = self.request.GET.get('species', None)
+        activity_filter = self.request.GET.get('activity', "")
+        spatial_filter = self.request.GET.get(
+            'spatial_filter_values', "").split(',')
+        spatial_filter = list(
+            filter(None, spatial_filter)
+        )
 
         filters = {}
 
@@ -414,8 +433,23 @@ class BasePropertyCountAPIView(APIView):
 
         queryset = AnnualPopulation.objects.filter(
             **filters
-        ).distinct()
-        return queryset
+        )
+        if activity_filter:
+            activity_qs = AnnualPopulationPerActivity.objects.filter(
+                annual_population=OuterRef('pk'),
+                activity_type_id__in=[
+                    int(act) for act in activity_filter.split(',')
+                ]
+            )
+            queryset = queryset.filter(Exists(activity_qs))
+
+        if spatial_filter:
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('property'),
+                context_layer_value__in=spatial_filter
+            )
+            queryset = queryset.filter(Exists(spatial_qs))
+        return queryset.distinct()
 
     def get_upper_lower_bound(self, categories, idx, category, query_field):
         lower_bound = category
@@ -437,8 +471,11 @@ class BasePropertyCountAPIView(APIView):
             upper_bound = categories[idx + 1]
 
         if query_field == 'population_density':
-            lower_bound = round(lower_bound, 4)
-            upper_bound = round(upper_bound, 4)
+            lower_bound = lower_bound
+            upper_bound = upper_bound
+        else:
+            lower_bound = round(lower_bound)
+            upper_bound = round(upper_bound)
 
         return lower_bound, upper_bound
 
@@ -449,6 +486,10 @@ class BasePropertyCountAPIView(APIView):
             data,
             n_classes=data.count() if data.count() < 6 else 6
         )
+        if query_field == 'population_density':
+            categories = sorted([cat for cat in categories])
+        else:
+            categories = sorted([round(cat) for cat in categories])
 
         results = []
         for idx, category in enumerate(categories):
@@ -463,10 +504,19 @@ class BasePropertyCountAPIView(APIView):
                 if lower_bound < 0:
                     continue
 
-                category_annotation = f'{lower_bound} - {upper_bound}'
+                category_annotation = (
+                    f'{round_with_precision_check(lower_bound, 2)} - '
+                    f'{round_with_precision_check(upper_bound, 2)}' if
+                    query_field == 'population_density' else
+                    f'{lower_bound} - {upper_bound}'
+                )
                 filters = {f'{query_field}__range': (lower_bound, upper_bound)}
                 if idx == len(categories) - 2 and len(categories) > 2:
-                    category_annotation = f'>{lower_bound}'
+                    category_annotation = (
+                        f'>{round_with_precision_check(lower_bound, 2)}'
+                        if query_field == 'population_density' else
+                        f'>{lower_bound}'
+                    )
                     filters = {f'{query_field}__gt': lower_bound}
 
                 counts = queryset.filter(
@@ -477,7 +527,7 @@ class BasePropertyCountAPIView(APIView):
 
                 result = {
                     'category': category_annotation,
-                    'common_name_varbatim': common_name
+                    'common_name_verbatim': common_name
                 }
                 for count in counts:
                     result[
@@ -485,7 +535,8 @@ class BasePropertyCountAPIView(APIView):
                             property_type_name_field
                         ].lower().replace(' ', '_')
                     ] = count['count']
-                results.append(result)
+                if counts.exists():
+                    results.append(result)
         return results
 
 
@@ -505,7 +556,7 @@ class PropertyCountPerPopulationSizeCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_varbatim
+        common_name = queryset.first().taxon.common_name_verbatim
         results = self.get_results(
             data,
             queryset,
@@ -539,7 +590,7 @@ class PropertyCountPerAreaCategoryAPIView(BasePropertyCountAPIView):
 
         data = queryset.values_list('property_size_ha', flat=True).distinct()
 
-        common_name = annual_populations.first().taxon.common_name_varbatim
+        common_name = annual_populations.first().taxon.common_name_verbatim
         results = self.get_results(
             data,
             queryset,
@@ -571,7 +622,7 @@ class PropertyPerAreaAvailableCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_varbatim
+        common_name = queryset.first().taxon.common_name_verbatim
         results = self.get_results(
             data,
             queryset,
@@ -607,7 +658,7 @@ class PropertyPerPopDensityCategoryAPIView(BasePropertyCountAPIView):
         if not data.exists():
             return Response(results)
 
-        common_name = queryset.first().taxon.common_name_varbatim
+        common_name = queryset.first().taxon.common_name_verbatim
         results = self.get_results(
             data,
             queryset,

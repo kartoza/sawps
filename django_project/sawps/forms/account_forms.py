@@ -1,5 +1,6 @@
 from allauth.account.forms import SignupForm, LoginForm, ChangePasswordForm
 from django import forms
+import re
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -9,6 +10,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from sawps.views import AddUserToOrganisation
 from django.shortcuts import redirect
+from stakeholder.models import OrganisationInvites
 
 
 class CustomSignupForm(SignupForm):
@@ -18,8 +20,8 @@ class CustomSignupForm(SignupForm):
     last_name = forms.CharField(
         max_length=150, label='Last Name', required=True
     )
-    organisation = forms.CharField(
-        label='organisation',
+    invitation_uuid = forms.CharField(
+        label='invitation_uuid',
         max_length=150,
         widget=forms.HiddenInput(),
         required=False
@@ -30,7 +32,7 @@ class CustomSignupForm(SignupForm):
         'last_name',
         'email',
         'password',
-        'organisation'
+        'invitation_uuid'
     ]
 
     def custom_signup(self, request, user):
@@ -39,18 +41,19 @@ class CustomSignupForm(SignupForm):
         user.is_active = False
         user.save()
         # add user to organisation
-        if self.cleaned_data.get('organisation'):
+        if self.cleaned_data.get('invitation_uuid'):
             add_user_view = AddUserToOrganisation()
-            if add_user_view.is_user_already_joined(
-                self.cleaned_data['email'], self.cleaned_data['organisation']):
+            is_user_invited = add_user_view.is_user_invited(
+                self.cleaned_data['invitation_uuid']
+            )
+            if is_user_invited:
                 add_user_view.adduser(
-                    user.email, self.cleaned_data['organisation'])
+                    self.cleaned_data['invitation_uuid'])
             else:
                 return redirect('/accounts/login')
 
-
         token = email_verification_token.make_token(user)
-        subject = 'Sucess! your SAWPS account has been created'
+        subject = 'Success! your SAWPS account has been created'
         message = render_to_string(
             'emails/email_verification.html',
             {
@@ -78,7 +81,7 @@ class CustomSignupForm(SignupForm):
         super().__init__(*args, **kwargs)
         self.fields['email'].label = 'Email'
         self.fields['password2'].label = 'Confirm Password'
-        self.fields['organisation'].label = 'organisation'
+        self.fields['invitation_uuid'].label = 'invitation_uuid'
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = ''
@@ -87,7 +90,33 @@ class CustomSignupForm(SignupForm):
 
 class CustomLoginForm(LoginForm):
 
+    def get_initial_email(self, kwargs):
+        request = kwargs.get('request', None)
+        if request is None:
+            return None
+        next_url = request.GET.get('next', None)
+        if next_url is None:
+            return None
+        email = None
+        add_user_re = re.compile(
+            '/adduser/([\da-f-]+)/?',
+            re.I
+        )
+        results = add_user_re.search(next_url)
+        if results:
+            invite_uuid = results.group(1)
+            org_invite = OrganisationInvites.objects.filter(
+                uuid=invite_uuid
+            ).order_by('id').last()
+            email = org_invite.email if org_invite else None
+        return email
+
     def __init__(self, *args, **kwargs):
+        email = self.get_initial_email(kwargs)
+        if email:
+            kwargs['initial'] = {
+                'login': email
+            }
         super().__init__(*args, **kwargs)
         self.fields['login'].label = 'Email'
         self.label_suffix = ""

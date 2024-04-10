@@ -1,10 +1,12 @@
-from unittest.mock import patch
+import json
+from unittest.mock import patch, PropertyMock
 
 from django.contrib.admin import AdminSite
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase, RequestFactory
 from django.db import connection
 from django.db.utils import InternalError
+from django.core.exceptions import ObjectDoesNotExist
 
 from frontend.models.spatial import SpatialDataModel
 from property.admin import PropertyAdmin
@@ -20,9 +22,13 @@ from property.spatial_data import (
 from property.factories import PropertyFactory
 from frontend.tests.model_factories import (
     LayerF,
-    ContextLayerF
+    ContextLayerF,
+    SpatialDataModelF
 )
-from property.tasks import generate_spatial_filter_task
+from property.tasks import (
+    generate_spatial_filter_task,
+    generate_spatial_filter_for_all_properties
+)
 
 
 class TestSpatialFunctions(TestCase):
@@ -183,6 +189,18 @@ class TestSpatialFunctions(TestCase):
             context_layer_value='1'
         ).exists())
 
+    def test_string_spatial_model(self):
+        spatial_model = SpatialDataModelF.create()
+        self.assertEqual(
+            str(spatial_model),
+            spatial_model.property.name
+        )
+        # mock property field to raise ObjectDoesNotExist
+        with patch.object(SpatialDataModel, 'property', new_callable=PropertyMock) as mocked_obj:
+            mocked_obj.side_effect = ObjectDoesNotExist('error')
+            self.assertEqual(str(spatial_model),
+                             "SpatialDataModel-{}".format(spatial_model.id))
+
 
 class GenerateSpatialFilterTaskTest(TestCase):
 
@@ -223,3 +241,12 @@ class GenerateSpatialFiltersTest(TestCase):
         self.assertEqual(property_2.spatialdatamodel_set.count(), 0)
 
         self.assertGreaterEqual(mock_task.delay.call_count, 2)
+
+
+class GenerateSpatialFilterAllPropertiesTaskTest(TestCase):
+
+    @patch('property.spatial_data.save_spatial_values_from_property_layers')
+    def test_generate_spatial_filter_task(self, mock_save_spatial):
+        property_obj = PropertyFactory.create()
+        generate_spatial_filter_for_all_properties()
+        mock_save_spatial.assert_called_once_with(property_obj)

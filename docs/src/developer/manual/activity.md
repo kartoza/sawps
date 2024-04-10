@@ -31,6 +31,17 @@ context_id: 3HAmdzQQKtSBEYsNjb3TtT
         heading_level: 1
         show_source: true
 
+
+# Forms
+
+::: django_project.activity.forms
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
 # Models
 
 ::: django_project.activity.models
@@ -61,5 +72,11 @@ context_id: 3HAmdzQQKtSBEYsNjb3TtT
         show_source: true
 
 
+# Views
 
-
+::: django_project.activity.views
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true

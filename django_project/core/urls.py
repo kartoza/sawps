@@ -23,32 +23,30 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
-from docs_crawler.urls import preferences as docs_crawler_preferences
-from sawps.custom_docs_crawler_views import CustomDocumentationDetail
+from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    path('accounts/two-factor/', include('frontend.allauth2fa_urls')),
     path('accounts/two-factor/', include('allauth_2fa.urls')),
+    path('accounts/logout/', include('frontend.accounts_urls')),
     path('accounts/', include('allauth.urls')),
     path('', include('frontend.urls')),
+    path('', include('docs_crawler.urls')),
+    re_path(
+        r'^admin/core/sitepreferences/(add)?/?$',
+        RedirectView.as_view(
+            url='/admin/core/sitepreferences/1/change/',
+            permanent=False
+        ),
+        name='site-preferences'
+    ),
     path('admin/', admin.site.urls),
     path('', include('notification.urls')),
     path('', include('activity.urls')),
     path('', include('stakeholder.urls')),
     path('', include('sawps.urls')),
     path('', include('species.urls')),
-]
-
-# Docs crawler
-urlpatterns += [
-    path(
-        'admin/docs_crawler/preferences/',
-        docs_crawler_preferences,
-        name='docs-crawler-admin-preferences'
-    ),
-    path('docs_crawler/data/',
-         CustomDocumentationDetail.as_view(),
-         name='docs-crawler-data'),
 ]
 
 if settings.DEBUG:

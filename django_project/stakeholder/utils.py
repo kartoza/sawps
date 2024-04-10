@@ -1,3 +1,7 @@
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.conf import settings
+from core.settings.contrib import SUPPORT_EMAIL
 from frontend.static_mapping import (
     ORGANISATION_MANAGER,
     ORGANISATION_MEMBER
@@ -64,47 +68,29 @@ def forward_func_0015(Province, Organisation):
         org.save()
 
 
-def add_user_to_organisation_group(
+def add_user_to_org_member(
     instance,
     OrgInvModel=None,
     GroupModel=None,
 ):
     """
-    Add user to Organisation Member/Manager group.
+    Add user to Organisation Member group.
     """
-    from stakeholder.models import OrganisationInvites, MANAGER
+    from stakeholder.models import OrganisationInvites
     from django.contrib.auth.models import Group
 
     OrgInvModel = OrgInvModel if OrgInvModel else OrganisationInvites
     GroupModel = GroupModel if GroupModel else Group
-
-    # check Organisation Invites.
-    # If it exists as Manager, assign to Organisation Manager group.
-    # Otherwise assign to Organisation Member
-    invitation: OrgInvModel = OrgInvModel.objects.filter(
-        email=instance.user.email,
-        organisation=instance.organisation,
-        joined=True
-    ).first()
-    if invitation:
-        if invitation.assigned_as == MANAGER:
-            group, _ = GroupModel.objects.get_or_create(
-                name=ORGANISATION_MANAGER
-            )
-            instance.user.groups.add(group)
-            return
     group, _ = GroupModel.objects.get_or_create(name=ORGANISATION_MEMBER)
     instance.user.groups.add(group)
 
 
-def remove_organisation_user_from_group(instance):
+def remove_user_from_org_member(instance):
     """
-    Remove user to Organisation Member/Manager group.
+    Remove user from Organisation Member group.
     """
 
-    from stakeholder.models import (
-        OrganisationInvites, OrganisationUser, MANAGER
-    )
+    from stakeholder.models import OrganisationUser
     from django.contrib.auth.models import Group
 
     organisation_users = OrganisationUser.objects.filter(user=instance.user)
@@ -115,25 +101,61 @@ def remove_organisation_user_from_group(instance):
     if group:
         instance.user.groups.remove(group)
 
-    if organisation_users.exists():
-        organisations = organisation_users.values_list('organisation')
-        # check invitation as manager for the user, for
-        # current organisations assigned to them.
-        invitations = OrganisationInvites.objects.filter(
-            organisation__in=organisations,
-            email=instance.user.email,
-            assigned_as=MANAGER
-        )
-        # if invitation as manager does not exist, remove from
-        # Organisation Manager group
-        if not invitations.exists():
-            group, _ = Group.objects.get_or_create(name=ORGANISATION_MANAGER)
-            instance.user.groups.remove(group)
-    else:
+    if not organisation_users.exists():
         group = Group.objects.filter(name=ORGANISATION_MEMBER).first()
         if group:
             instance.user.groups.remove(group)
 
+
+def add_user_to_org_manager(
+    instance,
+    GroupModel=None,
+):
+    """
+    Add user to Organisation Manager group.
+    """
+    from django.contrib.auth.models import Group
+
+    GroupModel = GroupModel if GroupModel else Group
+    group, _ = GroupModel.objects.get_or_create(name=ORGANISATION_MANAGER)
+    instance.user.groups.add(group)
+
+
+def remove_user_from_org_manager(instance):
+    """
+    Remove user from Organisation Manager group.
+    """
+
+    from stakeholder.models import OrganisationRepresentative
+    from django.contrib.auth.models import Group
+
+    organisation_reps = OrganisationRepresentative.objects.filter(
+        user=instance.user
+    )
+
+    if not organisation_reps.exists():
         group = Group.objects.filter(name=ORGANISATION_MANAGER).first()
         if group:
             instance.user.groups.remove(group)
+
+
+def notify_user_becomes_manager(instance):
+    if not instance.user.email:
+        return
+    # Send email
+    subject = 'SAWPS Organisation - You have been made as a manager'
+    message = render_to_string(
+        'emails/manager_email.html',
+        {
+            'full_name': instance.user.get_full_name(),
+            'organisation': instance.organisation.name,
+            'support_email': SUPPORT_EMAIL
+        }
+    )
+    send_mail(
+        subject,
+        None,
+        settings.SERVER_EMAIL,
+        [instance.user.email],
+        html_message=message
+    )

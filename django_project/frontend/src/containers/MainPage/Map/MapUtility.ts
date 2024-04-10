@@ -8,12 +8,14 @@ import { GeoJSONSource } from "maplibre-gl";
 const SEARCH_PARCEL_URL = '/api/map/search/parcel/'
 const SEARCH_PROPERTY_URL = '/api/map/search/property/'
 const BOUNDARY_FILE_GEOJSON_URL = '/api/upload/boundary-file/'
-export const MIN_SELECT_PARCEL_ZOOM_LEVEL = 12
-export const MIN_SELECT_PROPERTY_ZOOM_LEVEL = 10
+export const MIN_SELECT_PARCEL_ZOOM_LEVEL = 9
+export const MIN_SELECT_PROPERTY_ZOOM_LEVEL = 9
+export const MIN_SEARCH_PARCEL_ZOOM_LEVEL = 9 // search erf, farm_portion, holding and display the info on popup
 const PARCELS_ORIGINAL_ZOOM_LEVELS: any = {
     'erf': 14,
     'holding': 12,
-    'farm_portion': 12
+    'farm_portion': 12,
+    'parent_farm': 9
 }
 export const MIN_PROVINCE_ZOOM_LEVEL = 5
 export const MAX_PROVINCE_ZOOM_LEVEL = 8
@@ -55,7 +57,7 @@ export const renderHighlightParcelLayers = (map: maplibregl.Map, layer_names: st
     for (let _idx = 0; _idx < layer_names.length; ++_idx) {
         if (layer_names[_idx].indexOf('_labels') > -1) continue
         // parent_farm will not be in select mode because it is broken down to smaller parcels (farm_portions)
-        if (layer_names[_idx].indexOf('parent_farm') > -1) continue
+        // if (layer_names[_idx].indexOf('parent_farm') > -1) continue
         let _layer_name = `${layer_names[_idx]}-select-parcel`
         if (typeof map.getLayer(_layer_name) === 'undefined') {
             map.addLayer({
@@ -137,6 +139,16 @@ export const findAreaLayers = (contextLayers: ContextLayerInterface[]): string[]
 }
 
 /**
+ * Find context layer from Properties
+ * @param contextLayers
+ * @returns
+ */
+export const findPropertiesLayer = (contextLayers: ContextLayerInterface[]): ContextLayerInterface => {
+    return contextLayers.find((element) => element.name.toLowerCase() === 'properties')
+}
+
+
+/**
  * Check if context layer is selected
  * @param contextLayers
  * @returns
@@ -156,8 +168,8 @@ export const isContextLayerSelected = (contextLayers: ContextLayerInterface[], c
  * @param lngLat
  * @param callback
  */
-export const searchParcel = (lngLat: maplibregl.LngLat, propertyId: number, callback: (parcel: ParcelInterface) => void) => {
-    axios.get(SEARCH_PARCEL_URL + `?lat=${lngLat.lat}&lng=${lngLat.lng}&property_id=${propertyId}`).then((response) => {
+export const searchParcel = (lngLat: maplibregl.LngLat, propertyId: number, currentZoom: number, callback: (parcel: ParcelInterface) => void) => {
+    axios.get(SEARCH_PARCEL_URL + `?lat=${lngLat.lat}&lng=${lngLat.lng}&property_id=${propertyId}&zoom=${currentZoom}`).then((response) => {
         if (response.data) {
             callback(response.data as ParcelInterface)
         } else {
@@ -231,7 +243,8 @@ const FEATURE_NAME_MAPPING:{ [id: string] : string; } = {
     'protected': 'site_type',
     'erf': 'cname',
     'farm_portion': 'cname',
-    'holding': 'cname'
+    'holding': 'cname',
+    'parent_farm': 'cname'
 }
 
 // Mapping of LayerName with its Label to displayed in the popup
@@ -241,7 +254,8 @@ const GROUP_NAME_MAPPING:{ [id: string] : string; } = {
     'protected': 'Protected Area',
     'erf': 'Erf Cname',
     'farm_portion': 'Farm Portion Cname',
-    'holding': 'Holding Cname'
+    'holding': 'Holding Cname',
+    'parent_farm': 'Parent Farm Cname'
 }
 
 /**
@@ -349,6 +363,19 @@ export const addParcelInvisibleFillLayers = (mapObj: maplibregl.Map) => {
             'fill-opacity': 0
         }
     }, 'erf')
+    addLayerToMap('parent_farm-invisible-fill', mapObj, {
+        'id': 'parent_farm-invisible-fill',
+        'type': 'fill',
+        'source': 'sanbi',
+        'source-layer': 'parent_farm',
+        'minzoom': 9,
+        'maxzoom': 11,
+        'layout': {'visibility': 'visible'},
+        'paint': {
+            'fill-color': 'rgba(255, 255, 255, 0)',
+            'fill-opacity': 0
+        }
+    }, 'erf')
 }
 
 /**
@@ -394,7 +421,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
             "type": "fill",
             "source": "sanbi-dynamic",
             "source-layer": "properties",
-            "minzoom": 10,
+            "minzoom": 9,
             "maxzoom": 24,
             "layout": {"visibility": "visible"},
             "paint": {
@@ -414,7 +441,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
                 "circle-stroke-color": "rgb(0, 0, 0)"
             },
             "minzoom": 5,
-            "maxzoom": 10
+            "maxzoom": 9
         }, 'erf-highlighted')
     } else {
         // add province layer
@@ -448,7 +475,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
                 "id": "properties",
                 "type": "fill",
                 "source": "sanbi-dynamic",
-                "minzoom": 10,
+                "minzoom": 9,
                 "maxzoom": 24,
                 "layout": {"visibility": "visible"},
                 "paint": {
@@ -484,7 +511,7 @@ export const drawPropertiesLayer = (showPopulationCount: boolean, mapObj: maplib
                     "circle-stroke-color": "rgb(0, 0, 0)"
                 },
                 "minzoom": 5,
-                "maxzoom": 10
+                "maxzoom": 9
             }
             addLayerToMap('properties', mapObj, _propertiesLayer, 'erf-highlighted')
             addLayerToMap('properties-points', mapObj, _propertiesPointsLayer, 'erf-highlighted')
@@ -627,7 +654,7 @@ const addPropertiesExtrudeLayer = (mapObj: maplibregl.Map, propertiesCount?: Pop
             "fill-extrusion-height": ["*", ["/", ['get', 'count'], _maxValue], PROPERTIES_MAX_HEIGHT],
             "fill-extrusion-base": 0
         },
-        "minzoom": 10,
+        "minzoom": 9,
         "maxzoom": 24
     }
     addLayerToMap('properties-extrude', mapObj, _propertiesExtrudeLayer, 'properties-label')
@@ -668,20 +695,28 @@ const drawGeojsonLayer = (mapObj: maplibregl.Map, geojsonData: any) => {
             'type': 'geojson',
             'data': geojsonData
         })
-        let _layer = {
-            'id': 'geojson-upload-layer',
-            'type': 'line',
-            'source': _sourceName,
-            'layout': {'visibility': 'visible'},
-            "paint": {
-                "line-color": '#fff',
-                "line-width": 6
-            }
-        }
-        addLayerToMap('geojson-upload-layer', mapObj, _layer)
     } else {
         _source.setData(geojsonData)
     }
+    let _layer = {
+        'id': 'geojson-upload-layer',
+        'type': 'line',
+        'source': _sourceName,
+        'layout': {'visibility': 'visible'},
+        "paint": {
+            "line-color": '#A31ACB',
+            "line-width": 4
+        }
+    }
+    addLayerToMap('geojson-upload-layer', mapObj, _layer, 'erf-highlighted')
+}
+
+/**
+ * Remove geojson layer from map
+ * @param mapObj 
+ */
+export const removeGeojsonLayer = (mapObj: maplibregl.Map) => {
+    removeLayerFromMap('geojson-upload-layer', mapObj)
 }
 
 /**

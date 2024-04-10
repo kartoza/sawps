@@ -30,7 +30,7 @@ class NationalSpeciesViewTest(APITestCase):
 
         taxon_rank1 = TaxonRank.objects.create(name="Species")
         Taxon.objects.create(
-            common_name_varbatim='Species 1',
+            common_name_verbatim='Species 1',
              icon='images/tiger.png',
             taxon_rank=taxon_rank1
         )
@@ -47,17 +47,17 @@ class NationalSpeciesViewTest(APITestCase):
         taxon_rank1 = TaxonRank.objects.create(name="Species")
         taxon_rank2 = TaxonRank.objects.create(name="Genus")
         Taxon.objects.create(
-            common_name_varbatim='Species 5',
+            common_name_verbatim='Species 5',
              icon='images/tiger.png',
             taxon_rank=taxon_rank1
         )
         taxon1 = Taxon(
-            common_name_varbatim='Species 1',
+            common_name_verbatim='Species 1',
              icon='images/tiger.png',
             taxon_rank=taxon_rank1
         )
         taxon2 = Taxon(
-            common_name_varbatim='Species 2',
+            common_name_verbatim='Species 2',
             icon='images/tiger.png',
             taxon_rank=taxon_rank2
         )
@@ -175,7 +175,7 @@ class NationalPropertiesViewTest(TestCase):
         self.client = Client()
 
     def test_get_properties_per_population_category(self):
-        # Create a test organization and properties
+        # Create a test organisation and properties.
         self.organisation = organisationFactory.create()
         Province.objects.create(name='Gauteng')
         organisation_id = self.organisation.pk
@@ -229,7 +229,7 @@ class NationalActivityCountViewTestCase(TestCase):
         )
         taxon = Taxon.objects.create(
             scientific_name='Lion',
-            common_name_varbatim='Lion'
+            common_name_verbatim='Lion'
         )
         specie = AnnualPopulation.objects.create(
             user=self.test_user,
@@ -301,7 +301,7 @@ class NationalActivityCountPerProvinceViewTestCase(TestCase):
         )
         taxon = Taxon.objects.create(
             scientific_name='Lion',
-            common_name_varbatim='Lion'
+            common_name_verbatim='Lion'
         )
         specie = AnnualPopulation.objects.create(
             user=self.test_user,
@@ -382,7 +382,7 @@ class NationalActivityCountPerPropertyTypeViewTestCase(TestCase):
         )
         taxon = Taxon.objects.create(
             scientific_name='Lion',
-            common_name_varbatim='Lion'
+            common_name_verbatim='Lion'
         )
         specie = AnnualPopulation.objects.create(
             user=self.test_user,

@@ -76,6 +76,8 @@
 
     .MuiDataGrid-cellContent {
         text-align: left;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
 }
 
@@ -92,6 +94,11 @@
     margin-bottom: 10px;
     min-width: 120px;
     color: white;
+}
+
+.data-table-header {
+    margin-top: 20px;
+    margin-bottom: 0px;
 }
 
 .dataTable-auto {

@@ -15,7 +15,6 @@ from core.settings.utils import absolute_path
 from species.models import Taxon
 from frontend.models.map_session import MapSession
 from frontend.utils.color import linear_gradient
-from stakeholder.models import OrganisationUser
 from activity.models import ActivityType
 
 
@@ -155,7 +154,7 @@ def get_highlighted_layer(layer_name):
         "type": "line",
         "source": "sanbi",
         "source-layer": f"{layer_name}",
-        "minzoom": 12,
+        "minzoom": 9 if layer_name == 'parent_farm' else 12,
         "layout": {"visibility": "visible", "line-join": "bevel"},
         "paint": {
             "line-color": "#ffffff",
@@ -254,28 +253,31 @@ def get_query_condition_for_population_query(
     query_values = []
     sql_conditions.append('t.scientific_name=%s')
     query_values.append(filter_species_name)
-    if filter_activity and filter_activity != 'all':
+    if filter_activity:
+        if filter_activity == 'all':
+            activity_types = ActivityType.objects.all().values_list(
+                'id', flat=True)
+            filter_activity = ','.join(map(str, activity_types))
         activities = ast.literal_eval('(' + filter_activity + ',)')
-        if ActivityType.objects.count() != len(activities):
-            filter_years = ''
-            if filter_year:
-                filter_years = (
-                    """AND appa.year=%s"""
-                )
-            activity_sql = (
-                """
-                SELECT 1 FROM annual_population_per_activity appa
-                WHERE appa.annual_population_id=ap.id
-                AND appa.activity_type_id IN %s
-                {filter_years}
-                """
-            ).format(filter_years=filter_years)
-            sql_conditions.append(
-                'exists({activity_sql})'.format(activity_sql=activity_sql)
+        filter_years = ''
+        if filter_year:
+            filter_years = (
+                """AND appa.year=%s"""
             )
-            query_values.append(activities)
-            if filter_years:
-                query_values.append(filter_year)
+        activity_sql = (
+            """
+            SELECT 1 FROM annual_population_per_activity appa
+            WHERE appa.annual_population_id=ap.id
+            AND appa.activity_type_id IN %s
+            {filter_years}
+            """
+        ).format(filter_years=filter_years)
+        sql_conditions.append(
+            'exists({activity_sql})'.format(activity_sql=activity_sql)
+        )
+        query_values.append(activities)
+        if filter_years:
+            query_values.append(filter_year)
     if filter_year:
         sql_conditions.append('ap.year=%s')
         query_values.append(filter_year)
@@ -392,11 +394,12 @@ def get_properties_population_query(
     sql_view = (
         """
         select p2.id, p2.name, COALESCE(population_summary.count, 0) as count
-        from property p2 left join ({sub_sql}) as population_summary
+        from property p2 {join_sql} ({sub_sql}) as population_summary
         on p2.id=population_summary.id
         {where_sql}
         """
     ).format(
+        join_sql='inner join' if filter_activity else 'left join',
         sub_sql=sql,
         where_sql=(
             f'where {where_sql_properties}' if where_sql_properties else ''
@@ -627,12 +630,6 @@ def generate_map_view(
         drop_map_materialized_view(session.province_view_name)
     else:
         drop_map_materialized_view(session.properties_view_name)
-    if filter_organisation == 'all' and not session.user.is_superuser:
-        # get user organisation ids
-        org_ids = OrganisationUser.objects.filter(
-            user=session.user
-        ).values_list('organisation_id', flat=True).distinct()
-        filter_organisation = ','.join(map(str, org_ids))
     is_choropleth_layer = True if filter_species_name else False
     if is_choropleth_layer:
         if is_province_view:

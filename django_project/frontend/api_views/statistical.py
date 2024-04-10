@@ -21,6 +21,7 @@ from frontend.models import (
     PROPERTY_TREND,
     PROVINCIAL_GROWTH
 )
+from frontend.utils.user_roles import check_user_has_permission
 
 
 class SpeciesNationalTrend(APIView):
@@ -76,13 +77,21 @@ class SpeciesTrend(SpeciesNationalTrend):
 
     def get_properties_names(self):
         filter_property = self.request.data.get('property', None)
-        property_id_list = ast.literal_eval('(' + filter_property + ',)')
+        property_id_list = []
+        if filter_property:
+            property_id_list = ast.literal_eval('(' + filter_property + ',)')
         return Property.objects.filter(
             id__in=property_id_list
         ).values_list('name', flat=True).distinct()
 
     def get_filtered_properties_trends(self, trends, properties):
         return [trend for trend in trends if trend['property'] in properties]
+
+    def can_view_properties_trends(self):
+        return (
+            check_user_has_permission(self.request.user,
+                                      'Can view properties trends data')
+        )
 
     def get(self, request):
         species_name = request.GET.get("species")
@@ -114,6 +123,11 @@ class SpeciesTrend(SpeciesNationalTrend):
             data=self.get_trend_data_from_cache(species, output_type))
 
     def post(self, *args, **kwargs):
+        if not self.can_view_properties_trends():
+            return Response(
+                status=403,
+                data='User is not allowed to view properties trends data!'
+            )
         species_name = self.request.data.get('species', None)
         species = get_object_or_404(
             Taxon, scientific_name=species_name
@@ -145,15 +159,18 @@ class DownloadTrendDataAsJson(SpeciesTrend):
             return Response(status=404, data={
                 'detail': 'Empty data model for given species!'
             })
-        properties = self.get_properties_names()
         with model_output.output_file.open('r') as json_file:
             json_dict = json.load(json_file)
+        if self.can_view_properties_trends():
+            properties = self.get_properties_names()
             if PROPERTY_TREND in json_dict:
                 trends = json_dict[PROPERTY_TREND]
                 filtered_property_trends = (
                     self.get_filtered_properties_trends(trends, properties)
                 )
                 json_dict[PROPERTY_TREND] = filtered_property_trends
+        elif PROPERTY_TREND in json_dict:
+            del json_dict[PROPERTY_TREND]
         response = HttpResponse(content=json.dumps(json_dict))
         response['Content-Type'] = 'application/json'
         response['Content-Disposition'] = (

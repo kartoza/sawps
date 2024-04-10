@@ -12,22 +12,6 @@ license: This program is free software; you can redistribute it and/or modify it
 context_id: X6HSV6uqFkdc2UdmcRqRXL
 ---
 
-# API Views
-
-[//]: # (::: django_project.notification.api_views.reminder)
-
-[//]: # (    handler: python)
-
-[//]: # (    options:)
-
-[//]: # (        docstring_style: sphinx)
-
-[//]: # (        heading_level: 1)
-
-[//]: # (        show_source: true)
-
-
-
 # Admin
 
 ::: django_project.notification.admin
@@ -37,21 +21,6 @@ context_id: X6HSV6uqFkdc2UdmcRqRXL
         heading_level: 1
         show_source: true
 
-
-[//]: # (# Serializers)
-
-[//]: # ()
-[//]: # (::: django_project.notification.serializers.reminder)
-
-[//]: # (    handler: python)
-
-[//]: # (    options:)
-
-[//]: # (        docstring_style: sphinx)
-
-[//]: # (        heading_level: 1)
-
-[//]: # (        show_source: true)
 
 # Models
 

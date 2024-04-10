@@ -14,11 +14,11 @@ context_id: 2NQxCUzNPJyKFJZPVPQpx8
 
 # Landing Page
 
-Welcome to the SAWPS `Landing Page`. The landing page is the entry point to users' data exploration journey. The `Landing Page` provides a user-friendly interface to view aggregated species population data trends for South africa and access features like log in, register a new account, or learn more about the platform.
+Welcome to the SAWPS `Landing Page`. The landing page is the entry point to users' data exploration journey. The `Landing Page` provides a user-friendly interface to view aggregated species population data trends for South Africa and access features like log in, register a new account, or learn more about the platform.
 
 ## Prior to Login
 
-Upon initial interaction with the platform users will be greeted by the landing page
+Upon initial interaction with the platform, users will be greeted by the landing page.
 
 ### Landing Page Header and Navigation Bar
 
@@ -33,7 +33,6 @@ In the navigation bar at the top of the page, users will find several options:
 3. **Contact**:  The `CONTACT` navigation link navigates to the [contact page](help-contact.md) where the SAWPS team is ready to assist with any inquiries or issues.
 
 4. **Login**: The `LOGIN` button opens the [login form](./login-logout/login-page.md) for registered users.
-4. **Login**: The `LOGIN` button opens the [login form](./login-logout/login-page.md) for registered users.
 
 5. **Register**: The `REGISTER` button opens the [registration form](./register/register-page.md) where users can register for access to the full platform.
 
@@ -41,7 +40,6 @@ In the navigation bar at the top of the page, users will find several options:
 
 7. **Login**: The `LOGIN` button navigates to the [login form](./login-logout/login-page.md) where registered users can securely access the platform using their credentials.
 
-8. **Register**: The `REGISTER` button navigates to the [registration form](./register/register-page.md) where new users can register on the platform. Becoming a registered user opens up a world of data contribution and exploration.
 8. **Register**: The `REGISTER` button navigates to the [registration form](./register/register-page.md) where new users can register on the platform. Becoming a registered user opens up a world of data contribution and exploration.
 
 ### National Population Trends
@@ -58,11 +56,9 @@ On the `Landing Page`, users can view interactive charts that display national p
 
 4. **HOME**: The `HOME` link to return to the main [landing page](#prior-to-login).
 
-5. **EXPLORE**: The `EXPLORE` link navigates the user to the explore page.
+5. **DOCUMENTATION**: The `DOCUMENTATION` link navigates the user to the SAWPS documentation site in a new tab.
 
-6. **DOCUMENTATION**: The `DOCUMENTATION` link navigates the user to the SAWPS documentation site in a new tab.
-
-7. **CONTACT**: The `CONTACT` link navigates to the [contact page](./help-contact.md) where a user can use the contact form to ask any questions, or wish to provide feedback to the SAWPS support team.
+6. **CONTACT**: The `CONTACT` link navigates to the [contact page](./help-contact.md) where a user can use the contact form to ask any questions or wish to provide feedback to the SAWPS support team.
 
 ### Additional Resources and Pages
 
@@ -90,7 +86,7 @@ The footer section, located at the bottom of the `Landing Page`, offers links to
 
 ## Landing Page Once Logged In
 
-Once the user has logged in to the SAWPS platform the landing page updates. In the header there are new navigation links to features of the site that users with credentials have access to, their user profile, and the Quick links provide access to site features that users will need frequently.
+Once the user has logged in to the SAWPS platform the landing page updates. In the header, there are new navigation links to features of the site that users with credentials have access to, their user profile, and the Quick links provide access to site features that users will need frequently.
 
 ![Landing Page After Login](./img/landing-page-3.png)
 
@@ -120,7 +116,7 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 #### National Population Trends
 
-![National Population Trends](./img/landing-page-2.png)
+![National Population Trends](./img/landing-page-8.png)
 
 1. **Image**: Image of the species.
 
@@ -138,7 +134,7 @@ The navigation bar at the top of the `Landing Page` offers convenient access to 
 
 ### Additional Resources and Pages
 
-![Additional Resources and Pages](./img/landing-page-4.png)
+![Additional Resources and Pages](./img/landing-page-9.png)
 
 The footer section, located at the bottom of the `Landing Page`, offers links to additional resources and pages:
 

@@ -1,5 +1,5 @@
-![Image Tag](https://img.shields.io/badge/Staging%20Image%20Tag:-0.0.1--7b94e2f--sta-blue.svg)
-![Jenkins Status](https://img.shields.io/badge/Staging%20Jenkins%20Build%20Status:-SUCCESS-green.svg)
+![Staging Tag](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/lgkgh/889dd6c34a68d9461b1fd8cdb56b8a21/raw/sawps_build-tag.json)
+![Staging Status](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/lgkgh/889dd6c34a68d9461b1fd8cdb56b8a21/raw/sawps_build-status.json)
 [![codecov](https://codecov.io/gh/kartoza/sawps/branch/main/graph/badge.svg)](https://codecov.io/gh/kartoza/sawps/)
 
 
@@ -103,4 +103,3 @@ pg_restore -h 127.0.0.1 -U docker -d django -n layer sanbi_layer_db_compact.dump
 [Database ERD](https://drive.google.com/file/d/1O92w2zwbKm_SARXnXIljHbX-rQPmFiXM/view?usp=sharing)
 
 [Figma Board](https://www.figma.com/file/T6JEAAXTWzA9OIfAQe3iW7/SANBI?node-id=6-2&t=4T7COmsnfif2Nwwn-0)
-

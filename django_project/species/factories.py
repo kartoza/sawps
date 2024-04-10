@@ -28,7 +28,7 @@ class TaxonFactory(factory.django.DjangoModelFactory):
         model = Taxon
 
     scientific_name = factory.Sequence(lambda n: f"Scientific Name {n}")
-    common_name_varbatim = factory.Sequence(lambda n: f"Common Name {n}")
+    common_name_verbatim = factory.Sequence(lambda n: f"Common Name {n}")
     colour_variant = factory.Faker('boolean')
     infraspecific_epithet = factory.Sequence(
         lambda n: f"Infraspecific Epithet {n}"
@@ -52,7 +52,7 @@ class TaxonF(factory.django.DjangoModelFactory):
         model = Taxon
 
     scientific_name = factory.Sequence(lambda n: 'scientific_%d' % n)
-    common_name_varbatim = factory.Sequence(lambda n: 'common_%d' % n)
+    common_name_verbatim = factory.Sequence(lambda n: 'common_%d' % n)
     colour_variant = False
     taxon_rank = factory.SubFactory(
         'species.factories.TaxonRankFactory'

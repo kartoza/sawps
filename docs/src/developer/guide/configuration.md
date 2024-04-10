@@ -12,7 +12,7 @@ context_id: CEtGgetot37peA7mzmjNWH
 
 # Project Setup
 
-## Clone GeoSight repository
+## Clone SAWPS repository
 
 This will clone the SAWPS repository to your machine
 

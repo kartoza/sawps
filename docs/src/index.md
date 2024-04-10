@@ -13,13 +13,11 @@ context_id: W9bCrykc57auBj4DKhnscx
 
 # SANBI WPS
 
-<!-- Project Strapline, maybe turn into a paragraph -->
 Welcome to SANBI WPS. The SANBI Wildlife Protection System is a platform to track the population levels of endangered wildlife.
 
 ![Landing Page](./img/landing-page.png)
 
 ## Introduction to and AIM of the SAWPS
-<!-- Add some introductory paragraphs regarding the project ~ 2 or 3 paragraphs -->
 
 Welcome to the SAWPS platform Documentation site. SAWPS is a Global Environment Facility (GEF)-funded project. SAWPS is a coordinated system of wildlife trade monitoring with centralised/shared information for priority species (rhino, lion,
 leopard, cheetah, and elephant). The system will eventually be able to house information for other species as well. Currently, permits for legal trade, information about illegal trade seizures, and other law enforcement processes, and provincial-level monitoring data for key species (e.g., population counts and population information such as births, deaths, translocations, etc.) are captured at a provincial and sometimes national level. In addition, private wildlife owners maintain their own information systems about wildlife on their land, and some non-governmental organisations maintain their own information systems for specific species, SAWPS is expected to provide valuable data and information on a national level about the impacts of legal and illegal trade in the species and the current status of the distribution and abundance of the species. The data will then be interrogated and analysed by users of the system to inform national and international permitting and listing or reporting processes (e.g., the Threatened or Protected Species list under NEMBA, the CITES listings, hunting quotas, etc.).
@@ -41,9 +39,6 @@ The focus of the project is therefore on monitoring population levels for charis
 ### Overview to the SAWPS platform functionality
 
 ![image](./img/functionality.png)
-
-### Project Roadmap
-<!-- To be populated by Team Lead -->
 
 #### Contributing
 
@@ -68,7 +63,6 @@ encourage contributions from those with expertise in other areas, and welcome
 them into our community.
 
 #### Project Partners
-<!-- Populate with Logos and Partner name -->
 
 The work is funded by the [South African National Biodiversity Institute](https://www.sanbi.org/)
 

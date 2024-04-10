@@ -34,7 +34,7 @@ from frontend.api_views.metrics import (
     PropertyCountPerPopulationSizeCategoryAPIView,
     PropertyPerAreaAvailableCategoryAPIView,
     PropertyPerPopDensityCategoryAPIView,
-    SpeciesPopuationCountPerYearAPIView,
+    SpeciesPopulationCountPerYearAPIView,
     SpeciesPopulationCountPerProvinceAPIView,
     SpeciesPopulationDensityPerPropertyAPIView,
     TotalAreaAvailableToSpeciesAPIView,
@@ -57,7 +57,9 @@ from frontend.api_views.population import (
     PopulationMeanSDChartApiView,
     PopulationMetadataList,
     UploadPopulationAPIVIew,
-    FetchPopulationData
+    FetchPopulationData,
+    CanWritePopulationData,
+    DeletePopulationAPIView
 )
 from frontend.api_views.property import (
     CreateNewProperty,
@@ -68,7 +70,8 @@ from frontend.api_views.property import (
     UpdatePropertyBoundaries,
     UpdatePropertyInformation,
     CheckPropertyNameIsAvailable,
-    ListPropertyTypeAPIView
+    ListPropertyTypeAPIView,
+    ListProvince
 )
 from frontend.api_views.statistical import (
     DownloadTrendDataAsJson
@@ -195,6 +198,11 @@ urlpatterns = [
         name='property-types'
     ),
     re_path(
+        r'^api/province/?$',
+        ListProvince.as_view(),
+        name='province-list'
+    ),
+    re_path(
         r'^api/property/boundaries/update/?$',
         UpdatePropertyBoundaries.as_view(),
         name='property-update-boundaries'
@@ -243,6 +251,16 @@ urlpatterns = [
         r'^api/upload/population/fetch/(?P<id>\d+)/?$',
         FetchPopulationData.as_view(),
         name='fetch-population-data'
+    ),
+    re_path(
+        r'^api/upload/population/remove/(?P<population_id>\d+)/?$',
+        DeletePopulationAPIView.as_view(),
+        name='remove-population-data'
+    ),
+    re_path(
+        r'^api/upload/population/(?P<property_id>\d+)/check/?$',
+        CanWritePopulationData.as_view(),
+        name='can-upload-population-data'
     ),
     re_path(
         r'^api/upload/population/(?P<property_id>\d+)/?$',
@@ -323,7 +341,7 @@ urlpatterns = [
     path('api/data-table/', DataTableAPIView.as_view(), name='data-table'),
     path(
         'api/species-population-count/',
-        SpeciesPopuationCountPerYearAPIView.as_view(),
+        SpeciesPopulationCountPerYearAPIView.as_view(),
         name='species_population_count'
     ),
     path(

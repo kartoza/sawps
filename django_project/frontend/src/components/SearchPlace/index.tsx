@@ -9,6 +9,7 @@ import './index.scss';
 
 
 interface SearchPlaceInterface {
+    mapSession?: string;
     onPlaceSelected: (place: SeachPlaceResult) => void;
 }
 
@@ -24,11 +25,11 @@ export default function SearchPlace(props: SearchPlaceInterface) {
                     request: { input: string },
                     callback: (results: SeachPlaceResult[]) => void,
                 ) => {
-                    searchPlaces(request.input, callback)
+                    searchPlaces(request.input, callback, props.mapSession)
                 },
                 400,
             ),
-        [],
+        [props.mapSession],
     )
 
     useEffect(() => {
@@ -76,16 +77,6 @@ export default function SearchPlace(props: SearchPlaceInterface) {
             clearOnBlur={true}
             blurOnSelect={true}
             onChange={(event, newValue, reason) => {
-                // if (newValue && newValue.bbox && newValue.bbox.length === 4) {
-                //     // trigger zoom to property
-                //     let _bbox = newValue.bbox.map(String)
-                //     dispatch(triggerMapEvent({
-                //         'id': uuidv4(),
-                //         'name': MapEvents.ZOOM_INTO_PROPERTY,
-                //         'date': Date.now(),
-                //         'payload': _bbox
-                //     }))
-                // }
                 props.onPlaceSelected(newValue)
                 setSearchInputValue('')
             }}

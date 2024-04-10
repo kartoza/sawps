@@ -37,34 +37,31 @@ In the top right corner of the administration panel, administrators will find a 
 
     ![Change Password](./img/admin-8.png)
 
-    **Input Fields**
+    1. **1. Old Password**: In this field, administrators should provide the current password associated with their account. This is a mandatory field.
 
-    1. **Old Password**: In this field, administrators should provide the current password associated with their account. This is a mandatory field.
+    2. **2. New Password**: In this field, administrators should enter the new password they want to set for their account. The password should meet the following criteria:
 
-    2. **New Password**: In this field, administrators should enter the new password they want to set for their account. The password should meet the following criteria:
+       - The password can't be too similar to other personal information.
+       - The password must contain at least 12 characters.
+       - The password can't be a commonly used password.
+       - The password can't be entirely numeric.
+       - The password should include the following:
+           - Numeric character
+           - Uppercase letter
+           - Special character ( @ # % ; )
+       - Ensure that the new password adheres to these requirements.
 
-    * The password can't be too similar to other personal information.
-    * The password must contain at least 12 characters.
-    * The password can't be a commonly used password.
-    * The password can't be entirely numeric.
-    * The password should include the following:
-        * Numeric character
-        * Uppercase letter
-        * Special character (@#%;)
+    3. **3. New Password Confirmation**: Re-enter the new password in this field to confirm it. It should match the password entered in the `New Password` field.
 
-    * Ensure that the new password adheres to these requirements.
+    4. **4. Change My Password Button**: Once administrators have filled in the required information, they can click the `CHANGE MY PASSWORD` button to submit the form. If all the input is valid and the new password meets the criteria, the password for their account will be updated.
 
-    3. **New Password Confirmation**: Re-enter the new password in this field to confirm it. It should match the password entered in the `New Password` field.
-
-    4. **Change My Password Button**: Once administrators have filled in the required information, they can click the `CHANGE MY PASSWORD` button to submit the form. If all the input is valid and the new password meets the criteria, the password for their account will be updated.
-
-After successfully changing the password, the administrator will receive a confirmation message indicating that the password has been updated.
+    After successfully changing the password, the administrator will receive a confirmation message indicating that the password has been updated.
 
 4. **Log Out**: Clicking on this option will log the administrator out of the administration panel and return them to the login page.
 
     ![Logout admin page](./img/admin-9.png)
 
-    1. **Log in again**: Clicking this option will open the login page.
+    1. **1. Log in again**: Clicking this option will open the login page.
 
 5. **Recent Actions**: The `Recent Actions` section is located on the right side of the administration panel and provides a list of recent actions that have been performed within the administration interface. These actions may include additions, deletions, or changes to data in the project. Clicking on any of the available links will take an administrator to the details of the recent action.
 
@@ -122,7 +119,7 @@ After successfully changing the password, the administrator will receive a confi
 
     - **Login events**: In the `Login events` table, administrators can monitor login events which is critical for maintaining the security of SAWPS and keeping track of who is accessing the system. It helps in identifying suspicious or unauthorised activities, improving accountability, and enhancing the overall security posture of the application. This table provides administrators with the capability to perform various operations, including purging, deleting, updating, and viewing login events.
 
-    -**Request events**: In the `Request events` table, administrators can monitor request events which is crucial for understanding user interactions, diagnosing issues, improving system performance, and ensuring data security. It can provide valuable insights into how SAWPS is being used and help in troubleshooting problems. This table provides administrators with the capability to perform various operations, including purging, deleting, updating, and viewing request events.
+    - **Request events**: In the `Request events` table, administrators can monitor request events which is crucial for understanding user interactions, diagnosing issues, improving system performance, and ensuring data security. It can provide valuable insights into how SAWPS is being used and help in troubleshooting problems. This table provides administrators with the capability to perform various operations, including purging, deleting, updating, and viewing request events.
 
 7. **FRONTEND**: The administrators can use this section to perform operations related to the SAWPS front end.
 
@@ -204,7 +201,6 @@ After successfully changing the password, the administrator will receive a confi
 
     - **Property types**: The `Property types` table is used for storing the property types records. The administrators can use the property type table to select and change property type details within the SAWPS. This table allows administrators to categorising properties based on their type, such as community, provincial, national, state, private, or a combination of state and private. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing property types.
 
-
     - **Provinces**: The `Provinces` table is used for storing the provinces' records. The administrators can use the province table to select and change province details within the SAWPS. This table allows administrators to manage and update province information, including province names. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing provinces.
 
 15. **REDIRECTS**: The administrators can use this section to perform operations related to redirects.
@@ -255,8 +251,8 @@ After successfully changing the password, the administrator will receive a confi
 
     - **User roles**: The `User roles` table is used for storing the user roles records. User roles define the permissions and access levels for different users within the SAWPS. By adding user roles, administrators can control what users can and cannot do in the system. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing user roles.
 
-* For more information, click [here](django-table.md) to view the table documentation.
+* For more information on the detailed documentation for the tables, click [here](django-table.md).
 
-* For more information, click [here](django-add-data.md) to view how to add new data.
+* For more information on how to add new data, click [here](django-add-data.md).
 
-* For more information, click [here](django-change-data.md) to view how to edit data.
+* For more information on how to edit data, click [here](django-change-data.md).

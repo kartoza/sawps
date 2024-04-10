@@ -35,14 +35,13 @@ export interface Organisation {
   use_of_data_by_sanbi_only: boolean
   hosting_through_sanbi_platforms: boolean
   allowing_sanbi_to_expose_data: boolean
-  data_use_permission: number
   province: number
 }
 
 export interface Species {
   id: number
   scientific_name: string
-  common_name_varbatim: string
+  common_name_verbatim: string
 }
 
 export interface TaxonDetail {
@@ -53,6 +52,7 @@ export interface TaxonDetail {
   total_population: number
   total_area: number
   colour: string
+  model_updated_on: Date
 }
 
 export interface Activity {
@@ -70,12 +70,16 @@ export interface PropertyType {
   colour: string
 }
 
+export interface Province {
+  id: number
+  name: string
+}
 
 // Create an API slice using RTK Query's createApi.
 // This defines a set of endpoints related to user operations.
 export const userApi = createApi({
     baseQuery: baseQuery,
-    tagTypes: ['User', 'Organisation', 'Activity', 'Property', 'Species', 'Taxon', 'PropertyType'],
+    tagTypes: ['User', 'Organisation', 'Activity', 'Property', 'Species', 'Taxon', 'PropertyType', 'Province'],
     endpoints: (build) => ({
         getUserInfo: build.query<UserInfo, void>({
             query: () => 'api/user-info/',
@@ -133,6 +137,13 @@ export const userApi = createApi({
             },
             providesTags: ['PropertyType']
         }),
+        getProvince: build.query<Province[], void>({
+            query: () => 'api/province/',
+            transformResponse: (response: Province[]) => {
+                return response;
+            },
+            providesTags: ['Province']
+        }),
     })
 })
 
@@ -145,7 +156,8 @@ export const {
     useGetPropertyQuery,
     useGetSpeciesQuery,
     useGetTaxonDetailQuery,
-    useGetPropertyTypeQuery
+    useGetPropertyTypeQuery,
+    useGetProvinceQuery
 } = userApi
 
 

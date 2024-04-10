@@ -1,7 +1,8 @@
 """Test case for population data models.
 """
+import mock
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from population_data.factories import (
@@ -24,6 +25,9 @@ from population_data.models import (
 )
 from species.factories import TaxonFactory, TaxonRankFactory
 from species.models import Taxon
+from frontend.tests.model_factories import UserF
+from property.factories import ProvinceFactory, PropertyFactory
+from stakeholder.factories import organisationFactory, organisationRepresentativeFactory
 
 
 class PopulationCountTestCase(TestCase):
@@ -33,7 +37,7 @@ class PopulationCountTestCase(TestCase):
         """SetUpTestData for population count test case."""
         taxon = TaxonFactory.create(
             scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
@@ -96,6 +100,55 @@ class PopulationCountTestCase(TestCase):
             population_instance = AnnualPopulation(**data)
             population_instance.clean()
 
+    def test_population_str_representation(self):
+        self.assertEqual(str(self.population_count),
+                         "{} {}".format(self.population_count.property.name, self.population_count.year))
+        population_2 = AnnualPopulationF(
+            total=120,
+            adult_male=19,
+            adult_female=100,
+            adult_total=119,
+            year=2023
+        )
+        # mock property field to raise ObjectDoesNotExist
+        with mock.patch.object(AnnualPopulation, 'property', new_callable=mock.PropertyMock) as mocked_obj:
+            mocked_obj.side_effect = ObjectDoesNotExist('error')
+            self.assertEqual(str(population_2),
+                             "Population of year {} with total {}".format(2023, 120))
+
+    def test_is_population_editable(self):
+        superuser = UserF.create(
+            username='superuser', is_superuser=True,
+            is_staff=True, is_active=True)
+        user_1 = UserF.create(username='user_1')
+        user_2 = UserF.create(username='user_2')
+        organisation = organisationFactory(name='CapeNature')
+        province = ProvinceFactory(name='Western Cape')
+        property_1 = PropertyFactory(
+            name='Lupin',
+            province=province,
+            organisation=organisation,
+            created_by=superuser
+        )
+        population_1 = AnnualPopulationF(
+            total=120,
+            adult_male=19,
+            adult_female=100,
+            adult_total=119,
+            year=2023,
+            user=user_1,
+            property=property_1
+        )
+        self.assertTrue(population_1.is_editable(superuser))
+        self.assertTrue(population_1.is_editable(user_1))
+        self.assertFalse(population_1.is_editable(user_2))
+        # add user_2 as manager
+        organisationRepresentativeFactory.create(
+            organisation=organisation,
+            user=user_2
+        )
+        self.assertTrue(population_1.is_editable(user_2))
+
 
 class AnnualPopulationPerActivityTestCase(TestCase):
     """Population count test case."""
@@ -104,7 +157,7 @@ class AnnualPopulationPerActivityTestCase(TestCase):
         """SetUpTestData for population count test case."""
         taxon = Taxon.objects.create(
             scientific_name='taxon_0',
-            common_name_varbatim='taxon_0',
+            common_name_verbatim='taxon_0',
             colour_variant=False,
             taxon_rank=TaxonRankFactory(),
         )
@@ -165,6 +218,22 @@ class AnnualPopulationPerActivityTestCase(TestCase):
             msg="The count of AnnualPopulationPerActivity"
             "instances did not decrease by 1 after deletion."
         )
+
+    def test_activity_str_representation(self):
+        self.assertEqual(str(self.population_count),
+                         "{} {} {}".format(self.population_count.annual_population.property.name, self.population_count.year, self.population_count.activity_type.name))
+        activity_2 = AnnualPopulationPerActivityFactory(
+            annual_population=self.population_count.annual_population,
+            intake_permit='1',
+            offtake_permit='1',
+            year=2023,
+            total=120
+        )        
+        # mock property field to raise ObjectDoesNotExist
+        with mock.patch.object(AnnualPopulation, 'property', new_callable=mock.PropertyMock) as mocked_obj:
+            mocked_obj.side_effect = ObjectDoesNotExist('error')
+            self.assertEqual(str(activity_2),
+                             "Activity of year {} total {}".format(2023, 120))
 
 
 class TestCertainty(TestCase):

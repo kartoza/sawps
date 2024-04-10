@@ -1,8 +1,9 @@
 """Models for population data package.
 """
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import User
+from stakeholder.models import OrganisationRepresentative
 
 
 TOTAL_POPULATION_ERROR_MESSAGE = (
@@ -22,14 +23,6 @@ class AnnualPopulationAbstract(models.Model):
     """ "Annual Population model.
     """
     year = models.PositiveIntegerField()
-    # This field is no longer used,
-    # but will be deleted after data
-    # migration success.
-    owned_species = models.ForeignKey(
-        "species.OwnedSpecies",
-        on_delete=models.CASCADE,
-        null=True
-    )
     total = models.IntegerField()
     adult_male = models.IntegerField(null=True, blank=True)
     adult_female = models.IntegerField(null=True, blank=True)
@@ -122,17 +115,26 @@ class AnnualPopulation(AnnualPopulationAbstract):
         null=True, blank=True, choices=[(i, i) for i in range(1, 11)]
     )
     population_estimate_category_other = models.TextField(
-        null=True, blank=True
+        null=True, blank=True,
+        help_text=(
+            'If population estimate category is other, '
+            'then please explain'
+        )
     )
     survey_method_other = models.TextField(
-        null=True, blank=True
+        null=True, blank=True,
+        help_text=(
+            'If survey method is other, '
+            'then please explain'
+        )
     )
 
     def __str__(self):
-        return "{} {}".format(
-            self.property.name,
-            self.year
-        )
+        try:
+            return "{} {}".format(self.property.name, self.year)
+        except ObjectDoesNotExist:
+            return "Population of year {} with total {}".format(
+                self.year, self.total)
 
     def clean(self):
         """
@@ -150,6 +152,19 @@ class AnnualPopulation(AnnualPopulationAbstract):
                 })
 
         super().clean()
+
+    def is_editable(self, user: User, managed_organisations = None):
+        if user is None:
+            return False
+        if user.is_superuser:
+            return True
+        if managed_organisations is None:
+            managed_organisations = OrganisationRepresentative.objects.filter(
+                user=user
+            ).values_list('organisation_id', flat=True)
+        if self.property.organisation.id in managed_organisations:
+            return True
+        return self.user.id == user.id if self.user else False
 
     class Meta:
         verbose_name = "Annual Population"
@@ -186,10 +201,14 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     offtake_permit = models.CharField(null=True, blank=True, max_length=100)
 
     def __str__(self):
-        return "{} {} {}".format(
-            self.annual_population.property.name,
-            self.year,
-            self.activity_type.name)
+        try:
+            return "{} {} {}".format(
+                self.annual_population.property.name,
+                self.year,
+                self.activity_type.name)
+        except ObjectDoesNotExist:
+            return "Activity of year {} total {}".format(
+                self.year, self.total)
 
     class Meta:
         verbose_name = "Population count per activity"

@@ -23,11 +23,11 @@ class AnnualPopulationAdmin(admin.ModelAdmin):
         'property__name',
         'year',
         'taxon__scientific_name',
-        'taxon__common_name_varbatim'
+        'taxon__common_name_verbatim'
     ]
     form = AnnualPopulationForm
     autocomplete_fields = [
-        'user', 'owned_species', 'taxon',
+        'user', 'taxon',
         'property', 'population_estimate_category', 'sampling_effort_coverage'
     ]
 
@@ -43,7 +43,7 @@ class AnnualPopulationAdmin(admin.ModelAdmin):
 
     def common_name(self, obj: AnnualPopulationPerActivity):
         if obj.taxon:
-            return obj.taxon.common_name_varbatim
+            return obj.taxon.common_name_verbatim
         return None
 
 
@@ -73,7 +73,7 @@ class AnnualPopulationPerActivityAdmin(admin.ModelAdmin):
     search_fields = [
         'owned_species__property__name',
         'owned_species__taxon__scientific_name',
-        'owned_species__taxon__common_name_varbatim'
+        'owned_species__taxon__common_name_verbatim'
     ]
 
     def property_name(self, obj: AnnualPopulationPerActivity):
@@ -88,7 +88,7 @@ class AnnualPopulationPerActivityAdmin(admin.ModelAdmin):
 
     def common_name(self, obj: AnnualPopulationPerActivity):
         if obj.annual_population and obj.annual_population.taxon:
-            return obj.annual_population.taxon.common_name_varbatim
+            return obj.annual_population.taxon.common_name_verbatim
         return None
 
 

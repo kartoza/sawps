@@ -13,14 +13,14 @@ from django.db import connection
 from django.db.utils import ProgrammingError
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse, Http404, HttpResponseForbidden
+from django.http import StreamingHttpResponse
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.gis.geos import Point
 from django.utils import timezone
 from property.models import (
-    Property,
-    Parcel
+    Property
 )
 from frontend.models.context_layer import ContextLayer
 from frontend.models.map_session import MapSession
@@ -48,12 +48,16 @@ from frontend.serializers.property import (
 )
 from stakeholder.models import OrganisationUser
 from frontend.utils.organisation import get_current_organisation_id
+from frontend.utils.user_roles import check_user_has_permission
 
 
 User = get_user_model()
 PROVINCE_LAYER_ZOOMS = (5, 8)
-PROPERTIES_LAYER_ZOOMS = (10, 24)
+PROPERTIES_LAYER_ZOOMS = (9, 24)
 PROPERTIES_POINT_LAYER_ZOOMS = (5, 24)
+PARENT_FARM_LAYER_ZOOMS = (9, 11)
+PROPERTIES_LAYER = 'properties'
+PROPERTIES_POINTS_LAYER = 'properties-points'
 
 
 def should_generate_layer(z: int, zoom_configs: Tuple[int, int]) -> bool:
@@ -65,11 +69,16 @@ class MapSessionBase(APIView):
     """Base class for map filter session."""
 
     def can_view_properties_layer(self):
-        return self.request.user.has_perm(
-            'sawps.can_view_map_properties_layer')
+        return (
+            check_user_has_permission(self.request.user,
+                                      'Can view properties layer in the map')
+        )
 
     def can_view_province_layer(self):
-        return self.request.user.has_perm('sawps.can_view_map_province_layer')
+        return (
+            check_user_has_permission(self.request.user,
+                                      'Can view province layer in the map')
+        )
 
     def generate_session(self):
         """
@@ -184,6 +193,11 @@ class LayerMVTTilesBase(APIView):
     """Base class for generating dynamic VT."""
     permission_classes = [IsAuthenticated]
 
+    def get_geom_field_for_properties_layers(self, layer_name: str):
+        if layer_name == PROPERTIES_POINTS_LAYER:
+            return 'centroid'
+        return 'geometry'
+
     def gzip_tile(self, data):
         """Apply gzip to vector tiles bytes."""
         bytesbuffer = io.BytesIO()
@@ -249,15 +263,12 @@ class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
 
     def get_properties_layer_query(
             self,
-            is_points_layer: bool,
+            layer_name: str,
             session: MapSession,
             z: int, x: int, y: int) -> Tuple[str, List[str]]:
         """Generate SQL query for properties/points using filter session."""
         geom_field = (
-            'centroid' if is_points_layer else 'geometry'
-        )
-        layer_name = (
-            'properties-points' if is_points_layer else 'properties'
+            self.get_geom_field_for_properties_layers(layer_name)
         )
         sql = (
             """
@@ -321,15 +332,17 @@ class SessionPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
         if self.can_view_properties_layer():
             if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
                 properties_sql, properties_val = (
-                    self.get_properties_layer_query(False, session, z, x, y)
+                    self.get_properties_layer_query(
+                        PROPERTIES_LAYER, session, z, x, y)
                 )
                 sqls.append(properties_sql)
                 query_values.extend(properties_val)
             if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
-                propertie_points_sql, properties_points_val = (
-                    self.get_properties_layer_query(True, session, z, x, y)
+                properties_points_sql, properties_points_val = (
+                    self.get_properties_layer_query(
+                        PROPERTIES_POINTS_LAYER, session, z, x, y)
                 )
-                sqls.append(propertie_points_sql)
+                sqls.append(properties_points_sql)
                 query_values.extend(properties_points_val)
         if len(sqls) == 0:
             return None, None
@@ -362,14 +375,11 @@ class DefaultPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
 
     def get_default_properties_layer_query(
             self,
-            is_points_layer: bool,
+            layer_name: str,
             z: int, x: int, y: int) -> Tuple[str, List[str]]:
         """Generate SQL query for properties/points using active org."""
         geom_field = (
-            'centroid' if is_points_layer else 'geometry'
-        )
-        layer_name = (
-            'properties-points' if is_points_layer else 'properties'
+            self.get_geom_field_for_properties_layers(layer_name)
         )
         sql = (
             """
@@ -404,15 +414,17 @@ class DefaultPropertiesLayerMVTTiles(MapSessionBase, LayerMVTTilesBase):
             return None, None
         if should_generate_layer(z, PROPERTIES_LAYER_ZOOMS):
             properties_sql, properties_val = (
-                self.get_default_properties_layer_query(False, z, x, y)
+                self.get_default_properties_layer_query(
+                    PROPERTIES_LAYER, z, x, y)
             )
             sqls.append(properties_sql)
             query_values.extend(properties_val)
         if should_generate_layer(z, PROPERTIES_POINT_LAYER_ZOOMS):
-            propertie_points_sql, properties_points_val = (
-                self.get_default_properties_layer_query(True, z, x, y)
+            properties_points_sql, properties_points_val = (
+                self.get_default_properties_layer_query(
+                    PROPERTIES_POINTS_LAYER, z, x, y)
             )
-            sqls.append(propertie_points_sql)
+            sqls.append(properties_points_sql)
             query_values.extend(properties_points_val)
         if len(sqls) == 0:
             return None, None
@@ -440,92 +452,60 @@ class AerialTile(APIView):
         x = kwargs.get('x')
         y = kwargs.get('y')
         z = kwargs.get('z')
-        response = requests.get(
+        r = requests.get(
             f'http://aerial.openstreetmap.org.za/ngi-aerial/{z}/{x}/{y}.jpg'
         )
-        if response.status_code != 200:
+        if r.status_code != 200:
             raise Http404()
-        return HttpResponse(
-            response.content,
-            content_type=response.headers['Content-Type'])
+        response = StreamingHttpResponse(
+            (chunk for chunk in r.iter_content(512 * 1024)),
+            content_type=r.headers['Content-Type'])
+        if 'Cache-Control' in r.headers:
+            response['Cache-Control'] = r.headers['Cache-Control']
+        else:
+            response['Cache-Control'] = 'max-age=86400'
+        return response
 
 
 class FindParcelByCoord(APIView):
     """Find parcel that contains coordinate."""
     permission_classes = [IsAuthenticated]
 
-    def find_erf(self, point: Point):
-        """Find Erf parcel by point."""
-        parcel = Erf.objects.filter(geom__contains=point)
+    def find_parcel(self, cls, cls_serializer, point: Point):
+        """Find parcel by point."""
+        parcel = cls.objects.filter(geom__contains=point)
         if parcel:
-            return ErfParcelSerializer(
+            return cls_serializer(
                 parcel.first()
             ).data
         return None
-
-    def find_holding(self, point: Point):
-        """Find Holding parcel by point."""
-        parcel = Holding.objects.filter(geom__contains=point)
-        if parcel:
-            return HoldingParcelSerializer(
-                parcel.first()
-            ).data
-        return None
-
-    def find_farm_portion(self, point: Point):
-        """Find FarmPortion parcel by point."""
-        parcel = FarmPortion.objects.filter(geom__contains=point)
-        if parcel:
-            return FarmPortionParcelSerializer(
-                parcel.first()
-            ).data
-        return None
-
-    def find_parent_farm(self, point: Point):
-        """Find ParentFarm parcel by point."""
-        parcel = ParentFarm.objects.filter(geom__contains=point)
-        if parcel:
-            return ParentFarmParcelSerializer(
-                parcel.first()
-            ).data
-        return None
-
-    def check_used_parcel(self, cname: str, existing_property_id: int):
-        parcels = Parcel.objects.filter(sg_number=cname)
-        if existing_property_id:
-            parcels = parcels.exclude(property_id=existing_property_id)
-        return parcels.exists()
 
     def get(self, *args, **kwargs):
         lat = self.request.GET.get('lat', 0)
         lng = self.request.GET.get('lng', 0)
-        property_id = self.request.GET.get('property_id', 0)
+        zoom = int(self.request.GET.get('zoom', 12))
         point = Point(float(lng), float(lat), srid=4326)
         point.transform(3857)
-        # find erf
-        parcel = self.find_erf(point)
-        if parcel:
-            if self.check_used_parcel(parcel['cname'], property_id):
-                return Response(status=404)
-            return Response(status=200, data=parcel)
-        # find holding
-        parcel = self.find_holding(point)
-        if parcel:
-            if self.check_used_parcel(parcel['cname'], property_id):
-                return Response(status=404)
-            return Response(status=200, data=parcel)
-        # find farm_portion
-        parcel = self.find_farm_portion(point)
-        if parcel:
-            if self.check_used_parcel(parcel['cname'], property_id):
-                return Response(status=404)
-            return Response(status=200, data=parcel)
-        # find parent_farm
-        parcel = self.find_parent_farm(point)
-        if parcel:
-            if self.check_used_parcel(parcel['cname'], property_id):
-                return Response(status=404)
-            return Response(status=200, data=parcel)
+        if (
+            zoom >= PARENT_FARM_LAYER_ZOOMS[0] and
+            zoom <= PARENT_FARM_LAYER_ZOOMS[1]
+        ):
+            # find parent_farm
+            parcel = self.find_parcel(ParentFarm, ParentFarmParcelSerializer,
+                                      point)
+            if parcel:
+                return Response(status=200, data=parcel)
+        else:
+            map_serializers = {
+                Erf: ErfParcelSerializer,
+                Holding: HoldingParcelSerializer,
+                FarmPortion: FarmPortionParcelSerializer
+            }
+            for parcel_class, parcel_serializer in map_serializers.items():
+                parcel = self.find_parcel(parcel_class,
+                                          parcel_serializer, point)
+                if parcel:
+                    return Response(status=200, data=parcel)
         return Response(status=404)
 
 

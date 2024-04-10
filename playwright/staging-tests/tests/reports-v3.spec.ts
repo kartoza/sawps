@@ -1,0 +1,67 @@
+import { test, expect } from '@playwright/test';
+
+test.use({
+  storageState: 'auth.json'
+});
+
+test('test', async ({ page }) => {
+  await page.goto('https://sawps.sta.do.kartoza.com/');
+  await page.getByRole('button', { name: 'Explore' }).click();
+  await expect(page.getByRole('tab', { name: 'REPORTS' })).toBeVisible();
+  await page.getByRole('tab', { name: 'REPORTS' }).click();
+  await expect(page.getByText('Ready to explore?')).toBeVisible();
+  await expect(page.getByText('Choose a species to view the')).toBeVisible();
+  await expect(page.locator('#left-sidebar-container')).toContainText('Species');
+  await expect(page.getByPlaceholder('Select').first()).toBeEmpty();
+  await page.getByPlaceholder('Select').first().click();
+  await page.getByPlaceholder('Select').first().fill('panth');
+  await page.getByText('Panthera leo').click();
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.getByText('SAWPS SUMMARY REPORT')).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Species image', exact: true })).toBeVisible();
+  await expect(page.locator('#dataContainer').getByRole('img', { name: 'Organisation image' })).toBeVisible();
+  await expect(page.locator('#dataContainer').getByRole('img', { name: 'Property image' })).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Clock image' })).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Activity image' })).toBeVisible();
+  await expect(page.locator('#dataContainer')).toContainText('Species list: Panthera leo');
+  await expect(page.locator('nav').filter({ hasText: 'Report selected' }).getByRole('combobox')).toBeEmpty();
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.locator('#dataContainer')).toContainText('Species Report');
+  await page.locator('label').filter({ hasText: 'Select All' }).locator('path').click();
+  await expect(page.getByText('No Data To Show')).toBeVisible();
+  await page.getByRole('option', { name: 'CapeNature' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+  await expect(page.locator('#dataContainer')).toContainText('Organisation list: CapeNature');
+  await expect(page.locator('#dataContainer')).toContainText('Species Report');
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.locator('#left-sidebar-container')).toContainText('Property');
+  await expect(page.locator('nav').filter({ hasText: 'Properties selected' }).getByRole('combobox')).toBeEmpty();
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.locator('#left-sidebar-container')).toContainText('Year');
+  await expect(page.locator('.MuiSlider-track')).toBeVisible();
+  await expect(page.locator('#left-sidebar-container')).toContainText('Activity');
+  await expect(page.getByPlaceholder('Select')).toBeEmpty();
+  await page.locator('label').filter({ hasText: 'Select All' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+  await expect(page.locator('#dataContainer')).toContainText('Activity list: Other, Planned Euthanasia/DCA, Planned Hunt/Cull, Translocation (Intake), Translocation (Offtake), Unplanned/Illegal Hunting');
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.locator('#left-sidebar-container')).toContainText('Spatial filters');
+  await expect(page.locator('#sidebarArrowsBox')).toContainText('Critical Biodiversity Area');
+  await page.locator('nav').filter({ hasText: 'Report selected' }).getByRole('combobox').click();
+  await page.getByTestId('CheckBoxIcon').locator('path').click();
+  await page.getByRole('option', { name: 'Activity report' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+  await expect(page.getByText('Activity Report')).toBeVisible();
+  await page.locator('nav').filter({ hasText: 'Report selected' }).getByRole('combobox').click();
+  await page.getByTestId('CheckBoxIcon').locator('path').click();
+  await page.getByLabel('Property report').check();
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.getByText('Property Report')).toBeVisible();
+  await page.locator('nav').filter({ hasText: 'Report selected' }).getByRole('combobox').click();
+  await page.getByTestId('CheckBoxIcon').locator('path').click();
+  await page.getByRole('option', { name: 'Province report' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.getByText('Province Report')).toBeVisible();
+  await page.locator('nav').filter({ hasText: 'Report selected' }).getByRole('combobox').click();
+  await page.getByTestId('CheckBoxIcon').locator('path').click();
+  await page.getByRole('option', { name: 'Sampling report' }).getByTestId('CheckBoxOutlineBlankIcon').click();
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.getByText('Sampling Report')).toBeVisible();
+});

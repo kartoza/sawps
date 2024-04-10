@@ -1,15 +1,20 @@
-from django.conf import settings
+import uuid
+
 from django.contrib.auth.models import User, Group
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
-from stakeholder.utils import (
-    add_user_to_organisation_group,
-    remove_organisation_user_from_group
-)
 
 from property.models import Province
+from stakeholder.utils import (
+    add_user_to_org_member,
+    add_user_to_org_manager,
+    remove_user_from_org_member,
+    remove_user_from_org_manager,
+    notify_user_becomes_manager
+)
 
 MEMBER = 'Member'
 MANAGER = 'Manager'
@@ -70,7 +75,10 @@ class UserLogin(models.Model):
     date_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.username
+        try:
+            return self.user.username
+        except User.DoesNotExist:
+            return str(self.id)
 
     class Meta:
         verbose_name = 'User login'
@@ -86,10 +94,6 @@ class Organisation(models.Model):
         max_length=50,
         null=False,
         blank=True
-    )
-    data_use_permission = models.ForeignKey(
-        'regulatory_permit.dataUsePermission',
-        on_delete=models.CASCADE
     )
     national = models.BooleanField(null=True, blank=True)
     province = models.ForeignKey(
@@ -209,14 +213,10 @@ class UserProfile(models.Model):
         return super(self.__class__, self).delete(*args, **kwargs)
 
     def __str__(self):
-        return self.user.username
-
-    def picture_url(self):
-        if self.picture.url:
-            return '{media}/{url}'.format(
-                    media=settings.MEDIA_ROOT,
-                    url=self.picture,
-            )
+        try:
+            return self.user.username
+        except User.DoesNotExist:
+            return str(self.id)
 
     class Meta:
         verbose_name = 'User'
@@ -256,6 +256,11 @@ class OrganisationInvites(models.Model):
         (MANAGER, 'Manager'),
     ]
     email = models.CharField(max_length=200, null=True, blank=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True
+    )
     organisation = models.ForeignKey(
         Organisation,
         on_delete=models.CASCADE,
@@ -277,10 +282,15 @@ class OrganisationInvites(models.Model):
         choices=ASSIGNED_CHOICES,
         default=MEMBER
     )
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        null=False,
+        blank=True
+    )
 
     class Meta:
-        verbose_name = 'OrganisationInvites'
-        verbose_name_plural = 'OrganisationInvites'
+        verbose_name = 'Organisation invite'
+        verbose_name_plural = 'Organisation invites'
         db_table = "OrganisationInvites"
         permissions = [
             ("can_invite_people_to_organisation",
@@ -289,6 +299,12 @@ class OrganisationInvites(models.Model):
 
     def __str__(self):
         return str(self.email)
+
+    def get_invitee(self):
+        user = self.user
+        if not user:
+            user = User.objects.filter(email=self.email).first()
+        return user
 
 
 class Reminders(models.Model):
@@ -366,16 +382,16 @@ class OrganisationPersonnel(models.Model):
 class OrganisationRepresentative(OrganisationPersonnel):
     """Organisation representative model."""
     class Meta:
-        verbose_name = 'Organisation representative'
-        verbose_name_plural = 'Organisation representatives'
+        verbose_name = 'Organisation manager'
+        verbose_name_plural = 'Organisation managers'
         db_table = 'organisation_representative'
 
 
 class OrganisationUser(OrganisationPersonnel):
     """Organisation user model."""
     class Meta:
-        verbose_name = 'Organisation user'
-        verbose_name_plural = 'Organisation users'
+        verbose_name = 'Organisation member'
+        verbose_name_plural = 'Organisation members'
         db_table = 'organisation_user'
 
 
@@ -390,7 +406,7 @@ def post_create_organisation_user(
     Handle OrganisationUser creation by
     automatically add them to Organisation Member group.
     """
-    add_user_to_organisation_group(instance, OrganisationInvites, Group)
+    add_user_to_org_member(instance, OrganisationInvites, Group)
 
 
 @receiver(post_delete, sender=OrganisationUser)
@@ -405,4 +421,79 @@ def post_delete_organisation_user(
     from Data contributor and Organisation Member group, if they are no longer
     part of any organisation.
     """
-    remove_organisation_user_from_group(instance)
+    remove_user_from_org_member(instance)
+    # when user is removed from organisation
+    # also remove it from current_organisation in UserProfile
+    profile = UserProfile.objects.filter(
+        user=instance.user,
+        current_organisation=instance.organisation
+    ).first()
+    if profile:
+        profile.current_organisation = None
+        profile.save(update_fields=['current_organisation'])
+    # when user is removed, ensure that manager is removed as well
+    OrganisationRepresentative.objects.filter(
+        user=instance.user,
+        organisation=instance.organisation
+    ).delete()
+    # ensure invite record is removed
+    OrganisationInvites.objects.filter(
+        Q(email=instance.user.email) | Q(user=instance.user),
+        organisation=instance.organisation
+    ).delete()
+
+
+@receiver(post_save, sender=OrganisationRepresentative)
+def post_create_organisation_representative(
+    sender,
+    instance: OrganisationRepresentative,
+    created,
+    **kwargs
+):
+    """
+    Handle OrganisationRepresentative creation by
+    automatically add them to Organisation Manager group.
+    """
+    add_user_to_org_manager(instance, Group)
+    # check if user becomes manager from member
+    is_made_manager = False
+    if created:
+        organisation_user = OrganisationUser.objects.filter(
+            user=instance.user,
+            organisation=instance.organisation
+        ).first()
+        member_invite = OrganisationInvites.objects.filter(
+            user=instance.user,
+            joined=True
+        ).first()
+        if organisation_user is None:
+            # case when representative is created in admin site
+            # create organisation user
+            OrganisationUser.objects.create(
+                user=instance.user,
+                organisation=instance.organisation
+            )
+            is_made_manager = True
+        elif member_invite:
+            # check if previously has been invited as member
+            is_made_manager = member_invite.assigned_as == MEMBER
+        else:
+            # this case could be the member is added through admin site
+            is_made_manager = True
+    if is_made_manager:
+        notify_user_becomes_manager(instance)
+
+
+@receiver(post_delete, sender=OrganisationRepresentative)
+def post_delete_organisation_representative(
+    sender,
+    instance: OrganisationRepresentative,
+    *args,
+    **kwargs
+):
+    """
+    Handle OrganisationRepresentative deletion by removing them
+    from Data contributor and Organisation Manager group, if they are no longer
+    part of any organisation.
+    """
+    remove_user_from_org_manager(instance)

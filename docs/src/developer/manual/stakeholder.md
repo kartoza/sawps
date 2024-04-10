@@ -52,3 +52,69 @@ context_id: k9E3by5AW5pBLEbZQbty3J
         show_source: true
 
 
+::: django_project.stakeholder.tests.test_email_exists
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.stakeholder.tests.test_migration
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.stakeholder.tests.test_profile
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.stakeholder.tests.test_tasks
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.stakeholder.tests.test_view
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+# Tasks
+
+::: django_project.stakeholder.tasks
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+# Utils
+
+::: django_project.stakeholder.utils
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+# Views
+
+::: django_project.stakeholder.views
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true

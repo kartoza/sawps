@@ -33,7 +33,9 @@ const PopulationEstimateCategoryCount = (props: any) => {
     propertyId,
     startYear,
     endYear,
-    activityData
+    activityData,
+    activityIds,
+    spatialFilterValues
   } = props;
   let year: number | null = null;
   const [speciesData, setSpeciesData] = useState([]);
@@ -56,11 +58,8 @@ const PopulationEstimateCategoryCount = (props: any) => {
 
   const fetchPopulationEstimateCategoryCount = () => {
     setLoading(true);
-    axios
-      .get(
-        `${FETCH_POPULATION_ESTIMATE_CATEGORY_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`
-      )
-      .then((response) => {
+    let fullUrl = `${FETCH_POPULATION_ESTIMATE_CATEGORY_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&activity=${activityIds}&spatial_filter_values=${spatialFilterValues}`
+    axios.get(fullUrl).then((response) => {
         setLoading(false);
         if (response.data) {
           setSpeciesData(response.data);
@@ -76,7 +75,7 @@ const PopulationEstimateCategoryCount = (props: any) => {
 
   useEffect(() => {
     fetchPopulationEstimateCategoryCount();
-  }, [propertyId, startYear, endYear, selectedSpecies]);
+  }, [propertyId, startYear, endYear, selectedSpecies, activityIds, spatialFilterValues]);
 
   // Initialize variables
   const labels: string[] = [];
@@ -119,9 +118,9 @@ const PopulationEstimateCategoryCount = (props: any) => {
 
   if (selectedSpecies) {
     if (Object.keys(speciesData).length > 0) {
-      chartTitle = `Total count per population estimate category for ${selectedSpecies}`;
+      chartTitle = `Total count per population estimate category of ${selectedSpecies}`;
       if (year) {
-        chartTitle += ` year ${year}`;
+        chartTitle += ` for ${year}`;
       }
     } else {
       chartTitle = "No data available for current filter selections";

@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.contrib.auth import models
 from django.contrib.auth import login
@@ -9,11 +9,14 @@ from django.utils.http import (
 )
 from django.utils.encoding import force_str
 from django.views.generic import View
+from django.contrib.auth.mixins import UserPassesTestMixin
 from core.settings.contrib import SUPPORT_EMAIL
 from stakeholder.models import (
-    Organisation,
     OrganisationInvites,
-    OrganisationUser
+    OrganisationUser,
+    OrganisationRepresentative,
+    MANAGER,
+    UserProfile
 )
 from sawps.email_verification_token import email_verification_token
 from django.template.loader import render_to_string
@@ -45,8 +48,17 @@ class ActivateAccount(View):
                 user,
                 backend='django.contrib.auth.backends.ModelBackend',
             )
-            messages.success(request, ('Your account have been confirmed.'))
-            return redirect('/accounts/two-factor/two_factor/setup')
+            messages.success(request, ('Your account have been confirmed.'),
+                             extra_tags='notification')
+            # find invites that user has joined if any
+            org_invite = OrganisationInvites.objects.filter(
+                user=user,
+                joined=True
+            ).order_by('id').last()
+            if org_invite:
+                AddUserToOrganisation.notify_join_organisation_message(
+                    request, org_invite)
+            return redirect('/accounts/two-factor/setup')
         else:
             messages.warning(
                 request,
@@ -54,67 +66,114 @@ class ActivateAccount(View):
                     'The confirmation link was invalid,' +
                     'possibly because it has already been used.'
                 ),
+                extra_tags='notification'
             )
             return redirect('home')
 
 
-class AddUserToOrganisation(View):
-    def get(self, request, user_email, organisation, *args, **kwargs):
-        self.adduser(user_email, organisation, *args, **kwargs)
-        return redirect('home')
+class AddUserToOrganisation(UserPassesTestMixin, View):
 
-    def adduser(self, user_email, organisation, *args, **kwargs):
-        '''when the user has been invited to join an organisation
+    def test_func(self):
+        if not self.request.user.is_authenticated:
+            return False
+        # validate if user in invitation is the same with logged in user
+        invitation_uuid = self.kwargs.get('invitation_uuid')
+        org_invite = OrganisationInvites.objects.filter(
+            uuid=invitation_uuid
+        ).order_by('id').last()
+        if not org_invite:
+            return False
+        user = org_invite.get_invitee()
+        if user is None:
+            return False
+        return user.id == self.request.user.id
+
+    @staticmethod
+    def notify_join_organisation_message(request, org_invite):
+        messages.success(
+            request,
+            (
+                'You have successfully joined organisation '
+                f'{org_invite.organisation.name} '
+                'using the invitation link.'
+            ),
+            extra_tags='notification'
+        )
+
+    def get(self, request, invitation_uuid, *args, **kwargs):
+        org_invite = self.adduser(invitation_uuid, *args, **kwargs)
+        if org_invite:
+            self.notify_join_organisation_message(request, org_invite)
+        return redirect(
+            reverse('organisations', args=[self.request.user.username]))
+
+    def adduser(self, invitation_uuid, *args, **kwargs):
+        '''
+        when the user has been invited to join an organisation
         this view will Add the User to the OrganisationUser
         and update the linked models
-        OrganisationInvites'''
-
-        try:
-            org = Organisation.objects.get(name=str(organisation))
-            user = User.objects.filter(email=user_email).first()
-            if user:
-                org_invites = OrganisationInvites.objects.filter(
-                    email=user.email, organisation=org)
-                if org_invites:
-                    for invite in org_invites:
-                        # Update the joined field to True
-                        invite.joined = True
-                        invite.save()
-                        # check if not already added to prevent duplicates
-                        org_user = OrganisationUser.objects.filter(
-                            user=user,
-                            organisation=org
-                        ).first()
-                        if not org_user:
-                            # add user to organisation users
-                            user = OrganisationUser.objects.create(
-                                user=user,
-                                organisation=org
-                            )
-                            org_user.save()
-        except Organisation.DoesNotExist:
-            org = None
-        except Exception:
+        OrganisationInvites
+        '''
+        org_invite = OrganisationInvites.objects.filter(
+            uuid=invitation_uuid
+        ).order_by('id').last()
+        if org_invite is None:
             return None
+        # Update the joined field to True
+        org_invite.joined = True
+        org = org_invite.organisation
+        user = org_invite.get_invitee()
+        org_invite.user = user
+        org_invite.save()
 
+        try:
+            user_profile = user.user_profile
+        except AttributeError:
+            user_profile = UserProfile.objects.create(
+                user_id=user.id
+            )
+        user_profile.current_organisation = org
+        user_profile.save()
 
-    def is_user_already_joined(self, email, organisation):
+        # check if not already added to prevent duplicates
+        org_user = OrganisationUser.objects.filter(
+            user=org_invite.user,
+            organisation=org
+        ).first()
+        if not org_user:
+            # add user to organisation users
+            OrganisationUser.objects.create(
+                user=org_invite.user,
+                organisation=org
+            )
+
+        if org_invite.assigned_as == MANAGER:
+            # check if not already added to prevent duplicates
+            org_rep = OrganisationRepresentative.objects.filter(
+                user=org_invite.user,
+                organisation=org
+            ).first()
+            if not org_rep:
+                # add user to organisation users
+                org_rep = OrganisationRepresentative.objects.create(
+                    user=org_invite.user,
+                    organisation=org
+                )
+                org_rep.save()
+        return org_invite
+
+    def is_user_invited(self, invitation_uuid):
         """
-        Check if user already joined the organisation
+        Check if user invited to the organisation
         """
 
         try:
-            org = Organisation.objects.get(name=str(organisation))
-            joined = OrganisationInvites.objects.get(
-                email=email, organisation_id=org)
-            if joined:
-                return True
-            else:
-                return False
+            OrganisationInvites.objects.get(
+                uuid=invitation_uuid
+            )
+            return True
         except OrganisationInvites.DoesNotExist:
             return False
-        except Organisation.DoesNotExist:
-            return None
 
     def send_invitation_email(self, email_details):
         subject = 'SAWPS Organisation Invitation'
@@ -147,7 +206,7 @@ class SendRequestEmail(View):
     def send_email(self, request):
         organisation = request.POST.get('organisationName')
         request_message = request.POST.get('message')
-        subject = 'Oganisation Request'
+        subject = 'Organisation Request'
         if request.user.first_name:
             if request.user.last_name:
                 name = request.user.first_name + ' ' + request.user.last_name
@@ -194,14 +253,7 @@ class CustomPasswordResetView(View):
 
         try:
             user = User.objects.get(email=user_email)
-            user_name = ''
-            try:
-                if user.username is not None:
-                    user_name = user.username
-                elif user.first_name is not None:
-                    user_name = user.first_name
-            except AttributeError:
-                user_name = user_email
+            user_name = user.username
             # Generate the reset token and UID
             token = default_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
@@ -257,3 +309,46 @@ def custom_password_reset_complete_view(request):
         'forgot_password_reset.html',
         {'show_password_message': True}
     )
+
+
+def health(request):
+    return HttpResponse("OK")
+
+
+def resend_verification_email(request):
+    """
+    Resend the account verification email to the user if their
+    account is not active.
+    :param request: The HTTP request object containing the email address.
+    """
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            if not user.is_active:
+                token = email_verification_token.make_token(user)
+                subject = 'Activate your SAWPS account'
+                message = render_to_string(
+                    'emails/email_verification.html',
+                    {
+                        'name': user.first_name,
+                        'domain': Site.objects.get_current().domain,
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': token,
+                        'support_email': settings.SUPPORT_EMAIL
+                    },
+                )
+                send_mail(
+                    subject,
+                    None,
+                    settings.SERVER_EMAIL,
+                    [user.email],
+                    html_message=message
+                )
+        except User.DoesNotExist:
+            pass
+
+        return HttpResponse(status=200)
+
+    return HttpResponseRedirect(
+        reverse('account_login'))

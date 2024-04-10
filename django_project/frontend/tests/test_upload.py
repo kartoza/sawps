@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from core.settings.utils import absolute_path
 from rest_framework.test import APIRequestFactory
+from property.factories import ProvinceFactory
 from frontend.tests.model_factories import UserF
 from frontend.models.base_task import DONE
 from frontend.models.boundary_search import (
@@ -38,6 +39,7 @@ class TestUploadAPIViews(TestCase):
     def setUp(self) -> None:
         self.factory = APIRequestFactory()
         self.user_1 = UserF.create(username='test_1')
+        self.province = ProvinceFactory.create()
 
     @mock.patch(
         'frontend.api_views.upload.get_uploaded_file_crs',
@@ -154,12 +156,38 @@ class TestUploadAPIViews(TestCase):
         view = BoundaryFileSearch.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 204)
+        search_request = BoundarySearchRequest.objects.filter(
+            session=kwargs['session']
+        ).first()
+        self.assertTrue(search_request)
+        self.assertEqual(search_request.type, 'File')
+        # add using search_type
+        kwargs = {
+            'session': str(uuid.uuid4())
+        }
+        request = self.factory.get(
+            reverse(
+                'boundary-file-search',
+                kwargs=kwargs
+            ) + '?search_type=Digitise'
+        )
+        request.user = self.user_1
+        view = BoundaryFileSearch.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 204)
+        search_request = BoundarySearchRequest.objects.filter(
+            session=kwargs['session']
+        ).first()
+        self.assertTrue(search_request)
+        self.assertEqual(search_request.type, 'Digitise')
 
     def test_file_search_status(self):
         search_request = BoundarySearchRequest.objects.create(
             type='File',
             session=str(uuid.uuid4()),
             request_by=self.user_1,
+            province=self.province,
+            property_size_ha=10
         )
         kwargs = {
             'session': search_request.session
@@ -172,6 +200,10 @@ class TestUploadAPIViews(TestCase):
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'PENDING')
+        self.assertIn('progress', response.data)
+        self.assertEqual(response.data['type'], search_request.type)
+        self.assertEqual(response.data['province'], self.province.name)
+        self.assertEqual(response.data['property_size_ha'], search_request.property_size_ha)
 
     def test_file_search_geojson(self):
         search_request = BoundarySearchRequest.objects.create(

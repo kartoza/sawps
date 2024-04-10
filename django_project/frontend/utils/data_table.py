@@ -1,21 +1,22 @@
 import logging
 import os
 import urllib.parse
+import uuid
 from typing import Dict
 from typing import List
 from zipfile import ZipFile
 
 import pandas as pd
 from django.conf import settings
-from django.db.models import Sum
+from django.db.models import Sum, F, Exists, OuterRef
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 
 from activity.models import ActivityType
 from frontend.filters.data_table import DataContributorsFilter
 from frontend.filters.metrics import BaseMetricsFilter
-from frontend.utils.user_roles import get_user_roles
 from frontend.serializers.report import (
+    BaseSpeciesReportSerializer,
     SpeciesReportSerializer,
     SamplingReportSerializer,
     PropertyReportSerializer,
@@ -26,17 +27,19 @@ from frontend.serializers.report import (
     NationalLevelProvinceReport
 )
 from frontend.static_mapping import (
-    DATA_CONTRIBUTORS, DATA_SCIENTISTS, DATA_CONSUMERS
+    DATA_CONSUMERS
 )
 from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
 from frontend.utils.organisation import get_current_organisation_id
+from frontend.utils.user_roles import get_user_roles
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
 from property.models import Property
-from property.models import Province
 from species.models import Taxon
+from stakeholder.models import OrganisationRepresentative, Organisation
+from frontend.models.spatial import SpatialDataValueModel
 
 logger = logging.getLogger('sawps')
 
@@ -47,26 +50,30 @@ SPECIES_REPORT = 'Species_report'
 PROVINCE_REPORT = 'Province_report'
 
 
+def get_param_from_request(request, param, default_value=None):
+    if request.method == 'GET':
+        return request.GET.get(param, default_value)
+    else:
+        return request.data.get(param, default_value)
+
+
 def get_queryset(user_roles: List[str], request):
     organisation_id = get_current_organisation_id(request.user)
-    show_detail = set(user_roles) & set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
-        and not set(user_roles) & set(DATA_CONSUMERS)
+    show_detail = request.user.is_superuser \
+        or not set(user_roles) & set(DATA_CONSUMERS)
+    property_ids = get_param_from_request(request, 'property')
+    prop_ids = property_ids.split(",") if property_ids else []
+    organisation_ids = get_param_from_request(request, 'organisation')
+    org_ids = organisation_ids.split(",") if organisation_ids else []
     if show_detail:
         query_filter = DataContributorsFilter
-        organisation = request.GET.get("organisation")
-        if organisation and (set(user_roles) & set(DATA_SCIENTISTS)):
-            ids = organisation.split(",")
-            queryset = Property.objects.filter(
-                organisation_id__in=ids,
-                annualpopulation__taxon__taxon_rank__name="Species"
-            ).distinct().order_by("name")
-        else:
-            queryset = Property.objects.filter(
-                organisation_id=organisation_id,
-                annualpopulation__taxon__taxon_rank__name="Species"
-            ).distinct().order_by("name")
-
-        spatial_filter_values = request.GET.get(
+        queryset = Property.objects.filter(
+            organisation_id__in=org_ids,
+            id__in=prop_ids,
+            annualpopulation__taxon__taxon_rank__name="Species"
+        ).distinct().order_by("name")
+        spatial_filter_values = get_param_from_request(
+            request,
             'spatial_filter_values',
             ''
         ).split(',')
@@ -76,37 +83,51 @@ def get_queryset(user_roles: List[str], request):
         )
 
         if spatial_filter_values:
+            spatial_qs = SpatialDataValueModel.objects.filter(
+                spatial_data__property=OuterRef('pk'),
+                context_layer_value__in=spatial_filter_values
+            )
             queryset = queryset.filter(
-                **({
-                    'spatialdatamodel__spatialdatavaluemodel__'
-                    'context_layer_value__in':
-                        spatial_filter_values
-                })
+                Exists(spatial_qs)
             )
     else:
         query_filter = BaseMetricsFilter
-        queryset = Taxon.objects.filter(
-            annualpopulation__property__organisation_id=organisation_id,
-            taxon_rank__name="Species"
-        ).distinct().order_by("scientific_name")
+        if PROVINCIAL_DATA_CONSUMER in user_roles:
+            organisation = Organisation.objects.get(id=organisation_id)
+            queryset = Taxon.objects.filter(
+                annualpopulation__property__province=organisation.province,
+                taxon_rank__name="Species"
+            ).distinct().order_by("scientific_name")
+        else:
+            queryset = Taxon.objects.filter(
+                annualpopulation__property__organisation_id__in=org_ids,
+                annualpopulation__property_id__in=prop_ids,
+                taxon_rank__name="Species"
+            ).distinct().order_by("scientific_name")
 
     filtered_queryset = query_filter(
-        request.GET, queryset=queryset
+        request.GET if request.method == 'GET' else request.data,
+        queryset=queryset
     ).qs
 
     return filtered_queryset
 
 
 def get_taxon_queryset(request):
-    organisation_id = get_current_organisation_id(request.user)
+    property_ids = get_param_from_request(request, 'property')
+    organisation_ids = get_param_from_request(request, 'organisation')
+    prop_ids = property_ids.split(",") if property_ids else []
+    org_ids = organisation_ids.split(",") if organisation_ids else []
     query_filter = BaseMetricsFilter
     queryset = Taxon.objects.filter(
-        annualpopulation__property__organisation_id=organisation_id,
+        annualpopulation__property__organisation_id__in=org_ids,
+        annualpopulation__property_id__in=prop_ids,
         taxon_rank__name="Species"
     ).distinct().order_by("scientific_name")
 
     filtered_queryset = query_filter(
-        request.GET, queryset=queryset
+        request.GET if request.method == 'GET' else request.data,
+        queryset=queryset
     ).qs
     return filtered_queryset
 
@@ -118,7 +139,7 @@ def data_table_reports(queryset: QuerySet, request, user_roles) -> List[Dict]:
         queryset (QuerySet): The initial queryset to generate reports from.
         request: The HTTP request object.
     """
-    reports_list = request.GET.get("reports", None)
+    reports_list = get_param_from_request(request, "reports", None)
     reports = []
 
     if reports_list:
@@ -158,32 +179,24 @@ def get_report_filter(request, report_type):
         ACTIVITY_REPORT: default_year_field
     }
 
-    species_list = request.GET.get("species")
+    species_list = get_param_from_request(request, "species")
     if species_list:
         species_list = species_list.split(",")
         filters[species_fields[report_type]] = species_list
 
-    start_year = request.GET.get("start_year")
+    start_year = get_param_from_request(request, "start_year")
     if start_year:
         start_year = int(start_year)
-        end_year = int(request.GET.get("end_year"))
+        end_year = int(get_param_from_request(request, "end_year"))
         filters[year_fields[report_type]] = (start_year, end_year)
 
-    default_activity_field = (
-        'annualpopulationperactivity__'
-        'activity_type_id__in'
-    )
-
-    activity = request.GET.get("activity", "")
+    activity = get_param_from_request(request, "activity", "")
     activity = urllib.parse.unquote(activity)
-    if activity != 'all':
-        filters[default_activity_field] = [
+    if activity:
+        filters['annualpopulationperactivity__activity_type_id__in'] = [
             int(act) for act in activity.split(',')
         ] if activity else []
-    elif report_type == ACTIVITY_REPORT:
-        filters[
-            default_activity_field
-        ] = ActivityType.objects.values_list('id', flat=True)
+
     return filters
 
 
@@ -195,14 +208,29 @@ def species_report(queryset: QuerySet, request) -> List:
         request: The HTTP request object.
     """
     filters = get_report_filter(request, SPECIES_REPORT)
-    species_population_data = AnnualPopulation.objects.filter(
+    species_population_data = AnnualPopulation.objects.select_related(
+        'taxon', 'property', 'property__organisation', 'user'
+    ).filter(
         property_id__in=queryset.values_list('id', flat=True),
         **filters
     ).distinct()
-    species_reports = SpeciesReportSerializer(
-        species_population_data,
-        many=True
-    ).data
+    if get_param_from_request(request, "file"):
+        species_reports = BaseSpeciesReportSerializer(
+            species_population_data, many=True,
+        ).data
+    else:
+        # fetch organisations ids where user is manager
+        managed_ids = OrganisationRepresentative.objects.filter(
+            user=request.user
+        ).values_list('organisation_id', flat=True)
+        species_reports = SpeciesReportSerializer(
+            species_population_data,
+            many=True,
+            context={
+                'user': request.user,
+                'managed_ids': managed_ids
+            }
+        ).data
     return species_reports
 
 
@@ -259,8 +287,11 @@ def activity_report(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         'annualpopulationperactivity__'
         'activity_type_id__in'
     )
-    activity_type_ids = filters[activity_field]
-    del filters[activity_field]
+    if activity_field in filters:
+        activity_type_ids = filters[activity_field]
+        del filters[activity_field]
+    else:
+        activity_type_ids = ActivityType.objects.values_list('id', flat=True)
 
     activity_reports = {}
     valid_activities = ActivityType.objects.filter(id__in=activity_type_ids)
@@ -293,7 +324,7 @@ def national_level_user_table(
         request : The HTTP request object containing query parameters.
     """
     user_roles = get_user_roles(request.user)
-    reports_list = request.GET.get("reports")
+    reports_list = get_param_from_request(request, "reports")
     reports = []
     if reports_list:
         reports_list = reports_list.split(",")
@@ -336,20 +367,21 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     filters = {}
     properties = Property.objects.all()
 
-    start_year = request.GET.get("start_year")
+    start_year = get_param_from_request(request, "start_year")
     if start_year:
-        end_year = request.GET.get("end_year")
+        end_year = get_param_from_request(request, "end_year")
         filters["year__range"] = (
             start_year, end_year
         )
 
-    property_param = request.GET.get("property")
+    property_param = get_param_from_request(request, "property")
     if property_param:
         properties = properties.filter(
             id__in=property_param.split(',')
         )
 
-    spatial_filter_values = request.GET.get(
+    spatial_filter_values = get_param_from_request(
+        request,
         'spatial_filter_values',
         ''
     ).split(',')
@@ -359,29 +391,34 @@ def common_filters(request: HttpRequest, user_roles: List[str]) -> Dict:
     )
 
     if spatial_filter_values:
+        spatial_qs = SpatialDataValueModel.objects.filter(
+            spatial_data__property=OuterRef('pk'),
+            context_layer_value__in=spatial_filter_values
+        )
         properties = properties.filter(
-            **({
-                'spatialdatamodel__spatialdatavaluemodel__'
-                'context_layer_value__in':
-                    spatial_filter_values
-            })
+            Exists(spatial_qs)
         )
 
-    activity = request.GET.get("activity", "")
+    activity = get_param_from_request(request, "activity", "")
     activity = urllib.parse.unquote(activity)
-    if activity not in ['all', '']:
-        filters['annualpopulationperactivity__activity_type_id__in'] = [
-            int(act) for act in activity.split(',')
-        ] if activity else []
+    if activity:
+        activity_qs = AnnualPopulationPerActivity.objects.filter(
+            annual_population=OuterRef('pk'),
+            activity_type_id__in=[
+                int(act) for act in activity.split(',')
+            ]
+        )
+        filters['annualpopulationperactivity__activity_type_id__in'] = (
+            Exists(activity_qs)
+        )
 
     if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
-        province_ids = Province.objects.filter(
-            property__organisation_id=organisation_id
-        ).values_list("id", flat=True)
-        properties = properties.filter(
-            province__id__in=province_ids
-        )
+        if organisation_id:
+            organisation = Organisation.objects.get(id=organisation_id)
+            properties = properties.filter(
+                province=organisation.province
+            )
 
     filters['property__id__in'] = list(
         properties.values_list('id', flat=True)
@@ -404,36 +441,48 @@ def national_level_species_report(
     """
     user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
-
+    activity_field = (
+        'annualpopulationperactivity__activity_type_id__in'
+    )
+    activity_filter = None
+    if activity_field in filters:
+        activity_filter = filters[activity_field]
+        del filters[activity_field]
     report_data = AnnualPopulation.objects. \
-        filter(**filters, taxon__in=queryset). \
-        values(
-            'taxon__common_name_varbatim',
-            'taxon__scientific_name',
-            'year'
-        ). \
-        annotate(
-            total_property_area=Sum("property__property_size_ha"),
-            total_area_available=Sum("area_available_to_species"),
-            adult_male_total_population=Sum(
-                "adult_male"
-            ),
-            adult_female_total_population=Sum(
-                "adult_female"
-            ),
-            sub_adult_male_total_population=Sum(
-                "sub_adult_male"
-            ),
-            sub_adult_female_total_population=Sum(
-                "sub_adult_female"
-            ),
-            juvenile_male_total_population=Sum(
-                "juvenile_male"
-            ),
-            juvenile_female_total_population=Sum(
-                "juvenile_female"
-            ),
-        ).order_by('-year')
+        filter(**filters, taxon__in=queryset)
+    if activity_filter:
+        report_data = report_data.filter(activity_filter)
+    report_data = report_data.values(
+        'taxon__common_name_verbatim',
+        'taxon__scientific_name',
+        'year'
+    ).annotate(
+        common_name=F("taxon__common_name_verbatim"),
+        scientific_name=F("taxon__scientific_name"),
+        total_property_area=Sum("property__property_size_ha"),
+        total_area_available=Sum("area_available_to_species"),
+        total_population=Sum(
+            "total"
+        ),
+        adult_male_total_population=Sum(
+            "adult_male"
+        ),
+        adult_female_total_population=Sum(
+            "adult_female"
+        ),
+        sub_adult_male_total_population=Sum(
+            "sub_adult_male"
+        ),
+        sub_adult_female_total_population=Sum(
+            "sub_adult_female"
+        ),
+        juvenile_male_total_population=Sum(
+            "juvenile_male"
+        ),
+        juvenile_female_total_population=Sum(
+            "juvenile_female"
+        ),
+    ).order_by('-year')
     return NationalLevelSpeciesReport(report_data, many=True).data
 
 
@@ -477,24 +526,25 @@ def national_level_activity_report(
     user_roles = get_user_roles(request.user)
     filters = {}
 
-    start_year = request.GET.get("start_year")
+    start_year = get_param_from_request(request, "start_year")
     if start_year:
-        end_year = request.GET.get("end_year")
+        end_year = get_param_from_request(request, "end_year")
         filters[
-            "annualpopulationperactivity__year__range"
+            "annual_population__year__range"
         ] = (start_year, end_year)
 
-    property_param = request.GET.get("property")
+    property_param = get_param_from_request(request, "property")
     if property_param:
         property_list = property_param.split(",")
-        filters["property__id__in"] = property_list
+        filters["annual_population__property__id__in"] = property_list
 
     if PROVINCIAL_DATA_CONSUMER in user_roles:
         organisation_id = get_current_organisation_id(request.user)
-        province_ids = Province.objects.filter(
-            property__organisation_id=organisation_id
-        ).values_list("id", flat=True).distinct()
-        filters["property__province__id__in"] = province_ids
+        if organisation_id:
+            organisation = Organisation.objects.get(id=organisation_id)
+            filters[
+                "annual_population__property__province"
+            ] = organisation.province
 
     serializer = NationalLevelActivityReport(
         queryset,
@@ -536,11 +586,15 @@ def write_report_to_rows(queryset, request, report_functions=None):
     """
     Write report rows.
     """
-    reports_list = request.GET.get("reports", None)
-    path = os.path.join(settings.MEDIA_ROOT, "download_data")
+    reports_list = get_param_from_request(request, "reports", None)
+    request_dir = str(uuid.uuid4())
+    path = os.path.join(
+        settings.MEDIA_ROOT,
+        "download_data",
+        request_dir
+    )
     if not os.path.exists(path):
-        os.mkdir(path)
-
+        os.makedirs(path)
     if reports_list:
         reports_list = reports_list.split(",")
 
@@ -554,8 +608,10 @@ def write_report_to_rows(queryset, request, report_functions=None):
         report_functions = report_functions \
             if report_functions \
             else default_report_functions
-        if request.GET.get('file') == 'xlsx':
-            filename = 'data_report' + '.' + request.GET.get('file')
+        if get_param_from_request(request, 'file') == 'xlsx':
+            filename = (
+                'data_report' + '.' + get_param_from_request(request, 'file')
+            )
             path_file = os.path.join(path, filename)
             if os.path.exists(path_file):
                 os.remove(path_file)
@@ -584,26 +640,33 @@ def write_report_to_rows(queryset, request, report_functions=None):
                             index=False
                         )
                 return settings.MEDIA_URL + 'download_data/' \
-                    + os.path.basename(path_file)
+                    + request_dir + '/' + os.path.basename(path_file)
 
         csv_reports = []
         for report_name in reports_list:
             if report_name in report_functions:
-                rows = report_functions[report_name](queryset, request)
+                if report_name == PROVINCE_REPORT:
+                    taxon_qs = get_taxon_queryset(request)
+                    rows = report_functions[
+                        report_name
+                    ](taxon_qs, request)
+                else:
+                    rows = report_functions[report_name](queryset, request)
                 dataframe = pd.DataFrame(rows)
                 filename = "data_report_" + report_name
-                filename = filename + '.' + request.GET.get('file')
+                filename = (
+                    filename + '.' + get_param_from_request(request, 'file')
+                )
                 path_file = os.path.join(path, filename)
 
                 if os.path.exists(path_file):
                     os.remove(path_file)
                 dataframe.to_csv(path_file)
                 csv_reports.append(path_file)
-        if len(csv_reports) < 1:
-            return
-        elif len(csv_reports) == 1:
+
+        if len(csv_reports) == 1:
             return settings.MEDIA_URL + 'download_data/' \
-                   + os.path.basename(csv_reports[0])
+                + request_dir + '/' + os.path.basename(csv_reports[0])
         path_zip = os.path.join(path, 'data_report.zip')
         if os.path.exists(path_zip):
             os.remove(path_zip)
@@ -611,7 +674,7 @@ def write_report_to_rows(queryset, request, report_functions=None):
             for file in csv_reports:
                 zip.write(file, os.path.basename(file))
         return settings.MEDIA_URL + 'download_data/' \
-            + os.path.basename(path_zip)
+            + request_dir + '/' + os.path.basename(path_zip)
 
 
 def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
@@ -627,8 +690,11 @@ def activity_report_rows(queryset: QuerySet, request) -> Dict[str, List[Dict]]:
         'annualpopulationperactivity__'
         'activity_type_id__in'
     )
-    activity_type_ids = filters[activity_field]
-    del filters[activity_field]
+    if activity_field in filters:
+        activity_type_ids = filters[activity_field]
+        del filters[activity_field]
+    else:
+        activity_type_ids = ActivityType.objects.values_list('id', flat=True)
     valid_activities = ActivityType.objects.filter(id__in=activity_type_ids)
     activity_data = AnnualPopulationPerActivity.objects.filter(
         annual_population__property__in=queryset,

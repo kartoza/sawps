@@ -63,23 +63,34 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
         <Box className={'SectionContainer'}>
             <Grid container flexDirection={'column'}>
                 <Grid item className='SectionTitle'>
-                    <Typography>Property</Typography>
+                    <Typography>{Object.keys(populationTrendData).length > 1 ? 'Properties' : 'Property'}</Typography>
                     <Divider />
                 </Grid>
                 <Grid item>
                     <Grid container flexDirection={'column'}>
                         <Grid item>
-                            {!loadingTrendData ? 
-                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
+                            {loadingTrendData && <Loading containerStyle={{minHeight: 160}}/>}
+                            {!loadingTrendData && Object.keys(populationTrendData).length > 0 ? 
+                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 8, xl: 12 }}>
                                 {Object.keys(populationTrendData).map((property, index) => {
                                     return (
-                                        <Grid item xs={3} key={index}>
+                                        <Grid item xs={4} key={index}>
                                             <PopulationTrendChart chartId={`property-population-trend-${property}`} chartTitle={`${property}`} data={populationTrendData[property]} showRawPopEst={true} />
                                         </Grid>
                                     )
                                 })}
                             </Grid>
-                            : <Loading containerStyle={{minHeight: 160}}/>}
+                            : null}
+                            {!loadingTrendData && props.property && props.property.length > 0 && Object.keys(populationTrendData).length == 0 ?
+                            <Box className='SectionEmpty'>
+                                {'Insufficient data for selected ' + (props.property && props.property.length === 1 ? 'property': 'properties')}
+                            </Box>
+                            : null}
+                            {!loadingTrendData && !props.property ?
+                            <Box className='SectionEmpty'>
+                                {'Choose one or more property to view the property trend data.'}
+                            </Box>
+                            : null}
                         </Grid>
                         <Grid item>
                         </Grid>

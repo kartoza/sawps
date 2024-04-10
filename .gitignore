@@ -1,6 +1,7 @@
 .idea
 .venv
 .iml
+.env
 deployment/.env
 deployment/docker-compose.override.yml
 deployment/volumes
@@ -23,6 +24,7 @@ docs/site/*
 docks/mkdocs.yml
 .direnv
 docs/mkdocs.yml
+docs/pdfs/*
 
 test-results/
 playwright-report/

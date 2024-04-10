@@ -6,11 +6,11 @@
 {% block content %}
 <section style="min-height:var(--min-content-height);">
   <div class="container py-5">
-    <div class="my-row">
+    <div class="row">
       {% include "profile_config_base.html" %}
     </div>
 
-    <div class="container" style="margin-left: 0.5%;">
+    <div class="container">
 
       <!-- add user modal -->
       <div class="modal fade" id="adduser" tabindex="-1" role="dialog" aria-labelledby="adduserLabel" aria-hidden="true">
@@ -32,13 +32,6 @@
                 <select class="form-control custom-select" id="inviteAs">
                   <option value="manager">Organisation Manager</option>
                   <option value="member">Organisation Member</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="memberRole" style="display: block; text-align: center;">Permissions:</label>
-                <select class="form-control custom-select" id="memberRole">
-                  <option value="read">Read</option>
-                  <option value="write">Write</option>
                 </select>
               </div>
               <input type="hidden" id="organisationIdInput" name="organisation_id">
@@ -113,7 +106,7 @@
         {% if organisations|length == 0 and current_organisation == "-" and not user.is_superuser %}
         <div class="col-auto ml-auto mb-3">
           <button class="sawps-font-button green-button mt-0 button" style="font-weight: bold; align-items: flex-end;" type="button" data-toggle="modal" data-target="#organisationModal">
-            <i class="fas fa-plus"></i> Request Organisation
+            <i class="fas fa-plus"></i> Request a New Organisation
           </button>
         </div>
         {% endif %}
@@ -202,86 +195,76 @@
             </tr>
             {% endif %}
             {% for organisation in organisations %}
-            <tr>
-              <td>
-                <button class="sawps-font-button orange-button mt-0" style="width: 140px; font-weight: bold;" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
-              </td>
-              <td>{{ organisation.name }}</td>
-              <td>
-                <!-- Add User Button - Trigger Modal -->
-                <button
-                  class="sawps-font-button green-button mt-0"
-                  type="button"
-                  data-toggle="modal"
-                  data-target="#adduser"
-                  data-organisation-id="{{ organisation.id }}"
-                  data-organisation-name="{{ organisation.name }}"
-                  style="font-weight: bold; min-height: fit-content; min-width: 145px;"
-                >
-                  <i class="fas fa-plus"></i> Add User
-                </button>
-              </td>
-              <td>
-                <!-- Read More Link - Show/Hide More Text -->
-                <a
-                  href="#"
-                  class="read-more-link"
-                  data-toggle="collapse"
-                  data-target="#readMoreText{{ organisation.id }}"
-                  onclick="fetchOrganizationDetails({{ organisation.id }})"
-                >
-                  Read more
-                </a>
+                {% if organisation.id != current_organisation_id %}
+                    <tr>
+                      <td>
+                        <button class="sawps-font-button orange-button mt-0" style="width: 140px; font-weight: bold;" data-organisation-id="{{ organisation.id }}" onclick="switchOrganisation(this)">Set Active</button>
+                      </td>
+                      <td>{{ organisation.name }}</td>
+                      <td>
+                        <!-- Add User Button - Trigger Modal -->
+                        <button
+                          class="sawps-font-button green-button mt-0"
+                          type="button"
+                          data-toggle="modal"
+                          data-target="#adduser"
+                          data-organisation-id="{{ organisation.id }}"
+                          data-organisation-name="{{ organisation.name }}"
+                          style="font-weight: bold; min-height: fit-content; min-width: 145px;"
+                        >
+                          <i class="fas fa-plus"></i> Add User
+                        </button>
+                      </td>
+                      <td>
+                        <!-- Read More Link - Show/Hide More Text -->
+                        <a
+                          href="#"
+                          class="read-more-link"
+                          data-toggle="collapse"
+                          data-target="#readMoreText{{ organisation.id }}"
+                          onclick="fetchOrganizationDetails({{ organisation.id }})"
+                        >
+                          Read more
+                        </a>
 
-                <div id="readMoreText{{ organisation.id }}" class="collapse" style="max-height: 450px; overflow-y: auto; min-width: fit-content; overflow-x: auto;">
-                  <div id="readMoreText{{ organisation.id }}" class="collapse">
-                    <table id="permissionsTable{{ organisation.id }}" class="table table-borderederless" style="display: none;">
-                        <thead>
-                            <tr>
-                                <th>Permissions</th>
-                                <th>Read {{ organisation.data_use_permission }}</th>
-                            </tr>
-                        </thead>
-                    </table>
-                  </div>
+                        <div id="readMoreText{{ organisation.id }}" class="collapse" style="max-height: 450px; overflow-y: auto; min-width: fit-content; overflow-x: auto;">
+                          <div class="form-group mt-3" style="margin-left: 2%;">
+                            <small id="data-privacy" class="form-text text-muted">
+                                How would you like your data to be used?. See the SANBI data sharing <a href="URL_HERE">agreement</a>.
+                                Switching the toggle will be taken as full agreement to the terms of the option chosen
+                            </small>
+                          </div>
+                          <div class="custom-control custom-switch" style="margin-left: 2%;">
+                            <input type="checkbox" class="custom-control-input" id="onlySANBI{{ organisation.id }}">
+                            <label class="custom-control-label text-muted small" for="onlySANBI{{ organisation.id }}">Use of data by SANBI only</label>
+                          </div>
+                          <div class="custom-control custom-switch" style="margin-left: 2%;">
+                            <input type="checkbox" class="custom-control-input" id="hostingDataSANBI{{ organisation.id }}">
+                            <label class="custom-control-label text-muted small" for="hostingDataSANBI{{ organisation.id }}">Hosting / serving the data through SANBI platforms and portals</label>
+                          </div>
+                          <div class="custom-control custom-switch" style="margin-left: 2%;">
+                            <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther{{ organisation.id }}">
+                            <label class="custom-control-label text-muted small" for="hostingDataSANBIOther{{ organisation.id }}">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the data</label>
+                          </div>
 
+                          <div id="toggleMessage{{ organisation.id }}" style="display: none; margin-left: 2%;" class="text-warning-custom mt-3">
+                            Making changes here will not affect data that you have previously published and agreed to share under a different regime.
+                          </div>
 
-                  <div class="form-group mt-3" style="margin-left: 2%;">
-                    <small id="data-privacy" class="form-text text-muted">
-                        How would you like your data to be used?. See the SANBI data sharing <a href="URL_HERE">agreement</a>.
-                        Switching the toggle will be taken as full agreement to the terms of the option chosen
-                    </small>
-                  </div>
-                  <div class="custom-control custom-switch" style="margin-left: 2%;">
-                    <input type="checkbox" class="custom-control-input" id="onlySANBI{{ organisation.id }}">
-                    <label class="custom-control-label text-muted small" for="onlySANBI{{ organisation.id }}">Use of data by SANBI only</label>
-                  </div>
-                  <div class="custom-control custom-switch" style="margin-left: 2%;">
-                    <input type="checkbox" class="custom-control-input" id="hostingDataSANBI{{ organisation.id }}">
-                    <label class="custom-control-label text-muted small" for="hostingDataSANBI{{ organisation.id }}">Hosting / serving the data through SANBI platforms and portals</label>
-                  </div>
-                  <div class="custom-control custom-switch" style="margin-left: 2%;">
-                    <input type="checkbox" class="custom-control-input" id="hostingDataSANBIOther{{ organisation.id }}">
-                    <label class="custom-control-label text-muted small" for="hostingDataSANBIOther{{ organisation.id }}">Hosting through SANBI and allowing SANBI to publish the Data to other portals, as well as to actively curate the data</label>
-                  </div>
+                          <div class="form-group"></div>
+                          <button
+                            class="sawps-font-button orange-button mt-0 update-button"
+                            id="saveButton{{ organisation.id }}"
+                            style="font-weight: bold; margin-left: 60%; min-width: 140px;"
+                            onclick="savePermissions({{ organisation.id }})">
+                            Update
+                          </button>
 
-                  <div id="toggleMessage{{ organisation.id }}" style="display: none; margin-left: 2%;" class="text-warning-custom mt-3">
-                    Making changes here will not affect data that you have previously published and agreed to share under a different regime.
-                  </div>
+                        </div>
 
-                  <div class="form-group"></div>
-                  <button
-                    class="sawps-font-button orange-button mt-0 update-button"
-                    id="saveButton{{ organisation.id }}"
-                    style="font-weight: bold; margin-left: 60%; min-width: 140px;"
-                    onclick="savePermissions({{ organisation.id }})">
-                    Update
-                  </button>
-
-                </div>
-
-              </td>
-            </tr>
+                      </td>
+                    </tr>
+                {% endif %}
             {% endfor %}
           </tbody>
         </table>
@@ -327,9 +310,7 @@
       const updateButtons = document.querySelectorAll(".update-button");
 
       // Define the roles that can see the "Add User" column and enable switches
-      const allowedRoles = ["admin", "super user", "organisation manager"];
-
-      if (!allowedRoles.includes(userRole)) {
+      if ("{{ can_change_data_use_permissions }}" === "False") {
         // User role does not match, hide the "Add User" column
         table.querySelectorAll("th")[2].style.display = "none"; // Hide the "Add User" header
         table.querySelectorAll("td:nth-child(3)").forEach(function (cell) {
@@ -515,7 +496,6 @@
     function invitePeople() {
         var email = document.querySelector('.email-input').value;
         var inviteAs = document.querySelector('#inviteAs').value;
-        var memberRole = document.querySelector('#memberRole').value;
 
         var emailInput = document.querySelector('.email-input');
         var emailError = document.querySelector('.invalid-feedback');
@@ -537,7 +517,6 @@
             'action': 'invite',
             'email': email,
             'inviteAs': inviteAs,
-            'memberRole': memberRole,
             'current_organisation': organisationId,
             'csrfmiddlewaretoken': '{{ csrf_token }}'
           },
@@ -573,9 +552,6 @@
 
     .pagination-button.active {
       font-weight: bold;
-    }
-    .sawps-text-menu {
-      font-weight: normal;
     }
     .form-control:focus {
       border-color: var(--green);

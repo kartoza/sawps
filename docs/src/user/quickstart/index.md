@@ -13,14 +13,13 @@ context_id: mZq4S9eVpc2hb5hS2cVcCW
 # SANBI SAWPS Quickstart
 
 ## Accessing the Platform
-<!-- Add ink to production version of platform when available -->
+<!-- Add link to production version of platform when available -->
 
 Navigate to the [Home Page](https://sawps.sta.do.kartoza.com/) of the site, where you will be greeted by the landing page.
 
 ![Landing Page](./img/landing-page.png)
 
 ## Registration and Logging In
-<!-- How to Register and then Login -->
 
 Navigate to the `REGISTER` button on the home page and fill in your details in the space provided.
 

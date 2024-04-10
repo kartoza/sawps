@@ -8,6 +8,7 @@ import { MapTheme, PopulationCountLegend } from "../../../models/Map";
 
 interface LegendPlaceholderInterface {
   species: string;
+  year: number;
   data: PopulationCountLegend[];
 }
 
@@ -16,7 +17,7 @@ function LegendPlaceholder(props: LegendPlaceholderInterface) {
     return (
       <div className='legend-placeholder'>
         <div className='legend-header'>
-          {props.species} population
+          {props.species} population ({props.year})
         </div>
         {props.data.map((item: PopulationCountLegend, index: number) => {
           return (
@@ -60,12 +61,12 @@ export default class LegendControl<IControl> {
         this._map = undefined
     }
 
-    onUpdateLegends(zoom: number, species: string, data: PopulationCountLegend[]) {
+    onUpdateLegends(zoom: number, species: string, year: number, data: PopulationCountLegend[]) {
       this._currentZoom = zoom;
       if (data.length === 0) {
         this.onClearLegends();
       } else {
-        this._divRoot.render(<LegendPlaceholder species={species} data={data}/>);
+        this._divRoot.render(<LegendPlaceholder species={species} data={data} year={year}/>);
       }
     }
 

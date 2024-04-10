@@ -16,7 +16,9 @@ const TotalCountPerActivity = (props: any) => {
     startYear,
     endYear,
     selectedSpecies,
-    activityTypeList
+    activityTypeList,
+    activityIds,
+    spatialFilterValues
   } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [totalPopulation, setTotalPopulation] = useState(0);
@@ -36,7 +38,7 @@ const TotalCountPerActivity = (props: any) => {
     setLoading(true);
     axios
       .get(
-          `${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=all&property=${propertyId}`
+          `${FETCH_ACTIVITY_TOTAL_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&activity=${activityIds}&property=${propertyId}&spatial_filter_values=${spatialFilterValues}`
       )
       .then((response) => {
         setLoading(false);
@@ -56,7 +58,7 @@ const TotalCountPerActivity = (props: any) => {
 
   useEffect(() => {
     fetchActivityTotalCount();
-  }, [propertyId, startYear, endYear, selectedSpecies]);
+  }, [propertyId, startYear, endYear, selectedSpecies, activityIds, spatialFilterValues]);
 
   useEffect(() => {
     if (activityTypeList) {
@@ -104,7 +106,7 @@ const TotalCountPerActivity = (props: any) => {
   const options = {
         scales: {
             y: {
-              grace: '5%',
+              grace: '20%',
               display: true,
               stacked: false,
               title: {
@@ -144,7 +146,7 @@ const TotalCountPerActivity = (props: any) => {
         <BarChart
             chartData={data}
             chartId={'TotalCountPerActivity'}
-            chartTitle={'Activity count as % of total population'}
+            chartTitle={`Activity count as % of total population of ${selectedSpecies} for ${endYear}`}
             yLabel={'Percentage'}
             xLabel={'Activities'}
             indexAxis={'x'}

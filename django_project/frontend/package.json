@@ -26,7 +26,7 @@
     "chart.js": "^4.3.3",
     "chartjs-chart-error-bars": "^4.3.3",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "django-docs-crawler-react": "^0.0.5",
+    "django-docs-crawler-react": "^0.1.4",
     "dotenv": "^16.3.1",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",

@@ -4,6 +4,15 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+PERM_CAN_ADD_SPECIES_POPULATION_DATA = (
+    'Can add species population data'
+)
+
+PERM_CAN_CHANGE_DATA_USE = (
+    'Can change data use permissions'
+)
+
+
 class ExtendedGroup(models.Model):
     """
     Stores additional attributes for Django's built-in Group model.
@@ -82,9 +91,35 @@ class ExtendedGroup(models.Model):
                 "can_view_property_count_per_population_density_category",
                 "Can view property count per population density category",
             ),
+            # Used in species report
+            # Organisation Manager + Member should have this
+            (
+                "can_add_species_population_data",
+                PERM_CAN_ADD_SPECIES_POPULATION_DATA
+            ),
             (
                 "can_edit_species_population_data",
                 "Can edit species population data",
+            ),
+            # Used in trends tab
+            (
+                'can_view_properties_trends_data',
+                'Can view properties trends data'
+            ),
+            # Used in report
+            # Data consumer should have this
+            (
+                "can_view_report_as_data_consumer",
+                "Can view report as data consumer"
+            ),
+            # Provincial data consumer should have this
+            (
+                "can_view_report_as_provincial_data_consumer",
+                "Can view report as provincial data consumer"
+            ),
+            (
+                "can_change_data_use_permissions",
+                PERM_CAN_CHANGE_DATA_USE
             ),
         ]
 

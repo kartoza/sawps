@@ -4,7 +4,8 @@ from sawps.views import (
     SendRequestEmail,
     AddUserToOrganisation,
     CustomPasswordResetView,
-    custom_password_reset_complete_view
+    custom_password_reset_complete_view,
+    health, resend_verification_email
 )
 from django.contrib.auth import views as auth_views
 
@@ -15,7 +16,7 @@ urlpatterns = [
         name='activate',
     ),
     path(
-        'adduser/<user_email>/<organisation>/',
+        'adduser/<invitation_uuid>/',
         AddUserToOrganisation.as_view(),
         name='adduser'
     ),
@@ -41,4 +42,12 @@ urlpatterns = [
         custom_password_reset_complete_view,
         name='password_reset_complete'
     ),
+    path(
+        'healthz/',
+        health,
+        name='healthz'
+    ),
+    path('accounts/resend-verification/',
+         resend_verification_email,
+         name='account_resend_verification'),
 ]

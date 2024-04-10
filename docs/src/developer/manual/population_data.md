@@ -59,4 +59,3 @@ context_id: VphxUwHDcToRpLEDmFaDP7
         docstring_style: sphinx
         heading_level: 1
         show_source: true
-

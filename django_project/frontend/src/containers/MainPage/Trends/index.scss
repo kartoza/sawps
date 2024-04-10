@@ -35,8 +35,13 @@
       border-color: #86BC8B;
     }
   }
-
-  
+  .SectionEmpty {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-weight: bold;
+  }
 }
 
 .PopulationTrendChartContainer {
@@ -89,4 +94,22 @@
       cursor: pointer;
     }
   }
+}
+
+.national-trend-left-side {
+    .ChartContainerBox {
+        height: 600px;
+
+        .ChartContainer {
+            height: 520px;
+
+            .ChartBox {
+                height: 470px !important;
+
+                .PopulationTrendChartContainer, .AreaAvailableLineChartContainer {
+                  height: 460px;
+                }
+            }
+        }
+    }
 }

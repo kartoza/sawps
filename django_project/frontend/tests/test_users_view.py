@@ -1,21 +1,20 @@
 import json
 
 from django.contrib.auth.models import User, Permission
-from django.core.serializers.json import DjangoJSONEncoder
 from django.test import RequestFactory, TestCase, Client
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.contenttypes.models import ContentType
 
-from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER
+from frontend.static_mapping import PROVINCIAL_DATA_CONSUMER, DATA_CONSUMERS_PERMISSIONS
 from frontend.views.users import OrganisationUsersView
-from regulatory_permit.models import DataUsePermission
 from sawps.models import ExtendedGroup
 from sawps.tests.models.account_factory import GroupF
 from stakeholder.factories import userRoleTypeFactory
 from stakeholder.models import (
     Organisation,
     OrganisationInvites,
-    OrganisationUser
+    OrganisationUser,
+    OrganisationRepresentative
 )
 
 
@@ -25,14 +24,13 @@ class OrganisationUsersViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
+            first_name='test',
             username='testuser',
             password='testpassword',
             email='test@gmail.com'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test")
         self.organisation = Organisation.objects.create(
-            name="test_organisation", data_use_permission=self.data_use_permission)
+            name="test_organisation")
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation, user=self.user)
         self.org_invitation = OrganisationInvites.objects.create(
@@ -78,38 +76,65 @@ class OrganisationUsersViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'failed'})
 
-        # test user does not exist
+        # test delete manager
+        user_2 = User.objects.create_user(
+            first_name='user_2',
+            username='user_2',
+            password='testpassword',
+            email='user_2@gmail.com'
+        )
+        OrganisationUser.objects.create(
+            organisation=self.organisation, user=user_2)
+        OrganisationRepresentative.objects.create(
+            organisation=self.organisation, user=user_2)
+        OrganisationInvites.objects.create(
+            email=user_2.email,
+            organisation=self.organisation
+        )
         response = self.client.post(
                 '/users/',
                 {
                     'action': 'delete',
-                    'object_id': 55,
+                    'object_id': user_2.pk,
                     'current_organisation': self.organisation.name
                 }
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'status': 'failed'})
+        self.assertJSONEqual(response.content, {'status': 'success'})
+
+        # Verify that the OrganisationUser has been deleted
+        self.assertFalse(OrganisationUser.objects.filter(
+            user=user_2).exists())
+        self.assertFalse(OrganisationRepresentative.objects.filter(
+            user=user_2).exists())
+        self.assertFalse(OrganisationInvites.objects.filter(
+            email=user_2.email).exists())
+        
 
 
-    def test_invite_post(self):
+    def test_invite_post_manager(self):
         # Create a request object with the required POST data
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
+        self.client.login(
+            username='testuser', password='testpassword'
+        )
         response = self.client.post(
             '/users/',
             {
                 'action': 'invite',
                 'email': 'test@example.com',
-                'inviteAs': 'manager',
-                'memberRole': 'write'
+                'inviteAs': 'manager'
             }
         )
 
         OrganisationInvites.objects.filter(organisation=self.organisation)
 
-        # expected_json = {'status': "'current_organisation_id'"}
-
         self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.json(), expected_json)
 
         # test with read permissions
         response = self.client.post(
@@ -117,14 +142,42 @@ class OrganisationUsersViewTest(TestCase):
             {
                 'action': 'invite',
                 'email': 'test@example.com',
-                'inviteAs': 'manager',
-                'memberRole': 'read'
+                'inviteAs': 'manager'
             }
         )
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'Invitation already sent')
+
+    def test_invite_post_member(self):
+        # Create a request object with the required POST data
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
+        self.client.login(
+            username='testuser', password='testpassword'
+        )
+        response = self.client.post(
+            '/users/',
+            {
+                'action': 'invite',
+                'email': 'test@example.com',
+                'inviteAs': 'member'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
 
     def test_get_organisation_users(self):
+        user = User.objects.create_user(
+            username='testuser_2',
+            password='testpassword',
+            email='test@gmail.com'
+        )
+        OrganisationRepresentative.objects.create(
+            organisation=self.organisation, user=user
+        )
 
         factory = RequestFactory()
         request = factory.post('/users/')
@@ -162,101 +215,106 @@ class OrganisationUsersViewTest(TestCase):
 
         self.assertIsNotNone(response)
 
+        # test page not a number
+        request = factory.post('/users/?users_page=a')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_users(request)
+        self.assertIsNotNone(response)
+
+        # test empty page
+        request = factory.post('/users/?users_page=999')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_users(request)
+        self.assertIsNotNone(response)
+    
+        # test with search_text
+        request = factory.post('/users/?search_text=test')
+        request.user = user
+        view = OrganisationUsersView()
+        response = view.get_organisation_users(request)
+        self.assertIsNotNone(response)
+
     def test_get_organisation_invites(self):
         factory = RequestFactory()
         request = factory.post('/users/')
         request.user = self.user
-        # request.session = {CURRENT_ORGANISATION_ID_KEY: self.organisation.id}
-
         view = OrganisationUsersView()
-
-        response = view.get_organisation_users(request)
-
+        response = view.get_organisation_invites(request)
         self.assertIsNotNone(response)
 
+        # test page not a number
+        request = factory.post('/users/?invites_page=a')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_invites(request)
+        self.assertIsNotNone(response)
+
+        # test empty page
+        request = factory.post('/users/?invites_page=999')
+        request.user = self.user
+        view = OrganisationUsersView()
+        response = view.get_organisation_invites(request)
+        self.assertIsNotNone(response)
 
     def test_search_user_table(self):
+        device = TOTPDevice(
+            user=self.user,
+            name='device_name'
+        )
+        device.save()
+        self.client.login(
+            username='testuser', password='testpassword'
+        )
         # Create a request object with the required POST data
         response = self.client.post(
-            '/users/',
+            '/users/?search_text=test',
             {
-                'action': 'search_user_table',
-                'query': 'test',
-                'current_organisation': self.organisation.name
+                'action': 'search_user_table'
             }
         )
 
         # Assert the expected outcome
-        expected_data = [
-            {
-                'organisation': str(self.organisation),
-                'user': str(self.user),
-                'id': self.user.pk,
-                'role': 'Organisation '+self.org_invitation.assigned_as,
-                'joined': self.org_invitation.joined
-            }
-        ]
-        expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
+        expected_data = {
+            'data': [{
+                'user_id': self.user.id,
+                'name': 'test',
+                'is_manager': False
+            }],
+            'per_page': 5,
+            'number': 1,
+            'previous_page_number': -1,
+            'next_page_number': -1,
+            'search_text': 'test'
+        }
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_json)
-
-        # test with = in string
+        self.assertEqual(response.json(), expected_data)
+        # update user as superuser
+        self.user.is_superuser = True
+        self.user.save()
         response = self.client.post(
-            '/users/',
+            '/users/?search_text=test',
             {
-                'action': 'search_user_table',
-                'query': 'q=test',
-                'current_organisation': self.organisation.name
+                'action': 'search_user_table'
             }
         )
-
-        # Assert the expected outcome
-        expected_data = [
-            {
-                'organisation': str(self.organisation),
-                'user': str(self.user),
-                'id': self.user.pk,
-                'role': 'Organisation '+self.org_invitation.assigned_as,
-                'joined': self.org_invitation.joined
-            }
-        ]
-        expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_json)
-
-        # search with fake org
-        response = self.client.post(
-            '/users/',
-            {
-                'action': 'search_user_table',
-                'query': 'q=test',
-                'current_organisation': 'fake_org'
-            }
-        )
-
-        # Assert the expected outcome
-        expected_data = []
-        expected_json = {'data': json.dumps(expected_data, cls=DjangoJSONEncoder)}
+        expected_data = {
+            'data': [{
+                'user_id': self.user.id,
+                'name': 'test',
+                'is_manager': True
+            }],
+            'per_page': 5,
+            'number': 1,
+            'previous_page_number': -1,
+            'next_page_number': -1,
+            'search_text': 'test'
+        }
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), expected_json)
-
-    def test_get_user_by_email(self):
-
-        view = OrganisationUsersView()
-
-        response = view.get_user_email(self.user)
-
-        self.assertEqual(response, self.user.email)
-
-        # test user does not exist
-        view = OrganisationUsersView()
-
-        response = view.get_user_email('none')
-
-        self.assertEqual(response, None)
+        self.assertEqual(response.json(), expected_data)
 
     def test_get_role(self):
         view = OrganisationUsersView()
@@ -297,21 +355,14 @@ class OrganisationUsersViewTest(TestCase):
     def test_is_user_registered(self):
         view = OrganisationUsersView()
 
-        response = view.is_user_registerd(self.user.email)
+        response = view.is_user_registered(self.user.email)
 
-        self.assertEqual(response, True)
+        self.assertEqual(response, (True, self.user))
 
         # test none registered user
-        response = view.is_user_registerd('new@new.com')
+        response = view.is_user_registered('new@new.com')
 
-        self.assertEqual(response, False)
-
-    def test_calculate_rows_per_page(self):
-        view = OrganisationUsersView()
-
-        response = view.calculate_rows_per_page([])
-
-        self.assertEqual(response,0)
+        self.assertEqual(response, (False, None))
 
     def test_context_data(self):
 
@@ -378,14 +429,10 @@ class UserApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertTrue(PROVINCIAL_DATA_CONSUMER in response.data['user_roles'])
-        data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
 
         # Test with organisation
         organisation = Organisation.objects.create(
             name="test_organisation",
-            data_use_permission=data_use_permission,
             national=True
         )
         user.user_profile.current_organisation = organisation
@@ -400,7 +447,12 @@ class UserApiTest(TestCase):
         # - It is not allowed for organisation member or manager
         self.assertEqual(
             sorted(response.data['user_permissions']),
-            sorted([all_permissions[0].name, 'Can view province report'])
+            sorted([
+                all_permissions[0].name,
+                'Can view province report',
+                'Can view report as data consumer',
+                'Can view report as provincial data consumer'
+            ])
         )
 
     def test_get_user_info_superuser(self):
@@ -416,7 +468,6 @@ class UserApiTest(TestCase):
         )
         content_type = ContentType.objects.get_for_model(ExtendedGroup)
         all_permissions = Permission.objects.filter(content_type=content_type)
-
         login = client.login(
             username='testuser',
             password='testpassword'
@@ -433,5 +484,9 @@ class UserApiTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json()['user_permissions'],
-            sorted(list(all_permissions.values_list('name', flat=True)))
+            sorted(list(
+                all_permissions.values_list('name', flat=True).exclude(
+                    name__in=DATA_CONSUMERS_PERMISSIONS
+                )
+            ))
         )

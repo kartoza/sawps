@@ -39,16 +39,11 @@ class PopulationMeanSDChartApiTest(APITestCase):
             taxon_rank = TaxonRankFactory.create(name="Species")
 
         self.taxon = Taxon.objects.create(
-            taxon_rank=taxon_rank, common_name_varbatim="Lion",
+            taxon_rank=taxon_rank, common_name_verbatim="Lion",
             scientific_name="Penthera leo"
         )
-
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
         self.province1 = Province.objects.create(name="Province1")
         self.property1 = PropertyFactory.create(name="Property 1", province=self.province1, organisation=self.organisation)

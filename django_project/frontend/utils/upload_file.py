@@ -6,33 +6,45 @@ import fiona
 from fiona.io import (
     MemoryFile
 )
+import logging
+import traceback
 import zipfile
-from django.contrib.gis.geos import GEOSGeometry, Polygon, MultiPolygon
+from django.contrib.gis.geos import (
+    GEOSGeometry, Polygon,
+    MultiPolygon, WKTWriter
+)
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.core.files.uploadedfile import (
     InMemoryUploadedFile,
     TemporaryUploadedFile
 )
+from property.models import Province
 from frontend.models.base_task import (
-    DONE
+    DONE, ERROR
 )
 from frontend.models.parcels import (
     Erf,
     Holding,
-    FarmPortion
+    FarmPortion,
+    ParentFarm
 )
 from frontend.serializers.parcel import (
     ErfParcelSerializer,
     HoldingParcelSerializer,
-    FarmPortionParcelSerializer
+    FarmPortionParcelSerializer,
+    ParentFarmParcelSerializer
 )
 from frontend.models.boundary_search import (
     BoundarySearchRequest,
     BoundaryFile,
     SHAPEFILE
 )
-from frontend.utils.parcel import find_parcel_base
+from frontend.utils.parcel import (
+    find_parcel_base,
+    find_province,
+    get_geom_size_in_ha
+)
 
 
 # when searching for parcels,
@@ -40,10 +52,12 @@ from frontend.utils.parcel import find_parcel_base
 PARCEL_SERIALIZER_MAP = {
     Erf: ErfParcelSerializer,
     Holding: HoldingParcelSerializer,
-    FarmPortion: FarmPortionParcelSerializer
+    FarmPortion: FarmPortionParcelSerializer,
+    ParentFarm: ParentFarmParcelSerializer
 }
 
 fiona.drvsupport.supported_drivers['KML'] = 'ro'
+logger = logging.getLogger(__name__)
 
 
 def _store_zip_memory_to_temp_file(file_obj: InMemoryUploadedFile):
@@ -162,6 +176,35 @@ def get_uploaded_file_crs(file_obj, type):
     return crs
 
 
+def get_total_feature_in_file(boundary_file):
+    total = 0
+    file_path = boundary_file.file.path
+    if boundary_file.file_type == SHAPEFILE:
+        file_path = f'zip://{boundary_file.file.path}'
+    with fiona.open(file_path, encoding='utf-8') as layer:
+        total = len(layer)
+    return total
+
+
+def normalize_geometry(geometry: GEOSGeometry):
+    """
+    This function will do following:
+    - strip z dimension
+    - convert polygon to multipoylgon
+    """
+    if geometry is None:
+        return geometry
+    result = geometry
+    if geometry.hasz:
+        wkt_w = WKTWriter()
+        wkt_w.outdim = 2
+        temp = wkt_w.write(geometry)
+        result = GEOSGeometry(temp, srid=4326)
+    if isinstance(result, Polygon):
+        result = MultiPolygon([result], srid=4326)
+    return result
+
+
 def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     """Search parcels by uploaded boundary files."""
     request.task_on_started()
@@ -170,11 +213,16 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
     request.save()
     # get files from session
     files = BoundaryFile.objects.filter(session=request.session)
-    total_progress = files.count()
+    total_progress = 0
+    for boundary_file in files:
+        total_progress += get_total_feature_in_file(boundary_file)
+    # multiply total_progress with number of parcel types + 2
+    # add 1 for find province and calculate property size
+    total_progress = (
+        total_progress * (len(PARCEL_SERIALIZER_MAP) + 2)
+    ) + 1
     current_progress = 0
     results = []
-    parcel_keys = []
-    unavailable_parcels = []
     union_geom: GEOSGeometry = None
     for boundary_file in files:
         file_path = boundary_file.file.path
@@ -187,39 +235,53 @@ def search_parcels_by_boundary_files(request: BoundarySearchRequest):
                     geom_str = json.dumps(feature['geometry'])
                     geom = GEOSGeometry(geom_str, srid=4326)
                 except Exception as ex:
-                    print(ex)
+                    logger.error(
+                        f'Failed to process geometry in file {file_path}')
+                    logger.error(ex)
+                    logger.error(traceback.format_exc())
                 if geom is None:
+                    current_progress += len(PARCEL_SERIALIZER_MAP) + 2
+                    request.update_progress(current_progress, total_progress)
                     continue
                 if isinstance(geom, Polygon):
                     geom = MultiPolygon([geom], srid=4326)
                 search_geom = geom.transform(3857, clone=True)
-                # iterate from map
-                for parcel_class, parcel_serializer in\
-                    PARCEL_SERIALIZER_MAP.items():
-                    parcels, keys, used_parcels = find_parcel_base(
-                        parcel_class,
-                        parcel_serializer,
-                        search_geom,
-                        parcel_keys
-                    )
-                    if keys:
-                        parcel_keys.extend(keys)
-                    if parcels:
-                        results.extend(parcels)
-                    if used_parcels:
-                        unavailable_parcels.extend(used_parcels)
+                current_progress += 1
+                request.update_progress(current_progress, total_progress)
+                # search parcel is only for request with type=Digitise
+                if request.type == 'Digitise':
+                    # iterate from map
+                    for parcel_class, parcel_serializer in\
+                        PARCEL_SERIALIZER_MAP.items():
+                        parcels, _ = find_parcel_base(
+                            parcel_class,
+                            parcel_serializer,
+                            search_geom
+                        )
+                        if parcels:
+                            results.extend(parcels)
+                        current_progress += 1
+                        request.update_progress(current_progress,
+                                                total_progress)
+                else:
+                    current_progress += len(PARCEL_SERIALIZER_MAP)
+                    request.update_progress(current_progress,
+                                            total_progress)
                 # add to union geom
                 if union_geom:
                     union_geom = union_geom.union(geom)
                 else:
                     union_geom = geom
-        current_progress += 1
-        request.progress = current_progress * 100 / total_progress
-        request.save(update_fields=['progress'])
+                current_progress += 1
+                request.update_progress(current_progress, total_progress)
+    request.geometry = normalize_geometry(union_geom)
+    if request.geometry:
+        request.property_size_ha = get_geom_size_in_ha(request.geometry)
+        geom_3857 = request.geometry.transform(3857, clone=True)
+        request.province = find_province(geom_3857,
+                                         Province.objects.first())
     request.finished_at = datetime.now()
     request.progress = 100
     request.parcels = results
-    request.geometry = union_geom
-    request.used_parcels = unavailable_parcels
-    request.status = DONE
+    request.status = DONE if union_geom else ERROR
     request.save()

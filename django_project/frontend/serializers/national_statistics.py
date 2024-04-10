@@ -34,7 +34,7 @@ class SpeciesListSerializer(serializers.ModelSerializer):
         Params:
             obj (Taxon): The Taxon instance representing the species.
         """
-        return obj.common_name_varbatim
+        return obj.common_name_verbatim
 
     def get_species_colour(self, obj: Taxon) -> str:
         """Get the color of the species.

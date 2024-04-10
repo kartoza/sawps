@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class SpatialDataModel(models.Model):
@@ -14,7 +15,10 @@ class SpatialDataModel(models.Model):
     )
 
     def __str__(self):
-        return self.property.name
+        try:
+            return self.property.name
+        except ObjectDoesNotExist:
+            return f'SpatialDataModel-{self.id}'
 
     class Meta:
         verbose_name = "Spatial data"

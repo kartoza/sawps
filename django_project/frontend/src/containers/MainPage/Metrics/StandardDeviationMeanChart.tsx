@@ -20,7 +20,9 @@ const API_URL= '/api/population-mean-sd-chart/'
 interface StandardDeviationMeanChartProps {
     species: string,
     title: string,
-    propertyIds: string
+    propertyIds: string,
+    activityIds: string,
+    spatialFilterValues: string
 }
 
 export default function StandardDeviationMeanChart(props: StandardDeviationMeanChartProps) {
@@ -31,12 +33,12 @@ export default function StandardDeviationMeanChart(props: StandardDeviationMeanC
 
     useEffect(() => {
         fetchData();
-    }, [props.species, props.propertyIds]);
+    }, [props.species, props.propertyIds, props.activityIds, props.spatialFilterValues]);
 
     const fetchData = () => {
         setLoadingData(true);
         axios.get(
-            `${API_URL}?species=${props.species}&property=${props.propertyIds}`
+            `${API_URL}?species=${props.species}&property=${props.propertyIds}&activity=${props.activityIds}&spatial_filter_values=${props.spatialFilterValues}`
         ).then((response) => {
             setChartRawData(response.data);
         }).catch((error) => {

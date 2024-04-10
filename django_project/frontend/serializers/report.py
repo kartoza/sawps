@@ -1,10 +1,9 @@
 from django.db.models import Sum
-from rest_framework import serializers
-
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
 )
+from rest_framework import serializers
 
 
 class BaseReportSerializer(serializers.Serializer):
@@ -23,7 +22,7 @@ class BaseReportSerializer(serializers.Serializer):
         return obj.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulation) -> str:
-        return obj.taxon.common_name_varbatim
+        return obj.taxon.common_name_verbatim
 
     def get_property_name(self, obj: AnnualPopulation) -> str:
         return obj.property.name
@@ -38,17 +37,13 @@ class BaseReportSerializer(serializers.Serializer):
         return obj.property.organisation.short_code
 
 
-class SpeciesReportSerializer(
+class BaseSpeciesReportSerializer(
     serializers.ModelSerializer,
     BaseReportSerializer
 ):
     """
-    Serializer for Species Report.
+    Serializer for Species Report (for exporting to csv/excel).
     """
-    upload_id = serializers.SerializerMethodField()
-
-    def get_upload_id(self, obj: AnnualPopulation):
-        return obj.id
 
     class Meta:
         model = AnnualPopulation
@@ -58,7 +53,35 @@ class SpeciesReportSerializer(
             "scientific_name", "common_name",
             "year", "group", "total", "adult_male", "adult_female",
             "juvenile_male", "juvenile_female", "sub_adult_male",
-            "sub_adult_female", "upload_id", "property_id"
+            "sub_adult_female"
+        ]
+
+
+class SpeciesReportSerializer(BaseSpeciesReportSerializer):
+    """
+    Serializer for Species Report.
+    """
+    upload_id = serializers.SerializerMethodField()
+    is_editable = serializers.SerializerMethodField()
+
+    def get_upload_id(self, obj: AnnualPopulation):
+        return obj.id
+
+    def get_is_editable(self, obj: AnnualPopulation):
+        user = self.context.get('user', None)
+        managed_organisations = self.context.get('managed_ids', [])
+        return obj.is_editable(user, managed_organisations)
+
+    class Meta:
+        model = AnnualPopulation
+        fields = [
+            "property_name", "property_short_code",
+            "organisation_name", "organisation_short_code",
+            "scientific_name", "common_name",
+            "year", "group", "total", "adult_male", "adult_female",
+            "juvenile_male", "juvenile_female", "sub_adult_male",
+            "sub_adult_female", "upload_id", "property_id",
+            "is_editable"
         ]
 
 
@@ -147,7 +170,7 @@ class PropertyReportSerializer(
         return obj.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulation) -> str:
-        return obj.taxon.common_name_varbatim
+        return obj.taxon.common_name_verbatim
 
     def get_owner(self, obj: AnnualPopulation) -> str:
         return obj.property.created_by.first_name
@@ -212,7 +235,7 @@ class ActivityReportSerializer(
         return obj.annual_population.taxon.scientific_name
 
     def get_common_name(self, obj: AnnualPopulationPerActivity) -> str:
-        return obj.annual_population.taxon.common_name_varbatim
+        return obj.annual_population.taxon.common_name_verbatim
 
     def get_property_name(self, obj: AnnualPopulationPerActivity) -> str:
         return obj.annual_population.property.name
@@ -258,9 +281,7 @@ class ActivityReportSerializer(
 class NationalLevelSpeciesReport(serializers.Serializer):
 
     def to_representation(self, instance):
-        instance['common_name'] = instance['taxon__common_name_varbatim']
-        instance['scientific_name'] = instance['taxon__scientific_name']
-        del instance['taxon__common_name_varbatim']
+        del instance['taxon__common_name_verbatim']
         del instance['taxon__scientific_name']
         return instance
 
@@ -269,10 +290,20 @@ class NationalLevelPropertyReport(serializers.Serializer):
 
     def to_representation(self, instance):
         all_data = {}
-
+        filters = self.context['filters']
+        activity_field = (
+            'annualpopulationperactivity__activity_type_id__in'
+        )
+        activity_filter = None
+        if activity_field in filters:
+            activity_filter = filters[activity_field]
+            del filters[activity_field]
         property_data = AnnualPopulation.objects.filter(
-            **self.context['filters'], taxon=instance
-        ).values(
+            **filters, taxon=instance
+        )
+        if activity_filter:
+            property_data = property_data.filter(activity_filter)
+        property_data = property_data.values(
             "property__property_type__name",
             "year",
         ).annotate(
@@ -291,8 +322,8 @@ class NationalLevelPropertyReport(serializers.Serializer):
             data = {
                 "year": year,
                 "common_name": (
-                    instance.common_name_varbatim if
-                    instance.common_name_varbatim else '-'
+                    instance.common_name_verbatim if
+                    instance.common_name_verbatim else '-'
                 ),
                 "scientific_name": instance.scientific_name,
                 property_type_field: property_entry["population"],
@@ -337,18 +368,21 @@ class NationalLevelActivityReport(serializers.Serializer):
 
     def to_representation(self, instance):
         all_data = {}
-        activity_data = AnnualPopulation.objects.values(
-            "annualpopulationperactivity__activity_type__name",
+        activity_data = AnnualPopulationPerActivity.objects.values(
+            "activity_type__name",
             "year"
-        ).filter(**self.context['filters'], taxon=instance).annotate(
-            population=Sum("annualpopulationperactivity__total"),
+        ).filter(
+            **self.context['filters'],
+            annual_population__taxon=instance
+        ).annotate(
+            population=Sum("total"),
         ).order_by('-year')
 
         activity_fields = set()
         for activity_entry in activity_data:
             year = activity_entry["year"]
             activity_name = activity_entry[
-                "annualpopulationperactivity__activity_type__name"
+                "activity_type__name"
             ]
             activity_field = f"total_population_{activity_name}"
             if not activity_name:
@@ -356,9 +390,9 @@ class NationalLevelActivityReport(serializers.Serializer):
 
             data = {
                 "year": activity_entry["year"],
-                activity_field: activity_entry["population"],
-                "common_name": instance.common_name_varbatim,
+                "common_name": instance.common_name_verbatim,
                 "scientific_name": instance.scientific_name,
+                activity_field: activity_entry["population"],
             }
             activity_fields.add(activity_field)
             if year in all_data:
@@ -383,19 +417,29 @@ class NationalLevelProvinceReport(serializers.Serializer):
 
     def to_representation(self, instance):
         all_data = {}
-
+        filters = self.context['filters']
+        activity_field = (
+            'annualpopulationperactivity__activity_type_id__in'
+        )
+        activity_filter = None
+        if activity_field in filters:
+            activity_filter = filters[activity_field]
+            del filters[activity_field]
         province_data = AnnualPopulation.objects.select_related(
             'property__province'
         ).filter(
-            **self.context['filters'], taxon=instance
-        ).order_by('-year')
+            **filters, taxon=instance
+        )
+        if activity_filter:
+            province_data = province_data.filter(activity_filter)
+        province_data = province_data.order_by('-year')
 
         province_fields = set()
 
         for province_entry in province_data:
             data = {
                 "year": province_entry.year,
-                "common_name": instance.common_name_varbatim,
+                "common_name": instance.common_name_verbatim,
                 "scientific_name": instance.scientific_name,
             }
             year = province_entry.year

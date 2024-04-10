@@ -6,6 +6,7 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.conf import settings
+from property.models import Province
 from frontend.models.base_task import BaseTaskRequest
 
 # uploaded file types
@@ -99,6 +100,13 @@ class BoundarySearchRequest(BaseTaskRequest, gis_models.Model):
 
     used_parcels = models.JSONField(
         default=list,
+        null=True,
+        blank=True
+    )
+    property_size_ha = models.FloatField(null=True, blank=True)
+    province = models.ForeignKey(
+        Province,
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )

@@ -18,6 +18,6 @@ class TestTaxonSerializer(TestCase):
             {
                 'id': self.taxon_1.id,
                 'scientific_name': self.taxon_1.scientific_name,
-                'common_name_varbatim': self.taxon_1.common_name_varbatim
+                'common_name_verbatim': self.taxon_1.common_name_verbatim
             }
         )

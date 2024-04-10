@@ -8,7 +8,6 @@ body {
     flex: 1;
     flex-direction: column;
     display: flex;
-    overflow-y: auto;
 }
 
 .MainPage {
@@ -20,6 +19,7 @@ body {
 
     .TabHeaders {
         padding-left: 5px;
+        min-height: 48px;
 
         .MuiTab-root {
             min-width: 197.5px;
@@ -91,6 +91,30 @@ body {
     }
 }
 
+// set fixed 100% main content and filter content
+.main-content-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.main-content-area {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.main-content-sidebar-area {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    .TabPanels {
+        overflow-y: auto;
+    }
+}
+
 @media screen and (min-width: 1200px) {
     body {
         overflow: hidden;
@@ -99,9 +123,10 @@ body {
     .MainPage-map {
         overflow: hidden;
     }
-
-    .MainPage-reports, .MainPage-charts, .MainPage-trends {
-        overflow-y: auto;
+    
+    // set height of tab headers
+    .ContentTabHeaders {
+        height: 50px;
     }
 
   #main-container {
@@ -134,8 +159,28 @@ body {
 }
 
 @media only screen and (max-width: 1200px) {
+    .main-content-area {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+    }
+    
+    .main-content-sidebar-area {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    
+        .TabPanels {
+            overflow-y: auto;
+        }
+    }
+
+    .MainPage-reports, .MainPage-charts, .MainPage-trends {
+        overflow-y: auto;
+    }
+
     #right-sidebar-tab {
-        margin-top: 100px;
         width: 100%;
 
         .TabHeaders {
@@ -153,6 +198,11 @@ body {
 
     .hidden {
         display: none;
+    }
+    
+    // unset height of tab headers
+    .ContentTabHeaders {
+        min-height: 50px;
     }
 }
 

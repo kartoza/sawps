@@ -77,29 +77,37 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 
-@admin.register(OrganisationUser)
-class OrganisationUserAdmin(admin.ModelAdmin):
-    """Admin page for OrganisationUser model
-
-    """
-    list_display = ("user", "organisation")
+class OrganisationPersonnelBaseAdmin(admin.ModelAdmin):
+    list_display = ("get_user_first_name", "get_user_last_name",
+                    "organisation")
     search_fields = [
-        "user__username",
+        "user__first_name",
+        "user__last_name",
         "organisation__name"
     ]
     autocomplete_fields = ["user", "organisation"]
 
+    @admin.display(ordering='user__first_name', description='First Name')
+    def get_user_first_name(self, obj):
+        return obj.user.first_name if obj.user.first_name else '-'
+
+    @admin.display(ordering='user__last_name', description='Last Name')
+    def get_user_last_name(self, obj):
+        return obj.user.last_name
+
+
+@admin.register(OrganisationUser)
+class OrganisationUserAdmin(OrganisationPersonnelBaseAdmin):
+    """Admin page for OrganisationUser model
+
+    """
+
 
 @admin.register(OrganisationRepresentative)
-class OrganisationRepresentativeAdmin(admin.ModelAdmin):
+class OrganisationRepresentativeAdmin(OrganisationPersonnelBaseAdmin):
     """Admin page for OrganisationRepresentative model
 
     """
-    list_display = ("user", "organisation")
-    search_fields = [
-        "user__username",
-        "organisation__name"
-    ]
 
 
 @admin.register(OrganisationInvites)
@@ -120,6 +128,8 @@ class OrganisationInvitesAdmin(admin.ModelAdmin):
         "user_role__name",
         "assigned_as"
     ]
+    autocomplete_fields = ["user", "organisation"]
+    list_filter = ['assigned_as', 'joined']
 
 
 @admin.register(Reminders)

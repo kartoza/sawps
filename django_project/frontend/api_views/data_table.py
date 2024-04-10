@@ -8,12 +8,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from frontend.static_mapping import (
-    DATA_CONTRIBUTORS,
-    DATA_SCIENTISTS,
     DATA_CONSUMERS,
     PROVINCIAL_DATA_CONSUMER
 )
 from frontend.utils.data_table import (
+    get_param_from_request,
     data_table_reports,
     national_level_user_table,
     national_level_province_report,
@@ -49,24 +48,24 @@ class DataTableAPIView(APIView):
         """
         return get_queryset(user_roles, self.request)
 
-    def get(self, request) -> Response:
+    def process_request(self, request) -> Response:
         """
-        Handle GET request to retrieve data table reports.
+        Handle request to retrieve data table reports.
         Params: request (Request) The HTTP request object.
         """
+
         user_roles = get_user_roles(self.request.user)
         queryset = self.get_queryset(user_roles)
-        show_detail = set(user_roles) & \
-            set(DATA_CONTRIBUTORS + DATA_SCIENTISTS) \
-            and not set(user_roles) & set(DATA_CONSUMERS)
+        show_detail = self.request.user.is_superuser \
+            or not set(user_roles) & set(DATA_CONSUMERS)
         if show_detail:
-            if request.GET.get("file"):
+            if get_param_from_request(request, "file"):
                 return Response({
                     "file": write_report_to_rows(queryset, request)
                 })
 
             reports = data_table_reports(queryset, request, user_roles)
-            report_list = request.GET.get("reports", None)
+            report_list = get_param_from_request(request, "reports", None)
             if report_list:
                 report_list = report_list.split(",")
                 if PROVINCE_REPORT in report_list:
@@ -83,7 +82,7 @@ class DataTableAPIView(APIView):
             return Response(reports)
 
         else:
-            if request.GET.get("file"):
+            if get_param_from_request(request, "file"):
                 report_functions = {
                     PROPERTY_REPORT: national_level_property_report,
                     ACTIVITY_REPORT: national_level_activity_report,
@@ -103,3 +102,18 @@ class DataTableAPIView(APIView):
                 national_level_user_table(
                     queryset, request)
             )
+
+
+    def get(self, request) -> Response:
+        """
+        Handle GET request to retrieve data table reports.
+        Params: request (Request) The HTTP request object.
+        """
+        return self.process_request(request)
+
+    def post(self, request) -> Response:
+        """
+        Handle POST request to retrieve data table reports.
+        Params: request (Request) The HTTP request object.
+        """
+        return self.process_request(request)

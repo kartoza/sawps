@@ -1,7 +1,7 @@
 import base64
 import csv
-import json
 import os
+import shutil
 
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -24,15 +24,14 @@ from frontend.utils.data_table import (
     ACTIVITY_REPORT,
     SPECIES_REPORT,
     PROPERTY_REPORT,
-    SAMPLING_REPORT,
     PROVINCE_REPORT
 )
 from population_data.factories import (
     AnnualPopulationF
 )
 from population_data.models import AnnualPopulation, AnnualPopulationPerActivity
-from property.factories import PropertyFactory
-from property.factories import ProvinceFactory
+from property.factories import PropertyFactory, ProvinceFactory
+from property.models import Property
 from sawps.tests.models.account_factory import GroupF
 from species.factories import (
     TaxonFactory,
@@ -45,6 +44,11 @@ from stakeholder.factories import (
     userRoleTypeFactory,
 )
 from stakeholder.models import OrganisationInvites, MANAGER
+
+
+def get_path_from_media_url(media_url):
+    data_path = media_url.replace(settings.MEDIA_URL, '')
+    return os.path.join(settings.MEDIA_ROOT, data_path)
 
 
 class AnnualPopulationTestMixins:
@@ -112,6 +116,7 @@ class AnnualPopulationTestMixins:
             spatial_data=self.spatial_data,
             context_layer_value='spatial filter test'
         )
+        self.organisations = [self.organisation_1.id]
 
 
 class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
@@ -123,7 +128,9 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "species": "SpeciesA",
             "activity": str(value.activity_type.id),
-            "reports": "Property_report"
+            "reports": "Property_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(len(response.data[0]["Property_report"]), 1)
@@ -134,18 +141,22 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         )
 
     def test_data_table_filter_by_no_activity(self) -> None:
-        """Test data table filter by species name"""
+        """Test data table filter without specifying any activity.
+        It will return all data.
+        """
         url = self.url
         data = {
             "species": "SpeciesA",
             "activity": '',
-            "reports": "Property_report"
+            "reports": "Property_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data), 1)
 
-    def test_filter_all_reports_by_all_activity_type(self) -> None:
-        """Test data table filter by activity name"""
+    def test_show_all_reports(self) -> None:
+        """Test showing report for a species."""
         url = self.url
         self.annual_populations[0].annualpopulationperactivity_set.all().delete()
         self.annual_populations[1].annualpopulationperactivity_set.all().delete()
@@ -182,8 +193,10 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
 
         data = {
             "species": "SpeciesA",
-            "activity": 'all',
-            "reports": "Activity_report,Property_report,Province_report,Sampling_report,Species_report"
+            "activity": '',
+            "reports": "Activity_report,Property_report,Province_report,Sampling_report,Species_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -210,35 +223,35 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             [
                 {
                     "year": int(self.annual_populations[4].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 0,
                 },
                 {
                     "year": int(self.annual_populations[3].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 0,
                 },
                 {
                     "year": int(self.annual_populations[2].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 0,
                 },
                 {
                     "year": int(self.annual_populations[1].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 0,
                 },
                 {
                     "year": int(self.annual_populations[0].year),
-                    "common_name": self.annual_populations[-1].taxon.common_name_varbatim,
+                    "common_name": self.annual_populations[-1].taxon.common_name_verbatim,
                     "scientific_name": self.annual_populations[-1].taxon.scientific_name,
                     "total_population_Western Cape": 10,
                     f"total_population_{property_obj.province.name}": 20,
@@ -253,6 +266,8 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "activity": str(value.activity_type.id),
             "reports": "Property_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -271,6 +286,7 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "end_year": self.annual_populations[0].year,
             "spatial_filter_values": "spatial filter test",
             "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
             "reports": "Property_report"
         }
         response = self.client.get(self.url, data, **self.auth_headers)
@@ -278,6 +294,17 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
         self.assertEqual(
             response.data[0]["Property_report"][0]["property_name"],
             "PropertyA"
+        )
+
+    def test_filter_without_property(self) -> None:
+        """Test data table filter without property"""
+        data = {
+            "property": ''
+        }
+        response = self.client.get(self.url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            len(response.data), 0,
         )
 
     def test_filter_by_year_and_report(self) -> None:
@@ -314,31 +341,13 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "start_year": year,
             "end_year": year,
             "reports": "Activity_report",
-            "activity": str(value.activity_type.id)
+            "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        if response.data:
-            self.assertEqual(next(iter(response.data[0])), "Activity_report")
-        else:
-            self.assertEqual(response.data, [])
-
-    def test_activity_report_without_activity_filter(self) -> None:
-        """Test data table activity report without activity"""
-        year = AnnualPopulationPerActivity.objects.first().year
-        url = self.url
-        data = {
-            "species": "SpeciesA",
-            "start_year": year,
-            "end_year": year,
-            "reports": "Activity_report",
-        }
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        if response.data:
-            self.assertEqual(next(iter(response.data[0])), "Activity_report")
-        else:
-            self.assertEqual(response.data, [])
+        self.assertEqual(next(iter(response.data[0])), "Activity_report")
 
     def test_data_table_sampling_report(self) -> None:
         """Test data table sampling report"""
@@ -350,9 +359,34 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "start_year": year,
             "end_year": year,
             "reports": "Sampling_report",
-            "activity": str(value.activity_type.id)
+            "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data[0]["Sampling_report"][0][
+                "scientific_name"
+            ],
+            "SpeciesA"
+        )
+
+    def test_data_table_post(self) -> None:
+        """Test data table with post request"""
+        year = self.annual_populations[1].year
+        value = self.annual_populations[1].annualpopulationperactivity_set.first()
+        url = self.url
+        data = {
+            "species": "SpeciesA",
+            "start_year": year,
+            "end_year": year,
+            "reports": "Sampling_report",
+            "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.post(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data[0]["Sampling_report"][0][
@@ -387,6 +421,8 @@ class NationalUserTestCase(TestCase):
         )
         user.user_profile.current_organisation = self.organisation_1
         user.save()
+        self.national_data_consumer_group, _ = Group.objects.get_or_create(name=NATIONAL_DATA_CONSUMER)
+        user.groups.add(self.national_data_consumer_group)
 
         self.property = PropertyFactory.create(
             organisation=self.organisation_1,
@@ -419,6 +455,7 @@ class NationalUserTestCase(TestCase):
             spatial_data=self.spatial_data,
             context_layer_value='spatial filter test'
         )
+        self.organisations = [self.organisation_1.id]
 
     def test_national_property_report_all_activity(self) -> None:
         """Test property report for national data consumer"""
@@ -430,14 +467,16 @@ class NationalUserTestCase(TestCase):
         )
         url = self.url
         params = {
-            'activity': 'all'
+            'activity': '',
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
         expected_response = [
             {
                 PROPERTY_REPORT: [{
                     'year': int(self.annual_populations[0].year),
-                    'common_name': self.taxon.common_name_varbatim,
+                    'common_name': self.taxon.common_name_verbatim,
                     'scientific_name': self.taxon.scientific_name,
                     f'total_population_{self.property.property_type.name}_property': 10,
                     f'total_area_{self.property.property_type.name}_property': 200,
@@ -448,7 +487,7 @@ class NationalUserTestCase(TestCase):
         ]
         expected_response[0][PROPERTY_REPORT].extend([{
             'year': int(self.annual_populations[i].year),
-            'common_name': self.taxon.common_name_varbatim,
+            'common_name': self.taxon.common_name_verbatim,
             'scientific_name': self.taxon.scientific_name,
             f'total_population_{self.property.property_type.name}_property': 10,
             f'total_area_{self.property.property_type.name}_property': 200,
@@ -467,8 +506,10 @@ class NationalUserTestCase(TestCase):
         """Test activity report for national data consumer"""
         url = self.url
         params = {
-            'activity': 'all',
-            'reports': ACTIVITY_REPORT
+            'activity': ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
+            'reports': ACTIVITY_REPORT,
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
         expected_response = [
@@ -482,7 +523,7 @@ class NationalUserTestCase(TestCase):
             ).values_list('name', flat=True)
             base_dict = {
                 'year': int(self.annual_populations[i].year),
-                'common_name': self.taxon.common_name_varbatim,
+                'common_name': self.taxon.common_name_verbatim,
                 'scientific_name': self.taxon.scientific_name,
                 f'total_population_{self.annual_populations[i].annualpopulationperactivity_set.first().activity_type.name}': 100  # noqa
             }
@@ -502,8 +543,10 @@ class NationalUserTestCase(TestCase):
         """Test species report for national data consumer"""
         url = self.url
         params = {
-            'activity': 'all',
-            'reports': SPECIES_REPORT
+            'activity': ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
+            'reports': SPECIES_REPORT,
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
 
@@ -511,10 +554,11 @@ class NationalUserTestCase(TestCase):
             {
                 SPECIES_REPORT: [{
                     'year': int(self.annual_populations[i].year),
-                    'common_name': self.taxon.common_name_varbatim,
+                    'common_name': self.taxon.common_name_verbatim,
                     'scientific_name': self.taxon.scientific_name,
                     "total_property_area": 200,
                     "total_area_available": 10,
+                    "total_population": 10,
                     "adult_male_total_population": 4,
                     "adult_female_total_population": 6,
                     "sub_adult_male_total_population": 10,
@@ -542,8 +586,10 @@ class NationalUserTestCase(TestCase):
         )
         url = self.url
         params = {
-            'activity': 'all',
-            'reports': PROVINCE_REPORT
+            'activity': '',
+            'reports': PROVINCE_REPORT,
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, params, **self.auth_headers)
 
@@ -551,7 +597,7 @@ class NationalUserTestCase(TestCase):
             {
                 PROVINCE_REPORT: [{
                     'year': int(self.annual_populations[0].year),
-                    'common_name': self.taxon.common_name_varbatim,
+                    'common_name': self.taxon.common_name_verbatim,
                     'scientific_name': self.taxon.scientific_name,
                     f'total_population_{self.property.province.name}': 10,
                     f'total_population_{annual_population.property.province.name}': 21
@@ -560,7 +606,7 @@ class NationalUserTestCase(TestCase):
         ]
         expected_response[0][PROVINCE_REPORT].extend([{
             'year': int(self.annual_populations[i].year),
-            'common_name': self.taxon.common_name_varbatim,
+            'common_name': self.taxon.common_name_verbatim,
             'scientific_name': self.taxon.scientific_name,
             f'total_population_{self.property.province.name}': 10,
             f'total_population_{annual_population.property.province.name}': 0
@@ -582,7 +628,25 @@ class NationalUserTestCase(TestCase):
         data = {
             "species": "SpeciesA",
             "property": property,
-            "organisation": organisation,
+            "organisation": '',
+            "start_year": year,
+            "end_year": year,
+            "reports": (
+                "Activity_report,Province_report,"
+                "Species_report,Property_report"
+            ),
+            "activity": str(value.activity_type.id),
+            'spatial_filter_values': 'spatial filter test',
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+        # test with organisation
+        data = {
+            "species": "SpeciesA",
+            "property": property,
+            "organisation": f'{str(organisation)}',
             "start_year": year,
             "end_year": year,
             "reports": (
@@ -616,14 +680,19 @@ class RegionalUserTestCase(TestCase):
                 username='testuserd',
                 password='testpasswordd'
             )
-        self.organisation_1 = organisationFactory.create()
+        self.province = ProvinceFactory.create(
+            name='Limpopo'
+        )
+        self.organisation_1 = organisationFactory.create(
+            province=self.province
+        )
         # add user 1 to organisation 1 and 3
         organisationUserFactory.create(
             user=user,
             organisation=self.organisation_1
         )
         self.role_organisation_manager = userRoleTypeFactory.create(
-            name="Regional data consumer",
+            name="Provincial data consumer",
         )
 
         group = GroupF.create(name=PROVINCIAL_DATA_CONSUMER)
@@ -662,8 +731,31 @@ class RegionalUserTestCase(TestCase):
         session.save()
 
 
-    def test_regional_data_consumer(self) -> None:
-        """Test data table filter by regional data consumer"""
+    def test_no_province_data(self) -> None:
+        """Test data table filter by regional data consumer.
+        The response would be empty since there are no Annual Population data
+        for the user's organisation's province.
+        """
+        data = {
+            "reports": "Activity_report,Species_report,Property_report",
+            "activity": ",".join(
+                [
+                    str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
+                ]
+            )
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_has_province_data(self) -> None:
+        """Test data table filter by regional data consumer.
+        The response would not be empty since there are Annual Population data
+        for the user's organisation's province.
+        """
+        self.property.province = self.organisation_1.province
+        self.property.save()
         data = {
             "reports": "Activity_report,Species_report,Property_report",
             "activity": ",".join(
@@ -738,6 +830,7 @@ class DataScientistTestCase(TestCase):
         self.client = Client()
         session = self.client.session
         session.save()
+        self.organisations = [self.organisation_1.id]
 
     def test_regional_data_scientist(self) -> None:
         """Test data table filter by regional data scientist"""
@@ -746,7 +839,9 @@ class DataScientistTestCase(TestCase):
             "reports": (
                 "Species_report,Property_report"
             ),
-            "activity": str(value.activity_type.id)
+            "activity": str(value.activity_type.id),
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
@@ -766,25 +861,28 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "csv",
             "species": "SpeciesA",
-            "activity": 'all',
-            "reports": "Activity_report,Property_report,Sampling_report,Species_report"
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is zip
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.zip")
+        self.assertIn("data_report.zip", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
+        path = os.path.dirname(data_path)
 
-        # check if all csv files eexist in the folder
-        path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.zip")))
+        # check if all csv files exist in the folder
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Species_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Activity_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Property_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Sampling_report.csv")))
 
         # check fields in Activity report
-        activity_path = "/home/web/media/download_data/data_report_Activity_report.csv"
+        activity_path = os.path.join(path, "data_report_Activity_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -805,18 +903,35 @@ class DownloadDataTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "xlsx",
             "species": "SpeciesA",
-            "activity": 'all',
-            "reports": "Activity_report,Property_report,Sampling_report,Species_report"
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is xlsx
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.xlsx")
+        self.assertIn("data_report.xlsx", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
 
-        # check if xlsx files exists in the folder
-        path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
+    def test_download_xlsx_data_all_reports_without_activity_filter(self) -> None:
+        """Test download data table filter by activity name"""
+        url = self.url
+
+        data = {
+            "file": "xlsx",
+            "species": "SpeciesA",
+            "reports": "Activity_report,Property_report,Sampling_report,Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.get(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test if file output is xlsx
+        self.assertIn("data_report.xlsx", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
 
 
 class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
@@ -839,24 +954,27 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "csv",
             "species": "SpeciesA",
-            "activity": 'all',
-            "reports": "Activity_report,Property_report,Species_report,Province_report"
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
+            "reports": "Activity_report,Property_report,Species_report,Province_report",
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is zip
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.zip")
+        self.assertIn("data_report.zip", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
+        path = os.path.dirname(data_path)
 
-        # check if all csv files eexist in the folder
-        path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.zip")))
+        # check if all csv files exist in the folder
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Species_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Activity_report.csv")))
         self.assertTrue(os.path.exists(os.path.join(path, "data_report_Property_report.csv")))
 
         # check fields in Activity report
-        activity_path = "/home/web/media/download_data/data_report_Activity_report.csv"
+        activity_path = os.path.join(path, "data_report_Activity_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -865,7 +983,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             self.assertTrue("common_name" in headers)
             self.assertTrue("year" in headers)
 
-        activity_path = "/home/web/media/download_data/data_report_Province_report.csv"
+        activity_path = os.path.join(path, "data_report_Province_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -874,7 +992,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             self.assertTrue("common_name" in headers)
             self.assertTrue("year" in headers)
 
-        activity_path = "/home/web/media/download_data/data_report_Species_report.csv"
+        activity_path = os.path.join(path, "data_report_Species_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -882,7 +1000,7 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
             self.assertTrue("common_name" in headers)
             self.assertTrue("year" in headers)
 
-        activity_path = "/home/web/media/download_data/data_report_Property_report.csv"
+        activity_path = os.path.join(path, "data_report_Property_report.csv")
         with open(activity_path, encoding='utf-8-sig') as csv_file:
             file = csv.DictReader(csv_file)
             headers = file.fieldnames
@@ -898,15 +1016,48 @@ class DownloadDataDataConsumerTestCase(AnnualPopulationTestMixins, TestCase):
         data = {
             "file": "xlsx",
             "species": "SpeciesA",
-            "activity": 'all',
-            "reports": "Activity_report,Property_report,Species_report,Province_report"
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
+            "reports": "Activity_report,Property_report,Species_report,Province_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Test if file output is xlsx
-        self.assertEqual(response.data['file'], "/media/download_data/data_report.xlsx")
+        self.assertIn("data_report.xlsx", response.data['file'])
+        data_path = get_path_from_media_url(response.data['file'])
+        self.assertTrue(os.path.exists(data_path))
 
-        # check if xlsx files exists in the folder
+    def test_download_one_report(self) -> None:
+        """Test download data table with only one report"""
+        url = self.url
+
+        data = {
+            "file": "csv",
+            "species": "SpeciesA",
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
+            "reports": "Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.post(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("data_report_Species_report.csv", response.data['file'])
+
+    def test_path_not_exist(self):
+        """Test download data table when file path does not exist"""
+
         path = os.path.join(settings.MEDIA_ROOT, "download_data")
-        self.assertTrue(os.path.exists(os.path.join(path, "data_report.xlsx")))
+        shutil.rmtree(path, ignore_errors=True)
+
+        url = self.url
+
+        data = {
+            "file": "csv",
+            "species": "SpeciesA",
+            "activity": ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
+            "reports": "Species_report",
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.post(url, data, **self.auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("data_report_Species_report.csv", response.data['file'])

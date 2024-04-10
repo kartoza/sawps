@@ -40,6 +40,9 @@ const SpeciesCountPerProvinceChart = (props: any) => {
     propertyId,
     startYear,
     endYear,
+    organisationIds,
+    activityIds,
+    spatialFilterValues,
     loading,
     setLoading
   } = props;
@@ -49,7 +52,7 @@ const SpeciesCountPerProvinceChart = (props: any) => {
     setLoading(true);
     axios
       .get(
-        `${FETCH_ACTVITY_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}`
+        `${FETCH_ACTVITY_COUNT}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&property=${propertyId}&organisation=${organisationIds}&activity=${activityIds}&spatial_filter_values=${spatialFilterValues}`
       )
       .then((response) => {
         if (response.data) {
@@ -77,7 +80,7 @@ const SpeciesCountPerProvinceChart = (props: any) => {
 
   useEffect(() => {
     fetchActivityCount();
-  }, [propertyId, startYear, endYear, selectedSpecies]);
+  }, [propertyId, startYear, endYear, selectedSpecies, activityIds, organisationIds, spatialFilterValues]);
 
   const horizontalLabels: string[] = Array.from(new Set(speciesData.map((item) => item.province)));
   const legendLabels: number[] = Array.from(new Set(speciesData.map((item) => item.year)))
@@ -132,7 +135,7 @@ const SpeciesCountPerProvinceChart = (props: any) => {
     datasets: datasets
   };
 
-  const chartTitle = `Total count of species per province`;
+  const chartTitle = `Total count of ${selectedSpecies} per province for ${endYear}`;
 
   return (
     <Grid>

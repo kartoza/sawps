@@ -19,3 +19,69 @@ context_id: gfF5QRx4gqeaX3ujxgVCoM
         heading_level: 1
         show_source: true
         show_root_heading: false
+
+
+# Model
+
+::: django_project.sawps.models
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+        show_root_heading: false
+
+# Test Case
+
+::: django_project.sawps.tests.model_factories
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+        show_root_heading: false
+
+
+::: django_project.sawps.tests.test_activate_account
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+        show_root_heading: false
+
+
+::: django_project.sawps.tests.test_model
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+        show_root_heading: false
+
+
+::: django_project.sawps.tests.test_password_validation
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+        show_root_heading: false
+
+
+::: django_project.sawps.tests.test_user
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+        show_root_heading: false
+
+
+::: django_project.sawps.tests.test_utils
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+        show_root_heading: false

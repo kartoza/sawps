@@ -6,8 +6,13 @@ services:
 
   dev:
     image: kartoza/sanbi:test
+    environment:
+      - DISABLE_2FA=${DISABLE_2FA:-True}
     volumes:
       - ../django_project:/home/web/django_project
+      - ./volumes/static:/home/web/static
+      - ./volumes/media:/home/web/media
+      - ./volumes/plumber_data:/home/web/plumber_data
     ports:
       # for django test server
       - "61100:8080"
@@ -19,4 +24,7 @@ services:
   worker:
     volumes:
       - ../django_project:/home/web/django_project
+      - ./volumes/media:/home/web/media
+      - ./volumes/layer_tiles:/opt/layer_tiles
+      - ./volumes/plumber_data:/home/web/plumber_data
     image: kartoza/sanbi:test

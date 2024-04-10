@@ -11,6 +11,7 @@ copyright: Kartoza and Contributors
 
 markdown_extensions:
         - attr_list # lets us resize images see https://github.com/mkdocs/mkdocs/issues/1678#issuecomment-455500757
+        - sane_lists # needed to keep numbers in ordered lists correct
         - pymdownx.highlight:
                   anchor_linenums: true
         - pymdownx.inlinehilite
@@ -73,11 +74,13 @@ nav:
                                 - Map: user/manual/explore/map.md
                                 - Reports: user/manual/explore/reports.md
                                 - Charts: user/manual/explore/charts.md
+                                - Trends: user/manual/explore/trends.md
                           - Upload Data: 
                                 - user/manual/data-upload/index.md
                                 - Data Upload Panel: user/manual/data-upload/panel.md
                                 - The Online Form: user/manual/data-upload/online-form.md
                                 - Template Upload: user/manual/data-upload/template-upload.md
+                                - Update Data: user/manual/data-upload/update-data.md
                           - Help and Contact: user/manual/help-contact.md
                           - User Profile:
                                 - user/manual/user-profile/index.md
@@ -133,16 +136,17 @@ nav:
                       - SAWPS: developer/manual/sawps.md
                       - Species: developer/manual/species.md
                       - Stakeholder: developer/manual/stakeholder.md
-                  - API:
-                      - developer/api/index.md
-                      - Reference: developer/api/manual/index.md
-                      - Guide: developer/api/guide/index.md
-                  - Documentation Writing: developer/documentation/index.md
+                  - Documentation Writing:
+                      - developer/documentation/index.md
+                      - Overview: developer/documentation/overview.md
+                      - Context Help: developer/documentation/context-help.md
                   - License: about/license.md
         - DevOps:
                   - devops/index.md
                   - Guide: devops/guide/index.md
                   - Manual: devops/manual/index.md
+        - Training Videos:
+                  - videos/index.md
         - About:
                   - About: about/index.md
                   - License: about/license.md

@@ -1,17 +1,27 @@
+from datetime import datetime
+
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.generic import TemplateView
+
+from frontend.serializers.stakeholder import (
+    OrganisationSerializer
+)
+from frontend.utils.user_roles import check_user_has_permission
+from sawps.models import (
+    PERM_CAN_ADD_SPECIES_POPULATION_DATA,
+    PERM_CAN_CHANGE_DATA_USE
+)
 from stakeholder.models import (
     OrganisationUser,
     Organisation,
     Reminders,
     UserProfile
 )
-from frontend.serializers.stakeholder import (
-    OrganisationSerializer
-)
-from django.contrib import messages
-from datetime import datetime
+
+User = get_user_model()
 
 
 def get_user_notifications(request):
@@ -52,6 +62,13 @@ def get_user_notifications(request):
                 'user_notifications': []
             }
         )
+
+
+def validate_user_permission(user: User, permission_name: str):
+    """Check if user has permission to upload data."""
+    if user.is_superuser:
+        return True
+    return check_user_has_permission(user, 'Can add species population data')
 
 
 class OrganisationBaseView(TemplateView):
@@ -95,7 +112,7 @@ class OrganisationBaseView(TemplateView):
                 organisation = organisation_user.organisation
 
         if organisation:
-            # Set the current organization in the user's profile
+            # Set the current organisation in the user's profile
             if user_profile:
                 user_profile.current_organisation = organisation
                 user_profile.save()
@@ -120,7 +137,7 @@ class OrganisationBaseView(TemplateView):
             ).order_by('organisation_id')
             if user_profile and user_profile.current_organisation:
                 user_organisations = user_organisations.exclude(
-                    id=user_profile.current_organisation.id
+                    organisation_id=user_profile.current_organisation.id
                 )
             organisations = (
                 [org_user.organisation for org_user in user_organisations]
@@ -142,6 +159,19 @@ class OrganisationBaseView(TemplateView):
         ctx['current_organisation_id'] = current_organisation_id
         ctx['organisations'] = self.get_organisation_list(self.request)
         get_user_notifications(self.request)
+        # Data Consumers and Scientist are not allowed to upload data
+        ctx['can_user_do_upload_data'] = (
+            validate_user_permission(
+                self.request.user,
+                PERM_CAN_ADD_SPECIES_POPULATION_DATA)
+        )
+
+        ctx['can_change_data_use_permissions'] = (
+            validate_user_permission(
+                self.request.user,
+                PERM_CAN_CHANGE_DATA_USE)
+        )
+
         return ctx
 
 

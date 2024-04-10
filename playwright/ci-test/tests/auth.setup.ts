@@ -4,12 +4,12 @@ let url = '/';
 
 let user_email = 'admin@example.com';
 let password = 'admin';
-const authFile = 'tests/.auth/sawps-auth.json';
+const authFile = 'auth.json';
 
 
-setup.describe('login and 2fa-authentication ', () => {
+setup.describe('login', () => {
 
-  setup('login and 2fa', async ({page}) => {
+  setup('login', async ({page}) => {
 
     await page.goto(url);
 
@@ -31,17 +31,11 @@ setup.describe('login and 2fa-authentication ', () => {
     
     await page.getByRole('button', { name: 'LOGIN' }).click();
 
-    //await page.waitForURL('**/accounts/two-factor/authenticate/');
-
-    //await expect(page.getByRole('heading', { name: 'Two-Factor Authentication' })).toBeVisible();
-
-    //await page.locator('input[id="id_otp_token"]').fill(token);
-
-    //await page.getByRole('button', { name: 'Authenticate' }).click();
+    await page.waitForURL(url);
 
     const finalURL = page.url();
 
-    expect(finalURL).not.toBe(initialURL);
+    expect(finalURL).toBe(initialURL);
 
     await page.context().storageState({ path: authFile });
     

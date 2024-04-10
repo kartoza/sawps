@@ -39,7 +39,6 @@ interface FormWizardInterface {
 const steps = ['SPECIES DETAIL', 'ACTIVITY DETAIL', 'REVIEW & SUBMIT']
 const SUBMIT_SPECIES_DATA = '/api/upload/population/'
 const SAVE_DRAFT_SPECIES_DATA = '/api/upload/population/draft/'
-const CHECK_EXISTING_POPULATION_DATA = '/api/upload/population/check/'
 
 function FormWizard(props: FormWizardInterface) {
     const [loading, setLoading] = useState<boolean>(false)
@@ -56,6 +55,8 @@ function FormWizard(props: FormWizardInterface) {
     const [feedbackAlertDesc, setFeedbackAlertDesc] = useState<string>('')
     const [alertMessage, setAlertMessage] = useState<string>('')
     const [draftUUID, setDraftUUID] = useState<string>('')
+    const [confirmOverwrite, setConfirmOverwrite] = useState(false)
+    const [confirmOverwriteMessage, setConfirmOverwriteMessage] = useState<string>('')
 
     const totalSteps = () => {
         return steps.length
@@ -151,26 +152,52 @@ function FormWizard(props: FormWizardInterface) {
     /* End of Check Unsaved Changes */
 
     /* handle draft and submission */
-    const handleSubmit = () => {
+    const showAlertError = (error: any) => {
+        setFeedbackAlertDialog(AlertType.error)
+        let _error = 'There is an error while saving the data!'
+        if (error.response && error.response.status >= 400 && error.response.status < 500 && 'detail' in error.response.data) {
+            _error = error.response.data['detail']
+        }
+        setFeedbackAlertDesc(_error)
+    }
+    const submitData = (formData: UploadSpeciesDetailInterface, hideConfirmOverwrite?: boolean) => {
         setLoading(true)
-        postData(`${SUBMIT_SPECIES_DATA}${props.propertyItem.id}/?uuid=${draftUUID}`, data).then(
+        postData(`${SUBMIT_SPECIES_DATA}${props.propertyItem.id}/?uuid=${draftUUID}`, formData).then(
             response => {
                 setLoading(false)
+                if (hideConfirmOverwrite) {
+                    setConfirmOverwrite(false)
+                    setConfirmOverwriteMessage('')
+                }
                 setFeedbackAlertDialog(AlertType.success)
                 setFeedbackAlertDesc('Your data has been successfully saved!')
             }
           ).catch(error => {
             setLoading(false)
             console.log('error ', error)
-            setFeedbackAlertDialog(AlertType.error)
-            let _error = 'There is an error while saving the data!'
-            if (error.response && error.response.status >= 400 && error.response.status < 500 && 'detail' in error.response.data) {
-                _error = error.response.data['detail']
-            }
-            setFeedbackAlertDesc(_error)
+            showAlertError(error)
           })
     }
-
+    const handleSubmit = () => {
+        setLoading(true)
+        postData(`${SUBMIT_SPECIES_DATA}${props.propertyItem.id}/check/?uuid=${draftUUID}`, data).then(
+            response => {
+                let _response = response.data
+                if ('detail' in _response && 'other_id' in _response) {
+                    setLoading(false)
+                    // show confirmation dialog to overwrite the existing data
+                    setConfirmOverwrite(true)
+                    setConfirmOverwriteMessage(_response['detail'])
+                } else {
+                    submitData(data)
+                }
+            }
+        ).catch(error => {
+            setLoading(false)
+            console.log('error ', error)
+            showAlertError(error)
+        })        
+    }
     const handleSaveDraft = (formData: UploadSpeciesDetailInterface) => {
         setLoading(true)
         let _data = {
@@ -193,7 +220,13 @@ function FormWizard(props: FormWizardInterface) {
             setAlertMessage(_error)
           })
     }
-
+    const confirmSubmission = () => {
+        let _formData = {
+            ...data,
+            confirm_overwrite: true
+        }
+        submitData(_formData, true)
+    }
     useEffect(() => {
         if (props.draftUUID) {
             axios.get(`${SAVE_DRAFT_SPECIES_DATA}${props.draftUUID}/`).then((response) => {
@@ -277,6 +310,19 @@ function FormWizard(props: FormWizardInterface) {
                     alertDialogDescription={'You have unsaved changes. Are you sure to leave this page?'}
                     confirmButtonText='Leave'
                     confirmButtonProps={{color: 'error', autoFocus: true}}
+                    alertLoading={loading}
+                />
+            </Grid>
+            <Grid item>
+                <ConfirmationAlertDialog open={confirmOverwrite} alertClosed={() => {
+                    setConfirmOverwrite(false)
+                    setConfirmOverwriteMessage('')
+                }}
+                    alertConfirmed={confirmSubmission}
+                    alertDialogTitle={'Confirm overwrite population data'}
+                    alertDialogDescription={confirmOverwriteMessage}
+                    alertLoading={loading}
+                    confirmButtonText='Confirm'
                 />
             </Grid>
             <Grid item>

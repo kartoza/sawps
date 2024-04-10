@@ -1,4 +1,5 @@
-from django.contrib.auth.models import User
+import mock
+from django.contrib.auth.models import User, Group
 from django.db.models import Q
 from django.test import TestCase, override_settings
 from django.db.models.signals import post_save
@@ -37,6 +38,10 @@ from frontend.static_mapping import (
     ORGANISATION_MEMBER
 )
 from species.factories import UserFactory
+
+
+def mocked_sending_email(*args, **kwargs):
+    return True
 
 
 class TestUserRoleType(TestCase):
@@ -132,7 +137,7 @@ class TestUser(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.profileFactory = User.objects.create().user_profile
+        cls.user_profile = User.objects.create().user_profile
 
     def test_create_new_user_with_new_profile(self):
         """Test creating new user when new profile is created."""
@@ -140,17 +145,17 @@ class TestUser(TestCase):
 
     def test_update_user_profile(self):
         """Test updating user through profile."""
-        self.profileFactory.user.username = 'test'
-        self.profileFactory.user.first_name = 'test123'
-        self.profileFactory.user.save()
+        self.user_profile.user.username = 'test'
+        self.user_profile.user.first_name = 'test123'
+        self.user_profile.user.save()
         self.assertEqual(
             User.objects.get(username='test').first_name, 'test123'
         )
 
     def test_delete_profile(self):
         """Test deleting user when a profile is deleted."""
-        user_id = self.profileFactory.user.id
-        self.profileFactory.delete()
+        user_id = self.user_profile.user.id
+        self.user_profile.delete()
         self.assertEqual(User.objects.count(), 1)
 
         users = User.objects.filter(id=user_id)
@@ -170,6 +175,17 @@ class TestUser(TestCase):
         self.assertTrue(UserProfile.objects.filter(
             user_id=user.id
         ).exists())
+
+    def test_user_not_exist(self):
+        self.assertEqual(
+            self.user_profile.__str__(),
+            self.user_profile.user.username
+        )
+        self.user_profile.user_id = 99999999999
+        self.assertEqual(
+            self.user_profile.__str__(),
+            str(self.user_profile.id)
+        )
 
 
 class TestUserLogin(TestCase):
@@ -198,6 +214,17 @@ class TestUserLogin(TestCase):
         self.user_login.delete()
         self.assertEqual(UserLogin.objects.count(), 0)
         self.assertEqual(User.objects.count(), 2)
+
+    def test_user_not_exist(self):
+        self.assertEqual(
+            self.user_login.__str__(),
+            self.user_login.user.username
+        )
+        self.user_login.user_id = 99999999999
+        self.assertEqual(
+            self.user_login.__str__(),
+            str(self.user_login.id)
+        )
 
 
 @override_settings(
@@ -290,19 +317,21 @@ class OrganizationUserTestCase(TestCase):
 
     def test_create_organisation_user_manager(self):
         """Test creating organisation user as manager."""
-        OrganisationInvites.objects.create(
-            email=self.user.email,
-            joined=True,
-            assigned_as=MANAGER,
-            organisation=self.organisation
-        )
-        organisation_user = organisationUserFactory(
+        OrganisationRepresentative.objects.create(
             user=self.user,
             organisation=self.organisation
         )
-        self.assertEqual(
-            organisation_user.user.groups.first().name,
-            ORGANISATION_MANAGER
+        groups = Group.objects.filter(
+            user=self.user
+        )
+        all_groups = [group.name for group in groups]
+        self.assertIn(
+            ORGANISATION_MANAGER,
+            all_groups
+        )
+        self.assertIn(
+            ORGANISATION_MEMBER,
+            all_groups
         )
 
     def test_create_organisation_user_member(self):
@@ -343,7 +372,7 @@ class OrganizationUserTestCase(TestCase):
         OrganisationInvites.objects.create(
             email=self.user.email,
             joined=True,
-            assigned_as=MANAGER,
+            assigned_as=MEMBER,
             organisation=self.organisation
         )
         organisation_user_3 = organisationUserFactory(
@@ -353,9 +382,9 @@ class OrganizationUserTestCase(TestCase):
         organisation_user_4 = organisationUserFactory(
             user=self.user
         )
-        self.assertEqual(
-            sorted(organisation_user_3.user.groups.values_list('name', flat=True)),
-            [ORGANISATION_MANAGER, ORGANISATION_MEMBER]
+        self.assertEquals(
+            list(organisation_user_3.user.groups.values_list('name', flat=True)),
+            [ORGANISATION_MEMBER]
         )
 
         # delete organizationUser
@@ -366,6 +395,11 @@ class OrganizationUserTestCase(TestCase):
         self.assertEqual(len(user.groups.all()), 1)
         self.assertEqual(user.groups.first().name, ORGANISATION_MEMBER)
 
+        # set userprofile to organisation 4
+        user_profile = UserProfile.objects.filter(user=organisation_user_2.user).first()
+        self.assertTrue(user_profile)
+        user_profile.current_organisation = organisation_user_4.organisation
+        user_profile.save()
         # delete organisation_user_2
         # user would be removed from group Organisation Member
         # because he no longer belongs any organisation
@@ -374,13 +408,49 @@ class OrganizationUserTestCase(TestCase):
         self.assertFalse(
             user.groups.exists()
         )
+        # ensure current_organisation is not removed
+        user_profile.refresh_from_db()
+        self.assertTrue(user_profile.current_organisation)
+        self.assertEqual(user_profile.current_organisation.id, organisation_user_4.organisation.id)
 
+        # set userprofile to organisation 4
+        user_profile = UserProfile.objects.filter(user=organisation_user_4.user).first()
+        self.assertTrue(user_profile)
+        user_profile.current_organisation = organisation_user_4.organisation
+        user_profile.save()
+        # set as manager
+        OrganisationRepresentative.objects.create(
+            user=organisation_user_4.user,
+            organisation=organisation_user_4.organisation
+        )
+        # create invite
+        OrganisationInvites.objects.create(
+            organisation=organisation_user_4.organisation,
+            email=organisation_user_4.user.email,
+            user=organisation_user_4.user,
+        )
         # delete organisation_user_4
-        # user would not be removed from group Organisation Manager
-        # because is still a manager of other organisation
+        # user would not be removed from group Organisation Member
+        # because is still a member of other organisation
         organisation_user_4.delete()
         self.assertEqual(OrganisationUser.objects.count(), 1)
-        self.assertTrue(ORGANISATION_MANAGER in self.user.groups.values_list('name', flat=True))
+        self.assertEquals(
+            list(self.user.groups.values_list('name', flat=True)),
+            [ORGANISATION_MEMBER]
+        )
+        # ensure no current_organisation after organisation 4 is deleted
+        user_profile.refresh_from_db()
+        self.assertFalse(user_profile.current_organisation)
+        # ensure no manager record
+        self.assertFalse(OrganisationRepresentative.objects.filter(
+            user=organisation_user_4.user,
+            organisation=organisation_user_4.organisation
+        ).exists())
+        # ensure no invitation
+        self.assertFalse(OrganisationInvites.objects.filter(
+            user=organisation_user_4.user,
+            organisation=organisation_user_4.organisation
+        ).exists())
 
 
 class OrganizationRepresentativeTestCase(TestCase):
@@ -415,16 +485,119 @@ class OrganizationRepresentativeTestCase(TestCase):
         self.organizationRep.delete()
         self.assertEqual(OrganisationRepresentative.objects.count(), 0)
 
+    @mock.patch('stakeholder.utils.send_mail')
+    def test_upgrade_to_manager(self, mocked_send_mail):
+        """Test upgrade a member to manager."""
+        mocked_send_mail.side_effect = mocked_sending_email
+        organisation_1 = organisationFactory()
+        # user without email
+        user_0 = User.objects.create_user(
+            username='testuser0',
+            password='testpassword0'
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_0,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_not_called()
+        self.assertTrue(OrganisationUser.objects.filter(
+            user=user_0,
+            organisation=organisation_1
+        ).exists())
+        # from no org_user - possible from admin site
+        mocked_send_mail.reset_mock()
+        user_1 = User.objects.create_user(
+            username='testuser1',
+            password='testpassword1',
+            email='testuser1@test.com'
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_1,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_called_once()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=user_1,
+            organisation=organisation_1
+        ).count(), 1)
+        # from existing org_user with invite = Member
+        mocked_send_mail.reset_mock()
+        user_2 = User.objects.create_user(
+            username='testuser2',
+            password='testpassword2',
+            email='testuser2@test.com'
+        )
+        OrganisationUser.objects.create(
+            user=user_2,
+            organisation=organisation_1
+        )
+        OrganisationInvites.objects.create(
+            user=user_2,
+            joined=True,
+            assigned_as=MEMBER
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_2,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_called_once()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=user_2,
+            organisation=organisation_1
+        ).count(), 1)
+        # from existing org_user with invite = Manager
+        mocked_send_mail.reset_mock()
+        user_3 = User.objects.create_user(
+            username='testuser3',
+            password='testpassword3',
+            email='testuser3@test.com'
+        )
+        OrganisationUser.objects.create(
+            user=user_3,
+            organisation=organisation_1
+        )
+        OrganisationInvites.objects.create(
+            user=user_3,
+            joined=True,
+            assigned_as=MANAGER
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_3,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_not_called()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=user_3,
+            organisation=organisation_1
+        ).count(), 1)
+        # from existing org_user without any invite
+        mocked_send_mail.reset_mock()
+        user_4 = User.objects.create_user(
+            username='testuser4',
+            password='testpassword4',
+            email='testuser4@test.com'
+        )
+        OrganisationUser.objects.create(
+            user=user_4,
+            organisation=organisation_1
+        )
+        OrganisationRepresentative.objects.create(
+            user=user_4,
+            organisation=organisation_1
+        )
+        mocked_send_mail.assert_called_once()
+        self.assertEqual(OrganisationUser.objects.filter(
+            user=user_4,
+            organisation=organisation_1
+        ).count(), 1)
+
 
 class OrganisationInvitesModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username='testuser', password='testpassword')
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test")
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,
@@ -470,12 +643,8 @@ class RemindersModelTest(TestCase):
             username='testuser',
             password='testpassword'
         )
-        self.data_use_permission = DataUsePermission.objects.create(
-            name="test"
-        )
         self.organisation = Organisation.objects.create(
-            name="test_organisation",
-            data_use_permission=self.data_use_permission
+            name="test_organisation"
         )
         self.organisation_user = OrganisationUser.objects.create(
             organisation=self.organisation,

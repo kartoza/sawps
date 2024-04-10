@@ -6,6 +6,7 @@ import {
     useGetTaxonDetailQuery,
     TaxonDetail
 } from "../../../services/api";
+import { displayDateTime } from "../../../utils/Helpers";
 
 
 interface TopperProps {
@@ -17,11 +18,19 @@ interface TopperProps {
     species: string;
 }
 
+const getTrendsTitle = (taxonDetail: TaxonDetail) => {
+    if (taxonDetail?.model_updated_on)
+        return `These trend models were created on ${displayDateTime(taxonDetail?.model_updated_on, '-')} using the South African Wildlife Population System (SAWPS). `
+    return 'Insufficient amount of data for this species to generate trend models. '
+}
+
 
 const Topper = () => {
     const [tab, setTab] = useState<string>('')
     const startYearDisabled = ['map', 'charts'].includes(tab);
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
+    const selectedSpeciesList = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpeciesList).split(',').join(', ')
+    const selectedSpeciesListCount = selectedSpeciesList.split(', ').length
     const startYear = useAppSelector((state: RootState) => state.SpeciesFilter.startYear)
     const endYear = useAppSelector((state: RootState) => state.SpeciesFilter.endYear)
     const activityId = useAppSelector((state: RootState) => state.SpeciesFilter.activityId)
@@ -46,9 +55,18 @@ const Topper = () => {
         setTab(pathname)
     }, [window.location.pathname])
 
+    useEffect(() => {
+        if (tab === 'reports') {
+            setSpeciesIcon("/static/images/default-species-topper.svg")
+        }
+    }, [tab])
+
 
     useEffect(() => {
-        if (taxonDetail) {
+        if (tab === 'reports') {
+            setSpeciesIcon("/static/images/default-species-topper.svg")
+        }
+        else if (taxonDetail) {
             if (taxonDetail.topper_icon) {
                 setSpeciesIcon(taxonDetail.topper_icon)
             } else {
@@ -66,15 +84,16 @@ const Topper = () => {
                   </Box>
                   <Box>
                       <Box>
-                          This report was generated on the {todayStr} using the South African Wildlife Population System
-                          (SAWPS).
+                          {tab === 'trends' ? getTrendsTitle(taxonDetail)  : `This report was generated on the ${todayStr} using the South African Wildlife Population System (SAWPS). `}
                           The data presented is based on the following criteria.
                       </Box>
                       <Box className={'topper-detail'}>
                           <Grid container flexDirection={'row'} flexGrow={1}>
                               <Grid item xs>
                                   <Box><img className={'species-image'} src={speciesIcon} alt='Species image'/></Box>
-                                  <Box className={'text-content'}><b>{selectedSpecies}</b></Box>
+                                  <Box className={'text-content'}><b>
+                                      {tab === 'reports' ? `${selectedSpeciesListCount} Species` : selectedSpecies}
+                                  </b></Box>
                               </Grid>
                               <Grid item xs>
                                   <img src="/static/images/separator.svg" alt='Separator'/>
@@ -122,6 +141,9 @@ const Topper = () => {
               </Box>
           </Box>
           <Box className={'topper-grey'} padding={'10px'}>
+              <Box>
+                  <b>Species list</b>: {tab === 'reports' ? selectedSpeciesList: selectedSpecies}
+              </Box>
               <Box>
                   <b>Organisation list</b>: {organisationName}
               </Box>

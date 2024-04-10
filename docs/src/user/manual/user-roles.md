@@ -14,22 +14,6 @@ context_id: Bov9ysSsFG8VhSLC6oQdRF
 
 # User Roles Documentation
 
-User roles are the types of users on SAWPS and affect how they interact with the system.
-There are currently 10 roles:
-
-| Role                          | Description                                                                                                                                      |
-|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Unnamed user**              | A user on the internet who is not registered with the site.                                                                                      |
-| **Floating user**             | A registered user who does not have an organisation and needs to request addition to/of organisation.                                            |
-| **Organisation member**       | A user who is registered on the site and part of an organisation.                                                                                |
-| **Organisation manager**      | A user who is registered on the site and part of an organisation that can add other members to the site.                                         |
-| **Provincial data consumer**  | A decision-maker type user who has access to the site to consume aggregate data about the region but not property specific information.          |
-| **National data consumer**    | A national decision-maker type user who has access to the site to consume aggregate data about the region but not property specific information. |
-| **Provincial data scientist** | A provincial data reviewer that can view data down to property lever and use the data to e.g. planning and permitting.                           |
-| **National data scientist**   | A national data reviewer that can view data down to property lever and use the data for e.g. planning and permitting.                            |
-| **Site administrator**        | A SANBI staff member with superuser access to all functionality on the site and the Django admin page.                                           |
-| **Statistician**              | A user who has access to the statistics portal and R code uploader.                                                                              |
-
 ## User Roles
 
 1. **Unnamed user**: A user on the internet who is not registered with the site.
@@ -38,7 +22,7 @@ There are currently 10 roles:
 
     * **Full access**: The unnamed user has full access to login, register, about, contact, and help page. Unnamed users can access the documentation site.
 
-2. **Floating user**: A registered user who does not have an organisation and needs to request addition to/of an organisation.
+2. **Floating user**: A registered user without an organisation who needs to request an addition to an organisation.
 
     ![Floating user](./img/user-role-2.png)
 
@@ -62,7 +46,7 @@ There are currently 10 roles:
 
         5. **Automated reporting**: Only for their organisation.
 
-        6. **Download csv of data from filtered table**: Can only download reports for their organisation.
+        6. **Download CSV of data from the filtered table**: Can only download reports for their organisation.
 
         7. **Download charts image**: Can only download charts for their organisation.
 
@@ -84,7 +68,7 @@ There are currently 10 roles:
 
         5. **Automated reporting**: Only for their organisation.
 
-        6. **Download csv of data from filtered table**: Can only download reports for their organisation.
+        6. **Download CSV of data from the filtered table**: Can only download reports for their organisation.
 
         7. **Download charts image**: Can only download charts for their organisation.
 
@@ -99,19 +83,19 @@ There are currently 10 roles:
 
         1. **Organisation member page**: Can only add organisation members if instated as a manager of an organisation/ their own organisation.
 
-        2. **Explore page map tab**: Can see mapped aggregate data at a regional scale i.e. provincial, e.g. number of properties per region, number of species per region, number or activities per region.
+        2. **Explore page map tab**: Can see mapped aggregate data at a regional scale i.e. provincial, e.g. number of properties per region, number of species per region, number of activities per region.
 
-        3. **Explore page reports tab**: Can see data tables with aggregate data at a regional scale i.e. provincial, e.g. number of properties per region, number of species per region, number or activities per region.
+        3. **Explore page reports tab**: Can see data tables with aggregate data at a regional scale i.e. provincial, e.g. number of properties per region, number of species per region, and number of activities per region.
 
-        4. **Explore page charts tab**: Can see data charts with aggregate data at a regional scale i.e. provincial, e.g. number of properties per region, number of species per region, number or activities per region.
+        4. **Explore page charts tab**: Can see data charts with aggregate data at a regional scale i.e. provincial, e.g. number of properties per region, number of species per region, and number of activities per region.
 
-        5. **Automated reporting**: Only aggregate data for region.
+        5. **Automated reporting**: Only aggregate data for the region.
 
-        6. **Download csv of data from filtered table**: Can only download aggregate reports data for their region.
+        6. **Download CSV of data from the filtered table**: Can only download aggregate reports data for their region.
 
-        7. **Download charts image**: Can only download aggregate charts data for their region.
+        7. **Download charts image**: Can only download aggregate chart data for their region.
 
-6. **National data consumer**: A national decision-maker type user who has access to the site to consume aggregate data about the region but not property specific information.
+6. **National data consumer**: A national decision-maker-type user who has access to the site to consume aggregate data about the region but not property-specific information.
 
     ![National data consumer](./img/user-role-6.png)
 
@@ -129,11 +113,11 @@ There are currently 10 roles:
 
         5. **Automated reporting**: Only aggregate data for South Africa.
 
-        6. **Download CSV of data from filtered table**: Can only download aggregate reports data for South Africa.
+        6. **Download CSV of data from the filtered table**: Can only download aggregate reports data for South Africa.
 
-        7. **Download charts image**: Can only download aggregate charts data for South Africa.
+        7. **Download charts image**: Can only download aggregate chart data for South Africa.
 
-7. **Provincial data scientist**: A provincial data reviewer that can view data down to property lever and use the data to e.g. planning and permitting.
+7. **Provincial data scientist**: A provincial data reviewer who can view data down to the property level and use the data for e.g. planning and permitting.
 
     ![Provincial data scientist](./img/user-role-7.png)
 
@@ -149,15 +133,15 @@ There are currently 10 roles:
 
         4. **Explore page charts tab**: Can see all data on the SAWPS platform for all properties to property level, and can filter by organisation, property and species at a regional scale.
 
-        5. **Data upload**: Can upload property and species data if they are part of an organisation.
+        5. **Data upload**: Can upload property and species data if they are part of an organisation. Additionally, in the user role as a data scientist, they retain the ability to view data from other organisations.
 
-        6. **Automated reporting**: All types of reports available for regions as per filters applied by the user.
+        6. **Automated reporting**: All types of reports are available for regions as per filters applied by the user.
 
-        7. **Download CSV of data from filtered table**: Can download all types of reports available for regions as per filters applied by the user.
+        7. **Download CSV of data from the filtered table**: Can download all types of reports available for regions as per filters applied by the user.
 
         8. **Download charts image**: Can download all types of charts available for regions as per filters applied by the user.
 
-8. **National data scientist**: A national data reviewer that can view data down to property lever and use the data for e.g. planning and permitting.
+8. **National data scientist**: A national data reviewer who can view data down to the property level and use the data for e.g. planning and permitting.
 
     ![National data scientist](./img/user-role-8.png)
 
@@ -165,19 +149,19 @@ There are currently 10 roles:
 
     * **Access with conditions**: The national data scientist can access the following pages with conditions.
 
-        1. **Organisation member page**: Can only add organisation members if instated as a manager of an organisation/ their own organisation.
+        1. **Organisation member page**: Can only add organisation members if instated as a manager of an organisation or their organisation.
 
-        2. **Explore page map tab**: Can see all data on the map at property level for South Africa and filter by organisation, year and species etc.
+        2. **Explore page map tab**: Can see all data on the map at the property level for South Africa and filter by organisation, year, species etc.
 
         3. **Explore page reports tab**: Can see all data on the SAWPS platform for all properties to property level, and can filter by organisation, property and species for all of South Africa.
 
         4. **Explore page charts tab**: Can see all data on the SAWPS platform for all properties to property level, and can filter by organisation, property and species for all of South Africa.
 
-        5. **Data upload**: Can upload property and species data if they are part of an organisation.
+        5. **Data upload**: Can upload property and species data if they are part of an organisation. Additionally, in the user role as a data scientist, they retain the ability to view data from other organisations.
 
-        6. **Automated reporting**: All types of reports available for South Africa as per filters applied by the user.
+        6. **Automated reporting**: All types of reports are available for South Africa as per filters applied by the user.
 
-        7. **Download CSV of data from filtered table**: Can download all types of reports available for South Africa as per filters applied by the user.
+        7. **Download CSV of data from the filtered table**: Can download all types of reports available for South Africa as per filters applied by the user.
 
         8. **Download charts image**: Can download all types of charts available for South Africa as per filters applied by the user.
 
@@ -185,7 +169,7 @@ There are currently 10 roles:
 
     ![Site administrator](./img/user-role-9.png)
 
-    * **Full access**: The site administrator holds a privileged role with full access to all aspects of the website, as well as on the admin panel.
+    * **Full access**: The site administrator holds a privileged role with full access to all aspects of the website, as well as to the admin panel.
 
 10. **Statistician**: A user who has access to the statistics portal and R code.
 
@@ -197,13 +181,13 @@ There are currently 10 roles:
 
 ## Assigning Roles
 
-This section shows few method on how a user can obtain a role.
+This section shows a few methods on how a user can obtain a role.
 
 
 | Role                          | Assignment Method                                                                                                                                 |
 |-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Organisation member**       | User makes [organisation request](./user-profile/request-organisation.md), or<br/>Site administrator invites a user to an organisation as member. |
-| **Organisation manager**      | Site administrator invites a user to an organisation as manager.                                                                                  |
+| **Organisation manager**      | Site administrator invites a user to an organisation as manager. For detailed instruction on adding/inviting organisation manager click [here](./user-profile/organisation-page.md#add-people-popup-modal). Invite `Organisation Manager` to organisation from Organisation Invites Table in [Django Admin page](../../administrator/manual/django-table.md#organisation-invites-table). Add `Organisation Manager` to organisation from Organisation Manager Table in [Django Admin page](../../administrator/manual/django-table.md#organisation-manager-table)                                                                                 |
 | **Provincial data consumer**  | Add `Provincial data consumer` to user group from User Table in [Django Admin page](../../administrator/manual/django-admin.md).                  |
 | **National data consumer**    | Add `National data consumer` to user group from User Table in [Django Admin page](../../administrator/manual/django-admin.md).                    |
 | **Provincial data scientist** | Add `Provincial data scientist` to user group from User Table in [Django Admin page](../../administrator/manual/django-admin.md).                 |

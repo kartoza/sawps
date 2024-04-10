@@ -112,6 +112,7 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
         aspectRatio: 1.5,
         scales: {
             y: {
+                beginAtZero: true,
                 grace:50,
                 ticks: {
                     color: "#fff"
@@ -119,7 +120,9 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
             },
             x: {
                 ticks: {
-                    color: "#fff"
+                    color: "#fff",
+                    maxRotation: 45,
+                    minRotation: 45
                 }
             }
         },

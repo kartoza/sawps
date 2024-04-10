@@ -76,7 +76,7 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                 ...data,
                 taxon_id: value,
                 taxon_name: _selected.scientific_name,
-                common_name: _selected.common_name_varbatim,
+                common_name: _selected.common_name_verbatim,
                 annual_population: {...data.annual_population},
                 intake_populations: [...data.intake_populations],
                 offtake_populations: [...data.offtake_populations]            
@@ -357,7 +357,6 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 value={moment({'year': data.year})}
                                                 onChange={(newValue: Moment) => updateYearDetail(newValue.year())}
                                                 maxDate={moment({'year': new Date().getFullYear()})}
-                                                disabled={isEdit}
                                             />
                                             <FormHelperText>{' '}</FormHelperText>
                                         </LocalizationProvider>
@@ -421,50 +420,50 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                             <Grid item className='InputContainer'>
                                 <Grid container flexDirection={'row'} spacing={2}>
                                     <Grid item xs={6}>
-                                    <FormControl variant="standard" className='DropdownInput' fullWidth>
-                                        <InputLabel id="sampling-effort-coverage-label">Sampling Effort Coverage</InputLabel>
-                                        <Select
-                                        labelId="sampling-effort-coverage-label"
-                                        id="sampling-effort-coverage-select"
-                                        value={data.annual_population.sampling_effort_coverage_id ? data.annual_population.sampling_effort_coverage_id.toString() : ""}
-                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('sampling_effort_coverage_id', parseInt(event.target.value), sampling_effort_coverages)}
-                                        displayEmpty
-                                        label="Sampling Effort Coverage"
-                                        style={{ width: '300px' }}
-                                        >
-                                        {sampling_effort_coverages.map((common: CommonUploadMetadata) => {
-                                            return (
-                                            <MenuItem key={common.id} value={common.id}>
-                                                {common.name}
-                                            </MenuItem>
-                                            )
-                                        })}
-                                        </Select>
-                                        <FormHelperText>{' '}</FormHelperText>
-                                    </FormControl>
+                                        <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                            <InputLabel id="sampling-effort-coverage-label">Sampling Effort Coverage</InputLabel>
+                                            <Select
+                                                labelId="sampling-effort-coverage-label"
+                                                id="sampling-effort-coverage-select"
+                                                value={data.annual_population.sampling_effort_coverage_id ? data.annual_population.sampling_effort_coverage_id.toString() : ""}
+                                                onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('sampling_effort_coverage_id', parseInt(event.target.value), sampling_effort_coverages)}
+                                                displayEmpty
+                                                label="Sampling Effort Coverage"
+                                                style={{ width: '300px' }}
+                                            >
+                                                {sampling_effort_coverages.map((common: CommonUploadMetadata) => {
+                                                    return (
+                                                    <MenuItem key={common.id} value={common.id}>
+                                                        {common.name}
+                                                    </MenuItem>
+                                                    )
+                                                })}
+                                            </Select>
+                                            <FormHelperText>{' '}</FormHelperText>
+                                        </FormControl>
                                     </Grid>
                                     <Grid item xs={6}>
-                                    <FormControl variant="standard" className='DropdownInput' fullWidth>
-                                        <InputLabel id="population-status-label">Population Status</InputLabel>
-                                        <Select
-                                        labelId="population-status-label"
-                                        id="population-status-select"
-                                        value={data.annual_population.population_status_id ? data.annual_population.population_status_id.toString() : ""}
-                                        onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_status_id', parseInt(event.target.value), population_statuses)}
-                                        displayEmpty
-                                        label="Population Status"
-                                        style={{ width: '300px' }}
-                                        >
-                                        {population_statuses.map((common: CommonUploadMetadata) => {
-                                            return (
-                                            <MenuItem key={common.id} value={common.id}>
-                                                {common.name}
-                                            </MenuItem>
-                                            )
-                                        })}
-                                        </Select>
-                                        <FormHelperText>{' '}</FormHelperText>
-                                    </FormControl>
+                                        <FormControl variant="standard" className='DropdownInput' fullWidth>
+                                            <InputLabel id="population-status-label">Population Status</InputLabel>
+                                            <Select
+                                            labelId="population-status-label"
+                                            id="population-status-select"
+                                            value={data.annual_population.population_status_id ? data.annual_population.population_status_id.toString() : ""}
+                                            onChange={(event: SelectChangeEvent) => updateAnnualPopulationSelectValue('population_status_id', parseInt(event.target.value), population_statuses)}
+                                            displayEmpty
+                                            label="Population Status"
+                                            style={{ width: '300px' }}
+                                            >
+                                            {population_statuses.map((common: CommonUploadMetadata) => {
+                                                return (
+                                                <MenuItem key={common.id} value={common.id}>
+                                                    {common.name}
+                                                </MenuItem>
+                                                )
+                                            })}
+                                            </Select>
+                                            <FormHelperText>{' '}</FormHelperText>
+                                        </FormControl>
                                     </Grid>
                                 </Grid>
                             </Grid>

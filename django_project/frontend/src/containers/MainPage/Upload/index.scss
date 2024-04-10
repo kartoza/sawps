@@ -110,6 +110,9 @@
                     left: 0; top: 0; right: 0; bottom: 0;
                     overflow-y: auto;
                 }
+                .SelectedParcelSection {
+                    font-weight: bold;
+                }
             }
             
             .UploadSectionHelpIcon {
@@ -127,6 +130,7 @@
                     .Select.MuiButton-root {
                         min-width: 110px;
                         background: #FAA755;
+                        width: 100%;
                     }
 
                     .Select.MuiButton-root:hover {
@@ -136,6 +140,7 @@
                     .Digitise.MuiButton-root {
                         min-width: 110px;
                         background: #9D85BE;
+                        width: 100%;
                     }
 
                     .Digitise.MuiButton-root:hover {
@@ -145,15 +150,30 @@
                     .Upload.MuiButton-root {
                         min-width: 110px;
                         background: rgba(40, 40, 41, 0.8);
+                        width: 100%;
                     }
 
                     .Upload.MuiButton-root:hover {
                         background: rgba(40, 40, 41, 0.5);
                     }
 
+                    .Clear.MuiButton-root {
+                        min-width: 110px;
+                        background: rgba(255, 84, 5, 0.8);
+                        width: 100%;
+                    }
+
+                    .Clear.MuiButton-root:hover {
+                        background: rgba(255, 84, 5, 0.5);
+                    }
+
                     .Save {
                         width: 100%;
                     }
+                }
+
+                .hintText {
+                    font-size: small;
                 }
             }
 
@@ -255,6 +275,23 @@
         .ErrorFile{
             background-color: #FF5252;
             height: 30px;
+        }
+        .UploadAlertMessage {
+            text-align: left;
+          
+            .MuiAlert-message {
+              width: 100%;
+            }
+        }
+    }
+}
+
+.UploadedBoundaryTable {
+    font-size: 14px;
+    td.TableCellText {
+        span {
+            height: 40px;
+            line-height: 40px;
         }
     }
 }

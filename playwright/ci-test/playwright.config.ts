@@ -13,8 +13,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
-  /* Run tests in files in parallel */
+  /* Timeout */
   timeout: 30 * 1000,
+  /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
@@ -40,21 +41,28 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'],
-      // Use prepared auth state.
-      storageState: 'tests/.auth/sawps-auth.json',
+        // Use prepared auth state.
+        storageState: 'auth.json',
      },
      dependencies: ['setup'],
     },
-    //
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-    //
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+    /*{
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'],
+        // Use prepared auth state.
+        storageState: 'auth.json',
+      },
+      dependencies: ['setup'],
+    },*/
+    
+    //{
+    //  name: 'webkit',
+    //  use: { ...devices['Desktop Safari'],
+    //    // Use prepared auth state.
+    //    storageState: 'auth.json',
+    //  },
+    //  dependencies: ['setup'],
+    //},
 
     /* Test against mobile viewports. */
     // {

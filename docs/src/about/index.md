@@ -39,6 +39,6 @@ For more information about contributing, click [here](./contributing.md).
 
 This project was conceptualized and initially funded by [South African National Biodiversity Institute](https://www.sanbi.org/).
 
-## Logos
+## Development
 
 Another fine project contributed to by: [Kartoza](https://kartoza.com/) under contract to [IDS](https://ids-cc.co.za/).

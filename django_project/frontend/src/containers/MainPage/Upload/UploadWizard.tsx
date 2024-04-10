@@ -56,6 +56,11 @@ export default function UploadWizard(props: UploadWizardInterface) {
                         <Step2 property={property} onSave={(data: PropertyInterface) => {
                             setProperty(data)
                             setSelectedTab(2)
+                        }} onBoundaryPropertyUpdated={(source: string) => {
+                            setProperty({
+                                ...property,
+                                boundary_source: source
+                            })
                         }} />
                     </TabPanel>
                     <TabPanel key={2} value={selectedTab} index={2} noPadding>

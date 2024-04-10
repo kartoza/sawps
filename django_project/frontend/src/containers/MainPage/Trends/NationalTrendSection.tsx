@@ -6,6 +6,9 @@ import {GrowthDataItem} from './GrowthChart';
 import GroupedGrowthChart from './GroupedGrowthChart';
 import './index.scss';
 import Loading from '../../../components/Loading';
+import AreaAvailableLineChart from "../Metrics/AreaAvailableLineChart";
+import { capitalizeSentence } from '../../../utils/Helpers';
+import { DEFAULT_START_YEAR_FILTER, DEFAULT_END_YEAR_FILTER } from '../../../reducers/SpeciesFilter';
 
 
 interface NationalTrendSectionInterface {
@@ -14,6 +17,17 @@ interface NationalTrendSectionInterface {
 
 const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/'
 
+interface CategoryLabelInterface {
+    [key: string]: string;
+}
+
+const getGrowthChartTitle = (species: string, cat_label: string, labels: CategoryLabelInterface) => {
+    let _title = `${cat_label} ${species} Populations`
+    if (cat_label in labels) {
+        _title = _title + ` (${labels[cat_label]} individuals)`
+    }
+    return capitalizeSentence(_title)
+}
 
 const NationalTrendSection = (props: NationalTrendSectionInterface) => {
     const [populationTrendData, setPopulationTrendData] = useState<PopulationTrendItem[]>([])
@@ -22,6 +36,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
     const [smallPopulationGrowthData, setSmallPopulationGrowthData] = useState<GrowthDataItem[]>([])
     const [loadingTrendData, setLoadingTrendData] = useState(false)
     const [loadingGrowthData, setLoadingGrowthData] = useState(false)
+    const [categoryLabels, setCategoryLabels] = useState<CategoryLabelInterface>({})
 
     const fetchNationalTrendData = (species: string) => {
         setLoadingTrendData(true)
@@ -46,6 +61,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                 let _large: GrowthDataItem[] = []
                 let _medium: GrowthDataItem[] = []
                 let _small: GrowthDataItem[] = []
+                let _labels: CategoryLabelInterface = {}
                 for (let i = 0; i < response.data.length; i++) {
                     let _item = response.data[i] as GrowthDataItem
                     if (_item.pop_size_cat === 'large') {
@@ -55,10 +71,14 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                     } else if (_item.pop_size_cat === 'small') {
                         _small.push(_item)
                     }
+                    if (_item.pop_size_cat_label) {
+                        _labels[_item.pop_size_cat] = _item.pop_size_cat_label
+                    }
                 }
                 setLargePopulationGrowthData(_large)
                 setMediumPopulationGrowthData(_medium)
                 setSmallPopulationGrowthData(_small)
+                setCategoryLabels(_labels)
             }
         }).catch((error) => {
             setLoadingGrowthData(false)
@@ -79,35 +99,46 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                     <Divider />
                 </Grid>
                 <Grid item>
-                    <Grid container flexDirection={'row'} spacing={1}>
-                        <Grid item md={4}>
-                            <Grid container flexDirection={'column'}>
+                    {(loadingTrendData || loadingGrowthData || populationTrendData.length > 0) ? <Grid container flexDirection={'row'} spacing={1}>
+                        <Grid item sm={12} md={12} lg={5}>
+                            <Grid container flexDirection={'column'} className='national-trend-left-side'>
                                 <Grid item>
                                     {!loadingTrendData ?
-                                        <PopulationTrendChart chartId='national-population-trend' chartTitle='National Population Trend' data={populationTrendData} />
+                                        <PopulationTrendChart chartId='national-population-trend' chartTitle={capitalizeSentence(`${props.species} National Population Trend`)} data={populationTrendData} />
                                     : <Loading containerStyle={{minHeight: 160}}/>}
                                 </Grid>
-                                <Grid item>
-                                    
+                                <Grid item></Grid>
+                                <Grid item style={{ marginTop: 15 }}>
+                                    <AreaAvailableLineChart
+                                        propertyId={''}
+                                        startYear={DEFAULT_START_YEAR_FILTER}
+                                        endYear={DEFAULT_END_YEAR_FILTER}
+                                        national={true}
+                                    />
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item md={8}>
+                        <Grid item sm={12} md={12} lg={7}>
                             {!loadingGrowthData ?
                                 <Grid container flexDirection={'column'} spacing={1}>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='large-national-growth-chart' title={`Large ${props.species} Populations`} data={largePopulationGrowthData} />
+                                        <GroupedGrowthChart chartId='large-national-growth-chart' title={getGrowthChartTitle(props.species, 'large', categoryLabels)} data={largePopulationGrowthData} />
                                     </Grid>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='medium-national-growth-chart' title={`Medium ${props.species} Populations`} data={mediumPopulationGrowthData} />
+                                        <GroupedGrowthChart chartId='medium-national-growth-chart' title={getGrowthChartTitle(props.species, 'medium', categoryLabels)} data={mediumPopulationGrowthData} />
                                     </Grid>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='small-national-growth-chart' title={`Small ${props.species} Populations`} data={smallPopulationGrowthData} />                                    
+                                        <GroupedGrowthChart chartId='small-national-growth-chart' title={getGrowthChartTitle(props.species, 'small', categoryLabels)} data={smallPopulationGrowthData} />                                    
                                     </Grid>
                                 </Grid>
                             : <Loading containerStyle={{minHeight: 160}}/>}
                         </Grid>
                     </Grid>
+                    : null}
+                    {(!loadingTrendData && !loadingGrowthData && populationTrendData.length === 0) ? <Box className='SectionEmpty'>
+                        {'Insufficient amount of data for this species to generate trend charts.'}
+                    </Box>
+                    :null}
                 </Grid>
             </Grid>
         </Box>

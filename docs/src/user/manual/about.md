@@ -13,7 +13,7 @@ context_id: A62mBekpvWJ4TnDaLk5eKy
 
 # About SAWPS
 
-Welcome to the about page of the `South African Wildlife Population System (SAWPS)`. This page provides the user with essential information about the platform, its purpose, and how to make the most of the user's experience here.
+Welcome to the `About` page of the `South African Wildlife Population System (SAWPS)`. This page provides the user with essential information about the platform, its purpose, and how to make the most of the user's experience here.
 
 ## About Page
 

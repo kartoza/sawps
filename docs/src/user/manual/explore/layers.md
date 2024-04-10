@@ -13,7 +13,10 @@ context_id: GWy6g9HwvM2cBb3JgtYcyj
 
 # Layers
 
-Welcome to the documentation for map layers available in application. This document provides an overview of the map layers, how to access them, and how to interact with and customise their appearance.
+Welcome to the documentation for map layers available in the application. This document provides an overview of the map layers, how to access them, and how to interact with and customise their appearance.
+
+> DISCLAIMER: Some of the images in the manual may vary slightly from what you see on the platform due to continuous updates to the platform. On the platform you will see `green question mark` ![Help Desk Icon 1](./img/help-icon.png) buttons in the top right corner (underneath the `LOGOUT` button), you can click on these to access the help desk.
+The user can view the layer description by hovering over the layer.
 
 **Layers**
 
@@ -23,7 +26,7 @@ Welcome to the documentation for map layers available in application. This docum
 
 2. **Map**: By clicking on the `MAP` user will able to see map visualisation.
 
-3. **Available Layers**: Available layers side panel, user can use this layers for better visualisation.
+3. **Available Layers**: Available layers side panel, user can use these layers for better visualisation.
 
 ## Map layers
 
@@ -33,9 +36,9 @@ Welcome to the documentation for map layers available in application. This docum
 
     ![Rivers layer with map](./img/layers-3.png)
 
-    1. **Rivers**: `Rivers` layer allows user to see the rivers on map.
+    1. **Rivers**: The `Rivers` layer allows the user to see the rivers on the map.
 
-    2. **Rivers On Map**: Blue lines displays the rivers on map.
+    2. **Rivers On Map**: The blue lines display the rivers on the map.
 
     * **Layer Visibility**: You can control the visibility of the Rivers layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to rivers.
 
@@ -43,11 +46,11 @@ Welcome to the documentation for map layers available in application. This docum
 
     ![Roads layer with map](./img/layers-4.png)
 
-    1. **Roads**: `Roads` layer allows user to see the roads on map.
+    1. **Roads**: The `Roads` layer allows the user to see the roads on the map.
 
-    2. **Roads On Map**: Thin white lines displays the roads on map.
+    2. **Roads On Map**: The thin grey lines display the roads on the map.
 
-    * **Layer Visibility**: You can control the visibility of the roads layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to roads.
+    * **Layer Visibility**: The user can control the visibility of the road layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to roads.
 
 3. **Biome Type Layer**: The `Biome Type Layer` illustrates the various biomes and ecosystems in South Africa. This layer is essential for understanding the different habitats where species are found.
 
@@ -57,9 +60,9 @@ Welcome to the documentation for map layers available in application. This docum
 
     2. **Biome Type Dropdown**: The dropdown displays the names of biome types, with unique colors for easy identification.
 
-    3. **Ecosystem Type**: The map displays ecosystem type name.
+    3. **Ecosystem Type**: The map displays the ecosystem type name.
 
-    * **Layer Visibility**: You can control the visibility of the biome type layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to biome type.
+    * **Layer Visibility**: The user can control the visibility of the biome-type layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to the biome type.
 
 4. **Critical Biodiversity Areas Layer**: The `Critical Biodiversity Areas` layer highlights regions of significant ecological importance and high species diversity. It aids in identifying key areas for conservation efforts.
 
@@ -93,6 +96,10 @@ Welcome to the documentation for map layers available in application. This docum
 
     2. **Property Boundaries Display**: White lines on the map indicate the property boundaries and land divisions.
 
+    3. **Cadastral Cname:** Click on the map to view a cadastral's Cname. Depending on the zoom level this will be the Parent Farm, Farm Portion, Holding, or Erf.
+
+        ![Erf Name](./img/layers-14.png)
+
     * **Layer Visibility**: You can control the visibility of the Cadastral Boundaries layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to cadastral boundaries.
 
 7. **Place Names Layer**: The `Place Names` layer provides information on geographic place names and locations across South Africa. It helps users identify specific locations for their research or exploration.
@@ -111,7 +118,11 @@ Welcome to the documentation for map layers available in application. This docum
 
     1. **Properties**: The `Properties` layer provides detailed information about land parcels and properties within South Africa.
 
-    2. **Property on Map**: This layer displays properties on map.
+    2. **Property on Map**: The red dots display the properties on the map. Until you zoom in more, then the properties are highlighted in red.
+
+        Properties after zooming in
+
+        ![Properties layer with map - zoomed in](./img/layers-13.png)
 
     * **Layer Visibility**: You can control the visibility of the properties layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to properties.
 
@@ -126,7 +137,7 @@ Welcome to the documentation for map layers available in application. This docum
 
     * **Layer Visibility**: You can control the visibility of the NGI aerial imagery layer using the checkbox provided. To show or hide the layer on the map, simply check or uncheck the box next to NGI aerial imagery.
 
-* **Displaying All Layers on the Map**: User can display multiple layers simultaneously to enhance data exploration experience. To display all layers on the map just select all the layers from the side panel. User can also select specific layers according to his/her need.
+* **Displaying All Layers on the Map**: The user can display multiple layers simultaneously to enhance the data exploration experience. To display all layers on the map just select all the layers from the side panel. Users can also select specific layers according to their needs.
 
     ![Displaying All layers on the Map](./img/layers-12.png)
 

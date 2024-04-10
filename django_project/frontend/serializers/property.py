@@ -1,6 +1,5 @@
 """Serializer for property classes."""
 from rest_framework import serializers
-from collections import OrderedDict
 from frontend.serializers.common import NameObjectBaseSerializer
 from property.models import (
     PropertyType,
@@ -8,7 +7,6 @@ from property.models import (
     Property,
     Parcel
 )
-from frontend.utils.parcel import find_layer_by_cname
 
 
 class PropertyTypeSerializer(NameObjectBaseSerializer):
@@ -83,7 +81,7 @@ class PropertySerializer(serializers.ModelSerializer):
             'province', 'province_id',
             'open', 'open_id',
             'size', 'organisation', 'organisation_id',
-            'short_code'
+            'short_code', 'boundary_source'
         ]
 
 
@@ -95,32 +93,16 @@ class ParcelSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
 
     def get_id(self, obj: Parcel):
-        return ''
+        return obj.source_id
 
     def get_cname(self, obj: Parcel):
         return obj.sg_number
 
     def get_layer(self, obj: Parcel):
-        return ''
+        return obj.source
 
     def get_type(self, obj: Parcel):
         return obj.parcel_type.name.lower()
-
-    def to_representation(self, instance: Parcel):
-        representation = (
-            super(ParcelSerializer, self).
-            to_representation(instance)
-        )
-        layer, feature_id = find_layer_by_cname(instance.sg_number)
-        results = []
-        for k, v in representation.items():
-            if k == 'id':
-                results.append((k, feature_id))
-            elif k == 'layer':
-                results.append((k, layer))
-            else:
-                results.append((k, v))
-        return OrderedDict(results)
 
     class Meta:
         model = Parcel
@@ -157,7 +139,8 @@ class PropertyDetailSerializer(PropertySerializer):
             'open', 'open_id',
             'province', 'province_id',
             'size', 'organisation', 'organisation_id',
-            'parcels', 'bbox', 'centroid', 'short_code'
+            'parcels', 'bbox', 'centroid', 'short_code',
+            'boundary_source'
         ]
 
 

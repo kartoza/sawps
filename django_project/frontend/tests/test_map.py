@@ -1,19 +1,25 @@
 import json
 import mock
 import datetime
+from uuid import uuid4
 from importlib import import_module
 from django.db import connection
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry
-from django.test import TestCase
+from django.test import TestCase, Client, override_settings
 from django.urls import reverse
+from django_otp.plugins.otp_totp.models import TOTPDevice
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from core.settings.utils import absolute_path
+from core.settings.utils import absolute_path, DJANGO_ROOT
 from frontend.utils.map import get_map_template_style
 from activity.factories import ActivityTypeFactory
-from property.factories import PropertyFactory, ProvinceFactory
+from property.factories import (
+    PropertyFactory,
+    ProvinceFactory,
+    ParcelFactory
+)
 from stakeholder.models import OrganisationUser
 from stakeholder.factories import (
     organisationFactory,
@@ -24,7 +30,8 @@ from species.factories import TaxonF
 from frontend.models.map_session import MapSession
 from frontend.models.parcels import (
     Erf,
-    Holding
+    Holding,
+    ParentFarm
 )
 from frontend.tests.model_factories import UserF
 from frontend.api_views.map import (
@@ -35,7 +42,8 @@ from frontend.api_views.map import (
     FindPropertyByCoord,
     MapAuthenticate,
     SessionPropertiesLayerMVTTiles,
-    PopulationCountLegends
+    PopulationCountLegends,
+    AerialTile
 )
 from frontend.tests.request_factories import OrganisationAPIRequestFactory
 from sawps.models import ExtendedGroup
@@ -50,6 +58,14 @@ from frontend.utils.map import (
     delete_expired_map_materialized_view,
     generate_map_view,
     generate_population_count_categories
+)
+from frontend.static_mapping import (
+    NATIONAL_DATA_CONSUMER
+)
+from frontend.models.context_layer import (
+    ContextLayer,
+    ContextLayerLegend,
+    Layer
 )
 
 
@@ -86,6 +102,25 @@ def insert_province_geom(id, province_name, geom):
         cursor.execute(sql, [id, geom, province_name])
 
 
+def generate_chunk(x):
+    for i in range(x):
+        yield i
+
+
+class MockResponse:
+    def __init__(self, status_code, headers={}):
+        self.content = 'Test'
+        self.status_code = status_code
+        self.headers = {
+            'Content-Type': 'application/octet-stream'
+        }
+        if headers:
+            self.headers.update(headers)
+
+    def iter_content(self, chunk_size):
+        return generate_chunk(10)
+
+
 class TestMapAPIViews(TestCase):
 
     def setUp(self) -> None:
@@ -113,8 +148,12 @@ class TestMapAPIViews(TestCase):
         self.group_1.permissions.add(view_properties_perm)
         self.superuser = UserF.create(
             username='test_2',
-            is_superuser=True
+            is_superuser=True,
+            is_staff=True,
+            is_active=True
         )
+        TOTPDevice.objects.create(
+            user=self.superuser, name='Test Device', confirmed=True)
         # set active org for superuser
         self.superuser.user_profile.current_organisation = self.organisation_1
         self.superuser.user_profile.save()
@@ -132,6 +171,12 @@ class TestMapAPIViews(TestCase):
             codename='can_view_map_province_layer'
         ).first()
         self.group_2.permissions.add(view_province_perm)
+        # create another user for data consumer
+        self.user_3 = UserF.create(username='test_4')
+        self.data_consumer_group = GroupF.create(name=NATIONAL_DATA_CONSUMER)
+        self.user_3.groups.add(self.data_consumer_group)
+        self.user_3.groups.add(self.group_1)
+        self.data_consumer_group.permissions.add(view_province_perm)
         # insert geom 1 and 2
         geom_path = absolute_path(
             'frontend', 'tests',
@@ -148,6 +193,10 @@ class TestMapAPIViews(TestCase):
             self.holding_1 = Holding.objects.create(
                 geom=GEOSGeometry(geom_str),
                 cname='C1235DEF'
+            )
+            self.parent_farm_1 = ParentFarm.objects.create(
+                geom=GEOSGeometry(geom_str),
+                cname='C1235GHI'
             )
             self.property_1 = PropertyFactory.create(
                 geometry=self.holding_1.geom,
@@ -183,6 +232,26 @@ class TestMapAPIViews(TestCase):
         view = MapStyles.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
+        # using session object
+        taxon = TaxonF.create(
+            scientific_name='Loxodonta africana',
+            colour='#a9a9aa'
+        )
+        filter_species_name = taxon.scientific_name
+        session = MapSession.objects.create(
+            user=self.user_1,
+            created_date=datetime.datetime(2000, 8, 14, 8, 8, 8),
+            expired_date=datetime.datetime(2000, 8, 14, 8, 8, 8),
+            species=filter_species_name
+        )
+        request = self.factory.get(
+            reverse('map-style') + f'/?session={str(session.uuid)}'
+        )
+        request.user = self.user_1
+        request.session = engine.SessionStore(session_key)
+        view = MapStyles.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
 
     def test_map_styles_with_theme_value_for_role(self):
         # test with user role as decision maker
@@ -206,6 +275,13 @@ class TestMapAPIViews(TestCase):
         request.user = self.user_1
         response = get_map_template_style(request, 'session-test', 1)
         self.assertIsNotNone(response['layers'])
+        layers = response['layers']
+        find_layers = [layer for layer in layers if layer['id'] == 'parent_farm-highlighted']
+        self.assertEqual(len(find_layers), 1)
+        self.assertEqual(find_layers[0]['minzoom'], 9)
+        find_layers = [layer for layer in layers if layer['id'] == 'erf-highlighted']
+        self.assertEqual(len(find_layers), 1)
+        self.assertEqual(find_layers[0]['minzoom'], 12)
 
     def test_get_properties_map_tile(self):
         kwargs = {
@@ -232,6 +308,18 @@ class TestMapAPIViews(TestCase):
     def test_find_parcel_by_coord(self):
         lat = -26.71998940486352
         lng = 27.763781680455708
+        lng_2 = 25.763781680455708
+        # test not found
+        request = self.factory.get(
+            reverse('find-parcel') + (
+                f'/?lat={lat}&lng={lng_2}'
+            )
+        )
+        request.user = self.user_1
+        view = FindParcelByCoord.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 404)
+        # test found holding
         request = self.factory.get(
             reverse('find-parcel') + (
                 f'/?lat={lat}&lng={lng}'
@@ -243,6 +331,42 @@ class TestMapAPIViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['layer'], 'holding')
         self.assertEqual(response.data['cname'], self.holding_1.cname)
+        # test has been used, should return 200
+        used_parcel = ParcelFactory.create(
+            sg_number=self.holding_1.cname
+        )
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        used_parcel.delete()
+        # test with zoom
+        request = self.factory.get(
+            reverse('find-parcel') + (
+                f'/?lat={lat}&lng={lng}&zoom=9'
+            )
+        )
+        request.user = self.user_1
+        view = FindParcelByCoord.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['layer'], 'parent_farm')
+        self.assertEqual(response.data['cname'], self.parent_farm_1.cname)
+        # test has been used, should return 200
+        used_parcel = ParcelFactory.create(
+            sg_number=self.parent_farm_1.cname
+        )
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        used_parcel.delete()
+        # test not found
+        request = self.factory.get(
+            reverse('find-parcel') + (
+                f'/?lat={lat}&lng={lng_2}&zoom=9'
+            )
+        )
+        request.user = self.user_1
+        view = FindParcelByCoord.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 404)
 
     def test_find_property_by_coord(self):
         self.user_1.user_profile.current_organisation = self.organisation_1
@@ -303,7 +427,20 @@ class TestMapAPIViews(TestCase):
         view = MapAuthenticate.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 403)
+        # empty token
+        mocked_cache.return_value = None
+        request = self.factory.get(
+            reverse('map-authenticate')
+        )
+        view = MapAuthenticate.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 403)
         # has record in cache, 200
+        request = self.factory.get(
+            reverse('map-authenticate') + (
+                f'/?token={token}'
+            )
+        )
         mocked_cache.return_value = True
         response = view(request)
         self.assertEqual(response.status_code, 200)
@@ -378,6 +515,14 @@ class TestMapAPIViews(TestCase):
         response = view(request, **kwargs)
         # query returns a result, but ST_AsMVTGeom returns null geom
         self.assertEqual(response.status_code, 404)
+        # test with invalid session
+        request = self.factory.get(
+            reverse('session-properties-map-layer', kwargs=kwargs) +
+            f'?session={str(uuid4())}'
+        )
+        request.user = self.user_2
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 404)
 
     def test_population_count_legends(self):
         taxon = TaxonF.create(
@@ -432,6 +577,26 @@ class TestMapAPIViews(TestCase):
         self.assertTrue(
             is_materialized_view_exists(session.province_view_name))
         self.assertTrue(len(response.data['properties']) > 0)
+        self.assertTrue(len(response.data['province']) > 0)
+        # test if data consumer should not have access to properties
+        request = self.factory.post(
+            reverse('properties-map-legends'),
+            data=data, format='json'
+        )
+        request.user = self.user_3
+        view = PopulationCountLegends.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data['session'])
+        session = MapSession.objects.filter(
+            uuid=response.data['session']
+        ).first()
+        self.assertTrue(session)
+        self.assertFalse(
+            is_materialized_view_exists(session.properties_view_name))
+        self.assertTrue(
+            is_materialized_view_exists(session.province_view_name))
+        self.assertTrue(len(response.data['properties']) == 0)
         self.assertTrue(len(response.data['province']) > 0)
 
     def test_generate_population_count_categories_base(self):
@@ -586,10 +751,11 @@ class TestMapAPIViews(TestCase):
         conds, values = get_query_condition_for_population_query(
             filter_year, filter_species_name, filter_activity
         )
-        self.assertEqual(len(conds), 2)
+        self.assertEqual(len(conds), 3)
         self.assertIn('t.scientific_name=%s', conds[0])
-        self.assertIn('ap.year=%s', conds[1])
-        self.assertEqual(len(values), 2)
+        self.assertIn('SELECT 1 FROM annual_population_per_activity appa', conds[1])
+        self.assertIn('ap.year=%s', conds[2])
+        self.assertEqual(len(values), 4)
         filter_year = 2023
         filter_species_name = 'Loxodonta africana'
         filter_activity = f'{activity_type_1.id}'
@@ -600,6 +766,16 @@ class TestMapAPIViews(TestCase):
         self.assertIn('t.scientific_name=%s', conds[0])
         self.assertIn('SELECT 1 FROM annual_population_per_activity appa',
                       conds[1])
+        self.assertIn('ap.year=%s', conds[2])
+        self.assertEqual(len(values), 4)
+        # test with all activity
+        filter_activity = 'all'
+        conds, values = get_query_condition_for_population_query(
+            filter_year, filter_species_name, filter_activity
+        )
+        self.assertEqual(len(conds), 3)
+        self.assertIn('t.scientific_name=%s', conds[0])
+        self.assertIn('SELECT 1 FROM annual_population_per_activity appa', conds[1])
         self.assertIn('ap.year=%s', conds[2])
         self.assertEqual(len(values), 4)
 
@@ -662,6 +838,31 @@ class TestMapAPIViews(TestCase):
         self.assertIn(
             'from property p2 left join', sql_view)
         self.assertEqual(len(query_values), 4)
+        # use filter activity
+        activity_type_1 = ActivityTypeFactory.create()
+        filter_activity = f'{activity_type_1.id}'
+        sql_view, query_values = get_properties_population_query(
+            filter_year, filter_species_name, filter_organisation,
+            filter_activity, filter_spatial, filter_property
+        )
+        self.assertIn('select ap.property_id as id, sum(ap.total) as count',
+                      sql_view)
+        self.assertIn('p2.organisation_id IN %s',
+                      sql_view)
+        self.assertIn('p2.id IN %s',
+                      sql_view)
+        self.assertIn('t.scientific_name=%s',
+                      sql_view)
+        self.assertIn('ap.year=%s',
+                      sql_view)
+        self.assertIn(
+            'select p2.id, p2.name, COALESCE(population_summary.count, 0) '
+            'as count',
+            sql_view
+        )
+        self.assertIn(
+            'from property p2 inner join', sql_view)
+        self.assertEqual(len(query_values), 6)
 
     def test_get_properties_query(self):
         filter_organisation = '1,2,3'
@@ -794,3 +995,81 @@ class TestMapAPIViews(TestCase):
             is_materialized_view_exists(session.properties_view_name))
         self.assertFalse(
             is_materialized_view_exists(session.province_view_name))
+
+    @mock.patch('requests.get')
+    def test_get_aerial_tile(self, mocked_requests):
+        mocked_requests.return_value = MockResponse(404)
+        kwargs = {
+            'z': 14,
+            'x': 9455,
+            'y': 9454
+        }
+        request = self.factory.get(
+            reverse('aerial-map-layer', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = AerialTile.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 404)
+        mocked_requests.return_value = MockResponse(200)
+        request = self.factory.get(
+            reverse('aerial-map-layer', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = AerialTile.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Cache-Control', response.headers)
+        self.assertEqual(response.headers['Cache-Control'], 'max-age=86400')
+        # using cache control from mock
+        mocked_requests.return_value = MockResponse(
+            200, headers={'Cache-Control': 'max-age=300'})
+        request = self.factory.get(
+            reverse('aerial-map-layer', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = AerialTile.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Cache-Control', response.headers)
+        self.assertEqual(response.headers['Cache-Control'], 'max-age=300')
+
+
+    @override_settings(FIXTURE_DIRS=[DJANGO_ROOT])
+    def test_reload_context_layers(self):
+        # fetch fixtures context layer+legends
+        num_of_context_layer = 0
+        num_of_legends = 0
+        num_of_layers = 0
+        json_path = absolute_path(
+            'fixtures', 'context_layer.json'
+        )
+        with open(json_path) as fixtures_json:
+            data = json.load(fixtures_json)
+            num_of_context_layer = len(data)
+            for context_layer in data:
+                num_of_layers += len(context_layer['fields']['layer_names'])
+        json_path = absolute_path(
+            'fixtures', 'context_layer_legend.json'
+        )
+        with open(json_path) as fixtures_json:
+            data = json.load(fixtures_json)
+            num_of_legends = len(data)
+        self.assertTrue(num_of_context_layer > 0)
+        self.assertTrue(num_of_legends > 0)
+        self.assertTrue(num_of_layers > 0)
+        client = Client()
+        client.force_login(self.superuser)
+        response = client.get(
+            reverse('admin:reload-context-layer-fixtures'))
+        self.assertEqual(response.status_code, 302)
+        # assert the total counts
+        self.assertEqual(
+            ContextLayer.objects.all().count(), num_of_context_layer
+        )
+        self.assertEqual(
+            ContextLayerLegend.objects.all().count(), num_of_legends
+        )
+        self.assertEqual(
+            Layer.objects.count(), num_of_layers
+        )

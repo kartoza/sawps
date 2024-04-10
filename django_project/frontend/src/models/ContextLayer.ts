@@ -9,5 +9,15 @@ export default interface ContextLayerInterface {
     layer_names?: string[],
     isSelected?: boolean,
     isExpanded?: boolean,
-    legends: ContextLayerLegendInterface[]
+    legends: ContextLayerLegendInterface[],
+    description?: string
 }
+
+export interface ContextLayerVisibilityPayload {
+    id: number;
+    isVisible: boolean;
+}
+
+
+export const NGI_AERIAL_IMAGERY_LAYER = 'NGI Aerial Imagery'
+export const NGI_LAYER_GROUP = ['Properties', NGI_AERIAL_IMAGERY_LAYER]

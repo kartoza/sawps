@@ -33,6 +33,34 @@ DATA_CONSUMERS = [
 
 DATA_SCIENTISTS = [
     NATIONAL_DATA_SCIENTIST,
-    PROVINCIAL_DATA_SCIENTIST,
-    SUPER_USER
+    PROVINCIAL_DATA_SCIENTIST
 ]
+
+PROVINCIAL_ROLES = {
+    PROVINCIAL_DATA_CONSUMER,
+    PROVINCIAL_DATA_SCIENTIST
+}
+
+NATIONAL_ROLES = {
+    NATIONAL_DATA_CONSUMER,
+    NATIONAL_DATA_SCIENTIST
+}
+
+# Do not allow data consumer to have this permissions
+DATA_CONSUMERS_EXCLUDE_PERMISSIONS = set([
+    'Can view properties trends data',
+    'Can add species population data',
+    'Can edit species population data',
+    'Can view property filter',
+    'Can view organisation filter',
+    'Can view properties layer in the map'
+])
+
+# Do not allow data scientist to have this permissions
+DATA_SCIENTIST_EXCLUDE_PERMISSIONS = set([])
+
+# These are permissions for Data Consumer
+DATA_CONSUMERS_PERMISSIONS = set([
+    'Can view report as data consumer',
+    'Can view report as provincial data consumer'
+])

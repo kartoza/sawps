@@ -2,6 +2,8 @@ from django.test import (
     TestCase,
     RequestFactory
 )
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group, Permission
 from django.urls import reverse
 from django.contrib.sessions.middleware import SessionMiddleware
 from frontend.views.base_view import RegisteredOrganisationBaseView
@@ -13,6 +15,10 @@ from stakeholder.factories import (
 )
 from stakeholder.models import (
     Reminders
+)
+from sawps.models import ExtendedGroup
+from frontend.static_mapping import (
+    ORGANISATION_MEMBER
 )
 
 
@@ -63,6 +69,15 @@ class RegisteredBaseViewTestBase(TestCase):
         self.superuser.save()
 
         self.user_profile_2 = self.user_2.user_profile
+        # create organisation member group with all permission
+        self.group_member, _ = Group.objects.get_or_create(name=ORGANISATION_MEMBER)
+        content_type = ContentType.objects.get_for_model(ExtendedGroup)
+        all_permissions = Permission.objects.filter(content_type=content_type)
+        for perm in all_permissions:
+            self.group_member.permissions.add(perm)
+        self.user_1.groups.add(self.group_member)
+        self.user_2.groups.add(self.group_member)
+
 
     def process_session(self, request):
         self.middleware.process_request(request)
@@ -101,8 +116,6 @@ class RegisteredBaseViewTestBase(TestCase):
         self.assertIn('current_organisation_id', context)
         self.assertIn('organisations', context)
         self.assertGreater(len(context['organisations']), 0)
-        self.assertEqual(context['organisations'][0]['id'],
-                            context['current_organisation_id'])
 
     def do_test_user_without_organisation(self):
         request = self.factory.get(reverse(self.view_name))

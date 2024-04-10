@@ -27,7 +27,7 @@ class UserInfoSerializer(serializers.Serializer):
         return get_user_roles_func(obj)
 
     def get_user_permissions(self, obj: User):
-        return get_user_permissions_func(obj)
+        return sorted(list(get_user_permissions_func(obj)))
 
     class Meta:
         fields = [

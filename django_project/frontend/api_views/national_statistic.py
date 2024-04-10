@@ -119,7 +119,7 @@ class NationalPropertiesView(APIView):
     def get_properties_per_population_category(self) -> QuerySet[Property]:
         """
         Get the filtered queryset
-        of properties owned by the organization.
+        of properties owned by the organisation.
         """
         queryset = Property.objects.filter()
         filtered_queryset = PropertyFilter(
@@ -208,7 +208,7 @@ class NationalActivityCountView(APIView):
             taxa = AnnualPopulation.objects.filter(taxon_id=species).first()
             if taxa:
                 taxon = taxa.taxon
-                common_name = taxon.common_name_varbatim
+                common_name = taxon.common_name_verbatim
                 icon_url = taxon.icon.url if taxon.icon else None
 
             else:
@@ -255,7 +255,7 @@ class NationalActivityCountPerProvinceView(APIView):
 
         # Calculate total area for each species in each province
         for population in annual_population:
-            species_name = population.taxon.common_name_varbatim
+            species_name = population.taxon.common_name_verbatim
             province_name = population.property.province.name
             area_available = population.area_available_to_species
 
@@ -338,7 +338,7 @@ class NationalActivityCountPerPropertyView(APIView):
         # Calculate total area for each species
         # in each province and property type
         for population in annual_populations:
-            species_name = population.taxon.common_name_varbatim
+            species_name = population.taxon.common_name_verbatim
             property_type_name = population.property.property_type.name
             area_available = population.area_available_to_species
 

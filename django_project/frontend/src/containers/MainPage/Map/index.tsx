@@ -37,6 +37,7 @@ import {
   getSelectParcelLayerNames,
   MIN_SELECT_PARCEL_ZOOM_LEVEL,
   MIN_SELECT_PROPERTY_ZOOM_LEVEL,
+  MIN_SEARCH_PARCEL_ZOOM_LEVEL,
   findAreaLayers,
   isContextLayerSelected,
   getMapPopupDescription,
@@ -46,13 +47,16 @@ import {
   MIN_PROVINCE_ZOOM_LEVEL,
   showExtrudeLayer,
   removeExtrudeLayer,
-  fetchAndDrawGeojsonLayerFromUpload
+  fetchAndDrawGeojsonLayerFromUpload,
+  findPropertiesLayer,
+  removeGeojsonLayer
 } from './MapUtility';
 import PropertyInterface from '../../../models/Property';
 import CustomDrawControl from './CustomDrawControl';
 import LoadingIndicatorControl from './LoadingIndicatorControl';
 import {useGetUserInfoQuery} from "../../../services/api";
 import LegendControl from './LegendControl';
+import { setLayerVisibility } from '../../../reducers/LayerFilter';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_PROPERTIES_LEGENDS_URL = '/api/map/legends/properties/'
@@ -224,7 +228,7 @@ export default function Map(props: MapInterface) {
     // call API
     uploadGeoJsonFile(_geojson, _session, (isSuccess, error) => {
       if (isSuccess) {
-        axios.get(`${UPLOAD_FILE_URL}${_session}/search/`).then((response) => {
+        axios.get(`${UPLOAD_FILE_URL}${_session}/search/?search_type=Digitise`).then((response) => {
             setSavingBoundaryDigitise(true)
             dispatch(setSelectedParcels([]))
         }).catch((error) => {
@@ -245,7 +249,7 @@ export default function Map(props: MapInterface) {
     let _mapObj: maplibregl.Map = map.current
     _mapObj.removeControl(mapDraw.current)
     mapDraw.current = null
-    if (success) {
+    if (success === true) {
       dispatch(toggleParcelSelectionMode(uploadMode))
     } else {
       dispatch(toggleDigitiseSelectionMode())
@@ -288,14 +292,14 @@ export default function Map(props: MapInterface) {
   /* End of Map Draw (Digitise) Mode  */
 
   /* Map Legend functions */
-  const updateMapLegends = (currentZoom: number, species: string, provinceCountData: PopulationCountLegend[], propertiesCountData: PopulationCountLegend[]) => {
+  const updateMapLegends = (currentZoom: number, species: string, year: number, provinceCountData: PopulationCountLegend[], propertiesCountData: PopulationCountLegend[]) => {
     if (!mapLegendControlRef.current) return;
     let _legendObj: LegendControl<IControl> = mapLegendControlRef.current
     if (species) {
       if (currentZoom >= MIN_PROVINCE_ZOOM_LEVEL && currentZoom <= MAX_PROVINCE_ZOOM_LEVEL && provinceCountData) {
-        _legendObj.onUpdateLegends(currentZoom, species, provinceCountData)
+        _legendObj.onUpdateLegends(currentZoom, species, year, provinceCountData)
       } else if (currentZoom > MAX_PROVINCE_ZOOM_LEVEL && propertiesCountData) {
-        _legendObj.onUpdateLegends(currentZoom, species, propertiesCountData)
+        _legendObj.onUpdateLegends(currentZoom, species, year, propertiesCountData)
       } else {
         _legendObj.onClearLegends()
       }
@@ -345,14 +349,21 @@ export default function Map(props: MapInterface) {
     if (!isMapReady) return;
     if (contextLayers.length === 0) return;
     if (!map.current) return;
-
     let _mapObj: maplibregl.Map = map.current
     let _parcelLayer = findParcelLayer(contextLayers)
+    let _propertiesLayer = findPropertiesLayer(contextLayers)
     if (typeof _parcelLayer === 'undefined') return;
     if (selectionMode === MapSelectionMode.Parcel) {
       renderHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
     } else {
       removeHighlightParcelLayers(_mapObj, _parcelLayer.layer_names)
+    }
+    // toggle visibility of properties layer
+    if (_propertiesLayer) {
+      dispatch(setLayerVisibility({
+        id: _propertiesLayer.id,
+        isVisible: !(selectionMode === MapSelectionMode.Digitise || selectionMode === MapSelectionMode.Parcel)
+      }))
     }
     if (selectionMode === MapSelectionMode.Digitise) {
       // add Draw Control to the map
@@ -400,7 +411,10 @@ export default function Map(props: MapInterface) {
     if (mapLegendControlRef.current) {
       let _legendObj: LegendControl<IControl> = mapLegendControlRef.current
       if (_legendObj.getCurrentZoom() === zoom) return;
-      updateMapLegends(zoom, selectedSpecies, provinceCounts, propertiesCounts)
+      updateMapLegends(zoom, selectedSpecies, endYear, provinceCounts, propertiesCounts)
+    }
+    if (zoom < MIN_SELECT_PROPERTY_ZOOM_LEVEL && selectedProperty?.id) {
+      dispatch(resetSelectedProperty())
     }
   }, [zoom])
 
@@ -439,7 +453,7 @@ export default function Map(props: MapInterface) {
       // add exporter dialog
       mapNavControl.current = new CustomNavControl({
         showZoom: true,
-        visualizePitch: true
+        showCompass: false
       }, {
         initialTheme: mapTheme,
         onThemeSwitched: () => { dispatch(toggleMapTheme()) }
@@ -455,7 +469,7 @@ export default function Map(props: MapInterface) {
       map.current.on('styledata', mapStyleOnLoaded)
       map.current.on('zoom', () => {
         let _zoom = Math.trunc(map.current.getZoom())
-        if (_zoom < MAX_PROVINCE_ZOOM_LEVEL && mapPopupRef.current) {
+        if (_zoom < MIN_SELECT_PARCEL_ZOOM_LEVEL && mapPopupRef.current) {
           // close popup
           mapPopupRef.current.remove()
           mapPopupRef.current = null
@@ -479,12 +493,12 @@ export default function Map(props: MapInterface) {
     if (selectionMode === MapSelectionMode.None) return;
     let _parcelLayer = findParcelLayer(contextLayers)
     if (typeof _parcelLayer === 'undefined') return;
-    let _mapZoom = map.current.getZoom()
+    let _mapZoom = Math.trunc(map.current.getZoom())
     if (selectionMode === MapSelectionMode.Parcel) {
       // skip search if not in the parcel zoom
       if (_mapZoom < MIN_SELECT_PARCEL_ZOOM_LEVEL) return;
       // find parcel
-      searchParcel(e.lngLat, selectedProperty.id, (parcel: ParcelInterface) => {
+      searchParcel(e.lngLat, selectedProperty.id, _mapZoom, (parcel: ParcelInterface) => {
         if (parcel) {
           dispatch(toggleParcelSelectedState(parcel))
         }
@@ -499,9 +513,9 @@ export default function Map(props: MapInterface) {
       }
       const _parcelLayer = findParcelLayer(contextLayers)
       let _fillParcelLayers:string[] = []
-      if (_mapZoom >= MIN_SELECT_PARCEL_ZOOM_LEVEL && _parcelLayer && _parcelLayer.isSelected) {
+      if (_mapZoom >= MIN_SEARCH_PARCEL_ZOOM_LEVEL && _parcelLayer && _parcelLayer.isSelected) {
         // need to use invisible parcel layers
-        _fillParcelLayers = _parcelLayer.layer_names.map((layer_name) => layer_name !== 'parent_farm' ? `${layer_name}-invisible-fill` : '').filter((layer_name) => layer_name.length > 0)
+        _fillParcelLayers = _parcelLayer.layer_names.map((layer_name) => `${layer_name}-invisible-fill`).filter((layer_name) => layer_name.length > 0)
       }
       let _searchLayers = _layers.filter((layer:any) => _areaSourceLayers.includes(layer['source-layer']) || _fillParcelLayers.includes(layer['id']) ).map((layer:any) => layer.id)
       let features = map.current.queryRenderedFeatures(e.point, { layers: _searchLayers })
@@ -613,6 +627,8 @@ export default function Map(props: MapInterface) {
           })
           fetchAndDrawGeojsonLayerFromUpload(_mapObj, _event.payload[4])
         }
+      } else if (_event.name === MapEvents.BOUNDARY_FILES_REMOVED) {
+        removeGeojsonLayer(_mapObj)
       } else if (_event.name === MapEvents.HIGHLIGHT_SELECTED_PARCEL) {
         if (_event.payload && _event.payload.length === 2) {
           if (highlightedParcel.id) {
@@ -671,13 +687,13 @@ export default function Map(props: MapInterface) {
       if (dynamicMapSession) {
         _queryParams = `session=${dynamicMapSession}`
       }
-      fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies)
+      fetchPopulationCountsLegends(_queryParams, _data, selectedSpecies, endYear)
     }
   }, [props.isDataUpload, dynamicMapSession, endYear, selectedSpecies, organisationId, activityId, spatialFilterValues, propertyId])
 
   /* Use debounce+UseMemo to avoid updating filter (materialized view) frequently when filter is changed */
   /* useMemo is used to avoid the debounce function is recreated during each render (unless MapTheme is changed) */
-  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, bodyData: any, speciesFilters: string) => {
+  const fetchPopulationCountsLegends = React.useMemo(() => debounce((queryParams: string, bodyData: any, speciesFilters: string, year: number) => {
     if (axiosSource.current) axiosSource.current.cancel()
     let cancelPostToken = newCancelToken()
     axios.post(`${MAP_PROPERTIES_LEGENDS_URL}?${queryParams}`, bodyData, {cancelToken: cancelPostToken }).then((response) => {
@@ -689,7 +705,7 @@ export default function Map(props: MapInterface) {
           let _zoom = Math.trunc(map.current.getZoom())
           dispatch(setPopulationCountLegends([_provinceCounts, _propertiesCounts]))
           dispatch(setDynamicMapSession(_session))
-          updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
+          updateMapLegends(_zoom, speciesFilters, year, _provinceCounts, _propertiesCounts)
         } else if (map.current) {
           let _zoom = Math.trunc(map.current.getZoom())
           let _provinceCounts:PopulationCountLegend[] = []
@@ -709,7 +725,7 @@ export default function Map(props: MapInterface) {
               'date': Date.now()
             }))
           }
-          updateMapLegends(_zoom, speciesFilters, _provinceCounts, _propertiesCounts)
+          updateMapLegends(_zoom, speciesFilters, year, _provinceCounts, _propertiesCounts)
         } else {
           // initial map state will not have DynamicMapSession, hence map initialization depends on filters/mapTheme changed
           dispatch(setDynamicMapSession(_session))

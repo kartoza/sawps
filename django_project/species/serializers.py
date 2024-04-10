@@ -14,7 +14,7 @@ class TaxonSerializer(serializers.ModelSerializer):
             "scientific_name",
             # common name is used to autofill common
             # name in online form
-            "common_name_varbatim"
+            "common_name_verbatim"
         ]
 
 
@@ -71,6 +71,19 @@ class FrontPageTaxonSerializer(serializers.ModelSerializer):
 class TrendPageTaxonSerializer(FrontPageTaxonSerializer):
     """Display species data on TrendPage."""
     species_name = serializers.CharField(source='scientific_name')
+    model_updated_on = serializers.SerializerMethodField()
+
+    def get_model_updated_on(self, obj: Taxon):
+        from frontend.models.base_task import DONE
+        from frontend.models.statistical import SpeciesModelOutput
+        latest_model = SpeciesModelOutput.objects.filter(
+            taxon=obj,
+            is_latest=True,
+            status=DONE
+        ).first()
+        if latest_model:
+            return latest_model.generated_on
+        return None
 
     class Meta:
         model = Taxon
@@ -81,5 +94,6 @@ class TrendPageTaxonSerializer(FrontPageTaxonSerializer):
             'topper_icon',
             'total_population',
             'total_area',
-            'colour'
+            'colour',
+            'model_updated_on'
         ]

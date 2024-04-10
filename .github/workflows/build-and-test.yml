@@ -77,6 +77,14 @@ jobs:
             echo "Curl command failed"
             exit 1
           fi
+      - name: Restore map layer schema
+        working-directory: deployment
+        run: |
+          docker cp sanbi_layer_db.dump sanbi_db_1:/home/sanbi_layer_db.dump
+          cat << EOF | docker-compose exec -T db bash
+          cd /home
+          PGPASSWORD=docker pg_restore --clean --if-exists -h 127.0.0.1 -U docker -d django -n layer sanbi_layer_db.dump
+          EOF
       - name: Run Coverage test
         working-directory: deployment
         run: |
@@ -87,6 +95,14 @@ jobs:
           export DJANGO_SETTINGS_MODULE=core.settings.dev && coverage run manage.py test && coverage xml
           EOF
           docker cp sanbi_dev_1:/home/web/django_project/coverage.xml ../coverage.xml
+      - name: Create superuser
+        working-directory: deployment
+        run: |
+          cat << EOF | docker-compose exec -T dev bash
+          export DJANGO_SUPERUSER_PASSWORD=admin
+          python manage.py createsuperuser --no-input --username admin --email 'admin@example.com'
+          python manage.py loaddata fixtures/*.json
+          EOF
       - name: Update dependencies
         working-directory: ./playwright/ci-test
         run: npm install

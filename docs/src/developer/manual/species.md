@@ -12,7 +12,7 @@ license: This program is free software; you can redistribute it and/or modify it
 context_id: oXP2mg4qWnLhMGvPji3tLf
 ---
 
-# API Views
+# API Views 
 
 ::: django_project.species.api_views.upload_species
     handler: python
@@ -71,9 +71,43 @@ context_id: oXP2mg4qWnLhMGvPji3tLf
         show_source: true
 
 
+# Scripts 
+
+::: django_project.species.scripts.data_upload
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.species.scripts.upload_file_scripts
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
 # Test Case
 
 ::: django_project.species.test_species_models
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.species.test_serializer
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true
+
+
+::: django_project.species.test_api_views
     handler: python
     options:
         docstring_style: sphinx
@@ -91,3 +125,11 @@ context_id: oXP2mg4qWnLhMGvPji3tLf
         show_source: true
 
 
+# Views
+
+::: django_project.species.views
+    handler: python
+    options:
+        docstring_style: sphinx
+        heading_level: 1
+        show_source: true

@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Bar} from "react-chartjs-2";
+import { capitalize } from '../../../utils/Helpers';
 
 const GROWTH_COLOR_CATEGORY = [
     "#ED4B00",
@@ -20,6 +21,7 @@ export interface GrowthDataItem {
     sort?: number;
     pop_size_cat?: string;
     province?: string;
+    pop_size_cat_label?: string;
 }
 
 interface GrowthChartInterface {
@@ -31,13 +33,12 @@ interface GrowthDataDict {
     [key: string]: GrowthDataItem[];
 }
 
-// TODO: confirm if we can make these two as constant
 const pop_change_categories = [
-    "decreasing rapidly (>5% pa)",
-    "steady decrease (1-5% pa)",
-    "stable (-1% to 1%)",
-    "steady increase (1-5% pa)",
-    "increasing rapidly (>5% pa)"
+    "Decreasing rapidly (>5% pa)",
+    "Steady decrease (1-5% pa)",
+    "Stable (-1% to 1%)",
+    "Steady increase (1-5% pa)",
+    "Increasing rapidly (>5% pa)"
 ]
 const period_categories = [
     "Last 10 years",
@@ -73,13 +74,14 @@ const GrowthChart = (props: GrowthChartInterface) => {
         let _data: GrowthDataDict = {}
         for (let i=0; i < props.data.length; ++i) {
             let _item = props.data[i];
-            if (_item.pop_change_cat in _data) {
-                _data[_item.pop_change_cat].push({
+            let _pop_cat = capitalize(_item.pop_change_cat)
+            if (_pop_cat in _data) {
+                _data[_pop_cat].push({
                     ..._item,
                     sort: period_categories.findIndex(e => e === _item.period)
                 })
             } else {
-                _data[_item.pop_change_cat] = [{
+                _data[_pop_cat] = [{
                     ..._item,
                     sort: period_categories.findIndex(e => e === _item.period)
                 }]
@@ -116,7 +118,9 @@ const GrowthChart = (props: GrowthChartInterface) => {
                 data: _dataInCategory.map((item) => item.percentage),
                 counts: _dataInCategory.map((item) => item.count),
                 backgroundColor: _color,
-                stack: _category
+                stack: _category,
+                categoryPercentage: 0.9,
+                barPercentage: 0.9
             })
         }
         setChartData({
@@ -131,7 +135,7 @@ const GrowthChart = (props: GrowthChartInterface) => {
         maintainAspectRatio: false,
         scales: {
             y: {
-              grace: '5%',
+              grace: '20%',
               display: true,
               stacked: false,
               title: {
@@ -164,6 +168,10 @@ const GrowthChart = (props: GrowthChartInterface) => {
                 font: {
                     size: 12,
                 },
+                padding: {
+                    top: 0,
+                    bottom: 0
+                },
                 formatter: function(value: any, context: any) {
                     if (context.dataset.counts && context.dataset.counts[context.dataIndex])
                         return `n=${context.dataset.counts[context.dataIndex]}`;
@@ -172,7 +180,7 @@ const GrowthChart = (props: GrowthChartInterface) => {
             },
             legend: {
                 display: true,
-                position: 'right' as 'right',
+                position: 'bottom',
                 labels: {
                     boxWidth: 20,
                     boxHeight: 13,

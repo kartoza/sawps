@@ -17,7 +17,9 @@ export default interface PropertyInterface {
     parcels?: ParcelInterface[],
     bbox?: number[],
     centroid?: number[],
-    short_code?: string
+    short_code?: string,
+    boundary_search_session?: string,
+    boundary_source?: string
 }
 
 export const createNewProperty = ():PropertyInterface => {
@@ -61,4 +63,20 @@ export interface ProvinceInterface {
 export interface OpenCloseInterface {
     id: number,
     name: string
+}
+
+export const SELECT_SOURCE_TYPE = 'selection'
+export const DIGITISE_SOURCE_TYPE = 'digitise'
+export const BOUNDARY_FILE_SOURCE_TYPE = 'boundary_file'
+
+export interface BoundarySearchResultInterface {
+    session: string,
+    status: string,
+    progress: number,
+    parcels?: ParcelInterface[],
+    province: string,
+    property_size_ha: number,
+    type: string,
+    bbox: number[],
+    upload_file_names?: string[]
 }

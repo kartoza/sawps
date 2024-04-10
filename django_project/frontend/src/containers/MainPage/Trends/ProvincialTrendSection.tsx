@@ -6,9 +6,11 @@ import {GrowthDataItem} from './GrowthChart';
 import GroupedGrowthChart from './GroupedGrowthChart';
 import './index.scss';
 import Loading from '../../../components/Loading';
+import {setSelectedProvinceCount} from "../../../reducers/SpeciesFilter";
 
 interface ProvincialTrendSectionInterface {
     species: string;
+    province: string[]
 }
 
 interface ProvincialPopulationTrendDict {
@@ -22,6 +24,8 @@ const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/'
 
 
 const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
+    const [allPopulationTrendData, setAllPopulationTrendData] = useState<ProvincialPopulationTrendDict>({})
+    const [allPopulationGrowthData, setAllPopulationGrowthData] = useState<ProvincialPopulationGrowthDict>({})
     const [populationTrendData, setPopulationTrendData] = useState<ProvincialPopulationTrendDict>({})
     const [populationGrowthData, setPopulatioGrowthData] = useState<ProvincialPopulationGrowthDict>({})
     const [loadingTrendData, setLoadingTrendData] = useState(false)
@@ -49,6 +53,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                         _trendData[_province] = [_item]
                     }
                 }
+                setAllPopulationTrendData({..._trendData})
                 setPopulationTrendData({..._trendData})
             }
         }).catch((error) => {
@@ -81,6 +86,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                         _data[_province] = [_item]
                     }
                 }
+                setAllPopulationGrowthData({..._data})
                 setPopulatioGrowthData({..._data})
             }
         }).catch((error) => {
@@ -94,6 +100,15 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
         fetchProvincialGrowthData(props.species)
     }, [props.species])
 
+    useEffect(() => {
+        setPopulatioGrowthData(
+          Object.fromEntries(Object.entries(allPopulationGrowthData).filter(([key]) => props.province.includes(key)))
+        )
+        setPopulationTrendData(
+          Object.fromEntries(Object.entries(allPopulationTrendData).filter(([key]) => props.province.includes(key)))
+        )
+    }, [props.province])
+
     return (
         <Box className={'SectionContainer'}>
             <Grid container flexDirection={'column'}>
@@ -102,10 +117,10 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                     <Divider />
                 </Grid>
                 <Grid item>
-                    <Grid container flexDirection={'column'} spacing={1}>
+                    {(loadingTrendData || loadingGrowthData || Object.keys(populationTrendData).length > 0) ? <Grid container flexDirection={'column'} spacing={1}>
                         <Grid item>
                             {!loadingTrendData ? 
-                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
+                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 8, xl: 12 }}>
                                 {Object.keys(populationTrendData).map((province, index) => {
                                     return (
                                         <Grid item xs={4} key={index}>
@@ -118,10 +133,10 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                         </Grid>
                         <Grid item>
                             {!loadingGrowthData ? 
-                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 8, md: 12, xl: 12 }}>
+                            <Grid container flexDirection={'row'} spacing={{ xs: 1 }} columns={{ xs: 4, sm: 4, md: 12, xl: 12 }}>
                                 {Object.keys(populationGrowthData).map((province, index) => {
                                     return (
-                                        <Grid item xs={4} key={index}>
+                                        <Grid item xs={4} md={6} key={index}>
                                             <GroupedGrowthChart chartId={`province-growth-chart-${province}`} title={`${province}`} data={populationGrowthData[province]} />
                                         </Grid>
                                     )
@@ -130,6 +145,11 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                             : <Loading containerStyle={{minHeight: 160}}/>}
                         </Grid>
                     </Grid>
+                    : null}
+                    {(!loadingTrendData && !loadingGrowthData && Object.keys(populationTrendData).length === 0) ? <Box className='SectionEmpty'>
+                        {'Insufficient amount of data for this species to generate trend charts.'}
+                    </Box>
+                    :null}
                 </Grid>
             </Grid>
         </Box>

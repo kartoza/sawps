@@ -4,13 +4,15 @@ from frontend.serializers.property import PropertySerializer
 from frontend.serializers.report import (
     SamplingReportSerializer,
     PropertyReportSerializer,
-    SpeciesReportSerializer
+    SpeciesReportSerializer,
+    ActivityReportSerializer
 )
 from frontend.tests.test_data_table import AnnualPopulationTestMixins
 from population_data.models import (
     AnnualPopulation
 )
 from property.factories import PropertyFactory
+from frontend.tests.model_factories import UserF
 
 
 class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
@@ -25,6 +27,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             year=2021, total=30,
             adult_male=10, adult_female=10
         )
+        self.superuser = UserF.create(is_superuser=True)
 
     def test_species_report_serializer(self):
         annual_population = AnnualPopulation.objects.first()
@@ -35,7 +38,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "organisation_name": self.organisation_1.name,
             "organisation_short_code": self.organisation_1.short_code,
             "scientific_name": self.taxon.scientific_name,
-            "common_name": self.taxon.common_name_varbatim,
+            "common_name": self.taxon.common_name_verbatim,
             "year": annual_population.year,
             "group": None,
             "total": annual_population.total,
@@ -46,8 +49,56 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "sub_adult_male": annual_population.sub_adult_male,
             "sub_adult_female": annual_population.sub_adult_female,
             "property_id": self.property.id,
-            "upload_id": annual_population.id
+            "upload_id": annual_population.id,
+            "is_editable": False
         }
+        self.assertEqual(
+            serializer.data,
+            expected_value
+        )
+        other_user = UserF.create()
+        serializer = SpeciesReportSerializer(
+            annual_population,
+            context={
+                'user': other_user
+            }
+        )
+        self.assertEqual(
+            serializer.data,
+            expected_value
+        )
+        # test with superuser
+        serializer = SpeciesReportSerializer(
+            annual_population,
+            context={
+                'user': self.superuser
+            }
+        )
+        expected_value['is_editable'] = True
+        self.assertEqual(
+            serializer.data,
+            expected_value
+        )
+        serializer = SpeciesReportSerializer(
+            annual_population,
+            context={
+                'user': self.annual_populations[0].user
+            }
+        )
+        expected_value['is_editable'] = True
+        self.assertEqual(
+            serializer.data,
+            expected_value
+        )
+        # test with manager
+        serializer = SpeciesReportSerializer(
+            annual_population,
+            context={
+                'user': other_user,
+                'managed_ids': [self.organisation_1.id]
+            }
+        )
+        expected_value['is_editable'] = True
         self.assertEqual(
             serializer.data,
             expected_value
@@ -61,7 +112,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "organisation_name": self.annual_population.property.organisation.name,
             "organisation_short_code": self.annual_population.property.organisation.short_code,
             "scientific_name": self.annual_population.taxon.scientific_name,
-            "common_name": self.annual_population.taxon.common_name_varbatim,
+            "common_name": self.annual_population.taxon.common_name_verbatim,
             "owner": "",
             "owner_email": self.annual_population.property.owner_email,
             "property_type": self.annual_population.property.property_type.name,
@@ -87,7 +138,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             "organisation_short_code": self.organisation_1.short_code,
             "year": annual_population.year,
             "scientific_name": self.taxon.scientific_name,
-            "common_name": self.taxon.common_name_varbatim,
+            "common_name": self.taxon.common_name_verbatim,
             "population_status": "",
             "population_estimate_category": "",
             "survey_method": "",
@@ -100,6 +151,7 @@ class TestReportSerializer(AnnualPopulationTestMixins, TestCase):
             expected_value
         )
 
+
 class TestPropertySerializer(TestCase):
     def setUp(self) -> None:
         self.property = PropertyFactory.create()
@@ -109,9 +161,19 @@ class TestPropertySerializer(TestCase):
         expected_value = [
             'id', 'name', 'owner', 'owner_email', 'property_type', 'property_type_id',
             'province', 'province_id', 'open', 'open_id', 'size', 'organisation',
-            'organisation_id', 'short_code'
+            'organisation_id', 'short_code', 'boundary_source'
         ]
         self.assertEqual(
             sorted(list(serializer.data.keys())),
             sorted(expected_value)
         )
+
+
+class TestActivityReportSerializer(TestCase):
+
+    def test_activity_not_specified(self):
+        with self.assertRaises(ValueError):
+            ActivityReportSerializer(
+                [],
+                many=True
+            )

@@ -116,3 +116,75 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 9. **Save and continue editing**: Save the current record while still showing the current record.
 
 10. **Save**: Save the current record, then redirect to the Django Admin Table or record list.
+
+## Change Taxon
+
+![Change dates and User Info](./img/django-change-data-11.png)
+
+1. **History**: Button to view actions applied to the current record.
+
+2. **Form Fields**: Administrators can edit all taxon details, including scientific name, common name, color variant, infraspecific epithet, taxon rank, parent taxon, visibility settings, and taxon color. Additionally, administrators can edit the icons by modifying the graph icon, and the topper icon and icon will be generated automatically based on the graph icon.
+
+3. **Delete**: The administrators can delete the taxon by clicking on this button. The popup will open to confirm the deletion of the taxon.
+
+3. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+4. **Save and continue editing**: Save the current record while still showing the current record.
+
+5. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
+
+## Change Statistical Model
+
+![Change Statistical Model](./img/django-change-data-13.png)
+
+1. **History**: Button to view actions applied to the current record.
+
+2. **Form Fields**: Statisticians have the ability to update the values of various fields within the form. However, it's important to note that the "Taxon" field is not editable. If a statistician wishes to change the taxon associated with a statistical model, they need to create a new statistical model specifically for the desired taxon. This restriction ensures data integrity and alignment with the taxonomic hierarchy, requiring a distinct model for each taxon to accurately capture and represent statistical nuances unique to that taxon.
+
+![Change Statistical Model](./img/django-change-data-12.png)
+
+3. **Delete Checkbox**: Check mark the checkbox to delete the associated statistical output type.
+
+4. **Delete**: The administrator can delete the statistical model by clicking on the `Delete` button. It will ask for confirmation to delete the statistical model object.
+
+    ![Delete Statistical Model](./img/django-change-data-14.png)
+
+5. **Save and Add Another**: This option saves the current statical record and redirects administrators to a new page to add another statistical record.
+
+6. **Save and Continue Editing**: Choosing this option saves the current statistical record while still displaying the current record for further editing.
+
+7. **Save**: This option saves the current statistical record and redirects administrators to the Django Admin Table/record list.
+
+8. **Data Download Template**: Click on the `Data Download Template` button, to download the CSV file.
+
+## Change Organisation Invites Record
+
+![Change Organisation Invites Record](./img/django-change-data-15.png)
+
+1. **History**: Button to view actions applied to the current record.
+
+2. **Form Fields**: Administrators can edit organisation invite details, including email, user, organisation, joined, user role, assigned as and UUID.
+
+3. **Delete**: The administrators can delete the organisation invite by clicking on this button. The popup will open to confirm the deletion of the organisation invite.
+
+4. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+5. **Save and continue editing**: Save the current record while still showing the current record.
+
+6. **Save**: Save the current record, then redirect to the Django Admin Table/record list.
+
+## Change Organisation Manager Record
+
+![Change Organisation Manager Record](./img/django-change-data-16.png)
+
+1. **History**: Button to view actions applied to the current record.
+
+2. **Form Fields**: Administrators can edit organisation manager details, including organisation and user.
+
+3. **Delete**: The administrators can delete the organisation manager by clicking on this button. The popup will open to confirm the deletion of the organisation manager.
+
+4. **Save and add another**: Save the current record, then redirect to a new page to add a new record.
+
+5. **Save and continue editing**: Save the current record while still showing the current record.
+
+6. **Save**: Save the current record, then redirect to the Django Admin Table/record list.

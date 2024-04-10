@@ -24,6 +24,12 @@ class ContextLayer(models.Model):
                   'E.g ["layer_1", "layer_2"].'
     )
 
+    description = models.CharField(
+        max_length=512,
+        null=True,
+        blank=True
+    )
+
     def __str__(self) -> str:
         return self.name
 
