@@ -26,5 +26,3 @@ class Spreadsheet(models.Model):
 
     class Meta:
         verbose_name = "Spreadsheet"
-
-
