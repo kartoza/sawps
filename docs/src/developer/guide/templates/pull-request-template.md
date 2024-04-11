@@ -5,7 +5,7 @@ summary: The SANBI Wildlife Protection System is a platform to track the populat
 date: 09-11-2023
 some_url: https://github.com/kartoza/sawps/
 copyright: Copyright 2023, SANBI
-contact: PROJECT_CONTACT
+contact: M.Child@sanbi.org.za
 license: This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 context_id: LmD2JcMLJGCcn6yEc4bvKW
 ---
@@ -17,7 +17,7 @@ context_id: LmD2JcMLJGCcn6yEc4bvKW
 ## Description
 
 - Describe the purpose and context of the changes made in this PR.
-- Add screenshots which clarifies the implemented feature, fixed bug etc.
+- Add screenshots that clarify the implemented feature, fixed bug etc.
 
 ## Related Issues
 
@@ -26,7 +26,7 @@ context_id: LmD2JcMLJGCcn6yEc4bvKW
 ## Checklist
 
 - [ ] I have tested the changes.
-- [ ] I have updated documentation if needed.
+- [ ] I have updated the documentation if needed.
 - [ ] My code follows the project's coding standards.
 - [ ] I have added unit tests if applicable.
 
