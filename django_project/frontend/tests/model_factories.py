@@ -16,6 +16,8 @@ from frontend.models.spatial import (
     SpatialDataValueModel
 )
 
+from frontend.models.spreadsheet import Spreadsheet
+
 
 class UserF(factory.django.DjangoModelFactory):
     """Factory for User model."""
@@ -203,7 +205,7 @@ class UploadSpeciesCSVF(factory.django.DjangoModelFactory):
 
 
 class SpatialDataModelF(factory.django.DjangoModelFactory):
-    """Factor for SpatialData model"""
+    """Factory for SpatialData model"""
 
     property = factory.SubFactory(
         'property.factories.PropertyFactory'
@@ -233,3 +235,9 @@ class SpatialDataModelValueF(factory.django.DjangoModelFactory):
 
     class Meta:
         model = SpatialDataValueModel
+
+
+class SpreadsheetModelF(factory.django.DjangoModelFactory):
+    """Factory for Spreadsheet model."""
+    class Meta:
+        model = Spreadsheet
