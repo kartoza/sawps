@@ -66,7 +66,7 @@ export default function PropertySummaryTable(props: PropertySummaryTableInterfac
                             Property Size
                         </TableCell>
                         <TableCell>
-                            {props.propertyItem.size}ha
+                            {props.propertyItem.size ? props.propertyItem.size.toFixed(2) : 0 } ha
                         </TableCell>
                     </TableRow>
                     <TableRow key='organisation'>
