@@ -185,7 +185,10 @@ class PropertyReportSerializer(
         return obj.property.province.name
 
     def get_property_size_ha(self, obj: AnnualPopulation) -> str:
-        return obj.property.property_size_ha
+        return (
+            round(obj.property.property_size_ha, 2) if
+            obj.property.property_size_ha else 0
+        )
 
     def get_open_close_systems(self, obj: AnnualPopulation) -> str:
         return obj.property.open.name if obj.property.open else ""
@@ -197,7 +200,7 @@ class PropertyReportSerializer(
             year=obj.year
         ).aggregate(Sum('area_available_to_species'))
         return (
-            data['area_available_to_species__sum'] if
+            round(data['area_available_to_species__sum'], 2) if
             data['area_available_to_species__sum'] else 0
         )
 
