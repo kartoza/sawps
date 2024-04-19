@@ -22,32 +22,64 @@ from frontend.models import (
     PROVINCIAL_GROWTH
 )
 from frontend.utils.user_roles import check_user_has_permission
+from frontend.utils.statistical_model import store_species_model_output_cache
 
 
 class SpeciesNationalTrend(APIView):
     """Fetch national trend of species."""
     permission_classes = [AllowAny]
 
-    def get_trend_data_from_cache(self, species: Taxon,
-                                  output_type = NATIONAL_TREND):
-        # get latest species model output
+    def get_species_model_output(self, species: Taxon,
+                                 file_should_exists = False):
         model_output = SpeciesModelOutput.objects.filter(
             taxon=species,
             is_latest=True,
             status=DONE
         ).first()
-        if model_output:
-            cache_key = model_output.get_cache_key(output_type)
-            cached_data = cache.get(cache_key)
-            if cached_data:
-                return cached_data
-        return []
+        if model_output is None:
+            return None
+        if not file_should_exists:
+            return model_output
+        if (
+            model_output.output_file and
+            model_output.output_file.storage.exists(
+                model_output.output_file.name)
+        ):
+            return model_output
+        return None
+
+    def get_trend_data_by_type(self, model_output: SpeciesModelOutput,
+                               output_type = NATIONAL_TREND):
+        if model_output is None:
+            return []
+        # try getting from cache
+        cache_key = model_output.get_cache_key(output_type)
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return cached_data
+        # fetch from json file and store into cache
+        if not (
+            model_output.output_file and
+            model_output.output_file.storage.exists(
+                model_output.output_file.name)
+        ):
+            return []
+        trends = []
+        with model_output.output_file.open('r') as json_file:
+            json_dict = json.load(json_file)
+            store_species_model_output_cache(model_output, json_dict)
+            if output_type in json_dict:
+                trends = json_dict[output_type]
+        return trends
+
 
     def get(self, *args, **kwargs):
         species_id = kwargs.get('species_id')
         species = get_object_or_404(Taxon, id=species_id)
+        model_output = self.get_species_model_output(species)
+        data = self.get_trend_data_by_type(model_output)
         return Response(
-            status=200, data=self.get_trend_data_from_cache(species))
+            status=200, data=data)
 
 
 class SpeciesTrend(SpeciesNationalTrend):
@@ -58,22 +90,6 @@ class SpeciesTrend(SpeciesNationalTrend):
         Response: JSON response containing trend data.
     """
     permission_classes = [IsAuthenticated]
-
-    def get_model_output(self, species: Taxon):
-        model_output = SpeciesModelOutput.objects.filter(
-            taxon=species,
-            is_latest=True,
-            status=DONE
-        ).first()
-        if model_output is None:
-            return None
-        if (
-            model_output.output_file and
-            model_output.output_file.storage.exists(
-                model_output.output_file.name)
-        ):
-            return model_output
-        return None
 
     def get_properties_names(self):
         filter_property = self.request.data.get('property', None)
@@ -118,9 +134,11 @@ class SpeciesTrend(SpeciesNationalTrend):
                     )
                 }
             )
+        model_output = self.get_species_model_output(species)
+        data = self.get_trend_data_by_type(model_output, output_type)
         return Response(
             status=200,
-            data=self.get_trend_data_from_cache(species, output_type))
+            data=data)
 
     def post(self, *args, **kwargs):
         if not self.can_view_properties_trends():
@@ -132,7 +150,8 @@ class SpeciesTrend(SpeciesNationalTrend):
         species = get_object_or_404(
             Taxon, scientific_name=species_name
         )
-        model_output = self.get_model_output(species)
+        model_output = self.get_species_model_output(
+            species, file_should_exists=True)
         if model_output is None:
             return Response(status=200, data=[])
         properties = self.get_properties_names()
@@ -154,7 +173,8 @@ class DownloadTrendDataAsJson(SpeciesTrend):
         species = get_object_or_404(
             Taxon, scientific_name=species_name
         )
-        model_output = self.get_model_output(species)
+        model_output = self.get_species_model_output(
+            species, file_should_exists=True)
         if model_output is None:
             return Response(status=404, data={
                 'detail': 'Empty data model for given species!'
