@@ -240,7 +240,7 @@ export const searchProperty = (lngLat: maplibregl.LngLat, callback: (parcel: Pro
 const FEATURE_NAME_MAPPING:{ [id: string] : string; } = {
     'ecosystems': 'name_18',
     'biodiversity': 'sensfeat',
-    'protected': 'site_type',
+    'protected': 'cur_nme',
     'erf': 'cname',
     'farm_portion': 'cname',
     'holding': 'cname',
