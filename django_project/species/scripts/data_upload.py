@@ -324,12 +324,16 @@ class SpeciesCSVUpload(object):
     def sampling_effort(self, row):
         sampling_effort = self.row_value(row, SAMPLING_EFFORT)
         if sampling_effort:
-            sampling_eff, c = SamplingEffortCoverage.objects.get_or_create(
-                name__iexact=sampling_effort,
-                defaults={
-                    'name': sampling_effort
-                }
-            )
+            try:
+                sampling_eff = SamplingEffortCoverage.objects.get(
+                    name__iexact=sampling_effort
+                )
+            except SamplingEffortCoverage.DoesNotExist:
+                self.error_row(
+                    f"Sampling effort coverage '{sampling_effort}' "
+                    "does not exist"
+                )
+                return None
             return sampling_eff
         return None
 
@@ -349,47 +353,67 @@ class SpeciesCSVUpload(object):
         return None
 
     # Save Survey method
-    def survey_method(self, survey):
+    def survey_method(self, row):
         """Get survey method."""
-        if not survey:
-            return None
+        survey = self.row_value(row, SURVEY_METHOD)
+        if survey:
+            try:
+                survey_method = SurveyMethod.objects.get(
+                    name__iexact=survey
+                )
+            except SurveyMethod.DoesNotExist:
+                self.error_row(
+                    f"Survey method '{survey}' does not exist"
+                )
+                return None
+            return survey_method
+        return None
 
-        else:
-            survey, created = SurveyMethod.objects.get_or_create(
-                name__iexact=survey,
-                defaults={
-                    'name': survey
-                }
-            )
-            return survey
-
-    def population_estimate_category(self, pop_est):
+    def population_estimate_category(self, row):
         """ Save Population estimate category.
         """
-        if not pop_est:
-            return None
-        else:
-            p, pc = PopulationEstimateCategory.objects.get_or_create(
-                    name__iexact=pop_est,
-                    defaults={
-                        'name': pop_est
-                    }
-            )
-            return p
+        pop_est = self.row_value(row, POPULATION_ESTIMATE_CATEGORY)
+        if pop_est:
+            try:
+                pop_est_cat = PopulationEstimateCategory.objects.get(
+                    name__iexact=pop_est
+                )
+            except PopulationEstimateCategory.DoesNotExist:
+                self.error_row(
+                    f"Population estimate category '{pop_est}' does not exist"
+                )
+                return None
+            return pop_est_cat
+        return None
 
-    def population_status(self, pop_st):
+    def population_status(self, row):
         """ Fetch Population status.
         """
-        if not pop_st:
-            return None
-        else:
-            p, pc = PopulationStatus.objects.get_or_create(
-                    name__iexact=pop_st,
-                    defaults={
-                        'name': pop_st
-                    }
+        pop_st = self.row_value(row, POPULATION_STATUS)
+        if pop_st:
+            try:
+                population_st = PopulationStatus.objects.get(
+                    name__iexact=pop_st
+                )
+            except PopulationStatus.DoesNotExist:
+                self.error_row(
+                    f"Population status '{pop_st}' does not exist"
+                )
+                return None
+            return population_st
+        return None
+
+    def activity_type(self, activity):
+        try:
+            activity_obj = ActivityType.objects.get(
+                name__iexact=activity
             )
-            return p
+        except ActivityType.DoesNotExist:
+            self.error_row(
+                f"Activity '{activity}' does not exist"
+            )
+            return None
+        return activity_obj
 
 
     def check_compulsory_fields(self, row):
@@ -408,13 +432,9 @@ class SpeciesCSVUpload(object):
     ):
 
         pop = None
-        activity_type, _ = ActivityType.objects.get_or_create(
-            name__iexact=activity,
-            defaults={
-                'name': activity,
-                'recruitment': activity == ACTIVITY_TRANSLOCATION_INTAKE
-            }
-        )
+        activity_type = self.activity_type(activity)
+        if activity_type is None:
+            return pop
         try:
             pop, in_c = AnnualPopulationPerActivity.objects.get_or_create(
                 activity_type=activity_type,
@@ -498,8 +518,7 @@ class SpeciesCSVUpload(object):
                         )
             )
 
-        survey = self.row_value(row, SURVEY_METHOD)
-        survey_method = self.survey_method(survey)
+        survey_method = self.survey_method(row)
         survey_other = self.row_value(row, IF_OTHER_SURVEY)
         sur_other = None
         if survey_method and survey_method.name == IF_OTHER_SURVEY_VAL:
@@ -511,10 +530,8 @@ class SpeciesCSVUpload(object):
             sur_other = survey_other
 
         open_close_system = self.open_close_system(row)
-        population_st_value = self.row_value(row, POPULATION_STATUS)
-        population_status = self.population_status(population_st_value)
-        pop_est = self.row_value(row, POPULATION_ESTIMATE_CATEGORY)
-        population_estimate = self.population_estimate_category(pop_est)
+        population_status = self.population_status(row)
+        population_estimate = self.population_estimate_category(row)
         population_other = self.row_value(row, IF_OTHER_POPULATION)
         pop_other = None
         if population_estimate and \
@@ -536,6 +553,7 @@ class SpeciesCSVUpload(object):
         count_total = self.row_value(row, COUNT_TOTAL)
         presence = self.row_value(row, PRESENCE)
         pop_certainty = self.row_value(row, POPULATION_ESTIMATE_CERTAINTY)
+        sampling_effort_coverage = self.sampling_effort(row)
 
         if property and taxon and self.check_if_not_superuser():
             is_organisation_manager = (
@@ -615,7 +633,7 @@ class SpeciesCSVUpload(object):
                         self.row_value(row, LOWER))),
                     'certainty_of_bounds': int(string_to_number(
                         self.row_value(row, CERTAINTY_OF_POPULATION))),
-                    'sampling_effort_coverage': self.sampling_effort(row),
+                    'sampling_effort_coverage': sampling_effort_coverage,
                     'population_estimate_certainty': int(
                         string_to_number(pop_certainty)),
                     'population_estimate_category': population_estimate,
