@@ -1,0 +1,65 @@
+[
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 1,
+    "fields": {
+        "name": "Rough guess (guesstimate)"
+    }
+},
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 2,
+    "fields": {
+        "name": "Ad hoc or opportunistic monitoring"
+    }
+},
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 3,
+    "fields": {
+        "name": "Formal survey/census: total count (the total reserve sampled in an attempt to count all individuals present, e.g., helicopter total count)"
+    }
+},
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 4,
+    "fields": {
+        "name": "Formal survey/census: total population estimated from sample counts (a sample of the total reserve area was surveyed, e.g., aerial or ground transects/blocks, a camera trap array)"
+    }
+},
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 5,
+    "fields": {
+        "name": "Database of known individuals (not all individuals known, minimum estimate)"
+    }
+},
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 6,
+    "fields": {
+        "name": "Exact or near-exact estimate: all individuals or groups are known"
+    }
+},
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 7,
+    "fields": {
+        "name": "Extrapolation from previous population estimate"
+    }
+},
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 8,
+    "fields": {
+        "name": "Unknown how estimate was reached"
+    }
+},
+{
+    "model": "population_data.populationestimatecategory",
+    "pk": 9,
+    "fields": {
+        "name": "Other (please describe how the population size estimate was determined)"
+    }
+}
+]

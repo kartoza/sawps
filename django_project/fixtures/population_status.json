@@ -1,0 +1,23 @@
+[
+{
+    "model": "population_data.populationstatus",
+    "pk": 1,
+    "fields": {
+        "name": "Resident"
+    }
+},
+{
+    "model": "population_data.populationstatus",
+    "pk": 2,
+    "fields": {
+        "name": "Migratory"
+    }
+},
+{
+    "model": "population_data.populationstatus",
+    "pk": 3,
+    "fields": {
+        "name": "Partially open"
+    }
+}
+]

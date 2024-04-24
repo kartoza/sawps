@@ -14,6 +14,9 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     OpenCloseSystem,
+    PopulationStatus,
+    SamplingEffortCoverage,
+    PopulationEstimateCategory
 )
 from property.models import Property
 from property.factories import PropertyFactory
@@ -41,6 +44,7 @@ from stakeholder.factories import (
     organisationUserFactory
 )
 from population_data.factories import AnnualPopulationF
+from occurrence.models import SurveyMethod
 
 
 def mocked_run_func(encoding):
@@ -49,6 +53,14 @@ def mocked_run_func(encoding):
 
 class TestUploadSpeciesApiView(TestCase):
     """Test api view species uploader"""
+    fixtures = [
+        'activity_type.json',
+        'open_close_systems.json',
+        'population_status.json',
+        'sampling_effort_coverage.json',
+        'survey_methods',
+        'population_estimate_category.json'
+    ]
 
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -77,26 +89,9 @@ class TestUploadSpeciesApiView(TestCase):
         self.property.refresh_from_db()
         self.token = '8f1c1181-982a-4286-b2fe-da1abe8f7174'
         self.api_url = '/api/upload-species/'
-        ActivityType.objects.create(
-            name="Unplanned/Illegal Hunting")
-        ActivityType.objects.create(
-            name="Planned Euthanasia/DCA")
-        ActivityType.objects.create(
-            name="Planned Hunt/Cull")
-        ActivityType.objects.create(
-            name="Translocation (Intake)")
-        ActivityType.objects.create(
-            name="Translocation (Offtake)")
         self.lion = Taxon.objects.create(
             scientific_name='Panthera leo',
             common_name_verbatim='Lion'
-        )
-
-        OpenCloseSystem.objects.create(
-            name='Open'
-        )
-        OpenCloseSystem.objects.create(
-            name='Closed'
         )
 
     def test_upload_species_without_login(self):
@@ -290,7 +285,7 @@ class TestUploadSpeciesApiView(TestCase):
             offtake_permit="DEF100X10"
         ).count(), 1)
 
-        self.assertTrue(OpenCloseSystem.objects.all().count() == 2)
+        self.assertTrue(OpenCloseSystem.objects.all().count() == 3)
 
     def test_upload_species_status(self):
         """Test upload species status."""
@@ -1189,3 +1184,27 @@ class TestUploadSpeciesApiView(TestCase):
         )
         self.assertFalse(intake)
         self.assertEqual(len(file_upload.row_error), 1)
+        # test with invalid activity type
+        file_upload.row_error = []
+        intake = file_upload.save_population_per_activity(
+            row, 'invalid', 2023,
+            annual, INTRODUCTION_TOTAL,
+            INTRODUCTION_TOTAL_MALES, INTRODUCTION_TOTAL_FEMALES,
+            INTRODUCTION_MALE_JUV, INTRODUCTION_FEMALE_JUV
+        )
+        self.assertFalse(intake)
+        self.assertEqual(len(file_upload.row_error), 1)
+
+    def test_invalid_dropdown_values(self):
+        file_upload = SpeciesCSVUpload()
+        row = {
+            SAMPLING_EFFORT: '',
+            SURVEY_METHOD: 'invalid',
+            PRESENCE: 'invalid',
+            OPEN_SYS: ''
+        }
+        self.assertFalse(file_upload.sampling_effort(row))
+        self.assertFalse(file_upload.survey_method(row))
+        self.assertFalse(file_upload.presence(row))
+        self.assertFalse(file_upload.open_close_system(row))
+        self.assertEqual(len(file_upload.row_error), 2)

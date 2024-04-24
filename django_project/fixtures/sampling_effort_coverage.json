@@ -1,0 +1,26 @@
+[
+{
+    "model": "population_data.samplingeffortcoverage",
+    "pk": 1,
+    "fields": {
+        "name": "Low/poor: only a small number of sample units (transects, camera traps, etc) that cover a small part of the reserve or are biased to certain areas",
+        "sort_order": 1
+    }
+},
+{
+    "model": "population_data.samplingeffortcoverage",
+    "pk": 2,
+    "fields": {
+        "name": "Medium/fair: sample units (transects, camera traps, etc) cover a fair proportion of the reserve and are fairly evenly spread",
+        "sort_order": 2
+    }
+},
+{
+    "model": "population_data.samplingeffortcoverage",
+    "pk": 3,
+    "fields": {
+        "name": "High/good: a good number of sample units cover a large proportion of the reserve area and are randomly/evenly spread",
+        "sort_order": 3
+    }
+}
+]

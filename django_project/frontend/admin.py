@@ -20,7 +20,8 @@ from frontend.models import (
     StatisticalModelOutput,
     Layer,
     MapSession,
-    SpeciesModelOutput
+    SpeciesModelOutput,
+    UploadSpeciesCSV
 )
 from frontend.models.spatial import SpatialDataModel, SpatialDataValueModel
 from frontend.tasks import (
@@ -404,6 +405,13 @@ class MapSessionAdmin(admin.ModelAdmin):
     list_filter = ['user']
 
 
+class UploadSpeciesCSVAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'uploader', 'property', 'uploaded_at'
+    )
+    list_filter = ['uploader']
+
+
 admin.site.register(ContextLayer, ContextLayerAdmin)
 admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
@@ -415,3 +423,4 @@ admin.site.register(SpatialDataModel, SpatialDataModelAdmin)
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(MapSession, MapSessionAdmin)
 admin.site.register(SpeciesModelOutput, SpeciesModelOutputAdmin)
+admin.site.register(UploadSpeciesCSV, UploadSpeciesCSVAdmin)
