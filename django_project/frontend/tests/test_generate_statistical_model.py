@@ -5,7 +5,7 @@ import csv
 import requests_mock
 import json
 from django.test import TestCase
-from species.factories import TaxonF
+from species.factories import TaxonF, TaxonRankFactory
 from population_data.factories import AnnualPopulationF
 from frontend.models.base_task import DONE, PROCESSING, ERROR, PENDING
 from frontend.models.statistical import (
@@ -176,8 +176,11 @@ class TestGenerateStatisticalModel(TestCase):
     @mock.patch('frontend.tasks.start_plumber.'
                 'start_plumber_process.apply_async')
     def test_check_affected_model_output(self, mocked_process):
-        taxon_a = TaxonF.create()
-        taxon_b = TaxonF.create()
+        species_rank = TaxonRankFactory.create(
+            name='Species'
+        )
+        taxon_a = TaxonF.create(taxon_rank=species_rank)
+        taxon_b = TaxonF.create(taxon_rank=species_rank)
         non_generic_model = StatisticalModelF.create(
             taxon=taxon_a
         )
