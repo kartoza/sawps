@@ -14,6 +14,9 @@ from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity,
     OpenCloseSystem,
+    PopulationStatus,
+    SamplingEffortCoverage,
+    PopulationEstimateCategory
 )
 from property.models import Property
 from property.factories import PropertyFactory
@@ -41,6 +44,7 @@ from stakeholder.factories import (
     organisationUserFactory
 )
 from population_data.factories import AnnualPopulationF
+from occurrence.models import SurveyMethod
 
 
 def mocked_run_func(encoding):
@@ -97,6 +101,56 @@ class TestUploadSpeciesApiView(TestCase):
         )
         OpenCloseSystem.objects.create(
             name='Closed'
+        )
+        PopulationStatus.objects.create(
+            name='Resident'
+        )
+        SamplingEffortCoverage.objects.create(
+            name=(
+                'Medium/fair: sample units (transects, camera traps, etc) '
+                'cover a fair proportion of the reserve and are '
+                'fairly evenly spread'
+            )
+        )
+        SamplingEffortCoverage.objects.create(
+            name=(
+                'High/good: a good number of sample units cover '
+                'a large proportion of the reserve area and are '
+                'randomly/evenly spread'
+            )
+        )
+        SamplingEffortCoverage.objects.create(
+            name=(
+                'Low/poor: only a small number of sample units '
+                '(transects, camera traps, etc) that cover a small part '
+                'of the reserve or are biased to certain areas'
+            )
+        )
+        SurveyMethod.objects.create(
+            name='Aerial census - sample count (transects or blocks)'
+        )
+        SurveyMethod.objects.create(
+            name='Other - please explain'
+        )
+        SurveyMethod.objects.create(
+            name='Aerial census – total count – helicopter'
+        )
+        SurveyMethod.objects.create(
+            name='Call-up survey'
+        )
+        PopulationEstimateCategory.objects.create(
+            name='Other (please describe how the population size '
+            'estimate was determined)'
+        )
+        PopulationEstimateCategory.objects.create(
+            name='Exact or near-exact estimate: all individuals or '
+            'groups are known'
+        )
+        PopulationEstimateCategory.objects.create(
+            name='Ad hoc or opportunistic monitoring'
+        )
+        PopulationEstimateCategory.objects.create(
+            name='Extrapolation from previous population estimate'
         )
 
     def test_upload_species_without_login(self):
