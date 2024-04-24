@@ -415,6 +415,15 @@ class SpeciesCSVUpload(object):
             return None
         return activity_obj
 
+    def presence(self, row):
+        """Fetch presence value."""
+        presence = self.row_value(row, PRESENCE)
+        value = map_string_to_value(presence, PRESENCE_VALUE_MAPPING)
+        if value is None:
+            self.error_row(
+                f"Presence '{presence}' does not exist"
+            )
+        return value
 
     def check_compulsory_fields(self, row):
         """Check if compulsory fields are empty."""
@@ -551,7 +560,7 @@ class SpeciesCSVUpload(object):
                     message=f"'{YEAR}' with value {year} exceeds current year."
                 )
         count_total = self.row_value(row, COUNT_TOTAL)
-        presence = self.row_value(row, PRESENCE)
+        presence = self.presence(row)
         pop_certainty = self.row_value(row, POPULATION_ESTIMATE_CERTAINTY)
         sampling_effort_coverage = self.sampling_effort(row)
 
@@ -625,8 +634,7 @@ class SpeciesCSVUpload(object):
                     'group': int(string_to_number(self.row_value(row, GROUP))),
                     'open_close_system': open_close_system,
                     'survey_method': survey_method,
-                    'presence': map_string_to_value(
-                        presence, PRESENCE_VALUE_MAPPING),
+                    'presence': presence,
                     'upper_confidence_level': float(string_to_number(
                         self.row_value(row, UPPER))),
                     'lower_confidence_level': float(string_to_number(
