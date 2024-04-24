@@ -3,7 +3,7 @@ from django.test import TestCase
 import mock
 import requests_mock
 from collections import OrderedDict
-from species.factories import TaxonF
+from species.factories import TaxonF, TaxonRankFactory
 from frontend.models.statistical import (
     NATIONAL_TREND,
     PROVINCE_TREND,
@@ -233,8 +233,21 @@ class TestStatisticalUtils(TestCase):
         self.assertTrue(output.is_outdated)
 
     def test_init_species_model_output(self):
-        taxon_a = TaxonF.create()
-        taxon_b = TaxonF.create()
+        species_rank = TaxonRankFactory.create(
+            name='Species'
+        )
+        family_rank = TaxonRankFactory.create(
+            name='Family'
+        )
+        taxon_a = TaxonF.create(
+            taxon_rank=species_rank
+        )
+        taxon_b = TaxonF.create(
+            taxon_rank=species_rank
+        )
+        taxon_c = TaxonF.create(
+            taxon_rank=family_rank
+        )
         non_generic_model = StatisticalModelF.create(
             taxon=taxon_a
         )
