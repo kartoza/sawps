@@ -61,6 +61,25 @@ def mocked_property_trend():
     })
 
 
+def mocked_national_trend():
+    return OrderedDict({
+        "national_trend": [
+            {
+                "year": 1903,
+                "sum_fitted": 1006.3,
+                "lower_ci": -709.7,
+                "upper_ci": 2722.29
+            },
+            {
+                "year": 1904,
+                "sum_fitted": 960.7,
+                "lower_ci": -710.96,
+                "upper_ci": 2632.35
+            }
+        ]
+    })
+
+
 def mocked_cache_get(self, *args, **kwargs):
     return OrderedDict({
         'test': '12345'
@@ -121,14 +140,16 @@ class TestAPIStatistical(TestCase):
 
     @mock.patch('django.core.cache.cache.get',
                 mock.Mock(side_effect=mocked_cache_get_empty))
+    @mock.patch('django.core.cache.cache.set',
+                mock.Mock(side_effect=mocked_cache_get_empty))
     def test_national_trend_without_cache(self):
-        SpeciesModelOutputF.create(
+        model = StatisticalModelF.create(
+            taxon=self.taxon
+        )
+        output = SpeciesModelOutputF.create(
             taxon=self.taxon,
             is_latest=True,
             status=DONE
-        )
-        model = StatisticalModelF.create(
-            taxon=self.taxon
         )
         StatisticalModelOutputF.create(
             model=model,
@@ -145,6 +166,16 @@ class TestAPIStatistical(TestCase):
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [])
+        # test with file
+        output.output_file.save('test.json', ContentFile(json.dumps(mocked_national_trend())))
+        request = self.factory.get(
+            reverse('species-national-trend', kwargs=kwargs)
+        )
+        request.user = self.user_1
+        view = SpeciesNationalTrend.as_view()
+        response = view(request, **kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
 
     @mock.patch('django.core.cache.cache.get')
     def test_species_trend(self, mocked_cache):
