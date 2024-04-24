@@ -291,7 +291,9 @@ def init_species_model_output_from_generic_model(model: StatisticalModel):
     non_generic_models = StatisticalModel.objects.filter(
         taxon__isnull=False
     ).values_list('taxon_id', flat=True)
-    taxons = Taxon.objects.exclude(id__in=non_generic_models)
+    taxons = Taxon.objects.filter(
+        taxon_rank__name='Species'
+    ).exclude(id__in=non_generic_models)
     for taxon in taxons:
         SpeciesModelOutput.objects.create(
             model=model,
