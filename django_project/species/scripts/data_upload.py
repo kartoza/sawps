@@ -78,6 +78,17 @@ class SpeciesCSVUpload(object):
     csv_dict_reader = None
     species_id_list = []
 
+    def __init__(self):
+        self.upload_session = UploadSpeciesCSV.objects.none()
+        self.error_list = []
+        self.created_list = 0
+        self.existed_list = 0
+        self.headers = []
+        self.total_rows = 0
+        self.row_error = []
+        self.csv_dict_reader = None
+        self.species_id_list = []
+
     def process_started(self):
         pass
 
