@@ -418,11 +418,13 @@ class SpeciesCSVUpload(object):
     def presence(self, row):
         """Fetch presence value."""
         presence = self.row_value(row, PRESENCE)
-        value = map_string_to_value(presence, PRESENCE_VALUE_MAPPING)
-        if value is None:
-            self.error_row(
-                f"Presence '{presence}' does not exist"
-            )
+        value = None
+        if presence:
+            value = map_string_to_value(presence, PRESENCE_VALUE_MAPPING)
+            if value is None:
+                self.error_row(
+                    f"Presence '{presence}' does not exist"
+                )
         return value
 
     def check_compulsory_fields(self, row):
