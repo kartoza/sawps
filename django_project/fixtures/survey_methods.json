@@ -3,7 +3,7 @@
     "model": "occurrence.surveymethod",
     "pk": 1,
     "fields": {
-        "name": "Point cloud",
+        "name": "Aerial census - sample count (transects or blocks)",
         "sort_id": 1
     }
 },
@@ -11,7 +11,7 @@
     "model": "occurrence.surveymethod",
     "pk": 2,
     "fields": {
-        "name": "Transect survey - foot",
+        "name": "Aerial census - total count – fixed wing",
         "sort_id": 2
     }
 },
@@ -19,7 +19,7 @@
     "model": "occurrence.surveymethod",
     "pk": 3,
     "fields": {
-        "name": "Transect survey - aerial",
+        "name": "Aerial census – total count – helicopter",
         "sort_id": 3
     }
 },
@@ -27,7 +27,7 @@
     "model": "occurrence.surveymethod",
     "pk": 4,
     "fields": {
-        "name": "Transect survey - drive",
+        "name": "Call-up survey",
         "sort_id": 4
     }
 },
@@ -35,7 +35,7 @@
     "model": "occurrence.surveymethod",
     "pk": 5,
     "fields": {
-        "name": "Block survey - foot",
+        "name": "Camera trap survey – with density estimation (e.g., capture/recapture)",
         "sort_id": 5
     }
 },
@@ -43,7 +43,7 @@
     "model": "occurrence.surveymethod",
     "pk": 6,
     "fields": {
-        "name": "Block survey - aerial",
+        "name": "Camera trap survey – without density estimation (e.g., capture/recapture)",
         "sort_id": 6
     }
 },
@@ -51,7 +51,7 @@
     "model": "occurrence.surveymethod",
     "pk": 7,
     "fields": {
-        "name": "Quadrant survey",
+        "name": "Mark-recapture estimation – physical marking (e.g., ear notches)",
         "sort_id": 7
     }
 },
@@ -59,7 +59,7 @@
     "model": "occurrence.surveymethod",
     "pk": 8,
     "fields": {
-        "name": "Camera trapping",
+        "name": "Mark-recapture estimation – photographic",
         "sort_id": 8
     }
 },
@@ -67,7 +67,7 @@
     "model": "occurrence.surveymethod",
     "pk": 9,
     "fields": {
-        "name": "Pitfall trapping",
+        "name": "Vehicle ground survey via transects/roads - with distance sampling",
         "sort_id": 9
     }
 },
@@ -75,7 +75,7 @@
     "model": "occurrence.surveymethod",
     "pk": 10,
     "fields": {
-        "name": "Aquatic survey",
+        "name": "Vehicle ground survey via transects/roads – without distance sampling",
         "sort_id": 10
     }
 },
@@ -83,7 +83,7 @@
     "model": "occurrence.surveymethod",
     "pk": 11,
     "fields": {
-        "name": "Total count (census)",
+        "name": "Foot ground survey via transects/roads - with distance sampling",
         "sort_id": 11
     }
 },
@@ -91,7 +91,7 @@
     "model": "occurrence.surveymethod",
     "pk": 12,
     "fields": {
-        "name": "Unknown",
+        "name": "Foot ground survey via transects/roads – without distance sampling",
         "sort_id": 12
     }
 },
@@ -99,7 +99,7 @@
     "model": "occurrence.surveymethod",
     "pk": 13,
     "fields": {
-        "name": "Estimate",
+        "name": "Other - please explain",
         "sort_id": 13
     }
 }
