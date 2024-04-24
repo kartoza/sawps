@@ -1184,3 +1184,27 @@ class TestUploadSpeciesApiView(TestCase):
         )
         self.assertFalse(intake)
         self.assertEqual(len(file_upload.row_error), 1)
+        # test with invalid activity type
+        file_upload.row_error = []
+        intake = file_upload.save_population_per_activity(
+            row, 'invalid', 2023,
+            annual, INTRODUCTION_TOTAL,
+            INTRODUCTION_TOTAL_MALES, INTRODUCTION_TOTAL_FEMALES,
+            INTRODUCTION_MALE_JUV, INTRODUCTION_FEMALE_JUV
+        )
+        self.assertFalse(intake)
+        self.assertEqual(len(file_upload.row_error), 1)
+
+    def test_invalid_dropdown_values(self):
+        file_upload = SpeciesCSVUpload()
+        row = {
+            SAMPLING_EFFORT: '',
+            SURVEY_METHOD: 'invalid',
+            PRESENCE: 'invalid',
+            OPEN_SYS: ''
+        }
+        self.assertFalse(file_upload.sampling_effort(row))
+        self.assertFalse(file_upload.survey_method(row))
+        self.assertFalse(file_upload.presence(row))
+        self.assertFalse(file_upload.open_close_system(row))
+        self.assertEqual(len(file_upload.row_error), 2)
