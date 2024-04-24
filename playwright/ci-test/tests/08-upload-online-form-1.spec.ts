@@ -48,7 +48,7 @@ test.describe('navigation', () => {
 
     await page.getByLabel('Survey Method *').click();
 
-    await page.getByRole('option', { name: 'Estimate' }).click();
+    await page.getByRole('option', { name: 'Call-up survey' }).click();
     await expect(page.getByText('Survey Method *')).toBeVisible();
     await page.getByLabel('Adult Males', { exact: true }).click();
     await page.getByLabel('Adult Males', { exact: true }).fill('13');
