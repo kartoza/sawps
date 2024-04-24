@@ -53,6 +53,14 @@ def mocked_run_func(encoding):
 
 class TestUploadSpeciesApiView(TestCase):
     """Test api view species uploader"""
+    fixtures = [
+        'activity_type.json',
+        'open_close_systems.json',
+        'population_status.json',
+        'sampling_effort_coverage.json',
+        'survey_methods',
+        'population_estimate_category.json'
+    ]
 
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -81,76 +89,9 @@ class TestUploadSpeciesApiView(TestCase):
         self.property.refresh_from_db()
         self.token = '8f1c1181-982a-4286-b2fe-da1abe8f7174'
         self.api_url = '/api/upload-species/'
-        ActivityType.objects.create(
-            name="Unplanned/Illegal Hunting")
-        ActivityType.objects.create(
-            name="Planned Euthanasia/DCA")
-        ActivityType.objects.create(
-            name="Planned Hunt/Cull")
-        ActivityType.objects.create(
-            name="Translocation (Intake)")
-        ActivityType.objects.create(
-            name="Translocation (Offtake)")
         self.lion = Taxon.objects.create(
             scientific_name='Panthera leo',
             common_name_verbatim='Lion'
-        )
-
-        OpenCloseSystem.objects.create(
-            name='Open'
-        )
-        OpenCloseSystem.objects.create(
-            name='Closed'
-        )
-        PopulationStatus.objects.create(
-            name='Resident'
-        )
-        SamplingEffortCoverage.objects.create(
-            name=(
-                'Medium/fair: sample units (transects, camera traps, etc) '
-                'cover a fair proportion of the reserve and are '
-                'fairly evenly spread'
-            )
-        )
-        SamplingEffortCoverage.objects.create(
-            name=(
-                'High/good: a good number of sample units cover '
-                'a large proportion of the reserve area and are '
-                'randomly/evenly spread'
-            )
-        )
-        SamplingEffortCoverage.objects.create(
-            name=(
-                'Low/poor: only a small number of sample units '
-                '(transects, camera traps, etc) that cover a small part '
-                'of the reserve or are biased to certain areas'
-            )
-        )
-        SurveyMethod.objects.create(
-            name='Aerial census - sample count (transects or blocks)'
-        )
-        SurveyMethod.objects.create(
-            name='Other - please explain'
-        )
-        SurveyMethod.objects.create(
-            name='Aerial census – total count – helicopter'
-        )
-        SurveyMethod.objects.create(
-            name='Call-up survey'
-        )
-        PopulationEstimateCategory.objects.create(
-            name='Other (please describe how the population size '
-            'estimate was determined)'
-        )
-        PopulationEstimateCategory.objects.create(
-            name='Exact or near-exact estimate: all individuals or '
-            'groups are known'
-        )
-        PopulationEstimateCategory.objects.create(
-            name='Ad hoc or opportunistic monitoring'
-        )
-        PopulationEstimateCategory.objects.create(
-            name='Extrapolation from previous population estimate'
         )
 
     def test_upload_species_without_login(self):
@@ -344,7 +285,7 @@ class TestUploadSpeciesApiView(TestCase):
             offtake_permit="DEF100X10"
         ).count(), 1)
 
-        self.assertTrue(OpenCloseSystem.objects.all().count() == 2)
+        self.assertTrue(OpenCloseSystem.objects.all().count() == 3)
 
     def test_upload_species_status(self):
         """Test upload species status."""
