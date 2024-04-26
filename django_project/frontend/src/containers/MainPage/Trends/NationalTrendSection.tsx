@@ -37,14 +37,16 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
     const [loadingTrendData, setLoadingTrendData] = useState(false)
     const [loadingGrowthData, setLoadingGrowthData] = useState(false)
     const [categoryLabels, setCategoryLabels] = useState<CategoryLabelInterface>({})
+    const [growthPeriodCategories, setGrowthPeriodCategories] = useState<string[]>(null)
+    const [growthPopChangeCategories, setGrowthPopChangeCategories] = useState<string[]>(null)
 
     const fetchNationalTrendData = (species: string) => {
         setLoadingTrendData(true)
         axios.get(`${SPECIES_POPULATION_TREND_URL}?species=${species}&level=national&data_type=trend`)
             .then((response) => {
             setLoadingTrendData(false)
-            if (response.data) {
-                setPopulationTrendData(response.data as PopulationTrendItem[])
+            if (response.data['results']) {
+                setPopulationTrendData(response.data['results'] as PopulationTrendItem[])
             }
         }).catch((error) => {
             setLoadingTrendData(false)
@@ -57,13 +59,14 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
         axios.get(`${SPECIES_POPULATION_TREND_URL}?species=${species}&level=national&data_type=growth`)
             .then((response) => {
             setLoadingGrowthData(false)
-            if (response.data) {
+            let _data = response.data['results']
+            if (_data) {
                 let _large: GrowthDataItem[] = []
                 let _medium: GrowthDataItem[] = []
                 let _small: GrowthDataItem[] = []
                 let _labels: CategoryLabelInterface = {}
-                for (let i = 0; i < response.data.length; i++) {
-                    let _item = response.data[i] as GrowthDataItem
+                for (let i = 0; i < _data.length; i++) {
+                    let _item = _data[i] as GrowthDataItem
                     if (_item.pop_size_cat === 'large') {
                         _large.push(_item)
                     } else if (_item.pop_size_cat === 'medium') {
@@ -78,6 +81,11 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                 setLargePopulationGrowthData(_large)
                 setMediumPopulationGrowthData(_medium)
                 setSmallPopulationGrowthData(_small)
+                let _metadata = response.data['metadata']
+                let _periodCategories = 'period' in _metadata ? _metadata['period'] : null
+                let _popChangeCategories = 'pop_change_cat' in _metadata ? _metadata['pop_change_cat'] : null
+                setGrowthPeriodCategories(_periodCategories)
+                setGrowthPopChangeCategories(_popChangeCategories)
                 setCategoryLabels(_labels)
             }
         }).catch((error) => {
@@ -122,13 +130,13 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                             {!loadingGrowthData ?
                                 <Grid container flexDirection={'column'} spacing={1}>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='large-national-growth-chart' title={getGrowthChartTitle(props.species, 'large', categoryLabels)} data={largePopulationGrowthData} />
+                                        <GroupedGrowthChart chartId='large-national-growth-chart' title={getGrowthChartTitle(props.species, 'large', categoryLabels)} data={largePopulationGrowthData} periodCategories={growthPeriodCategories} popChangeCategories={growthPopChangeCategories} />
                                     </Grid>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='medium-national-growth-chart' title={getGrowthChartTitle(props.species, 'medium', categoryLabels)} data={mediumPopulationGrowthData} />
+                                        <GroupedGrowthChart chartId='medium-national-growth-chart' title={getGrowthChartTitle(props.species, 'medium', categoryLabels)} data={mediumPopulationGrowthData} periodCategories={growthPeriodCategories} popChangeCategories={growthPopChangeCategories} />
                                     </Grid>
                                     <Grid item>
-                                        <GroupedGrowthChart chartId='small-national-growth-chart' title={getGrowthChartTitle(props.species, 'small', categoryLabels)} data={smallPopulationGrowthData} />                                    
+                                        <GroupedGrowthChart chartId='small-national-growth-chart' title={getGrowthChartTitle(props.species, 'small', categoryLabels)} data={smallPopulationGrowthData} periodCategories={growthPeriodCategories} popChangeCategories={growthPopChangeCategories} />
                                     </Grid>
                                 </Grid>
                             : <Loading containerStyle={{minHeight: 160}}/>}

@@ -52,7 +52,7 @@ const SpeciesChart:FC<ISpeciesChartProps> = (props)=>{
     const fetchChartData = () => {
         axios.get(SPECIES_NATIONAL_TREND_URL.replace('{species_id}', props.species_id.toString())).then((response) => {
             if (response) {
-                let _data = response.data as NationalTrendInterface[]
+                let _data = response.data['results'] as NationalTrendInterface[]
                 setChartData({
                     labels: _data.map((a) => {
                         if (a.year % 1 === 0) return a.year;

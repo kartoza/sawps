@@ -10,8 +10,10 @@ from population_data.factories import AnnualPopulationF
 from frontend.models.base_task import DONE, PROCESSING, ERROR, PENDING
 from frontend.models.statistical import (
     NATIONAL_TREND,
+    NATIONAL_GROWTH,
     SpeciesModelOutput,
-    CACHED_OUTPUT_TYPES
+    CACHED_OUTPUT_TYPES,
+    OutputTypeCategoryIndex
 )
 from frontend.tests.model_factories import (
     StatisticalModelF,
@@ -30,7 +32,9 @@ from frontend.tasks.generate_statistical_model import (
     save_model_output_on_failure,
     trigger_generate_species_model_output,
     check_affected_model_output,
-    generate_species_statistical_model
+    generate_species_statistical_model,
+    add_json_metadata,
+    sort_output_type_categories
 )
 from frontend.admin import (
     trigger_generate_species_statistical_model
@@ -379,3 +383,124 @@ class TestGenerateStatisticalModel(TestCase):
         mocked_process.assert_called_once()
         output.refresh_from_db()
         self.assertEqual(output.task_id, '1')
+
+    def test_sort_output_type_categories(self):
+        data_set = set()
+        category_index_list = []
+        result = sort_output_type_categories(data_set, category_index_list)
+        self.assertFalse(result)
+        data_set = set(
+            [
+                'stable (-2% to 2%)', 'steady decrease (2-5% pa)',
+                'steady increase (2-5% pa)', 'increasing rapidly (>5% pa)'
+            ]
+        )
+        OutputTypeCategoryIndex.objects.create(
+            type='period',
+            value='Steady Decrease',
+            sort_index=1
+        )
+        OutputTypeCategoryIndex.objects.create(
+            type='period',
+            value='stable',
+            sort_index=2
+        )
+        OutputTypeCategoryIndex.objects.create(
+            type='period',
+            value='steady Increase',
+            sort_index=3
+        )
+        category_index_list = (
+            OutputTypeCategoryIndex.objects.find_category_index(
+                'test', 'period'
+            )
+        )
+        result = sort_output_type_categories(data_set, category_index_list)
+        self.assertTrue(result)
+        self.assertEqual(
+            result,
+            ['increasing rapidly (>5% pa)', 'steady decrease (2-5% pa)',
+             'stable (-2% to 2%)', 'steady increase (2-5% pa)']
+        )
+        # test query find_category_index
+        OutputTypeCategoryIndex.objects.create(
+            type=f'{NATIONAL_GROWTH}__period',
+            value='Steady Decrease',
+            sort_index=1
+        )
+        category_index_list = (
+            OutputTypeCategoryIndex.objects.find_category_index(
+                NATIONAL_GROWTH, 'period'
+            )
+        )
+        self.assertEqual(category_index_list.count(), 1)
+
+    def test_add_json_metadata(self):
+        json_data = {
+            NATIONAL_GROWTH: [
+                {
+                    "pop_size_cat": "large",
+                    "pop_size_cat_label": "\u003E40",
+                    "period": "Most recent 10 yrs",
+                    "pop_change_cat": "stable (-2% to 2%)",
+                    "count": 4,
+                    "percentage": 50,
+                    "count2": "n=4"
+                },
+                {
+                    "pop_size_cat": "large",
+                    "pop_size_cat_label": "\u003E40",
+                    "period": "Most recent 10 yrs",
+                    "pop_change_cat": "Steady Increase (2-5% pa)",
+                    "count": 2,
+                    "percentage": 25,
+                    "count2": "n=2"
+                },
+                {
+                    "pop_size_cat": "large",
+                    "pop_size_cat_label": "\u003E40",
+                    "period": "Most recent 10 yrs",
+                    "pop_change_cat": "increasing Rapidly (\u003E5% pa)",
+                    "count": 2,
+                    "percentage": 25,
+                    "count2": "n=2"
+                },
+                {
+                    "pop_size_cat": "large",
+                    "pop_size_cat_label": "\u003E40",
+                    "period": "Most recent 5 yrs",
+                    "pop_change_cat": "Stable (-2% to 2%)",
+                    "count": 4,
+                    "percentage": 50,
+                    "count2": "n=4"
+                }
+            ]
+        }
+        OutputTypeCategoryIndex.objects.create(
+            type='pop_change_cat',
+            value='stable',
+            sort_index=1
+        )
+        OutputTypeCategoryIndex.objects.create(
+            type='pop_change_cat',
+            value='steady Increase',
+            sort_index=2
+        )
+        OutputTypeCategoryIndex.objects.create(
+            type='pop_change_cat',
+            value='Increasing Rapidly',
+            sort_index=3
+        )
+        results = add_json_metadata(json_data)
+        self.assertIn('metadata', results)
+        self.assertIn(NATIONAL_GROWTH, results['metadata'])
+        metadata = results['metadata'][NATIONAL_GROWTH]
+        self.assertIn('period', metadata)
+        self.assertIn('pop_change_cat', metadata)
+        self.assertEqual(len(metadata['period']), 2)
+        self.assertEqual(len(metadata['pop_change_cat']), 3)
+        self.assertEqual(
+            metadata['pop_change_cat'],
+            ['stable (-2% to 2%)', 'steady increase (2-5% pa)',
+             'increasing rapidly (\u003E5% pa)']
+        )

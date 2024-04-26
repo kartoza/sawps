@@ -30,16 +30,19 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
     const [populationGrowthData, setPopulatioGrowthData] = useState<ProvincialPopulationGrowthDict>({})
     const [loadingTrendData, setLoadingTrendData] = useState(false)
     const [loadingGrowthData, setLoadingGrowthData] = useState(false)
+    const [growthPeriodCategories, setGrowthPeriodCategories] = useState<string[]>(null)
+    const [growthPopChangeCategories, setGrowthPopChangeCategories] = useState<string[]>(null)
 
     const fetchProvincialTrendData = (species: string) => {
         setLoadingTrendData(true)
         axios.get(`${SPECIES_POPULATION_TREND_URL}?species=${species}&level=provincial`)
             .then((response) => {
             setLoadingTrendData(false)
-            if (response.data) {
+            let _results_data = response.data['results']
+            if (_results_data) {
                 let _trendData: ProvincialPopulationTrendDict = {}
-                for (let i=0; i < response.data.length; ++i) {
-                    let _trend = response.data[i]
+                for (let i=0; i < _results_data.length; ++i) {
+                    let _trend = _results_data[i]
                     let _province = _trend['province']
                     let _item: PopulationTrendItem = {
                         'year': _trend['year'],
@@ -67,18 +70,21 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
         axios.get(`${SPECIES_POPULATION_TREND_URL}?species=${species}&level=provincial&data_type=growth`)
             .then((response) => {
             setLoadingGrowthData(false)
-            if (response.data) {
+            let _results_data = response.data['results']
+            if (_results_data) {
                 // check if has data
-                if (response.data.length === 1) {
-                    let _item = response.data[0]
+                if (_results_data.length === 1) {
+                    let _item = _results_data[0]
                     if ('data.limitation' in _item) {
                         setPopulatioGrowthData({})
+                        setGrowthPeriodCategories(null)
+                        setGrowthPopChangeCategories(null)
                         return;
                     }
                 }
                 let _data: ProvincialPopulationGrowthDict = {}
-                for (let i = 0; i < response.data.length; i++) {
-                    let _item = response.data[i] as GrowthDataItem
+                for (let i = 0; i < _results_data.length; i++) {
+                    let _item = _results_data[i] as GrowthDataItem
                     let _province = _item.province
                     if (_province in _data) {
                         _data[_province].push(_item)
@@ -89,6 +95,11 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                 setAllPopulationGrowthData({..._data})
                 setPopulatioGrowthData({..._data})
             }
+            let _metadata = response.data['metadata']
+            let _periodCategories = 'period' in _metadata ? _metadata['period'] : null
+            let _popChangeCategories = 'pop_change_cat' in _metadata ? _metadata['pop_change_cat'] : null
+            setGrowthPeriodCategories(_periodCategories)
+            setGrowthPopChangeCategories(_popChangeCategories)
         }).catch((error) => {
             setLoadingGrowthData(false)
             console.log(error)
@@ -137,7 +148,7 @@ const ProvincialTrendSection = (props: ProvincialTrendSectionInterface) => {
                                 {Object.keys(populationGrowthData).map((province, index) => {
                                     return (
                                         <Grid item xs={4} md={6} key={index}>
-                                            <GroupedGrowthChart chartId={`province-growth-chart-${province}`} title={`${province}`} data={populationGrowthData[province]} />
+                                            <GroupedGrowthChart chartId={`province-growth-chart-${province}`} title={`${province}`} data={populationGrowthData[province]} periodCategories={growthPeriodCategories} popChangeCategories={growthPopChangeCategories} />
                                         </Grid>
                                     )
                                 })}

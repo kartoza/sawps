@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import pre_delete, post_save, post_delete
 from django.dispatch import receiver
 from django.utils.text import slugify
+from django.db.models.functions import Lower
 from frontend.models.base_task import BaseTaskRequest
 
 
@@ -14,6 +15,7 @@ PROPERTY_TREND = 'property_trend'
 SPECIES_PER_PROPERTY = 'species_per_property'
 NATIONAL_GROWTH = 'national_growth'
 PROVINCIAL_GROWTH = 'provincial_growth'
+NATIONAL_GROWTH_CAT = 'national_growth_category'
 OTHER_DATA = 'other_data'
 
 CACHED_OUTPUT_TYPES = [
@@ -78,6 +80,7 @@ class StatisticalModelOutput(models.Model):
         (SPECIES_PER_PROPERTY, 'Species Per Property'),
         (NATIONAL_GROWTH, 'National Growth'),
         (PROVINCIAL_GROWTH, 'Provincial Growth'),
+        (NATIONAL_GROWTH_CAT, 'National Growth Category'),
         (OTHER_DATA, 'Other Data')
     )
 
@@ -161,3 +164,42 @@ def species_model_output_pre_delete(sender,
         clear_species_model_output_cache
     )
     clear_species_model_output_cache(instance)
+
+
+class OutputTypeCategoryIndexManager(models.Manager):
+    """Manager class for output type category index."""
+
+    def find_category_index(self, output_type, field_name):
+        original_qs = self.annotate(val=Lower('value'))
+        filter_type = f'{output_type}__{field_name}'
+        qs = original_qs.filter(
+            type=filter_type
+        ).order_by('sort_index')
+        if qs.exists():
+            return qs
+        return original_qs.filter(
+            type=field_name
+        ).order_by('sort_index')
+
+
+class OutputTypeCategoryIndex(models.Model):
+    """Define a sort index for output type of categories."""
+
+    objects = OutputTypeCategoryIndexManager()
+
+    type = models.CharField(
+        max_length=255,
+        help_text=(
+            "The attribute name with/without the type name. "
+            "e.g. pop_change_cat or national_growth__pop_change_cat"
+        )
+    )
+
+    value = models.CharField(
+        max_length=255,
+        help_text=(
+            "Part of category value. e.g. steady decrease"
+        )
+    )
+
+    sort_index = models.IntegerField()

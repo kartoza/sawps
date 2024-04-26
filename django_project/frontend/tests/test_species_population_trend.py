@@ -122,4 +122,6 @@ class TestSpeciesTrend(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
+        self.assertIn('results', response.data)
+        self.assertIn('metadata', response.data)
+        self.assertEqual(response.data['results'], [])

@@ -21,7 +21,8 @@ from frontend.models import (
     Layer,
     MapSession,
     SpeciesModelOutput,
-    UploadSpeciesCSV
+    UploadSpeciesCSV,
+    OutputTypeCategoryIndex
 )
 from frontend.models.spatial import SpatialDataModel, SpatialDataValueModel
 from frontend.tasks import (
@@ -32,6 +33,9 @@ from frontend.tasks import (
 )
 from property.tasks import (
     generate_spatial_filter_for_all_properties
+)
+from frontend.utils.statistical_model import (
+    clear_species_model_output_cache
 )
 
 
@@ -322,13 +326,25 @@ def trigger_generate_species_statistical_model(modeladmin, request, queryset):
     )
 
 
+@admin.action(description='Clear model output cache')
+def clear_model_output_cache(modeladmin, request, queryset):
+    for output in queryset:
+        clear_species_model_output_cache(output)
+    modeladmin.message_user(
+        request,
+        'Statistical model output cache is cleared!',
+        messages.SUCCESS
+    )
+
+
 class SpeciesModelOutputAdmin(admin.ModelAdmin):
     """Admin page for Species Model Output."""
     list_display = ('taxon', 'model', 'is_latest', 'status',
                     'generated_on', 'is_outdated')
     search_fields = ['taxon__scientific_name', 'model__name']
     list_filter = ['taxon', 'model', 'is_latest', 'is_outdated']
-    actions = [trigger_generate_species_statistical_model]
+    actions = [trigger_generate_species_statistical_model,
+               clear_model_output_cache]
 
 
 @admin.action(description='Trigger generate spatial filter')
@@ -412,6 +428,37 @@ class UploadSpeciesCSVAdmin(admin.ModelAdmin):
     list_filter = ['uploader']
 
 
+class OutputTypeCategoryIndexAdmin(admin.ModelAdmin):
+    change_list_template = "admin/category_index.html"
+    list_display = (
+        'type', 'value', 'sort_index'
+    )
+    list_filter = ['type']
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('reload_category_index_fixtures/', self.reload_fixtures,
+                 name='reload-category-index-fixtures'),
+        ]
+        return my_urls + urls
+
+    def reload_fixtures(self, request):
+        # delete
+        OutputTypeCategoryIndex.objects.all().delete()
+        # load fixtures from json files
+        call_command('loaddata', 'fixtures/output_type_category_index.json',
+                     app_label='frontend')
+        self.message_user(
+            request,
+            'Output type category index fixture has been '
+            'successfully reloaded!',
+            messages.SUCCESS
+        )
+        return HttpResponseRedirect(
+            '/admin/frontend/outputtypecategoryindex/')
+
+
 admin.site.register(ContextLayer, ContextLayerAdmin)
 admin.site.register(ContextLayerLegend, ContextLayerLegendAdmin)
 admin.site.register(ContextLayerTilingTask, TilingTaskAdmin)
@@ -424,3 +471,4 @@ admin.site.register(Layer, LayerAdmin)
 admin.site.register(MapSession, MapSessionAdmin)
 admin.site.register(SpeciesModelOutput, SpeciesModelOutputAdmin)
 admin.site.register(UploadSpeciesCSV, UploadSpeciesCSVAdmin)
+admin.site.register(OutputTypeCategoryIndex, OutputTypeCategoryIndexAdmin)
