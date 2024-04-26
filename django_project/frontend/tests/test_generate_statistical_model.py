@@ -11,7 +11,8 @@ from frontend.models.base_task import DONE, PROCESSING, ERROR, PENDING
 from frontend.models.statistical import (
     NATIONAL_TREND,
     SpeciesModelOutput,
-    CACHED_OUTPUT_TYPES
+    CACHED_OUTPUT_TYPES,
+    OutputTypeCategoryIndex
 )
 from frontend.tests.model_factories import (
     StatisticalModelF,
@@ -30,7 +31,9 @@ from frontend.tasks.generate_statistical_model import (
     save_model_output_on_failure,
     trigger_generate_species_model_output,
     check_affected_model_output,
-    generate_species_statistical_model
+    generate_species_statistical_model,
+    add_json_metadata,
+    sort_output_type_categories
 )
 from frontend.admin import (
     trigger_generate_species_statistical_model
@@ -379,3 +382,45 @@ class TestGenerateStatisticalModel(TestCase):
         mocked_process.assert_called_once()
         output.refresh_from_db()
         self.assertEqual(output.task_id, '1')
+
+    def test_sort_output_type_categories(self):
+        data_set = set()
+        category_index_list = []
+        result = sort_output_type_categories(data_set, category_index_list)
+        self.assertFalse(result)
+        data_set = set(
+            [
+                'stable (-2% to 2%)', 'steady decrease (2-5% pa)',
+                'steady increase (2-5% pa)', 'increasing rapidly (>5% pa)'
+            ]
+        )
+        OutputTypeCategoryIndex.objects.create(
+            type='period',
+            value='Steady Decrease',
+            sort_index=1
+        )
+        OutputTypeCategoryIndex.objects.create(
+            type='period',
+            value='stable',
+            sort_index=2
+        )
+        OutputTypeCategoryIndex.objects.create(
+            type='period',
+            value='steady Increase',
+            sort_index=3
+        )
+        category_index_list = (
+            OutputTypeCategoryIndex.objects.find_category_index(
+                'test', 'period'
+            )
+        )
+        result = sort_output_type_categories(data_set, category_index_list)
+        self.assertTrue(result)
+        self.assertEqual(
+            result,
+            ['increasing rapidly (>5% pa)', 'steady decrease (2-5% pa)',
+             'stable (-2% to 2%)', 'steady increase (2-5% pa)']
+        )
+
+    def test_add_json_metadata(self):
+        json_data = {}

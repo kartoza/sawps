@@ -1,0 +1,12 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    <div>
+        <form action="reload_category_index_fixtures/" method="POST">
+            {% csrf_token %}
+            <button type="submit">Reload from fixtures</button>
+        </form>
+    </div>
+    <br />
+    {{ block.super }}
+{% endblock %}

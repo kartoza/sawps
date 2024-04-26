@@ -13,7 +13,14 @@ from celery import shared_task
 from species.models import Taxon
 from population_data.models import AnnualPopulation
 from frontend.models.base_task import DONE, ERROR, PENDING
-from frontend.models.statistical import StatisticalModel, SpeciesModelOutput
+from frontend.models.statistical import (
+    StatisticalModel,
+    SpeciesModelOutput,
+    NATIONAL_GROWTH,
+    PROVINCIAL_GROWTH,
+    NATIONAL_GROWTH_CAT,
+    OutputTypeCategoryIndex
+)
 from frontend.utils.statistical_model import (
     write_plumber_data,
     execute_statistical_model,
@@ -76,6 +83,63 @@ def save_model_data_input(model_output: SpeciesModelOutput, data_filepath):
             model_output.input_file.save(input_name, File(input_file))
 
 
+def sort_output_type_categories(data_set: set, category_index_list):
+    """Sort set of categories by OutputTypeCategoryIndex list."""
+    result = []
+    for category in category_index_list:
+        find_val = [val for val in data_set if category.val in val]
+        if find_val:
+            result.append(find_val[0])
+            data_set.remove(find_val[0])
+    if data_set:
+        for val in data_set:
+            result.insert(0, val)
+    return result
+
+
+def add_json_metadata(json_data):
+    """
+    Generate metadata for category values sorted
+    by OutputTypeCategoryIndex.
+    """
+    metadata = json_data['metadata'] if 'metadata' in json_data else {}
+    # growth output types should have categories in field_name:
+    # period and pop_change_cat
+    growth_output_types = [
+        NATIONAL_GROWTH, PROVINCIAL_GROWTH, NATIONAL_GROWTH_CAT
+    ]
+    for growth_type in growth_output_types:
+        if growth_type not in json_data:
+            continue
+        periods = set()
+        pop_change_cats = set()
+        period_cat_index = (
+            OutputTypeCategoryIndex.objects.find_category_index(
+                growth_type, 'period'
+            )
+        )
+        pop_change_cat_index = (
+            OutputTypeCategoryIndex.objects.find_category_index(
+                growth_type, 'pop_change_cat'
+            )
+        )
+        data = json_data[growth_type]
+        for item in data:
+            period_str = item.get('period', '')
+            pop_change_cat_str = item.get('pop_change_cat', '')
+            if period_str:
+                periods.add(period_str.lower())
+            if pop_change_cat_str:
+                pop_change_cats.add(pop_change_cat_str.lower())
+        metadata[growth_type] = {
+            'period': sort_output_type_categories(periods, period_cat_index),
+            'pop_change_cat': sort_output_type_categories(
+                pop_change_cats, pop_change_cat_index),
+        }
+    json_data['metadata'] = metadata
+    return json_data
+
+
 def save_model_output_on_success(model_output: SpeciesModelOutput, json_data):
     """Store the result from successful execution of R statistical model."""
     model_output.finished_at = timezone.now()
@@ -86,6 +150,7 @@ def save_model_output_on_success(model_output: SpeciesModelOutput, json_data):
     model_output.outdated_since = None
     model_output.save()
     taxon_name = slugify(model_output.taxon.scientific_name).replace('-', '_')
+    json_data = add_json_metadata(json_data)
     output_name = f'{model_output.id}_{taxon_name}.json'
     model_output.output_file.save(
         output_name, ContentFile(json.dumps(json_data)))
