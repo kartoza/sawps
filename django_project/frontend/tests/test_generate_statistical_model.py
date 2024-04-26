@@ -422,6 +422,18 @@ class TestGenerateStatisticalModel(TestCase):
             ['increasing rapidly (>5% pa)', 'steady decrease (2-5% pa)',
              'stable (-2% to 2%)', 'steady increase (2-5% pa)']
         )
+        # test query find_category_index
+        OutputTypeCategoryIndex.objects.create(
+            type=f'{NATIONAL_GROWTH}__period',
+            value='Steady Decrease',
+            sort_index=1
+        )
+        category_index_list = (
+            OutputTypeCategoryIndex.objects.find_category_index(
+                NATIONAL_GROWTH, 'period'
+            )
+        )
+        self.assertEqual(category_index_list.count(), 1)
 
     def test_add_json_metadata(self):
         json_data = {

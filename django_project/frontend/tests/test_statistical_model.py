@@ -1,11 +1,15 @@
 import mock
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test import Client
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.urls import reverse
 from django_otp.plugins.otp_totp.models import TOTPDevice
-from frontend.models.statistical import StatisticalModel
+from core.settings.utils import DJANGO_ROOT
+from frontend.models.statistical import (
+    StatisticalModel,
+    OutputTypeCategoryIndex
+)
 from frontend.tests.model_factories import (
     StatisticalModelF,
     StatisticalModelOutputF
@@ -105,3 +109,18 @@ class StatisticalModelAdminTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response['content-type'], 'text/csv')
         self.assertTrue(response.has_header('Content-Disposition'))
+
+    @override_settings(FIXTURE_DIRS=[DJANGO_ROOT])
+    def test_reload_fixtures_output_type_categories(self):
+        OutputTypeCategoryIndex.objects.create(
+            type='period',
+            value='Steady Decrease',
+            sort_index=1
+        )
+        self.assertTrue(OutputTypeCategoryIndex.objects.count() == 1)
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(
+            reverse('admin:reload-category-index-fixtures'))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(OutputTypeCategoryIndex.objects.count() == 1)
