@@ -34,6 +34,9 @@ from frontend.tasks import (
 from property.tasks import (
     generate_spatial_filter_for_all_properties
 )
+from frontend.utils.statistical_model import (
+    clear_species_model_output_cache
+)
 
 
 def cancel_other_processing_tasks(task_id=None):
@@ -323,13 +326,25 @@ def trigger_generate_species_statistical_model(modeladmin, request, queryset):
     )
 
 
+@admin.action(description='Clear model output cache')
+def clear_model_output_cache(modeladmin, request, queryset):
+    for output in queryset:
+        clear_species_model_output_cache(output)
+    modeladmin.message_user(
+        request,
+        'Statistical model output cache is cleared!',
+        messages.SUCCESS
+    )
+
+
 class SpeciesModelOutputAdmin(admin.ModelAdmin):
     """Admin page for Species Model Output."""
     list_display = ('taxon', 'model', 'is_latest', 'status',
                     'generated_on', 'is_outdated')
     search_fields = ['taxon__scientific_name', 'model__name']
     list_filter = ['taxon', 'model', 'is_latest', 'is_outdated']
-    actions = [trigger_generate_species_statistical_model]
+    actions = [trigger_generate_species_statistical_model,
+               clear_model_output_cache]
 
 
 @admin.action(description='Trigger generate spatial filter')

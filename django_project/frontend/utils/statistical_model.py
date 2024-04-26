@@ -232,11 +232,16 @@ def store_species_model_output_cache(model_output: SpeciesModelOutput,
     :param model_output: SpeciesModelOutput
     :param json_data: dictionary from plumber response
     """
+    metadata = json_data.get('metadata', {})
     for output_type in CACHED_OUTPUT_TYPES:
         if output_type not in json_data:
             continue
+        data = {
+            'metadata': metadata.get(output_type, {}),
+            'results': json_data[output_type]
+        }
         cache_key = model_output.get_cache_key(output_type)
-        cache.set(cache_key, json_data[output_type], timeout=None)
+        cache.set(cache_key, data, timeout=None)
 
 
 def clear_species_model_output_cache(model_output: SpeciesModelOutput):

@@ -59,8 +59,8 @@ const PopulationTrend= (props: any) => {
             .then((response) => {
             if (response.data) {
                 setLoading(false)
-                let _data = response.data as NationalTrendInterface[]
-                if (props.setResult) props.setResult(response.data)
+                let _data = response.data['results'] as NationalTrendInterface[]
+                if (props.setResult) props.setResult(_data)
                 setChartData({
                     labels: _data.map((a) => {
                       if (a.year % 2 === 0) return a.year;

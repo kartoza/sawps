@@ -27,6 +27,8 @@ export interface GrowthDataItem {
 interface GrowthChartInterface {
     data: GrowthDataItem[];
     chartId: string;
+    popChangeCategories?: string[];
+    periodCategories?: string[];
 }
 
 interface GrowthDataDict {
@@ -46,12 +48,12 @@ const period_categories = [
     "Last 3 years"
 ]
 
-const getDefaultList = (cat: string) => {
+const getDefaultList = (cat: string, periodCategories: string[]) => {
     let _list:GrowthDataItem[] = []
-    for (let i = 0; i < period_categories.length; ++i) {
-        let _period = period_categories[i]
+    for (let i = 0; i < periodCategories.length; ++i) {
+        let _period = periodCategories[i]
         _list.push({
-            period: _period,
+            period: capitalize(_period),
             pop_change_cat: cat,
             count: 0,
             percentage: 0,
@@ -70,7 +72,8 @@ const GrowthChart = (props: GrowthChartInterface) => {
             setChartData(null)
             return;
         }
-
+        let _popChangeCategories = props.popChangeCategories || pop_change_categories
+        let _periodCategories = props.periodCategories || period_categories
         let _data: GrowthDataDict = {}
         for (let i=0; i < props.data.length; ++i) {
             let _item = props.data[i];
@@ -78,31 +81,32 @@ const GrowthChart = (props: GrowthChartInterface) => {
             if (_pop_cat in _data) {
                 _data[_pop_cat].push({
                     ..._item,
-                    sort: period_categories.findIndex(e => e === _item.period)
+                    sort: _periodCategories.findIndex(e => e === _item.period.toLowerCase())
                 })
             } else {
                 _data[_pop_cat] = [{
                     ..._item,
-                    sort: period_categories.findIndex(e => e === _item.period)
+                    sort: _periodCategories.findIndex(e => e === _item.period.toLowerCase())
                 }]
             }
         }
         let _datasets = []
-        for (let _category of pop_change_categories) {
-            let _colorIdx = pop_change_categories.findIndex((a) => a === _category)
+        for (let _category of _popChangeCategories) {
+            let _colorIdx = _popChangeCategories.findIndex((a) => a === _category)
+            let _pop_cat = capitalize(_category)
             let _color = _colorIdx > -1 && _colorIdx < GROWTH_COLOR_CATEGORY.length ? GROWTH_COLOR_CATEGORY[_colorIdx] : FALLBACK_COLOR_CATEGORY
             let _dataInCategory: GrowthDataItem[] = []
-            if (_category in _data) {
-                let _items = _data[_category]
-                for (let i = 0; i < period_categories.length; ++i) {
-                    let _period = period_categories[i]
-                    let _itemIdx = _items.findIndex(e => e.period === _period)
+            if (_pop_cat in _data) {
+                let _items = _data[_pop_cat]
+                for (let i = 0; i < _periodCategories.length; ++i) {
+                    let _period = _periodCategories[i]
+                    let _itemIdx = _items.findIndex(e => e.period.toLowerCase() === _period)
                     if (_itemIdx > -1) {
                         _dataInCategory.push(_items[_itemIdx])
                     } else {
                         _dataInCategory.push({
-                            period: _period,
-                            pop_change_cat: _category,
+                            period: capitalize(_period),
+                            pop_change_cat: _pop_cat,
                             count: 0,
                             percentage: 0,
                             count2: 'n=0',
@@ -111,20 +115,20 @@ const GrowthChart = (props: GrowthChartInterface) => {
                     }
                 }
             } else {
-                _dataInCategory = getDefaultList(_category)
+                _dataInCategory = getDefaultList(_pop_cat, _periodCategories)
             }
             _datasets.push({
-                label: _category,
+                label: _pop_cat,
                 data: _dataInCategory.map((item) => item.percentage),
                 counts: _dataInCategory.map((item) => item.count),
                 backgroundColor: _color,
-                stack: _category,
+                stack: _pop_cat,
                 categoryPercentage: 0.9,
                 barPercentage: 0.9
             })
         }
         setChartData({
-            labels: period_categories,
+            labels: _periodCategories.map(e => capitalize(e)),
             datasets: _datasets
         })
     }, [props.data])

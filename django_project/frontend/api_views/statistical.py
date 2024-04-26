@@ -50,8 +50,12 @@ class SpeciesNationalTrend(APIView):
 
     def get_trend_data_by_type(self, model_output: SpeciesModelOutput,
                                output_type = NATIONAL_TREND):
+        results = {
+            'metadata': {},
+            'results': []
+        }
         if model_output is None:
-            return []
+            return results
         # try getting from cache
         cache_key = model_output.get_cache_key(output_type)
         cached_data = cache.get(cache_key)
@@ -63,15 +67,16 @@ class SpeciesNationalTrend(APIView):
             model_output.output_file.storage.exists(
                 model_output.output_file.name)
         ):
-            return []
-        trends = []
+            return results
         with model_output.output_file.open('r') as json_file:
             json_dict = json.load(json_file)
             store_species_model_output_cache(model_output, json_dict)
             if output_type in json_dict:
-                trends = json_dict[output_type]
-        return trends
-
+                results['results'] = json_dict[output_type]
+            if 'metadata' in json_dict:
+                results['metadata'] = json_dict['metadata'].get(
+                    output_type, {})
+        return results
 
     def get(self, *args, **kwargs):
         species_id = kwargs.get('species_id')
@@ -153,7 +158,10 @@ class SpeciesTrend(SpeciesNationalTrend):
         model_output = self.get_species_model_output(
             species, file_should_exists=True)
         if model_output is None:
-            return Response(status=200, data=[])
+            return Response(status=200, data={
+                'metadata': {},
+                'results': []
+            })
         properties = self.get_properties_names()
         trends = []
         with model_output.output_file.open('r') as json_file:
@@ -162,7 +170,12 @@ class SpeciesTrend(SpeciesNationalTrend):
                 trends = json_dict[PROPERTY_TREND]
         return Response(
             status=200,
-            data=self.get_filtered_properties_trends(trends, properties))
+            data={
+                'metadata': {},
+                'results': (
+                    self.get_filtered_properties_trends(trends, properties)
+                )
+            })
 
 
 class DownloadTrendDataAsJson(SpeciesTrend):

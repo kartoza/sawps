@@ -28,26 +28,27 @@ const PropertyTrendSection = (props: PropertyTrendSectionInterface) => {
         axios.post(`${SPECIES_POPULATION_TREND_URL}`, _data)
             .then((response) => {
                 setLoadingTrendData(false)
-            if (response.data) {
-                let _trendData: PropertyTrendDict = {}
-                for (let i=0; i < response.data.length; ++i) {
-                    let _trend = response.data[i]
-                    let _property = _trend['property']
-                    let _item: PopulationTrendItem = {
-                        'year': _trend['year'],
-                        'sum_fitted': _trend['fitted_pop_est'],
-                        'lower_ci': _trend['lower_ci'],
-                        'upper_ci': _trend['upper_ci'],
-                        'raw_pop_est': _trend['raw_pop_est']
+                let _results_data = response.data['results']
+                if (_results_data) {
+                    let _trendData: PropertyTrendDict = {}
+                    for (let i=0; i < _results_data.length; ++i) {
+                        let _trend = _results_data[i]
+                        let _property = _trend['property']
+                        let _item: PopulationTrendItem = {
+                            'year': _trend['year'],
+                            'sum_fitted': _trend['fitted_pop_est'],
+                            'lower_ci': _trend['lower_ci'],
+                            'upper_ci': _trend['upper_ci'],
+                            'raw_pop_est': _trend['raw_pop_est']
+                        }
+                        if (_property in _trendData) {
+                            _trendData[_property].push(_item)
+                        } else {
+                            _trendData[_property] = [_item]
+                        }
                     }
-                    if (_property in _trendData) {
-                        _trendData[_property].push(_item)
-                    } else {
-                        _trendData[_property] = [_item]
-                    }
+                    setPopulationTrendData({..._trendData})
                 }
-                setPopulationTrendData({..._trendData})
-            }
         }).catch((error) => {
             setLoadingTrendData(false)
             console.log(error)

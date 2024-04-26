@@ -9,6 +9,8 @@ interface GroupedGrowthChartInterface {
     data: GrowthDataItem[];
     title: string;
     chartId: string;
+    popChangeCategories?: string[];
+    periodCategories?: string[];
 }
 
 const INFO_CHART_ICON = '/static/images/information-chart-icon.svg'
@@ -35,7 +37,7 @@ const GroupedGrowthChart = (props: GroupedGrowthChartInterface) => {
                 </Box>
                 <Box className={'ChartContainer'}>
                     <Box className={'ChartBox'}>
-                        <GrowthChart data={props.data} chartId={props.chartId} />
+                        <GrowthChart data={props.data} chartId={props.chartId} popChangeCategories={props.popChangeCategories} periodCategories={props.periodCategories} />
                     </Box>
                 </Box>
             </Box>

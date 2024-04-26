@@ -33,6 +33,7 @@ from frontend.static_mapping import (
 
 def mocked_property_trend():
     return OrderedDict({
+        "metadata": {},
         "property_trend": [
             {
                 "property": "Test Reserve",
@@ -63,6 +64,7 @@ def mocked_property_trend():
 
 def mocked_national_trend():
     return OrderedDict({
+        "metadata": {},
         "national_trend": [
             {
                 "year": 1903,
@@ -81,9 +83,12 @@ def mocked_national_trend():
 
 
 def mocked_cache_get(self, *args, **kwargs):
-    return OrderedDict({
-        'test': '12345'
-    })
+    return {
+        'metadata': {},
+        'results': [{
+            'test': '12345'
+        }]
+    }
 
 
 def mocked_cache_get_empty(self, *args, **kwargs):
@@ -135,8 +140,11 @@ class TestAPIStatistical(TestCase):
         view = SpeciesNationalTrend.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIn('test', response.data)
-        self.assertEqual(response.data['test'], '12345')
+        self.assertIn('results', response.data)
+        self.assertIn('metadata', response.data)
+        self.assertTrue(response.data['results'])
+        self.assertIn('test', response.data['results'][0])
+        self.assertEqual(response.data['results'][0]['test'], '12345')
 
     @mock.patch('django.core.cache.cache.get',
                 mock.Mock(side_effect=mocked_cache_get_empty))
@@ -165,7 +173,8 @@ class TestAPIStatistical(TestCase):
         view = SpeciesNationalTrend.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
+        self.assertEqual(response.data['results'], [])
+        self.assertEqual(response.data['metadata'], {})
         # test with file
         output.output_file.save('test.json', ContentFile(json.dumps(mocked_national_trend())))
         request = self.factory.get(
@@ -175,7 +184,7 @@ class TestAPIStatistical(TestCase):
         view = SpeciesNationalTrend.as_view()
         response = view(request, **kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data['results']), 2)
 
     @mock.patch('django.core.cache.cache.get')
     def test_species_trend(self, mocked_cache):
@@ -202,7 +211,9 @@ class TestAPIStatistical(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertIn('results', response.data)
+        self.assertIn('metadata', response.data)
+        self.assertEqual(len(response.data['results']), 0)
         # get national growth empty output file
         output.is_latest = True
         output.save()
@@ -214,7 +225,7 @@ class TestAPIStatistical(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['results']), 0)
         # get provincial growth
         mocked_cache.side_effect = mocked_cache_get
         url = reverse('species-population-trend')
@@ -224,7 +235,7 @@ class TestAPIStatistical(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_species_property_trend(self):
         property = PropertyFactory.create(
@@ -249,7 +260,9 @@ class TestAPIStatistical(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertIn('results', response.data)
+        self.assertIn('metadata', response.data)
+        self.assertEqual(len(response.data['results']), 0)
         # empty file
         output.output_file = None
         output.is_latest = True
@@ -262,7 +275,7 @@ class TestAPIStatistical(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['results']), 0)
         # has file
         output.output_file.save('test.json', ContentFile(json.dumps(mocked_property_trend())))
         request = self.factory.post(
@@ -273,7 +286,7 @@ class TestAPIStatistical(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
         # test empty property id
         data = {
             'species': self.taxon.scientific_name,
@@ -287,7 +300,7 @@ class TestAPIStatistical(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data['results']), 0)
         # test using superuser
         data = {
             'species': self.taxon.scientific_name,
@@ -301,7 +314,7 @@ class TestAPIStatistical(TestCase):
         view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
         # test using data consumer
         request = self.factory.post(
             reverse('species-population-trend'),
