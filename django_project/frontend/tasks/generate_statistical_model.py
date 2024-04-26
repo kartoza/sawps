@@ -32,7 +32,6 @@ from frontend.utils.statistical_model import (
     init_species_model_output_from_non_generic_model
 )
 from frontend.utils.celery import cancel_task
-from core.settings.utils import absolute_path
 
 
 logger = logging.getLogger(__name__)
@@ -287,14 +286,8 @@ def generate_species_statistical_model(request_id):
         if model.taxon is None:
             # this is generic model
             model = None
-        # is_success, json_data = execute_statistical_model(
-        #     data_filepath, model_output.taxon, model=model)
-        is_success = True
-        file_path = absolute_path(
-            'frontend', 'tasks', 'dummy.json'
-        )
-        with open(file_path, 'r') as json_file:
-            json_data = json.load(json_file)
+        is_success, json_data = execute_statistical_model(
+            data_filepath, model_output.taxon, model=model)
         if is_success:
             save_model_output_on_success(model_output, json_data)
         else:
