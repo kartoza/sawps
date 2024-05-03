@@ -50,6 +50,12 @@ This page offers the following functionality:
 
     ![Read More](./img/organisation-page-11.png)
 
+    1. **Update Button**: After setting up new data use permissions, click the update button to save changes.
+
+    - Upon clicking on any of the toggle buttons, the user will see the message `Making changes here will not affect data that you have previously published and agreed to share under a different regime.`
+
+        ![Message](./img/organisation-page-13.png)
+
 6. **Pagination**: Click on the number to go to the preferred page.
 
     ![Pagination](./img/organisation-page-12.png)
