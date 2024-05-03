@@ -20,3 +20,4 @@ This section of documentation describes the various page elements of the Explore
 * **[Map:](./map.md)** Explains the various components of the interactive map.
 * **[Reports:](./reports.md)** Explains the various components of the reports tab.
 * **[Charts:](./charts.md)** Explains the various components of the charts.
+* **[Trends:](./trends.md)** Explains the various components of the trends tab.
