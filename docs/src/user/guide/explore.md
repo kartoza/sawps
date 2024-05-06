@@ -238,6 +238,8 @@ After that, the PDF file will be downloaded to your system.
 
 ### Charts Description
 
+Referring to the description of each chart will provide a clearer understanding.
+
 #### Number of properties per population category (count) of species for year chart
 
 This chart illustrates the distribution of properties across population categories, based on the total population sizes of the selected species for the chosen year. The population is categorized into six groups. Each bar represents the count of properties per population category, categorized by property type.
