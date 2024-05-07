@@ -311,3 +311,57 @@ You will then be prompted to save the trends data to your computer.
 Once the file is downloaded, you can open it using a text editor (e.g. Notepad).
 
 ![Trends 6](./img/trends-6.png)
+
+### Trends Description
+
+Referring to the description of each trend will provide a clearer understanding.
+
+#### Species National Population Trend
+
+National population trend. The trend in the total population size across all properties (sub-populations) for all years where data are available. The trend for each property was estimated using General Additive Models fitted to raw population estimates, and then the fitted population estimates were aggregated across all properties in South Africa, each year. The shaded area represents the 95% confidence interval for the population trends.   Note – the population estimates are derived from a variety of sampling methods and specific uncertainty bounds (for example, see the Population Estimate Category graph)
+
+![Trends description](./img/trends-7.png)
+
+#### Large species populations chart
+
+**Percentage of populations that are increasing and decreasing: Large populations**
+ 
+The percentage of large populations determined by natural breaks in population size categories in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.
+
+![Trends description](./img/trends-8.png)
+
+#### Medium species populations chart
+
+**Percentage of populations that are increasing and decreasing: Medium populations**
+ 
+The percentage of medium-sized elephant populations (determined by natural breaks in population size categories) in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.
+
+![Trends description](./img/trends-9.png)
+
+#### Small species populations chart
+
+**Percentage of populations that are increasing and decreasing: Small populations**
+ 
+The percentage of small populations determined by natural breaks in population size categories in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.
+
+![Trends description](./img/trends-10.png)
+
+#### Total area vs area available to species chart
+
+The chart illustrates the total area versus the available area for the species.
+
+![Trends description](./img/trends-11.png)
+
+#### Province Population Trend Charts
+
+Trend in the total population size across all properties (sub-populations) in the province. The trend for each property was estimated using General Additive Models fitted to raw population estimates, and then the fitted population estimates were aggregated across all properties in the province, each year. Sudden jumps or dips may represent the inclusion of new properties, or translocation of animals out of the province, rather than natural population changes. The total number of properties for each time period can be checked in other graphs. The shaded area represents the 95% confidence interval for the population trends.
+
+>Note: the population estimates are derived from a variety of sampling methods and specific uncertainty bounds (for example, see the Population Estimate Category graph)
+
+![Trends description](./img/trends-12.png)
+
+#### Trends by property
+ 
+The trend in the total population size for the property is based on a General Additive Model fitted to raw population estimates (raw data shown as dots). Where there were only two estimates a simple log-linear curve was used to connect the two points.
+
+![Trends description](./img/trends-13.png)
