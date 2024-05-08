@@ -21,5 +21,7 @@ Welcome to the SAWPS administrator guide. In this section of the documentation, 
 * **[Managing Taxa:](./manage-taxa.md)** This section describes how administrators can manage taxa ( i.e. add, remove, modify, etc.) on the SAWPS platform.
 * **[Managing Uploaded Data:](./manage-upload-data.md)** This section describes how administrators can manage uploaded data ( e.g. properties, their permissions, etc.) on the SAWPS platform.
 * **[Managing Lookup Tables:](./manage-lookup-tables.md)** This section describes how administrators can manage the values in the look-up tables (i.e. add/edit/delete the options available in dropdown menus using the pencil icons) on the backend so these values are reflected in the front-end and backend dropdown menus.
+* **[Managing Statistical Tables:](./manage-statistical-model.md)** This section describes how statisticians can add the population analysis code and generate the statistical input/outputs.
+
 
 > **Disclaimer:** The workflows described in the guide demonstrate the necessary workflows for an administrator. If there is a page on the administration site that you would like to edit but has not been described in the guide, please do not edit it until you have been in contact with the development team.
