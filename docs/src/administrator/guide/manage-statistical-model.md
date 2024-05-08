@@ -30,4 +30,44 @@ Choose the species from the 1️⃣ `Species` dropdown for which you want to add
 
 Statisticians have the ability to produce different types of statistical model outputs for species. To generate the statistical model output, for the species click on the 1️⃣ `Type` dropdown and choose the type of the output you want to generate. Enter the variable name into the 2️⃣ `Variable Name` field. Once all fields are filled, click on the 3️⃣ `Save` button to generate the statistical model output for the respective species.
 
+>Note: The input and output files are generated for the species which can be downloaded from the `Species model outputs` table.
+
 ![Generate statistical model output](./img/statistical-6.png)
+
+## How can I download/view the Input/Output files?
+
+The statisticians can download/view the Input/Output files of the species statistical output model. To download/view this file you need to go to the `Species model outputs` table. You can find this table under the frontend section (FRONTEND > Species Model Outputs). Click on the 1️⃣ `Species model outputs` to go to the species model outputs table.
+
+![Species model outputs](./img/statistical-7.png)
+
+Upon accessing the species model outputs table, you can locate the species from which you wish to download/view the input/output files. Alternatively, you can utilise the search functionality to find the species. To search for the species enter the name scientific name of the species in the 1️⃣ `Search` field and click on the 2️⃣ `Search` button to search the species model output. 
+
+![Search species model outputs](./img/statistical-8.png)
+
+**Searched species model output.**
+
+![Searched species model output](./img/statistical-9.png)
+
+Once you have located the desired species, click on the 1️⃣ `Scientific Name` of the species, to view the species model output data specific to that species.
+
+![species model output](./img/statistical-10.png)
+
+Upon clicking on the scientific name of the species you will be taken to the `Change species model output` page.
+
+![Change species model output page](./img/statistical-11.png)
+
+Scroll down to find the `Input file` and `Output file` sections. Click on the 1️⃣ `Blue Link` next to the input file to download the input file and click on the 2️⃣ `Blue Link` next to the output file to view the output file.
+
+![Input/Output files](./img/statistical-12.png)
+
+**Downloaded Input File**
+
+![Downloaded input file](./img/statistical-13.png)
+
+**Output JSON File**
+
+![Output file](./img/statistical-14.png)
+
+The JSON file appears unreadable, check the 1️⃣ `Pretty Print` checkbox to format it for better readability.
+
+![Output file](./img/statistical-15.png)
