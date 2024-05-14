@@ -242,25 +242,25 @@ Referring to the description of each chart will provide a clearer understanding.
 
 #### Number of properties per population category (count) of species for year chart
 
-This chart illustrates the distribution of properties across population categories, based on the total population sizes of the selected species for the chosen year. The population is categorized into six groups. Each bar represents the count of properties per population category, categorized by property type.
+This chart illustrates the distribution of properties across population categories, based on the total population sizes of the selected species for the chosen year. The population is categorised into six groups. Each bar represents the count of properties per population category, categorised by property type.
 
 ![1st chart description](./img/charts-7.png)
 
 #### Number of properties per population category (population density) of species for year chart
 
-This chart illustrates the distribution of properties across population density categories, based on the total population densities of the selected species for the chosen year. Population density is calculated by dividing population size by the available area for the species, which is then grouped into six categories. Each bar represents the count of properties per population density category, categorized by property type.
+This chart illustrates the distribution of properties across population density categories, based on the total population densities of the selected species for the chosen year. Population density is calculated by dividing population size by the available area for the species, which is then grouped into six categories. Each bar represents the count of properties per population density category, categorised by property type.
 
 ![2nd chart description](./img/charts-8.png)
 
 #### Number of properties per categories of area (ha) for species for year chart
 
-This chart illustrates the distribution of total property size (in hectares) for the chosen year and selected species. The property area is categorized into six groups. Each bar represents the count of properties per property area range, categorized by property type.
+This chart illustrates the distribution of total property size (in hectares) for the chosen year and selected species. The property area is categorised into six groups. Each bar represents the count of properties per property area range, categorised by property type.
 
 ![3rd chart description](./img/charts-9.png)
 
 #### Number of properties per categories of area (ha) available to species for year chart
 
-This chart illustrates the distribution area available to the selected species (in hectares) for the chosen year, which may be a subset of the total size of the property. The area available to species is categorized into six groups. Each bar represents the count of properties per area available to species on the property, categorized by property type.
+This chart illustrates the distribution area available to the selected species (in hectares) for the chosen year, which may be a subset of the total size of the property. The area available to species is categorised into six groups. Each bar represents the count of properties per area available to species on the property, categorised by property type.
 
 ![4th chart description](./img/charts-10.png)
 
