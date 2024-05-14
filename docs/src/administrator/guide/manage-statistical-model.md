@@ -12,7 +12,7 @@ After clicking on the Django Admin, you will be redirected to the Django Admin p
 
 ![Statistical models](./img/statistical-2.png)
 
-When you click on `Statistical Models`, you will be taken to a table displaying various statistical models. In this table, you will find the default statistical model labeled as 1️⃣ `Generic`. This model is applied to all species that do not have a specific statistical model assigned to them. You can click on the (➖) minus icon to view the generic statistical model.
+When you click on `Statistical Models`, you will be taken to a table displaying various statistical models. In this table, you will find the default statistical model labelled as 1️⃣ `Generic`. This model is applied to all species that do not have a specific statistical model assigned to them. You can click on the (➖) minus icon to view the generic statistical model.
 
 ![Generic statistical model](./img/statistical-3.png)
 
