@@ -236,6 +236,58 @@ After that, the PDF file will be downloaded to your system.
 
 ![Downloaded PDF Charts 6](./img/charts-6.png)
 
+### Charts Description
+
+Referring to the description of each chart will provide a clearer understanding.
+
+#### Number of properties per population category (count) of species for year chart
+
+This chart illustrates the distribution of properties across population categories, based on the total population sizes of the selected species for the chosen year. The population is categorised into six groups. Each bar represents the count of properties per population category, categorised by property type.
+
+![1st chart description](./img/charts-7.png)
+
+#### Number of properties per population category (population density) of species for year chart
+
+This chart illustrates the distribution of properties across population density categories, based on the total population densities of the selected species for the chosen year. Population density is calculated by dividing population size by the available area for the species, which is then grouped into six categories. Each bar represents the count of properties per population density category, categorised by property type.
+
+![2nd chart description](./img/charts-8.png)
+
+#### Number of properties per categories of area (ha) for species for year chart
+
+This chart illustrates the distribution of total property size (in hectares) for the chosen year and selected species. The property area is categorised into six groups. Each bar represents the count of properties per property area range, categorised by property type.
+
+![3rd chart description](./img/charts-9.png)
+
+#### Number of properties per categories of area (ha) available to species for year chart
+
+This chart illustrates the distribution area available to the selected species (in hectares) for the chosen year, which may be a subset of the total size of the property. The area available to species is categorised into six groups. Each bar represents the count of properties per area available to species on the property, categorised by property type.
+
+![4th chart description](./img/charts-10.png)
+
+#### Total count of species per province chart
+
+This chart illustrates the total population size of the selected species per province for the chosen year.
+
+![5th chart description](./img/charts-11.png)
+
+#### Activity count as % of total population of species for year chart
+
+This chart illustrates the proportions of animals for the selected species, expressed as a percentage of the total population, under different activities for the chosen year. The text above each bar expresses the total count per activity for the chosen year. The total population size is assumed to be the net population size after all reported activities have been conducted.
+
+![6th chart description](./img/charts-12.png)
+
+#### Total count per population estimate category for species for year chart
+
+This chart illustrates the population estimate for the selected species split into the count method used for the chosen year.
+
+![7th chart description](./img/charts-13.png)
+
+#### Mean and standard deviation of age classes for species chart
+
+This chart illustrates the mean and standard deviation of population demographics (age and gender) of the selected species and year across properties categorised by property type. Note these data reflect only the properties for which demographic information is available.
+
+![8th chart description](./img/charts-14.png)
+
 ## Trends
 
 If you would like to view trends for different species you will need to navigate to the `TRENDS` tab of the `EXPLORE` page. To get there, click on the `EXPLORE` link in the navigation bar and then click on the `TRENDS` tab.
@@ -259,3 +311,57 @@ You will then be prompted to save the trends data to your computer.
 Once the file is downloaded, you can open it using a text editor (e.g. Notepad).
 
 ![Trends 6](./img/trends-6.png)
+
+### Trends Description
+
+Referring to the description of each trend will provide a clearer understanding.
+
+#### Species National Population Trend
+
+National population trend. The trend in the total population size across all properties (sub-populations) for all years where data are available. The trend for each property was estimated using General Additive Models fitted to raw population estimates, and then the fitted population estimates were aggregated across all properties in South Africa, each year. The shaded area represents the 95% confidence interval for the population trends.   Note – the population estimates are derived from a variety of sampling methods and specific uncertainty bounds (for example, see the Population Estimate Category graph)
+
+![Trends description](./img/trends-7.png)
+
+#### Large species populations chart
+
+**Percentage of populations that are increasing and decreasing: Large populations**
+ 
+The percentage of large populations determined by natural breaks in population size categories in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.
+
+![Trends description](./img/trends-8.png)
+
+#### Medium species populations chart
+
+**Percentage of populations that are increasing and decreasing: Medium populations**
+ 
+The percentage of medium-sized elephant populations (determined by natural breaks in population size categories) in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.
+
+![Trends description](./img/trends-9.png)
+
+#### Small species populations chart
+
+**Percentage of populations that are increasing and decreasing: Small populations**
+ 
+The percentage of small populations determined by natural breaks in population size categories in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.
+
+![Trends description](./img/trends-10.png)
+
+#### Total area vs area available to species chart
+
+The chart illustrates the total area versus the available area for the species.
+
+![Trends description](./img/trends-11.png)
+
+#### Province Population Trend Charts
+
+Trend in the total population size across all properties (sub-populations) in the province. The trend for each property was estimated using General Additive Models fitted to raw population estimates, and then the fitted population estimates were aggregated across all properties in the province, each year. Sudden jumps or dips may represent the inclusion of new properties, or translocation of animals out of the province, rather than natural population changes. The total number of properties for each time period can be checked in other graphs. The shaded area represents the 95% confidence interval for the population trends.
+
+>Note: the population estimates are derived from a variety of sampling methods and specific uncertainty bounds (for example, see the Population Estimate Category graph)
+
+![Trends description](./img/trends-12.png)
+
+#### Trends by property
+ 
+The trend in the total population size for the property is based on a General Additive Model fitted to raw population estimates (raw data shown as dots). Where there were only two estimates a simple log-linear curve was used to connect the two points.
+
+![Trends description](./img/trends-13.png)
