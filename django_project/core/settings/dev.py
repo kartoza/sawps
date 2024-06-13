@@ -58,3 +58,8 @@ WEBPACK_LOADER['DEFAULT']['CACHE'] = DEBUG
 WEBPACK_LOADER['DEFAULT']['STATS_FILE'] = absolute_path(
     'frontend', 'webpack-stats.dev.json'
 )
+
+# Extra installed apps for bdd tests
+INSTALLED_APPS = INSTALLED_APPS + (
+    'behave_django',
+)
