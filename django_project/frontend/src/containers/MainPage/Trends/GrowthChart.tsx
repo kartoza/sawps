@@ -184,13 +184,13 @@ const GrowthChart = (props: GrowthChartInterface) => {
             },
             legend: {
                 display: true,
-                position: 'bottom',
+                position: 'top',
                 labels: {
                     boxWidth: 20,
                     boxHeight: 13,
                     padding: 12,
                     font: {
-                        size: 10,
+                        size: 12,
                     }
                 },
             }
