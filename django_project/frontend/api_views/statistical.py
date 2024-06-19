@@ -19,7 +19,8 @@ from frontend.models import (
     PROVINCE_TREND,
     NATIONAL_GROWTH,
     PROPERTY_TREND,
-    PROVINCIAL_GROWTH
+    PROVINCIAL_GROWTH,
+    NATIONAL_GROWTH_CAT
 )
 from frontend.utils.user_roles import check_user_has_permission
 from frontend.utils.statistical_model import store_species_model_output_cache
@@ -129,6 +130,8 @@ class SpeciesTrend(SpeciesNationalTrend):
             output_type = NATIONAL_GROWTH
             if level == 'provincial':
                 output_type = PROVINCIAL_GROWTH
+        elif type == 'growth_overall':
+            output_type = NATIONAL_GROWTH_CAT
         else:
             return Response(
                 status=400,
