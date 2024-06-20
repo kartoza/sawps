@@ -1,0 +1,12 @@
+**/.features-gen/**/*.spec.js
+*package-lock.json
+*auth.json
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.env
+.direnv/
+/test-results/
+/tests/

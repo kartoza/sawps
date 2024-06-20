@@ -115,6 +115,12 @@ jobs:
       - name: Run Playwright tests
         working-directory: ./playwright/ci-test
         run: npx playwright test
+      - name: Playwright-BDD tests
+        working-directory: ./playwright-bdd
+        run: |
+          npm install
+          npm ci
+          npx bddgen && npx playwright test
       - uses: actions/upload-artifact@v3
         if: always()
         with:
