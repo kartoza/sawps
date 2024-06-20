@@ -15,7 +15,10 @@ from frontend.tests.model_factories import (
     StatisticalModelOutputF,
     SpeciesModelOutputF
 )
-from frontend.models.statistical import NATIONAL_TREND, PROPERTY_TREND
+from frontend.models.statistical import (
+    NATIONAL_TREND, PROPERTY_TREND,
+    NUM_PROPERTIES_PER_DENSITY_CAT
+)
 from frontend.api_views.statistical import (
     SpeciesNationalTrend,
     SpeciesTrend,
@@ -188,6 +191,7 @@ class TestAPIStatistical(TestCase):
 
     @mock.patch('django.core.cache.cache.get')
     def test_species_trend(self, mocked_cache):
+        view = SpeciesTrend.as_view()
         # get invalid type
         output = SpeciesModelOutputF.create(
             taxon=self.taxon,
@@ -198,7 +202,6 @@ class TestAPIStatistical(TestCase):
         url += f'?species={self.taxon.scientific_name}&level=national&data_type=abcdef'
         request = self.factory.get(url)
         request.user = self.user_1
-        view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 400)
         # get without model output
@@ -208,7 +211,6 @@ class TestAPIStatistical(TestCase):
         url += f'?species={self.taxon.scientific_name}&level=provincial&data_type=trend'
         request = self.factory.get(url)
         request.user = self.user_1
-        view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('results', response.data)
@@ -222,7 +224,6 @@ class TestAPIStatistical(TestCase):
         url += f'?species={self.taxon.scientific_name}&level=national&data_type=growth'
         request = self.factory.get(url)
         request.user = self.user_1
-        view = SpeciesTrend.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['results']), 0)
@@ -232,7 +233,15 @@ class TestAPIStatistical(TestCase):
         url += f'?species={self.taxon.scientific_name}&level=provincial&data_type=growth'
         request = self.factory.get(url)
         request.user = self.user_1
-        view = SpeciesTrend.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['results']), 1)
+        # get NUM_PROPERTIES_PER_DENSITY_CAT
+        mocked_cache.side_effect = mocked_cache_get
+        url = reverse('species-population-trend')
+        url += f'?species={self.taxon.scientific_name}&level=national&data_type={NUM_PROPERTIES_PER_DENSITY_CAT}'
+        request = self.factory.get(url)
+        request.user = self.user_1
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['results']), 1)
