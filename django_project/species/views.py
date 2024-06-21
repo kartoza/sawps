@@ -20,11 +20,10 @@ class TaxonListAPIView(APIView):
     """Get taxon within the organisations"""
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        organisation_id = get_current_organisation_id(self.request.user)
-        organisation = self.request.GET.get("organisation")
-
-        user_roles = get_user_roles(self.request.user)
+    def taxon_queryset(self, request):
+        organisation_id = get_current_organisation_id(request.user)
+        organisation = request.GET.get("organisation")
+        user_roles = get_user_roles(request.user)
         if PROVINCIAL_DATA_CONSUMER in user_roles:
             if organisation_id:
                 org = Organisation.objects.get(id=organisation_id)
@@ -52,10 +51,21 @@ class TaxonListAPIView(APIView):
                 taxon = Taxon.objects.filter(
                     **filters
                 ).order_by("scientific_name").distinct()
+        return taxon
 
+    def all_taxon_queryset(self):
+        return Taxon.objects.filter(
+            taxon_rank__name="Species").order_by("scientific_name").distinct()
+
+    def get(self, request):
+        current_tab = self.request.GET.get("tab", "")
+        if current_tab == 'trends':
+            taxon_qs = self.all_taxon_queryset()
+        else:
+            taxon_qs = self.taxon_queryset(request)
         return Response(
             status=200,
-            data=TaxonSerializer(taxon, many=True).data
+            data=TaxonSerializer(taxon_qs, many=True).data
         )
 
 
