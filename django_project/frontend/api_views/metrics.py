@@ -203,7 +203,7 @@ class SpeciesPopulationCountPerProvinceAPIView(APIView):
         taxon = Taxon.objects.filter(
             taxon_rank__name="Species",
             scientific_name__in=species_filter.split(',')
-        ).first()            
+        ).first()
         user_roles = get_user_roles(request.user)
         filters = common_filters(request, user_roles)
 
