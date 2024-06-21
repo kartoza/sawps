@@ -134,7 +134,7 @@ class SpeciesTrend(SpeciesNationalTrend):
         elif (
             type in [
                 NUM_PROPERTIES_PER_DENSITY_CAT,
-                NUM_PROPERTIES_PER_DENSITY_CAT
+                NUM_PROPERTIES_PER_POP_SIZE_CAT
             ]
         ):
             output_type = type
