@@ -13,7 +13,8 @@ from frontend.models.statistical import (
     NATIONAL_GROWTH,
     SpeciesModelOutput,
     CACHED_OUTPUT_TYPES,
-    OutputTypeCategoryIndex
+    OutputTypeCategoryIndex,
+    CUSTOM_AREA_AVAILABLE_GROWTH
 )
 from frontend.tests.model_factories import (
     StatisticalModelF,
@@ -34,7 +35,9 @@ from frontend.tasks.generate_statistical_model import (
     check_affected_model_output,
     generate_species_statistical_model,
     add_json_metadata,
-    sort_output_type_categories
+    sort_output_type_categories,
+    calculate_area_diff,
+    add_json_area_available_growth
 )
 from frontend.admin import (
     trigger_generate_species_statistical_model
@@ -514,3 +517,60 @@ class TestGenerateStatisticalModel(TestCase):
             ['stable (-2% to 2%)', 'steady increase (2-5% pa)',
              'increasing rapidly (\u003E5% pa)']
         )
+
+    def test_calculate_area_diff(self):
+        property_dict = {
+            'PropertyA': {
+                'area_available': 100,
+                'area_total': 100
+            }
+        }
+        current_dict = {
+            'PropertyA': {
+                'area_available': 110,
+                'area_total': 110
+            },
+            'PropertyB': {
+                'area_available': 70,
+                'area_total': 74
+            }
+        }
+        diff_value, sum_new_area, property_dict = calculate_area_diff(property_dict, current_dict)
+        self.assertEqual(diff_value, 80)
+        self.assertEqual(sum_new_area, 74)
+        self.assertIn('PropertyA', property_dict)
+        self.assertEqual(property_dict['PropertyA']['area_available'], 110)
+        self.assertIn('PropertyB', property_dict)
+
+    def test_add_json_area_available_growth(self):
+        output = SpeciesModelOutputF.create(
+            is_latest=False,
+            is_outdated=False,
+            status=DONE,
+            generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
+        )
+        population = AnnualPopulationF.create(
+            taxon=output.taxon,
+            year=2000,
+            area_available_to_species=90
+        )
+        AnnualPopulationF.create(
+            taxon=output.taxon,
+            year=2001,
+            area_available_to_species=92,
+            property=population.property
+        )
+        AnnualPopulationF.create(
+            taxon=output.taxon,
+            year=2002,
+            area_available_to_species=94,
+            property=population.property
+        )
+        file_path = export_annual_population_data(output.taxon)
+        save_model_data_input(output, file_path)
+        json_data = add_json_area_available_growth(output, {})
+        self.assertIn(CUSTOM_AREA_AVAILABLE_GROWTH, json_data)
+        area_results = json_data[CUSTOM_AREA_AVAILABLE_GROWTH]
+        self.assertEqual(len(area_results), 3)
+        found_year = [a for a in area_results if a['year'] == 2002]
+        self.assertEqual(found_year[0]['area_available'], 94)

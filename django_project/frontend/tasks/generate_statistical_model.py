@@ -178,7 +178,7 @@ def add_json_area_available_growth(
                 line_count += 1
                 continue
             line_count += 1
-            row_year = row[3]
+            row_year = int(row[3])
             row_property = row[1]
             row_area_available = float(row[10])
             row_area_total = float(row[9])
