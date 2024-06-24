@@ -48,7 +48,7 @@ export interface AnnualPopulationPerActivityInterface {
     juvenile_female?: number;
     founder_population?: boolean;
     reintroduction_source?: string;
-    permit?: number;
+    permit?: string;
     translocation_destination?: string;
     note?: string;
     id?: number;
@@ -143,7 +143,7 @@ export const getDefaultAnnualPopulationPerActivity = ():AnnualPopulationPerActiv
         reintroduction_source: '',
         translocation_destination: '',
         note: '',
-        permit: 0,
+        permit: '',
         id: -1
     }
 }
@@ -199,7 +199,7 @@ const copyActivityPopulation = (dataList: AnnualPopulationPerActivityInterface[]
             reintroduction_source: data.reintroduction_source != null ? data.reintroduction_source : '',
             translocation_destination: data.translocation_destination != null ? data.translocation_destination : '',
             note: data.note != null ? data.note : '',
-            permit: data.permit != null ? data.permit : 0,
+            permit: data.permit != null ? data.permit : '',
         })
     })
     return _results
@@ -243,7 +243,7 @@ export const FIELD_COUNTER = [
 
 export const OTHER_NUMBER_FIELDS = [
     'group', 'sampling_effort', 'area_available_to_species',
-    'area_covered', 'permit'
+    'area_covered'
 ]
 
 
