@@ -510,61 +510,6 @@ class PopulationPerAgeGroupTestCase(BaseTestCase):
         )
 
 
-class TotalAreaVSAreaAvailableTestCase(BaseTestCase):
-    """
-    Test case for the endpoint that retrieves
-    total area versus area available to species.
-    """
-
-    def setUp(self) -> None:
-        """
-        Set up the test case.
-        """
-        super().setUp()
-        self.url = reverse("total_area_vs_available_area")
-
-    def test_total_area_vs_area_available(self) -> None:
-        """
-        Test total area versus area available.
-        """
-        url = self.url
-        response = self.client.get(url, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data[0]['area'][0]['area_total'], 200
-        )
-        self.assertEqual(
-            response.data[0]['area'][0]['area_available'], 10
-        )
-
-    def test_total_area_vs_area_available_filter_by_property(self) -> None:
-        """
-        Test total area versus area available filtered by property.
-        """
-        id = self.annual_populations[0].property_id
-        data = {'property': id}
-        url = self.url
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data[0]['area'][0]['area_total'], 200
-        )
-
-    def test_total_area_vs_area_available_filter_by_year(self) -> None:
-        """
-        Test total area versus area available filtered by year.
-        """
-        year = self.annual_populations[1].year
-        data = {'start_year': year, "end_year": year}
-        url = self.url
-        response = self.client.get(url, data, **self.auth_headers)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data[0]['area'][0]['year'],
-            int(year)
-        )
-
-
 class TestPropertyCountPerCategoryMixins:
     def test_empty_result(self) -> None:
         """

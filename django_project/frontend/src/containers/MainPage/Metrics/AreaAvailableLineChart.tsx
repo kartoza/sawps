@@ -11,18 +11,11 @@ import {RootState} from "../../../app/store";
 
 
 Chart.register(CategoryScale);
-const FETCH_PROPERTY_POPULATION_SPECIES = '/api/total-area-vs-available-area/'
+const FETCH_PROPERTY_POPULATION_SPECIES = '/api/species/population_trend/'
 
 
 const AreaAvailableLineChart = (props: any) => {
-    const {
-        propertyId,
-        startYear,
-        endYear,
-        national
-    } = props
     const selectedSpecies = useAppSelector((state: RootState) => state.SpeciesFilter.selectedSpecies)
-    const organisationId = useAppSelector((state: RootState) => state.SpeciesFilter.organisationId)
     const [loading, setLoading] = useState(false)
     const [areaData, setAreaData] = useState([])
 
@@ -52,17 +45,12 @@ const AreaAvailableLineChart = (props: any) => {
 
     const fetchAreaAvailableLineData = () => {
         setLoading(true)
-        let url = `${FETCH_PROPERTY_POPULATION_SPECIES}?start_year=${startYear}&end_year=${endYear}&species=${selectedSpecies}&organisation=${organisationId}`
-        if (!national) {
-            url = `${url}&property=${propertyId}`
-        }
+        let url = `${FETCH_PROPERTY_POPULATION_SPECIES}?species=${selectedSpecies}&level=national&data_type=area_available_growth`
 
         axios.get(url).then((response) => {
             setLoading(false)
-            if (response.data) {
-                if (response.data.length > 0) {
-                    setAreaData(response.data[0]?.area)
-                }
+            if (response.data['results']) {
+                setAreaData(response.data['results'])
             }
         }).catch((error) => {
             setLoading(false)
@@ -84,7 +72,7 @@ const AreaAvailableLineChart = (props: any) => {
 
     useEffect(() => {
         fetchAreaAvailableLineData()
-    }, [propertyId, startYear, endYear, selectedSpecies]);
+    }, [selectedSpecies]);
 
     areaDataB.datasets.forEach(dataset => {
         if (dataset.data.length === 1) {
