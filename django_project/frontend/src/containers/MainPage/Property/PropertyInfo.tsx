@@ -249,7 +249,7 @@ export default function PropertyInfo(props: PropertyInfoInterface) {
                                 Property Size
                             </TableCell>
                             <TableCell className='TableCellText'>
-                                <span>{props.property.size ? props.property.size.toFixed(2) : '0'} ha</span>                                
+                                <span>{props.property.size ? props.property.size.toFixed(0) : '0'} ha</span>                                
                             </TableCell>
                         </TableRow>
                     }
