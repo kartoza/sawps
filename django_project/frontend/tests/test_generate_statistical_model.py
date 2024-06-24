@@ -118,6 +118,11 @@ class TestGenerateStatisticalModel(TestCase):
             status=PROCESSING,
             generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8)
         )
+        AnnualPopulationF.create(
+            taxon=output.taxon
+        )
+        file_path = export_annual_population_data(output.taxon)
+        save_model_data_input(output, file_path)
         # ADD LATEST
         SpeciesModelOutputF.create(
             taxon=output.taxon,
@@ -137,7 +142,7 @@ class TestGenerateStatisticalModel(TestCase):
         self.assertTrue(output.output_file)
         self.assertTrue(
             output.output_file.storage.exists(output.output_file.name))
-        mocked_set.assert_called_once()
+        self.assertEqual(mocked_set.call_count, 2)
         self.assertTrue(output.is_latest)
         self.assertEqual(mocked_clear.call_count, len(CACHED_OUTPUT_TYPES))
 
@@ -237,6 +242,11 @@ class TestGenerateStatisticalModel(TestCase):
             generated_on=datetime.datetime(2000, 8, 14, 8, 8, 8),
             task_id=None
         )
+        AnnualPopulationF.create(
+            taxon=output_2.taxon
+        )
+        file_path = export_annual_population_data(output_2.taxon)
+        save_model_data_input(output_2, file_path)
         save_model_output_on_success(output_2, {
             NATIONAL_TREND: 'abcdef'
         })
@@ -308,7 +318,7 @@ class TestGenerateStatisticalModel(TestCase):
             self.assertTrue(output.output_file)
             self.assertTrue(
                 output.output_file.storage.exists(output.output_file.name))
-            mocked_set.assert_called_once()
+            self.assertEqual(mocked_set.call_count, 2)
             mocked_set.reset_mock()
             self.assertTrue(output.is_latest)
         # mock success for generic model
@@ -340,7 +350,7 @@ class TestGenerateStatisticalModel(TestCase):
             self.assertTrue(output.output_file)
             self.assertTrue(
                 output.output_file.storage.exists(output.output_file.name))
-            mocked_set.assert_called_once()
+            self.assertEqual(mocked_set.call_count, 2)
             mocked_set.reset_mock()
             self.assertTrue(output.is_latest)
 
