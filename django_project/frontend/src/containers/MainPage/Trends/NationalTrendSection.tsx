@@ -117,12 +117,7 @@ const NationalTrendSection = (props: NationalTrendSectionInterface) => {
                                 </Grid>
                                 <Grid item></Grid>
                                 <Grid item style={{ marginTop: 15 }}>
-                                    <AreaAvailableLineChart
-                                        propertyId={''}
-                                        startYear={DEFAULT_START_YEAR_FILTER}
-                                        endYear={DEFAULT_END_YEAR_FILTER}
-                                        national={true}
-                                    />
+                                    <AreaAvailableLineChart />
                                 </Grid>
                             </Grid>
                         </Grid>

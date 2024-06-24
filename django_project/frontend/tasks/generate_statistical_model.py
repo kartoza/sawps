@@ -4,6 +4,7 @@ import logging
 import traceback
 import json
 import time
+import csv
 from datetime import datetime, timedelta
 from django.core.files import File
 from django.core.files.base import ContentFile
@@ -19,7 +20,8 @@ from frontend.models.statistical import (
     NATIONAL_GROWTH,
     PROVINCIAL_GROWTH,
     NATIONAL_GROWTH_CAT,
-    OutputTypeCategoryIndex
+    OutputTypeCategoryIndex,
+    CUSTOM_AREA_AVAILABLE_GROWTH
 )
 from frontend.utils.statistical_model import (
     write_plumber_data,
@@ -140,6 +142,81 @@ def add_json_metadata(json_data):
     return json_data
 
 
+def calculate_area_diff(property_dict, current_dict):
+    """Compare property dict with the current year property dict."""
+    diff_value = 0
+    sum_new_area = 0
+    for property, values in current_dict.items():
+        if property in property_dict:
+            diff_value += (
+                values['area_available'] -
+                property_dict[property]['area_available']
+            )
+        else:
+            diff_value += values['area_available']
+            sum_new_area += values['area_total']
+        property_dict[property] = values
+    return diff_value, sum_new_area, property_dict
+
+
+def add_json_area_available_growth(
+        model_output: SpeciesModelOutput, json_data):
+    """Generate area available vs total area data."""
+    current_year = 0
+    property_dict = {}
+    sum = 0
+    sum_area = 0
+    results = []
+    current_dict = {}
+    line_count = 0
+    with model_output.input_file.open('rb') as csv_file:
+        file = csv_file.read().decode(
+            'utf-8', errors='ignore').splitlines()
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+                continue
+            line_count += 1
+            row_year = row[3]
+            row_property = row[1]
+            row_area_available = float(row[10])
+            row_area_total = float(row[9])
+            if current_year == 0:
+                current_year = row_year
+            elif current_year != row_year:
+                diff_value, sum_new_area, updated_dict = (
+                    calculate_area_diff(property_dict, current_dict)
+                )
+                sum += diff_value
+                sum_area += sum_new_area
+                results.append({
+                    'year': current_year,
+                    'area_available': sum,
+                    'area_total': sum_area
+                })
+                property_dict = updated_dict
+                current_dict = {}
+                current_year = row_year
+            current_dict[row_property] = {
+                'area_available': row_area_available,
+                'area_total': row_area_total
+            }
+    if current_dict:
+        diff_value, sum_new_area, updated_dict = (
+            calculate_area_diff(property_dict, current_dict)
+        )
+        sum += diff_value
+        sum_area += sum_new_area
+        results.append({
+            'year': current_year,
+            'area_available': sum,
+            'area_total': sum_area
+        })
+    json_data[CUSTOM_AREA_AVAILABLE_GROWTH] = results
+    return json_data
+
+
 def save_model_output_on_success(model_output: SpeciesModelOutput, json_data):
     """Store the result from successful execution of R statistical model."""
     model_output.finished_at = timezone.now()
@@ -151,6 +228,7 @@ def save_model_output_on_success(model_output: SpeciesModelOutput, json_data):
     model_output.save()
     taxon_name = slugify(model_output.taxon.scientific_name).replace('-', '_')
     json_data = add_json_metadata(json_data)
+    json_data = add_json_area_available_growth(model_output, json_data)
     output_name = f'{model_output.id}_{taxon_name}.json'
     model_output.output_file.save(
         output_name, ContentFile(json.dumps(json_data)))
