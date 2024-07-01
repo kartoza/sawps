@@ -97,19 +97,19 @@
 }
 
 .national-trend-left-side {
-    .ChartContainerBox {
-        height: 600px;
+  .ChartContainerBox {
+      height: 808px;
 
-        .ChartContainer {
-            height: 520px;
+      .ChartContainer {
+          height: 728px;
 
-            .ChartBox {
-                height: 470px !important;
+          .ChartBox {
+              height: 678px !important;
 
-                .PopulationTrendChartContainer, .AreaAvailableLineChartContainer {
-                  height: 460px;
-                }
-            }
-        }
-    }
+              .PopulationTrendChartContainer, .AreaAvailableLineChartContainer {
+                height: 668px;
+              }
+          }
+      }
+  }
 }
