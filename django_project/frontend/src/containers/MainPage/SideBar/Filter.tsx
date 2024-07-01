@@ -101,7 +101,10 @@ function Filter(props: any) {
         data: SpeciesFilterList,
         isLoading: isSpeciesLoading,
         isSuccess: isSpeciesSuccess
-    } = useGetSpeciesQuery(selectedOrganisation.join(','))
+    } = useGetSpeciesQuery({
+        organisationIds: selectedOrganisation.join(','),
+        tab: tab
+    })
     const {
         data: provinceList,
         isLoading: isProvinceListLoading,
