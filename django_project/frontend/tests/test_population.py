@@ -396,7 +396,7 @@ class TestPopulationAPIViews(TestCase):
             year=2023
         ).first()
         self.assertTrue(annual_population)
-        self.assertEqual(annual_population.area_available_to_species, 5.5)
+        self.assertEqual(annual_population.area_available_to_species, 5)
         self.assertEqual(annual_population.total, data['annual_population']['total'])
         self.assertEqual(annual_population.adult_total, data['annual_population']['adult_total'])
         self.assertEqual(annual_population.sub_adult_total, data['annual_population']['sub_adult_total'])
