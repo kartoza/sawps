@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>sanbi Database</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="bower/html5shiv/html5shiv.min.js"></script>
+        <script src="bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="index.html" class="navbar-brand"><b>sanbi</b> Database</a>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>All Relationships</h1>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 class="box-title">Diagrams</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom">
+                                <!-- Tabs within a box -->
+                                <h5>By default only columns that are primary keys, foreign keys or indexes are shown.</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#compactDegreeImg-chart" data-toggle="tab" aria-expanded="true">Compact</a></li>
+                                    <li class=""><a href="#largeDegreeImg-chart" data-toggle="tab" aria-expanded="true">Large</a></li>
+                                    <li class=""><a href="#compactimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Compact Implied</a></li>
+                                    <li class=""><a href="#largeimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Large Implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="compactDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="compactRelationshipsDiagram" name="compactRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/survey_method.html" target="_top" title="survey_method" alt="" coords="1065,644,1270,796">
+<area shape="rect" id="node2" href="tables/otp_static_statictoken.html" target="_top" title="otp_static_statictoken" alt="" coords="1039,3373,1296,3525">
+<area shape="rect" id="node44" href="tables/otp_static_staticdevice.html" target="_top" title="otp_static_staticdevice" alt="" coords="620,3384,897,3531">
+<area shape="rect" id="node3" href="tables/frontend_contextlayerlegend.html" target="_top" title="frontend_contextlayerlegend" alt="" coords="1010,3209,1325,3356">
+<area shape="rect" id="node6" href="tables/frontend_contextlayer.html" target="_top" title="frontend_contextlayer" alt="" coords="629,3249,889,3367">
+<area shape="rect" id="node4" href="tables/organisation_representative.html" target="_top" title="organisation_representative" alt="" coords="605,2000,913,2152">
+<area shape="rect" id="node25" href="tables/organisation.html" target="_top" title="organisation" alt="" coords="300,1836,539,2041">
+<area shape="rect" id="node52" href="tables/auth_user.html" target="_top" title="auth_user" alt="" coords="338,2811,501,2957">
+<area shape="rect" id="node5" href="tables/socialaccount_socialapp_sites.html" target="_top" title="socialaccount_socialapp_sites" alt="" coords="1008,3740,1327,3892">
+<area shape="rect" id="node11" href="tables/socialaccount_socialapp.html" target="_top" title="socialaccount_socialapp" alt="" coords="621,3771,896,3888">
+<area shape="rect" id="node24" href="tables/django_site.html" target="_top" title="django_site" alt="" coords="671,3905,846,4052">
+<area shape="rect" id="node7" href="tables/annual_population.html" target="_top" title="annual_population" alt="" coords="1401,1111,1742,1492">
+<area shape="rect" id="node26" href="tables/open_close_system.html" target="_top" title="open_close_system" alt="" coords="1049,1117,1285,1240">
+<area shape="rect" id="node38" href="tables/count_method.html" target="_top" title="count_method" alt="" coords="1068,977,1267,1100">
+<area shape="rect" id="node41" href="tables/population_estimate_category.html" target="_top" title="population_estimate_category" alt="" coords="1005,1397,1329,1520">
+<area shape="rect" id="node42" href="tables/sampling_effort_coverage.html" target="_top" title="sampling_effort_coverage" alt="" coords="1022,1677,1313,1800">
+<area shape="rect" id="node49" href="tables/certainty.html" target="_top" title="certainty" alt="" coords="1091,813,1244,960">
+<area shape="rect" id="node55" href="tables/population_status.html" target="_top" title="population_status" alt="" coords="1054,1537,1281,1660">
+<area shape="rect" id="node58" href="tables/sampling_size_unit.html" target="_top" title="sampling_size_unit" alt="" coords="1051,1257,1284,1380">
+<area shape="rect" id="node62" href="tables/owned_species.html" target="_top" title="owned_species" alt="" coords="1041,1981,1294,2187">
+<area shape="rect" id="node8" href="tables/taxon.html" target="_top" title="taxon" alt="" coords="634,940,883,1175">
+<area shape="rect" id="node39" href="tables/taxon_rank.html" target="_top" title="taxon_rank" alt="" coords="333,1057,505,1180">
+<area shape="rect" id="node9" href="tables/frontend_uploadspeciescsv.html" target="_top" title="frontend_uploadspeciescsv" alt="" coords="1017,2427,1317,2603">
+<area shape="rect" id="node19" href="tables/property.html" target="_top" title="property" alt="" coords="667,2205,851,2499">
+<area shape="rect" id="node10" href="tables/frontend_draftspeciesupload.html" target="_top" title="frontend_draftspeciesupload" alt="" coords="1010,2204,1325,2409">
+<area shape="rect" id="node12" href="tables/socialaccount_socialaccount.html" target="_top" title="socialaccount_socialaccount" alt="" coords="605,3548,913,3753">
+<area shape="rect" id="node13" href="tables/activity_activitytype.html" target="_top" title="activity_activitytype" alt="" coords="1048,2843,1287,2989">
+<area shape="rect" id="node14" href="tables/otp_totp_totpdevice.html" target="_top" title="otp_totp_totpdevice" alt="" coords="620,2588,897,2735">
+<area shape="rect" id="node15" href="tables/auth_group.html" target="_top" title="auth_group" alt="" coords="331,5012,507,5135">
+<area shape="rect" id="node16" href="tables/user_title.html" target="_top" title="user_title" alt="" coords="341,1415,498,1537">
+<area shape="rect" id="node17" href="tables/django_content_type.html" target="_top" title="django_content_type" alt="" coords="6,5032,255,5184">
+<area shape="rect" id="node18" href="tables/frontend_statisticalmodel.html" target="_top" title="frontend_statisticalmodel" alt="" coords="1023,1817,1311,1964">
+<area shape="rect" id="node46" href="tables/property_type.html" target="_top" title="property_type" alt="" coords="322,2281,517,2404">
+<area shape="rect" id="node65" href="tables/province.html" target="_top" title="province" alt="" coords="55,2220,207,2337">
+<area shape="rect" id="node20" href="tables/user_login.html" target="_top" title="user_login" alt="" coords="675,4263,843,4439">
+<area shape="rect" id="node32" href="tables/login_status.html" target="_top" title="login_status" alt="" coords="329,4292,509,4415">
+<area shape="rect" id="node21" href="tables/OrganisationInvites.html" target="_top" title="OrganisationInvites" alt="" coords="638,1192,879,1368">
+<area shape="rect" id="node66" href="tables/user_role.html" target="_top" title="user_role" alt="" coords="341,1251,498,1397">
+<area shape="rect" id="node22" href="tables/parcel_type.html" target="_top" title="parcel_type" alt="" coords="671,2945,846,3068">
+<area shape="rect" id="node23" href="tables/frontend_boundarysearchrequest.html" target="_top" title="frontend_boundarysearchrequest" alt="" coords="583,2752,935,2928">
+<area shape="rect" id="node29" href="tables/data_use_permission.html" target="_top" title="data_use_permission" alt="" coords="5,1895,256,2041">
+<area shape="rect" id="node27" href="tables/account_emailconfirmation.html" target="_top" title="account_emailconfirmation" alt="" coords="1017,4103,1317,4279">
+<area shape="rect" id="node36" href="tables/account_emailaddress.html" target="_top" title="account_emailaddress" alt="" coords="628,4069,889,4245">
+<area shape="rect" id="node28" href="tables/django_celery_beat_crontabschedule.html" target="_top" title="django_celery_beat_crontabschedule" alt="" coords="979,5,1356,123">
+<area shape="rect" id="node30" href="tables/auth_user_groups.html" target="_top" title="auth_user_groups" alt="" coords="645,4649,872,4801">
+<area shape="rect" id="node31" href="tables/parcel.html" target="_top" title="parcel" alt="" coords="1059,2620,1276,2825">
+<area shape="rect" id="node33" href="tables/django_celery_beat_intervalschedule.html" target="_top" title="django_celery_beat_intervalschedule" alt="" coords="979,140,1355,257">
+<area shape="rect" id="node34" href="tables/django_celery_beat_solarschedule.html" target="_top" title="django_celery_beat_solarschedule" alt="" coords="989,275,1345,456">
+<area shape="rect" id="node35" href="tables/django_celery_beat_periodictask.html" target="_top" title="django_celery_beat_periodictask" alt="" coords="1400,105,1743,369">
+<area shape="rect" id="node63" href="tables/django_celery_beat_clockedschedule.html" target="_top" title="django_celery_beat_clockedschedule" alt="" coords="979,473,1355,591">
+<area shape="rect" id="node37" href="tables/frontend_boundaryfile.html" target="_top" title="frontend_boundaryfile" alt="" coords="627,3085,890,3232">
+<area shape="rect" id="node40" href="tables/django_admin_log.html" target="_top" title="django_admin_log" alt="" coords="644,4456,873,4632">
+<area shape="rect" id="node43" href="tables/species_taxonsurveymethod.html" target="_top" title="species_taxonsurveymethod" alt="" coords="1417,563,1726,715">
+<area shape="rect" id="node45" href="tables/user_profile.html" target="_top" title="user_profile" alt="" coords="600,1385,917,1620">
+<area shape="rect" id="node47" href="tables/frontend_statisticalmodeloutput.html" target="_top" title="frontend_statisticalmodeloutput" alt="" coords="1401,1788,1742,1935">
+<area shape="rect" id="node48" href="tables/frontend_spatialdatamodel.html" target="_top" title="frontend_spatialdatamodel" alt="" coords="1017,3035,1317,3187">
+<area shape="rect" id="node50" href="tables/auth_user_user_permissions.html" target="_top" title="auth_user_user_permissions" alt="" coords="604,5047,913,5199">
+<area shape="rect" id="node64" href="tables/auth_permission.html" target="_top" title="auth_permission" alt="" coords="311,5152,527,5328">
+<area shape="rect" id="node51" href="tables/django_redirect.html" target="_top" title="django_redirect" alt="" coords="1063,3909,1272,4085">
+<area shape="rect" id="node53" href="tables/socialaccount_socialtoken.html" target="_top" title="socialaccount_socialtoken" alt="" coords="1023,3545,1312,3721">
+<area shape="rect" id="node54" href="tables/annual_population_per_activity.html" target="_top" title="annual_population_per_activity" alt="" coords="1405,2376,1737,2581">
+<area shape="rect" id="node56" href="tables/guardian_groupobjectpermission.html" target="_top" title="guardian_groupobjectpermission" alt="" coords="584,5385,933,5596">
+<area shape="rect" id="node57" href="tables/organisation_user.html" target="_top" title="organisation_user" alt="" coords="645,1637,873,1789">
+<area shape="rect" id="node59" href="tables/guardian_userobjectpermission.html" target="_top" title="guardian_userobjectpermission" alt="" coords="591,4819,927,5029">
+<area shape="rect" id="node60" href="tables/auth_group_permissions.html" target="_top" title="auth_group_permissions" alt="" coords="619,5216,899,5368">
+<area shape="rect" id="node61" href="tables/Reminders.html" target="_top" title="Reminders" alt="" coords="673,1807,845,1983">
+<area shape="rect" id="node67" href="tables/frontend_spatialdatavaluemodel.html" target="_top" title="frontend_spatialdatavaluemodel" alt="" coords="1400,3005,1743,3152">
+</map>
+                                        <a name='diagram'><img id="compactDegreeImg" src="diagrams/summary/relationships.real.compact.png" usemap="#compactRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="largeDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="largeRelationshipsDiagram" name="largeRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/survey_method.html" target="_top" title="survey_method" alt="" coords="1065,1532,1270,1684">
+<area shape="rect" id="node2" href="tables/otp_static_statictoken.html" target="_top" title="otp_static_statictoken" alt="" coords="1039,4833,1296,4985">
+<area shape="rect" id="node44" href="tables/otp_static_staticdevice.html" target="_top" title="otp_static_staticdevice" alt="" coords="620,4892,897,5132">
+<area shape="rect" id="node3" href="tables/frontend_contextlayerlegend.html" target="_top" title="frontend_contextlayerlegend" alt="" coords="1010,4605,1325,4787">
+<area shape="rect" id="node6" href="tables/frontend_contextlayer.html" target="_top" title="frontend_contextlayer" alt="" coords="629,4693,889,4875">
+<area shape="rect" id="node4" href="tables/organisation_representative.html" target="_top" title="organisation_representative" alt="" coords="605,2631,913,2783">
+<area shape="rect" id="node25" href="tables/organisation.html" target="_top" title="organisation" alt="" coords="300,2491,539,2701">
+<area shape="rect" id="node52" href="tables/auth_user.html" target="_top" title="auth_user" alt="" coords="338,4097,501,4484">
+<area shape="rect" id="node5" href="tables/socialaccount_socialapp_sites.html" target="_top" title="socialaccount_socialapp_sites" alt="" coords="1008,7187,1327,7339">
+<area shape="rect" id="node11" href="tables/socialaccount_socialapp.html" target="_top" title="socialaccount_socialapp" alt="" coords="621,7172,896,7412">
+<area shape="rect" id="node24" href="tables/django_site.html" target="_top" title="django_site" alt="" coords="671,7429,846,7581">
+<area shape="rect" id="node7" href="tables/annual_population.html" target="_top" title="annual_population" alt="" coords="1401,1004,1742,1919">
+<area shape="rect" id="node26" href="tables/open_close_system.html" target="_top" title="open_close_system" alt="" coords="1049,1252,1285,1375">
+<area shape="rect" id="node38" href="tables/count_method.html" target="_top" title="count_method" alt="" coords="1068,1112,1267,1235">
+<area shape="rect" id="node41" href="tables/population_estimate_category.html" target="_top" title="population_estimate_category" alt="" coords="1005,1701,1329,1824">
+<area shape="rect" id="node42" href="tables/sampling_effort_coverage.html" target="_top" title="sampling_effort_coverage" alt="" coords="1022,1981,1313,2104">
+<area shape="rect" id="node49" href="tables/certainty.html" target="_top" title="certainty" alt="" coords="1091,943,1244,1095">
+<area shape="rect" id="node55" href="tables/population_status.html" target="_top" title="population_status" alt="" coords="1054,1841,1281,1964">
+<area shape="rect" id="node58" href="tables/sampling_size_unit.html" target="_top" title="sampling_size_unit" alt="" coords="1051,1392,1284,1515">
+<area shape="rect" id="node62" href="tables/owned_species.html" target="_top" title="owned_species" alt="" coords="1041,2695,1294,2905">
+<area shape="rect" id="node8" href="tables/taxon.html" target="_top" title="taxon" alt="" coords="634,933,883,1379">
+<area shape="rect" id="node39" href="tables/taxon_rank.html" target="_top" title="taxon_rank" alt="" coords="333,1109,505,1232">
+<area shape="rect" id="node9" href="tables/frontend_uploadspeciescsv.html" target="_top" title="frontend_uploadspeciescsv" alt="" coords="1017,2923,1317,3397">
+<area shape="rect" id="node19" href="tables/property.html" target="_top" title="property" alt="" coords="667,2836,851,3223">
+<area shape="rect" id="node10" href="tables/frontend_draftspeciesupload.html" target="_top" title="frontend_draftspeciesupload" alt="" coords="1010,2320,1325,2677">
+<area shape="rect" id="node12" href="tables/socialaccount_socialaccount.html" target="_top" title="socialaccount_socialaccount" alt="" coords="605,5377,913,5647">
+<area shape="rect" id="node13" href="tables/activity_activitytype.html" target="_top" title="activity_activitytype" alt="" coords="1048,3731,1287,3883">
+<area shape="rect" id="node14" href="tables/otp_totp_totpdevice.html" target="_top" title="otp_totp_totpdevice" alt="" coords="620,3312,897,3757">
+<area shape="rect" id="node15" href="tables/auth_group.html" target="_top" title="auth_group" alt="" coords="331,6569,507,6692">
+<area shape="rect" id="node16" href="tables/user_title.html" target="_top" title="user_title" alt="" coords="341,1631,498,1753">
+<area shape="rect" id="node17" href="tables/django_content_type.html" target="_top" title="django_content_type" alt="" coords="6,6604,255,6756">
+<area shape="rect" id="node18" href="tables/frontend_statisticalmodel.html" target="_top" title="frontend_statisticalmodel" alt="" coords="1023,2121,1311,2303">
+<area shape="rect" id="node46" href="tables/property_type.html" target="_top" title="property_type" alt="" coords="322,3000,517,3123">
+<area shape="rect" id="node65" href="tables/province.html" target="_top" title="province" alt="" coords="55,2909,207,3032">
+<area shape="rect" id="node20" href="tables/user_login.html" target="_top" title="user_login" alt="" coords="675,5664,843,5875">
+<area shape="rect" id="node32" href="tables/login_status.html" target="_top" title="login_status" alt="" coords="329,5752,509,5875">
+<area shape="rect" id="node21" href="tables/OrganisationInvites.html" target="_top" title="OrganisationInvites" alt="" coords="638,1396,879,1636">
+<area shape="rect" id="node66" href="tables/user_role.html" target="_top" title="user_role" alt="" coords="341,1771,498,1923">
+<area shape="rect" id="node22" href="tables/parcel_type.html" target="_top" title="parcel_type" alt="" coords="671,4237,846,4360">
+<area shape="rect" id="node23" href="tables/frontend_boundarysearchrequest.html" target="_top" title="frontend_boundarysearchrequest" alt="" coords="583,3775,935,4220">
+<area shape="rect" id="node29" href="tables/data_use_permission.html" target="_top" title="data_use_permission" alt="" coords="5,2549,256,2701">
+<area shape="rect" id="node27" href="tables/account_emailconfirmation.html" target="_top" title="account_emailconfirmation" alt="" coords="1017,5032,1317,5243">
+<area shape="rect" id="node36" href="tables/account_emailaddress.html" target="_top" title="account_emailaddress" alt="" coords="628,5149,889,5360">
+<area shape="rect" id="node28" href="tables/django_celery_beat_crontabschedule.html" target="_top" title="django_celery_beat_crontabschedule" alt="" coords="979,65,1356,335">
+<area shape="rect" id="node30" href="tables/auth_user_groups.html" target="_top" title="auth_user_groups" alt="" coords="645,6208,872,6360">
+<area shape="rect" id="node31" href="tables/parcel.html" target="_top" title="parcel" alt="" coords="1059,3415,1276,3713">
+<area shape="rect" id="node33" href="tables/django_celery_beat_intervalschedule.html" target="_top" title="django_celery_beat_intervalschedule" alt="" coords="979,352,1355,504">
+<area shape="rect" id="node34" href="tables/django_celery_beat_solarschedule.html" target="_top" title="django_celery_beat_solarschedule" alt="" coords="989,521,1345,703">
+<area shape="rect" id="node35" href="tables/django_celery_beat_periodictask.html" target="_top" title="django_celery_beat_periodictask" alt="" coords="1400,5,1743,744">
+<area shape="rect" id="node63" href="tables/django_celery_beat_clockedschedule.html" target="_top" title="django_celery_beat_clockedschedule" alt="" coords="979,720,1355,843">
+<area shape="rect" id="node37" href="tables/frontend_boundaryfile.html" target="_top" title="frontend_boundaryfile" alt="" coords="627,4377,890,4676">
+<area shape="rect" id="node40" href="tables/django_admin_log.html" target="_top" title="django_admin_log" alt="" coords="644,5892,873,6191">
+<area shape="rect" id="node43" href="tables/species_taxonsurveymethod.html" target="_top" title="species_taxonsurveymethod" alt="" coords="1417,821,1726,973">
+<area shape="rect" id="node45" href="tables/user_profile.html" target="_top" title="user_profile" alt="" coords="600,1653,917,2040">
+<area shape="rect" id="node47" href="tables/frontend_statisticalmodeloutput.html" target="_top" title="frontend_statisticalmodeloutput" alt="" coords="1401,2063,1742,2215">
+<area shape="rect" id="node48" href="tables/frontend_spatialdatamodel.html" target="_top" title="frontend_spatialdatamodel" alt="" coords="1017,4168,1317,4320">
+<area shape="rect" id="node50" href="tables/auth_user_user_permissions.html" target="_top" title="auth_user_user_permissions" alt="" coords="604,6605,913,6757">
+<area shape="rect" id="node64" href="tables/auth_permission.html" target="_top" title="auth_permission" alt="" coords="311,6709,527,6891">
+<area shape="rect" id="node51" href="tables/django_redirect.html" target="_top" title="django_redirect" alt="" coords="1063,7400,1272,7581">
+<area shape="rect" id="node53" href="tables/socialaccount_socialtoken.html" target="_top" title="socialaccount_socialtoken" alt="" coords="1023,6073,1312,6313">
+<area shape="rect" id="node54" href="tables/annual_population_per_activity.html" target="_top" title="annual_population_per_activity" alt="" coords="1405,2847,1737,3351">
+<area shape="rect" id="node56" href="tables/guardian_groupobjectpermission.html" target="_top" title="guardian_groupobjectpermission" alt="" coords="584,6944,933,7155">
+<area shape="rect" id="node57" href="tables/organisation_user.html" target="_top" title="organisation_user" alt="" coords="645,2057,873,2209">
+<area shape="rect" id="node59" href="tables/guardian_userobjectpermission.html" target="_top" title="guardian_userobjectpermission" alt="" coords="591,6377,927,6588">
+<area shape="rect" id="node60" href="tables/auth_group_permissions.html" target="_top" title="auth_group_permissions" alt="" coords="619,6775,899,6927">
+<area shape="rect" id="node61" href="tables/Reminders.html" target="_top" title="Reminders" alt="" coords="673,2227,845,2613">
+<area shape="rect" id="node67" href="tables/frontend_spatialdatavaluemodel.html" target="_top" title="frontend_spatialdatavaluemodel" alt="" coords="1400,4109,1743,4261">
+</map>
+                                        <a name='diagram'><img id="largeDegreeImg" src="diagrams/summary/relationships.real.large.png" usemap="#largeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="compactimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="compactImpliedRelationshipsDiagram" name="compactImpliedRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/survey_method.html" target="_top" title="survey_method" alt="" coords="1065,889,1270,1041">
+<area shape="rect" id="node2" href="tables/otp_static_statictoken.html" target="_top" title="otp_static_statictoken" alt="" coords="1039,3619,1296,3771">
+<area shape="rect" id="node45" href="tables/otp_static_staticdevice.html" target="_top" title="otp_static_staticdevice" alt="" coords="620,3629,897,3776">
+<area shape="rect" id="node3" href="tables/frontend_contextlayerlegend.html" target="_top" title="frontend_contextlayerlegend" alt="" coords="1010,3455,1325,3601">
+<area shape="rect" id="node6" href="tables/frontend_contextlayer.html" target="_top" title="frontend_contextlayer" alt="" coords="629,3495,889,3612">
+<area shape="rect" id="node4" href="tables/organisation_representative.html" target="_top" title="organisation_representative" alt="" coords="605,2245,913,2397">
+<area shape="rect" id="node25" href="tables/organisation.html" target="_top" title="organisation" alt="" coords="300,2081,539,2287">
+<area shape="rect" id="node53" href="tables/auth_user.html" target="_top" title="auth_user" alt="" coords="338,3056,501,3203">
+<area shape="rect" id="node5" href="tables/socialaccount_socialapp_sites.html" target="_top" title="socialaccount_socialapp_sites" alt="" coords="1008,3985,1327,4137">
+<area shape="rect" id="node11" href="tables/socialaccount_socialapp.html" target="_top" title="socialaccount_socialapp" alt="" coords="621,4016,896,4133">
+<area shape="rect" id="node24" href="tables/django_site.html" target="_top" title="django_site" alt="" coords="671,4151,846,4297">
+<area shape="rect" id="node7" href="tables/annual_population.html" target="_top" title="annual_population" alt="" coords="1401,1356,1742,1737">
+<area shape="rect" id="node26" href="tables/open_close_system.html" target="_top" title="open_close_system" alt="" coords="1049,1363,1285,1485">
+<area shape="rect" id="node39" href="tables/count_method.html" target="_top" title="count_method" alt="" coords="1068,1223,1267,1345">
+<area shape="rect" id="node42" href="tables/population_estimate_category.html" target="_top" title="population_estimate_category" alt="" coords="1005,1643,1329,1765">
+<area shape="rect" id="node43" href="tables/sampling_effort_coverage.html" target="_top" title="sampling_effort_coverage" alt="" coords="1022,1923,1313,2045">
+<area shape="rect" id="node50" href="tables/certainty.html" target="_top" title="certainty" alt="" coords="1091,1059,1244,1205">
+<area shape="rect" id="node56" href="tables/population_status.html" target="_top" title="population_status" alt="" coords="1054,1783,1281,1905">
+<area shape="rect" id="node59" href="tables/sampling_size_unit.html" target="_top" title="sampling_size_unit" alt="" coords="1051,1503,1284,1625">
+<area shape="rect" id="node63" href="tables/owned_species.html" target="_top" title="owned_species" alt="" coords="1041,2227,1294,2432">
+<area shape="rect" id="node8" href="tables/taxon.html" target="_top" title="taxon" alt="" coords="634,1185,883,1420">
+<area shape="rect" id="node40" href="tables/taxon_rank.html" target="_top" title="taxon_rank" alt="" coords="333,1303,505,1425">
+<area shape="rect" id="node9" href="tables/frontend_uploadspeciescsv.html" target="_top" title="frontend_uploadspeciescsv" alt="" coords="1017,2672,1317,2848">
+<area shape="rect" id="node19" href="tables/property.html" target="_top" title="property" alt="" coords="667,2451,851,2744">
+<area shape="rect" id="node10" href="tables/frontend_draftspeciesupload.html" target="_top" title="frontend_draftspeciesupload" alt="" coords="1010,2449,1325,2655">
+<area shape="rect" id="node12" href="tables/socialaccount_socialaccount.html" target="_top" title="socialaccount_socialaccount" alt="" coords="605,3793,913,3999">
+<area shape="rect" id="node13" href="tables/activity_activitytype.html" target="_top" title="activity_activitytype" alt="" coords="1048,3088,1287,3235">
+<area shape="rect" id="node14" href="tables/otp_totp_totpdevice.html" target="_top" title="otp_totp_totpdevice" alt="" coords="620,2833,897,2980">
+<area shape="rect" id="node15" href="tables/auth_group.html" target="_top" title="auth_group" alt="" coords="331,5257,507,5380">
+<area shape="rect" id="node16" href="tables/user_title.html" target="_top" title="user_title" alt="" coords="341,1660,498,1783">
+<area shape="rect" id="node17" href="tables/django_content_type.html" target="_top" title="django_content_type" alt="" coords="6,5277,255,5429">
+<area shape="rect" id="node18" href="tables/frontend_statisticalmodel.html" target="_top" title="frontend_statisticalmodel" alt="" coords="1023,2063,1311,2209">
+<area shape="rect" id="node47" href="tables/property_type.html" target="_top" title="property_type" alt="" coords="322,2527,517,2649">
+<area shape="rect" id="node66" href="tables/province.html" target="_top" title="province" alt="" coords="55,2465,207,2583">
+<area shape="rect" id="node20" href="tables/user_login.html" target="_top" title="user_login" alt="" coords="675,4508,843,4684">
+<area shape="rect" id="node32" href="tables/login_status.html" target="_top" title="login_status" alt="" coords="329,4537,509,4660">
+<area shape="rect" id="node21" href="tables/OrganisationInvites.html" target="_top" title="OrganisationInvites" alt="" coords="638,1437,879,1613">
+<area shape="rect" id="node67" href="tables/user_role.html" target="_top" title="user_role" alt="" coords="341,1496,498,1643">
+<area shape="rect" id="node22" href="tables/parcel_type.html" target="_top" title="parcel_type" alt="" coords="671,3191,846,3313">
+<area shape="rect" id="node23" href="tables/frontend_boundarysearchrequest.html" target="_top" title="frontend_boundarysearchrequest" alt="" coords="583,2997,935,3173">
+<area shape="rect" id="node29" href="tables/data_use_permission.html" target="_top" title="data_use_permission" alt="" coords="5,2140,256,2287">
+<area shape="rect" id="node27" href="tables/account_emailconfirmation.html" target="_top" title="account_emailconfirmation" alt="" coords="1017,4348,1317,4524">
+<area shape="rect" id="node36" href="tables/account_emailaddress.html" target="_top" title="account_emailaddress" alt="" coords="628,4315,889,4491">
+<area shape="rect" id="node28" href="tables/django_celery_beat_crontabschedule.html" target="_top" title="django_celery_beat_crontabschedule" alt="" coords="979,251,1356,368">
+<area shape="rect" id="node30" href="tables/auth_user_groups.html" target="_top" title="auth_user_groups" alt="" coords="645,4895,872,5047">
+<area shape="rect" id="node31" href="tables/parcel.html" target="_top" title="parcel" alt="" coords="1059,2865,1276,3071">
+<area shape="rect" id="node33" href="tables/django_celery_beat_intervalschedule.html" target="_top" title="django_celery_beat_intervalschedule" alt="" coords="979,385,1355,503">
+<area shape="rect" id="node34" href="tables/django_celery_beat_solarschedule.html" target="_top" title="django_celery_beat_solarschedule" alt="" coords="989,520,1345,701">
+<area shape="rect" id="node35" href="tables/django_celery_beat_periodictask.html" target="_top" title="django_celery_beat_periodictask" alt="" coords="1400,371,1743,635">
+<area shape="rect" id="node64" href="tables/django_celery_beat_clockedschedule.html" target="_top" title="django_celery_beat_clockedschedule" alt="" coords="979,719,1355,836">
+<area shape="rect" id="node37" href="tables/frontend_boundaryfile.html" target="_top" title="frontend_boundaryfile" alt="" coords="627,3331,890,3477">
+<area shape="rect" id="node38" href="tables/spatial_ref_sys.html" target="_top" title="spatial_ref_sys" alt="" coords="1068,116,1267,233">
+<area shape="rect" id="node41" href="tables/django_admin_log.html" target="_top" title="django_admin_log" alt="" coords="644,4701,873,4877">
+<area shape="rect" id="node44" href="tables/species_taxonsurveymethod.html" target="_top" title="species_taxonsurveymethod" alt="" coords="1417,808,1726,960">
+<area shape="rect" id="node46" href="tables/user_profile.html" target="_top" title="user_profile" alt="" coords="600,1631,917,1865">
+<area shape="rect" id="node48" href="tables/frontend_statisticalmodeloutput.html" target="_top" title="frontend_statisticalmodeloutput" alt="" coords="1401,2033,1742,2180">
+<area shape="rect" id="node49" href="tables/frontend_spatialdatamodel.html" target="_top" title="frontend_spatialdatamodel" alt="" coords="1017,3280,1317,3432">
+<area shape="rect" id="node51" href="tables/auth_user_user_permissions.html" target="_top" title="auth_user_user_permissions" alt="" coords="604,5292,913,5444">
+<area shape="rect" id="node65" href="tables/auth_permission.html" target="_top" title="auth_permission" alt="" coords="311,5397,527,5573">
+<area shape="rect" id="node52" href="tables/django_redirect.html" target="_top" title="django_redirect" alt="" coords="1063,4155,1272,4331">
+<area shape="rect" id="node54" href="tables/socialaccount_socialtoken.html" target="_top" title="socialaccount_socialtoken" alt="" coords="1023,3791,1312,3967">
+<area shape="rect" id="node55" href="tables/annual_population_per_activity.html" target="_top" title="annual_population_per_activity" alt="" coords="1405,2621,1737,2827">
+<area shape="rect" id="node57" href="tables/guardian_groupobjectpermission.html" target="_top" title="guardian_groupobjectpermission" alt="" coords="584,5631,933,5841">
+<area shape="rect" id="node58" href="tables/organisation_user.html" target="_top" title="organisation_user" alt="" coords="645,1883,873,2035">
+<area shape="rect" id="node60" href="tables/guardian_userobjectpermission.html" target="_top" title="guardian_userobjectpermission" alt="" coords="591,5064,927,5275">
+<area shape="rect" id="node61" href="tables/auth_group_permissions.html" target="_top" title="auth_group_permissions" alt="" coords="619,5461,899,5613">
+<area shape="rect" id="node62" href="tables/Reminders.html" target="_top" title="Reminders" alt="" coords="673,2052,845,2228">
+<area shape="rect" id="node68" href="tables/frontend_spatialdatavaluemodel.html" target="_top" title="frontend_spatialdatavaluemodel" alt="" coords="1400,3251,1743,3397">
+<area shape="rect" id="node69" href="tables/geography_columns.html" target="_top" title="geography_columns" alt="" coords="1450,5,1693,99">
+<area shape="rect" id="node70" href="tables/geometry_columns.html" target="_top" title="geometry_columns" alt="" coords="1455,116,1688,209">
+<area shape="rect" id="node71" href="tables/raster_columns.html" target="_top" title="raster_columns" alt="" coords="1470,227,1673,320">
+</map>
+                                        <a name='diagram'><img id="compactimpliedDegreeImg" src="diagrams/summary/relationships.implied.compact.png" usemap="#compactImpliedRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="largeimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="largeImpliedRelationshipsDiagram" name="largeImpliedRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/survey_method.html" target="_top" title="survey_method" alt="" coords="1065,2553,1270,2705">
+<area shape="rect" id="node2" href="tables/otp_static_statictoken.html" target="_top" title="otp_static_statictoken" alt="" coords="1039,5855,1296,6007">
+<area shape="rect" id="node45" href="tables/otp_static_staticdevice.html" target="_top" title="otp_static_staticdevice" alt="" coords="620,5913,897,6153">
+<area shape="rect" id="node3" href="tables/frontend_contextlayerlegend.html" target="_top" title="frontend_contextlayerlegend" alt="" coords="1010,5627,1325,5808">
+<area shape="rect" id="node6" href="tables/frontend_contextlayer.html" target="_top" title="frontend_contextlayer" alt="" coords="629,5715,889,5896">
+<area shape="rect" id="node4" href="tables/organisation_representative.html" target="_top" title="organisation_representative" alt="" coords="605,3652,913,3804">
+<area shape="rect" id="node25" href="tables/organisation.html" target="_top" title="organisation" alt="" coords="300,3512,539,3723">
+<area shape="rect" id="node53" href="tables/auth_user.html" target="_top" title="auth_user" alt="" coords="338,5119,501,5505">
+<area shape="rect" id="node5" href="tables/socialaccount_socialapp_sites.html" target="_top" title="socialaccount_socialapp_sites" alt="" coords="1008,8208,1327,8360">
+<area shape="rect" id="node11" href="tables/socialaccount_socialapp.html" target="_top" title="socialaccount_socialapp" alt="" coords="621,8193,896,8433">
+<area shape="rect" id="node24" href="tables/django_site.html" target="_top" title="django_site" alt="" coords="671,8451,846,8603">
+<area shape="rect" id="node7" href="tables/annual_population.html" target="_top" title="annual_population" alt="" coords="1401,2025,1742,2940">
+<area shape="rect" id="node26" href="tables/open_close_system.html" target="_top" title="open_close_system" alt="" coords="1049,2273,1285,2396">
+<area shape="rect" id="node39" href="tables/count_method.html" target="_top" title="count_method" alt="" coords="1068,2133,1267,2256">
+<area shape="rect" id="node42" href="tables/population_estimate_category.html" target="_top" title="population_estimate_category" alt="" coords="1005,2723,1329,2845">
+<area shape="rect" id="node43" href="tables/sampling_effort_coverage.html" target="_top" title="sampling_effort_coverage" alt="" coords="1022,3003,1313,3125">
+<area shape="rect" id="node50" href="tables/certainty.html" target="_top" title="certainty" alt="" coords="1091,1964,1244,2116">
+<area shape="rect" id="node56" href="tables/population_status.html" target="_top" title="population_status" alt="" coords="1054,2863,1281,2985">
+<area shape="rect" id="node59" href="tables/sampling_size_unit.html" target="_top" title="sampling_size_unit" alt="" coords="1051,2413,1284,2536">
+<area shape="rect" id="node63" href="tables/owned_species.html" target="_top" title="owned_species" alt="" coords="1041,3716,1294,3927">
+<area shape="rect" id="node8" href="tables/taxon.html" target="_top" title="taxon" alt="" coords="634,1955,883,2400">
+<area shape="rect" id="node40" href="tables/taxon_rank.html" target="_top" title="taxon_rank" alt="" coords="333,2131,505,2253">
+<area shape="rect" id="node9" href="tables/frontend_uploadspeciescsv.html" target="_top" title="frontend_uploadspeciescsv" alt="" coords="1017,3944,1317,4419">
+<area shape="rect" id="node19" href="tables/property.html" target="_top" title="property" alt="" coords="667,3857,851,4244">
+<area shape="rect" id="node10" href="tables/frontend_draftspeciesupload.html" target="_top" title="frontend_draftspeciesupload" alt="" coords="1010,3341,1325,3699">
+<area shape="rect" id="node12" href="tables/socialaccount_socialaccount.html" target="_top" title="socialaccount_socialaccount" alt="" coords="605,6399,913,6668">
+<area shape="rect" id="node13" href="tables/activity_activitytype.html" target="_top" title="activity_activitytype" alt="" coords="1048,4752,1287,4904">
+<area shape="rect" id="node14" href="tables/otp_totp_totpdevice.html" target="_top" title="otp_totp_totpdevice" alt="" coords="620,4333,897,4779">
+<area shape="rect" id="node15" href="tables/auth_group.html" target="_top" title="auth_group" alt="" coords="331,7591,507,7713">
+<area shape="rect" id="node16" href="tables/user_title.html" target="_top" title="user_title" alt="" coords="341,2652,498,2775">
+<area shape="rect" id="node17" href="tables/django_content_type.html" target="_top" title="django_content_type" alt="" coords="6,7625,255,7777">
+<area shape="rect" id="node18" href="tables/frontend_statisticalmodel.html" target="_top" title="frontend_statisticalmodel" alt="" coords="1023,3143,1311,3324">
+<area shape="rect" id="node47" href="tables/property_type.html" target="_top" title="property_type" alt="" coords="322,4021,517,4144">
+<area shape="rect" id="node66" href="tables/province.html" target="_top" title="province" alt="" coords="55,3931,207,4053">
+<area shape="rect" id="node20" href="tables/user_login.html" target="_top" title="user_login" alt="" coords="675,6685,843,6896">
+<area shape="rect" id="node32" href="tables/login_status.html" target="_top" title="login_status" alt="" coords="329,6773,509,6896">
+<area shape="rect" id="node21" href="tables/OrganisationInvites.html" target="_top" title="OrganisationInvites" alt="" coords="638,2417,879,2657">
+<area shape="rect" id="node67" href="tables/user_role.html" target="_top" title="user_role" alt="" coords="341,2792,498,2944">
+<area shape="rect" id="node22" href="tables/parcel_type.html" target="_top" title="parcel_type" alt="" coords="671,5259,846,5381">
+<area shape="rect" id="node23" href="tables/frontend_boundarysearchrequest.html" target="_top" title="frontend_boundarysearchrequest" alt="" coords="583,4796,935,5241">
+<area shape="rect" id="node29" href="tables/data_use_permission.html" target="_top" title="data_use_permission" alt="" coords="5,3571,256,3723">
+<area shape="rect" id="node27" href="tables/account_emailconfirmation.html" target="_top" title="account_emailconfirmation" alt="" coords="1017,6053,1317,6264">
+<area shape="rect" id="node36" href="tables/account_emailaddress.html" target="_top" title="account_emailaddress" alt="" coords="628,6171,889,6381">
+<area shape="rect" id="node28" href="tables/django_celery_beat_crontabschedule.html" target="_top" title="django_celery_beat_crontabschedule" alt="" coords="979,1116,1356,1385">
+<area shape="rect" id="node30" href="tables/auth_user_groups.html" target="_top" title="auth_user_groups" alt="" coords="645,7229,872,7381">
+<area shape="rect" id="node31" href="tables/parcel.html" target="_top" title="parcel" alt="" coords="1059,4436,1276,4735">
+<area shape="rect" id="node33" href="tables/django_celery_beat_intervalschedule.html" target="_top" title="django_celery_beat_intervalschedule" alt="" coords="979,1403,1355,1555">
+<area shape="rect" id="node34" href="tables/django_celery_beat_solarschedule.html" target="_top" title="django_celery_beat_solarschedule" alt="" coords="989,1572,1345,1753">
+<area shape="rect" id="node35" href="tables/django_celery_beat_periodictask.html" target="_top" title="django_celery_beat_periodictask" alt="" coords="1400,1087,1743,1825">
+<area shape="rect" id="node64" href="tables/django_celery_beat_clockedschedule.html" target="_top" title="django_celery_beat_clockedschedule" alt="" coords="979,1771,1355,1893">
+<area shape="rect" id="node37" href="tables/frontend_boundaryfile.html" target="_top" title="frontend_boundaryfile" alt="" coords="627,5399,890,5697">
+<area shape="rect" id="node38" href="tables/spatial_ref_sys.html" target="_top" title="spatial_ref_sys" alt="" coords="1068,415,1267,625">
+<area shape="rect" id="node41" href="tables/django_admin_log.html" target="_top" title="django_admin_log" alt="" coords="644,6913,873,7212">
+<area shape="rect" id="node44" href="tables/species_taxonsurveymethod.html" target="_top" title="species_taxonsurveymethod" alt="" coords="1417,1843,1726,1995">
+<area shape="rect" id="node46" href="tables/user_profile.html" target="_top" title="user_profile" alt="" coords="600,2675,917,3061">
+<area shape="rect" id="node48" href="tables/frontend_statisticalmodeloutput.html" target="_top" title="frontend_statisticalmodeloutput" alt="" coords="1401,3084,1742,3236">
+<area shape="rect" id="node49" href="tables/frontend_spatialdatamodel.html" target="_top" title="frontend_spatialdatamodel" alt="" coords="1017,5189,1317,5341">
+<area shape="rect" id="node51" href="tables/auth_user_user_permissions.html" target="_top" title="auth_user_user_permissions" alt="" coords="604,7627,913,7779">
+<area shape="rect" id="node65" href="tables/auth_permission.html" target="_top" title="auth_permission" alt="" coords="311,7731,527,7912">
+<area shape="rect" id="node52" href="tables/django_redirect.html" target="_top" title="django_redirect" alt="" coords="1063,8421,1272,8603">
+<area shape="rect" id="node54" href="tables/socialaccount_socialtoken.html" target="_top" title="socialaccount_socialtoken" alt="" coords="1023,7095,1312,7335">
+<area shape="rect" id="node55" href="tables/annual_population_per_activity.html" target="_top" title="annual_population_per_activity" alt="" coords="1405,4107,1737,4611">
+<area shape="rect" id="node57" href="tables/guardian_groupobjectpermission.html" target="_top" title="guardian_groupobjectpermission" alt="" coords="584,7965,933,8176">
+<area shape="rect" id="node58" href="tables/organisation_user.html" target="_top" title="organisation_user" alt="" coords="645,3079,873,3231">
+<area shape="rect" id="node60" href="tables/guardian_userobjectpermission.html" target="_top" title="guardian_userobjectpermission" alt="" coords="591,7399,927,7609">
+<area shape="rect" id="node61" href="tables/auth_group_permissions.html" target="_top" title="auth_group_permissions" alt="" coords="619,7796,899,7948">
+<area shape="rect" id="node62" href="tables/Reminders.html" target="_top" title="Reminders" alt="" coords="673,3248,845,3635">
+<area shape="rect" id="node68" href="tables/frontend_spatialdatavaluemodel.html" target="_top" title="frontend_spatialdatavaluemodel" alt="" coords="1400,5131,1743,5283">
+<area shape="rect" id="node69" href="tables/geography_columns.html" target="_top" title="geography_columns" alt="" coords="1450,5,1693,251">
+<area shape="rect" id="node70" href="tables/geometry_columns.html" target="_top" title="geometry_columns" alt="" coords="1455,268,1688,513">
+<area shape="rect" id="node71" href="tables/raster_columns.html" target="_top" title="raster_columns" alt="" coords="1470,531,1673,1069">
+</map>
+                                        <a name='diagram'><img id="largeimpliedDegreeImg" src="diagrams/summary/relationships.implied.large.png" usemap="#largeImpliedRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.1.1-SNAPSHOT</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="bower/pdfmake/pdfmake.min.js"></script>
+        <script src="bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="bower/codemirror/codemirror.js"></script>
+        <script src="bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="relationships.js"></script>
+        <script src="schemaSpy.js"></script>
+    </body>
+</html>
