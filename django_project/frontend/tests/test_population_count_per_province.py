@@ -213,6 +213,16 @@ class SpeciesCountPerProvinceTest(APITestCase):
         self.url = reverse('species_count_per_province')
         self.organisations = [self.organisation.id]
 
+    def test_calculate_species_count_per_province_empty_taxon(self):
+        data = {
+            "species": "invalid-taxon",
+            "organisation": ','.join([str(id) for id in self.organisations]),
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+        }
+        response = self.client.get(self.url, data, **self.auth_headers)
+        result_data = response.json()
+        self.assertEqual(result_data, [])
+
     def test_calculate_species_count_per_province(self):
         data = {
             "species": "Penthera leo",
