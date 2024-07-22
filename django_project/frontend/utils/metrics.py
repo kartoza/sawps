@@ -3,7 +3,7 @@ from typing import Dict, List, Any, Tuple
 from population_data.models import AnnualPopulation
 
 from frontend.static_mapping import ACTIVITY_COLORS_DICT
-from django.db.models import QuerySet, Sum, Min, Max
+from django.db.models import QuerySet, Sum, Min, Max, F
 from property.models import Property
 
 CATEGORY_LABELS = 'category_labels'
@@ -15,6 +15,8 @@ def calculate_species_count_per_province(
         taxon,
         filters
 ) -> Dict[str, int]:
+    if taxon is None:
+        return []
     activity_field = (
         'annualpopulationperactivity__activity_type_id__in'
     )
@@ -29,22 +31,15 @@ def calculate_species_count_per_province(
     )
     if activity_filter:
         annual_populations = annual_populations.filter(activity_filter)
-    annual_populations = annual_populations.values(
-        'year', 'property__province__name', 'taxon__scientific_name'
+    annual_populations = annual_populations.annotate(
+        province=F('property__province__name'),
+        species=F('taxon__scientific_name')
+    ).values(
+        'year', 'province', 'species'
     ).annotate(
-        total_population=Sum('total')
-    ).order_by('-year', '-total_population')
-    result_data = list()
-    for pop_data in annual_populations:
-        data = {
-            "year": pop_data['year'],
-            "count": pop_data['total_population'],
-            "province": pop_data['property__province__name'],
-            "species": pop_data['taxon__scientific_name'],
-        }
-        result_data.append(data)
-
-    return result_data
+        count=Sum('total'),
+    ).order_by('-year', '-count')
+    return annual_populations
 
 
 def calculate_population_categories(

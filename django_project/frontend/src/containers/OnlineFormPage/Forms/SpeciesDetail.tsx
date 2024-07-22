@@ -702,14 +702,15 @@ export default function SpeciesDetail(props: SpeciesDetailInterface) {
                                                 ),
                                                 inputProps: { 
                                                     min: 0,
-                                                    step: 0.5
+                                                    inputMode: 'numeric',
+                                                    pattern: '[0-9]*'
                                                 }
                                             }}
                                             type='number'
                                             variant="standard"
                                             fullWidth
                                             value={data.annual_population.area_available_to_species.toString()}
-                                            onChange={(e) => updateAnnualPopulation('area_available_to_species', parseFloat(e.target.value))}
+                                            onChange={(e) => updateAnnualPopulation('area_available_to_species', parseInt(e.target.value))}
                                             helperText={validation.annual_population?.area_available_to_species ? 'Area available to species must be greater than 0 and less than or equal to property area size' : ' '}
                                             error={validation.annual_population?.area_available_to_species}
                                         />

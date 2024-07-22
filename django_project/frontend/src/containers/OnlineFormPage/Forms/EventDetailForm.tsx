@@ -346,8 +346,7 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                 <Grid item className='InputContainer'>
                     <TextField id='intake_permit' label='Permit Number' value={data.permit}
                         variant='standard'
-                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                        onChange={(e) => updateActivityPopulation('permit', parseInt(e.target.value)) } fullWidth
+                        onChange={(e) => updateActivityPopulation('permit', e.target.value) } fullWidth
                         helperText={validation?.permit ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
                 </Grid>
                 <Grid item className='InputContainer'>
@@ -519,8 +518,7 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                 <Grid item className='InputContainer'>
                     <TextField id='offtake_permit' label='Permit Number' value={data.permit}
                         variant='standard'
-                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                        onChange={(e) => updateActivityPopulation('permit', parseInt(e.target.value)) } fullWidth
+                        onChange={(e) => updateActivityPopulation('permit', e.target.value) } fullWidth
                         error={validation?.permit}
                         helperText={validation?.permit ? REQUIRED_FIELD_ERROR_MESSAGE : ' '} />
                 </Grid>

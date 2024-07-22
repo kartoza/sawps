@@ -12,12 +12,5 @@
     "fields": {
         "name": "Migratory"
     }
-},
-{
-    "model": "population_data.populationstatus",
-    "pk": 3,
-    "fields": {
-        "name": "Partially open"
-    }
 }
 ]

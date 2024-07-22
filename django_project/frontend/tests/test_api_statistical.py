@@ -236,6 +236,16 @@ class TestAPIStatistical(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['results']), 1)
+        # test growth overall
+        mocked_cache.side_effect = mocked_cache_get
+        url = reverse('species-population-trend')
+        url += f'?species={self.taxon.scientific_name}&level=national&data_type=growth_overall'
+        request = self.factory.get(url)
+        request.user = self.user_1
+        view = SpeciesTrend.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_species_property_trend(self):
         property = PropertyFactory.create(

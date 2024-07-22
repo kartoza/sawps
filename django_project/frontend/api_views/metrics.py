@@ -30,7 +30,10 @@ from frontend.serializers.metrics import (
 from frontend.utils.data_table import (
     get_queryset, get_report_filter, SPECIES_REPORT
 )
-from frontend.utils.data_table import get_taxon_queryset, common_filters
+from frontend.utils.data_table import (
+    common_filters,
+    get_param_from_request
+)
 from frontend.utils.metrics import (
     calculate_population_categories,
     calculate_total_area_per_property_type,
@@ -195,13 +198,17 @@ class SpeciesPopulationCountPerProvinceAPIView(APIView):
         """
         Handle GET request to retrieve species count per province.
         """
+        species_filter = get_param_from_request(request, 'species', '')
+        taxon = Taxon.objects.filter(
+            taxon_rank__name="Species",
+            scientific_name__in=species_filter.split(',')
+        ).first()
         user_roles = get_user_roles(request.user)
-        queryset = get_taxon_queryset(request)
         filters = common_filters(request, user_roles)
 
         return Response(
             calculate_species_count_per_province(
-                queryset.first(),
+                taxon,
                 filters
             )
         )
