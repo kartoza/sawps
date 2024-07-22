@@ -20,6 +20,8 @@ from frontend.models import (
     NATIONAL_GROWTH,
     PROPERTY_TREND,
     PROVINCIAL_GROWTH,
+    NUM_PROPERTIES_PER_POP_SIZE_CAT,
+    NUM_PROPERTIES_PER_DENSITY_CAT,
     NATIONAL_GROWTH_CAT
 )
 from frontend.utils.user_roles import check_user_has_permission
@@ -130,6 +132,13 @@ class SpeciesTrend(SpeciesNationalTrend):
             output_type = NATIONAL_GROWTH
             if level == 'provincial':
                 output_type = PROVINCIAL_GROWTH
+        elif (
+            type in [
+                NUM_PROPERTIES_PER_DENSITY_CAT,
+                NUM_PROPERTIES_PER_POP_SIZE_CAT
+            ]
+        ):
+            output_type = type
         elif type == 'growth_overall':
             output_type = NATIONAL_GROWTH_CAT
         else:
