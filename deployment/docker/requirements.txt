@@ -59,6 +59,8 @@ django-easy-audit==1.3.5
 # for reading excel file
 pandas==2.1.0
 openpyxl==3.1.2
+# fix pandas dependency from numpy
+numpy==1.26.4
 
 # For documentation frontend
 -e git+https://github.com/kartoza/django-docs-crawler.git@1.1.0#egg=django-docs-crawler

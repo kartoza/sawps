@@ -556,6 +556,22 @@ class TaxonTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), [])
 
+    def test_get_taxon_for_trends_tab(self):
+        User.objects.create_user(
+            username='testuserd',
+            password='testpasswordd',
+            is_superuser=True
+        )
+
+        auth_headers = {
+            'HTTP_AUTHORIZATION': 'Basic ' +
+            base64.b64encode(b'testuserd:testpasswordd').decode('ascii'),
+        }
+        client = Client()
+        response = client.get(self.url + f'?tab=trends', **auth_headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = TaxonSerializer([self.taxon], many=True).data
+        self.assertEqual(expected_data, response.data)
 
 class TaxonSurveyMethodTestCase(TestCase):
     """Taxon survey method count test case."""

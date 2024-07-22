@@ -243,9 +243,9 @@ class UploadPopulationAPIVIew(CanWritePopulationData):
             SurveyMethod, id=annual_population.get("survey_method_id", 0)
         )
         # area_available_to_species
-        area_available_to_species = annual_population.get(
+        area_available_to_species = int(annual_population.get(
             "area_available_to_species", 0
-        )
+        ))
         sampling_effort_coverage = None
         sampling_effort_coverage_id = annual_population.get(
             "sampling_effort_coverage_id", None)
