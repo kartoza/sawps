@@ -75,6 +75,11 @@ export interface Province {
   name: string
 }
 
+export interface SpeciesQuery {
+    organisationIds: string;
+    tab: string;
+}
+
 // Create an API slice using RTK Query's createApi.
 // This defines a set of endpoints related to user operations.
 export const userApi = createApi({
@@ -116,8 +121,8 @@ export const userApi = createApi({
             },
             providesTags: ['Property']
         }),
-        getSpecies: build.query<Species[], string>({
-            query: (organisationIds: string) => `species/?organisation=${organisationIds}`,
+        getSpecies: build.query<Species[], SpeciesQuery>({
+            query: ({organisationIds, tab}) => tab === 'trends' ? `species/?organisation=${organisationIds}&tab=${tab}` : `species/?organisation=${organisationIds}`,
             transformResponse: (response: Species[]) => {
                 return response;
             },

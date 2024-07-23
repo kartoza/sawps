@@ -9,6 +9,7 @@ import './index.scss';
 import NationalTrendSection from "./NationalTrendSection";
 import ProvincialTrendSection from "./ProvincialTrendSection";
 import PropertyTrendSection from "./PropertyTrendSection";
+import PropertiesSummarySection from "./PropertiesSummarySection";
 
 const SPECIES_POPULATION_TREND_URL = '/api/species/population_trend/download/'
 
@@ -105,6 +106,11 @@ const Trends = () => {
               {selectedSpecies && rerender && (
                 <Grid item xs={12} md={12} className="SectionItem" key={'ProvincialSectionItem'}>
                   <ProvincialTrendSection species={selectedSpecies} province={provinceName}/>
+                </Grid>
+              )}
+              {selectedSpecies && rerender && (
+                <Grid item xs={12} md={12} className="SectionItem" key={'NationalSectionItem'}>
+                  <PropertiesSummarySection species={selectedSpecies} />
                 </Grid>
               )}
               {selectedSpecies && rerender && userInfoData?.user_permissions.includes('Can view properties trends data') && (

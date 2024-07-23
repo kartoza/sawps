@@ -574,44 +574,6 @@ class AnnualPopulationSerializer(serializers.ModelSerializer):
         return data
 
 
-class TotalAreaVSAvailableAreaSerializer(serializers.ModelSerializer):
-    """
-    Serializer class for serializing total area and available area.
-    """
-    area = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Taxon
-        fields = ["area", "common_name_verbatim"]
-
-    def get_area(self, obj) -> list:
-        """ Calculate and get total area and available area.
-        Params: obj (Taxon): The Taxon instance.
-        """
-
-        filters = {}
-        property_list = self.context['request'].GET.get("property")
-        if property_list:
-            property_ids = property_list.split(",")
-            filters["property__id__in"] = property_ids
-
-        start_year = self.context['request'].GET.get("start_year")
-        if start_year:
-            end_year = self.context['request'].GET.get("end_year")
-            filters["year__range"] = (start_year, end_year)
-
-        populations = AnnualPopulation.objects.filter(
-            **filters, taxon=obj
-        ).values(
-            'year'
-        ).annotate(
-            area_total=Sum("property__property_size_ha"),
-            area_available=Sum("area_available_to_species")
-        ).order_by('year')
-
-        return populations
-
-
 class AreaAvailablePerSpeciesSerializer(serializers.ModelSerializer):
     species = serializers.SerializerMethodField()
     property_name = serializers.SerializerMethodField()
