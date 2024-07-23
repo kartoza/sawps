@@ -26,10 +26,10 @@ const AreaAvailableLineChart = (props: any) => {
                 label: "Area available to species",
                 data: areaData.map((item: any) => item?.area_available),
                 borderColor: "rgb(249, 169, 93)",
-                backgroundColor: "rgba(249, 169, 93, 0.4)",
+                backgroundColor: "rgba(249, 169, 93, 0.25)",
                 fill: {
                     target: "origin",
-                    above: "rgba(249, 169, 93, 0.4)"
+                    above: "rgba(249, 169, 93, 0.25)"
                 }
             },
             {
