@@ -25,20 +25,20 @@ const AreaAvailableLineChart = (props: any) => {
             {
                 label: "Area available to species",
                 data: areaData.map((item: any) => item?.area_available),
-                borderColor: "#F9A95D",
-                backgroundColor: "#F9A95D",
+                borderColor: "rgb(249, 169, 93)",
+                backgroundColor: "rgba(249, 169, 93, 0.25)",
                 fill: {
                     target: "origin",
-                    above: "#F9A95D"
+                    above: "rgba(249, 169, 93, 0.25)"
                 }
             },
             {
                 label: "Total area of property",
                 data: areaData.map((item: any) => item?.area_total),
-                borderColor: "#FF5252",
-                backgroundColor: "#FF5252",
+                borderColor: "rgba(255, 82, 82)",
+                backgroundColor: "rgba(255, 82, 82, 0.4)",
                 fill: "origin",
-                above: "#FF5252"
+                above: "rgb(255, 82, 82, 0.4)"
             }
         ]
     }
