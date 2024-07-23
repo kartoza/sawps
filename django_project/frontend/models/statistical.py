@@ -16,13 +16,17 @@ SPECIES_PER_PROPERTY = 'species_per_property'
 NATIONAL_GROWTH = 'national_growth'
 PROVINCIAL_GROWTH = 'provincial_growth'
 NATIONAL_GROWTH_CAT = 'national_growth_category'
+NUM_PROPERTIES_PER_POP_SIZE_CAT = 'num_properties_per_pop_size_cat'
+NUM_PROPERTIES_PER_DENSITY_CAT = 'num_properties_per_density_cat'
 OTHER_DATA = 'other_data'
 CUSTOM_AREA_AVAILABLE_GROWTH = 'custom_area_available_growth'
 
 CACHED_OUTPUT_TYPES = [
     NATIONAL_TREND, PROVINCE_TREND,
     NATIONAL_GROWTH, PROVINCIAL_GROWTH,
-    CUSTOM_AREA_AVAILABLE_GROWTH
+    CUSTOM_AREA_AVAILABLE_GROWTH,
+    NUM_PROPERTIES_PER_POP_SIZE_CAT,
+    NUM_PROPERTIES_PER_DENSITY_CAT
 ]
 
 
@@ -83,6 +87,14 @@ class StatisticalModelOutput(models.Model):
         (NATIONAL_GROWTH, 'National Growth'),
         (PROVINCIAL_GROWTH, 'Provincial Growth'),
         (NATIONAL_GROWTH_CAT, 'National Growth Category'),
+        (
+            NUM_PROPERTIES_PER_POP_SIZE_CAT,
+            'Number of Properties Per Population Size Category'
+        ),
+        (
+            NUM_PROPERTIES_PER_DENSITY_CAT,
+            'Number of Properties Per Density Category'
+        ),
         (OTHER_DATA, 'Other Data')
     )
 

@@ -21,6 +21,8 @@ from frontend.models import (
     PROPERTY_TREND,
     PROVINCIAL_GROWTH,
     CUSTOM_AREA_AVAILABLE_GROWTH,
+    NUM_PROPERTIES_PER_POP_SIZE_CAT,
+    NUM_PROPERTIES_PER_DENSITY_CAT,
     NATIONAL_GROWTH_CAT
 )
 from frontend.utils.user_roles import check_user_has_permission
@@ -133,6 +135,13 @@ class SpeciesTrend(SpeciesNationalTrend):
                 output_type = PROVINCIAL_GROWTH
         elif type == 'area_available_growth':
             output_type = CUSTOM_AREA_AVAILABLE_GROWTH
+        elif (
+            type in [
+                NUM_PROPERTIES_PER_DENSITY_CAT,
+                NUM_PROPERTIES_PER_POP_SIZE_CAT
+            ]
+        ):
+            output_type = type
         elif type == 'growth_overall':
             output_type = NATIONAL_GROWTH_CAT
         else:
