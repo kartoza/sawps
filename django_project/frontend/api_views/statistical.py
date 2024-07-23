@@ -20,6 +20,7 @@ from frontend.models import (
     NATIONAL_GROWTH,
     PROPERTY_TREND,
     PROVINCIAL_GROWTH,
+    CUSTOM_AREA_AVAILABLE_GROWTH,
     NUM_PROPERTIES_PER_POP_SIZE_CAT,
     NUM_PROPERTIES_PER_DENSITY_CAT,
     NATIONAL_GROWTH_CAT
@@ -132,6 +133,8 @@ class SpeciesTrend(SpeciesNationalTrend):
             output_type = NATIONAL_GROWTH
             if level == 'provincial':
                 output_type = PROVINCIAL_GROWTH
+        elif type == 'area_available_growth':
+            output_type = CUSTOM_AREA_AVAILABLE_GROWTH
         elif (
             type in [
                 NUM_PROPERTIES_PER_DENSITY_CAT,

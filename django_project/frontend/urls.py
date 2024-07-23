@@ -39,7 +39,6 @@ from frontend.api_views.metrics import (
     SpeciesPopulationDensityPerPropertyAPIView,
     TotalAreaAvailableToSpeciesAPIView,
     TotalAreaPerPropertyTypeAPIView,
-    TotalAreaVSAvailableAreaAPIView,
     TotalCountPerActivityAPIView,
     TotalCountPerPopulationEstimateAPIView,
 )
@@ -388,11 +387,6 @@ urlpatterns = [
         'api/population-per-age-group/',
         PopulationPerAgeGroupAPIView.as_view(),
         name='population_per_age_group'
-    ),
-    path(
-        'api/total-area-vs-available-area/',
-        TotalAreaVSAvailableAreaAPIView.as_view(),
-        name='total_area_vs_available_area'
     ),
     path(
         'api/property-count-per-population-category-size/',
