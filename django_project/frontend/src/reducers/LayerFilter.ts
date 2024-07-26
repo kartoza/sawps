@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import ContextLayerInterface, {ContextLayerVisibilityPayload, NGI_AERIAL_IMAGERY_LAYER, NGI_LAYER_GROUP} from '../models/ContextLayer';
+import ContextLayerInterface, {ContextLayerVisibilityPayload, NGI_AERIAL_IMAGERY_LAYER, NGI_LAYER_GROUP, CADASTRAL_BOUNDARIES_LAYER} from '../models/ContextLayer';
 
 export interface LayerFilterInterface {
     contextLayers: ContextLayerInterface[];
@@ -55,7 +55,6 @@ export const LayerFilterSlice = createSlice({
                         layer.isSelected = !layer.isSelected
                     }
                 }
-                console.log('layer name: ', layer.name, layer.isSelected)
                 return layer
             })
             state.contextLayers = [..._layers]
@@ -77,6 +76,19 @@ export const LayerFilterSlice = createSlice({
                 return layer
             })
             state.contextLayers = [..._layers]
+        },
+        toggleMapWithNGIBaseLayer: (state, action: PayloadAction<null>) => {
+            // This is called in the Upload tab
+            let _visibleLayers = [...NGI_LAYER_GROUP, CADASTRAL_BOUNDARIES_LAYER]
+            let _layers = state.contextLayers.map((layer) => {
+                if (_visibleLayers.includes(layer.name)) {
+                    layer.isSelected = true
+                } else {
+                    layer.isSelected = false
+                }
+                return layer
+            })
+            state.contextLayers = [..._layers]
         }
     }
 })
@@ -86,7 +98,8 @@ export const {
     setSelectedLayers,
     toggleLayer,
     toggleExpandedLayer,
-    setLayerVisibility
+    setLayerVisibility,
+    toggleMapWithNGIBaseLayer
 } = LayerFilterSlice.actions
 
 export default LayerFilterSlice.reducer;

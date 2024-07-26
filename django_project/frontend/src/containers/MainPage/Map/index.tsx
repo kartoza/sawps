@@ -56,7 +56,7 @@ import CustomDrawControl from './CustomDrawControl';
 import LoadingIndicatorControl from './LoadingIndicatorControl';
 import {useGetUserInfoQuery} from "../../../services/api";
 import LegendControl from './LegendControl';
-import { setLayerVisibility } from '../../../reducers/LayerFilter';
+import { setLayerVisibility, toggleMapWithNGIBaseLayer } from '../../../reducers/LayerFilter';
 
 const MAP_STYLE_URL = window.location.origin + '/api/map/styles/'
 const MAP_PROPERTIES_LEGENDS_URL = '/api/map/legends/properties/'
@@ -656,6 +656,8 @@ export default function Map(props: MapInterface) {
           )
           setHighlightedParcel(getEmptyFeature())
         }
+      } else if (_event.name === MapEvents.UPLOAD_MAP_NGI_BASE) {
+        dispatch(toggleMapWithNGIBaseLayer())
       }
     }
     dispatch(onMapEventProcessed([...mapEvents]))

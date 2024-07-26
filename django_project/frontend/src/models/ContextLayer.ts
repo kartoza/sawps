@@ -21,3 +21,4 @@ export interface ContextLayerVisibilityPayload {
 
 export const NGI_AERIAL_IMAGERY_LAYER = 'NGI Aerial Imagery'
 export const NGI_LAYER_GROUP = ['Properties', NGI_AERIAL_IMAGERY_LAYER]
+export const CADASTRAL_BOUNDARIES_LAYER = 'Cadastral boundaries'
