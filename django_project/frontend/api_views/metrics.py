@@ -440,6 +440,10 @@ class BasePropertyCountAPIView(APIView):
         else:
             upper_bound -= delta
 
+        # lower bound must start from 0 for count
+        if lower_bound == 0:
+            lower_bound = delta
+
         if idx == len(categories) - 2:
             upper_bound = categories[idx + 1]
 
@@ -452,8 +456,7 @@ class BasePropertyCountAPIView(APIView):
         else:
             lower_bound = round(lower_bound)
             upper_bound = round(upper_bound)
-
-        return lower_bound, upper_bound
+        return lower_bound, upper_bound, delta
 
     def get_results(self, data: set, queryset: QuerySet,
                     property_type_name_field: str,
@@ -470,7 +473,7 @@ class BasePropertyCountAPIView(APIView):
         results = []
         for idx, category in enumerate(categories):
             if idx != len(categories) - 1:
-                lower_bound, upper_bound = self.get_upper_lower_bound(
+                lower_bound, upper_bound, delta = self.get_upper_lower_bound(
                     categories,
                     idx,
                     category,
@@ -493,7 +496,10 @@ class BasePropertyCountAPIView(APIView):
                         if query_field == 'population_density' else
                         f'>{lower_bound}'
                     )
-                    filters = {f'{query_field}__gt': lower_bound}
+                    if lower_bound == delta:
+                        filters = {f'{query_field}__gte': lower_bound}
+                    else:
+                        filters = {f'{query_field}__gt': lower_bound}
 
                 counts = queryset.filter(
                     **filters
