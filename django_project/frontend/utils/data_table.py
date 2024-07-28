@@ -114,22 +114,12 @@ def get_queryset(user_roles: List[str], request):
 
 
 def get_taxon_queryset(request):
-    property_ids = get_param_from_request(request, 'property')
-    organisation_ids = get_param_from_request(request, 'organisation')
-    prop_ids = property_ids.split(",") if property_ids else []
-    org_ids = organisation_ids.split(",") if organisation_ids else []
-    query_filter = BaseMetricsFilter
-    queryset = Taxon.objects.filter(
-        annualpopulation__property__organisation_id__in=org_ids,
-        annualpopulation__property_id__in=prop_ids,
-        taxon_rank__name="Species"
+    species_filter = get_param_from_request(request, 'species', '')
+    taxon_qs = Taxon.objects.filter(
+        taxon_rank__name="Species",
+        scientific_name__in=species_filter.split(',')
     ).distinct().order_by("scientific_name")
-
-    filtered_queryset = query_filter(
-        request.GET if request.method == 'GET' else request.data,
-        queryset=queryset
-    ).qs
-    return filtered_queryset
+    return taxon_qs
 
 
 def data_table_reports(queryset: QuerySet, request, user_roles) -> List[Dict]:
