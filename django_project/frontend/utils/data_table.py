@@ -560,7 +560,6 @@ def national_level_province_report(
     """
     user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
-
     serializer = NationalLevelProvinceReport(
         queryset,
         many=True,
@@ -568,8 +567,31 @@ def national_level_province_report(
             'filters': filters
         }
     )
-
-    return serializer.data[0] if serializer.data else []
+    data_dict = {}
+    provinces = set()
+    for d in serializer.data:
+        data = d['province_data']
+        for year, values in data.items():
+            if year in data_dict:
+                data_dict[year].append(values)
+            else:
+                data_dict[year] = [values]
+        provinces.update(d['province_set'])
+    years = list(data_dict.keys())
+    years.sort(reverse=True)
+    data = []
+    for year in years:
+        items = data_dict[year]
+        for item in items:
+            dt_prov_fields = {
+                key for key in item.keys() if
+                key.startswith('total_population')
+            }
+            item.update(
+                {key: 0 for key in provinces.difference(dt_prov_fields)}
+            )
+            data.append(item)
+    return data
 
 
 def write_report_to_rows(queryset, request, report_functions=None):

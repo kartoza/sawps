@@ -56,6 +56,8 @@ class DataTableAPIView(APIView):
 
         user_roles = get_user_roles(self.request.user)
         queryset = self.get_queryset(user_roles)
+        if self.get_taxon_queryset().count() == 0:
+            return Response(status=200, data=[])
         show_detail = self.request.user.is_superuser \
             or not set(user_roles) & set(DATA_CONSUMERS)
         if show_detail:
