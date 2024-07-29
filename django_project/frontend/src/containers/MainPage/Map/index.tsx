@@ -460,6 +460,8 @@ export default function Map(props: MapInterface) {
       })
       mapLegendControlRef.current = new LegendControl()
       map.current.addControl(mapNavControl.current, 'bottom-left')
+      // add legends ref to export control
+      mapNavControl.current.getExportControl().setLegendsControl(mapLegendControlRef.current)
       map.current.addControl(mapNavControl.current.getExportControl(), 'bottom-left')
       map.current.addControl(mapLegendControlRef.current, 'bottom-left')
       map.current.on('load', () => {
