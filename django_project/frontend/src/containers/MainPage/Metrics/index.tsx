@@ -102,11 +102,11 @@ const Metrics = () => {
           heightLeft -= pageHeight;
           const doc = new jsPDF('p', 'mm');
           doc.setFillColor('245');
-          doc.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
+          doc.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight + 30, '', 'FAST');
           while (heightLeft >= 0) {
             position = heightLeft - imgHeight;
             doc.addPage();
-            doc.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
+            doc.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight + 30, '', 'FAST');
             heightLeft -= pageHeight;
           }
           setOpen(false)
