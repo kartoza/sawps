@@ -113,13 +113,25 @@ export const removeHighlightParcelLayers = (map: maplibregl.Map, layer_names: st
     }
 }
 
+
+/**
+ * Find context layer by name
+ * @param contextLayers 
+ * @param name 
+ * @returns ContextLayer
+ */
+export const findLayerByName = (contextLayers: ContextLayerInterface[], name: string): ContextLayerInterface => {
+    return contextLayers.find((element) => element.name.toLowerCase() === name.toLowerCase())
+}
+
+
 /**
  * Find context layer from Cadastral boundaries: erf, farm_portion, holding, and parent_farm
  * @param contextLayers
  * @returns
  */
 export const findParcelLayer = (contextLayers: ContextLayerInterface[]): ContextLayerInterface => {
-    return contextLayers.find((element) => element.name.toLowerCase() === 'cadastral boundaries')
+    return findLayerByName(contextLayers, 'cadastral boundaries')
 }
 
 /**

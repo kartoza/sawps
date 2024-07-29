@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from "react-router-dom";
+import {v4 as uuidv4} from 'uuid';
 import Button from '@mui/material/Button';
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -14,10 +15,10 @@ import Upload from './Upload';
 import Map from './Map';
 import './index.scss';
 import {PropertySummary} from './Property';
-import {MapSelectionMode} from "../../models/Map";
+import {MapSelectionMode, MapEvents} from "../../models/Map";
 import {UploadMode} from "../../models/Upload";
 import {setUploadState} from '../../reducers/UploadState';
-import {resetMapState, resetSelectedProperty, setMapSelectionMode, setSelectedParcels} from '../../reducers/MapState';
+import {resetMapState, resetSelectedProperty, setMapSelectionMode, setSelectedParcels, triggerMapEvent} from '../../reducers/MapState';
 import DataList from './Data';
 import Metrics from './Metrics';
 import Trends from './Trends';
@@ -41,6 +42,7 @@ function MainPage() {
   const [rightSideBarMode, setRightSideBarMode] = useState(RightSideBarMode.None) // 0: upload data, 1: property summary, 2: filtered properties summary
   const propertyItem = useAppSelector((state: RootState) => state.mapState.selectedProperty)
   const mapSelectionMode = useAppSelector((state: RootState) => state.mapState.selectionMode)
+  const isMapReady = useAppSelector((state: RootState) => state.mapState.isMapReady)
 
   const initialTabParam = new URLSearchParams(location.search).get('tab');
   const initialSelectedTab = initialTabParam !== null ? parseInt(initialTabParam) : 0;
@@ -116,7 +118,16 @@ function MainPage() {
 
   }, [selectedTab, navigate, location.pathname, isUploadUrl]);
 
-
+  useEffect(() => {
+    if (!isUploadUrl) return;
+    if (!isMapReady) return;
+    dispatch(triggerMapEvent({
+      'id': uuidv4(),
+      'name': MapEvents.UPLOAD_MAP_NGI_BASE,
+      'date': Date.now(),
+      'payload': null
+  }))
+  }, [isUploadUrl, isMapReady])
 
   useEffect(() => {
     if (rightSideBarMode === RightSideBarMode.None) {
