@@ -27,6 +27,7 @@ import {
     AnnualPopulationPerActivityErrorMessage
 } from '../../../models/Upload';
 import { REQUIRED_FIELD_ERROR_MESSAGE, getErrorMessage } from '../../../utils/Validation';
+import NumberInputWithNA from '../../../components/NumberInputWithNA';
 
 export enum EventType {
     intake = 'intake',
@@ -88,17 +89,28 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
     const updateActivityPopulation = (field: keyof AnnualPopulationPerActivityInterface, value: any) => {
         if (field === 'total') {
             // if total is updated, then reset other number fields
-            if (isNaN(value)) {
-                value = 0
+            if (value === null) {
+                setData({
+                    ...data,
+                    total: null,
+                    adult_male: null,
+                    adult_female: null,
+                    juvenile_male: null,
+                    juvenile_female: null,
+                })
+            } else {
+                if (isNaN(value)) {
+                    value = 0
+                }
+                setData({
+                    ...data,
+                    total: value,
+                    adult_male: 0,
+                    adult_female: 0,
+                    juvenile_male: 0,
+                    juvenile_female: 0,
+                })
             }
-            setData({
-                ...data,
-                total: value,
-                adult_male: 0,
-                adult_female: 0,
-                juvenile_male: 0,
-                juvenile_female: 0,
-            })
         } else {
             let _total = data.total
             if (FIELD_COUNTER.includes(field)) {
@@ -191,6 +203,12 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
         setValidation({})
         setValidationMessages({})
     }, [initialData])
+
+    const isValidForm = () => {
+        if (Object.keys(validation).length === 0) return true
+        var idx = Object.values(validation).findIndex(v => v)
+        return idx === -1
+    }
 
     if (eventType === EventType.intake) {
         return (
@@ -374,41 +392,47 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
             <Grid item className='InputContainer'>
                 <Grid container flexDirection={'row'} spacing={2}>
                     <Grid item xs={6}>
-                        <TextField
+                        <NumberInputWithNA
                             id='offtake_adult_male'
                             label='Adult Males'
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <MaleIcon />
-                                    </InputAdornment>
-                                ),
+                            initialValue={data.adult_male}
+                            icon={<MaleIcon />}
+                            onValueChange={(value: number) => {
+                                updateActivityPopulation('adult_male', value)
                             }}
-                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                            variant="standard"
-                            fullWidth
-                            value={data.adult_male}
-                            onChange={(e) => updateActivityPopulation('adult_male', parseInt(e.target.value))}
-                            helperText=" "
+                            onValidationError={() => {
+                                let field = 'adult_male'
+                                setValidation({
+                                    ...validation,
+                                    [field]: true
+                                })
+                                setValidationMessages({
+                                    ...validationMessages,
+                                    [field]: 'Invalid value'
+                                })
+                            }}
                         />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField
+                        <NumberInputWithNA
                             id='offtake_adult_female'
                             label='Adult Females'
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <FemaleIcon />
-                                    </InputAdornment>
-                                ),
+                            initialValue={data.adult_female}
+                            icon={<FemaleIcon />}
+                            onValueChange={(value: number) => {
+                                updateActivityPopulation('adult_female', value)
                             }}
-                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                            variant="standard"
-                            fullWidth
-                            value={data.adult_female}
-                            onChange={(e) => updateActivityPopulation('adult_female', parseInt(e.target.value))}
-                            helperText=" "
+                            onValidationError={() => {
+                                let field = 'adult_female'
+                                setValidation({
+                                    ...validation,
+                                    [field]: true
+                                })
+                                setValidationMessages({
+                                    ...validationMessages,
+                                    [field]: 'Invalid value'
+                                })
+                            }}
                         />
                     </Grid>
                 </Grid>
@@ -416,41 +440,47 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
             <Grid item className='InputContainer'>
                 <Grid container flexDirection={'row'} spacing={2}>
                     <Grid item xs={6}>
-                        <TextField
+                        <NumberInputWithNA
                             id='offtake_juvenile_male'
                             label='Juvenile Males'
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <MaleIcon />
-                                    </InputAdornment>
-                                ),
+                            initialValue={data.juvenile_male}
+                            icon={<MaleIcon />}
+                            onValueChange={(value: number) => {
+                                updateActivityPopulation('juvenile_male', value)
                             }}
-                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                            variant="standard"
-                            fullWidth
-                            value={data.juvenile_male}
-                            onChange={(e) => updateActivityPopulation('juvenile_male', parseInt(e.target.value))}
-                            helperText=" "
+                            onValidationError={() => {
+                                let field = 'juvenile_male'
+                                setValidation({
+                                    ...validation,
+                                    [field]: true
+                                })
+                                setValidationMessages({
+                                    ...validationMessages,
+                                    [field]: 'Invalid value'
+                                })
+                            }}
                         />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField
+                        <NumberInputWithNA
                             id='offtake_juvenile_female'
                             label='Juvenile Females'
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <FemaleIcon />
-                                    </InputAdornment>
-                                ),
+                            initialValue={data.juvenile_female}
+                            icon={<FemaleIcon />}
+                            onValueChange={(value: number) => {
+                                updateActivityPopulation('juvenile_female', value)
                             }}
-                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                            variant="standard"
-                            fullWidth
-                            value={data.juvenile_female}
-                            onChange={(e) => updateActivityPopulation('juvenile_female', parseInt(e.target.value))}
-                            helperText=" "
+                            onValidationError={() => {
+                                let field = 'juvenile_female'
+                                setValidation({
+                                    ...validation,
+                                    [field]: true
+                                })
+                                setValidationMessages({
+                                    ...validationMessages,
+                                    [field]: 'Invalid value'
+                                })
+                            }}
                         />
                     </Grid>
                 </Grid>
@@ -458,15 +488,24 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
             <Grid item className='InputContainer'>
                 <Grid container flexDirection={'row'} spacing={2}>
                     <Grid item xs={6}>
-                        <TextField
+                        <NumberInputWithNA
                             id='offtake_total_count'
                             label='Total Count'
-                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                            variant="standard"
-                            fullWidth
-                            value={data.total}
-                            onChange={(e) => updateActivityPopulation('total', parseInt(e.target.value))}
-                            helperText=" "
+                            initialValue={data.total}
+                            onValueChange={(value: number) => {
+                                updateActivityPopulation('total', value)
+                            }}
+                            onValidationError={() => {
+                                let field = 'total'
+                                setValidation({
+                                    ...validation,
+                                    [field]: true
+                                })
+                                setValidationMessages({
+                                    ...validationMessages,
+                                    [field]: 'Invalid value'
+                                })
+                            }}
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -535,7 +574,7 @@ export default function EventDetailForm(props: EventDetailFormInterface) {
                         Cancel
                     </Button> : null
                 }
-                <Button variant="outlined" startIcon={ initialData ? <ModeEditIcon /> : <AddIcon />} onClick={saveForm}>
+                <Button variant="outlined" disabled={!isValidForm()} startIcon={ initialData ? <ModeEditIcon /> : <AddIcon />} onClick={saveForm}>
                     { initialData ? 'Update' : 'Add' }
                 </Button>
             </Grid>
