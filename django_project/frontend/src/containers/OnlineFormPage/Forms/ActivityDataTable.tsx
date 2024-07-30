@@ -67,6 +67,10 @@ export default function ActivityDataTable(props: ActivityDataTableInterface) {
                     field: 'total',
                     headerName: 'Total',
                     flex: 1,
+                    valueGetter: (value) => {
+                        if (value.value === null) return 'NA'
+                        return value.value
+                    },
                 },
                 {
                     field: 'translocation_destination',
