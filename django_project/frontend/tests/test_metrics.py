@@ -1,5 +1,6 @@
 import base64
 
+from mock import patch
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -690,6 +691,46 @@ class TestPropertyCountPerPopulationSizeCategory(
                     'category': '28 - 30',
                     self.new_property.property_type.name.lower().replace(' ', '_'): 1,
                     'common_name_verbatim': self.taxon.common_name_verbatim
+                },
+                {
+                    'category': '>30',
+                    self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    'common_name_verbatim': self.taxon.common_name_verbatim
+                }
+            ]
+        )
+
+    @patch('jenkspy.jenks_breaks')
+    def test_lower_bound_zero(self, mocked_breaks) -> None:
+        """
+        Test zero lower bound.
+        """
+        mocked_breaks.return_value = [0, 1, 30, 100]
+        new_property = PropertyFactory.create()
+        AnnualPopulation.objects.create(
+            total=1,
+            property=new_property,
+            year=self.annual_populations[1].year,
+            taxon=self.annual_populations[1].taxon,
+            adult_male=1,
+            adult_female=0
+        )
+        year = self.annual_populations[1].year
+        data = {
+            'year': year,
+            'species': self.annual_populations[1].taxon.scientific_name
+        }
+        url = self.url
+        response = self.client.get(url, data, **self.auth_headers)
+        mocked_breaks.assert_called_once()
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    'category': '1 - 30',
+                    'common_name_verbatim': self.taxon.common_name_verbatim,
+                    new_property.property_type.name.lower().replace(' ', '_'): 1,
+                    self.new_property.property_type.name.lower().replace(' ', '_'): 1
                 },
                 {
                     'category': '>30',
