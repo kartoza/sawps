@@ -1,0 +1,3964 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="SANBI WPS technical and user documentation.">
+      
+      
+        <meta name="author" content="Kartoza">
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../django-table/">
+      
+      
+      <link rel="icon" href="../../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>IDS SAWPS - SAWPS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#django-admin-page-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="SAWPS" class="md-header__button md-logo" aria-label="SAWPS" data-md-component="logo">
+      
+  <img src="../../../img/SANBI-logo.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SAWPS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              IDS SAWPS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18V6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-2.69L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kartoza/sawps/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SANBI WPS
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  Home
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../user/" class="md-tabs__link">
+          
+  
+    
+  
+  User
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+    
+  
+  Administrators
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../developer/" class="md-tabs__link">
+          
+  
+    
+  
+  Developer
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../devops/" class="md-tabs__link">
+          
+  
+    
+  
+  DevOps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../videos/" class="md-tabs__link">
+          
+  
+    
+  
+  Training Videos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../about/" class="md-tabs__link">
+          
+  
+    
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="SAWPS" class="md-nav__button md-logo" aria-label="SAWPS" data-md-component="logo">
+      
+  <img src="../../../img/SANBI-logo.jpg" alt="logo">
+
+    </a>
+    SAWPS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kartoza/sawps/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SANBI WPS
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Home
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/code-of-conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../user/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../user/guide/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/guide/registering/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Registering and Logging In
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/guide/help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help And Contact
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/guide/profile-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting Up the Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/guide/organisations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Organisations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/guide/explore/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Working with the Explore Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/guide/data-upload/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the Data Upload Feature
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../user/manual/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Manual
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            Manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/landing-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Landing Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../user/manual/login-logout/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Login and Logout
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_3" id="__nav_2_4_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Login and Logout
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/login-logout/login-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Login
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/login-logout/forgot-password/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Forgot Password
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/login-logout/login-2fa-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Two Factor Authentication
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/login-logout/logout/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logout
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../user/manual/register/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Register
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_4" id="__nav_2_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Register
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/register/register-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Register
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/register/setup-2fa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Set up Two Factor Authentication
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_6" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../user/manual/explore/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Explore
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_6" id="__nav_2_4_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explore
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/explore/layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Layers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/explore/filters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Filters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/explore/map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Map
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/explore/reports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reports
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/explore/charts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Charts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/explore/trends/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Trends
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../user/manual/data-upload/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Upload Data
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_7" id="__nav_2_4_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            Upload Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/data-upload/panel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Upload Panel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/data-upload/online-form/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    The Online Form
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/data-upload/template-upload/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Template Upload
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/data-upload/update-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Update Data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/help-contact/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help and Contact
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_9" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../user/manual/user-profile/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    User Profile
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_9" id="__nav_2_4_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_9">
+            <span class="md-nav__icon md-icon"></span>
+            User Profile
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/user-profile/profile-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profile Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/user-profile/reminders/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reminders
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/user-profile/notifications/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Notifications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/user-profile/2fa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Two Factor Authentication
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/user-profile/organisation-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Organisation Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/user-profile/request-organisation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Request An Organisation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../user/manual/user-roles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User Roles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Administrators
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Administrators
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/access-admin-site/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Accessing the Administration Site
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/manage-organisations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Organisations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/manage-users/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Users
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/manage-taxa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Taxa
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/manage-upload-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Uploaded Data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/manage-lookup-tables/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Lookup Tables
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Manual
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Django Administration
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Django Administration
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#heading-to-django-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Heading to Django Admin
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#django-admin-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Django Admin Layout
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#django-admin-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Django Admin Tables
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../django-table/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Django Tables
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../django-add-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Add Data in Django
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../django-change-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Edit Data in Django
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Developer
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Developer
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/guide/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/prerequisites/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/design/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/ide-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IDE Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/cloning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cloning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/workflows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workflows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/templates/pull-request-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/templates/commit-message-convention/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/manual/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Manual
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/activity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Activity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/core/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Core
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/fixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/frontend/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Frontend
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/notification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Notification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/occurrence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Occurrence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/population_data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Population Data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/property/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Property
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/regulator_permit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Regulatory Permit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/sawps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SAWPS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/species/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Species
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/stakeholder/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stakeholder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/documentation/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Documentation Writing
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Documentation Writing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/documentation/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/documentation/context-help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Context Help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../devops/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            DevOps
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../devops/guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../devops/manual/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Manual
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../videos/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Training Videos
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Training Videos
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../about/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#heading-to-django-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Heading to Django Admin
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#django-admin-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Django Admin Layout
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#django-admin-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Django Admin Tables
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<div><h1 id="django-admin-page-documentation">Django Admin Page Documentation<a class="headerlink" href="#django-admin-page-documentation" title="Permanent link">¶</a></h1>
+<p>The Django Admin is the central hub to create, read, update, or delete SAWPS data. Only users with staff status (i.e. administrators) can enter the administration page.</p>
+<h2 id="heading-to-django-admin">Heading to Django Admin<a class="headerlink" href="#heading-to-django-admin" title="Permanent link">¶</a></h2>
+<p><img alt="Django Admin" src="../img/admin-1.png"></p>
+<ol>
+<li>Click on the profile icon, then click <strong>Django Admin</strong>.</li>
+</ol>
+<h2 id="django-admin-layout">Django Admin Layout<a class="headerlink" href="#django-admin-layout" title="Permanent link">¶</a></h2>
+<p>The Welcome page will be the first thing that administrators see. It typically displays a welcome message and provides an overview of the available actions and options within the administration panel.</p>
+<p><img alt="Django Admin Layout" src="../img/admin-2.png"></p>
+<p>In the top right corner of the administration panel, administrators will find a section that usually displays their username. In this section, administrators have the following options:</p>
+<ol>
+<li>
+<p><strong>Welcome</strong>: Displays welcome with the administrator's name.</p>
+</li>
+<li>
+<p><strong>View Site</strong>: Clicking on this option will take administrators to the <code>SAWPS</code> website.</p>
+</li>
+<li>
+<p><strong>Change Password</strong>: Clicking on this option allows administrators to change their administration password. Administrators will be prompted to provide their current password and then set a new one.</p>
+<p><img alt="Change Password" src="../img/admin-8.png"></p>
+<ol>
+<li>
+<p><strong>1. Old Password</strong>: In this field, administrators should provide the current password associated with their account. This is a mandatory field.</p>
+</li>
+<li>
+<p><strong>2. New Password</strong>: In this field, administrators should enter the new password they want to set for their account. The password should meet the following criteria:</p>
+</li>
+</ol>
+<ul>
+<li>The password can't be too similar to other personal information.</li>
+<li>The password must contain at least 12 characters.</li>
+<li>The password can't be a commonly used password.</li>
+<li>The password can't be entirely numeric.</li>
+<li>The password should include the following:<ul>
+<li>Numeric character</li>
+<li>Uppercase letter</li>
+<li>Special character ( @ # % ; )</li>
+</ul>
+</li>
+<li>Ensure that the new password adheres to these requirements.</li>
+</ul>
+<ol start="3">
+<li>
+<p><strong>3. New Password Confirmation</strong>: Re-enter the new password in this field to confirm it. It should match the password entered in the <code>New Password</code> field.</p>
+</li>
+<li>
+<p><strong>4. Change My Password Button</strong>: Once administrators have filled in the required information, they can click the <code>CHANGE MY PASSWORD</code> button to submit the form. If all the input is valid and the new password meets the criteria, the password for their account will be updated.</p>
+</li>
+</ol>
+<p>After successfully changing the password, the administrator will receive a confirmation message indicating that the password has been updated.</p>
+</li>
+<li>
+<p><strong>Log Out</strong>: Clicking on this option will log the administrator out of the administration panel and return them to the login page.</p>
+<p><img alt="Logout admin page" src="../img/admin-9.png"></p>
+<ol>
+<li><strong>1. Log in again</strong>: Clicking this option will open the login page.</li>
+</ol>
+</li>
+<li>
+<p><strong>Recent Actions</strong>: The <code>Recent Actions</code> section is located on the right side of the administration panel and provides a list of recent actions that have been performed within the administration interface. These actions may include additions, deletions, or changes to data in the project. Clicking on any of the available links will take an administrator to the details of the recent action.</p>
+</li>
+<li>
+<p><strong>Site Administration</strong>: This section provides links to various models and apps registered with the administration panel. It serves as the primary navigation point for managing a project's data. Clicking on any of the available links will take an administrator to the respective model's management page.</p>
+</li>
+<li>
+<p><strong>Add</strong>: This button is used to create a new item for the associated model. Clicking on the <code>Add</code> link will open a form where administrators can enter the details of the new record.</p>
+</li>
+<li>
+<p><strong>Change</strong>: This button is used to edit an existing item from the list. When administrators click the <code>Change</code> button, they will be redirected to a page where they can view all the associated data for that model and select the data to change.</p>
+</li>
+</ol>
+<h2 id="django-admin-tables">Django Admin Tables<a class="headerlink" href="#django-admin-tables" title="Permanent link">¶</a></h2>
+<p><img alt="Django Admin Tables" src="../img/admin-11.png"></p>
+<ol>
+<li>
+<p><strong>ACCOUNTS</strong>: The administrators can use this section to perform operations related to accounts.</p>
+<ul>
+<li><strong>Email Addresses</strong>: The <code>Email addresses</code> table is designed for storing and managing the email addresses associated with user accounts. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing user email addresses.</li>
+</ul>
+</li>
+<li>
+<p><strong>ACTIVITY</strong>: The administrators can use this section to perform operations related to activities.</p>
+<ul>
+<li><strong>Activities</strong>: The <code>Activity</code> table is designed to capture and track various activities related to the management and conservation of wildlife or specific areas. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing activities.<ul>
+<li><strong>Add</strong>: Click <a href="../django-add-data/">here</a> to view how to add a new activity.</li>
+<li><strong>Edit</strong>: Click <a href="../django-change-data/">here</a> to view how to edit an activity.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>AUTHENTICATION AND AUTHORISATION</strong>: The administrators can use this section to perform operations related to authentication and authorisation.</p>
+<ul>
+<li>
+<p><strong>Groups</strong>: The <code>Groups</code> table is designed to organise and categorise users into distinct groups or roles within a web application. This table serves as a fundamental component of the application's access control and permission management system. It provides administrators with the capability to perform various operations, including creating, modifying, and viewing user groups.</p>
+<ul>
+<li><strong>Add</strong>: Click <a href="../django-add-data/">here</a> to view how to add a new group.</li>
+<li><strong>Edit</strong>: Click <a href="../django-change-data/">here</a> to view how to edit a group.</li>
+</ul>
+</li>
+<li>
+<p><strong>Permissions</strong>: The <code>Permissions</code> table is a core element of a web application's access control and authorisation system. It is designed to manage and regulate the rights and privileges of users within the application, allowing administrators to create, modify, and oversee user permissions.</p>
+</li>
+<li>
+<p><strong>Users</strong>: The <code>Users</code> table is a foundational component of a web application, designed to represent and manage individual user accounts. This table plays a central role in user authentication, identity management, and access control. It empowers administrators to perform a range of essential operations, including user creation, modification, and access management.</p>
+<ul>
+<li><strong>Add</strong>: Click <a href="../django-add-data/">here</a> to view how to add a new user.</li>
+<li><strong>Edit</strong>: Click <a href="../django-change-data/">here</a> to view how to edit a user.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>CELERY RESULTS</strong>: The administrators can use this section to perform operations related to celery.</p>
+<ul>
+<li>
+<p><strong>Group Results</strong>: In the <code>Group result</code> table, administrators can click on a specific group to see details about its tasks and their outcomes. This is useful for tracking the progress of related tasks and ensuring they were executed successfully. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing group results.</p>
+</li>
+<li>
+<p><strong>Task Results</strong>: In the <code>Task result</code> table, administrators can view the status and outcomes of individual tasks. This is particularly valuable for diagnosing issues with specific tasks and understanding how the application is handling asynchronous processes. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing task results.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><img alt="Django Admin Tables" src="../img/admin-12.png"></p>
+<ol start="5">
+<li>
+<p><strong>DOCUMENTATION CENTRE</strong>: The administrators can use this section to perform operations related to documentation. The <code>Documentation Centre</code> is a vital tool for administrators to streamline the process of providing users with access to relevant documentation, guides, and help resources. It offers a structured approach to managing and presenting documentation, enhancing the user experience and support for SAWPS.</p>
+<ul>
+<li>
+<p><strong>Blocks</strong>: In the <code>Blocks</code> table, administrators can specify a relative URL that links to the documentation base URL. This URL is used to auto-fetch content, allowing administrators to seamlessly integrate the documentation with SAWPS. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing blocks.</p>
+</li>
+<li>
+<p><strong>Pages</strong>: In the <code>Pages</code> table, administrators can specify the page with a relative URL that links to the documentation base URL. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing pages.</p>
+</li>
+<li>
+<p><strong>Preferences</strong>: In the <code>Preferences</code> table, administrators can set the documentation base URL. This is the foundation of the documentation centre and should be carefully defined to ensure accurate integration. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing preferences.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>EASY AUDIT APPLICATION</strong>: The administrators can use this section to perform operations related to the easy audit application. An <code>Easy Audit Application</code> is a tool that helps administrators monitor and maintain an audit trail of changes and user activity within the application, providing transparency, accountability, and security.</p>
+<ul>
+<li>
+<p><strong>CRUD events</strong>: In the <code>CRUD events</code> table, administrators can track CRUD events to maintain data integrity, improve accountability, and ensure compliance with regulatory requirements. An audit log of these events helps administrators to keep a record of data changes, and understand who made the changes, and when they occurred. This table provides administrators with the capability to perform various operations, including purging, deleting, updating, and viewing CRUD events.</p>
+</li>
+<li>
+<p><strong>Login events</strong>: In the <code>Login events</code> table, administrators can monitor login events which is critical for maintaining the security of SAWPS and keeping track of who is accessing the system. It helps in identifying suspicious or unauthorised activities, improving accountability, and enhancing the overall security posture of the application. This table provides administrators with the capability to perform various operations, including purging, deleting, updating, and viewing login events.</p>
+</li>
+<li>
+<p><strong>Request events</strong>: In the <code>Request events</code> table, administrators can monitor request events which is crucial for understanding user interactions, diagnosing issues, improving system performance, and ensuring data security. It can provide valuable insights into how SAWPS is being used and help in troubleshooting problems. This table provides administrators with the capability to perform various operations, including purging, deleting, updating, and viewing request events.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>FRONTEND</strong>: The administrators can use this section to perform operations related to the SAWPS front end.</p>
+<ul>
+<li>
+<p><strong>Boundary files</strong>: In the <code>Boundary files</code> table, administrators can define geographical boundaries, regions, or areas. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing boundary files.</p>
+</li>
+<li>
+<p><strong>Boundary search requests</strong>: In the <code>Boundary search requests</code> table, administrators can manage boundary search requests, as it ensures that users can access accurate geographical data and perform spatial queries effectively. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing boundary search requests.</p>
+</li>
+<li>
+<p><strong>Context layer legends</strong>: The <code>Context layer legends</code> table is used for storing the context layer legends records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing context layer legends.</p>
+</li>
+<li>
+<p><strong>Context layer tiling tasks</strong>: The <code>Context layer tiling tasks</code> table is used for storing context layer tiling tasks records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing context layer tiling tasks.</p>
+</li>
+<li>
+<p><strong>Context layers</strong>: The <code>Context layers</code> table is used for storing the context layers records. Context layers are fundamental components of SAWPS, offering diverse geospatial data to users. The administrators can manage these layers to ensure that users can access the most relevant and up-to-date spatial information, thereby improving decision-making and enhancing the user experience. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing context layers.</p>
+</li>
+<li>
+<p><strong>Draft species uploads</strong>: The <code>Draft species uploads</code> table is used for storing the draft species uploads records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing draft species uploads.</p>
+</li>
+<li>
+<p><strong>Layers</strong>: The <code>Layers</code> table is used for storing the layers records. The administrators can modify individual layers within the application, which includes defining their display properties, filter settings, and their relationships with context layers. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing layers.</p>
+</li>
+<li>
+<p><strong>Map sessions</strong>: The <code>Map sessions</code> table is used for storing the map session records. The administrators can monitor and configure these sessions. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing map sessions.</p>
+</li>
+<li>
+<p><strong>Spatial data</strong>: The <code>Spatial data</code> table is used for storing the spatial data records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing spatial data.</p>
+</li>
+<li>
+<p><strong>Statistical models</strong>: The <code>Statistical models</code> table is used for storing the statistical model records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing statistical models.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><img alt="Django Admin Tables" src="../img/admin-13.png"></p>
+<ol start="8">
+<li>
+<p><strong>NOTIFICATION</strong>: The administrators can use this section to perform operations related to reminders.</p>
+<ul>
+<li><strong>Reminders</strong>: The <code>Reminders</code> table is used for storing the reminder records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing reminders.</li>
+</ul>
+</li>
+<li>
+<p><strong>OCCURRENCE</strong>: The administrators can use this section to perform operations related to occurrences.</p>
+<ul>
+<li><strong>Survey methods</strong>: The <code>Survey methods</code> table is used for storing the survey methods records. In the field of wildlife and environmental studies, survey methods are essential for systematically collecting data about the occurrence and distribution of various species and ecosystems. These methods are carefully designed to provide accurate information for research, conservation, and management purposes. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing survey methods.</li>
+</ul>
+</li>
+<li>
+<p><strong>OTP STATIC</strong>: The administrators can use this section to perform operations related to static OTP (one-time pin) devices.</p>
+<ul>
+<li><strong>Static devices</strong>: The <code>Static devices</code> table is used for storing the static devices records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing static devices.</li>
+</ul>
+</li>
+<li>
+<p><strong>OTP TOTP</strong>: The administrators can use this section to perform operations related to OTP TOTP (time-based one-time pin) devices.</p>
+<ul>
+<li><strong>TOTP devices</strong>: The <code>TOTP devices</code> table is used for storing the TOTP devices records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing TOTP devices.<ul>
+<li><strong>Add</strong>: Click on the <a href="../django-add-data/">add</a> to view how to add a new TOTP device.</li>
+<li><strong>Edit</strong>: Click on the <a href="../django-change-data/">edit</a> to view how to edit a TOTP device.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>PERIODIC TASKS</strong>: The administrators can use this section to perform operations related to periodic tasks.</p>
+<ul>
+<li>
+<p><strong>Clocked</strong>: The <code>Clocked</code> table is used for storing the clocked records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing clocked objects.</p>
+</li>
+<li>
+<p><strong>Crontabs</strong>: The <code>Crontabs</code> table is used for storing the crontabs records. The administrators can use the crontab table to schedule and automate periodic tasks within the application. Crontab allows administrators to specify precise times and dates for task execution. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing crontabs.</p>
+</li>
+<li>
+<p><strong>Intervals</strong>: The <code>Intervals</code> table is used for storing the interval records. The administrators can use intervals to determine how often a task runs and the number of periods to wait before the task runs again. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing intervals.</p>
+</li>
+<li>
+<p><strong>Periodic tasks</strong>: The <code>Periodic tasks</code> table is used for storing the periodic tasks records. The administrators can use the periodic tasks table to automate recurring operations within the application. This functionality allows administrators to configure and schedule tasks to run at specific intervals, saving time and ensuring consistency. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing periodic tasks.</p>
+</li>
+<li>
+<p><strong>Solar events</strong>: The <code>Solar events</code> table is used for storing the solar events records. The administrators can use the solar events table to schedule tasks based on solar events, such as sunrise or sunset, at specific geographic locations. Solar events are essential for tasks that need to be synchronised with daylight or specific astronomical occurrences. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing solar events.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><img alt="Django Admin Tables" src="../img/admin-14.png"></p>
+<ol start="13">
+<li>
+<p><strong>POPULATION DATA</strong>: The administrators can use this section to perform operations related to species populations.</p>
+<ul>
+<li>
+<p><strong>Annual Populations</strong>: The <code>Annual Populations</code> table is used for storing the annual population records. The administrators can manage population data for owned species in the SAWPS. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing annual populations.</p>
+</li>
+<li>
+<p><strong>Open Close System</strong>: The <code>Open Close System</code> table is used for storing the open-close systems records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing open-close systems.</p>
+</li>
+<li>
+<p><strong>Population Estimate Categories</strong>: The <code>Population Estimate Categories</code> table is used for storing the population estimate categories records. Population estimate categories help clarify the methods used to estimate species populations, providing valuable context and transparency. They allow administrators to categorise and describe the reliability and accuracy of population estimates. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing population estimate categories.</p>
+</li>
+<li>
+<p><strong>Population Status</strong>: The <code>Population Status</code> table is used for storing the population status records. The administrators can use the population status table to select and change the population status of species within the application. This table allows administrators to categorising species as either resident or migratory. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing population status.</p>
+</li>
+<li>
+<p><strong>Population count per activities</strong>: The <code>Population count per activities</code> table is used for storing the population count per activities records. The administrators can use the population count per activity table to select and change population counts for specific activities associated with species. This table allows administrators to track and manage population counts in various activities. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing population counts per activity.</p>
+</li>
+<li>
+<p><strong>Sampling Effort Coverages</strong>: The <code>Sampling Effort Coverages</code> table is used for storing the sampling effort coverages records. The administrators can use the sampling effort coverage table to select and change the coverage level of sampling effort in surveys and data collection. This table allows administrators to categorising the extent and distribution of sample units within a reserve or area. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing sampling effort coverages.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>PROPERTY</strong>: The administrators can use this section to perform operations related to properties.</p>
+<ul>
+<li>
+<p><strong>Parcel Types</strong>: The <code>Parcel Types</code> table is used for storing the parcel types records. The administrators can use the parcel types table to select and change the type of parcels within the SAWPS. This table allows administrators to categorising parcels as either rural or urban, based on their characteristics. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing parcel types.</p>
+</li>
+<li>
+<p><strong>Parcels</strong>: The <code>Parcels</code> table is used for storing the parcel records. The administrators can use the parcels table to select and change parcel details within the SAWPS. This table allows administrators to manage and update parcel information. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing parcels.</p>
+</li>
+<li>
+<p><strong>Properties</strong>: The <code>Properties</code> table is used for storing the properties records. The administrators can use the property table to select and change property details within the SAWPS. This table allows administrators to manage and update property information, including property name, short code, organisation, property size, and province. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing properties.</p>
+</li>
+<li>
+<p><strong>Property types</strong>: The <code>Property types</code> table is used for storing the property types records. The administrators can use the property type table to select and change property type details within the SAWPS. This table allows administrators to categorising properties based on their type, such as community, provincial, national, state, private, or a combination of state and private. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing property types.</p>
+</li>
+<li>
+<p><strong>Provinces</strong>: The <code>Provinces</code> table is used for storing the provinces' records. The administrators can use the province table to select and change province details within the SAWPS. This table allows administrators to manage and update province information, including province names. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing provinces.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>REDIRECTS</strong>: The administrators can use this section to perform operations related to redirects.</p>
+<ul>
+<li><strong>Redirects</strong>: The <code>Provinces</code> table is used for storing the redirects records. The administrators can use the redirect table to set up URL redirections within the SAWPS site. This table allows administrators to direct users from one URL to another, either within the same domain or to an external website. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing redirects.</li>
+</ul>
+</li>
+<li>
+<p><strong>REGULATORY PERMIT</strong>: The administrators can use this section to perform operations related to regulatory permits.</p>
+<ul>
+<li><strong>Data use permissions</strong>: The <code>Data use permissions</code> table is used for storing the data use permissions records. The administrators can use the data use permission table to select and change permission settings related to data usage within the SAWPS. This table allows administrators to configure data access and usage policies. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing data use permissions.</li>
+</ul>
+</li>
+</ol>
+<p><img alt="Django Admin Tables" src="../img/admin-15.png"></p>
+<ol start="17">
+<li>
+<p><strong>SITES</strong>: The administrators can use this section to perform operations related to sites.</p>
+<ul>
+<li><strong>Sites</strong>: The <code>Sites</code> table is used for storing the site records. The administrators can use the sites table to select and change site details within the SAWPS. This table allows administrators to manage and update site information, including the domain name and display name. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing sites.</li>
+</ul>
+</li>
+<li>
+<p><strong>SOCIAL ACCOUNTS</strong>: The administrators can use this section to perform operations related to social accounts.</p>
+<ul>
+<li>
+<p><strong>Social accounts</strong>: The <code>Social accounts</code> table is used for storing the social accounts records. The administrators can use the social account table to add and manage social media account connections for users within the SAWPS. This table allows administrators to integrate social media logins and enhance the user experience.  This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing social accounts.</p>
+</li>
+<li>
+<p><strong>Social application tokens</strong>: The <code>Social application tokens</code> table is used for storing the social application tokens records. The administrators can use the social account table to add and manage social media account connections for users within the SAWPS. This table allows administrators to integrate social media logins and enhance the user experience. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing social application tokens.</p>
+</li>
+<li>
+<p><strong>Social applications</strong>: The <code>Social applications</code> table is used for storing the social applications records. The administrators can use the social application table to integrate and manage social media applications within the application. This table allows administrators to social media integration, such as login via social platforms. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing social applications.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>SPECIES</strong>: The administrators can use this section to perform operations related to species.</p>
+<ul>
+<li>
+<p><strong>Owned Species</strong>: The <code>Owned Species</code> table is used for storing the owned species records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing owned species.</p>
+</li>
+<li>
+<p><strong>Taxa</strong>: The <code>Taxa</code> table is used for storing the taxon(species) records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing taxon(species).</p>
+</li>
+<li>
+<p><strong>Taxon Ranks</strong>: The <code>Taxon Ranks</code> table is used for storing the taxon rank records. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing taxon ranks.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>STAKEHOLDER</strong>: The administrators can use this section to perform operations related to stakeholders.</p>
+<ul>
+<li>
+<p><strong>Login Status</strong>: The <code>Login status</code> table is used for storing the login status records. The administrators can use the login status table to define and manage different login states within the SAWPS. This can help track and manage user's login activities. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing login status.</p>
+</li>
+<li>
+<p><strong>Organisation Representatives</strong>: The <code>Organisation representatives</code> table is used for storing the organisation representative's records. The administrators can use the organisation representative table to designate and manage individuals who represent specific organisations within the SAWPS. This helps establish connections and responsibilities within the system. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing organisation representatives.</p>
+</li>
+<li>
+<p><strong>Organisation users</strong>: The <code>Organisation users</code> table is used for storing the organisation users records. The administrators can use the organisation user table to associate and manage users with specific organisations within the SAWPS. This helps define user roles and responsibilities within the context of their organisations. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing organisation users.</p>
+</li>
+<li>
+<p><strong>Organisation Invites</strong>: The <code>Organisation Invites</code> table is used for storing the organisation invite records. The administrators can use the organisation invites table to invite individuals to join specific organisations within the application. This is a helpful way to extend invitations to users and control their roles within the organisation. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing organisation invites.</p>
+</li>
+<li>
+<p><strong>Organisations</strong>: The <code>Organisations</code> table is used for storing the organisation's records. The administrators can use the organisation table to create and manage organisations within the SAWPS. Organisations help structure and organise user roles and responsibilities. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing organisations.</p>
+</li>
+<li>
+<p><strong>Reminders</strong>: The <code>Reminders</code> table is used for storing the reminder records. The administrators can use the reminders table to create and manage reminders within the SAWPS. Reminders help users keep track of important tasks and deadlines. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing reminders.</p>
+</li>
+<li>
+<p><strong>Titles</strong>: The <code>Titles</code> table is used for storing the titles records. The administrators can use the titles table to manage and add titles that can be associated with user profiles within the SAWPS. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing titles.</p>
+</li>
+<li>
+<p><strong>User roles</strong>: The <code>User roles</code> table is used for storing the user roles records. User roles define the permissions and access levels for different users within the SAWPS. By adding user roles, administrators can control what users can and cannot do in the system. This table provides administrators with the capability to perform various operations, including adding, deleting, updating, and viewing user roles.</p>
+</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>
+<p>For more information on the detailed documentation for the tables, click <a href="../django-table/">here</a>.</p>
+</li>
+<li>
+<p>For more information on how to add new data, click <a href="../django-add-data/">here</a>.</p>
+</li>
+<li>
+<p>For more information on how to edit data, click <a href="../django-change-data/">here</a>.</p>
+</li>
+</ul></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Kartoza and Contributors
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/kartoza" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://hub.docker.com/r/kartoza/" target="_blank" rel="noopener" title="hub.docker.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M349.9 236.3h-66.1v-59.4h66.1v59.4zm0-204.3h-66.1v60.7h66.1V32zm78.2 144.8H362v59.4h66.1v-59.4zm-156.3-72.1h-66.1v60.1h66.1v-60.1zm78.1 0h-66.1v60.1h66.1v-60.1zm276.8 100c-14.4-9.7-47.6-13.2-73.1-8.4-3.3-24-16.7-44.9-41.1-63.7l-14-9.3-9.3 14c-18.4 27.8-23.4 73.6-3.7 103.8-8.7 4.7-25.8 11.1-48.4 10.7H2.4c-8.7 50.8 5.8 116.8 44 162.1 37.1 43.9 92.7 66.2 165.4 66.2 157.4 0 273.9-72.5 328.4-204.2 21.4.4 67.6.1 91.3-45.2 1.5-2.5 6.6-13.2 8.5-17.1l-13.3-8.9zm-511.1-27.9h-66v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1v-59.4zm-78.1-72.1h-66.1v60.1h66.1v-60.1z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/KartozaGeo" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://kartoza.com" target="_blank" rel="noopener" title="kartoza.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 120 82.7 220.8 194.2 248.5V334.2h-52.8V256h52.8v-33.7c0-87.1 39.4-127.5 125-127.5 16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287v175.9C413.8 494.8 512 386.9 512 256z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://kartoza.com" target="_blank" rel="noopener" title="kartoza.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="m177.8 63.2 10 17.4c2.8 4.8 4.2 10.3 4.2 15.9v41.4c0 3.9 1.6 7.7 4.3 10.4 6.2 6.2 16.5 5.7 22-1.2l13.6-17c4.7-5.9 12.9-7.7 19.6-4.3l15.2 7.6c3.4 1.7 7.2 2.6 11 2.6 6.5 0 12.8-2.6 17.4-7.2l3.9-3.9c2.9-2.9 7.3-3.6 11-1.8l29.2 14.6c7.8 3.9 12.6 11.8 12.6 20.5 0 10.5-7.1 19.6-17.3 22.2l-35.4 8.8c-7.4 1.8-15.1 1.5-22.4-.9l-32-10.7c-3.3-1.1-6.7-1.7-10.2-1.7-7 0-13.8 2.3-19.4 6.5L176 212c-10.1 7.6-16 19.4-16 32v28c0 26.5 21.5 48 48 48h32c8.8 0 16 7.2 16 16v48c0 17.7 14.3 32 32 32 10.1 0 19.6-4.7 25.6-12.8l25.6-34.1c8.3-11.1 12.8-24.6 12.8-38.4v-12.1c0-3.9 2.6-7.3 6.4-8.2l5.3-1.3c11.9-3 20.3-13.7 20.3-26 0-7.1-2.8-13.9-7.8-18.9l-33.5-33.5c-3.7-3.7-3.7-9.7 0-13.4 5.7-5.7 14.1-7.7 21.8-5.1l14.1 4.7c12.3 4.1 25.7-1.5 31.5-13 3.5-7 11.2-10.8 18.9-9.2l27.4 5.5C432 112.4 351.5 48 256 48c-27.7 0-54 5.4-78.2 15.2zM0 256a256 256 0 1 1 512 0 256 256 0 1 1-512 0z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate", "content.tabs.link", "header.autohide", "navigation.indexes", "navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../../js/tablesort.js"></script>
+      
+    
+  </body>
+</html>

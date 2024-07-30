@@ -1,0 +1,4296 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="SANBI WPS technical and user documentation.">
+      
+      
+        <meta name="author" content="Kartoza">
+      
+      
+      
+        <link rel="prev" href="../organisations/">
+      
+      
+        <link rel="next" href="../data-upload/">
+      
+      
+      <link rel="icon" href="../../../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>IDS SAWPS - SAWPS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#explore-page" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="SAWPS" class="md-header__button md-logo" aria-label="SAWPS" data-md-component="logo">
+      
+  <img src="../../../img/SANBI-logo.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SAWPS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              IDS SAWPS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18V6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-2.69L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kartoza/sawps/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SANBI WPS
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  Home
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+    
+  
+  User
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../administrator/" class="md-tabs__link">
+          
+  
+    
+  
+  Administrators
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../developer/" class="md-tabs__link">
+          
+  
+    
+  
+  Developer
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../devops/" class="md-tabs__link">
+          
+  
+    
+  
+  DevOps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../videos/" class="md-tabs__link">
+          
+  
+    
+  
+  Training Videos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../about/" class="md-tabs__link">
+          
+  
+    
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="SAWPS" class="md-nav__button md-logo" aria-label="SAWPS" data-md-component="logo">
+      
+  <img src="../../../img/SANBI-logo.jpg" alt="logo">
+
+    </a>
+    SAWPS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kartoza/sawps/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SANBI WPS
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Home
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/code-of-conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            User
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../registering/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Registering and Logging In
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help And Contact
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../profile-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting Up the Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../organisations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Organisations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Working with the Explore Page
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Working with the Explore Page
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#switching-between-dark-and-light-mode-on-the-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      Switching between dark and light mode on the map
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-zoom-levels-on-the-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing zoom levels on the map
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-map-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with map layers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with map layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ngi-aerial-imagery" class="md-nav__link">
+    <span class="md-ellipsis">
+      NGI Aerial Imagery
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-map-orientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing map orientation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#printing-your-current-map-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      Printing your current map view
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-the-filters-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using the Filters Panel
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using the Filters Panel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#applying-the-spatial-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Applying the Spatial Filters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reports
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#charts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Charts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Charts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#charts-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Charts Description
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Charts Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#number-of-properties-per-population-category-count-of-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of properties per population category (count) of species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-of-properties-per-population-category-population-density-of-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of properties per population category (population density) of species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-of-properties-per-categories-of-area-ha-for-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of properties per categories of area (ha) for species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-of-properties-per-categories-of-area-ha-available-to-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of properties per categories of area (ha) available to species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-count-of-species-per-province-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total count of species per province chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activity-count-as-of-total-population-of-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Activity count as % of total population of species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-count-per-population-estimate-category-for-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total count per population estimate category for species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mean-and-standard-deviation-of-age-classes-for-species-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mean and standard deviation of age classes for species chart
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trends" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trends
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trends">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trends-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trends Description
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trends Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#species-national-population-trend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Species National Population Trend
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#large-species-populations-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Large species populations chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medium-species-populations-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Medium species populations chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#small-species-populations-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Small species populations chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-area-vs-area-available-to-species-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total area vs area available to species chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#province-population-trend-charts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Province Population Trend Charts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trends-by-property" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trends by property
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-upload/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using the Data Upload Feature
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../manual/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Manual
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            Manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/landing-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Landing Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../manual/login-logout/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Login and Logout
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_3" id="__nav_2_4_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Login and Logout
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/login-logout/login-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Login
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/login-logout/forgot-password/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Forgot Password
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/login-logout/login-2fa-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Two Factor Authentication
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/login-logout/logout/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logout
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../manual/register/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Register
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_4" id="__nav_2_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Register
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/register/register-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Register
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/register/setup-2fa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Set up Two Factor Authentication
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_6" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../manual/explore/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Explore
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_6" id="__nav_2_4_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Explore
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/explore/layers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Layers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/explore/filters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Filters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/explore/map/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Map
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/explore/reports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reports
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/explore/charts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Charts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/explore/trends/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Trends
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../manual/data-upload/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Upload Data
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_7" id="__nav_2_4_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            Upload Data
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/data-upload/panel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Upload Panel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/data-upload/online-form/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    The Online Form
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/data-upload/template-upload/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Template Upload
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/data-upload/update-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Update Data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/help-contact/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Help and Contact
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4_9" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../manual/user-profile/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    User Profile
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4_9" id="__nav_2_4_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_4_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4_9">
+            <span class="md-nav__icon md-icon"></span>
+            User Profile
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/user-profile/profile-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Profile Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/user-profile/reminders/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reminders
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/user-profile/notifications/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Notifications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/user-profile/2fa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Two Factor Authentication
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/user-profile/organisation-page/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Organisation Page
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/user-profile/request-organisation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Request An Organisation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../manual/user-roles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User Roles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../administrator/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Administrators
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Administrators
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../administrator/guide/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/guide/access-admin-site/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Accessing the Administration Site
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/guide/manage-organisations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Organisations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/guide/manage-users/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Users
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/guide/manage-taxa/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Taxa
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/guide/manage-upload-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Uploaded Data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/guide/manage-lookup-tables/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing Lookup Tables
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../administrator/manual/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Manual
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/manual/django-admin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Django Administration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/manual/django-table/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Django Tables
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/manual/django-add-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Add Data in Django
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../administrator/manual/django-change-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Edit Data in Django
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Developer
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Developer
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/guide/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/prerequisites/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/design/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/ide-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IDE Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/cloning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cloning
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/workflows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workflows
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/templates/pull-request-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/guide/templates/commit-message-convention/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/manual/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Manual
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/activity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Activity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/core/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Core
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/fixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/frontend/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Frontend
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/notification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Notification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/occurrence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Occurrence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/population_data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Population Data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/property/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Property
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/regulator_permit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Regulatory Permit
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/sawps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SAWPS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/species/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Species
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/manual/stakeholder/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stakeholder
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../developer/documentation/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Documentation Writing
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Documentation Writing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/documentation/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer/documentation/context-help/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Context Help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../devops/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    DevOps
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            DevOps
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../devops/guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../devops/manual/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Manual
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../videos/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Training Videos
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Training Videos
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../about/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            About
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#switching-between-dark-and-light-mode-on-the-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      Switching between dark and light mode on the map
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-zoom-levels-on-the-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing zoom levels on the map
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-map-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with map layers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with map layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ngi-aerial-imagery" class="md-nav__link">
+    <span class="md-ellipsis">
+      NGI Aerial Imagery
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changing-map-orientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Changing map orientation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#printing-your-current-map-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      Printing your current map view
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-the-filters-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using the Filters Panel
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using the Filters Panel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#applying-the-spatial-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Applying the Spatial Filters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reports
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#charts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Charts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Charts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#charts-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Charts Description
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Charts Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#number-of-properties-per-population-category-count-of-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of properties per population category (count) of species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-of-properties-per-population-category-population-density-of-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of properties per population category (population density) of species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-of-properties-per-categories-of-area-ha-for-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of properties per categories of area (ha) for species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-of-properties-per-categories-of-area-ha-available-to-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Number of properties per categories of area (ha) available to species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-count-of-species-per-province-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total count of species per province chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activity-count-as-of-total-population-of-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Activity count as % of total population of species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-count-per-population-estimate-category-for-species-for-year-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total count per population estimate category for species for year chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mean-and-standard-deviation-of-age-classes-for-species-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mean and standard deviation of age classes for species chart
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trends" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trends
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trends">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trends-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trends Description
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trends Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#species-national-population-trend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Species National Population Trend
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#large-species-populations-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Large species populations chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medium-species-populations-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Medium species populations chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#small-species-populations-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Small species populations chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-area-vs-area-available-to-species-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Total area vs area available to species chart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#province-population-trend-charts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Province Population Trend Charts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trends-by-property" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trends by property
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<div><h1 id="explore-page">Explore page<a class="headerlink" href="#explore-page" title="Permanent link">¶</a></h1>
+<p>This documentation explains how to use the map on the platform as well as how to use the various other tabs contained within the Explore page. On the landing page, click on the <code>Explore</code> button in the navigation bar to be redirected to the explore page.</p>
+<blockquote>
+<p>Disclaimer: The screenshots in the documentation may vary slightly from the actual site due to continuous updates and improvements to the platform.</p>
+</blockquote>
+<p><img alt="Explore 1" src="../img/explore-1.png"></p>
+<h2 id="switching-between-dark-and-light-mode-on-the-map">Switching between dark and light mode on the map<a class="headerlink" href="#switching-between-dark-and-light-mode-on-the-map" title="Permanent link">¶</a></h2>
+<p>When you first load the explore page, the map is in light mode. If you wish to change to dark mode you can switch by simply clicking on 1️⃣ the <code>Toggle Dark Mode</code> button.</p>
+<p><img alt="Dark Mode 1" src="../img/dark-mode-1.png"></p>
+<p>This will switch your map from light mode to dark mode.</p>
+<p><img alt="Dark Mode 2" src="../img/dark-mode-2.png"></p>
+<p>To switch your map from dark mode to light mode, click on 1️⃣ the <code>Toggle Light Mode</code> button.</p>
+<p><img alt="Dark Mode 3" src="../img/dark-mode-3.png"></p>
+<p>This will switch your map from dark mode to light mode.</p>
+<p><img alt="Dark Mode 4" src="../img/dark-mode-4.png"></p>
+<blockquote>
+<p>This guide is done mostly in Dark mode, so the visuals will look slightly different to if you are working in light mode.</p>
+</blockquote>
+<h2 id="changing-zoom-levels-on-the-map">Changing zoom levels on the map<a class="headerlink" href="#changing-zoom-levels-on-the-map" title="Permanent link">¶</a></h2>
+<p>There are multiple ways to change zoom levels on the map: you can scroll up and down on your mouse, you can swipe two fingers up and down on your laptop's touchpad, or you can use 1️⃣ the <code>Zoom in</code> and <code>Zoom out</code> buttons.</p>
+<p><img alt="Zoom Levels 1" src="../img/zoom-levels-1.png"></p>
+<p>Click on the <code>plus</code> (<code>Zoom in</code>) button to zoom in</p>
+<p><img alt="Zoom Levels 2" src="../img/zoom-levels-2.png"></p>
+<p>And click on the <code>minus</code> (<code>Zoom out</code>) button to zoom out and click on the <code>minus</code> (<code>Zoom out</code>) button to zoom out.</p>
+<p><img alt="Zoom Levels 3" src="../img/zoom-levels-3.png"></p>
+<h2 id="working-with-map-layers">Working with map layers<a class="headerlink" href="#working-with-map-layers" title="Permanent link">¶</a></h2>
+<p>When you first arrive on the explore page, to the left of the map will be the <code>FILTERS</code> panel. Click on the <code>LAYERS</code> tab on the panel to switch to the <code>LAYERS</code> panel.</p>
+<p><img alt="Map Layers 1" src="../img/map-layers-1.png"></p>
+<p>From the list of layers, you can enable and disable layers as needed. If a checkbox is empty then the layer is disabled and not visible. If there is a tick in the checkbox then the layer is enabled and visible.</p>
+<p><img alt="Map Layers 2" src="../img/map-layers-2.png"></p>
+<p>Keep in mind that some layers are only visible between certain zoom levels, like the Protected areas and Cadastral boundaries.</p>
+<p><img alt="Map Layers 3" src="../img/map-layers-3.png"></p>
+<h3 id="ngi-aerial-imagery">NGI Aerial Imagery<a class="headerlink" href="#ngi-aerial-imagery" title="Permanent link">¶</a></h3>
+<p>By default, the NGI Aerial Imagery layer is disabled and when you enable it, it will only appear when you zoom in enough.</p>
+<p><img alt="Map Layers 4" src="../img/map-layers-4.png"></p>
+<p><img alt="Map Layers 5" src="../img/map-layers-5.png"></p>
+<h2 id="changing-map-orientation">Changing map orientation<a class="headerlink" href="#changing-map-orientation" title="Permanent link">¶</a></h2>
+<p>When you first view the map, it will be in an overhead 2D view. If you right click and drag your mouse pointer on the map, you can change the view orientation and in turn visualise your data in a 3D manner, or you can click on 1️⃣ the <code>Toggle 3D view</code> button.</p>
+<p><img alt="Change Orientation 1" src="../img/change-orientation-1.png"></p>
+<p>When viewing the data in a 3D view, the different intervals are represented at different heights (i.e. the interval with the highest upper bound would be the tallest column).</p>
+<p><img alt="Change Orientation 2" src="../img/change-orientation-2.png"></p>
+<p>If you want to reset the map view back to the standard overhead view, click on 1️⃣ the <code>Toggle 3D view</code> button and this will return the map to the 2D overhead view.</p>
+<p><img alt="Change Orientation 3" src="../img/change-orientation-3.png"></p>
+<h2 id="printing-your-current-map-view">Printing your current map view<a class="headerlink" href="#printing-your-current-map-view" title="Permanent link">¶</a></h2>
+<p>The print option on the map allows you to take a screenshot of whatever is present on your map canvas. To save this screenshot, click on the print icon which is located next to the layers panel.</p>
+<p><img alt="Print 1" src="../img/print-1.png"></p>
+<p>Select your desired page size, orientation, image format and DPI and then click on the <code>Generate</code> button.</p>
+<p><img alt="Print 2" src="../img/print-2.png"></p>
+<p>After clicking the <code>Generate</code> button, you will be prompted to save the image to your local machine.</p>
+<p><img alt="Print 3" src="../img/print-3.png"></p>
+<p>Once the image is saved to you will be able to open it and view it.</p>
+<p><img alt="Print 4" src="../img/print-4.png"></p>
+<h2 id="using-the-filters-panel">Using the Filters Panel<a class="headerlink" href="#using-the-filters-panel" title="Permanent link">¶</a></h2>
+<p>To apply filters to the data being displayed on your map, open the <code>FILTERS</code> panel. In this panel there are a few options of filters that you can apply to your map.</p>
+<p><img alt="Filters 1" src="../img/filters-1.png"></p>
+<p>If you know a nearby location to your property, you can use 1️⃣ the <code>Search Place</code> field to search for cities, towns, villages, and suburbs (The list of places is from the Surveyor General and some more recent locations may not be searchable). You will need to type at least two characters (letters) before the platform will return a list of search results.</p>
+<p><img alt="Filters 2" src="../img/filters-2.png"></p>
+<p>If you know the species you would like to view data for, then you can select the scientific name from 1️⃣ the <code>Species</code> dropdown list (this example uses <em>Connochaetes taurinus</em>, i.e. the Blue Wildebeest). Once you have selected a species then 2️⃣ the key showing the intervals in population will be displayed on the map (i.e. a choropleth map), and zooming in on your properties will let you see which interval they fall into based off of their colour.</p>
+<p><img alt="Filters 3" src="../img/filters-3.png"></p>
+<p>If you would like to filter the data by organisation(s), you can use 1️⃣ the <code>Organisation</code> dropdown list to select the organisation(s) for which you would like to view data.</p>
+<p><img alt="Filters 4" src="../img/filters-4.png"></p>
+<p>If your property/properties had been previously created, you can use 1️⃣ the <code>Property</code> dropdown list to select the property/properties for which you would like to view data.</p>
+<p><img alt="Filters 5" src="../img/filters-5.png"></p>
+<p>If you would like to filter data by year, you can enter in 1️⃣ the <code>Year Field</code> to view data for that specific year.</p>
+<p><img alt="Filters 6" src="../img/filters-6.png"></p>
+<p>When you click on 1️⃣ the <code>Activity</code> dropdown, you will be able to choose from a list of activities that can occur on properties that are specified during the <a href="../data-upload/">data upload process</a>, or you can select all of the activities using the <code>Select All</code> option. Selecting different combinations of options will change the intervals shown on the interval key.</p>
+<p><img alt="Filters 7" src="../img/filters-7.png"></p>
+<h3 id="applying-the-spatial-filters">Applying the Spatial Filters<a class="headerlink" href="#applying-the-spatial-filters" title="Permanent link">¶</a></h3>
+<p>There are two types of spatial filters on the platform, the <code>Critical Biodiversity Areas</code> and the <code>Ecosystems</code>. When you apply the spatial filters, whichever of your properties do not intersect the desired sub-section of either of the spatial layers will not be displayed. For example if you choose the <em>Tsakane Clay Grassland</em> as the <code>Ecosystem</code> filter, then all of your properties that do not overlap that ecosystem type will not appear on the map.</p>
+<p>If none of the <code>Critical Biodiversity Areas</code> filters are selected, then all of the example properties are displayed.</p>
+<p><img alt="Filters 8" src="../img/filters-8.png"></p>
+<p>However, if only the <code>Ecological Support Area 1</code> filter is selected, then only those properties displayed that intersect Ecological Support Area 1.</p>
+<p><img alt="Filters 9" src="../img/filters-9.png"></p>
+<p>If none of the <code>Critical Biodiversity Areas</code> filters are selected, but you select an <code>Ecosystem</code> filter that your properties do not intersect, then none of your properties will be visible.</p>
+<p><img alt="Filters 10" src="../img/filters-10.png"></p>
+<p>Unless you choose an <code>Ecosystem</code> filter that intersects your properties.</p>
+<p><img alt="Filters 11" src="../img/filters-11.png"></p>
+<h2 id="reports">Reports<a class="headerlink" href="#reports" title="Permanent link">¶</a></h2>
+<p>If you would like reports about different species you will need to navigate to the <code>REPORTS</code> tab of the <code>EXPLORE</code> page. To get there, click on the <code>EXPLORE</code> link in the navigation bar and then click on the <code>REPORTS</code> tab.</p>
+<p><img alt="Reports 1" src="../img/reports-1.png"></p>
+<p>If you navigate directly to the <code>REPORTS</code> tab, having not implemented any filters on the map, you will be greeted by a prompt asking you select a species to begin.</p>
+<p><img alt="Reports 2" src="../img/reports-2.png"></p>
+<p>If you had already been exploring the map and using a species filter (as shown in <a href="#using-the-filters-panel">Using the Filters Panel</a>), then you will see all data on the platform associated with that species (from your active organisation). This example chose <em>Connochaetes taurinus</em> (i.e. the Blue Wildebeest), but you are free to choose whatever species you would like to get a report for.</p>
+<p><img alt="Reports 3" src="../img/reports-3.png"></p>
+<p>Depending on the <code>Report Type</code> option(s) selected, the platform will adapt and automatically update the report to contain the other field types in the displayed table.</p>
+<p><img alt="Reports 4" src="../img/reports-4.png"></p>
+<p>Depending on the <code>Activity</code> type(s) selected, the platform will adapt and automatically update the report to contain the other field types in the displayed table.</p>
+<p><img alt="Reports 5" src="../img/reports-5.png"></p>
+<p>Adjusting the year slider the <code>Year</code> slider, or the year interval using the <code>From</code> and <code>To</code> fields, will also cause the platform to adapt and only display fields that are within the specified time frame.</p>
+<p><img alt="Reports 6" src="../img/reports-6.png"></p>
+<p>Applying any of, or a combination of, the spatial filters ( <code>Critical Biodiversity Areas</code> and/or <code>Ecosystems</code>) will cause the platform to only display records that overlap the desired sub-section of either of the spatial layers. For example if you choose the <em>Critical Biodiversity Area 2</em> as the <code>Critical Biodiversity Areas</code> filter, then a report of all of your properties that overlap that critical biodiversity area type will appear on the tables.</p>
+<p><img alt="Reports 7" src="../img/reports-7.png"></p>
+<p>You can customise which columns will be displayed in the report by clicking on 1️⃣ the columns dropdown menu, and then ticking or unticking the various columns you would like to have as part of your report. Keep in mind there are multiple columns so you can scroll up and down on the dropdown menu.</p>
+<p><img alt="Reports 8" src="../img/reports-8.png"></p>
+<p>Once you have customised the report to your preferred specifications, scroll down on the reports page and click on either 1️⃣ <code>DOWNLOAD DATA</code> to then be prompted to download the data currently displayed as either a CSV or an XLSX file, or 2️⃣ <code>DOWNLOAD DATA REPORT</code> to download the report as PDF file.</p>
+<p><img alt="Reports 9" src="../img/reports-9.png"></p>
+<p>If you clicked on <code>DOWNLOAD DATA</code>, a small popup menu will be shown where you can choose your preferred format.</p>
+<p><img alt="Reports 10" src="../img/reports-10.png"></p>
+<p>Once you choose your preferred format, you will be prompted to save the file (CSV or XLSX) to your computer.</p>
+<p><img alt="Reports 11" src="../img/reports-11.png"></p>
+<p>After you have saved the file you can then open it using a program that can open CSV or XLSX file (e.g. using Excel).</p>
+<p><img alt="Reports 12" src="../img/reports-12.png"></p>
+<p>If you click on <code>DOWNLOAD DATA REPORT</code>, a popup warning you it may take some time appears.</p>
+<p><img alt="Reports 13" src="../img/reports-13.png"></p>
+<p>After which, you wil be redirected to a new tab in your web browser where you can view the PDF report and the report will be downloaded to your computer.</p>
+<p><img alt="Reports 14" src="../img/reports-14.png"></p>
+<h2 id="charts">Charts<a class="headerlink" href="#charts" title="Permanent link">¶</a></h2>
+<p>If you would like to view charts about different species you will need to navigate to the <code>CHARTS</code> tab of the <code>EXPLORE</code> page. To get there, click on the <code>EXPLORE</code> link in the navigation bar and then click on the <code>CHARTS</code> tab.</p>
+<p><img alt="Charts 1" src="../img/charts-1.png"></p>
+<p>On this page, you can view various charts associated with the chosen species here. If you adjust the filters, the charts you see will change and display different information.</p>
+<p><img alt="Charts 2" src="../img/charts-2.png"></p>
+<p><img alt="Charts 3" src="../img/charts-3.png"></p>
+<p><img alt="Charts 4" src="../img/charts-4.png"></p>
+<p>To download the charts, you can click on 1️⃣ the <code>DOWNLOAD DATA VISUALISATIONS</code> button. A popup warning you it may take some time appears.</p>
+<p><img alt="Charts 5" src="../img/charts-5.png"></p>
+<p>After that, the PDF file will be downloaded to your system.</p>
+<p><img alt="Downloaded PDF Charts 6" src="../img/charts-6.png"></p>
+<h3 id="charts-description">Charts Description<a class="headerlink" href="#charts-description" title="Permanent link">¶</a></h3>
+<p>Referring to the description of each chart will provide a clearer understanding.</p>
+<h4 id="number-of-properties-per-population-category-count-of-species-for-year-chart">Number of properties per population category (count) of species for year chart<a class="headerlink" href="#number-of-properties-per-population-category-count-of-species-for-year-chart" title="Permanent link">¶</a></h4>
+<p>This chart illustrates the distribution of properties across population categories, based on the total population sizes of the selected species for the chosen year. The population is categorised into six groups. Each bar represents the count of properties per population category, categorised by property type.</p>
+<p><img alt="1st chart description" src="../img/charts-7.png"></p>
+<h4 id="number-of-properties-per-population-category-population-density-of-species-for-year-chart">Number of properties per population category (population density) of species for year chart<a class="headerlink" href="#number-of-properties-per-population-category-population-density-of-species-for-year-chart" title="Permanent link">¶</a></h4>
+<p>This chart illustrates the distribution of properties across population density categories, based on the total population densities of the selected species for the chosen year. Population density is calculated by dividing population size by the available area for the species, which is then grouped into six categories. Each bar represents the count of properties per population density category, categorised by property type.</p>
+<p><img alt="2nd chart description" src="../img/charts-8.png"></p>
+<h4 id="number-of-properties-per-categories-of-area-ha-for-species-for-year-chart">Number of properties per categories of area (ha) for species for year chart<a class="headerlink" href="#number-of-properties-per-categories-of-area-ha-for-species-for-year-chart" title="Permanent link">¶</a></h4>
+<p>This chart illustrates the distribution of total property size (in hectares) for the chosen year and selected species. The property area is categorised into six groups. Each bar represents the count of properties per property area range, categorised by property type.</p>
+<p><img alt="3rd chart description" src="../img/charts-9.png"></p>
+<h4 id="number-of-properties-per-categories-of-area-ha-available-to-species-for-year-chart">Number of properties per categories of area (ha) available to species for year chart<a class="headerlink" href="#number-of-properties-per-categories-of-area-ha-available-to-species-for-year-chart" title="Permanent link">¶</a></h4>
+<p>This chart illustrates the distribution area available to the selected species (in hectares) for the chosen year, which may be a subset of the total size of the property. The area available to species is categorised into six groups. Each bar represents the count of properties per area available to species on the property, categorised by property type.</p>
+<p><img alt="4th chart description" src="../img/charts-10.png"></p>
+<h4 id="total-count-of-species-per-province-chart">Total count of species per province chart<a class="headerlink" href="#total-count-of-species-per-province-chart" title="Permanent link">¶</a></h4>
+<p>This chart illustrates the total population size of the selected species per province for the chosen year.</p>
+<p><img alt="5th chart description" src="../img/charts-11.png"></p>
+<h4 id="activity-count-as-of-total-population-of-species-for-year-chart">Activity count as % of total population of species for year chart<a class="headerlink" href="#activity-count-as-of-total-population-of-species-for-year-chart" title="Permanent link">¶</a></h4>
+<p>This chart illustrates the proportions of animals for the selected species, expressed as a percentage of the total population, under different activities for the chosen year. The text above each bar expresses the total count per activity for the chosen year. The total population size is assumed to be the net population size after all reported activities have been conducted.</p>
+<p><img alt="6th chart description" src="../img/charts-12.png"></p>
+<h4 id="total-count-per-population-estimate-category-for-species-for-year-chart">Total count per population estimate category for species for year chart<a class="headerlink" href="#total-count-per-population-estimate-category-for-species-for-year-chart" title="Permanent link">¶</a></h4>
+<p>This chart illustrates the population estimate for the selected species split into the count method used for the chosen year.</p>
+<p><img alt="7th chart description" src="../img/charts-13.png"></p>
+<h4 id="mean-and-standard-deviation-of-age-classes-for-species-chart">Mean and standard deviation of age classes for species chart<a class="headerlink" href="#mean-and-standard-deviation-of-age-classes-for-species-chart" title="Permanent link">¶</a></h4>
+<p>This chart illustrates the mean and standard deviation of population demographics (age and gender) of the selected species and year across properties categorised by property type. Note these data reflect only the properties for which demographic information is available.</p>
+<p><img alt="8th chart description" src="../img/charts-14.png"></p>
+<h2 id="trends">Trends<a class="headerlink" href="#trends" title="Permanent link">¶</a></h2>
+<p>If you would like to view trends for different species you will need to navigate to the <code>TRENDS</code> tab of the <code>EXPLORE</code> page. To get there, click on the <code>EXPLORE</code> link in the navigation bar and then click on the <code>TRENDS</code> tab.</p>
+<p><img alt="Trends 1" src="../img/trends-1.png"></p>
+<p>On this page, you can view various trend charts associated with the chosen species here. If you adjust the filters, the charts you see will change and display different information.</p>
+<p><img alt="Trends 2" src="../img/trends-2.png"></p>
+<p><img alt="Trends 3" src="../img/trends-3.png"></p>
+<p>To download the trend charts, you can click on 1️⃣ the <code>DOWNLOAD JSON DOCUMENT</code> button.</p>
+<p><img alt="Trends 4" src="../img/trends-4.png"></p>
+<p>You will then be prompted to save the trends data to your computer.</p>
+<p><img alt="Trends 5" src="../img/trends-5.png"></p>
+<p>Once the file is downloaded, you can open it using a text editor (e.g. Notepad).</p>
+<p><img alt="Trends 6" src="../img/trends-6.png"></p>
+<h3 id="trends-description">Trends Description<a class="headerlink" href="#trends-description" title="Permanent link">¶</a></h3>
+<p>Referring to the description of each trend will provide a clearer understanding.</p>
+<h4 id="species-national-population-trend">Species National Population Trend<a class="headerlink" href="#species-national-population-trend" title="Permanent link">¶</a></h4>
+<p>National population trend. The trend in the total population size across all properties (sub-populations) for all years where data are available. The trend for each property was estimated using General Additive Models fitted to raw population estimates, and then the fitted population estimates were aggregated across all properties in South Africa, each year. The shaded area represents the 95% confidence interval for the population trends.   Note – the population estimates are derived from a variety of sampling methods and specific uncertainty bounds (for example, see the Population Estimate Category graph)</p>
+<p><img alt="Trends description" src="../img/trends-7.png"></p>
+<h4 id="large-species-populations-chart">Large species populations chart<a class="headerlink" href="#large-species-populations-chart" title="Permanent link">¶</a></h4>
+<p><strong>Percentage of populations that are increasing and decreasing: Large populations</strong>
+ 
+The percentage of large populations determined by natural breaks in population size categories in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.</p>
+<p><img alt="Trends description" src="../img/trends-8.png"></p>
+<h4 id="medium-species-populations-chart">Medium species populations chart<a class="headerlink" href="#medium-species-populations-chart" title="Permanent link">¶</a></h4>
+<p><strong>Percentage of populations that are increasing and decreasing: Medium populations</strong>
+ 
+The percentage of medium-sized elephant populations (determined by natural breaks in population size categories) in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.</p>
+<p><img alt="Trends description" src="../img/trends-9.png"></p>
+<h4 id="small-species-populations-chart">Small species populations chart<a class="headerlink" href="#small-species-populations-chart" title="Permanent link">¶</a></h4>
+<p><strong>Percentage of populations that are increasing and decreasing: Small populations</strong>
+ 
+The percentage of small populations determined by natural breaks in population size categories in South Africa that are increasing or decreasing in size (rapidly or steadily) over the last 3, 5 and 10 years. The number of populations in each category is shown above each bar. Rates of population change are determined from the General Additive Model population trends fitted to raw population estimates.</p>
+<p><img alt="Trends description" src="../img/trends-10.png"></p>
+<h4 id="total-area-vs-area-available-to-species-chart">Total area vs area available to species chart<a class="headerlink" href="#total-area-vs-area-available-to-species-chart" title="Permanent link">¶</a></h4>
+<p>The chart illustrates the total area versus the available area for the species.</p>
+<p><img alt="Trends description" src="../img/trends-11.png"></p>
+<h4 id="province-population-trend-charts">Province Population Trend Charts<a class="headerlink" href="#province-population-trend-charts" title="Permanent link">¶</a></h4>
+<p>Trend in the total population size across all properties (sub-populations) in the province. The trend for each property was estimated using General Additive Models fitted to raw population estimates, and then the fitted population estimates were aggregated across all properties in the province, each year. Sudden jumps or dips may represent the inclusion of new properties, or translocation of animals out of the province, rather than natural population changes. The total number of properties for each time period can be checked in other graphs. The shaded area represents the 95% confidence interval for the population trends.</p>
+<blockquote>
+<p>Note: the population estimates are derived from a variety of sampling methods and specific uncertainty bounds (for example, see the Population Estimate Category graph)</p>
+</blockquote>
+<p><img alt="Trends description" src="../img/trends-12.png"></p>
+<h4 id="trends-by-property">Trends by property<a class="headerlink" href="#trends-by-property" title="Permanent link">¶</a></h4>
+<p>The trend in the total population size for the property is based on a General Additive Model fitted to raw population estimates (raw data shown as dots). Where there were only two estimates a simple log-linear curve was used to connect the two points.</p>
+<p><img alt="Trends description" src="../img/trends-13.png"></p></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Kartoza and Contributors
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/kartoza" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://hub.docker.com/r/kartoza/" target="_blank" rel="noopener" title="hub.docker.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M349.9 236.3h-66.1v-59.4h66.1v59.4zm0-204.3h-66.1v60.7h66.1V32zm78.2 144.8H362v59.4h66.1v-59.4zm-156.3-72.1h-66.1v60.1h66.1v-60.1zm78.1 0h-66.1v60.1h66.1v-60.1zm276.8 100c-14.4-9.7-47.6-13.2-73.1-8.4-3.3-24-16.7-44.9-41.1-63.7l-14-9.3-9.3 14c-18.4 27.8-23.4 73.6-3.7 103.8-8.7 4.7-25.8 11.1-48.4 10.7H2.4c-8.7 50.8 5.8 116.8 44 162.1 37.1 43.9 92.7 66.2 165.4 66.2 157.4 0 273.9-72.5 328.4-204.2 21.4.4 67.6.1 91.3-45.2 1.5-2.5 6.6-13.2 8.5-17.1l-13.3-8.9zm-511.1-27.9h-66v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1v-59.4zm-78.1-72.1h-66.1v60.1h66.1v-60.1z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/KartozaGeo" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://kartoza.com" target="_blank" rel="noopener" title="kartoza.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 120 82.7 220.8 194.2 248.5V334.2h-52.8V256h52.8v-33.7c0-87.1 39.4-127.5 125-127.5 16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287v175.9C413.8 494.8 512 386.9 512 256z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://kartoza.com" target="_blank" rel="noopener" title="kartoza.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="m177.8 63.2 10 17.4c2.8 4.8 4.2 10.3 4.2 15.9v41.4c0 3.9 1.6 7.7 4.3 10.4 6.2 6.2 16.5 5.7 22-1.2l13.6-17c4.7-5.9 12.9-7.7 19.6-4.3l15.2 7.6c3.4 1.7 7.2 2.6 11 2.6 6.5 0 12.8-2.6 17.4-7.2l3.9-3.9c2.9-2.9 7.3-3.6 11-1.8l29.2 14.6c7.8 3.9 12.6 11.8 12.6 20.5 0 10.5-7.1 19.6-17.3 22.2l-35.4 8.8c-7.4 1.8-15.1 1.5-22.4-.9l-32-10.7c-3.3-1.1-6.7-1.7-10.2-1.7-7 0-13.8 2.3-19.4 6.5L176 212c-10.1 7.6-16 19.4-16 32v28c0 26.5 21.5 48 48 48h32c8.8 0 16 7.2 16 16v48c0 17.7 14.3 32 32 32 10.1 0 19.6-4.7 25.6-12.8l25.6-34.1c8.3-11.1 12.8-24.6 12.8-38.4v-12.1c0-3.9 2.6-7.3 6.4-8.2l5.3-1.3c11.9-3 20.3-13.7 20.3-26 0-7.1-2.8-13.9-7.8-18.9l-33.5-33.5c-3.7-3.7-3.7-9.7 0-13.4 5.7-5.7 14.1-7.7 21.8-5.1l14.1 4.7c12.3 4.1 25.7-1.5 31.5-13 3.5-7 11.2-10.8 18.9-9.2l27.4 5.5C432 112.4 351.5 48 256 48c-27.7 0-54 5.4-78.2 15.2zM0 256a256 256 0 1 1 512 0 256 256 0 1 1-512 0z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate", "content.tabs.link", "header.autohide", "navigation.indexes", "navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../../js/tablesort.js"></script>
+      
+    
+  </body>
+</html>
