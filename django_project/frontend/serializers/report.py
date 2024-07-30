@@ -276,6 +276,18 @@ class ActivityReportSerializer(
         for field_name in existing - allowed:
             self.fields.pop(field_name)
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        count_fields = [
+            "total", "adult_male", "adult_female",
+            "juvenile_male", "juvenile_female"
+        ]
+        for k, v in representation.items():
+            if k not in count_fields:
+                continue
+            representation[k] = 'NA' if v is None else v
+        return representation
+
     class Meta:
         model = AnnualPopulationPerActivity
         fields = '__all__'
