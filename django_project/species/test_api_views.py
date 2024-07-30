@@ -36,7 +36,8 @@ from species.scripts.data_upload import (
     SpeciesCSVUpload,
     string_to_boolean,
     string_to_number,
-    map_string_to_value
+    map_string_to_value,
+    string_to_int_with_na
 )
 from species.scripts.upload_file_scripts import *  # noqa
 from stakeholder.factories import (
@@ -498,6 +499,16 @@ class TestUploadSpeciesApiView(TestCase):
 
         self.assertEqual(10, string_to_number('10'))
         self.assertEqual(0.0, string_to_number(''))
+
+    def test_task_string_to_int_with_na(self):
+        """Test string_to_int_with_na functionality in task"""
+
+        self.assertEqual(10, string_to_int_with_na('10'))
+        self.assertEqual(0, string_to_int_with_na(''))
+        self.assertEqual(0, string_to_int_with_na(None))
+        self.assertEqual(None, string_to_int_with_na('NA'))
+        self.assertEqual(None, string_to_int_with_na('na'))
+        self.assertEqual(0, string_to_int_with_na('aaaaa'))
 
     def test_upload_species_with_property_taxon_not_exist(self):
         """Test upload species task with a property and taxon not existing."""
