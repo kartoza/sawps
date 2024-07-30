@@ -1,5 +1,4 @@
 import { IControl, PointLike, Map as MaplibreMap } from 'maplibre-gl';
-import { CirclePaint, Map as MapboxMap } from 'mapbox-gl';
 import { 
     MaplibreExportControl,
     defaultAttributionOptions,
@@ -19,9 +18,29 @@ import '@watergis/maplibre-gl-export/dist/maplibre-gl-export.css';
 import LegendControl from './LegendControl';
 
 
+/**
+ * Class to store canvas data from LegendsControl
+ */
+class CanvasData {
+	image: any;
+	coords: PointLike;
+	scaledWidth: number;
+	scaledHeight: number;
+
+	constructor(image: any, coords: PointLike, scaledWidth: number, scaledHeight: number) {
+		this.image = image;
+		this.coords = coords;
+		this.scaledWidth = scaledWidth;
+		this.scaledHeight = scaledHeight;
+	}
+	
+}
+
+
 class CustomMapGenerator extends MapGeneratorBase {
     _legendsControl: LegendControl<IControl>;
     _legendsControlRef: LegendControl<IControl>;
+
     /**
 	 * Constructor
 	 * @param map MaplibreMap object
@@ -30,6 +49,7 @@ class CustomMapGenerator extends MapGeneratorBase {
 	 * @param format image format. default is PNG
 	 * @param unit length unit. default is mm
 	 * @param fileName file name. default is 'map'
+	 * @param legendsControl original LegendControl
 	 */
 	constructor(
 		map: any,
@@ -41,7 +61,7 @@ class CustomMapGenerator extends MapGeneratorBase {
 		markerCirclePaint = defaultMarkerCirclePaint,
 		attributionOptions = defaultAttributionOptions,
 		northIconOptions = defaultNorthIconOptions,
-        legendsControl: IControl = null
+        legendsControl: LegendControl<IControl> = null
 	) {
 		super(
 			map,
@@ -56,9 +76,15 @@ class CustomMapGenerator extends MapGeneratorBase {
 			attributionOptions,
 			northIconOptions
 		);
-        this._legendsControl = legendsControl as LegendControl<IControl>;
+        this._legendsControl = legendsControl;
 	}
 
+	/**
+	 * Clone the map object
+	 * @param container hidden container
+	 * @param style original map style
+	 * @returns MaplibreMap, cloned map object
+	 */
 	protected getRenderedMap(container: HTMLElement, style: any) {
 		// Render map
 		const renderMap: MaplibreMap = new MaplibreMap({
@@ -72,10 +98,6 @@ class CustomMapGenerator extends MapGeneratorBase {
 			preserveDrawingBuffer: true,
 			fadeDuration: 0,
 			attributionControl: false,
-			// hack to read transfrom request callback function
-			// eslint-disable-next-line
-			// @ts-ignore
-			// transformRequest: (this.map as unknown)._requestManager._transformRequestFn
 		});
 
 		const terrain = (this.map as any).getTerrain();
@@ -91,20 +113,22 @@ class CustomMapGenerator extends MapGeneratorBase {
 			if (!images[key].data) return;
 			renderMap.addImage(key, images[key].data);
 		});
+		// clone the existing legendsControl
         if (this._legendsControl) {
-            this._legendsControlRef = new LegendControl()
-            renderMap.addControl(this._legendsControlRef, 'bottom-left')
-            this._legendsControlRef.onUpdateLegends(
-                this._legendsControl.getCurrentZoom(),
-                this._legendsControl.getCurrentSpecies(),
-                this._legendsControl.getCurrentYear(),
-                this._legendsControl.getCurrentData()
-            )
+            this._legendsControlRef = new LegendControl(true);
+            renderMap.addControl(this._legendsControlRef, 'bottom-left');
+            this._legendsControlRef.updateLegendsFromOther(this._legendsControl);
+			this._legendsControlRef.onThemeChanged(this._legendsControl._currentTheme);
         }
         
 		return renderMap as any;
 	}
 
+	/**
+	 * Post render method
+	 * @param renderMap, MaplibreMap
+	 * @returns MaplibreMap
+	 */
     protected renderMapPost(renderMap: any) {
 		const terrain = (this.map as any).getTerrain();
 		if (terrain) {
@@ -117,10 +141,11 @@ class CustomMapGenerator extends MapGeneratorBase {
 		return renderMap;
 	}
 
+	/**
+	 * Generate screenshot from a map
+	 */
     generate(): void {
         // eslint-disable-next-line
-		const this_ = this;
-
 		// see documentation for JS Loading Overray library
 		// https://js-loading-overlay.muhdfaiz.com
 		// eslint-disable-next-line
@@ -142,6 +167,7 @@ class CustomMapGenerator extends MapGeneratorBase {
 		});
 
 		// Calculate pixel ratio
+		const this_ = this;
 		const actualPixelRatio: number = window.devicePixelRatio;
 		Object.defineProperty(window, 'devicePixelRatio', {
 			get() {
@@ -171,83 +197,51 @@ class CustomMapGenerator extends MapGeneratorBase {
 			});
 		}
 
-		// Render map
+		// Render map, need to use idle event to wait for layers to be loaded
 		let renderMap = this.getRenderedMap(container, style);
         renderMap.once('idle', () => {
-            this._addLegendsToMap(renderMap).then((hasLegends: boolean) => {
-                if (hasLegends) {
-                    renderMap.once('idle', () => {
-                        this._finalizeMapRenders(renderMap, hidden, actualPixelRatio);
-                    });
-                } else {
-                    this._finalizeMapRenders(renderMap, hidden, actualPixelRatio);
-                }
+            this._addLegendsToMap(renderMap).then((canvasData: CanvasData) => {
+				renderMap = this.renderMapPost(renderMap);
+				const markers = this._getMarkers();
+				if (markers.length === 0) {
+					this._exportImage(renderMap, hidden, actualPixelRatio, canvasData);
+				} else {
+					renderMap = this.renderMarkers(renderMap as any) as any;
+					renderMap.once('idle', () => {
+						this._exportImage(renderMap, hidden, actualPixelRatio, canvasData);
+					});
+				}
             });
         });	
     }
 
-    private _finalizeMapRenders(
-        renderMap: MaplibreMap,
-		hiddenDiv: HTMLElement,
-		actualPixelRatio: number
-    ) {
-        renderMap = this.renderMapPost(renderMap);
-        const markers = this._getMarkers();
-        if (markers.length === 0) {
-            this._exportImage(renderMap, hiddenDiv, actualPixelRatio);
-        } else {
-            renderMap = this.renderMarkers(renderMap as any) as any;
-            renderMap.once('idle', () => {
-                this._exportImage(renderMap, hiddenDiv, actualPixelRatio);
-            });
-        }
-    }
-
+	/**
+	 * Add legends image layer into renderMap
+	 * @param renderMap MaplibreMap
+	 * @returns Promise<CanvasData>, True if there is legends layer
+	 */
     private _addLegendsToMap(renderMap: MaplibreMap) {
         const _this = this;
-        return new Promise<boolean>((resolve) => {
+        return new Promise<CanvasData>((resolve) => {
             this._legendsControlRef.getContentAsCanvas().then((canvasContent: any) => {
                 if (canvasContent === null) {
-                    resolve(false);
+                    resolve(null);
                     return;
                 }
-                const img = canvasContent.toDataURL('image/png');
                 const pixels = _this._getElementPosition(
                     renderMap,
-                    'top-left',
-                    0
+                    'bottom-left',
+                    10
                 );
-                const imgRatio = 0.75;
+                var imgRatio = window.devicePixelRatio || 1;
+				imgRatio = imgRatio * 0.75;
                 const _pixels = pixels as [number, number];
-                const pixels2 = [_pixels[0] + (canvasContent.width * imgRatio), _pixels[1] + (canvasContent.height * imgRatio)] as PointLike;
-                const lngLat = (renderMap as MaplibreMap).unproject(pixels);
-                const lngLat2 = (renderMap as MaplibreMap).unproject(pixels2);
-                // Add the image to the map
-                renderMap.addSource('image-source', {
-                    'type': 'image',
-                    'url': img,
-                    'coordinates': [
-                        [lngLat.lng, lngLat.lat],
-                        [lngLat2.lng, lngLat.lat],
-                        [lngLat2.lng, lngLat2.lat],
-                        [lngLat.lng, lngLat2.lat],
-                    ]
-                });
-
-                // Add an image layer
-                renderMap.addLayer({
-                    'id': 'image-layer',
-                    'type': 'raster',
-                    'source': 'image-source',
-                    'paint': {
-                        'raster-opacity': 1.0
-                    }
-                });
-                resolve(true);
+				// calculate coordinate from top-left image bounds
+                const pixels2 = [_pixels[0], _pixels[1] - (canvasContent.height * imgRatio)] as PointLike;
+                resolve(new CanvasData(canvasContent, pixels2, canvasContent.width * imgRatio, canvasContent.height * imgRatio));
             });
         });
     }
-
 
     private _getMarkers() {
 		return this.map.getCanvasContainer().getElementsByClassName(this.markerClassName);
@@ -266,6 +260,9 @@ class CustomMapGenerator extends MapGeneratorBase {
 		offset = 0
 	) {
 		const containerDiv = renderMap.getContainer();
+		let mapCanvas = renderMap.getCanvas();
+		let refWidth = mapCanvas.width;
+		let refHeight = mapCanvas.height;
 		let width = 0;
 		let height = 0;
 
@@ -275,16 +272,16 @@ class CustomMapGenerator extends MapGeneratorBase {
 				height = 0 + offset;
 				break;
 			case 'top-right':
-				width = parseInt(containerDiv.style.width.replace('px', '')) - offset;
+				width = refWidth - offset;
 				height = 0 + offset;
 				break;
 			case 'bottom-left':
 				width = 0 + offset;
-				height = parseInt(containerDiv.style.height.replace('px', '')) - offset;
+				height = refHeight - offset;
 				break;
 			case 'bottom-right':
-				width = parseInt(containerDiv.style.width.replace('px', '')) - offset;
-				height = parseInt(containerDiv.style.height.replace('px', '')) - offset;
+				width = refWidth - offset;
+				height = refHeight - offset;
 				break;
 			default:
 				break;
@@ -294,12 +291,33 @@ class CustomMapGenerator extends MapGeneratorBase {
 		return pixels;
 	}
 
+	/**
+	 * Export renderMap based on selected format.
+	 * @param renderMap Map object
+	 * @param hiddenDiv hidden container
+	 * @param actualPixelRatio device pixel ratio
+	 */
     private _exportImage(
 		renderMap: MaplibreMap,
 		hiddenDiv: HTMLElement,
-		actualPixelRatio: number
+		actualPixelRatio: number,
+		legendsCanvasData: CanvasData
 	) {
-		const canvas = renderMap.getCanvas();
+		const mapCanvas = renderMap.getCanvas();
+		var canvas = null;
+		if (legendsCanvasData) {
+			const combinedCanvas = document.createElement('canvas');
+			combinedCanvas.width = mapCanvas.width;
+			combinedCanvas.height = mapCanvas.height;
+			const combinedCtx = combinedCanvas.getContext('2d');
+			combinedCtx.drawImage(mapCanvas, 0, 0, combinedCanvas.width, combinedCanvas.height);
+			// draw legends canvas
+			const legendsCoords = legendsCanvasData.coords as [number, number];
+			combinedCtx.drawImage(legendsCanvasData.image, legendsCoords[0], legendsCoords[1], legendsCanvasData.scaledWidth, legendsCanvasData.scaledHeight);
+			canvas = combinedCanvas;
+		} else {
+			canvas = mapCanvas;
+		}
 
 		const fileName = `${this.fileName}.${this.format}`;
 		switch (this.format) {
@@ -403,14 +421,14 @@ class CustomMapGenerator extends MapGeneratorBase {
 
 
 class CustomMaplibreExport extends MaplibreExportControl {
-    _legendsControl: IControl;
+    _legendsControl: LegendControl<IControl>;
 
-    constructor(options: ControlOptions, legendsControl: IControl) {
+    constructor(options: ControlOptions, legendsControl: LegendControl<IControl>) {
         super(options);
         this._legendsControl = legendsControl;
 	}
 
-    public setLegendsControl(legendsControl: IControl) {
+    public setLegendsControl(legendsControl: LegendControl<IControl>) {
         this._legendsControl = legendsControl;
     }
 
@@ -437,15 +455,16 @@ class CustomMaplibreExport extends MaplibreExportControl {
 		mapGenerator.generate();
 	}
 
+	public isDisplayed() {
+		return this.exportContainer.style.display !== 'none';
+	}
 }
 
 
 export default class CustomExportControl implements IControl {
     _map: MaplibreMap;
-    _exporter: MaplibreExportControl;
+    _exporter: CustomMaplibreExport;
     _exporterContainer: HTMLElement;
-    _isExporterDisplayed: boolean;
-    _legends: LegendControl<IControl>;
 
     constructor() {
         this._exporter = new CustomMaplibreExport({
@@ -453,7 +472,6 @@ export default class CustomExportControl implements IControl {
             PrintableArea: true,
             Crosshair: true
         }, null);
-        this._isExporterDisplayed = false;
     }
 
     onAdd(map: MaplibreMap): HTMLElement {
@@ -483,25 +501,21 @@ export default class CustomExportControl implements IControl {
     }
 
     onRemove(map: MaplibreMap): void {
-        this._exporter.onRemove()   
+        this._exporter.onRemove()
     }
 
     showExporter(): void {
-        if (!this._isExporterDisplayed) {
+        if (!this._exporter.isDisplayed()) {
             // seems this will trigger onDocumentClick inside the MaplibreExportControl
             // so timeout to the rescue
             setTimeout(() => {
                 let _buttonControl = this._exporterContainer.getElementsByClassName('maplibregl-export-control').item(0) as HTMLButtonElement
                 _buttonControl.click()
             }, 100)
-            this._isExporterDisplayed = true
-        } else {
-            this._isExporterDisplayed = false
         }
     }
 
-    setLegendsControl(legends: IControl) {
-        this._legends = legends as LegendControl<IControl>;
+    setLegendsControl(legends: LegendControl<IControl>) {
         (this._exporter as CustomMaplibreExport).setLegendsControl(legends);
     }
 }
