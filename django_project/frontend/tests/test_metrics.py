@@ -705,7 +705,7 @@ class TestPropertyCountPerPopulationSizeCategory(
         """
         Test zero lower bound.
         """
-        mocked_breaks.return_value = [0, 1, 30, 100]
+        mocked_breaks.return_value = [0, 0, 0, 100]
         new_property = PropertyFactory.create()
         AnnualPopulation.objects.create(
             total=1,
@@ -727,14 +727,10 @@ class TestPropertyCountPerPopulationSizeCategory(
             response.json(),
             [
                 {
-                    'category': '1 - 30',
-                    'common_name_verbatim': self.taxon.common_name_verbatim,
-                    new_property.property_type.name.lower().replace(' ', '_'): 1,
-                    self.new_property.property_type.name.lower().replace(' ', '_'): 1
-                },
-                {
-                    'category': '>30',
+                    'category': '>1',
                     self.property.property_type.name.lower().replace(' ', '_'): 1,
+                    self.new_property.property_type.name.lower().replace(' ', '_'): 1,
+                    new_property.property_type.name.lower().replace(' ', '_'): 1,
                     'common_name_verbatim': self.taxon.common_name_verbatim
                 }
             ]
