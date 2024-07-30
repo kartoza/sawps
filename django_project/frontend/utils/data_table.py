@@ -114,22 +114,12 @@ def get_queryset(user_roles: List[str], request):
 
 
 def get_taxon_queryset(request):
-    property_ids = get_param_from_request(request, 'property')
-    organisation_ids = get_param_from_request(request, 'organisation')
-    prop_ids = property_ids.split(",") if property_ids else []
-    org_ids = organisation_ids.split(",") if organisation_ids else []
-    query_filter = BaseMetricsFilter
-    queryset = Taxon.objects.filter(
-        annualpopulation__property__organisation_id__in=org_ids,
-        annualpopulation__property_id__in=prop_ids,
-        taxon_rank__name="Species"
+    species_filter = get_param_from_request(request, 'species', '')
+    taxon_qs = Taxon.objects.filter(
+        taxon_rank__name="Species",
+        scientific_name__in=species_filter.split(',')
     ).distinct().order_by("scientific_name")
-
-    filtered_queryset = query_filter(
-        request.GET if request.method == 'GET' else request.data,
-        queryset=queryset
-    ).qs
-    return filtered_queryset
+    return taxon_qs
 
 
 def data_table_reports(queryset: QuerySet, request, user_roles) -> List[Dict]:
@@ -570,7 +560,6 @@ def national_level_province_report(
     """
     user_roles = get_user_roles(request.user)
     filters = common_filters(request, user_roles)
-
     serializer = NationalLevelProvinceReport(
         queryset,
         many=True,
@@ -578,8 +567,31 @@ def national_level_province_report(
             'filters': filters
         }
     )
-
-    return serializer.data[0] if serializer.data else []
+    data_dict = {}
+    provinces = set()
+    for d in serializer.data:
+        data = d['province_data']
+        for year, values in data.items():
+            if year in data_dict:
+                data_dict[year].append(values)
+            else:
+                data_dict[year] = [values]
+        provinces.update(d['province_set'])
+    years = list(data_dict.keys())
+    years.sort(reverse=True)
+    data = []
+    for year in years:
+        items = data_dict[year]
+        for item in items:
+            dt_prov_fields = {
+                key for key in item.keys() if
+                key.startswith('total_population')
+            }
+            item.update(
+                {key: 0 for key in provinces.difference(dt_prov_fields)}
+            )
+            data.append(item)
+    return data
 
 
 def write_report_to_rows(queryset, request, report_functions=None):

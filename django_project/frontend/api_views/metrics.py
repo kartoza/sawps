@@ -32,7 +32,7 @@ from frontend.utils.data_table import (
 )
 from frontend.utils.data_table import (
     common_filters,
-    get_param_from_request
+    get_taxon_queryset
 )
 from frontend.utils.metrics import (
     calculate_population_categories,
@@ -198,11 +198,7 @@ class SpeciesPopulationCountPerProvinceAPIView(APIView):
         """
         Handle GET request to retrieve species count per province.
         """
-        species_filter = get_param_from_request(request, 'species', '')
-        taxon = Taxon.objects.filter(
-            taxon_rank__name="Species",
-            scientific_name__in=species_filter.split(',')
-        ).first()
+        taxon = get_taxon_queryset(request).first()
         user_roles = get_user_roles(request.user)
         filters = common_filters(request, user_roles)
 

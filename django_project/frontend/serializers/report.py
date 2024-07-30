@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, F
 from population_data.models import (
     AnnualPopulation,
     AnnualPopulationPerActivity
@@ -428,44 +428,49 @@ class NationalLevelProvinceReport(serializers.Serializer):
         if activity_field in filters:
             activity_filter = filters[activity_field]
             del filters[activity_field]
-        province_data = AnnualPopulation.objects.select_related(
-            'property__province'
+        province_data = AnnualPopulation.objects.annotate(
+            province_name=F('property__province__name'),
         ).filter(
             **filters, taxon=instance
         )
         if activity_filter:
             province_data = province_data.filter(activity_filter)
-        province_data = province_data.order_by('-year')
-
+        province_data = province_data.values(
+            'year', 'province_name'
+        ).annotate(
+            count=Sum('total')
+        )
+        province_data = province_data.order_by(
+            '-year', '-province_name', '-count')
         province_fields = set()
-
-        for province_entry in province_data:
-            data = {
-                "year": province_entry.year,
+        year_data = {}
+        current_year_iter = None
+        for province_item in province_data:
+            province_name = province_item['province_name']
+            province_field = f"total_population_{province_name}"
+            province_fields.add(province_field)
+            year = province_item['year']
+            if current_year_iter is None:
+                current_year_iter = year
+            elif current_year_iter != year:
+                all_data[current_year_iter] = {
+                    "year": current_year_iter,
+                    "common_name": instance.common_name_verbatim,
+                    "scientific_name": instance.scientific_name,
+                }
+                all_data[current_year_iter].update(year_data)
+                year_data = {}
+                current_year_iter = year
+            year_data[province_field] = province_item['count']
+        # add the rest of item
+        if year_data:
+            all_data[current_year_iter] = {
+                "year": current_year_iter,
                 "common_name": instance.common_name_verbatim,
                 "scientific_name": instance.scientific_name,
             }
-            year = province_entry.year
-            province_name = province_entry.property.province.name
-            province_field = f"total_population_{province_name}"
-            data[province_field] = province_entry.total
-            province_fields.add(province_field)
-            if year in all_data:
-                if province_field in all_data[year]:
-                    all_data[year][province_field] += province_entry.total
-                else:
-                    all_data[year][province_field] = province_entry.total
-            else:
-                all_data[year] = data
-
-        all_data = [dt for dt in all_data.values()]
-        for data in all_data:
-            dt_prov_fields = {
-                key for key in data.keys() if
-                key.startswith('total_population')
-            }
-            data.update(
-                {key: 0 for key in province_fields.difference(dt_prov_fields)}
-            )
-
-        return all_data
+            all_data[current_year_iter].update(year_data)
+        return {
+            'province_data': all_data,
+            'province_set': province_fields
+        }

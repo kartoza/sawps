@@ -267,7 +267,8 @@ class AnnualPopulationTestCase(AnnualPopulationTestMixins, TestCase):
             "activity": str(value.activity_type.id),
             "reports": "Property_report",
             "organisation": ','.join([str(id) for id in self.organisations]),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "species": self.taxon.scientific_name
         }
         response = self.client.get(url, data, **self.auth_headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -469,7 +470,8 @@ class NationalUserTestCase(TestCase):
         params = {
             'activity': '',
             "organisation": ','.join([str(id) for id in self.organisations]),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "species": self.taxon.scientific_name
         }
         response = self.client.get(url, params, **self.auth_headers)
         expected_response = [
@@ -509,7 +511,8 @@ class NationalUserTestCase(TestCase):
             'activity': ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             'reports': ACTIVITY_REPORT,
             "organisation": ','.join([str(id) for id in self.organisations]),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "species": self.taxon.scientific_name
         }
         response = self.client.get(url, params, **self.auth_headers)
         expected_response = [
@@ -546,7 +549,8 @@ class NationalUserTestCase(TestCase):
             'activity': ','.join([str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)]),
             'reports': SPECIES_REPORT,
             "organisation": ','.join([str(id) for id in self.organisations]),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "species": self.taxon.scientific_name
         }
         response = self.client.get(url, params, **self.auth_headers)
 
@@ -589,7 +593,8 @@ class NationalUserTestCase(TestCase):
             'activity': '',
             'reports': PROVINCE_REPORT,
             "organisation": ','.join([str(id) for id in self.organisations]),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "species": self.taxon.scientific_name
         }
         response = self.client.get(url, params, **self.auth_headers)
 
@@ -762,7 +767,8 @@ class RegionalUserTestCase(TestCase):
                 [
                     str(act_id) for act_id in ActivityType.objects.values_list('id', flat=True)
                 ]
-            )
+            ),
+            "species": self.taxon.scientific_name
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
@@ -841,7 +847,8 @@ class DataScientistTestCase(TestCase):
             ),
             "activity": str(value.activity_type.id),
             "organisation": ','.join([str(id) for id in self.organisations]),
-            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)])
+            "property": ','.join([str(prop) for prop in Property.objects.values_list('id', flat=True)]),
+            "species": self.taxon.scientific_name
         }
         url = self.url
         response = self.client.get(url, data, **self.auth_headers)
