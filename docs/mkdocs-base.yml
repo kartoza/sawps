@@ -101,6 +101,7 @@ nav:
                         - Managing Taxa: administrator/guide/manage-taxa.md
                         - Managing Uploaded Data: administrator/guide/manage-upload-data.md
                         - Managing Lookup Tables: administrator/guide/manage-lookup-tables.md
+                        - Managing Statistical Tables: administrator/guide/manage-statistical-model.md
                 - Manual:
                         - administrator/manual/index.md
                         - Django Administration: administrator/manual/django-admin.md
