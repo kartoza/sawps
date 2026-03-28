@@ -185,7 +185,9 @@ class AnnualPopulationPerActivityTestCase(TestCase):
                 id=self.population_count.id
             ).exists()
         )
-
+        # create activity with total None
+        new_activity = AnnualPopulationPerActivityFactory(total=None)
+        self.assertTrue(new_activity.total is None)
 
     def test_update_population_count(self):
         """Test update population count."""

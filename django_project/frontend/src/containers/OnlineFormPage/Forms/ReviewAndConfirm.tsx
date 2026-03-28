@@ -43,6 +43,10 @@ const displayNumber = (value: number):number => {
     return value ? value : 0
 }
 
+const displayNumberWithNA = (value: number):string => {
+    return value === null ? 'NA' : String(value)
+}
+
 const displayBoolean = (value: Boolean):string => {
     return value ? 'Yes':'No'
 }
@@ -549,7 +553,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                                         }}
                                                         variant="standard"
                                                         fullWidth disabled
-                                                        value={displayNumber(selectedOfftakeActivity.adult_male)} 
+                                                        value={displayNumberWithNA(selectedOfftakeActivity.adult_male)} 
                                                     />
                                                 </Grid>
                                                 <Grid item xs={6}>
@@ -565,7 +569,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                                         }}
                                                         variant="standard"
                                                         fullWidth disabled
-                                                        value={displayNumber(selectedOfftakeActivity.adult_female)} 
+                                                        value={displayNumberWithNA(selectedOfftakeActivity.adult_female)} 
                                                     />
                                                 </Grid>
                                             </Grid>
@@ -585,7 +589,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                                         }}
                                                         variant="standard"
                                                         fullWidth disabled
-                                                        value={displayNumber(selectedOfftakeActivity.juvenile_male)} 
+                                                        value={displayNumberWithNA(selectedOfftakeActivity.juvenile_male)} 
                                                     />
                                                 </Grid>
                                                 <Grid item xs={6}>
@@ -601,7 +605,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                                         }}
                                                         variant="standard"
                                                         fullWidth disabled
-                                                        value={displayNumber(selectedOfftakeActivity.juvenile_female)} 
+                                                        value={displayNumberWithNA(selectedOfftakeActivity.juvenile_female)} 
                                                     />
                                                 </Grid>
                                             </Grid>
@@ -615,7 +619,7 @@ function ActivityDetailReview(props: ReviewItemInterface) {
                                                         disabled
                                                         variant="standard"
                                                         fullWidth
-                                                        value={displayNumber(selectedOfftakeActivity.total)}                                            
+                                                        value={displayNumberWithNA(selectedOfftakeActivity.total)}                                            
                                                     />
                                                 </Grid>
                                                 <Grid item xs={6}>

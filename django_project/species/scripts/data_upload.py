@@ -60,6 +60,25 @@ def string_to_number(string):
         return float(0)
 
 
+def string_to_int_with_na(string: str):
+    """Convert a string to an integer.
+
+    :param
+    string: The string to convert
+    :type
+    string:str
+    :return int or None if the string is 'NA'
+    """
+    if string == None:
+        return 0
+    elif string.lower() == 'na':
+        return None
+    try:
+        return int(string)
+    except ValueError:
+        return 0
+
+
 def map_string_to_value(string, value_mapping):
     """Convert a string to the value in dictionary of value_mapping."""
     if string in value_mapping:
@@ -463,16 +482,16 @@ class SpeciesCSVUpload(object):
                 year=int(string_to_number(year)),
                 annual_population=annual_population,
                 defaults={
-                    'total': int(string_to_number(
-                        self.row_value(row, total))),
-                    'adult_male': int(string_to_number(
-                        self.row_value(row, total_males))),
-                    'adult_female': int(string_to_number(
-                        self.row_value(row, total_females))),
-                    'juvenile_male': int(string_to_number(
-                        self.row_value(row, male_juv))),
-                    'juvenile_female': int(string_to_number(
-                        self.row_value(row, female_juv))),
+                    'total': string_to_int_with_na(
+                        self.row_value(row, total)),
+                    'adult_male': string_to_int_with_na(
+                        self.row_value(row, total_males)),
+                    'adult_female': string_to_int_with_na(
+                        self.row_value(row, total_females)),
+                    'juvenile_male': string_to_int_with_na(
+                        self.row_value(row, male_juv)),
+                    'juvenile_female': string_to_int_with_na(
+                        self.row_value(row, female_juv)),
                 }
             )
         except IntegrityError:

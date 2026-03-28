@@ -41,7 +41,7 @@ export interface AnnualPopulationInterface {
 export interface AnnualPopulationPerActivityInterface {
     activity_type_id: number;
     activity_type_name?: string;
-    total: number;
+    total?: number;
     adult_male?: number;
     adult_female?: number;
     juvenile_male?: number;

@@ -199,6 +199,7 @@ class AnnualPopulationPerActivity(AnnualPopulationAbstract):
     intake_permit = models.CharField(null=True, blank=True, max_length=100)
     translocation_destination = models.TextField(null=True, blank=True)
     offtake_permit = models.CharField(null=True, blank=True, max_length=100)
+    total = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         try:
