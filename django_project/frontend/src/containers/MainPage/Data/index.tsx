@@ -354,7 +354,7 @@ const DataList = () => {
         const activityDataGrid = isDataConsumer(userInfoData) && activityDataSet.length > 0 ?
           null : activityDataSet.map((each: any) =>
             <Box key={each}>
-                <Box className="data-table"
+                <Box className="data-table data-grid data-table-header"
                      style={{
                          backgroundColor: (customColorWidth as any)[each]?.color,
                          marginTop: '20px',
