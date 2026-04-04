@@ -63,6 +63,8 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 
 ### Change User Permission
 
+![User permission](./img/django-change-data-7.png)
+
 1.  **Checkbox**: The administrators can grant permissions to a user by checking the checkbox.
 
 2.  **Arrows**: The administrators can assign or unassign a group to the user by selecting and using these arrows.
@@ -77,7 +79,7 @@ The other options (`History`, `Delete`, `Save and add another`, `Save and contin
 
 ### Change Dates And User Info
 
-![Change dates and User Info](./img/django-change-data-5.png)
+![Change dates and User Info](./img/django-change-data-8.png)
 
 1. **Dates**: The administrators can edit the last login date-time and date joined date-time of a user from this section.
 
